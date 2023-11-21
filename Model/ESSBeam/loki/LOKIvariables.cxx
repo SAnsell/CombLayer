@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKIvariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,8 +130,8 @@ LOKIvariables(FuncDataBase& Control)
 
   // Guide from First chopper to Wall
   PipeGen.setPipe(5.0,0.8);  // Rad / thick
-  PipeGen.setWindow(-2.0,0.8);  // window offset/ thick
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setNoWindow();
+  PipeGen.setFlange(9.0,1.0);
   PipeGen.generatePipe(Control,"lokiPipeC",487.0);
   Control.addVariable("lokiPipeCYStep",1.0);
   FGen.generateRectangle(Control,"lokiFC",484.0,2.5,3.0);
@@ -255,7 +255,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCaveConcFloor",50.0);
   Control.addVariable("lokiCaveConcBack",35.0);
 
-  Control.addVariable("lokiCaveFeMat","Stainless304");
+  Control.addVariable("lokiCavePipeMat","Stainless304");
   Control.addVariable("lokiCaveConcMat","Concrete");
 
   PipeGen.generatePipe(Control,"lokiPipeOutC",150.0);

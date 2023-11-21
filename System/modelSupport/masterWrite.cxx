@@ -3,7 +3,7 @@
 
  * File:   modelSupport/masterWrite.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,12 +38,21 @@
 
 masterWrite::masterWrite() :
   zeroTol(1e-20),sigFig(6),
-  FMTdouble("%1.6g"),
-  FMTinteger("%1d")
+  FMTdouble(new boost::format("%1.6g")),
+  FMTinteger(new boost::format("%1d"))
   /*!
     Constructor
   */
 {}
+
+masterWrite::~masterWrite()
+ /*!
+   Destructor
+ */
+{
+  delete FMTdouble;
+  delete FMTinteger;
+}
 
 masterWrite&
 masterWrite::Instance()
@@ -68,7 +77,7 @@ masterWrite::setSigFig(const size_t S)
   std::ostringstream cx;
   cx<<"\%1."<<S<<"g";
   sigFig=S;
-  FMTdouble=boost::format(cx.str());
+  *FMTdouble =boost::format(cx.str());
   return;
 }
 
@@ -94,7 +103,7 @@ masterWrite::Num(const double& D)
   if (std::abs(D)<zeroTol)
     return "0.0";
 
-  return (FMTdouble % D).str();
+  return ((*FMTdouble) % D).str();
 }
 
 std::string
@@ -105,7 +114,7 @@ masterWrite::Num(const int& I)
     \return formated number
   */
 {
-  return (FMTinteger % I).str();
+  return ((*FMTinteger) % I).str();
 }
 
 std::string
@@ -120,7 +129,7 @@ masterWrite::Num(const Geometry::Vec3D& V)
   for(int i=0;i<3;i++)
     {
       Out +=(std::abs(V[i])<zeroTol) ? "0.0" :
-	(FMTdouble % V[i]).str();
+	((*FMTdouble) % V[i]).str();
       if (i!=2) Out+=" ";
     }
   return Out;
@@ -138,7 +147,7 @@ masterWrite::NumComma(const Geometry::Vec3D& V)
   for(int i=0;i<3;i++)
     {
       Out +=(std::abs(V[i])<zeroTol) ? "0.0" :
-	(FMTdouble % V[i]).str();
+	((*FMTdouble) % V[i]).str();
       if (i!=2) Out+=",";
     }
   return Out;

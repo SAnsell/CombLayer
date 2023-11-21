@@ -3,7 +3,7 @@
 
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1763,13 +1763,14 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
 
   OPtr->populate();
   OPtr->createSurfaceList();
-
+  const int CN = OPtr->getName();
+  
   std::vector<std::pair<int,int>>
     IP=OPtr->getImplicatePairs();
 
   const std::set<int> SPair=
     OPtr->getHeadRule().getPairedSurf();
-  
+
   bool activeFlag(0);
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(OPtr->cellCompStr());
@@ -1795,7 +1796,7 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
 
       return 1;
     }
-
+  
   return 0;
 }
 
@@ -1813,10 +1814,10 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject(cell)");
 
+  
   MonteCarlo::Object* CPtr = findObject(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
-
   const int flag=minimizeObject(CPtr);
   if (flag<0)
     Simulation::removeCell(CN);

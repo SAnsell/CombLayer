@@ -445,7 +445,7 @@ WWGWeight::scaleMeshItem(const long int I,const long int J,
 
   if (I>=WX || J>=WY || K>=WZ || EI>=WE ||
       I<0 || J<0 || K<0 || EI<0)
-    throw ColErr::DimensionError<4,long int>
+    throw ColErr::DimensionError<long int>
 		      ({I,J,K,EI},{WX,WY,WZ,WE},"Index values");
   
 
@@ -665,7 +665,7 @@ WWGWeight::CADISnorm(const Simulation& System,
       Source.WX!=Adjoint.WX ||
       Source.WY!=Adjoint.WY ||
       Source.WZ!=Adjoint.WZ)
-    throw ColErr::DimensionError<4,long int>
+    throw ColErr::DimensionError<long int>
       ({Source.WX,Source.WY,Source.WZ,Source.WE},
        {Adjoint.WX,Adjoint.WY,Adjoint.WZ,Adjoint.WE},
        "Index values");
@@ -1036,6 +1036,12 @@ void WWGWeight::CADISnorm(const Simulation&,const long int,
 			  const WWGWeight&,const long int,
 			  const WWGWeight&,const long int,
                           const Geometry::Vec3D&,const Geometry::Vec3D&,
+			  const double,const double,const double);
+template 
+void WWGWeight::CADISnorm(const Simulation&,const long int,
+			  const WWGWeight&,const long int,
+			  const WWGWeight&,const long int,
+                          const Geometry::Vec3D&,const Geometry::Plane&,
 			  const double,const double,const double);
 
 template 

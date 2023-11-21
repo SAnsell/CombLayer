@@ -52,7 +52,7 @@ class MultiChannel :
   int bladeMat;                 ///< material of blades
   int voidMat;                  ///< material of void
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void processSurface(const size_t,const double,const double);
   void createObjects(Simulation&);
@@ -64,11 +64,11 @@ class MultiChannel :
   MultiChannel(const std::string&);
   MultiChannel(const MultiChannel&);
   MultiChannel& operator=(const MultiChannel&);
-  virtual ~MultiChannel() {}  ///< Destructor
+  ~MultiChannel() override {}  ///< Destructor
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

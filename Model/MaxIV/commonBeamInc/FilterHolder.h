@@ -62,7 +62,7 @@ class FilterHolder :
 
   int mat;                      ///< Main material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -72,10 +72,10 @@ class FilterHolder :
   FilterHolder(const std::string&);
   FilterHolder(const FilterHolder&);
   FilterHolder& operator=(const FilterHolder&);
-  virtual ~FilterHolder();
+  ~FilterHolder() override;
 
   using attachSystem::FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

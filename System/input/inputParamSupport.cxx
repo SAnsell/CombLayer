@@ -112,6 +112,9 @@ getNamedPlanePoints(const Simulation& System,
       const attachSystem::SurfMap* SMptr=
 	System.getObject<attachSystem::SurfMap>(objName);
 
+      ELog::EM<<"Obj name == "<<objName<<ELog::endDiag;
+      ELog::EM<<"ITEM name == "<<indexName<<ELog::endDiag;
+
       if (SMptr)
 	{
 	  if (SMptr->hasSurf(indexName,itemIndex))

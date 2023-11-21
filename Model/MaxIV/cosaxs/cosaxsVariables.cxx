@@ -3,7 +3,7 @@
  
  * File:   cosaxs/cosaxsVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -44,7 +45,6 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BremCollGenerator.h"
 #include "BremMonoCollGenerator.h"
@@ -105,7 +105,7 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
   //  Control.addVariable<double>(undKey+"UPipeYStep",20.0);
-  Control.addVariable(undKey+"UPipeFeThick",0.2);
+  Control.addVariable(undKey+"UPipePipeThick",0.2);
 
   // undulator I Vacuum
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
@@ -564,7 +564,7 @@ opticsVariables(FuncDataBase& Control,
   PTubeGen.generateTube(Control,preName+"FilterBoxA",0.0,25.2);
   Control.addVariable(preName+"FilterBoxANPorts",4);
   
-  PItemGen.setCF<setVariable::CF40>(mainRadius+4.0);
+  PItemGen.setCF<setVariable::Linac::CF40>(mainRadius+4.0);
   // 1/4 and 3/4 in main length: [total length 25.0-11.0] 
   Geometry::Vec3D PPos(0,3.55,0);
   const Geometry::Vec3D XVec(-1,0,0);

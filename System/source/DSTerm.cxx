@@ -19,18 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <complex>
-#include <cmath>
-#include <string>
-#include <vector>
-#include <map>
-#include <iterator>
-#include <numeric>
 #include <boost/format.hpp>
+#include <cmath>
+#include <complex>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <numeric>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -49,8 +50,8 @@ DSBase::DSBase() :
   */
 {}
 
-DSBase::DSBase(const std::string& K,const char O)  :
-  option(O),Key(K)
+DSBase::DSBase(std::string  K,const char O)  :
+  option(O),Key(std::move(K))
   /*!
     Contructor
     \param K :: Key value

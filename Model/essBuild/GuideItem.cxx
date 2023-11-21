@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideItem.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Exception.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
@@ -46,8 +47,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -66,7 +65,9 @@
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
+#include "SurfMap.h"
 #include "CellMap.h"
 #include "GuideItem.h"
 
@@ -74,11 +75,13 @@ namespace essSystem
 {
 
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
-  attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedRotateGroup(Key+std::to_string(Index),
                                  "Main",6,"Beam",6),
-  attachSystem::CellMap(),baseName(Key),
-  active(1),innerCyl(0),outerCyl(0),GPtr(0)
+  attachSystem::ContainedGroup("Inner","Outer"),
+  attachSystem::ExternalCut(),
+  attachSystem::SurfMap(),
+  attachSystem::CellMap(),
+  baseName(Key),active(1),RInner(0),ROuter(0),GPtr(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -87,15 +90,17 @@ GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
 {}
 
 GuideItem::GuideItem(const GuideItem& A) : 
-  attachSystem::ContainedGroup(A),
   attachSystem::FixedRotateGroup(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::SurfMap(A),
   attachSystem::CellMap(A),
   baseName(A.baseName),active(A.active),beamXStep(A.beamXStep),
   beamZStep(A.beamZStep),beamXYAngle(A.beamXYAngle),
   beamZAngle(A.beamZAngle),beamWidth(A.beamWidth),
   beamHeight(A.beamHeight),nSegment(A.nSegment),
   height(A.height),depth(A.depth),width(A.width),length(A.length),
-  mat(A.mat),innerCyl(A.innerCyl),outerCyl(A.outerCyl),
+  mat(A.mat),
   RInner(A.RInner),ROuter(A.ROuter),GPtr(A.GPtr)
   /*!
     Copy constructor
@@ -113,8 +118,10 @@ GuideItem::operator=(const GuideItem& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotateGroup::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       attachSystem::CellMap::operator=(A);
       active=A.active;
       beamXStep=A.beamXStep;
@@ -129,8 +136,6 @@ GuideItem::operator=(const GuideItem& A)
       width=A.width;
       length=A.length;
       mat=A.mat;
-      innerCyl=A.innerCyl;
-      outerCyl=A.outerCyl;
       RInner=A.RInner;
       ROuter=A.ROuter;
       GPtr=A.GPtr;
@@ -146,26 +151,29 @@ GuideItem::~GuideItem()
 {}
 
 void
-GuideItem::setCylBoundary(const int dPlane,const int A,const int B)
+GuideItem::calcRadii()
   /*!
-    Set the boundary cylinders
-    \param dPlane :: divide surface
-    \param A :: Inner Cylinder
-    \param B :: Outer Cylinder
+    Calc inner/oute radii
+    [ copied from GuideBay -- this is junk so fix ]
    */
 {
-  ELog::RegMethod RegA("GuideItem","setCylBoundary");
+  ELog::RegMethod RegA("GuideItem","calcRadii");
+  
+  // construct
+  const HeadRule innerHR=getRule("innerCyl");
+  const HeadRule outerHR=getRule("outerCyl");
 
-  dividePlane=dPlane;
-  innerCyl=abs(A);
-  outerCyl=abs(B);
+  const Geometry::Cylinder* CInner=
+    dynamic_cast<const Geometry::Cylinder*>(innerHR.primarySurface());
+  const Geometry::Cylinder* COuter=
+    dynamic_cast<const Geometry::Cylinder*>(innerHR.primarySurface());
 
-  const Geometry::Cylinder* CPtr=
-    SMap.realPtr<Geometry::Cylinder>(innerCyl);
-  RInner=CPtr->getRadius();
-  const Geometry::Cylinder* DPtr=
-    SMap.realPtr<Geometry::Cylinder>(outerCyl);
-  ROuter=DPtr->getRadius();
+  if (!CInner || !COuter)
+    throw ColErr::InContainerError<std::string>
+      ("Inner/Outer","inner/outer Cyl not cylinder");
+
+  RInner=CInner->getRadius();
+  ROuter=COuter->getRadius();
   return;
 }
 
@@ -177,6 +185,7 @@ GuideItem::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("GuideItem","populate");
+
 
   FixedRotateGroup::populate(Control);
   active=Control.EvalTail<int>(keyName,baseName,"Active");
@@ -216,7 +225,6 @@ GuideItem::populate(const FuncDataBase& Control)
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
   filled=Control.EvalTail<int>(keyName,baseName,"Filled");
 
-
   return;
 }
   
@@ -234,15 +242,8 @@ GuideItem::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
-  mainFC.createUnitVector(FC,0);
-  //  mainFC.createUnitVector(FC.getCentre(),-LU.getAxis(),FC.getZ());
-
-  //   beamFC=mainFC;
-
-  
+  mainFC.createUnitVector(FC,0);  
   beamFC.createUnitVector(FC,sideIndex);
-
-
   applyOffset();
   // Need to calculate impact point of beamline:
   const double yShift=sqrt(RInner*RInner-beamXStep*beamXStep)-RInner;
@@ -261,16 +262,13 @@ GuideItem::createSurfaces()
 {
   ELog::RegMethod RegA("GuideItem","createSurface");
 
-  if (dividePlane)
+  if (!ExternalCut::isActive("divider"))
     {
-      const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(dividePlane);
-      if (dividePlane * PPtr->getNormal().dotProd(Y)<0.0)
-	dividePlane*=-1;
-      SMap.addMatch(buildIndex+1,dividePlane);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);    // Divider plane
+      setCutSurf("divider",SMap.realSurf(buildIndex+1));
     }
   else
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);    // Divider plane
-
   
   const attachSystem::FixedComp& mainFC=
     FixedGroup::getKey("Main");
@@ -279,25 +277,20 @@ GuideItem::createSurfaces()
 
   const Geometry::Vec3D mainOrigin=mainFC.getCentre();
   const Geometry::Vec3D beamOrigin=beamFC.getCentre();
-
   
   const Geometry::Vec3D& bX=beamFC.getX();
   const Geometry::Vec3D& bZ=beamFC.getZ();
- 
-
-  SMap.addMatch(buildIndex+7,innerCyl);
 
   int GI(buildIndex);
-
   for(size_t i=0;i<nSegment;i++)
     {
       if (i!=nSegment-1)
 	ModelSupport::buildCylinder(SMap,GI+57,mainOrigin,Z,length[i]);
 
-      ModelSupport::buildPlane(SMap,GI+3,beamOrigin-bX*(width[i]/2.0),bX);
-      ModelSupport::buildPlane(SMap,GI+4,beamOrigin+bX*(width[i]/2.0),bX);
-      ModelSupport::buildPlane(SMap,GI+5,beamOrigin-bZ*depth[i],bZ);
-      ModelSupport::buildPlane(SMap,GI+6,beamOrigin+bZ*height[i],bZ);
+      SurfMap::makePlane("Left",SMap,GI+3,beamOrigin-bX*(width[i]/2.0),bX);
+      SurfMap::makePlane("Right",SMap,GI+4,beamOrigin+bX*(width[i]/2.0),bX);
+      SurfMap::makePlane("Base",SMap,GI+5,beamOrigin-bZ*depth[i],bZ);
+      SurfMap::makePlane("Top",SMap,GI+6,beamOrigin+bZ*height[i],bZ);
 
       ModelSupport::buildPlane
         (SMap,GI+13,beamOrigin-bX*(-sideGap+width[i]/2.0),bX);
@@ -305,10 +298,8 @@ GuideItem::createSurfaces()
         (SMap,GI+14,beamOrigin+bX*(-sideGap+width[i]/2.0),bX);
       ModelSupport::buildPlane(SMap,GI+15,beamOrigin-bZ*(-baseGap+depth[i]),bZ);
       ModelSupport::buildPlane(SMap,GI+16,beamOrigin+bZ*(-topGap+height[i]),bZ);
-
       GI+=50;
     }
-  SMap.addMatch(GI+7,outerCyl);
 
   // Beamline :: 
   ModelSupport::buildPlane(SMap,buildIndex+1103,
@@ -340,18 +331,21 @@ GuideItem::getPlane(const int SN) const
 HeadRule
 GuideItem::getEdge(const GuideItem* GPtr) const
   /*!
-    Given another GuideItem determine the end point collision string
+    Given another GuideItem determine the end point collision
     \param GPtr :: Other object Ptr [0 for none]
-    \return Edge string (3 side)
+    \return Edge  (3/4 side)
    */
 {
-  ELog::RegMethod RegA("GuideItem","getEdgeStr");
+  ELog::RegMethod RegA("GuideItem","getEdge");
 
   HeadRule HR;
   if (!GPtr) return HR;
+
   const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   const Geometry::Vec3D beamOrigin=beamFC.getCentre();
+  
 
+  
   const Geometry::Plane* gP3=GPtr->getPlane(3);
   const Geometry::Plane* gP4=GPtr->getPlane(4);
   const Geometry::Plane* P3=getPlane(3);
@@ -360,14 +354,41 @@ GuideItem::getEdge(const GuideItem* GPtr) const
   
   const Geometry::Vec3D RptA=SurInter::getPoint(gP3,P4,ZPlane,beamOrigin);
   const Geometry::Vec3D RptB=SurInter::getPoint(gP4,P3,ZPlane,beamOrigin);
-  const Geometry::Cylinder* CPtr=
-    SMap.realPtr<Geometry::Cylinder>(innerCyl);
 
-  if (CPtr->side(RptA))
-    return GPtr->sideExclude(1);
-  else if (CPtr->side(RptB))
-    return GPtr->sideExclude(0);
+  const HeadRule cylHR=getRule("innerCyl");
+  const HeadRule divHR=getRule("divider");
+
+  if (cylHR.isValid(RptA) && divHR.isValid(RptA))
+    HR=GPtr->sideExclude(0);
+  else if (cylHR.isValid(RptB) && divHR.isValid(RptB))
+    HR=GPtr->sideExclude(1);
   return HR;
+}
+
+HeadRule
+GuideItem::wheelHeadRule() const
+  /*!
+    Decides is wheel headrule cuts into the guide item
+    and returns a HeadRule if that is the case.
+   */
+{
+  ELog::RegMethod RegA("GiudeItem","wheelHeadRule");
+
+  const HeadRule wheelHR=getRule("wheel");
+
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  const Geometry::Vec3D& beamOrigin=beamFC.getCentre();
+  const Geometry::Vec3D& bY=beamFC.getY();
+
+  const HeadRule innerHR=getRule("innerCyl");
+  Geometry::Vec3D beamEnter=
+    SurInter::getLinePoint(beamOrigin,bY,innerHR,
+			   beamOrigin+bY*RInner);
+  // need to project to origin:
+  beamEnter=beamEnter.cutComponent(Z);    
+  return (wheelHR.isValid(beamEnter)) ?
+    wheelHR.complement() : HeadRule();
+    
 }
 
 void
@@ -378,29 +399,37 @@ GuideItem::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("GuideItem","createObjects");
+
   if (!active) return;
-
+  const HeadRule wheelHR=wheelHeadRule();   // null if not intersecting
+  const HeadRule innerHR=getRule("innerCyl")*wheelHR;
+  const HeadRule outerHR=getComplementRule("outerCyl"); 
+  HeadRule divideHR=getRule("divider"); // populate ??
+  if (!divideHR.isValid(Origin+Y*1000.0))
+    divideHR.makeComplement();
+  
   const HeadRule edgeHR=getEdge(GPtr);
-  HeadRule HR;
 
+  HeadRule HR;
   int GI(buildIndex);
   for(size_t i=0;i<nSegment;i++)
     {
       // Outer layer
       if (i==0)
 	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 7 3 -4 5 -6 -57");
-	  HR*=edgeHR;
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6 -57");
+	  HR*=edgeHR*innerHR*divideHR;
 	}
       else 
-	HR=ModelSupport::getHeadRule(SMap,GI,buildIndex,"1M 7 3 -4 5 -6 -57");
+	HR=ModelSupport::getSetHeadRule(SMap,GI,"7 3 -4 5 -6 -57");
+      HR*=divideHR;
+      if (i+1==nSegment) HR*=outerHR;
 
+      // This is a mess:
       if (!i)
 	addOuterSurf("Inner",HR);
       else 
 	addOuterUnionSurf("Outer",HR);
-
-
 
       // Add inner boundary
       HR*=ModelSupport::getHeadRule(SMap,GI,"(-13:14:-15:16)");
@@ -409,31 +438,30 @@ GuideItem::createObjects(Simulation& System)
       if (i==0)
 	{
 	  HR=ModelSupport::getHeadRule
-	    (SMap,buildIndex,"1 7 13 -14 15 -16 -57");
-	  HR*=edgeHR;
+	    (SMap,buildIndex,"13 -14 15 -16 -57");
+	  HR*=edgeHR*innerHR;
 	}
       else 
-	HR=ModelSupport::getHeadRule
-	  (SMap,GI,buildIndex,"1M 7 13 -14 15 -16 -57");
-
+	HR=ModelSupport::getSetHeadRule
+	  (SMap,GI,buildIndex,"7 13 -14 15 -16 -57");
+      HR*=divideHR;
+      
       // Inner metal:
       if (!filled)
 	HR*=ModelSupport::getHeadRule
 	  (SMap,buildIndex,"(-1103:1104:-1105:1106)");
-      makeCell("Body",System,cellIndex++,mat,0.0,HR);
-
-      addCell("Body",cellIndex-1);
-      if (filled) addCell("Void",cellIndex-1);
-
+      if (i+1==nSegment) HR*=outerHR;
       
+      makeCell("Body",System,cellIndex++,mat,0.0,HR);
+      if (filled) addCell("Void",cellIndex-1);
       GI+=50;
     }      
   // Inner void
   if (!filled)
     {
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,GI,"1 7 -7M 1103 -1104 1105 -1106 ");
-      makeCell("Void",System,cellIndex++,0,0.0,HR);
+	(SMap,buildIndex,"1103 -1104 1105 -1106 ");
+      makeCell("Void",System,cellIndex++,0,0.0,HR*divideHR*innerHR*outerHR);
     }
 
   return;
@@ -470,26 +498,31 @@ GuideItem::createLinks()
 
   const Geometry::Vec3D beamOrigin=beamFC.getCentre();
 
-  MonteCarlo::LineIntersectVisit LI(beamOrigin,beamFC.getY());
+  HeadRule divideHR=getRule("divider"); // populate ??
+  if (!divideHR.isValid(Origin+Y*1000.0))
+    divideHR.makeComplement();
 
-  const Geometry::Cylinder* CPtr=
-    SMap.realPtr<Geometry::Cylinder>(innerCyl);
-  const Geometry::Cylinder* DPtr=
-     SMap.realPtr<Geometry::Cylinder>(outerCyl);
-
+  const HeadRule innerHR=getRule("innerCyl");
+  const HeadRule outerHR=getRule("outerCyl");
+  //  ELog::EM<<"Inner == "<<innerHR<<" "<<outerHR<<ELog::endDiag;
+  
   const Geometry::Vec3D beamEnter=
-    LI.getPoint(CPtr,beamOrigin+bY*RInner);
+    SurInter::getLinePoint(beamOrigin,bY,innerHR,
+			   beamOrigin+bY*RInner);
   const Geometry::Vec3D beamExit=
-    LI.getPoint(DPtr,beamOrigin+bY*ROuter);
+    SurInter::getLinePoint(beamOrigin,bY,outerHR,
+			   beamOrigin+bY*ROuter);
+  
 
   beamFC.setConnect(0,beamEnter,-bY);
-  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
-  beamFC.addBridgeSurf(0,SMap.realSurf(buildIndex+1));
+
+  beamFC.setLinkSurf(0,innerHR.complement());
+  beamFC.setBridgeSurf(0,divideHR);
 
   const int GI=50*static_cast<int>(nSegment)+buildIndex;
   beamFC.setConnect(1,beamExit,bY);
-  beamFC.setLinkSurf(1,SMap.realSurf(GI+7));
-  beamFC.addBridgeSurf(1,SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf(1,outerHR);
+  beamFC.setBridgeSurf(1,divideHR);
   if (!filled)
     {
       const Geometry::Vec3D MidPt((beamOrigin+bY*RInner+beamExit)/2.0);
@@ -506,12 +539,12 @@ GuideItem::createLinks()
 
   /// TARGET CENTRE TRACKING:
   mainFC.setConnect(0,beamEnter-Geometry::Vec3D(0,0,beamEnter[2]),-bY);
-  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+7));
-  mainFC.addBridgeSurf(0,SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf(0,innerHR.complement());
+  mainFC.setBridgeSurf(0,divideHR);
 
   mainFC.setConnect(1,beamExit-Geometry::Vec3D(0,0,beamExit[2]),bY);
-  mainFC.setLinkSurf(1,SMap.realSurf(GI+7));
-  mainFC.addBridgeSurf(1,SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf(1,outerHR);
+  mainFC.setBridgeSurf(1,divideHR);
     
 
   return;
@@ -530,7 +563,8 @@ GuideItem::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("GuideItem","createAll");
-	    
+
+  calcRadii();
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();

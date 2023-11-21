@@ -68,15 +68,15 @@ class FixedGroup : public FixedComp
 
   FixedGroup(const FixedGroup&);
   FixedGroup& operator=(const FixedGroup&);
-  virtual ~FixedGroup();
+  ~FixedGroup() override;
 
   using FixedComp::createUnitVector;
   virtual void createUnitVector(const std::string&,
 				const attachSystem::FixedComp&,
 				const long int);
 
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				 const long int);
+  void createUnitVector(const attachSystem::FixedComp&,
+				 const long int) override;
   virtual void secondaryUnitVector(const attachSystem::FixedComp&,
 				   const long int);
   virtual void secondaryUnitVector(const attachSystem::FixedComp&,
@@ -100,8 +100,8 @@ class FixedGroup : public FixedComp
   const FixedComp& getSecondary() const;
   FixedComp& getSecondary();
 
-  virtual void applyRotation(const localRotate&);
-  virtual void applyRotation(const Geometry::Vec3D&,const double);
+  void applyRotation(const localRotate&) override;
+  void applyRotation(const Geometry::Vec3D&,const double) override;
 
   void setAxisControl(const long int,const Geometry::Vec3D&);
 

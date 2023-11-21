@@ -3,7 +3,7 @@
  
  * File:   src/objectGroups.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -545,6 +545,50 @@ objectGroups::addObject(const std::string& Name,
     throw ColErr::InContainerError<std::string>(Name,"Exisiting object");
   Components.insert(cMapTYPE::value_type(Name,Ptr));
   return;
+}
+
+void
+objectGroups::reAddObject(const CTYPE& Ptr)
+  /*! 
+    Register a shared_ptr of an object. 
+    Requirement that 
+    - (a) The object already exists as a range
+    - (b) Object is replaced on repeat
+    All failures result in an exception.
+    \param Ptr :: FixedComp object [shared_ptr]
+  */
+{
+  ELog::RegMethod RegA("objectGroups","reAddObject(Obj)");
+  if (Ptr)
+    reAddObject(Ptr->getKeyName(),Ptr);
+  else
+    throw ColErr::EmptyValue<void>("Ptr Shared_ptr");
+  return;
+}
+
+
+void
+objectGroups::reAddObject(const std::string& Name,
+			  const CTYPE& Ptr)
+  /*!
+    Register a shared_ptr of an object. 
+    Requirement that 
+    - (a) The object already exists as a range
+    - (b) Object replaced if on sytem
+    All failures result in an exception.
+    \param Name :: Name of the object						
+    \param Ptr :: Shared_ptr
+  */
+{
+  ELog::RegMethod RegA("objectGroups","reAddObject");
+
+  // First check that we have it in Register:
+  if (regionMap.find(Name)==regionMap.end())
+    throw ColErr::InContainerError<std::string>(Name,"regionMap empty");
+
+  // Doesn't matter if it exists:
+  Components.insert_or_assign(Name,Ptr);
+  return;    
 }
 
 bool

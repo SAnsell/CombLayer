@@ -63,9 +63,9 @@ class BellJar : public attachSystem::ContainedComp,
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -76,7 +76,7 @@ class BellJar : public attachSystem::ContainedComp,
   BellJar(const std::string&);
   BellJar(const BellJar&);
   BellJar& operator=(const BellJar&);
-  virtual ~BellJar();
+  ~BellJar() override;
 
   /// Access inner void
   int innerCell() const { return innerVoid; }
@@ -84,7 +84,7 @@ class BellJar : public attachSystem::ContainedComp,
   int outerCell() const { return midVoid; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

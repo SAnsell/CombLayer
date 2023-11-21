@@ -51,7 +51,7 @@ class Capillary :
   int innerMat;                 ///< Inner material
   int wallMat;                  ///< Wall material 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -61,11 +61,11 @@ class Capillary :
   Capillary(const std::string&);
   Capillary(const Capillary&);
   Capillary& operator=(const Capillary&);
-  virtual ~Capillary();
+  ~Capillary() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

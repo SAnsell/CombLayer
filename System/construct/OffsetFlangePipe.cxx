@@ -3,7 +3,7 @@
  
  * File:   construct/OffsetFlangePipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,15 +81,13 @@ OffsetFlangePipe::OffsetFlangePipe(const std::string& Key) :
 
 OffsetFlangePipe::OffsetFlangePipe(const OffsetFlangePipe& A) :
   GeneralPipe(A),
-  radius(A.radius),length(A.length),feThick(A.feThick),
   flangeAXStep(A.flangeAXStep),flangeAZStep(A.flangeAZStep),
   flangeAXYAngle(A.flangeAXYAngle),flangeAZAngle(A.flangeAZAngle),
   flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
   flangeBXStep(A.flangeBXStep),flangeBZStep(A.flangeBZStep),
   flangeBXYAngle(A.flangeBXYAngle),flangeBZAngle(A.flangeBZAngle),
   flangeBRadius(A.flangeBRadius),flangeBLength(A.flangeBLength),
-  voidMat(A.voidMat),feMat(A.feMat),flangeAYAxis(A.flangeAYAxis),
-  flangeBYAxis(A.flangeBYAxis)
+  flangeAYAxis(A.flangeAYAxis),flangeBYAxis(A.flangeBYAxis)
   /*!
     Copy constructor
     \param A :: OffsetFlangePipe to copy
@@ -107,9 +105,6 @@ OffsetFlangePipe::operator=(const OffsetFlangePipe& A)
   if (this!=&A)
     {
       constructSystem::GeneralPipe::operator=(A);
-      radius=A.radius;
-      length=A.length;
-      feThick=A.feThick;
       flangeAXStep=A.flangeAXStep;
       flangeAZStep=A.flangeAZStep;
       flangeAXYAngle=A.flangeAXYAngle;
@@ -122,8 +117,6 @@ OffsetFlangePipe::operator=(const OffsetFlangePipe& A)
       flangeBZAngle=A.flangeBZAngle;
       flangeBRadius=A.flangeBRadius;
       flangeBLength=A.flangeBLength;
-      voidMat=A.voidMat;
-      feMat=A.feMat;
       flangeAYAxis=A.flangeAYAxis;
       flangeBYAxis=A.flangeBYAxis;
     }
@@ -145,12 +138,7 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OffsetFlangePipe","populate");
   
-  FixedRotate::populate(Control);
-
-  // Void + Fe special:
-  radius=Control.EvalVar<double>(keyName+"Radius");  
-  length=Control.EvalVar<double>(keyName+"Length");
-  feThick=Control.EvalVar<double>(keyName+"FeThick");
+  GeneralPipe::populate(Control);
 
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
@@ -182,28 +170,7 @@ OffsetFlangePipe::populate(const FuncDataBase& Control)
   flangeBZAngle=Control.EvalDefVar<double>
     (keyName+"FlangeBZAngle",0.0);
 
-  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-
-  return;
-}
-
-void
-OffsetFlangePipe::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed component to link to
-    \param sideIndex :: Link point and direction [0 for origin]
-  */
-{
-  ELog::RegMethod RegA("OffsetFlangePipe","createUnitVector");
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  applyActiveFrontBack(length);
-  flangeAYAxis=Y;
-  flangeBYAxis=Y;
+  
   return;
 }
   
@@ -218,6 +185,7 @@ OffsetFlangePipe::createSurfaces()
   // Inner void
   flangeAYAxis=Y;
   flangeBYAxis=Y;
+  
   if (!frontActive())
     {
       const Geometry::Quaternion Qz=
@@ -230,12 +198,11 @@ OffsetFlangePipe::createSurfaces()
 			       Origin-Y*(length/2.0),flangeAYAxis); 
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
-  getShiftedFront(SMap,buildIndex+11,flangeAYAxis,flangeALength);
+  getShiftedFront(SMap,buildIndex+101,flangeAYAxis,flangeALength);
 
   
   if (!backActive())
     {
-
       const Geometry::Quaternion Qz=
 	Geometry::Quaternion::calcQRotDeg(flangeBZAngle,X);
       const Geometry::Quaternion Qxy=
@@ -246,10 +213,11 @@ OffsetFlangePipe::createSurfaces()
 			       Origin+Y*(length/2.0),flangeBYAxis);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
-  getShiftedBack(SMap,buildIndex+12,flangeBYAxis,-flangeBLength);
+  getShiftedBack(SMap,buildIndex+102,flangeBYAxis,-flangeBLength);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
+  makeCylinder("InnerCyl",SMap,buildIndex+7,Origin,Y,radius);
+  makeCylinder("PipeCyl",SMap,buildIndex+17,Origin,Y,radius+pipeThick);
+  addSurf("OuterRadius",SMap.realSurf(buildIndex+17));
 
   // FLANGE SURFACES FRONT/BACK:
   ModelSupport::buildCylinder(SMap,buildIndex+107,
@@ -270,33 +238,33 @@ OffsetFlangePipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("OffsetFlangePipe","createObjects");
 
-    HeadRule HR;
+  HeadRule HR;
   const HeadRule& frontHR=getFrontRule();
   const HeadRule& backHR=getBackRule();
   
   // Void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  HR=HeadRule(SMap,buildIndex,-7);
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
   // FLANGE Front: 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 7");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 7");
+  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,HR*frontHR);
 
   // FLANGE Back: 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 7");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207 7");
+  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17 7");
-  makeCell("MainPipe",System,cellIndex++,feMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -17 7");
+  makeCell("MainPipe",System,cellIndex++,pipeMat,0.0,HR);
 
   // outer boundary [flange front/back]
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
   addOuterSurf("FlangeA",HR*frontHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207");
   addOuterSurf("FlangeB",HR*backHR);
   // outer boundary mid tube
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -17");
   addOuterSurf("Main",HR);
 
   return;
@@ -323,8 +291,8 @@ OffsetFlangePipe::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
   
   // pipe wall
-  FixedComp::setConnect(7,Origin-Z*(radius+feThick),-Z);
-  FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
+  FixedComp::setConnect(7,Origin-Z*(radius+pipeThick),-Z);
+  FixedComp::setConnect(8,Origin+Z*(radius+pipeThick),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
 

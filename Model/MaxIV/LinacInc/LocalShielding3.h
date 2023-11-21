@@ -42,7 +42,7 @@ class LocalShielding3 :
 {
   std::vector<double> midHoleShieldHeight;  ///< mid hole shielding/void heights
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -52,11 +52,11 @@ class LocalShielding3 :
   LocalShielding3(const std::string&);
   LocalShielding3(const LocalShielding3&);
   LocalShielding3& operator=(const LocalShielding3&);
-  virtual LocalShielding3* clone() const;
-  virtual ~LocalShielding3();
+  LocalShielding3* clone() const override;
+  ~LocalShielding3() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

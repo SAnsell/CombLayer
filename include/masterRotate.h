@@ -50,26 +50,26 @@ class masterRotate : public localRotate
  public:
   
   /// Desctructor
-  virtual ~masterRotate() {} 
+  ~masterRotate() override {} 
   
   static masterRotate& Instance();
 
-  virtual Geometry::Vec3D calcRotate(const Geometry::Vec3D&) const;
-  virtual Geometry::Vec3D calcAxisRotate(const Geometry::Vec3D&) const;
+  Geometry::Vec3D calcRotate(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D calcAxisRotate(const Geometry::Vec3D&) const override;
 
   virtual Geometry::Vec3D forceCalcRotate(const Geometry::Vec3D&) const;
   virtual Geometry::Vec3D forceCalcAxisRotate(const Geometry::Vec3D&) const;
 
-  virtual Geometry::Vec3D reverseRotate(const Geometry::Vec3D&) const;
-  virtual Geometry::Vec3D reverseAxisRotate(const Geometry::Vec3D&) const;
+  Geometry::Vec3D reverseRotate(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D reverseAxisRotate(const Geometry::Vec3D&) const override;
 
   virtual Geometry::Vec3D forceReverseRotate(const Geometry::Vec3D&) const;
   virtual Geometry::Vec3D forceReverseAxisRotate(const Geometry::Vec3D&) const;
 
-  virtual void applyFull(MonteCarlo::Object*) const;
-  virtual void applyFull(Geometry::Surface*) const;
-  virtual void applyFull(Geometry::Vec3D&) const;
-  virtual void applyFullAxis(Geometry::Vec3D&) const;
+  void applyFull(MonteCarlo::Object*) const override;
+  void applyFull(Geometry::Surface*) const override;
+  void applyFull(Geometry::Vec3D&) const override;
+  void applyFullAxis(Geometry::Vec3D&) const override;
 
 
   /// Rotation applied

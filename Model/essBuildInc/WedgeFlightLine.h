@@ -52,7 +52,7 @@ class WedgeFlightLine :
   size_t nWedges;                  ///< number of wedges to build
   std::vector<std::shared_ptr<WedgeItem> > wedges; ///< array of wedges
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void buildWedges(Simulation&);
   
  public:
@@ -60,11 +60,11 @@ class WedgeFlightLine :
   WedgeFlightLine(const std::string&);
   WedgeFlightLine(const WedgeFlightLine&);
   WedgeFlightLine& operator=(const WedgeFlightLine&);
-  ~WedgeFlightLine();
+  ~WedgeFlightLine() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 
 };

@@ -73,19 +73,19 @@ class flexpesFrontEnd :  public R1FrontEnd
   /// Steel beam stop
   std::shared_ptr<insertSystem::insertPlate> shield;
 
-  virtual const attachSystem::FixedComp&
+  const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
-		   const std::string&);
+		   const std::string&) override;
 			      
-  virtual void createLinks();
+  void createLinks() override;
   
  public:
   
   flexpesFrontEnd(const std::string&);
   flexpesFrontEnd(const flexpesFrontEnd&);
   flexpesFrontEnd& operator=(const flexpesFrontEnd&);
-  virtual ~flexpesFrontEnd();
+  ~flexpesFrontEnd() override;
 
 };
 

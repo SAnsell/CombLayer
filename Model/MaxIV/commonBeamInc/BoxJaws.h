@@ -74,7 +74,7 @@ class BoxJaws :
   int jawMat;                ///< jaw material
 
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,11 +85,11 @@ class BoxJaws :
   BoxJaws(const std::string&,const std::string&);
   BoxJaws(const BoxJaws&);
   BoxJaws& operator=(const BoxJaws&);
-  virtual ~BoxJaws();
+  ~BoxJaws() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

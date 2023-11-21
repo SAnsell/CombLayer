@@ -56,10 +56,10 @@ class BenderUnit :
   calcMidTrack(const double,const double) const;
   Geometry::Vec3D calcCentre(const double,const double) const;
 
-  void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
+  void createLinks() override;
   
  public:
 
@@ -67,10 +67,10 @@ class BenderUnit :
   BenderUnit(const BenderUnit&);
   BenderUnit& operator=(const BenderUnit&);
   virtual BenderUnit* clone() const;
-  virtual ~BenderUnit();
+  ~BenderUnit() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const FixedComp&,const long int);
+  void createAll(Simulation&,const FixedComp&,const long int) override;
 
 };
 

@@ -374,7 +374,8 @@ SimValid::runPoint(const Simulation& System,
 {
   ELog::RegMethod RegA("SimValid","runPoint");
   ELog::debugMethod DebA;
-  
+
+  std::set<Geometry::Vec3D> MultiPoint;
   const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
   MonteCarlo::Object* InitObj(0);
   const Geometry::Surface* SPtr;          // Output surface
@@ -428,7 +429,9 @@ SimValid::runPoint(const Simulation& System,
 	  // boundary e.g. circles in contact
 	  if (!SN)
 	    {
-	      ELog::EM<<"Multi Point ="<<TNeut.Pos<<ELog::endDiag;
+	      if (MultiPoint.find(TNeut.Pos)==MultiPoint.end())
+		MultiPoint.emplace(TNeut.Pos);
+
 	      TNeut.moveForward(Geometry::zeroTol*5.0);
 	      OPtr=System.findCell(TNeut.Pos,0);
 	      if (OPtr)

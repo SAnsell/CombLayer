@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertGrid.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,10 +183,10 @@ insertGrid::createSurfaces()
   for(const double T : wallThick)
     {
       TThick+=T;
-      ModelSupport::buildPlane(SMap,PI+3,Origin-X*(T+innerWidth/2.0),X);
-      ModelSupport::buildPlane(SMap,PI+4,Origin+X*(T+innerWidth/2.0),X);
-      ModelSupport::buildPlane(SMap,PI+5,Origin-Z*(T+innerHeight/2.0),Z);
-      ModelSupport::buildPlane(SMap,PI+6,Origin+Z*(T+innerHeight/2.0),Z); 
+      ModelSupport::buildPlane(SMap,PI+3,Origin-X*(TThick+innerWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,PI+4,Origin+X*(TThick+innerWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,PI+5,Origin-Z*(TThick+innerHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,PI+6,Origin+Z*(TThick+innerHeight/2.0),Z); 
       PI+=50;
     }
   

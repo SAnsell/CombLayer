@@ -3,7 +3,7 @@
  
  * File:   include/objectGroups.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,6 +93,8 @@ class objectGroups
     
   void addObject(const std::string&,const CTYPE&);
   void addObject(const CTYPE&);
+  void reAddObject(const std::string&,const CTYPE&);
+  void reAddObject(const CTYPE&);
   template<typename T> const T*
     getObject(const std::string&) const;
   template<typename T> T*

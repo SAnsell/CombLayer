@@ -48,7 +48,7 @@ class R1Beamline :
   R1Beamline(const std::string&,const std::string&);
   R1Beamline(const R1Beamline&);
   R1Beamline& operator=(const R1Beamline&);
-  virtual ~R1Beamline();
+  ~R1Beamline() override;
 
   /// set ring
   void setRing(std::shared_ptr<R1Ring>& R) { r1Ring=R; }

@@ -70,7 +70,7 @@ class SideCoolTarget :
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,17 +80,17 @@ class SideCoolTarget :
   SideCoolTarget(const std::string&);
   SideCoolTarget(const SideCoolTarget&);
   SideCoolTarget& operator=(const SideCoolTarget&);
-  virtual SideCoolTarget* clone() const; 
-  virtual ~SideCoolTarget();
+  SideCoolTarget* clone() const override; 
+  ~SideCoolTarget() override;
 
   /// Main cell body
   int getMainBody() const { return buildIndex+1; }
   void addInnerBoundary(attachSystem::ContainedComp&) const;
 
-  void addProtonLine(Simulation&);
+  void addProtonLine(Simulation&) override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
   
 
 };

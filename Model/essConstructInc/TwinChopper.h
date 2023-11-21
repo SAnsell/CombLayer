@@ -55,10 +55,10 @@ class TwinChopper : public TwinBase
   TwinChopper(const std::string&);
   TwinChopper(const TwinChopper&);
   TwinChopper& operator=(const TwinChopper&);
-  virtual ~TwinChopper();
+  ~TwinChopper() override;
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

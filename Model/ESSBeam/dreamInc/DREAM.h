@@ -159,7 +159,7 @@ class DREAM : public attachSystem::CopiedComp
   DREAM(const std::string&);
   DREAM(const DREAM&);
   DREAM& operator=(const DREAM&);
-  ~DREAM() =default;
+  ~DREAM() override =default;
   
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);

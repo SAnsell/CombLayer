@@ -3,7 +3,7 @@
 
  * File:   construct/portItem.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
-#include <array>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -62,18 +63,20 @@
 #include "LineTrack.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 
 #include "portItem.h"
 
 namespace constructSystem
 {
 
-portItem::portItem(const std::string& baseKey,
+portItem::portItem(std::string  baseKey,
 		   const std::string& Key) :
   attachSystem::FixedComp(Key,8),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  portBase(baseKey),
+  portBase(std::move(baseKey)),
   statusFlag(0),outerFlag(0),
   length(0.0),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),capThick(0.0),
@@ -87,7 +90,9 @@ portItem::portItem(const std::string& baseKey,
 
 portItem::portItem(const std::string& Key) :
   attachSystem::FixedComp(Key,8),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap(),
   portBase(keyName),
   statusFlag(0),outerFlag(0),
   length(0.0),radius(0.0),wall(0.0),
@@ -104,6 +109,7 @@ portItem::portItem(const std::string& Key) :
 portItem::portItem(const portItem& A) : 
   attachSystem::FixedComp(A),
   attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
   attachSystem::CellMap(A),
   portBase(A.portBase),statusFlag(A.statusFlag),
   outerFlag(A.outerFlag),centreOffset(A.centreOffset),
@@ -132,6 +138,7 @@ portItem::operator=(const portItem& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
       attachSystem::CellMap::operator=(A);
       statusFlag=A.statusFlag;
       outerFlag=A.outerFlag;
@@ -301,7 +308,7 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
 		      const Geometry::Vec3D& Centre,
 		      const Geometry::Vec3D& Axis)
   /*!
-    Set position
+    Set position and re-orientate so  that Centre/Axis are correct
     \param FC :: FixedComp to get inital orientation [origin]
     \param Centre :: centre point [in FC basis coordinates]
     \param Axis :: Axis direction
@@ -351,13 +358,13 @@ portItem::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wall);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,flangeRadius);
 
-  
   // Final outer
-  ModelSupport::buildPlane(SMap,buildIndex+2,
-			   Origin+Y*length,Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Origin+Y*(length-flangeLength),Y);
+  if (!isActive("portEnd"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+      setCutSurf("portEnd",-SMap.realSurf(buildIndex+2));
+    }
+  makeShiftedSurf(SMap,"portEnd",buildIndex+102,Y,-flangeLength);
 
   const bool capFlag(capThick>Geometry::zeroTol);
   const bool windowFlag (capFlag &&
@@ -386,8 +393,6 @@ portItem::createSurfaces()
 	}
     }
   /// ----  END : Cap/Window
- 
-
   return;
 }
 
@@ -419,7 +424,7 @@ portItem::createLinks()
   else
     {
       FixedComp::setConnect(1,Origin+Y*length,Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+      FixedComp::setLinkSurf(1,getComplementRule("portEnd"));
     }
   FixedComp::nameSideIndex(2,"InnerRadius");
   FixedComp::setConnect(2,Origin+Y*(length/2.0)+X*radius,X);
@@ -433,7 +438,7 @@ portItem::createLinks()
 
   FixedComp::nameSideIndex(4,"InnerPlate");
   FixedComp::setConnect(4,Origin+Y*length,-Y);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf(4,getRule("portEnd"));
 
   FixedComp::nameSideIndex(5,"VoidRadius");
   FixedComp::setConnect(5,Origin+Y*length,-Y);
@@ -478,26 +483,28 @@ portItem::constructObject(Simulation& System,
 
   const bool capFlag(capThick>Geometry::zeroTol);
   const bool windowFlag(windowThick>Geometry::zeroTol);
+  const HeadRule portHR=getRule("portEnd");
+  const HeadRule portComp=getComplementRule("portEnd");
   
   // construct inner volume:
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7 -2");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -7");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerSurf*portHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7 -2");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 7");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*innerSurf*portHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -27 17 -2");
-  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -27 17");
+  makeCell("Flange",System,cellIndex++,wallMat,0.0,HR*portHR);
 
   if (capFlag)
     {
       // we have window AND flange:
       if (windowFlag)
 	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 -211 2");
-	  makeCell("BelowPlate",System,cellIndex++,voidMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 -211");
+	  makeCell("BelowPlate",System,cellIndex++,voidMat,0.0,HR*portComp);
 
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 212 -202");
 	  makeCell("AbovePlate",System,cellIndex++,outerVoidMat,0.0,HR);
@@ -505,13 +512,14 @@ portItem::constructObject(Simulation& System,
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 211 -212");
 	  makeCell("Plate",System,cellIndex++,windowMat,0.0,HR);
 
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 207 -202 2");
-	  makeCell("PlateSurround",System,cellIndex++,capMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 207 -202");
+	  makeCell("PlateSurround",System,cellIndex++,
+		   capMat,0.0,HR*portComp);
 	}
       else // just a cap
 	{
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 2 -202");
-	  makeCell("Plate",System,cellIndex++,capMat,0.0,HR);
+	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 -202");
+	  makeCell("Plate",System,cellIndex++,capMat,0.0,HR*portComp);
 	}
     }
 
@@ -521,7 +529,7 @@ portItem::constructObject(Simulation& System,
       makeCell("OutVoid",System,cellIndex++,outerVoidMat,0.0,HR*outerSurf);
       HR= (capFlag) ?
 	ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 1") :
-	ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27  1");
+	ModelSupport::getHeadRule(SMap,buildIndex,"-27  1")*portHR;
 
       addOuterSurf(HR*outerSurf);
     }
@@ -529,7 +537,7 @@ portItem::constructObject(Simulation& System,
     {
       HR= (capFlag) ?
 	ModelSupport::getHeadRule(SMap,buildIndex,"-202 -27 102") :
-	ModelSupport::getHeadRule(SMap,buildIndex,"-2 -27 102");
+	ModelSupport::getHeadRule(SMap,buildIndex,"-27 102")*portHR;
       addOuterSurf(HR);
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 -102 1");
       addOuterUnionSurf(HR*outerSurf);
@@ -546,7 +554,7 @@ portItem::addPortCut(MonteCarlo::Object* mainTube) const
 {
   // Mid port exclude
   const HeadRule HR=
-    ModelSupport::getHeadRule(SMap,buildIndex,"( 17 : -1 )");
+    ModelSupport::getHeadRule(SMap,buildIndex,"(17 : -1)");
   mainTube->addIntersection(HR);
   return;
 }

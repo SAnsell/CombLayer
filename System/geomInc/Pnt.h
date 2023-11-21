@@ -43,26 +43,26 @@ class Pnt : public Intersect
  public:
   
   Pnt();
-  Pnt(const Vec3D&);
-  Pnt(const int,const Vec3D&);
+  Pnt(Vec3D );
+  Pnt(const int,Vec3D );
   Pnt(const Pnt&);
   Pnt& operator=(const Pnt&);
-  virtual ~Pnt() {}  ///< Destructor
+  ~Pnt() override {}  ///< Destructor
   Pnt& operator()(const Vec3D&);
 
   /// Debug function to get index
   int getIndex() const { return index; }
 
   /// Calc area
-  double area() const { return 0.0;}
+  double area() const override { return 0.0;}
   /// Valid centre
-  bool hasCentre() const { return true; }  
+  bool hasCentre() const override { return true; }  
   /// calculate the centre
-  Vec3D centre() const { return Cent; }  
+  Vec3D centre() const override { return Cent; }  
   
-  Vec3D ParamPt(const double) const;
+  Vec3D ParamPt(const double) const override;
 
-  void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 };
 
 }   // NAMESPACE Geometry

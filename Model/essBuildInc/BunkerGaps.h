@@ -52,7 +52,7 @@ class BunkerGaps : public attachSystem::ContainedComp,
   BunkerGaps(const std::string&);
   BunkerGaps(const BunkerGaps&);
   BunkerGaps& operator=(const BunkerGaps&);
-  virtual ~BunkerGaps();
+  ~BunkerGaps() override;
   
   void buildAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const long int);

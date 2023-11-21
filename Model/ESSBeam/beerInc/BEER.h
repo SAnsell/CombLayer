@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/beer/BEER.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,10 @@ namespace essSystem
     \brief BEER beamline constructor for the ESS
   */
   
-class BEER : public attachSystem::CopiedComp
+class BEER :
+    public attachSystem::CopiedComp,
+    public attachSystem::ExternalCut
+    
 {
  private:
 
@@ -188,7 +191,7 @@ class BEER : public attachSystem::CopiedComp
   BEER(const std::string&);
   BEER(const BEER&);
   BEER& operator=(const BEER&);
-  ~BEER();
+  ~BEER() override;
 
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

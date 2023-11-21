@@ -1,3 +1,5 @@
+#include <utility>
+
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
@@ -56,7 +58,7 @@ struct subPipeUnit
   int wallMat;             ///< Wall material
   int flangeMat;           ///< flange material
   
-  subPipeUnit(const std::string& K) : keyName(K) {};
+  subPipeUnit(std::string  K) : keyName(std::move(K)) {};
   subPipeUnit(const subPipeUnit&);
   subPipeUnit& operator=(const subPipeUnit&);
   subPipeUnit() {}

@@ -1604,6 +1604,13 @@ DBMaterial::initMaterial()
   Mptr->setMXitem(6000, 70, 'c', "h", "06012");
   Mptr->setDensity(-0.97);
 
+  
+
+  // Gold Metal
+  Mptr = &createMaterial("Gold","79197.70c 1.0",
+			 "",MLib);
+  Mptr->setDensity(-17.58);
+  
   return;
 }
 

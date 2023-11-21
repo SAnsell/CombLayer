@@ -70,20 +70,20 @@ class balderFrontEnd :
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Wiggler> wiggler;
 
-  virtual const attachSystem::FixedComp&
+  const attachSystem::FixedComp&
     buildUndulator(Simulation&,const attachSystem::FixedComp&,
-		   const long int);
+		   const long int) override;
 			      
   void createSurfaces();
   void buildObjects(Simulation&);
-  virtual void createLinks();
+  void createLinks() override;
   
  public:
   
   balderFrontEnd(const std::string&);
   balderFrontEnd(const balderFrontEnd&);
   balderFrontEnd& operator=(const balderFrontEnd&);
-  virtual ~balderFrontEnd();
+  ~balderFrontEnd() override;
 
 };
 

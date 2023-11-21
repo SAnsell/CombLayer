@@ -311,7 +311,6 @@ getLine(std::istream& IX,const int spc)
   return Line;
 }
 
-
 void
 lowerString(std::string& LN) 
   /*!
@@ -619,6 +618,24 @@ removeOuterSpace(const std::string& A)
   if (posA==A.size()) return "";
   
   return A.substr(posA,posB-posA);
+}
+
+std::string
+stripNotNumber(std::string Line)
+  /*!
+    Removes the start of a word upto the number
+    \param Line :: Line to process
+    \return String starting with number (or -)
+  */
+{
+  std::string::size_type pos=Line.find_first_of("0123456789");
+  if (pos==std::string::npos) return std::string("");
+
+  if (pos && Line[pos-1]=='-')
+    pos--;
+  if (!pos) return Line;
+  Line.erase(0,pos);
+  return Line;
 }
 
 int
@@ -1237,6 +1254,40 @@ removeItem(V<T,Alloc>& A,const T& indexA)
   if (ac==A.end()) return 0;
   A.erase(ac);
   return 1;
+}
+
+std::pair<std::string,std::string>
+splitPair(const std::string& Line,const char delim)
+  /*!
+    Split a string based on a a delimiter and avoiding quotes
+    but only do the split once
+    \param Line :: Line to split 
+    \param delim :: deliminator
+  */
+{
+  std::pair<std::string,std::string> Out;
+  int hardQuote(0);
+  int softQuote(0);
+  for(size_t index=0;index<Line.length();index++)
+    {
+      if (Line[index]=='\'' && index &&
+	  Line[index]!='\\')
+        {
+	  hardQuote=1-hardQuote;
+	}
+      else if (!hardQuote && Line[index]=='\"' &&
+	       index && Line[index]!='\\')
+        {
+	  softQuote=1-softQuote;
+	}
+      if ((!softQuote || !hardQuote) && Line[index]==delim)
+	{
+	  Out.first=StrFunc::removeOuterSpace(Line.substr(0,index));
+	  Out.second=StrFunc::removeOuterSpace(Line.substr(index+1));
+	  return Out;
+	}
+    }
+  return Out;
 }
 
 std::vector<std::string>

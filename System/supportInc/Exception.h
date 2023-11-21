@@ -3,7 +3,7 @@
  
  * File:   supportInc/Exception.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,10 +63,10 @@ class ExBase : public std::exception
   ExBase(const std::string&);
   ExBase(const ExBase&);
   ExBase& operator=(const ExBase&);
-  virtual ~ExBase() throw() {}  ///< Destructor 
+  ~ExBase() throw() override {}  ///< Destructor 
 
   /// Main reporting method
-  virtual const char* what() const throw();
+  const char* what() const throw() override;
   
   /// Return the error number 
   int getErrorNum() const { return state; }    
@@ -94,7 +94,7 @@ class EmptyContainer : public ExBase
   EmptyContainer(const std::string&);
   EmptyContainer(const EmptyContainer&);
   EmptyContainer& operator=(const EmptyContainer&);
-  virtual ~EmptyContainer() throw() {}   ///< Destructor 
+  ~EmptyContainer() throw() override {}   ///< Destructor 
 
 };
 
@@ -119,13 +119,40 @@ class IndexError : public ExBase
 
  public:
 
-  IndexError(const T&,const T&,const std::string&);
+  IndexError(T ,T ,const std::string&);
   IndexError(const IndexError& A);
   IndexError& operator=(const IndexError&);
-  virtual ~IndexError() throw() {}   ///< Destructor 
+  ~IndexError() throw() override {}   ///< Destructor 
 
 };
 
+
+/*!
+  \class SizeError
+  \brief Exception for index errors
+  \author Stuart Ansell
+  \date November 2022
+  \version 1.0
+
+  Called when an index is not linearly
+  ordered.
+*/
+template<typename T>
+class LinearError : public ExBase
+{
+ private:
+
+  std::vector<T> Val;     ///< Actual value called 
+  void setOutLine();
+
+ public:
+
+  LinearError(std::vector<T>,const std::string&);
+  LinearError(const LinearError& A);
+  LinearError& operator=(const LinearError&);
+  ~LinearError() throw() override {}   ///< Destructor 
+
+};
 
 /*!
   \class SizeError
@@ -136,6 +163,7 @@ class IndexError : public ExBase
 
   Called when an index falls out of range
 */
+
 template<typename T>
 class SizeError : public ExBase
 {
@@ -151,7 +179,7 @@ class SizeError : public ExBase
   SizeError(const T&,const T&,const std::string&);
   SizeError(const SizeError& A);
   SizeError& operator=(const SizeError&);
-  virtual ~SizeError() throw() {}   ///< Destructor 
+  ~SizeError() throw() override {}   ///< Destructor 
 
 };
 
@@ -176,10 +204,10 @@ class FileError : public ExBase
 
  public:
 
-  FileError(const int,const std::string&,const std::string&);
+  FileError(const int,std::string ,const std::string&);
   FileError(const FileError&);
   FileError& operator=(const FileError&);
-  virtual ~FileError() throw() {}   ///< Destructor 
+  ~FileError() throw() override {}   ///< Destructor 
 
 };
 
@@ -203,7 +231,7 @@ class EmptyValue : public ExBase
   EmptyValue(const std::string&);
   EmptyValue(const EmptyValue&);
   EmptyValue<T>& operator=(const EmptyValue<T>&);
-  virtual ~EmptyValue() throw() {}   ///< Destructor 
+  ~EmptyValue() throw() override {}   ///< Destructor 
 
 };
 
@@ -228,10 +256,10 @@ class InContainerError : public ExBase
 
  public:
 
-  InContainerError(const T&,const std::string&);
+  InContainerError(T ,const std::string&);
   InContainerError(const InContainerError&);
   InContainerError<T>& operator=(const InContainerError<T>&);
-  virtual ~InContainerError() throw() {}   ///< Destructor 
+  ~InContainerError() throw() override {}   ///< Destructor 
 
   /// Accessor to search item
   const T& getItem() const { return SearchObj; }
@@ -263,7 +291,7 @@ class RangeError : public ExBase
   RangeError(const T&,const T&,const T&,const std::string&);
   RangeError(const RangeError<T>& A);
   RangeError<T>& operator=(const RangeError<T>&);
-  virtual ~RangeError() throw() {}   ///< Destructor 
+  ~RangeError() throw() override {}   ///< Destructor 
  
 };
 
@@ -292,7 +320,7 @@ class OrderError : public ExBase
   OrderError(const T&,const T&,const std::string&);
   OrderError(const OrderError<T>& A);
   OrderError<T>& operator=(const OrderError<T>&);
-  virtual ~OrderError() throw() {}   ///< Destructor 
+  ~OrderError() throw() override {}   ///< Destructor 
  
 };
 
@@ -305,25 +333,22 @@ class OrderError : public ExBase
 
   Records the sizes and accessed values for the array 
 */
-template<unsigned int ndim,typename T>
+template<typename T>
 class DimensionError : public ExBase
 {
  private:
 
-  T indexSize[ndim];         ///< Index search components
-  T reqSize[ndim];           ///< required size
+  std::vector<T> indexSize;         ///< Index search components
+  std::vector<T> reqSize;           ///< required size
 
   void setOutLine();
 
  public:
 
-  DimensionError(const T*,const T*,const std::string&);
-  DimensionError(const std::vector<T>&,const std::vector<T>&,
-		 const std::string&);
-  
-  DimensionError(const DimensionError<ndim,T>&);
-  DimensionError<ndim,T>& operator=(const DimensionError<ndim,T>&);
-  virtual ~DimensionError() throw() {}  ///< Destructor
+  DimensionError(std::vector<T>,std::vector<T>,const std::string&);  
+  DimensionError(const DimensionError<T>&);
+  DimensionError<T>& operator=(const DimensionError<T>&);
+  ~DimensionError() throw() override {}  ///< Destructor
 
 };
 
@@ -352,7 +377,7 @@ class ArrayError : public ExBase
   ArrayError(const int*,const int*,const std::string&);
   ArrayError(const ArrayError<ndim>&);
   ArrayError<ndim>& operator=(const ArrayError<ndim>&);
-  virtual ~ArrayError() throw() {}  ///< Destructor
+  ~ArrayError() throw() override {}  ///< Destructor
 
 };
 
@@ -384,7 +409,7 @@ class MisMatch : public ExBase
 
   MisMatch(const MisMatch<T>& A);
   MisMatch<T>& operator=(const MisMatch<T>&);
-  virtual ~MisMatch() throw() {}   ///< Destructor
+  ~MisMatch() throw() override {}   ///< Destructor
 
 };
 
@@ -407,13 +432,13 @@ class TypeMatch : public ExBase
  
  public:
 
-  TypeMatch(const std::string&,const std::string&,
+  TypeMatch(std::string ,std::string ,
 	    const std::string&);
 
 
   TypeMatch(const TypeMatch& A);
   TypeMatch& operator=(const TypeMatch&);
-  virtual ~TypeMatch() throw() {}   ///< Destructor
+  ~TypeMatch() throw() override {}   ///< Destructor
 };
 
 
@@ -439,10 +464,10 @@ class InvalidLine : public ExBase
 
  public:
 
-  InvalidLine(const std::string&,const std::string&,const size_t =0);
+  InvalidLine(const std::string&,std::string ,const size_t =0);
   InvalidLine(const InvalidLine&);
   InvalidLine& operator=(const InvalidLine&);
-  virtual ~InvalidLine() throw() {}   ///< Destructor
+  ~InvalidLine() throw() override {}   ///< Destructor
 
 };
 
@@ -472,7 +497,7 @@ class CastError : public ExBase
 
   CastError(const CastError<Ptr>&);
   CastError<Ptr>& operator=(const CastError<Ptr>&);
-  virtual ~CastError() throw() {}    ///< Destructor
+  ~CastError() throw() override {}    ///< Destructor
 
 };
 
@@ -496,11 +521,11 @@ class TypeConvError : public ExBase
 
  public:
 
-  TypeConvError(const T&,const std::string&);
+  TypeConvError(T ,const std::string&);
 
   TypeConvError(const TypeConvError<T,U>&);
   TypeConvError<T,U>& operator=(const TypeConvError<T,U>&);
-  virtual ~TypeConvError() throw() {}    ///< Destructor
+  ~TypeConvError() throw() override {}    ///< Destructor
 
 };
 
@@ -524,11 +549,11 @@ class DynamicConv : public ExBase
 
  public:
 
-  DynamicConv(const std::string&,const std::string&,const std::string&);
+  DynamicConv(std::string ,std::string ,const std::string&);
 
   DynamicConv(const DynamicConv&);
   DynamicConv& operator=(const DynamicConv&);
-  virtual ~DynamicConv() throw() {}    ///< Destructor
+  ~DynamicConv() throw() override {}    ///< Destructor
 
 };
 
@@ -552,10 +577,10 @@ class CommandError : public ExBase
 
  public:
 
-  CommandError(const std::string&,const std::string&);
+  CommandError(std::string ,const std::string&);
   CommandError(const CommandError&);
   CommandError& operator=(const CommandError&);
-  virtual ~CommandError() throw() {}    ///< Destructor
+  ~CommandError() throw() override {}    ///< Destructor
 
 };
 
@@ -582,21 +607,21 @@ class ConstructionError : public ExBase
 
  public:
 
-  ConstructionError(const std::string&,const std::string&);
-  ConstructionError(const std::string&,const std::string&,
+  ConstructionError(std::string ,const std::string&);
+  ConstructionError(std::string ,const std::string&,
+		    std::string );
+  ConstructionError(std::string ,const std::string&,
+		    std::string ,const std::string&);
+  ConstructionError(std::string ,const std::string&,
+		    std::string ,const std::string&,
 		    const std::string&);
-  ConstructionError(const std::string&,const std::string&,
-		    const std::string&,const std::string&);
-  ConstructionError(const std::string&,const std::string&,
-		    const std::string&,const std::string&,
-		    const std::string&);
-  ConstructionError(const std::string&,const std::string&,
-		    const std::string&,const std::string&,
+  ConstructionError(std::string ,const std::string&,
+		    std::string ,const std::string&,
 		    const std::string&,const std::string&);
 
   ConstructionError(const ConstructionError&);
   ConstructionError& operator=(const ConstructionError&);
-  virtual ~ConstructionError() throw() {}    ///< Destructor
+  ~ConstructionError() throw() override {}    ///< Destructor
 
 };
 
@@ -619,7 +644,7 @@ class AbsObjMethod : public ExBase
   AbsObjMethod(const std::string&);
   AbsObjMethod(const AbsObjMethod&);
   AbsObjMethod& operator=(const AbsObjMethod&);
-  virtual ~AbsObjMethod() throw() {}    ///< Destructor
+  ~AbsObjMethod() throw() override {}    ///< Destructor
 
 };
 
@@ -642,7 +667,7 @@ class NumericalAbort : public ExBase
   NumericalAbort(const std::string&);
   NumericalAbort(const NumericalAbort&);
   NumericalAbort& operator=(const NumericalAbort&);
-  virtual ~NumericalAbort() throw() {}    ///< Destructor
+  ~NumericalAbort() throw() override {}    ///< Destructor
 
 };
 
@@ -664,15 +689,15 @@ class ExitAbort : public std::exception
 
  public:
 
-  ExitAbort(const std::string&,const int =0);
+  ExitAbort(std::string ,const int =0);
   ExitAbort(const ExitAbort&);
   ExitAbort& operator=(const ExitAbort&);
-  virtual ~ExitAbort() throw() {}    ///< Destructor
+  ~ExitAbort() throw() override {}    ///< Destructor
 
   /// Access to path flag [true if written]
   int pathFlag() const { return fullPath; }
   /// Main reporting method
-  virtual const char* what() const throw();
+  const char* what() const throw() override;
 
 };
 

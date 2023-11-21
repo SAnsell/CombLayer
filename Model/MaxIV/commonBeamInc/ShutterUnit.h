@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/ShutterUnit.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,9 +69,10 @@ class ShutterUnit :
   int threadMat;           ///<  water material
   // Functions:
 
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
+  using FixedRotateGroup::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const attachSystem::FixedComp&,const long int);
+			const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -83,12 +84,12 @@ class ShutterUnit :
   ShutterUnit(const std::string&);
   ShutterUnit(const ShutterUnit&);
   ShutterUnit& operator=(const ShutterUnit&);
-  virtual ~ShutterUnit();
+  ~ShutterUnit() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+		 const attachSystem::FixedComp&,const long int) override;
   
 };
 

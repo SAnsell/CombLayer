@@ -69,8 +69,8 @@ class VespaInner :
   int feMat;                  ///< Fe layer material 
   int concMat;                ///< Second layer material
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,11 +80,11 @@ class VespaInner :
   VespaInner(const std::string&);
   VespaInner(const VespaInner&);
   VespaInner& operator=(const VespaInner&);
-  virtual ~VespaInner();
+  ~VespaInner() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

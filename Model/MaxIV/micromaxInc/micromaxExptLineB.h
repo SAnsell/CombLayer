@@ -96,7 +96,7 @@ class micromaxExptLineB :
   int beamStopMat;     /// MAterial for beamstop
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -106,7 +106,7 @@ class micromaxExptLineB :
   micromaxExptLineB(const std::string&);
   micromaxExptLineB(const micromaxExptLineB&);
   micromaxExptLineB& operator=(const micromaxExptLineB&);
-  ~micromaxExptLineB();
+  ~micromaxExptLineB() override;
 
   /// Assignment to outer void
   void setOuterMat(const int M) { outerMat=M; }
@@ -118,7 +118,7 @@ class micromaxExptLineB :
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

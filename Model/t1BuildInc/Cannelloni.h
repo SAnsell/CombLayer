@@ -82,8 +82,8 @@ class Cannelloni :
   void createCentres(const Geometry::Plane*);
 
   void createLinkSurf();
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -96,8 +96,8 @@ class Cannelloni :
   Cannelloni(const std::string&);
   Cannelloni(const Cannelloni&);
   Cannelloni& operator=(const Cannelloni&);
-  virtual Cannelloni* clone() const; 
-  virtual ~Cannelloni();
+  Cannelloni* clone() const override; 
+  ~Cannelloni() override;
 
   /// Main cell body
   int getMainBody() const { return buildIndex+1; }
@@ -107,9 +107,9 @@ class Cannelloni :
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 
-  void addProtonLine(Simulation&);
+  void addProtonLine(Simulation&) override;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

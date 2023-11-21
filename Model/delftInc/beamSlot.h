@@ -52,7 +52,7 @@ class beamSlot :
 
   int glassMat;          ///< Glass material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);
   void createLinks();
@@ -62,11 +62,11 @@ class beamSlot :
   beamSlot(const std::string&,const int);
   beamSlot(const beamSlot&);
   beamSlot& operator=(const beamSlot&);
-  virtual ~beamSlot();
+  ~beamSlot() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);  
+		 const long int) override;  
 
 };
 

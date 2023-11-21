@@ -50,7 +50,7 @@ class BeOElement  : public RElement
   int coolMat;              ///< Default [be material]
   int wallMat;              ///< Default [be material]
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -60,10 +60,10 @@ class BeOElement  : public RElement
   BeOElement(const size_t,const size_t,const std::string&);
   BeOElement(const BeOElement&);
   BeOElement& operator=(const BeOElement&);
-  virtual ~BeOElement() {}   ///< Destructor
+  ~BeOElement() override {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 
 };

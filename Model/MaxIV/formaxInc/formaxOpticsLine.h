@@ -60,6 +60,7 @@ namespace xraySystem
   class GaugeTube;
   class Mirror;
   class MLMono;
+  class MLMonoDetail;
   class MonoBlockXstals;
   class ShutterUnit;
   class SquareFMask;
@@ -136,7 +137,7 @@ class formaxOpticsLine :
   /// MirrorMonoBox 
   std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
   /// Mirror-Mono system
-  std::shared_ptr<xraySystem::MLMono> MLM;
+  std::shared_ptr<xraySystem::MLMonoDetail> MLM;
 
   // PART 5: [connection pipe]
 
@@ -237,7 +238,7 @@ class formaxOpticsLine :
   void constructMonoShutter
   (Simulation&,const attachSystem::FixedComp&,const std::string&);
  
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -247,7 +248,7 @@ class formaxOpticsLine :
   formaxOpticsLine(const std::string&);
   formaxOpticsLine(const formaxOpticsLine&);
   formaxOpticsLine& operator=(const formaxOpticsLine&);
-  ~formaxOpticsLine();
+  ~formaxOpticsLine() override;
 
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -257,7 +258,7 @@ class formaxOpticsLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

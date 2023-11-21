@@ -55,19 +55,19 @@ class userTrack : public flukaTally
   userTrack(const int,const int);
   userTrack(const std::string&,const int,const int);
   userTrack(const userTrack&);
-  virtual userTrack* clone() const; 
+  userTrack* clone() const override; 
   userTrack& operator=(const userTrack&);
-  virtual ~userTrack();
+  ~userTrack() override;
 
     /// return fluke name
-  virtual std::string getType() const { return "USRTRACK"; };
+  std::string getType() const override { return "USRTRACK"; };
   
   void setParticle(const std::string&);
   void setCell(const int);
-  virtual void setEnergy(const bool,const double,
-			 const double,const size_t);
+  void setEnergy(const bool,const double,
+			 const double,const size_t) override;
   
-  virtual void write(std::ostream&) const;  
+  void write(std::ostream&) const override;  
 };
 
 }

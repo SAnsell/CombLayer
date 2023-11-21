@@ -74,7 +74,7 @@ class ViewScreenTube :
   int voidMat;               ///< void material
   int wallMat;               ///< wall material
  
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,11 +85,11 @@ class ViewScreenTube :
   ViewScreenTube(const std::string&,const std::string&);
   ViewScreenTube(const ViewScreenTube&);
   ViewScreenTube& operator=(const ViewScreenTube&);
-  virtual ~ViewScreenTube();
+  ~ViewScreenTube() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

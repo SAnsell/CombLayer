@@ -51,12 +51,12 @@ class makeESSBL :
 
   static std::pair<int,int> getBeamNum(const std::string&);
   
-  makeESSBL(const std::string&,const std::string&);
+  makeESSBL(std::string ,std::string );
   makeESSBL(const makeESSBL&);
   makeESSBL& operator=(const makeESSBL&);
-  virtual ~makeESSBL();  
+  ~makeESSBL() override;  
 
-  virtual void build(Simulation&,const essSystem::Bunker&);
+  void build(Simulation&,const essSystem::Bunker&) override;
 
 };
 

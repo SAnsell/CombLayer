@@ -80,7 +80,7 @@ class OpticsHutch :
 
   forkHoles forks;              ///< Forklift holes if made 
 
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
   void createLinks();
@@ -94,12 +94,12 @@ class OpticsHutch :
   OpticsHutch(const std::string&);
   OpticsHutch(const OpticsHutch&);
   OpticsHutch& operator=(const OpticsHutch&);
-  virtual ~OpticsHutch();
+  ~OpticsHutch() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

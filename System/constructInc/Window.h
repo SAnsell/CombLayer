@@ -73,7 +73,7 @@ class Window :
   Window(const std::string&);
   Window(const Window&);
   Window& operator=(const Window&);
-  ~Window();
+  ~Window() override;
 
   void setSize(const double,const double);
   void setCentre(const Geometry::Vec3D&,const Geometry::Vec3D&);
@@ -82,7 +82,7 @@ class Window :
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

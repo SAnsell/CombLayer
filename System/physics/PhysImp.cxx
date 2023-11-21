@@ -19,18 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <vector>
+#include <algorithm>
 #include <complex>
-#include <set>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
 #include <list>
 #include <map>
-#include <iterator>
-#include <algorithm>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 #include "Exception.h"
@@ -62,9 +63,9 @@ PhysImp::PhysImp(const std::string& TP) :
   */
 {}
 
-PhysImp::PhysImp(const std::string& TP,
+PhysImp::PhysImp(std::string  TP,
 		 const std::string& particleList) :
-  type(TP),defFlag(0),defValue(0.0)
+  type(std::move(TP)),defFlag(0),defValue(0.0)
   /*!
     Constructor with Type
     \param TP :: Type identifier
@@ -74,10 +75,10 @@ PhysImp::PhysImp(const std::string& TP,
   fullName=type+getParticles();
 }
 
-PhysImp::PhysImp(const std::string& TP,
+PhysImp::PhysImp(std::string  TP,
 		 const std::string& particleList,
 		 const double V) :
-  type(TP),defFlag(1),defValue(V)
+  type(std::move(TP)),defFlag(1),defValue(V)
   /*!
     Constructor with Type
     \param TP :: Type identifier

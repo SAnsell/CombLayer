@@ -52,7 +52,7 @@ class MultiPipe :
 
   int flangeMat;                    ///< Pipe material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,11 +64,11 @@ class MultiPipe :
   MultiPipe(const std::string&);
   MultiPipe(const MultiPipe&);
   MultiPipe& operator=(const MultiPipe&);
-  virtual ~MultiPipe();
+  ~MultiPipe() override;
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

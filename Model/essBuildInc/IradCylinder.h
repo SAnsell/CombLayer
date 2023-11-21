@@ -55,7 +55,7 @@ class IradCylinder :
   double sampleY;                 ///< Sample Z step     
   double sampleZ;                 ///< Sample Z step
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createInnerObjects(Simulation&);
@@ -67,11 +67,11 @@ class IradCylinder :
   IradCylinder(const IradCylinder&);
   IradCylinder& operator=(const IradCylinder&);
   virtual IradCylinder* clone() const;
-  virtual ~IradCylinder();
+  ~IradCylinder() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -67,8 +67,8 @@ localRotate::localRotate(const localRotate& A)
 
 void
 localRotate::addRotation(const Geometry::Vec3D& A,
-			  const Geometry::Vec3D& O,
-			  const double ang)
+			 const Geometry::Vec3D& O,
+			 const double ang)
   /*!
     Push back a rotation
     \param A :: Axis to rotate about

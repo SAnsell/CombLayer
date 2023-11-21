@@ -72,7 +72,7 @@ class formaxDetectorTube :
   std::shared_ptr<xraySystem::MonoBeamStop> monoBeamStop;
   std::shared_ptr<xraySystem::AreaDetector> waxs;
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -82,14 +82,14 @@ class formaxDetectorTube :
   formaxDetectorTube(const std::string&);
   formaxDetectorTube(const formaxDetectorTube&);
   formaxDetectorTube& operator=(const formaxDetectorTube&);
-  virtual ~formaxDetectorTube();
+  ~formaxDetectorTube() override;
 
   /// set delay
   void createPorts(Simulation&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -50,12 +50,12 @@ class virtualMod :
   virtualMod(const std::string&);
   virtualMod(const virtualMod&);
   virtualMod& operator=(const virtualMod&);
-  virtual ~virtualMod();
+  ~virtualMod() override;
 
   ///\cond ABSTRACT 
   virtual virtualMod* clone() const =0;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int) =0;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override =0;
   virtual void postCreateWork(Simulation&) =0;
   ///\endcond ABSTRACT 
 };

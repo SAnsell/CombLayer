@@ -48,7 +48,7 @@ class eType
 
  public:
 
-  eType(const std::vector<double>&);
+  eType(std::vector<double> );
   eType(const std::string&,const double,const double,const double);
   eType(const std::string&,const size_t,const double,const double);
   

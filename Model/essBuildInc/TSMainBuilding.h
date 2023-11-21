@@ -50,8 +50,8 @@ class TSMainBuilding :
   int mainMat;                   ///< main material
   int roomMat;                   ///< room material  
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   
   void createSurfaces();
   void createLinks();
@@ -63,10 +63,10 @@ class TSMainBuilding :
   TSMainBuilding(const std::string&);
   TSMainBuilding(const TSMainBuilding&);
   TSMainBuilding& operator=(const TSMainBuilding&);
-  virtual ~TSMainBuilding();
+  ~TSMainBuilding() override;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

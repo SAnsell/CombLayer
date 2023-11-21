@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedComp.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@ class HeadRule;
 
 namespace attachSystem
 {
+  class FixedGroup;
+  
 /*!
   \class FixedComp
   \version 1.0
@@ -88,11 +90,11 @@ class FixedComp
 			       Geometry::Vec3D&);
 
   explicit FixedComp(const size_t);
-  explicit FixedComp(const size_t,const std::string&);
+  explicit FixedComp(const size_t,std::string );
   FixedComp(const std::string&,const size_t,const size_t =10000);
-  FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);
+  FixedComp(const std::string&,const size_t,Geometry::Vec3D );
   FixedComp(const std::string&,const size_t,
-	    const Geometry::Vec3D&,const Geometry::Vec3D&,
+	    Geometry::Vec3D ,const Geometry::Vec3D&,
 	    const Geometry::Vec3D&,const Geometry::Vec3D&);
   FixedComp(const FixedComp&);
   FixedComp(const FixedComp&&);
@@ -296,6 +298,10 @@ class FixedComp
   virtual void createAll(Simulation&,const FixedComp&,const std::string&);
   virtual void createAll(Simulation&,const FixedComp&,const std::string&,
 			 const FixedComp&,const std::string&);
+  virtual void createAll(Simulation&,const FixedGroup&,const std::string&,
+			 const std::string&);
+  virtual void createAll(Simulation&,const FixedGroup&,const std::string&,
+			 const long int);
 
 };
 

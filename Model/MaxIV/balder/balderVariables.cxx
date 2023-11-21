@@ -3,7 +3,7 @@
  
  * File:   balder/balderVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -41,7 +42,6 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
@@ -725,7 +725,8 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");  
   
   PipeGen.setMat("Stainless304");
-  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.setCF<setVariable::CF40>();
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   PipeGen.generatePipe(Control,"BalderJoinPipe",130.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");

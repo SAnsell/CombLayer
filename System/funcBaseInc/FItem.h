@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/FItem.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,37 +112,37 @@ class FValue : public FItem
 
   typedef T type;          ///< Storage type 
 
-  FValue(varList*,const int,const T&);
+  FValue(varList*,const int,T);
   FValue(const FValue<T>&);
   FValue<T>& operator=(const FValue<T>&);
-  virtual FValue<T>* clone() const;
-  virtual ~FValue();
+  FValue<T>* clone() const override;
+  ~FValue() override;
 
-  virtual void setValue(const Geometry::Vec3D&);
-  virtual void setValue(const double&);
-  virtual void setValue(const size_t&); 
-  virtual void setValue(const int&);
-  virtual void setValue(const long int&);
-  virtual void setValue(const std::string&);
+  void setValue(const Geometry::Vec3D&) override;
+  void setValue(const double&) override;
+  void setValue(const size_t&) override; 
+  void setValue(const int&) override;
+  void setValue(const long int&) override;
+  void setValue(const std::string&) override;
   
-  virtual int getValue(Geometry::Vec3D&) const;
-  virtual int getValue(int&) const;     
-  virtual int getValue(long int&) const;     
-  virtual int getValue(size_t&) const;     
-  virtual int getValue(double&) const;     
-  virtual int getValue(std::string&) const;
+  int getValue(Geometry::Vec3D&) const override;
+  int getValue(int&) const override;     
+  int getValue(long int&) const override;     
+  int getValue(size_t&) const override;     
+  int getValue(double&) const override;     
+  int getValue(std::string&) const override;
 
-  virtual int getVector(std::vector<Geometry::Vec3D>&) const;
-  virtual int getVector(std::vector<int>&) const;     
-  virtual int getVector(std::vector<long int>&) const;     
-  virtual int getVector(std::vector<size_t>&) const;     
-  virtual int getVector(std::vector<double>&) const;     
-  virtual int getVector(std::vector<std::string>&) const;
+  int getVector(std::vector<Geometry::Vec3D>&) const override;
+  int getVector(std::vector<int>&) const override;     
+  int getVector(std::vector<long int>&) const override;     
+  int getVector(std::vector<size_t>&) const override;     
+  int getVector(std::vector<double>&) const override;     
+  int getVector(std::vector<std::string>&) const override;
 
 
-  virtual std::string typeKey() const;
+  std::string typeKey() const override;
 
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 
 };
 
@@ -166,29 +166,29 @@ class FList : public FItem
   FList(varList*,const int,const T&);
   FList(const FList<T>&);
   FList<T>& operator=(const FList<T>&);
-  virtual FList<T>* clone() const;
-  virtual ~FList();
+  FList<T>* clone() const override;
+  ~FList() override;
 
-  virtual void setValue(const Geometry::Vec3D&);
-  virtual void setValue(const double&);
-  virtual void setValue(const size_t&); 
-  virtual void setValue(const int&);
-  virtual void setValue(const long int&);
-  virtual void setValue(const std::string&);
+  void setValue(const Geometry::Vec3D&) override;
+  void setValue(const double&) override;
+  void setValue(const size_t&) override; 
+  void setValue(const int&) override;
+  void setValue(const long int&) override;
+  void setValue(const std::string&) override;
   
-  virtual int getValue(Geometry::Vec3D&) const;
-  virtual int getValue(int&) const;     
-  virtual int getValue(long int&) const;     
-  virtual int getValue(size_t&) const;     
-  virtual int getValue(double&) const;     
-  virtual int getValue(std::string&) const;
+  int getValue(Geometry::Vec3D&) const override;
+  int getValue(int&) const override;     
+  int getValue(long int&) const override;     
+  int getValue(size_t&) const override;     
+  int getValue(double&) const override;     
+  int getValue(std::string&) const override;
 
-  virtual int getVector(std::vector<Geometry::Vec3D>&) const;
-  virtual int getVector(std::vector<int>&) const;     
-  virtual int getVector(std::vector<long int>&) const;     
-  virtual int getVector(std::vector<size_t>&) const;     
-  virtual int getVector(std::vector<double>&) const;     
-  virtual int getVector(std::vector<std::string>&) const;
+  int getVector(std::vector<Geometry::Vec3D>&) const override;
+  int getVector(std::vector<int>&) const override;     
+  int getVector(std::vector<long int>&) const override;     
+  int getVector(std::vector<size_t>&) const override;     
+  int getVector(std::vector<double>&) const override;     
+  int getVector(std::vector<std::string>&) const override;
 
   /// Access to size
   size_t getSize() const { return Vec.size(); }
@@ -196,8 +196,8 @@ class FList : public FItem
   void pushValue(const T&);
 
   
-  virtual std::string typeKey() const;
-  virtual void write(std::ostream&) const;  
+  std::string typeKey() const override;
+  void write(std::ostream&) const override;  
 };
 
 
@@ -222,27 +222,27 @@ class FFunc : public FItem
   FFunc(varList*,const int,const Code&);
   FFunc(const FFunc&);
   FFunc& operator=(const FFunc&);
-  virtual FFunc* clone() const;
-  virtual ~FFunc();
+  FFunc* clone() const override;
+  ~FFunc() override;
 
-  void setValue(const Code&);
+  void setValue(const Code&) override;
 
-  virtual int getValue(Geometry::Vec3D&) const;  
-  virtual int getValue(int&) const;     
-  virtual int getValue(long int&) const;     
-  virtual int getValue(size_t&) const;     
-  virtual int getValue(double&) const;     
-  virtual int getValue(std::string&) const;
+  int getValue(Geometry::Vec3D&) const override;  
+  int getValue(int&) const override;     
+  int getValue(long int&) const override;     
+  int getValue(size_t&) const override;     
+  int getValue(double&) const override;     
+  int getValue(std::string&) const override;
 
-  virtual int getVector(std::vector<Geometry::Vec3D>&) const;
-  virtual int getVector(std::vector<int>&) const;     
-  virtual int getVector(std::vector<long int>&) const;     
-  virtual int getVector(std::vector<size_t>&) const;     
-  virtual int getVector(std::vector<double>&) const;     
-  virtual int getVector(std::vector<std::string>&) const;
+  int getVector(std::vector<Geometry::Vec3D>&) const override;
+  int getVector(std::vector<int>&) const override;     
+  int getVector(std::vector<long int>&) const override;     
+  int getVector(std::vector<size_t>&) const override;     
+  int getVector(std::vector<double>&) const override;     
+  int getVector(std::vector<std::string>&) const override;
 
-  virtual std::string typeKey() const;
-  virtual void write(std::ostream&) const;
+  std::string typeKey() const override;
+  void write(std::ostream&) const override;
 
 };
 

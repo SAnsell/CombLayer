@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <boost/format.hpp>
+#include <boost/multi_array.hpp>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
 #include <map>
-#include <string>
 #include <random>
-#include <boost/format.hpp>
-#include <boost/multi_array.hpp>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "RefCon.h"
 #include "FileReport.h"
@@ -62,12 +63,12 @@ BandDetector::BandDetector() :
 }
 
 BandDetector::BandDetector(const int Hpts,const int Vpts,const int Epts,
-			     const Geometry::Vec3D& CV,
+			     Geometry::Vec3D  CV,
 			     const Geometry::Vec3D& Hvec,
 			     const Geometry::Vec3D& Vvec,
 			     const double ES,const double EE) : 
   Detector(0),nH(Hpts),nV(Vpts),nE((Epts>0) ? Epts : 1),
-  Cent(CV),H(Hvec.unit()),V(Vvec.unit()),
+  Cent(std::move(CV)),H(Hvec.unit()),V(Vvec.unit()),
   hSize(Hvec.abs()),vSize(Vvec.abs()),
   PlnNorm((V*H).unit()),PlnDist(Cent.dotProd(PlnNorm)),
   EData(boost::extents[nV][nH][nE])

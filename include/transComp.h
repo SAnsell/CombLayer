@@ -86,25 +86,25 @@ class transRot : public transComp
  public:
 
   transRot();
-  transRot(const Geometry::Vec3D&,const Geometry::Vec3D&,const double);
+  transRot(const Geometry::Vec3D&,Geometry::Vec3D ,const double);
   transRot(const transRot&);
   transRot& operator=(const transRot&);
-  virtual transRot* clone() const;
-  virtual ~transRot() {}         ///< Destructor
+  transRot* clone() const override;
+  ~transRot() override {}         ///< Destructor
   
-  virtual Geometry::Vec3D calc(const Geometry::Vec3D&) const;
-  virtual Geometry::Vec3D calcAxis(const Geometry::Vec3D&) const;
-  virtual void applyAxis(Geometry::Vec3D&) const;
-  virtual void apply(Geometry::Surface*) const;
-  virtual void apply(MonteCarlo::Object*) const;
-  virtual void apply(Geometry::Vec3D&) const;
+  Geometry::Vec3D calc(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D calcAxis(const Geometry::Vec3D&) const override;
+  void applyAxis(Geometry::Vec3D&) const override;
+  void apply(Geometry::Surface*) const override;
+  void apply(MonteCarlo::Object*) const override;
+  void apply(Geometry::Vec3D&) const override;
 
-  virtual Geometry::Vec3D calcRev(const Geometry::Vec3D&) const;
-  virtual Geometry::Vec3D calcRevAxis(const Geometry::Vec3D&) const;
-  virtual void reverseAxis(Geometry::Vec3D&) const;
-  virtual void reverse(Geometry::Surface*) const;
-  virtual void reverse(MonteCarlo::Object*) const;
-  virtual void reverse(Geometry::Vec3D&) const;  
+  Geometry::Vec3D calcRev(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D calcRevAxis(const Geometry::Vec3D&) const override;
+  void reverseAxis(Geometry::Vec3D&) const override;
+  void reverse(Geometry::Surface*) const override;
+  void reverse(MonteCarlo::Object*) const override;
+  void reverse(Geometry::Vec3D&) const override;  
 };
 
 /*!
@@ -127,22 +127,22 @@ class transMirror : public transComp
   transMirror(const Geometry::Plane&);
   transMirror(const transMirror&);
   transMirror& operator=(const transMirror&);
-  virtual transMirror* clone() const;
-  virtual ~transMirror() {}         ///< Destructor
+  transMirror* clone() const override;
+  ~transMirror() override {}         ///< Destructor
   
-  virtual Geometry::Vec3D calc(const Geometry::Vec3D&) const;
-  virtual Geometry::Vec3D calcAxis(const Geometry::Vec3D&) const;
-  virtual void applyAxis(Geometry::Vec3D&) const;
-  virtual void apply(Geometry::Surface*) const;
-  virtual void apply(MonteCarlo::Object*) const;
-  virtual void apply(Geometry::Vec3D&) const;
+  Geometry::Vec3D calc(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D calcAxis(const Geometry::Vec3D&) const override;
+  void applyAxis(Geometry::Vec3D&) const override;
+  void apply(Geometry::Surface*) const override;
+  void apply(MonteCarlo::Object*) const override;
+  void apply(Geometry::Vec3D&) const override;
 
-  virtual Geometry::Vec3D calcRev(const Geometry::Vec3D&) const;
-  virtual Geometry::Vec3D calcRevAxis(const Geometry::Vec3D&) const;
-  virtual void reverseAxis(Geometry::Vec3D&) const;
-  virtual void reverse(Geometry::Surface*) const;
-  virtual void reverse(MonteCarlo::Object*) const;
-  virtual void reverse(Geometry::Vec3D&) const;  
+  Geometry::Vec3D calcRev(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D calcRevAxis(const Geometry::Vec3D&) const override;
+  void reverseAxis(Geometry::Vec3D&) const override;
+  void reverse(Geometry::Surface*) const override;
+  void reverse(MonteCarlo::Object*) const override;
+  void reverse(Geometry::Vec3D&) const override;  
 
 };
 
@@ -163,25 +163,25 @@ class transDisplace : public transComp
  public:
 
   transDisplace();
-  transDisplace(const Geometry::Vec3D&);
+  transDisplace(Geometry::Vec3D );
   transDisplace(const transDisplace&);
   transDisplace& operator=(const transDisplace&);
-  virtual transDisplace* clone() const;
-  virtual ~transDisplace() {}         ///< Destructor
+  transDisplace* clone() const override;
+  ~transDisplace() override {}         ///< Destructor
   
-  virtual Geometry::Vec3D calc(const Geometry::Vec3D&) const;
-  virtual Geometry::Vec3D calcAxis(const Geometry::Vec3D&) const;
-  virtual void applyAxis(Geometry::Vec3D&) const;
-  virtual void apply(Geometry::Surface*) const;
-  virtual void apply(MonteCarlo::Object*) const;
-  virtual void apply(Geometry::Vec3D&) const;
+  Geometry::Vec3D calc(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D calcAxis(const Geometry::Vec3D&) const override;
+  void applyAxis(Geometry::Vec3D&) const override;
+  void apply(Geometry::Surface*) const override;
+  void apply(MonteCarlo::Object*) const override;
+  void apply(Geometry::Vec3D&) const override;
 
-  virtual Geometry::Vec3D calcRev(const Geometry::Vec3D&) const;
-  virtual Geometry::Vec3D calcRevAxis(const Geometry::Vec3D&) const;
-  virtual void reverseAxis(Geometry::Vec3D&) const;
-  virtual void reverse(Geometry::Surface*) const;
-  virtual void reverse(MonteCarlo::Object*) const;
-  virtual void reverse(Geometry::Vec3D&) const;  
+  Geometry::Vec3D calcRev(const Geometry::Vec3D&) const override;
+  Geometry::Vec3D calcRevAxis(const Geometry::Vec3D&) const override;
+  void reverseAxis(Geometry::Vec3D&) const override;
+  void reverse(Geometry::Surface*) const override;
+  void reverse(MonteCarlo::Object*) const override;
+  void reverse(Geometry::Vec3D&) const override;  
 };
 
 

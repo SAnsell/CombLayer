@@ -56,7 +56,7 @@ class ChannelDet :
   ChannelDet(const ChannelDet&);
   virtual ChannelDet* clone() const;
   ChannelDet& operator=(const ChannelDet&);
-  virtual ~ChannelDet();
+  ~ChannelDet() override;
 
   virtual void clear();
   virtual double project(const size_t,

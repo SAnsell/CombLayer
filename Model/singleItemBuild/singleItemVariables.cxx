@@ -48,7 +48,7 @@
 #include "BladeGenerator.h"
 #include "PipeGenerator.h"
 #include "CornerPipeGenerator.h"
-#include "RectPipeGenerator.h"
+#include "LeadPipeGenerator.h"
 #include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "TwinFlatGenerator.h"
@@ -106,7 +106,6 @@
 #include "FMUndulatorGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
@@ -129,10 +128,12 @@
 #include "ConnectorGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "FlangeDomeGenerator.h"
+#include "DomeConnectorGenerator.h"
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
 #include "FocusGenerator.h"
 #include "MLMDetailGenerator.h"
+#include "M1DetailGenerator.h"
 
 #include "RoundShutterGenerator.h"
 #include "TubeDetBoxGenerator.h"
@@ -144,6 +145,7 @@ namespace setVariable
 
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
 void localShieldVariables(FuncDataBase&);
+void m1chamberDetails(FuncDataBase&);
 void targetShieldVariables(FuncDataBase&);
 
 
@@ -243,9 +245,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   TCGen.generateChopper(Control,"singleTwinD",80.0,16.0,10.0);
 
-  setVariable::RectPipeGenerator RPipeGen;
-  RPipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
-  RPipeGen.generatePipe(Control,"singleBoxPipeB",0.0,80.0);
+  setVariable::PipeGenerator RPipeGen;
+  RPipeGen.setCF<CF100>();
+  RPipeGen.setRectPipe(5.0,6.0);
+  RPipeGen.generatePipe(Control,"singleBoxPipeA",80.0);
+  RPipeGen.generatePipe(Control,"singleBoxPipeB",90.0);
 
   setVariable::CornerPipeGenerator CPipeGen;
   CPipeGen.generatePipe(Control,"CornerPipe",80.0);
@@ -559,20 +563,59 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::TWCavityGenerator TDCGen;
 
   const double flangeLength(3.7);
-  RPipeGen.generatePipe(Control,"PipeA",0.0,flangeLength);
+
+  setVariable::PipeGenerator TWPipeGen;
+  TWPipeGen.setCF<CF100>();
+
+  TWPipeGen.generatePipe(Control,"PipeA",4*flangeLength);
   Control.addVariable("PipeARadius",1.16);
-  Control.addVariable("PipeAFeThick",0.2);
+  Control.addVariable("PipeAPipeThick",0.2);
 
   TDCGen.generate(Control,"TWCavity");
 
-  RPipeGen.generatePipe(Control,"PipeB",0.0,flangeLength);
+  TWPipeGen.generatePipe(Control,"PipeB",4.0*flangeLength);
   Control.addParse<double>("PipeBRadius","PipeARadius");
-  Control.addParse<double>("PipeBFeThick","PipeAFeThick");
+  Control.addParse<double>("PipeBPipeThick","PipeAPipeThick");
 
   // Bellow
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,"Bellow",7.5);
+
+  // Lead Clad Pipe
+  setVariable::LeadPipeGenerator LeadGen;
+  LeadGen.setCF<setVariable::CF63>();
+  LeadGen.generatePipe(Control,"LeadPipe",7.5);
+
+
+  // Offset Pipe [use standard pipe and modify]
+  setVariable::PipeGenerator OPipeGen;
+  OPipeGen.setCF<setVariable::CF63>();
+  OPipeGen.generatePipe(Control,"OFP",20.0);
+  Control.addVariable("OFPFlangeAXYAngle",20.0);
+  Control.addVariable("OFPFlangeAXStep",-1.5);
+  Control.addVariable("OFPFlangeAZStep",1.3);
+  Control.addVariable("OFPFlangeBXStep",1.0);
+  Control.addVariable("OFPFlangeBZStep",2.0);
+
+
+  // UTube Pipe
+  setVariable::PipeGenerator UTubeGen;
+  UTubeGen.setCF<setVariable::CF63>();
+  UTubeGen.generatePipe(Control,"UTubePipe",20.0);
+  Control.addVariable("UTubePipeWidth",6.0);
+  Control.addVariable("UTubePipeHeight",0.6);
+  Control.addVariable("UTubePipePipeThick",0.2);
+
+  // Rectangle Pipe with different flanges
+  setVariable::PipeGenerator RTubeGen;
+
+  RTubeGen.setRectPipe(3.0,4.0,0.5);
+  RTubeGen.setARectFlange(8.0,13.0,2.0);
+  RTubeGen.setBRectFlange(12.0,8.0,3.0);
+  RTubeGen.setRectWindow(6.0,7.0,0.3);
+  RTubeGen.setOuterVoid();
+  RTubeGen.generatePipe(Control,"RPipe",20.0);
 
   // PipeTube
 
@@ -703,11 +746,20 @@ SingleItemVariables(FuncDataBase& Control)
   SimpleTubeGen.setCF<CF350>();
   SimpleTubeGen.generateTube(Control,"FlangeTube",20.0);
   Control.addVariable("FlangeTubeNPorts",0);
+
   FDGen.generateDome(Control,"FlangeDome");
   Control.addVariable("FlangeDomeNPorts",1);
   PItemGen.generatePort(Control,"FlangeDomePort0",
 			Geometry::Vec3D(0.0, 0.0, 0.0),
 			Geometry::Vec3D(0,1,0));
+
+  // Flange DomeConnector  components:
+  // uses FlangeTube above--
+  DomeConnectorGenerator FDCGen;
+  FDCGen.generateDome(Control,"DomeConnector",1);
+  PItemGen.generatePort(Control,"DomeConnectorPort0",
+			Geometry::Vec3D(0.0, 0.0, 0.0),
+			Geometry::Vec3D(0,-1,0));
 
 
 
@@ -732,6 +784,7 @@ SingleItemVariables(FuncDataBase& Control)
   MLMDetailGenerator MLGen;
   MLGen.generateMono(Control,"MLM",0.1,-0.1);
 
+  m1chamberDetails(Control);
 
   TubeDetBoxGenerator TDBGen;
   TDBGen.generateBox(Control,"TDetBox",Geometry::Vec3D(0,3.15,0),8);
@@ -814,6 +867,60 @@ SingleItemVariables(FuncDataBase& Control)
 
   return;
 }
+
+void
+m1chamberDetails(FuncDataBase& Control)
+  /*!
+    Construct the M1 detail
+   */
+{
+  ELog::RegMethod RegA("singleItemVariable[F]","m1chamberDetails");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::M1DetailGenerator M1DGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::DomeConnectorGenerator DCGen;
+  setVariable::PortItemGenerator PItemGen;
+
+  const double tubeLength(40.5);
+  const double portXStep(2.0);
+  const double theta(-0.0*M_PI/180.0);
+  const double mExtra=30.0*sin(theta);
+
+
+  const std::string frontName="M1TubeFront";
+  const std::string tubeName="M1Tube";
+  const std::string backName="M1TubeBack";
+
+  PItemGen.setCF<setVariable::CF63>(6.0);
+  PItemGen.setNoPlate();
+
+  DCGen.setSphere(7.0,2.5);
+  DCGen.setFlangeCF<CF150>(0.8);
+  DCGen.setLengths(2.5,2.0,3.0);
+  DCGen.generateDome(Control,frontName,1);
+  PItemGen.generatePort(Control,frontName+"Port0",
+			Geometry::Vec3D(portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0.0, -1.0, 0.0));
+  //Control.addVariable(frontName+"ZAngle",-1.0);
+
+
+  const std::string mName="M1Tube";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.generateTube(Control,mName,tubeLength);
+  Control.addVariable(mName+"WallMat","Titanium");
+  Control.addVariable(mName+"NPorts",0);   // beam ports
+
+  M1DGen.generateMirror(Control,"M1",0.0,0.0,0.0);
+  Control.addVariable("M1XStep",portXStep+mExtra);
+
+  DCGen.generateDome(Control,backName,1);
+  PItemGen.generatePort(Control,backName+"Port0",
+			Geometry::Vec3D(-portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0,-1,0));
+
+}
+
 
 void
 targetShieldVariables(FuncDataBase& Control)

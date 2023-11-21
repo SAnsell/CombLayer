@@ -52,7 +52,7 @@ class BeamWindow :
   int inconelMat;                   ///< Inconel
   int waterMat;                  ///< Light water
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -62,11 +62,11 @@ class BeamWindow :
   BeamWindow(const std::string&);
   BeamWindow(const BeamWindow&);
   BeamWindow& operator=(const BeamWindow&);
-  virtual ~BeamWindow();
+  ~BeamWindow() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment3.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -64,7 +63,6 @@
 
 #include "GeneralPipe.h"
 #include "OffsetFlangePipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "FlatPipe.h"
 #include "DipoleDIBMag.h"
@@ -139,7 +137,7 @@ Segment3::buildObjects(Simulation& System)
 
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
 
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");

@@ -57,7 +57,7 @@ class PinHole :
   double radius;           ///< Excloseing radius
   double length;           ///< Enclosing length
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -67,12 +67,12 @@ class PinHole :
   PinHole(const std::string&);
   PinHole(const PinHole&);
   PinHole& operator=(const PinHole&);
-  virtual ~PinHole();
+  ~PinHole() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

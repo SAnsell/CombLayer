@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/objectRegister.h
+ * File:   modelSupportInc/objectRegister.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,8 @@ class objectRegister
   typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
   void addObject(const std::string&,const CTYPE&);
   void addObject(const CTYPE&);
+  void reAddObject(const std::string&,const CTYPE&);
+  void reAddObject(const CTYPE&);
 
 };
 

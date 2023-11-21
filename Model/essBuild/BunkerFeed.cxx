@@ -161,7 +161,7 @@ BunkerFeed::populate(const FuncDataBase& Control)
 }
   
 void
-BunkerFeed::createUnitVector(const Bunker& BUnit,
+BunkerFeed::createLocalUnitVector(const Bunker& BUnit,
                              const size_t segIndex)
   /*!
     Create the unit vectors
@@ -248,7 +248,7 @@ BunkerFeed::buildAll(Simulation& System,
   ELog::RegMethod RegA("BunkerFeed","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(bunkerObj,segNumber);
+  createLocalUnitVector(bunkerObj,segNumber);
   moveToLayer(bunkerObj,feedName);
   insertColl(System); 
 

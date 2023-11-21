@@ -53,7 +53,7 @@ class DCMTankGenerator :
   DCMTankGenerator();
   DCMTankGenerator(const DCMTankGenerator&);
   DCMTankGenerator& operator=(const DCMTankGenerator&);
-  virtual ~DCMTankGenerator();
+  ~DCMTankGenerator() override;
 
   virtual void generateBox(FuncDataBase&,const std::string&,
 			   const double,const double,

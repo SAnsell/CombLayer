@@ -45,9 +45,9 @@ struct pillarInfo
   Geometry::Vec3D YAxis;          ///< Y Axis 
 
   
-  pillarInfo(const std::string&,const size_t,const size_t,
+  pillarInfo(std::string ,const size_t,const size_t,
 	     const int,const int,
-	     const Geometry::Vec3D&,const Geometry::Vec3D&);
+	     Geometry::Vec3D ,const Geometry::Vec3D&);
   pillarInfo(const pillarInfo&);
   pillarInfo& operator=(const pillarInfo&);
   ~pillarInfo() {}                ///< Destructor

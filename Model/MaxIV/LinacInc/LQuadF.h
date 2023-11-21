@@ -71,7 +71,7 @@ class LQuadF :
   int coilMat;                     ///< coil material
   int yokeMat;                     ///< Iron material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -79,14 +79,14 @@ class LQuadF :
  public:
 
   LQuadF(const std::string&);
-  LQuadF(const std::string&,const std::string&);
+  LQuadF(std::string ,const std::string&);
   LQuadF(const LQuadF&);
   LQuadF& operator=(const LQuadF&);
-  virtual ~LQuadF();
+  ~LQuadF() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

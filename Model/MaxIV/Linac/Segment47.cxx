@@ -3,7 +3,7 @@
 
  * File: Linac/Segment47.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,8 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "SplitFlangePipe.h"
+
+#include "GeneralPipe.h"
 #include "Bellows.h"
 #include "CylGateValve.h"
 #include "NameStack.h"
@@ -72,17 +73,11 @@
 #include "SPFCameraShield.h"
 #include "FixedOffset.h"
 #include "InjectionHall.h"
-
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Importance.h"
 #include "Object.h"
 
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 
 #include "TDCsegment.h"
 #include "Segment47.h"

@@ -42,16 +42,16 @@ class JawValveTube :
   
   double innerRadius;           ///< Void radius
   
-  virtual void populate(const FuncDataBase&);
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+  void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
   
  public:
 
   JawValveTube(const std::string&);
   JawValveTube(const JawValveTube&);
   JawValveTube& operator=(const JawValveTube&);
-  virtual ~JawValveTube();
+  ~JawValveTube() override;
 
 };
 

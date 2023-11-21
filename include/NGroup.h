@@ -3,7 +3,7 @@
  
  * File:   include/NGroup.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,13 +71,13 @@ public:
   RSingle(const T&);
   RSingle(const RSingle<T>&);
   RSingle& operator=(const RSingle<T>&);
-  virtual RSingle* clone() const { return new RSingle(*this); }
-  virtual ~RSingle() {}
+  RSingle* clone() const override { return new RSingle(*this); }
+  ~RSingle() override {}
 
-  virtual T getItem(const int) const { return value; } 
-  virtual int getSize() const { return 1; }
-  virtual void writeVector(std::vector<T>&) const;
-  virtual void write(std::ostream&) const;
+  T getItem(const int) const override { return value; } 
+  int getSize() const override { return 1; }
+  void writeVector(std::vector<T>&) const override;
+  void write(std::ostream&) const override;
 };
 
 /*!
@@ -98,13 +98,13 @@ public:
   RRepeat(const T&,const int);
   RRepeat(const RRepeat<T>&);
   RRepeat<T>& operator=(const RRepeat<T>&);
-  virtual RRepeat* clone() const { return new RRepeat(*this); }
-  virtual ~RRepeat() {}
+  RRepeat* clone() const override { return new RRepeat(*this); }
+  ~RRepeat() override {}
 
-  virtual T getItem(const int) const { return value; } 
-  virtual int getSize() const { return count+RUnit<T>::isFirst; }
-  virtual void writeVector(std::vector<T>&) const;
-  virtual void write(std::ostream&) const;
+  T getItem(const int) const override { return value; } 
+  int getSize() const override { return count+RUnit<T>::isFirst; }
+  void writeVector(std::vector<T>&) const override;
+  void write(std::ostream&) const override;
 };
 
 template<typename T>
@@ -121,13 +121,13 @@ public:
   RInterval(const T&,const T&,const int);
   RInterval(const RInterval<T>&);
   RInterval<T>& operator=(const RInterval<T>&);
-  virtual RInterval* clone() const { return new RInterval(*this); }
-  virtual ~RInterval() {}
+  RInterval* clone() const override { return new RInterval(*this); }
+  ~RInterval() override {}
 
-  virtual T getItem(const int) const;
-  virtual int getSize() const { return count+RUnit<T>::isFirst; }
-  virtual void writeVector(std::vector<T>&) const;
-  virtual void write(std::ostream&) const ;
+  T getItem(const int) const override;
+  int getSize() const override { return count+RUnit<T>::isFirst; }
+  void writeVector(std::vector<T>&) const override;
+  void write(std::ostream&) const override ;
 };
 
 template<typename T>
@@ -144,13 +144,13 @@ public:
   RLog(const T&,const T&,const int);
   RLog(const RLog<T>&);
   RLog<T>& operator=(const RLog<T>&);
-  virtual RLog* clone() const { return new RLog(*this); }
-  virtual ~RLog() {}
+  RLog* clone() const override { return new RLog(*this); }
+  ~RLog() override {}
 
-  virtual T getItem(const int) const;
-  virtual int getSize() const { return count+RUnit<T>::isFirst; }
-  virtual void writeVector(std::vector<T>&) const;
-  virtual void write(std::ostream&) const;
+  T getItem(const int) const override;
+  int getSize() const override { return count+RUnit<T>::isFirst; }
+  void writeVector(std::vector<T>&) const override;
+  void write(std::ostream&) const override;
 };
 
 /*!

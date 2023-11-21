@@ -146,9 +146,7 @@ processExitChecks(Simulation& System,
 		    Pts.emplace(FG->getKey(UName).getCentre());
 		}
 	      
-
 	      const attachSystem::FixedComp& FC = *(mc.second);
-
 	      const size_t iLk=FC.NConnect();
 	      for(long int i=0;i<static_cast<long int>(iLk);i++)
 		{
@@ -192,7 +190,7 @@ processExitChecks(Simulation& System,
 	  // object.
 	  SValidCheck.calcTouch(System);
 	  return errFlag;
-	  ELog::EM<<"ADFAFDS"<<ELog::endDiag;
+
 	  const size_t NPts=IParam.getValue<size_t>("validCheck");
 	  const std::string FCObject=
 	    IParam.getValueError<std::string>("validRandom",0,0,"No FC-object");

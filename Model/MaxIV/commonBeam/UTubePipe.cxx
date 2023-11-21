@@ -92,28 +92,11 @@ UTubePipe::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("UTubePipe","populate");
 
-  FixedRotate::populate(Control);
+  GeneralPipe::populate(Control);
 
   // Void + Fe special:
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  length=Control.EvalVar<double>(keyName+"Length");
-
-  feThick=Control.EvalVar<double>(keyName+"FeThick");
-
-  flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
-					 keyName+"FlangeRadius");
-  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBRadius",
-					 keyName+"FlangeRadius");
-
-  flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
-					 keyName+"FlangeLength");
-  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
-					 keyName+"FlangeLength");
-
-
-  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   return;
 }
@@ -126,23 +109,9 @@ UTubePipe::createSurfaces()
 {
   ELog::RegMethod RegA("UTubePipe","createSurfaces");
 
-  // Inner void
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+1,
-			       Origin-Y*(length/2.0),Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
-    }
-  getShiftedFront(SMap,buildIndex+11,Y,flangeALength);
-
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+2,
-			       Origin+Y*(length/2.0),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
-    }
-  getShiftedBack(SMap,buildIndex+12,Y,-flangeBLength);
-
+  GeneralPipe::createCommonSurfaces();
+  GeneralPipe::createFlangeSurfaces();
+  
   // main pipe
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -150,26 +119,24 @@ UTubePipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
 
-  // two inner
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin-X*(width/2.0),Y,height/2.0);
-  ModelSupport::buildCylinder(SMap,buildIndex+8,Origin+X*(width/2.0),Y,height/2.0);
+  // two inner corners
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+7,Origin-X*(width/2.0),Y,height/2.0);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+8,Origin+X*(width/2.0),Y,height/2.0);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+17,
-			      Origin-X*(width/2.0),Y,height/2.0+feThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+18,
-			      Origin+X*(width/2.0),Y,height/2.0+feThick);
-
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+17,Origin-X*(width/2.0),Y,height/2.0+pipeThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+18,Origin+X*(width/2.0),Y,height/2.0+pipeThick);
 
   // main pipe walls
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(feThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(feThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(feThick+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(feThick+height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(pipeThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(pipeThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(pipeThick+height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(pipeThick+height/2.0),Z);
 
 
-  // FLANGE SURFACES FRONT/BACK:
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
 
   return;
 }
@@ -198,57 +165,55 @@ UTubePipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -8");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 6 -16");
-  makeCell("TopPipe",System,cellIndex++,feMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 3 -4 6 -16");
+  makeCell("TopPipe",System,cellIndex++,pipeMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -4 -5 15");
-  makeCell("BasePipe",System,cellIndex++,feMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 3 -4 -5 15");
+  makeCell("BasePipe",System,cellIndex++,pipeMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -3 7 -17 15 -16");
-  makeCell("LeftPipe",System,cellIndex++,feMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -3 7 -17 15 -16");
+  makeCell("LeftPipe",System,cellIndex++,pipeMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 4 8 -18 15 -16");
-  makeCell("RightPipe",System,cellIndex++,feMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 4 8 -18 15 -16");
+  makeCell("RightPipe",System,cellIndex++,pipeMat,0.0,HR);
 
+  
   // FLANGE Front:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 -3 7 ");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 -3 7");
+  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 4 8");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 4 8");
+  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 3 -4 -5");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 3 -4 -5");
+  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 3 -4 6");
-  makeCell("FrontFlange",System,cellIndex++,feMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107 3 -4 6");
+  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,HR*frontHR);
 
   // FLANGE Back:
-  // HR=ModelSupport::getHeadRule
-  //   (SMap,buildIndex,"12 -207 ((7 -3) : (8 4) : -5 : 6)");
-  // makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 -3 7");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -207 -3 7");
+  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 4 8");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -207 4 8");
+  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 3 -4 -5");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -207 3 -4 -5");
+  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 3 -4 6");
-  makeCell("BackFlange",System,cellIndex++,feMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -207 3 -4 6");
+  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,HR*backHR);
 
   // outer boundary [flange front/back]
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 -107 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
   addOuterSurf("FlangeA",HR*frontHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -207 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -207");
   addOuterSurf("FlangeB",HR*backHR);
   // outer boundary mid tube
   //  (3:-7) (-4:8) 5 -6 ");
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"11 -12 15 -16 (3:-17) (-4:-18)");
+    (SMap,buildIndex,"101 -201 15 -16 (3:-17) (-4:-18)");
   addOuterSurf("Main",HR);
   return;
 }
@@ -264,11 +229,10 @@ UTubePipe::createLinks()
 
   //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-
-  FixedComp::setConnect(2,Origin-X*(feThick+height/2.0+width/2.0),-X);
-  FixedComp::setConnect(3,Origin-X*(feThick+height/2.0+width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(feThick+height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(feThick+height/2.0),Z);
+  FixedComp::setConnect(2,Origin-X*(pipeThick+height/2.0+width/2.0),-X);
+  FixedComp::setConnect(3,Origin-X*(pipeThick+height/2.0+width/2.0),X);
+  FixedComp::setConnect(4,Origin-Z*(pipeThick+height/2.0),-Z);
+  FixedComp::setConnect(5,Origin+Z*(pipeThick+height/2.0),Z);
 
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+18));

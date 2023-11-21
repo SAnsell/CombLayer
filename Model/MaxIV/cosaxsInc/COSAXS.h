@@ -79,10 +79,10 @@ class COSAXS : public R3Beamline
   COSAXS(const std::string&);
   COSAXS(const COSAXS&);
   COSAXS& operator=(const COSAXS&);
-  virtual ~COSAXS();
+  ~COSAXS() override;
 
-  virtual void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+  void build(Simulation&,const attachSystem::FixedComp&,
+	     const long int) override;
 
 };
 

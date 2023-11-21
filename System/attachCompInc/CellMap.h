@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/CellMap.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ class CellMap  : public BaseMap
   CellMap();         
   CellMap(const CellMap&);
   CellMap& operator=(const CellMap&);
-  virtual ~CellMap() {}     ///< Destructor
+  ~CellMap() override {}     ///< Destructor
 
   //@{
   /*!
@@ -68,7 +68,11 @@ class CellMap  : public BaseMap
   /// Accessor to has Item (to avoid ambiguity with SurfMap)
   bool hasCell(const std::string& K,const size_t index =0) const
     { return BaseMap::hasItem(K,index); }
-    
+
+  void setCell(const std::string& K,const CellMap& CM,
+	       const std::string& AKey,const size_t index =0)
+  { BaseMap::setItem(K,CM.getCell(AKey,index)); }
+
   /// Create named item
   void setCell(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }

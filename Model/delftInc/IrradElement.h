@@ -64,7 +64,7 @@ class IrradElement  : public RElement
   int sampleMat;          ///< sample [whaterever]
   int waterMat;           ///< Water coolant 
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -74,11 +74,11 @@ class IrradElement  : public RElement
   IrradElement(const size_t,const size_t,const std::string&);
   IrradElement(const IrradElement&);
   IrradElement& operator=(const IrradElement&);
-  virtual ~IrradElement() {}   ///< Destructor
+  ~IrradElement() override {}   ///< Destructor
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

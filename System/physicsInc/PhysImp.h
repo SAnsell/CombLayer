@@ -53,8 +53,8 @@ class PhysImp
  public:
 
   explicit PhysImp(const std::string&);
-  PhysImp(const std::string&,const std::string&);
-  PhysImp(const std::string&,const std::string&,const double);
+  PhysImp(std::string ,const std::string&);
+  PhysImp(std::string ,const std::string&,const double);
   PhysImp(const PhysImp&);
   PhysImp& operator=(const PhysImp&);
   ~PhysImp();

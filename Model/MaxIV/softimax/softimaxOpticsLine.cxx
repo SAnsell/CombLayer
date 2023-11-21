@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -45,8 +46,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Importance.h"
-#include "Object.h"
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
@@ -73,7 +72,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "OffsetFlangePipe.h"
 #include "Bellows.h"
 #include "FlangeMount.h"
@@ -82,6 +80,8 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
+#include "portSet.h"
+#include "DomeConnector.h"
 
 #include "BlockStand.h"
 #include "GateValveCube.h"
@@ -91,7 +91,13 @@
 #include "JawValveTube.h"
 #include "TankMonoVessel.h"
 #include "GratingUnit.h"
+#include "VacuumBox.h"
+#include "MonoBox.h"
 #include "Mirror.h"
+#include "M1Mirror.h"
+#include "M1BackPlate.h"
+#include "M1FrontShield.h"
+#include "M1Detail.h"
 #include "BeamPair.h"
 #include "TwinPipe.h"
 #include "BiPortTube.h"
@@ -127,10 +133,13 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   pumpM1(new constructSystem::PipeTube(newName+"PumpM1")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  M1TubeFront(new constructSystem::OffsetFlangePipe(newName+"M1TubeFront")),
+
+  M1TubeFront(new constructSystem::DomeConnector(newName+"M1TubeFront")),
   M1Tube(new constructSystem::PipeTube(newName+"M1Tube")),
-  M1TubeBack(new constructSystem::OffsetFlangePipe(newName+"M1TubeBack")),
-  M1Mirror(new xraySystem::Mirror(newName+"M1Mirror")),
+  M1TubeBack(new constructSystem::DomeConnector(newName+"M1TubeBack")),
+  M1Box(new xraySystem::MonoBox(newName+"M1Box")),
+
+  M1Detail(new xraySystem::M1Detail(newName+"M1")),
   M1Stand(new xraySystem::BlockStand(newName+"M1Stand")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   pumpTubeA(new constructSystem::PipeTube(newName+"PumpTubeA")),
@@ -205,7 +214,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   OR.addObject(M1TubeFront);
   OR.addObject(M1Tube);
   OR.addObject(M1TubeBack);
-  OR.addObject(M1Mirror);
+  OR.addObject(M1Box);
+  OR.addObject(M1Detail);
   OR.addObject(M1Stand);
   OR.addObject(bellowC);
   OR.addObject(pumpTubeA);
@@ -281,7 +291,6 @@ softimaxOpticsLine::populate(const FuncDataBase& Control)
   return;
 }
 
-
 void
 softimaxOpticsLine::createSurfaces()
   /*!
@@ -302,7 +311,7 @@ softimaxOpticsLine::createSurfaces()
       ModelSupport::buildPlane
 	(SMap,buildIndex+6,Origin+Z*outerTop,Z);      
       const HeadRule HR=
-	ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 -6");
+	ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -6");
 
       buildZone.setSurround(HR*getRule("floor"));
       buildZone.setFront(getRule("front"));
@@ -327,27 +336,50 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   ELog::RegMethod RegA("softimaxOpticsBeamline","buildM1Mirror");
 
   int outerCell;
-  
+
+  // This is the tube options
+  M1TubeFront->setCutSurf("portJoin",initFC,sideName);  
+  M1TubeFront->setPortRotate(2);   // port 0
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*M1TubeFront);
   
-  
-  M1Tube->setFront(*M1TubeFront,11);
-  M1Tube->createAll(System,*M1TubeFront,11);
-  outerCell=buildZone.createUnit(System,*M1Tube,2);
+  M1Tube->setFront(*M1TubeFront,2);
+  M1Tube->createAll(System,*M1TubeFront,"back");
+
+  outerCell=buildZone.createUnit(System,*M1Tube,"back");
   M1Tube->insertAllInCell(System,outerCell);
 
-  M1Mirror->addInsertCell(M1Tube->getCell("Void"));
-  M1Mirror->createAll(System,*M1Tube,0);
+  
+  M1TubeBack->setPortRotate(1);   // Back
+  constructSystem::constructUnit
+    (System,buildZone,*M1Tube,"back",*M1TubeBack,"port0");
 
-  M1Stand->setCutSurf("floor",this->getRule("floor"));
+  // this is the box options
+  /*
+  outerCell=constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*M1Box);
+
+  
+  //  M1Box->splitObject(System,2001,outerCell,
+  //		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+  //  cellIndex++;
+  M1Detail->addInsertCell(M1Box->getCell("Void"));
+  */
+
+  M1Detail->addInsertCell(M1Tube->getCell("Void"));
+  M1Detail->setCell("FrontVoid",M1TubeFront->getCell("Void",3));
+  M1Detail->setCutSurf("TubeRadius",*M1Tube,"InnerSide");
+  M1Detail->createAll(System,*M1Tube,0);
+
+  /*  M1Stand->setCutSurf("floor",this->getRule("floor"));
   M1Stand->setCutSurf("front",*M1Tube,-1);
   M1Stand->setCutSurf("back",*M1Tube,-2);
   M1Stand->addInsertCell(outerCell);
   M1Stand->createAll(System,*M1Tube,0);
-
-  constructSystem::constructUnit
-    (System,buildZone,*M1Tube,"back",*M1TubeBack);
+  */
+  // M1TubeBack->setPortRotate(1);   // Back
+  // constructSystem::constructUnit
+  //   (System,buildZone,*M1Tube,"back",*M1TubeBack,"port0");
 
   return;
 }
@@ -551,11 +583,11 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   
   outerCell=IZLeft.createUnit(System,*bellowAA,"back");
   splitter->insertAllInCell(System,outerCell);
-  bellowAA->insertInCell(System,outerCell);
+  bellowAA->insertAllInCell(System,outerCell);
   outerCell=IZRight.createUnit(System,*bellowBA,"back");
 
   splitter->insertAllInCell(System,outerCell);
-  bellowBA->insertInCell(System,outerCell);
+  bellowBA->insertAllInCell(System,outerCell);
   
   M3Pump->setLeftPort(*bellowAA,"back");
   M3Pump->setRightPort(*bellowBA,"back");
@@ -623,13 +655,12 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   pipeInit->createAll(System,*this,0);
   // dump cell for joinPipe
   outerCell=buildZone.createUnit(System,*pipeInit,2);
-  pipeInit->insertInCell(System,outerCell);
+  pipeInit->insertAllInCell(System,outerCell);
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);
-
 
   constructSystem::constructUnit
     (System,buildZone,*triggerPipe,"back",*gateTubeA);
@@ -639,7 +670,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*bellowA,"back",*pipeA);
-
 
   pumpM1->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpM1->setOuterVoid();
@@ -694,10 +724,21 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   buildM1Mirror(System,*bellowB,"back");
 
-  
-  constructSystem::constructUnit
-    (System,buildZone,*M1TubeBack,"back",*bellowC);
 
+  // version for box outer
+  //  constructSystem::constructUnit
+  //    (System,buildZone,*M1Box,"back",*bellowC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*M1TubeBack,"port0",*bellowC);
+
+  ELog::EM<<"Early return"<<ELog::endDiag;
+  //  System.removeCell(buildZone.getLastCell("Unit"));
+  buildZone.createUnit(System);  // build to end
+  buildZone.rebuildInsertCells(System);
+  lastComp=bellowC;  
+  return;
+  
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeA->createAll(System,*bellowC,2);
 
@@ -705,10 +746,9 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit
     (System,CPI1,CPI1.getSideIndex("OuterPlate"));
   pumpTubeA->insertAllInCell(System,outerCell);
-  //  pumpTubeA->intersectPorts(System,1,2);
-
   constructSystem::constructUnit
     (System,buildZone,CPI1,"OuterPlate",*bremCollA);
+  
 
   constructSystem::constructUnit
     (System,buildZone,*bremCollA,"back",*gateB);
@@ -805,7 +845,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   //  buildZone.createUnit(System);
   //  buildZone.rebuildInsertCells(System);
-
   
   System.removeCell(buildZone.getLastCell("Unit"));
   lastComp=bellowJ;  

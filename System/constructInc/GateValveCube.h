@@ -67,8 +67,8 @@ class GateValveCube :
   int bladeMat;                 ///< blade material
   int wallMat;                  ///< Pipe material
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,11 +78,11 @@ class GateValveCube :
   GateValveCube(const std::string&);
   GateValveCube(const GateValveCube&);
   GateValveCube& operator=(const GateValveCube&);
-  virtual ~GateValveCube();
+  ~GateValveCube() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

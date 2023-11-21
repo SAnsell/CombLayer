@@ -52,24 +52,24 @@ class VolumeBeam : public Beam
   VolumeBeam(const VolumeBeam&);
   VolumeBeam& operator=(const VolumeBeam&);
   /// Clone operation
-  Beam* clone() const { return new VolumeBeam(*this); }  
-  virtual ~VolumeBeam();
+  Beam* clone() const override { return new VolumeBeam(*this); }  
+  ~VolumeBeam() override;
 
   double wave() const { return wavelength; }
   const Geometry::Vec3D& getCorner() const { return Corner; }
 
-  virtual void setWavelength(const double W) { wavelength=W; }  
-  void setBias(const double YB) { yBias=YB; }
+  void setWavelength(const double W) override { wavelength=W; }  
+  void setBias(const double YB) override { yBias=YB; }
 
   ///\endcond GET/SETTER
   
   const Geometry::Vec3D& getAxis(const int) const;
   void setCorners(const Geometry::Vec3D&,const Geometry::Vec3D&);
   
-  virtual MonteCarlo::neutron generateNeutron() const;
-  virtual MonteCarlo::photon generatePhoton() const;
+  MonteCarlo::neutron generateNeutron() const override;
+  MonteCarlo::photon generatePhoton() const override;
   
-  void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 
 };
 

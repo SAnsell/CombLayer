@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   xmlInc/XMLobject.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef XMLobject_h
@@ -66,8 +66,8 @@ class XMLobject
  public:
   
   XMLobject(XMLobject*);
-  XMLobject(XMLobject*,const std::string&);
-  XMLobject(XMLobject*,const std::string&,int const);
+  XMLobject(XMLobject*,std::string );
+  XMLobject(XMLobject*,std::string ,int const);
   XMLobject(const XMLobject&);
   virtual XMLobject* clone() const;      
   XMLobject& operator=(const XMLobject&);

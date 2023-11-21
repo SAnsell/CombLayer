@@ -85,7 +85,7 @@ class LayerDivide3D :
   LayerDivide3D(const std::string&);
   LayerDivide3D(const LayerDivide3D&);
   LayerDivide3D& operator=(const LayerDivide3D&);
-  virtual ~LayerDivide3D();
+  ~LayerDivide3D() override;
 
   void setSurfPair(const size_t,const int,const int);
   void setFractions(const size_t,const std::vector<double>&);
@@ -103,7 +103,7 @@ class LayerDivide3D :
   
   void divideCell(Simulation&,const int);
 
-  void createAll(Simulation&,const FixedComp&,const long int) {}
+  void createAll(Simulation&,const FixedComp&,const long int) override {}
   
 };
 

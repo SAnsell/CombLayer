@@ -66,11 +66,11 @@ class H2FlowGuide :
   H2FlowGuide(const H2FlowGuide&);
   H2FlowGuide& operator=(const H2FlowGuide&);
   virtual H2FlowGuide* clone() const;
-  virtual ~H2FlowGuide();
+  ~H2FlowGuide() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

@@ -103,14 +103,13 @@ class HeadRule
   bool isAnyValid(const Geometry::Vec3D&,const std::set<int>&) const;
   bool isSideValid(const Geometry::Vec3D&,const int) const;
 
-
   bool isValid(const Geometry::Vec3D&) const;
   bool isValid(const Geometry::Vec3D&,const int) const;
   bool isValid(const std::map<int,int>&) const;
   bool isValid(const Geometry::Vec3D&,const std::map<int,int>&) const;
 
   bool isLineValid(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-  
+  bool isZeroVolume() const;
 
   std::set<int> getPairedSurf() const;
   
@@ -170,6 +169,10 @@ class HeadRule
 		       const double);
   void isolateSurfNum(const std::set<int>&);
   int removeTopItem(const int);
+  int substituteSurf(const ModelSupport::surfRegister&,
+		     const int,const int,const int);
+  int substituteSurf(const ModelSupport::surfRegister&,
+		     const int,const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
   void removeCommon();
   void removeComplement();

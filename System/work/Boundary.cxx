@@ -3,7 +3,7 @@
  
  * File:   work/Boundary.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,10 +56,6 @@ operator<<(std::ostream& OX,const BItems& A)
   return OX;
 }
 
-BItems::BItems()
-  /// Constructor
-{}
-
 BItems::BItems(const BItems& A) :
   FList(A.FList)
   /*!
@@ -94,12 +90,14 @@ BItems::addItem(const size_t Index,const double F)
   if (F>0.0)
     {
       std::vector<PTYPE>::iterator vc;
-      vc=std::lower_bound(FList.begin(),FList.end(),Index,
-		     mathSupport::PairSndLess<size_t,double>());
+      PTYPE keyValue(Index,0.0);
+      vc=std::lower_bound(FList.begin(),FList.end(),
+			  keyValue,
+			  [](const PTYPE& A, const PTYPE& B) ->bool
+			  { return A.first<B.first; });
+
       if (vc!=FList.end() && vc->first==Index)
-	{
-	  vc->second=F;
-	}
+	vc->second=F;
       else
         {
 	  FList.insert(vc,PTYPE(Index,F));

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DiskLayerMod.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,10 @@ namespace essSystem
   \brief Specialized for a cylinder pre-mod under moderator
 */
 
-class DiskLayerMod : public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,
+class DiskLayerMod : 
     public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::LayerComp,
     public attachSystem::CellMap,
     public attachSystem::SurfMap
 {
@@ -53,7 +54,7 @@ class DiskLayerMod : public attachSystem::ContainedComp,
   std::vector<std::vector<int>> mat;               ///< Materials 
   std::vector<std::vector<double>> temp;           ///< Temperatures
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,10 +65,10 @@ class DiskLayerMod : public attachSystem::ContainedComp,
   DiskLayerMod(const DiskLayerMod&);
   DiskLayerMod& operator=(const DiskLayerMod&);
   virtual DiskLayerMod* clone() const;
-  virtual ~DiskLayerMod();
+  ~DiskLayerMod() override;
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   /// total height of object
   double getHeight() const;
@@ -78,8 +79,8 @@ class DiskLayerMod : public attachSystem::ContainedComp,
   void setLayout(const bool,const double,const double);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

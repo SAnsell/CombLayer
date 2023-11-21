@@ -60,7 +60,7 @@ class SimMonte : public Simulation
   SimMonte();
   SimMonte(const SimMonte&);
   SimMonte& operator=(const SimMonte&);
-  virtual ~SimMonte();
+  ~SimMonte() override;
 
   void clearAll();
   // MAIN RUN:
@@ -83,7 +83,7 @@ class SimMonte : public Simulation
   void normalizeDetectors();
   void writeDetectors(const std::string&,const double) const;
 
-  virtual void write(const std::string&) const;
+  void write(const std::string&) const override;
 };
 
 #endif

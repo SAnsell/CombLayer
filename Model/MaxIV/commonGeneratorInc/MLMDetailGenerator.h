@@ -69,11 +69,92 @@ class MLMDetailGenerator
   double spokeCornerRadius;    ///< nice radius in corner
   double spokeCornerGap;       ///< gap at thin points
 
+
+  double radialLength;               ///< Total length
+  double radialSupportLen;           ///< Support length
+
+  double radialTopGap;               ///< Top plate drop down
+  double radialTopThick;             ///< Top plate thickness
+  double radialTopBeamWidth;         ///< Top plate width
+  double radialTopOutWidth;          ///< Top plate width
+
+  double radialPlateThick;           ///< Thickness of plate
+  double radialPlateLength;          ///< Thickness of plate
+  double radialPlateBeam;            ///< Extra extention under beam
+  double radialPlateXStep;           ///< Width of straight block
+  
+  double radialSideWidth;            ///< Width of straight block
+  double radialSideBlock;            ///< Length of outside block
+  double radialSideLift;             ///< extra straight vertical
+  double radialSideFullWidth;        ///< Length between inner blocks
+  double radialSideBaseWidth;        ///< Length between inner blocks
+  double radialSideOutWidth;         ///< Length between outer blocks
+
+  double radialSupportHeight;        ///< Height from base to edge block
+  double radialSupportOuterHeight;   ///< corner bolt blocks
+  double radialSupportInnerLift;     /// inner curve maximum 
+  
+  double radialBladeThick;           ///< blade thickness
+  double radialBladeTopGap;          ///< blade separation at top
+  double radialBladeBaseGap;         ///< blade separation at base 
+
+  // wheel plate:
+  
+  double WPlength;               ///< Total length
+  double WPwidth;                ///< Total width
+  double WPthick;                ///< Total thickness (include ridge)
+  double WPridgeThick;           ///< Thickness of just the front/back ridges
+  double WPridgeLen;             ///< length of front/back
+  
+  double WPoutSlotLength;        ///< Out slot length
+  double WPoutSlotWidth;         ///< Slot width 
+  
+  double WPmidSlotXStep;         ///< Displacement of slot
+  double WPmidSlotLength;        ///< mid slot length
+  double WPmidSlotWidth;         ///< Mid slot width
+
+  double WPdriveZClear;          ///< ZClearance
+  double WPdriveThick;           ///< Full thickness
+  double WPdriveWidth;           ///< Full Width
+  double WPdriveLength;          ///< Full Length
+  double WPdriveTopLen;          ///< Len of top section
+  double WPdriveBaseThick;       ///< Thickness at base
+  double WPdriveCutWidth;
+  double WPdriveCutLength;       ///< Length from +x side
+  double WPdriveCutRadius;       ///< Half radius of cut out
+  double WPdriveCutRadLen;       ///< length of cutou
+  
+  
+  double WPbaseYStep;            ///< Shift relative to wheel
+  double WPbaseThick;            ///< Total Thickness of base plae
+  double WPbaseWidth;
+  double WPbaseLength;
+
+  double WPbaseCutDepth;      ///< Recess cut depth
+  double WPbaseCutFLen;       ///< Recess from front surf
+  double WPbaseCutBLen;       ///< Recess from back suf
+  double WPbaseCutWidth;      ///< Recess cut with
+
+  double WPbaseMidSlotWidth;     ///< Mid slot cut out
+  double WPbaseMidSlotHeight;    ///< Mid slot Height (from base)
+
+  double WPbaseSideSlotEdge;     ///< Side Slot edge thickness
+  double WPbaseSideSlotHeight;   ///< Side slot height (from base)
+  double WPbaseSideSlotWidth;    ///< Side slot height 
+
+  std::string plateMat;              ///< Plate material
   std::string mirrorMat;             ///< XStal material
   std::string baseMat;               ///< Base material
+  std::string voidMat;               ///< Void material
 
-  void makeSupportWheel(FuncDataBase&,const std::string,
+  void makeRadialSupport(FuncDataBase&,const std::string&,
+			 const double,const double) const;
+  
+  void makeSupportWheel(FuncDataBase&,const std::string&,
 			const double,const double) const;
+
+  void makeWheelPlate(FuncDataBase&,const std::string&,
+		      const double,const double) const;
   
   void makeCrystal(FuncDataBase&,const std::string&,
 		   const bool,const double,

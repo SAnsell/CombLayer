@@ -65,9 +65,9 @@ class delftH2Moderator : public virtualMod
   static int calcDir(const double);
   Geometry::Vec3D calcCentre(const int,const int,const double) const;
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -78,13 +78,13 @@ class delftH2Moderator : public virtualMod
   delftH2Moderator(const std::string&);
   delftH2Moderator(const delftH2Moderator&);
   delftH2Moderator& operator=(const delftH2Moderator&);
-  virtual delftH2Moderator* clone() const;
-  virtual ~delftH2Moderator();
+  delftH2Moderator* clone() const override;
+  ~delftH2Moderator() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
-  virtual void postCreateWork(Simulation&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
+  void postCreateWork(Simulation&) override;
 };
 
 }

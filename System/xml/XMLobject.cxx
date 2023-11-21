@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   xml/XMLobject.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,15 @@
  *
  ****************************************************************************/
 #include <iostream>
-#include <cmath>
-#include <vector>
-#include <map>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <functional>
 #include <algorithm>
 #include <iterator>
-#include <typeinfo>
-#include <time.h>
-#include <boost/multi_array.hpp>
+#include <cmath>
+#include <vector>
+#include <map>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -70,8 +67,8 @@ XMLobject::XMLobject(XMLobject* B) :
   */
 {}
 
-XMLobject::XMLobject(XMLobject* B,const std::string& K) :
-  depth(0),empty(1),loaded(0),repNumber(0),Key(K),Base(B)
+XMLobject::XMLobject(XMLobject* B,std::string  K) :
+  depth(0),empty(1),loaded(0),repNumber(0),Key(std::move(K)),Base(B)
   /*!
     Default constructor (with key)
     \param B :: Parent pointer
@@ -79,8 +76,8 @@ XMLobject::XMLobject(XMLobject* B,const std::string& K) :
   */
 {}
 
-XMLobject::XMLobject(XMLobject* B,const std::string& K,const int GN) :
-  depth(0),empty(1),loaded(0),repNumber(GN),Key(K),Base(B)
+XMLobject::XMLobject(XMLobject* B,std::string  K,const int GN) :
+  depth(0),empty(1),loaded(0),repNumber(GN),Key(std::move(K)),Base(B)
   /*!
     Default constructor (with key)
     \param B :: Parent pointer

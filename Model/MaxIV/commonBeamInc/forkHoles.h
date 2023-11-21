@@ -62,7 +62,7 @@ class forkHoles
   
  public:
 
-  forkHoles(const std::string&);
+  forkHoles(std::string );
   forkHoles(const forkHoles&);
   forkHoles& operator=(const forkHoles&);
   ~forkHoles();

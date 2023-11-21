@@ -3,7 +3,7 @@
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -385,7 +385,7 @@ Cannelloni::createInnerObjects(Simulation& System)
 
   HeadRule excludeHR;
   std::map<int,constructSystem::hexUnit*>::const_iterator ac;
-  int cnt(0);
+
   for(ac=HVec.begin();ac!=HVec.end();ac++)
     {
       const constructSystem::hexUnit* APtr= ac->second;
@@ -414,10 +414,6 @@ Cannelloni::createInnerObjects(Simulation& System)
       makeCell("TaClad",System,cellIndex++,taMat,0.0,CylB);
       makeCell("Outer",System,cellIndex++,waterMat,0.0,HR);
       cylIndex+=10;
-
-      
-      cnt++;
-
     }
   return;
 }

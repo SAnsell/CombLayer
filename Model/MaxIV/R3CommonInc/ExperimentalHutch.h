@@ -91,7 +91,7 @@ class ExperimentalHutch :
 
   forkHoles forks;              ///< Forklift holes if made
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -104,7 +104,7 @@ class ExperimentalHutch :
   ExperimentalHutch(const std::string&);
   ExperimentalHutch(const ExperimentalHutch&);
   ExperimentalHutch& operator=(const ExperimentalHutch&);
-  virtual ~ExperimentalHutch();
+  ~ExperimentalHutch() override;
 
   /// accessor to void mat
   int getInnerMat() const { return voidMat; }
@@ -113,9 +113,9 @@ class ExperimentalHutch :
   
   void splitChicane(Simulation& System,const size_t,const size_t);
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

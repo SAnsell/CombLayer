@@ -67,23 +67,23 @@ class userYield : public flukaTally
   userYield(const int,const int);
   userYield(const std::string&,const int,const int);
   userYield(const userYield&);
-  virtual userYield* clone() const; 
+  userYield* clone() const override; 
   userYield& operator=(const userYield&);
-  virtual ~userYield();
+  ~userYield() override;
 
   /// return fluke name
-  virtual std::string getType() const { return "USRBDX"; };
+  std::string getType() const override { return "USRBDX"; };
 
   void setScoreType(const bool,const std::string&,const std::string&);
   void setParticle(const std::string&);
     
   void setCell(const int,const int);
-  virtual void setAngle(const bool,const double,
-		const double,const size_t);
-  virtual void setEnergy(const bool,const double,
-			 const double,const size_t);
+  void setAngle(const bool,const double,
+		const double,const size_t) override;
+  void setEnergy(const bool,const double,
+			 const double,const size_t) override;
   
-  virtual void write(std::ostream&) const;  
+  void write(std::ostream&) const override;  
 };
 
 }

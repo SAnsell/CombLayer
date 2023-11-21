@@ -54,11 +54,11 @@ class pairValueSet
 			      const std::pair<int,std::string>&);
  public:
 
-  pairValueSet(const std::string&,const std::string&);
-  pairValueSet(const std::string&,const std::string&,
-	       const std::string&);
-  pairValueSet(const std::string&,const std::string&,
-	       const std::string&,const std::array<double,N>&);
+  pairValueSet(std::string ,std::string );
+  pairValueSet(std::string ,std::string ,
+	       std::string );
+  pairValueSet(std::string ,std::string ,
+	       std::string ,const std::array<double,N>&);
 
   pairValueSet(const pairValueSet&);
   pairValueSet& operator=(const pairValueSet&);

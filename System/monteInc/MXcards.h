@@ -42,7 +42,7 @@ class MXcards
 
  public:
   
-  MXcards(const std::string&);
+  MXcards(std::string );
   MXcards(const MXcards&);
   MXcards& operator=(const MXcards&);
   bool operator==(const MXcards&) const;

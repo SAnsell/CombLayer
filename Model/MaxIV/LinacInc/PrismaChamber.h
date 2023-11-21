@@ -75,7 +75,7 @@ class PrismaChamber :
   int wallMat;                  ///< main material
   int plateMat;                 ///< plate material
  
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -86,11 +86,11 @@ class PrismaChamber :
   PrismaChamber(const std::string&,const std::string&);
   PrismaChamber(const PrismaChamber&);
   PrismaChamber& operator=(const PrismaChamber&);
-  virtual ~PrismaChamber();
+  ~PrismaChamber() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

@@ -65,9 +65,9 @@ class TubeMod :
 
   std::vector<TUnit> Tubes;  ///< Extra tubes
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -78,11 +78,11 @@ class TubeMod :
   TubeMod(const std::string&);
   TubeMod(const TubeMod&);
   TubeMod& operator=(const TubeMod&);
-  virtual ~TubeMod();
+  ~TubeMod() override;
   virtual TubeMod* clone() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

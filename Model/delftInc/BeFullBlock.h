@@ -50,7 +50,7 @@ class BeFullBlock :
 
   int mat;                      ///< Material 
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -60,11 +60,11 @@ class BeFullBlock :
   BeFullBlock(const std::string&);
   BeFullBlock(const BeFullBlock&);
   BeFullBlock& operator=(const BeFullBlock&);
-  virtual ~BeFullBlock();
+  ~BeFullBlock() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

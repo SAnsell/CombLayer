@@ -77,7 +77,7 @@ class SupplyPipe :
   SupplyPipe(const std::string&);
   SupplyPipe(const SupplyPipe&);
   SupplyPipe& operator=(const SupplyPipe&);
-  ~SupplyPipe();
+  ~SupplyPipe() override;
 
   /// Set the option name
   void setOption(const std::string& ON) 
@@ -97,7 +97,7 @@ class SupplyPipe :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
   void createAll(Simulation&,const attachSystem::LayerComp&,
 		 const size_t,const long int,const long int);

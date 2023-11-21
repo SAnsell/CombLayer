@@ -72,7 +72,7 @@ class FlightLine :
 
   HeadRule attachRuleHR;           ///< Attached rule
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createCapSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
@@ -87,7 +87,7 @@ class FlightLine :
   FlightLine(const std::string&);
   FlightLine(const FlightLine&);
   FlightLine& operator=(const FlightLine&);
-  ~FlightLine();
+  ~FlightLine() override;
 
   void getInnerVec(std::vector<int>&) const;
 
@@ -105,7 +105,7 @@ class FlightLine :
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
  
 };
 

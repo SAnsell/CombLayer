@@ -52,7 +52,7 @@ class BeamWing :
 
   int mainMat;              ///< Material
   
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,11 +64,11 @@ class BeamWing :
   BeamWing(const std::string&,const std::string&);
   BeamWing(const BeamWing&);
   BeamWing& operator=(const BeamWing&);
-  virtual ~BeamWing();
+  ~BeamWing() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

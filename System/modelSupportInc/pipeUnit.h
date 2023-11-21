@@ -94,7 +94,7 @@ class pipeUnit :
   void createObjects(Simulation&);
   double getOuterRadius() const;
   size_t getOuterIndex() const;
-  void insertObjects(Simulation&);
+  void insertObjects(Simulation&) override;
 
  public:
   
@@ -103,7 +103,7 @@ class pipeUnit :
   /// Virtual constructor
   virtual pipeUnit* clone() const { return new pipeUnit(*this); }  
   pipeUnit& operator=(const pipeUnit&);
-  virtual ~pipeUnit();
+  ~pipeUnit() override;
 
   /// Set Number of angles
   void setNAngle(const size_t A) { nAngle=(A) ? A : 6; }

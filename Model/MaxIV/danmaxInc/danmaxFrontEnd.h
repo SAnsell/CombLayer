@@ -70,20 +70,20 @@ class danmaxFrontEnd :
   /// Undulator in vacuum box [needs updating]
   std::shared_ptr<xraySystem::Wiggler> undulator;
 
-  virtual const attachSystem::FixedComp&
+  const attachSystem::FixedComp&
     buildUndulator(Simulation&,
-		   const attachSystem::FixedComp&,const long int);
+		   const attachSystem::FixedComp&,const long int) override;
 			      
   void createSurfaces();
   void buildObjects(Simulation&);
-  virtual void createLinks();
+  void createLinks() override;
   
  public:
   
   danmaxFrontEnd(const std::string&);
   danmaxFrontEnd(const danmaxFrontEnd&);
   danmaxFrontEnd& operator=(const danmaxFrontEnd&);
-  virtual ~danmaxFrontEnd();
+  ~danmaxFrontEnd() override;
 
 };
 

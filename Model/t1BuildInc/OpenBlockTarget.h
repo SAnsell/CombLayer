@@ -75,19 +75,19 @@ class OpenBlockTarget :
   OpenBlockTarget(const std::string&);
   OpenBlockTarget(const OpenBlockTarget&);
   OpenBlockTarget& operator=(const OpenBlockTarget&);
-  virtual OpenBlockTarget* clone() const;
-  virtual ~OpenBlockTarget();
+  OpenBlockTarget* clone() const override;
+  ~OpenBlockTarget() override;
 
   Geometry::Vec3D plateEdge(const size_t,double&,double&) const;
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   double getTargetLength() const;
 
 
-  virtual void addProtonLine(Simulation&);
+  void addProtonLine(Simulation&) override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

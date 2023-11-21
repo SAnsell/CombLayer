@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/UTubePipe.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,20 +43,9 @@ class UTubePipe :
   double width;                 ///< void width [inner]
   double height;                ///< void height [inner]
   double length;                ///< void length [total]
-  
-  double feThick;               ///< pipe thickness
-
-  double flangeARadius;          ///< Joining Flange radius 
-  double flangeALength;          ///< Joining Flange length
-
-  double flangeBRadius;          ///< Joining Flange radius 
-  double flangeBLength;          ///< Joining Flange length
-    
-  int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material
-  
-  void populate(const FuncDataBase&);
-  void createSurfaces();
+      
+  void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
   void createObjects(Simulation&);
   void createLinks();
 
@@ -65,11 +54,11 @@ class UTubePipe :
   UTubePipe(const std::string&);
   UTubePipe(const UTubePipe&);
   UTubePipe& operator=(const UTubePipe&);
-  virtual ~UTubePipe();
+  ~UTubePipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

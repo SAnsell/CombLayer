@@ -196,7 +196,7 @@ class MAGIC : public attachSystem::CopiedComp
   MAGIC(const std::string&);
   MAGIC(const MAGIC&);
   MAGIC& operator=(const MAGIC&);
-  ~MAGIC();
+  ~MAGIC() override;
   
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,const Bunker&,const int);

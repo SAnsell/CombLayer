@@ -53,7 +53,7 @@ class GPreMod :
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,11 +63,11 @@ class GPreMod :
   GPreMod(const std::string&);
   GPreMod(const GPreMod&);
   GPreMod& operator=(const GPreMod&);
-  virtual ~GPreMod();
+  ~GPreMod() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

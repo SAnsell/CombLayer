@@ -64,7 +64,7 @@ class BilbaoWheelInnerStructure :
   int brickGapMat;             ///< Material of gap between bricks
   int brickMat;                ///< Tungsten brick material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&,attachSystem::FixedComp&);
   void createLinks();
@@ -81,7 +81,7 @@ class BilbaoWheelInnerStructure :
 
   double sideIntersect(HeadRule&&,const Geometry::Plane*);
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) {}
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override {}
   
  public:
 
@@ -89,7 +89,7 @@ class BilbaoWheelInnerStructure :
   BilbaoWheelInnerStructure(const BilbaoWheelInnerStructure&);
   BilbaoWheelInnerStructure& operator=(const BilbaoWheelInnerStructure&);
   virtual BilbaoWheelInnerStructure* clone() const;
-  virtual ~BilbaoWheelInnerStructure();
+  ~BilbaoWheelInnerStructure() override;
 
   void createAll(Simulation&,attachSystem::FixedComp&,const long int);
 

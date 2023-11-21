@@ -48,7 +48,6 @@
 #include "CornerPipeGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "VacBoxGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "PortItemGenerator.h"
@@ -130,7 +129,7 @@ moveApertureTable(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
 
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF63>();
@@ -229,7 +228,7 @@ shutterTable(FuncDataBase& Control,
   GVGen.generateGate(Control,frontKey+"GateTubeB",0);
   
   PipeGen.setMat("Stainless304");
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
@@ -300,7 +299,7 @@ heatDumpTable(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
     
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  PipeGen.setNoWindow();
   PipeGen.setMat("Stainless304");
   
   heatDumpVariables(Control,frontKey);

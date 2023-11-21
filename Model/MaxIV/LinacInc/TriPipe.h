@@ -69,7 +69,7 @@ class TriPipe :
   int flangeMat;                 ///< Flange material
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,11 +80,11 @@ class TriPipe :
   TriPipe(const std::string&);
   TriPipe(const TriPipe&);
   TriPipe& operator=(const TriPipe&);
-  virtual ~TriPipe();
+  ~TriPipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

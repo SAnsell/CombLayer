@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -72,7 +73,9 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "WindowPipe.h"
+#include "UTubePipe.h"
+#include "RectanglePipe.h"
+#include "OffsetFlangePipe.h"
 #include "Quadrupole.h"
 #include "Sexupole.h"
 #include "Octupole.h"
@@ -126,8 +129,8 @@
 #include "YagUnitBig.h"
 #include "BeamScrapper.h"
 #include "TWCavity.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "LeadPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
@@ -159,6 +162,7 @@
 #include "LocalShielding.h"
 #include "WrapperCell.h"
 #include "FlangeDome.h"
+#include "DomeConnector.h"
 #include "MonoShutter.h"
 #include "RoundMonoShutter.h"
 #include "GuideUnit.h"
@@ -169,6 +173,13 @@
 #include "IonPumpGammaVacuum.h"
 #include "RFGun.h"
 #include "Solenoid.h"
+#include "M1Mirror.h"
+#include "M1BackPlate.h"
+#include "M1FrontShield.h"
+#include "BlockStand.h"
+#include "DomeConnector.h"
+#include "LegoBrick.h"
+#include "M1Detail.h"
 
 #include "makeSingleItem.h"
 
@@ -215,7 +226,8 @@ makeSingleItem::build(Simulation& System,
 	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
 	"StriplineBPM","BeamDivider","BeamScrapper",
-	"Scrapper","TWCavity","Bellow", "VacuumPipe","WindowPipe",
+	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
+	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
 	"HalfElectronPipe",
 	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
@@ -223,10 +235,11 @@ makeSingleItem::build(Simulation& System,
 	"NBeamStop","MagTube","TriggerTube",
 	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
-	"ConnectorTube","LocalShield","FlangeDome",
+	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid",
+	"M1detail","M1Full",
 	"Help","help"
     });
 
@@ -309,11 +322,49 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<xraySystem::MLMonoDetail>
 	MD(new xraySystem::MLMonoDetail("MLM"));
-
       OR.addObject(MD);
 
       MD->addInsertCell(voidCell);
       MD->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "M1detail" )
+    {
+      std::shared_ptr<xraySystem::M1Detail>
+	MD(new xraySystem::M1Detail("M1"));
+      OR.addObject(MD);
+
+      MD->addInsertCell(voidCell);
+      MD->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "M1Full" )
+    {
+      std::shared_ptr<constructSystem::DomeConnector> M1TubeFront
+	(new constructSystem::DomeConnector("M1TubeFront"));
+      std::shared_ptr<constructSystem::DomeConnector> M1TubeBack
+	(new constructSystem::DomeConnector("M1TubeBack"));
+      std::shared_ptr<constructSystem::PipeTube> M1Tube
+	(new constructSystem::PipeTube("M1Tube"));
+
+      std::shared_ptr<xraySystem::M1Detail> M1Detail
+	(new xraySystem::M1Detail("M1"));
+
+      M1TubeFront->addInsertCell(voidCell);
+      M1TubeFront->createAll(System,World::masterOrigin(),0);
+
+      M1Tube->setFront(*M1TubeFront,2);
+      M1Tube->createAll(System,*M1TubeFront,"back");
+      M1Tube->insertAllInCell(System,voidCell);
+
+      M1TubeBack->addInsertCell(voidCell);
+      M1TubeBack->setPortRotate(1);   // Back
+      M1TubeBack->createAll(System,*M1Tube,"back");
+
+      M1Detail->addInsertCell(M1Tube->getCell("Void"));
+      M1Detail->createAll(System,*M1Tube,0);
 
       return;
     }
@@ -445,25 +496,42 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
   if (item == "FlangeDome")
     {
       std::shared_ptr<constructSystem::PipeTube>
-	ft(new constructSystem::PipeTube("FlangeTube"));
+	fTube(new constructSystem::PipeTube("FlangeTube"));
       std::shared_ptr<constructSystem::FlangeDome>
-	fd(new constructSystem::FlangeDome("FlangeDome"));
-      OR.addObject(ft);
-      OR.addObject(fd);
+	fDome(new constructSystem::FlangeDome("FlangeDome"));
+      OR.addObject(fTube);
+      OR.addObject(fDome);
 
-      ft->addAllInsertCell(voidCell);
-      ft->setOuterVoid();
-      ft->createAll(System,World::masterOrigin(),0);
+      fTube->addAllInsertCell(voidCell);
+      fTube->setOuterVoid();
+      fTube->createAll(System,World::masterOrigin(),0);
 
-      fd->addInsertCell(voidCell);
-      fd->setCutSurf("plate",*ft,"front");
-      fd->createAll(System,*ft,1);
+      fDome->addInsertCell(voidCell);
+      fDome->setCutSurf("plate",*fTube,"front");
+      fDome->createAll(System,*fTube,1);
 
       return;
     }
+
+  if (item == "DomeConnector")
+    {
+      std::shared_ptr<constructSystem::PipeTube>
+	fTube(new constructSystem::PipeTube("FlangeTube"));
+      std::shared_ptr<constructSystem::DomeConnector>
+	fDome(new constructSystem::DomeConnector("DomeConnector"));
+      OR.addObject(fTube);
+      OR.addObject(fDome);
+
+      fDome->addInsertCell(voidCell);
+      fDome->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "StriplineBPM")
     {
       std::shared_ptr<tdcSystem::StriplineBPM>
@@ -1170,6 +1238,18 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+  if (item == "LegoBrick" )
+    {
+      std::shared_ptr<essSystem::LegoBrick>
+	lego(new essSystem::LegoBrick("LegoBrick"));
+      OR.addObject(lego);
+
+      lego->addInsertCell(voidCell);
+      lego->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "MultiPipe")
     {
       std::shared_ptr<tdcSystem::MultiPipe>
@@ -1249,7 +1329,8 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<constructSystem::VacuumPipe>
 	pipeA(new constructSystem::VacuumPipe("PipeA"));
-      std::shared_ptr<tdcSystem::TWCavity> cavity(new tdcSystem::TWCavity("TWCavity"));
+      std::shared_ptr<tdcSystem::TWCavity>
+	cavity(new tdcSystem::TWCavity("TWCavity"));
       std::shared_ptr<constructSystem::VacuumPipe>
 	pipeB(new constructSystem::VacuumPipe("PipeB"));
 
@@ -1275,8 +1356,52 @@ makeSingleItem::build(Simulation& System,
 	bellow(new constructSystem::Bellows("Bellow"));
       OR.addObject(bellow);
 
-      bellow->addInsertCell(voidCell);
+      bellow->addAllInsertCell(voidCell);
       bellow->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="LeadPipe")
+    {
+      std::shared_ptr<constructSystem::LeadPipe>
+	lead(new constructSystem::LeadPipe("LeadPipe"));
+      OR.addObject(lead);
+
+      lead->addAllInsertCell(voidCell);
+      lead->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="OffsetFlangePipe")
+    {
+      std::shared_ptr<constructSystem::OffsetFlangePipe>
+	ofp(new constructSystem::OffsetFlangePipe("OFP"));
+      OR.addObject(ofp);
+
+      ofp->addAllInsertCell(voidCell);
+      ofp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="RectanglePipe")
+    {
+      std::shared_ptr<constructSystem::RectanglePipe>
+	rcp(new constructSystem::RectanglePipe("RPipe"));
+      OR.addObject(rcp);
+
+      rcp->addAllInsertCell(voidCell);
+      rcp->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="UTubePipe")
+    {
+      std::shared_ptr<xraySystem::UTubePipe>
+	utp(new xraySystem::UTubePipe("UTubePipe"));
+      OR.addObject(utp);
+
+      utp->addAllInsertCell(voidCell);
+      utp->createAll(System,World::masterOrigin(),0);
 
       return;
     }
@@ -1296,8 +1421,8 @@ makeSingleItem::build(Simulation& System,
 
   if (item == "WindowPipe" )
     {
-      std::shared_ptr<constructSystem::WindowPipe>
-	VC(new constructSystem::WindowPipe("VCWin"));
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("VCWin"));
 
       OR.addObject(VC);
 
@@ -1318,7 +1443,7 @@ makeSingleItem::build(Simulation& System,
 	OR.addObject(bellowTube);
 	OR.addObject(pipeTube);
 
-	bellowTube->addInsertCell(voidCell);
+	bellowTube->addAllInsertCell(voidCell);
 	bellowTube->createAll(System,World::masterOrigin(),0);
 
 	pipeTube->setPortRotation(3,Geometry::Vec3D(0,0,1));

@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -44,7 +45,6 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BremBlockGenerator.h"
 #include "LeadPipeGenerator.h"
@@ -75,6 +75,7 @@
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
+#include "MLMDetailGenerator.h"
 #include "ViewScreenGenerator.h"
 #include "ScreenGenerator.h"
 #include "YagScreenGenerator.h"
@@ -150,11 +151,11 @@ undulatorVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,undKey+"UPipe",undulatorLen);
-  //  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
+  Control.addVariable(undKey+"UPipeYStep",-undulatorLen/2.0);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
-  Control.addVariable(undKey+"UPipeFeThick",0.2);
+  Control.addVariable(undKey+"UPipePipeThick",0.2);
 
   // undulator  
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
@@ -236,6 +237,11 @@ mirrorMonoPackage(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::VacBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
+
+  setVariable::MLMDetailGenerator MLGen;
+
+  MLGen.generateMono(Control,monoKey+"MLM",0.4,-0.4);
+
   
   // ystep/width/height/depth/length
   //
@@ -258,9 +264,9 @@ mirrorMonoPackage(FuncDataBase& Control,
 			Geometry::Vec3D(1,0,0));
 
   // crystals gap 10mm
-  MXtalGen.setGap(1.0);
-  MXtalGen.generateMono(Control,monoKey+"MLM",-20.0,0.6,0.6);
-  Control.addVariable(monoKey+"MLMYAngle",0.0);   
+  //  MXtalGen.setGap(1.0);
+  //  MXtalGen.generateMono(Control,monoKey+"MLM",-20.0,0.6,0.6);
+  //  Control.addVariable(monoKey+"MLMYAngle",0.0);   
   return;
 }
 

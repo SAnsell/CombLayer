@@ -3,7 +3,7 @@
  
  * File:   delft/makeDelft.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,13 +35,14 @@
 #include <memory>
 #include <array>
 #include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "inputParam.h"
 #include "surfRegister.h"
 #include "objectRegister.h"

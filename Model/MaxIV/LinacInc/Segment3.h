@@ -91,12 +91,12 @@ class Segment3 :
   Segment3(const std::string&);
   Segment3(const Segment3&);
   Segment3& operator=(const Segment3&);
-  ~Segment3();
+  ~Segment3() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

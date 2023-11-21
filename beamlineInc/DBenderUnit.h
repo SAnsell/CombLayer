@@ -72,9 +72,9 @@ class DBenderUnit : public GuideUnit
   Geometry::Vec3D calcWidthCent(const bool) const;
   Geometry::Vec3D calcHeightCent(const bool) const;
 
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
-  virtual void createLinks();
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
+  void createLinks() override;
   
  public:
 
@@ -82,7 +82,7 @@ class DBenderUnit : public GuideUnit
   DBenderUnit(const DBenderUnit&);
   DBenderUnit& operator=(const DBenderUnit&);
   virtual DBenderUnit* clone() const;
-  virtual ~DBenderUnit();
+  ~DBenderUnit() override;
 
   void setApperture(const double,const double,
 		    const double,const double);
@@ -98,7 +98,7 @@ class DBenderUnit : public GuideUnit
 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const FixedComp&,const long int);
+  void createAll(Simulation&,const FixedComp&,const long int) override;
 
 };
 

@@ -19,22 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
+#include <algorithm>
 #include <cmath>
 #include <complex>
-#include <list>
-#include <vector>
-#include <set>
-#include <map>
-#include <string>
-#include <algorithm>
-#include <numeric>
-#include <iterator>
-#include <memory>
+#include <fstream>
 #include <functional>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <map>
+#include <memory>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -74,10 +75,10 @@ namespace shutterSystem
 
 BlockShutter::BlockShutter(const size_t ID,
 			   const std::string& K,
-			   const std::string& ZK) :
+			   std::string  ZK) :
   GeneralShutter(ID,K),
   b4cMat(47),
-  blockKey(ZK),
+  blockKey(std::move(ZK)),
   collPtr(new collInsert(blockKey+"Insert"))
   /*!
     Constructor BUT ALL variable are left unpopulated.

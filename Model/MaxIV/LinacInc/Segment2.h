@@ -102,11 +102,11 @@ class Segment2 :
   Segment2(const std::string&);
   Segment2(const Segment2&);
   Segment2& operator=(const Segment2&);
-  ~Segment2();
+  ~Segment2() override;
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

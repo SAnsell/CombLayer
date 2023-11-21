@@ -19,20 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <complex>
-#include <cmath>
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
 #include <algorithm>
+#include <cmath>
+#include <complex>
+#include <fstream>
 #include <functional>
-#include <numeric>
+#include <iomanip>
+#include <iostream>
+#include <map>
 #include <memory>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -48,9 +49,9 @@
 namespace SDef
 {
 
-KCodeSource::KCodeSource(const std::string& KN) :
+KCodeSource::KCodeSource(std::string  KN) :
   SourceBase(),
-  keyName(KN),rkk(1.0),defFlag(8,0),vals(8)
+  keyName(std::move(KN)),rkk(1.0),defFlag(8,0),vals(8)
   /*!
     Constructor with default list
     \param KN :: Keyname

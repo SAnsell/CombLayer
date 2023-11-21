@@ -3,7 +3,7 @@
  
  * File:   geomInc/Torus.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,8 +52,8 @@ class Torus : public Surface
   double Iradius;                ///< Inner radius
   double Oradius;                ///< Outer radius
 
-  void rotate(const Geometry::Matrix<double>&);
-  void displace(const Geometry::Vec3D&);
+  void rotate(const Geometry::Matrix<double>&) override;
+  void displace(const Geometry::Vec3D&) override;
 
  public:
 
@@ -61,21 +61,23 @@ class Torus : public Surface
 
   Torus();
   Torus(const Torus&);
-  Torus* clone() const;
+  Torus* clone() const override;
   Torus& operator=(const Torus&);
   bool operator==(const Torus&) const;
   bool operator!=(const Torus&) const;
-  virtual ~Torus();
+  ~Torus() override;
 
   /// Effective TYPENAME 
   static std::string classType() { return "Torus"; }
   /// Public identifier
-  virtual std::string className() const { return "Torus"; }
+  std::string className() const override { return "Torus"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::Torus; }
     /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
   void setCentre(const Vec3D&);
@@ -91,18 +93,18 @@ class Torus : public Surface
   double getIRad() const { return Iradius; }     ///< IRad accessor
   double getORad() const { return Oradius; }     ///< ORad accessor
   
-  int setSurface(const std::string&);
-  int side(const Geometry::Vec3D&) const;  
-  int onSurface(const Geometry::Vec3D&) const;  
-  double distance(const Geometry::Vec3D&) const;   
-  void mirror(const Geometry::Plane&);
+  int setSurface(const std::string&) override;
+  int side(const Geometry::Vec3D&) const override;  
+  int onSurface(const Geometry::Vec3D&) const override;  
+  double distance(const Geometry::Vec3D&) const override;   
+  void mirror(const Geometry::Plane&) override;
 
 
-  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;
+  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;
 
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void writePOVRay(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void writeFLUKA(std::ostream&) const override;
+  void writePOVRay(std::ostream&) const override;
+  void write(std::ostream&) const override;
   
 };
 

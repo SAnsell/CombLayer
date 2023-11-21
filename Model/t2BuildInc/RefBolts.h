@@ -40,7 +40,7 @@ class RefBolts : public attachSystem::FixedComp
  private:
   
   
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void createBoltGrp(Simulation&,const std::string&);
 
@@ -49,10 +49,10 @@ class RefBolts : public attachSystem::FixedComp
   RefBolts(const std::string&);
   RefBolts(const RefBolts&);
   RefBolts& operator=(const RefBolts&);
-  ~RefBolts();
+  ~RefBolts() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

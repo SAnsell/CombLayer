@@ -87,7 +87,7 @@ class TDC :
   TDC(const std::string&);
   TDC(const TDC&);
   TDC& operator=(const TDC&);
-  virtual ~TDC();
+  ~TDC() override;
 
   /// Do not carry out end point checks:
   void setNoLengthCheck() { noCheck=1; }
@@ -97,7 +97,7 @@ class TDC :
   void setActive(const std::set<std::string>& SC) { activeINJ=SC; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+		     const long int) override;
 
 };
 

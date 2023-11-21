@@ -80,19 +80,19 @@ class speciesFrontEnd :  public R1FrontEnd
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Undulator> undulator;
 
-  virtual const attachSystem::FixedComp&
+  const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
-		   const std::string&);
+		   const std::string&) override;
 			      
-  virtual void createLinks();
+  void createLinks() override;
   
  public:
   
   speciesFrontEnd(const std::string&);
   speciesFrontEnd(const speciesFrontEnd&);
   speciesFrontEnd& operator=(const speciesFrontEnd&);
-  virtual ~speciesFrontEnd();
+  ~speciesFrontEnd() override;
 
 };
 

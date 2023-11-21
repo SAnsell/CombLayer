@@ -69,7 +69,7 @@ class RentrantBS :
   int concMat;                ///< Second layer material
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -79,11 +79,11 @@ class RentrantBS :
   RentrantBS(const std::string&);
   RentrantBS(const RentrantBS&);
   RentrantBS& operator=(const RentrantBS&);
-  virtual ~RentrantBS();
+  ~RentrantBS() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

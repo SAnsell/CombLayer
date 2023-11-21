@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideBay.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,9 @@
 #include "SurInter.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
+#include "SurfMap.h"
 #include "CellMap.h"
 #include "GuideItem.h"
 #include "GuideBay.h"
@@ -81,7 +83,7 @@ GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
   attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::CellMap(),
   baseKey(Key),bayNumber(BN),
-  nItems(0)
+  nItems(0),RInner(0.0),ROuter(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,7 +98,7 @@ GuideBay::GuideBay(const GuideBay& A) :
   viewAngle(A.viewAngle),innerHeight(A.innerHeight),
   innerDepth(A.innerDepth),height(A.height),depth(A.depth),
   midRadius(A.midRadius),mat(A.mat),nItems(A.nItems),
-  innerCyl(A.innerCyl),outerCyl(A.outerCyl),GUnit(A.GUnit)
+  RInner(A.RInner),ROuter(A.ROuter),GUnit(A.GUnit)
   /*!
     Copy constructor
     \param A :: GuideBay to copy
@@ -124,8 +126,8 @@ GuideBay::operator=(const GuideBay& A)
       midRadius=A.midRadius;
       mat=A.mat;
       nItems=A.nItems;
-      innerCyl=A.innerCyl;
-      outerCyl=A.outerCyl;
+      RInner=A.RInner;
+      ROuter=A.ROuter;
       GUnit=A.GUnit;
     }
   return *this;
@@ -138,20 +140,6 @@ GuideBay::~GuideBay()
   */
 {}
 
-void
-GuideBay::setCylBoundary(const int A,const int B)
-  /*!
-    Set inside and outside cylinder cuts
-    \todo Move to a headrule system
-    \param A :: Inner cylinder 
-    \param B :: Outer cylinder
-   */
-{
-  innerCyl=std::abs(A);
-  outerCyl=std::abs(B);
-  return;
-}
-  
 void
 GuideBay::populate(const FuncDataBase& Control)
  /*!
@@ -175,7 +163,34 @@ GuideBay::populate(const FuncDataBase& Control)
   nItems=Control.EvalTail<size_t>(keyName,baseKey,"NItems");
   return;
 }
-    
+
+void
+GuideBay::calcRadii()
+  /*!
+    Calc inner/oute radii
+   */
+{
+  ELog::RegMethod RegA("GuideBay","calcRadii");
+  
+  // construct
+  const HeadRule innerHR=getRule("innerCyl");
+  const HeadRule outerHR=getRule("outerCyl");
+  const Geometry::Cylinder* CInner=
+    dynamic_cast<const Geometry::Cylinder*>(innerHR.primarySurface());
+  const Geometry::Cylinder* COuter=
+    dynamic_cast<const Geometry::Cylinder*>(outerHR.primarySurface());
+
+  if (!CInner || !COuter)
+    throw ColErr::InContainerError<std::string>
+      ("Inner/Outer","inner/outer Cyl not cylinder");
+
+  RInner=CInner->getRadius();
+  ROuter=COuter->getRadius();
+
+  return;
+}
+  
+  
 void
 GuideBay::createSurfaces()
   /*!
@@ -183,16 +198,14 @@ GuideBay::createSurfaces()
   */
 {
   ELog::RegMethod RegA("GuideBay","createSurface");
-
+  
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);    // Divider plane
 
-  SMap.addMatch(buildIndex+7,innerCyl);
-  SMap.addMatch(buildIndex+27,outerCyl);
-  const Geometry::Cylinder* CPtr=
-    SMap.realPtr<Geometry::Cylinder>(buildIndex+7);
-  const double RInner=CPtr->getRadius();
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,RInner+midRadius);
-  
+
+  // note Origin here is axpanded centre and only used for planes
+  // it deals with the case of a bridge surface in expanded map
+  makeExpandedSurf(SMap,"innerCyl",buildIndex+17,Origin,midRadius);
+
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*innerDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*innerHeight,Z);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*depth,Z);
@@ -218,16 +231,13 @@ GuideBay::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4,RPoint,RVec);  
 
   // Link Points created here as access to variables
-  const Geometry::Cylinder* DPtr=
-    SMap.realPtr<Geometry::Cylinder>(buildIndex+27);
-  const double ROuter=DPtr->getRadius();
 
   const double midRad=(RInner+ROuter)/2.0;
   // Inner point 
   FixedComp::setConnect(0,Origin+Y*RInner,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(0,getRule("#innerCyl"));
   FixedComp::setConnect(1,Origin+Y*ROuter,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+27));
+  FixedComp::setLinkSurf(1,getRule("outerCyl"));
   FixedComp::setConnect(2,LPoint+LEdge*midRad,-LVec);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
   FixedComp::setConnect(3,RPoint+REdge*midRad,RVec);
@@ -249,13 +259,17 @@ GuideBay::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GuideBay","createObjects");
 
+  const HeadRule innerHR=getRule("innerCyl");
+  const HeadRule outerHR=getComplementRule("outerCyl");
+
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 7 -17 3 -4 5 -6");
-  makeCell("Inner",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -17 3 -4 5 -6");
+  makeCell("Inner",System,cellIndex++,mat,0.0,HR*innerHR);
   addOuterSurf("Inner",HR);
+
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17 -27 3 -4 15 -16");
-  makeCell("Outer",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 17 3 -4 15 -16");
+  makeCell("Outer",System,cellIndex++,mat,0.0,HR*outerHR);
   addOuterSurf("Outer",HR);
 
   return;
@@ -293,17 +307,13 @@ GuideBay::outerMerge(Simulation& System,
   if (!BB)
     throw ColErr::InContainerError<int>
       (otherBay.CellMap::getCell("Outer"),"Outer cell not found");
-  // Get radii:
-  const Geometry::Cylinder* CInner=
-    SMap.realPtr<Geometry::Cylinder>(buildIndex+7);
-  const Geometry::Cylinder* COuter=
-    SMap.realPtr<Geometry::Cylinder>(buildIndex+27);
-  const double midRadius=
-    (CInner->getRadius()+COuter->getRadius())/2.0;
 
+  // Get radii:
+    
+  const double halfRadius=(RInner+ROuter)/2.0;
   // Keep positive direction of sense
   Geometry::Vec3D CPoint = (Origin+otherBay.getCentre())/2.0
-    +Y*midRadius;
+    +Y*halfRadius;
 
 
   HeadRule ARule=AB->getHeadRule();
@@ -357,8 +367,6 @@ GuideBay::createGuideItems(Simulation& System,
   const long int lFocusIndex=(bayNumber==1) ? 2 : 3;
   const long int rFocusIndex=(bayNumber==1) ? 1 : 4;
   
-  const int dPlane=SMap.realSurf(buildIndex+1);
-
   const GuideItem* GB(0);  // guides can intersect
 
   
@@ -370,27 +378,31 @@ GuideBay::createGuideItems(Simulation& System,
   for(size_t i=0;i<nItems;i++)
     {
       const long int FI((i>=nItems/2) ? rFocusIndex : lFocusIndex);
+
       std::shared_ptr<GuideItem> GA(new GuideItem(BL,i+1));
       OR.addObject(GA);
-      GA->setCylBoundary(dPlane,innerCyl,outerCyl);
+      GA->setCutSurf("divider",SMap.realSurf(buildIndex+1));
+      GA->copyCutSurf("innerCyl",*this,"innerCyl");
+      GA->copyCutSurf("outerCyl",*this,"outerCyl");
+      GA->copyCutSurf("wheel",*this,"wheel");
 
       GA->addInsertCell("Inner",getCell("Inner"));
       GA->addInsertCell("Outer",getCell("Outer"));
 
-      GA->setNeighbour(GB);
+      if (GB && GB->isBuilt())
+	GA->setNeighbour(GB);
       GA->createAll(System,*ModFC,FI);
       GUnit.push_back(GA);
 
       // Add wheel to inner cell if required
-      if (GA->hasItem("BodyMetal"))
+      if (GA->hasCell("BodyMetal"))
 	GA->insertComponent(System,"Body",CG->getCC("Wheel"));
       
       GB=GA.get();
     }
   
   return;
-}
-  
+} 
 
 void
 GuideBay::createAll(Simulation& System,
@@ -407,7 +419,7 @@ GuideBay::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
+  calcRadii();
   createSurfaces();
   createObjects(System);
   createLinks();

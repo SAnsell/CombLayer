@@ -19,17 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -61,8 +62,8 @@ PointDetector::PointDetector(const size_t ID) :
   */
 {}
 
-PointDetector::PointDetector(const size_t ID,const Geometry::Vec3D& CV) : 
-  Detector(ID),angle(0.0),Cent(CV)
+PointDetector::PointDetector(const size_t ID,Geometry::Vec3D  CV) : 
+  Detector(ID),angle(0.0),Cent(std::move(CV))
  /*!
    Constructor 
    \param ID :: Idenitification number

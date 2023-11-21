@@ -73,7 +73,7 @@ class RotaryCollimator :
   void setHoleIndex();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -85,14 +85,14 @@ class RotaryCollimator :
   RotaryCollimator(const std::string&);
   RotaryCollimator(const RotaryCollimator&);
   RotaryCollimator& operator=(const RotaryCollimator&);
-  ~RotaryCollimator();
+  ~RotaryCollimator() override;
 
   Geometry::Vec3D getHoleCentre() const;
   void setCentre(const Geometry::Vec3D&);
 
   void createPartial(Simulation&,const attachSystem::FixedComp&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

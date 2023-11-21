@@ -68,11 +68,11 @@ class Segment16 :
   Segment16(const std::string&);
   Segment16(const Segment16&);
   Segment16& operator=(const Segment16&);
-  ~Segment16();
+  ~Segment16() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

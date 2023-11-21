@@ -73,7 +73,7 @@ class Wheel : public WheelBase
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,17 +85,17 @@ class Wheel : public WheelBase
   Wheel(const std::string&);
   Wheel(const Wheel&);
   Wheel& operator=(const Wheel&);
-  virtual Wheel* clone() const;
-  virtual ~Wheel();
+  Wheel* clone() const override;
+  ~Wheel() override;
 
   /// total wheel void size
-  virtual double wheelHeight() const
+  double wheelHeight() const override
   { return targetHeight+
       2.0*(coolantThickIn+caseThick+voidThick); }
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
   
 };
 

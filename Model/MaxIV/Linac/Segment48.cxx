@@ -3,7 +3,7 @@
 
  * File: Linac/Segment48.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,12 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "FileReport.h"
 #include "OutputLog.h"
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
@@ -50,10 +53,6 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "SplitFlangePipe.h"
-#include "Bellows.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "objectRegister.h"
 #include "Code.h"
 #include "varList.h"
@@ -64,13 +63,14 @@
 #include "ContainedGroup.h"
 #include "BlockZone.h"
 #include "generalConstruct.h"
+
 #include "GeneralPipe.h"
+#include "Bellows.h"
 #include "VacuumPipe.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
 #include "portItem.h"
-#include "FixedOffset.h"
 #include "EBeamStop.h"
 #include "JawFlange.h"
 #include "CrossWayTube.h"

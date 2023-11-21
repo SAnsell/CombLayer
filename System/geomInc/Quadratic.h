@@ -3,7 +3,7 @@
  
  * File:   geomInc/Quadratic.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,23 +56,25 @@ class Quadratic : public Surface
   Quadratic();
   Quadratic(const int,const int);
   Quadratic(const Quadratic&);
-  virtual Quadratic* clone() const;
+  Quadratic* clone() const override;
   Quadratic& operator=(const Quadratic&);
   bool operator==(const Quadratic&) const;
   bool operator!=(const Quadratic&) const;
-  virtual ~Quadratic();
+  ~Quadratic() override;
 
   /// Effective TYPENAME 
   static std::string classType() { return "Quadratic"; }
   /// Effective typeid
-  virtual std::string className() const 
+  std::string className() const override 
     { return "Quadratic"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::Quadratic; }
 
   /// Accept visitor for line calculation
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
   /// access baseEqn
@@ -80,28 +82,28 @@ class Quadratic : public Surface
   /// access BaseEquation vector
   const std::vector<double>& copyBaseEqn() const { return BaseEqn; } 
 
-  virtual int setSurface(const std::string&);
-  virtual int side(const Geometry::Vec3D&) const; 
+  int setSurface(const std::string&) override;
+  int side(const Geometry::Vec3D&) const override; 
 
   virtual void setBaseEqn();      ///< Abstract set baseEqn 
   
-  virtual int onSurface(const Geometry::Vec3D&) const;          ///< is point valid on surface 
-  virtual double distance(const Geometry::Vec3D&) const;        ///< distance between point and surface (approx)
-  virtual Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;    ///< Normal at surface
+  int onSurface(const Geometry::Vec3D&) const override;          ///< is point valid on surface 
+  double distance(const Geometry::Vec3D&) const override;        ///< distance between point and surface (approx)
+  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;    ///< Normal at surface
 
-  virtual void displace(const Geometry::Vec3D&);
-  virtual void rotate(const Geometry::Matrix<double>&);
-  virtual void rotate(const Geometry::Quaternion&);
-  virtual void mirror(const Geometry::Plane&);
+  void displace(const Geometry::Vec3D&) override;
+  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::Quaternion&) override;
+  void mirror(const Geometry::Plane&) override;
 
   void normalizeGEQ(const size_t);
   
-  virtual void print() const;
+  void print() const override;
 
-  virtual void writeXML(const std::string&) const;
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void writePOVRay(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void writeXML(const std::string&) const override;
+  void writeFLUKA(std::ostream&) const override;
+  void writePOVRay(std::ostream&) const override;
+  void write(std::ostream&) const override;
 
 };
 

@@ -58,7 +58,7 @@ class WedgeItem :
 
   double getFixedXYAngle(const double) const;
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const attachSystem::FixedComp&,
@@ -70,7 +70,7 @@ class WedgeItem :
   WedgeItem(const std::string&,const size_t);
   WedgeItem(const WedgeItem&);
   WedgeItem& operator=(const WedgeItem&);
-  virtual ~WedgeItem();
+  ~WedgeItem() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int,
 		 const long int,

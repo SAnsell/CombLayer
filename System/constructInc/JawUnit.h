@@ -59,7 +59,7 @@ class JawUnit :
   int zJawMat;                  ///< Z material
   int xJawMat;                  ///< X material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -69,11 +69,11 @@ class JawUnit :
   JawUnit(const std::string&);
   JawUnit(const JawUnit&);
   JawUnit& operator=(const JawUnit&);
-  virtual ~JawUnit();
+  ~JawUnit() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

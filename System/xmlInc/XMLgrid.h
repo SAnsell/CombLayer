@@ -47,15 +47,15 @@ class XMLgrid : public XMLobject
 
   XMLgrid(XMLobject*,const std::string&);
   XMLgrid(const XMLgrid<V,T,Alloc>&);
-  XMLgrid<V,T,Alloc>* clone() const;
+  XMLgrid<V,T,Alloc>* clone() const override;
   XMLgrid<V,T,Alloc>& operator=(const XMLgrid<V,T,Alloc>&);
-  ~XMLgrid();
+  ~XMLgrid() override;
 
   size_t getSize() const { return (!empty) ? size : 0; }    ///< get size
   void setContLine(const size_t IFlag) { contLine=IFlag; }  ///< Set continue size 
 
   void setComp(const size_t,const V<T,Alloc>&);    ///< Assumes copy setting
-  virtual void writeXML(std::ostream&) const;    
+  void writeXML(std::ostream&) const override;    
 
   V<T,Alloc>& getGVec(const size_t);
   const V<T,Alloc>& getGVec(const size_t) const;

@@ -3,7 +3,7 @@
  
  * File:   construct/portSet.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,15 +39,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Quadratic.h"
-#include "Line.h"
-#include "Cylinder.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
@@ -62,8 +56,10 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "ExternalCut.h"
 #include "Importance.h"
 #include "Object.h"
+
 
 #include "portItem.h"
 #include "doublePortItem.h"
@@ -105,28 +101,41 @@ portSet::populate(const FuncDataBase& Control)
 
   const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
   const std::string portBase=keyName+"Port";
+
+  PCentre.resize(NPorts);
+  PAxis.resize(NPorts);
+  PLen.resize(NPorts);
   for(size_t i=0;i<NPorts;i++)
     {
-      
       const std::string portName=portBase+std::to_string(i);
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
 	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
+      const double pLen=
+	Control.EvalTail<double>(portName,portBase,"Length");
 
       std::shared_ptr<portItem> windowPort;
-      windowPort=std::make_shared<portItem>(portBase,portName);
-      windowPort->populate(Control);
-      
-      PCentre.push_back(Centre);
-      PAxis.push_back(Axis);
-      Ports.push_back(windowPort);
-      OR.addObject(windowPort);
+      if (i>=Ports.size())
+	{
+	  windowPort=std::make_shared<portItem>(portBase,portName);
+	  windowPort->populate(Control);	  
+	  Ports.push_back(windowPort);
+	  OR.addObject(windowPort);
+	}
+      else
+	{
+	  windowPort=Ports[i];
+	  windowPort->populate(Control);
+	  OR.reAddObject(windowPort);
+	}
+      PCentre[i]=Centre;
+      PAxis[i]=Axis;
+      PLen[i]=pLen;
     }					    
   return;
 }
   
-
 const portItem&
 portSet::getPort(const size_t index) const
   /*!
@@ -141,6 +150,37 @@ portSet::getPort(const size_t index) const
     throw ColErr::IndexError<size_t>(index,Ports.size(),"index/Ports size");
      
   return *(Ports[index]);
+}
+
+portItem&
+portSet::getPort(const size_t index) 
+  /*!
+    Accessor to ports [non-constant]
+    \param index :: index point
+    \return port
+  */
+{
+  ELog::RegMethod RegA("portSet","getPort[non-const]");
+
+  if (index>=Ports.size())
+    throw ColErr::IndexError<size_t>(index,Ports.size(),"index/Ports size");
+     
+  return *(Ports[index]);
+}
+
+std::tuple<Geometry::Vec3D,Geometry::Vec3D,double>
+portSet::getPortInfo(const size_t pIndex) const
+  /*!
+    Get a port info tuple of centre/axis/length
+    \param pIndex :: active port number
+   */
+{
+  ELog::RegMethod RegA("portSet","getPortInfo");
+
+  if (pIndex>=Ports.size())
+    throw ColErr::IndexError<size_t>(pIndex,Ports.size(),"index/Ports size");
+  
+  return {PCentre[pIndex],PAxis[pIndex],PLen[pIndex]};
 }
 
 
@@ -443,6 +483,40 @@ portSet::insertPortInCell(Simulation& System,
 }
 
 void
+portSet::constructPortAxis(const FuncDataBase& Control)
+  /*
+    Function to construct the port axis to allow movement
+    of base object.
+    \param Control :: DataBase object 
+   */
+{
+  ELog::RegMethod RegA("portSet","constructPortAxis");
+
+  populate(Control);
+  for(size_t i=0;i<Ports.size();i++)
+    Ports[i]->setCentLine(FUnit,PCentre[i],PAxis[i]);
+  return;
+}
+
+void
+portSet::copyPortLinks
+(size_t offsetIndex,attachSystem::FixedComp& FC) const
+  /*!
+    Copy the end point of all the ports into the links
+    of the FC item
+    \param index :: offset index to start
+  */
+{
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      FC.setLinkCopy(offsetIndex,*Ports[i],"OuterPlate");
+      FC.nameSideIndex(offsetIndex,"port"+std::to_string(i));
+      offsetIndex++;
+    }
+  return;
+}
+
+void
 portSet::createPorts(Simulation& System,
 		     MonteCarlo::Object* insertObj,
 		     const HeadRule& innerSurf,
@@ -460,7 +534,6 @@ portSet::createPorts(Simulation& System,
   populate(System.getDataBase());
   for(size_t i=0;i<Ports.size();i++)
     {
-      
       for(const int CN : portCells)
 	Ports[i]->addOuterCell(CN);
 

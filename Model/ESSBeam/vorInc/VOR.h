@@ -171,7 +171,7 @@ class VOR : public attachSystem::CopiedComp
   VOR(const std::string&);
   VOR(const VOR&);
   VOR& operator=(const VOR&);
-  ~VOR();
+  ~VOR() override;
 
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

@@ -56,6 +56,9 @@
 #include "FixedRotate.h"
 #include "FixedRotateUnit.h"
 #include "ContainedComp.h"
+#include "ExternalCut.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "EmptyCyl.h"
 
@@ -64,7 +67,9 @@ namespace essSystem
 
 EmptyCyl::EmptyCyl(const std::string& Key)  :
   attachSystem::FixedRotateUnit(Key,6),
-  attachSystem::ContainedComp()
+  attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
+  attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -74,6 +79,8 @@ EmptyCyl::EmptyCyl(const std::string& Key)  :
 EmptyCyl::EmptyCyl(const EmptyCyl& A) : 
   attachSystem::FixedRotateUnit(A),
   attachSystem::ContainedComp(A),
+  attachSystem::ExternalCut(A),
+  attachSystem::CellMap(A),
   height(A.height),mat(A.mat)
   /*!
     Copy constructor
@@ -93,6 +100,9 @@ EmptyCyl::operator=(const EmptyCyl& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ExternalCut::operator=(A);
+      attachSystem::CellMap::operator=(A);
+	  
       height=A.height;
       mat=A.mat;
     }
@@ -151,7 +161,8 @@ EmptyCyl::createSurfaces()
   
 void
 EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
-			const long int floor,const long int side,
+			const long int floor,
+			const long int side,
 			const long int inner,
 			const attachSystem::FixedComp& BC,
 			const long int bulk,
@@ -233,9 +244,6 @@ EmptyCyl::createLinks(const attachSystem::FixedComp&FC,
   return;
 }
   
-  
-
-  
 void
 EmptyCyl::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
@@ -270,6 +278,7 @@ EmptyCyl::createAll(Simulation& System,
   createSurfaces();
   ELog::EM<<"EARLY RETURN "<<ELog::endCrit;
   return;
+
   createObjects(System,FC,floor,side,inner,
 		BC,bulk,
 		GB1,gb1lp,GB2,gb2lp);

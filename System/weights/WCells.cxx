@@ -3,7 +3,7 @@
  
  * File:   weights/WCells.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ WCells::populateCells(const std::map<int,MonteCarlo::Object*>& ObjMap)
 {
   ELog::RegMethod RegA("WCells","populateCells");
   
-  for(const std::pair<int,MonteCarlo::Object*>& objUnit : ObjMap)
+  for(const std::pair<const int,MonteCarlo::Object*>& objUnit : ObjMap)
     {
       const int cellN(objUnit.first);
       const MonteCarlo::Object& ORef(*(objUnit.second));

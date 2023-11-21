@@ -3,13 +3,13 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *s
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -76,7 +76,7 @@ mathFunc::logFromLinear(const double A,const double B,const size_t N,
   */
 {
   const double step(static_cast<double>(index)*
-		    log(fabs((B-A)/A))/static_cast<double>(N));
+		    log(std::abs((B-A)/A))/static_cast<double>(N));
   return (A>B) ? B*exp(step) : A*exp(step);
 }
   
@@ -128,7 +128,9 @@ countBits(const unsigned int& u)
 size_t
 countBits(const size_t& u)
   /*!
-    Clever trick from MIT to obtain number of bits 
+    Clever trick from MIT to obtain number of bits
+    Note: 3 bits are 4a+2b+c. Shift right 2a+b and double shift a
+    Add all together == a+b+c  . number of bits set
     \param u :: Number to test
     \return number of bits
   */
@@ -141,6 +143,17 @@ countBits(const size_t& u)
     ((uCount + (uCount >> 3))
      & 0307070707070707070707UL) % 63;
 
+}
+
+size_t
+getPowerTwo(const size_t N)
+  /*!
+    Gets the 2^n part of a number .
+    Maybe quicker way with rotate ??
+    \return number
+  */
+{
+  return static_cast<size_t>(std::pow(2L,std::floor(std::log2(N))));
 }
 
 long int
@@ -348,6 +361,8 @@ indexSort(const std::vector<T>& pVec,std::vector<U>& Index)
   transform(pVec.begin(),pVec.end(),PartList.begin(),
 	    mathSupport::PIndex<T>());
   sort(PartList.begin(),PartList.end());
+
+  
   transform(PartList.begin(),PartList.end(),Index.begin(),
 	    mathSupport::PSep<T>());
   
@@ -422,6 +437,29 @@ iteratorPos(const std::vector<T>& xArray,const T& Aim)
   typename std::vector<T>::const_iterator xV=
     lower_bound(xArray.begin(),xArray.end(),Aim);
   return xV;
+}
+
+template<typename T>
+size_t
+rangePos(const std::vector<T>& xArray,const T& Aim)
+/*!
+  Detemine the point that matches an array.
+  Such that  \f$ xArray[index] > Aim> xArray[index+1] \f$
+  This also gives 0 and size-1
+  \param xArray :: Array to search
+  \param Aim :: Aim Point
+  \return position in array  [ranged between: -1 and size-1  ] 
+*/
+{
+  if (xArray.empty() || Aim<=xArray.front())
+    return 0;
+  if (Aim>=xArray.back())
+    return xArray.size()-1;
+  
+  typename std::vector<T>::const_iterator 
+    xV=lower_bound(xArray.begin(),xArray.end(),Aim);
+  const size_t out=static_cast<size_t>(distance(xArray.begin(),xV));
+  return (out) ? out-1 : 0;
 }
 
 template<typename T>
@@ -509,7 +547,7 @@ polFit(const Xtype& Aim,const unsigned int Order,
   for(size_t i=1;i<Order;i++)
     {
       const long int li(static_cast<long int>(i));
-      testDiff=static_cast<Xtype>(fabs(Aim-X[li]));
+      testDiff=static_cast<Xtype>(std::abs(Aim-X[li]));
       if (diff>testDiff)
         {
           ns=i;
@@ -606,7 +644,7 @@ d2dxQuadratic(const typename std::vector<T>::const_iterator& Xpts,
   for the three points Xpts,Ypts. It assumes that Xpts are random.
   \param Xpts :: XPoints
   \param Ypts :: YPoints 
-  \return dy/dx at Xpts[1]
+  \return d2y/dx2 at Xpts[1]
 */
 {
   const T C = Ypts[0];
@@ -623,6 +661,42 @@ d2dxQuadratic(const typename std::vector<T>::const_iterator& Xpts,
   return A*static_cast<T>(2.0);
 }
 
+template<typename T>
+T
+d2dxQuadratic(const std::vector<T>& Xpts,const  std::vector<T>& Ypts) 
+/*!
+  This function carries out a quadratic polynominal differentuation
+  for the three points Xpts,Ypts. It assumes that Xpts are random.
+  \param Xpts :: XPoints
+  \param Ypts :: YPoints 
+  \return dy/dx at Xpts[1]
+*/
+{
+  if (Xpts.size()<3 || Ypts.size()<3)
+    throw ColErr::SizeError<size_t>
+      (Xpts.size(),3,"Vector size to small:");
+    
+  return d2dxQuadratic<T>(Xpts.begin(),Ypts.begin());
+}
+
+template<typename T>
+T
+derivQuadratic(const std::vector<T>& Xpts,
+	       const std::vector<T>& Ypts) 
+/*!
+  This function carries out a quadratic polynominal differentuation
+  for the three points Xpts,Ypts. It assumes that Xpts are random.
+  \param Xpts :: vector for three X-points
+  \param Ypts :: vector for three Y-points
+  \return derivative at midpoint
+*/
+{
+  if (Xpts.size()<3 || Ypts.size()<3)
+    throw ColErr::SizeError<size_t>
+      (Xpts.size(),3,"Vector size to small:");
+    
+  return derivQuadratic<T>(Xpts.begin(),Ypts.begin());
+}
 
 
 template<typename T>
@@ -889,11 +963,34 @@ template
 double
 derivQuadratic(const std::vector<double>::const_iterator&,
 	       const std::vector<double>::const_iterator&);
+template 
+float
+derivQuadratic(const std::vector<float>::const_iterator&,
+	       const std::vector<float>::const_iterator&);
+
+template 
+double
+d2dxQuadratic(const std::vector<double>::const_iterator&,
+	      const std::vector<double>::const_iterator&);
+
+template 
+double derivQuadratic(const std::vector<double>&,const std::vector<double>&);
+template 
+float derivQuadratic(const std::vector<float>&,const std::vector<float>&);
+
+template 
+double
+d2dxQuadratic(const std::vector<double>&,const std::vector<double>&);
 
 
 template class mathSupport::PIndex<double>;
 template class mathSupport::PSep<double>;
 
+template size_t rangePos(const std::vector<float>&,const float&);
+template size_t rangePos(const std::vector<int>&,const int&);
+template size_t rangePos(const std::vector<double>&,const double&);
+template size_t rangePos(const std::vector<DError::doubleErr>&,
+                           const DError::doubleErr&);
 template long int indexPos(const std::vector<double>&,const double&);
 template long int indexPos(const std::vector<DError::doubleErr>&,
                            const DError::doubleErr&);
@@ -939,9 +1036,8 @@ template double mathFunc::minDifference(const std::vector<double>&,
 
 
 template
-size_t inUnorderedRange(const std::vector<int>&,const std::vector<int>&,
-			const int&);
-
+size_t inUnorderedRange(const std::vector<int>&,
+			const std::vector<int>&,const int&);
 
 template void signSplit(const long int&,long int&,size_t&);
 template void signSplit(const long int&,long int&,long int&);

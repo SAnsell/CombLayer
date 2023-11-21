@@ -67,7 +67,7 @@ class FMUndulator :
   int magnetMat;                   ///< Block material
   int supportMat;                  ///< support material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -77,12 +77,12 @@ class FMUndulator :
   FMUndulator(const std::string&);
   FMUndulator(const FMUndulator&);
   FMUndulator& operator=(const FMUndulator&);
-  virtual ~FMUndulator();
+  ~FMUndulator() override;
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BlockAddition.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ namespace essSystem
 class BlockAddition :
     public attachSystem::FixedOffsetUnit,
     public attachSystem::ContainedComp,
-    public attachSystem::LayerComp
+    public attachSystem::LayerComp,
+    public attachSystem::ExternalCut
 {
  private:
   
@@ -59,10 +60,10 @@ class BlockAddition :
   HeadRule preModInner;       ///< Inner preMod surface
   HeadRule preModOuter;       ///< Outer preMod surface
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const Geometry::Vec3D&,
 			const Geometry::Vec3D&,
-			const Geometry::Vec3D&);
+			const Geometry::Vec3D&) override;
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::LayerComp&,
@@ -76,7 +77,7 @@ class BlockAddition :
   BlockAddition(const std::string&);
   BlockAddition(const BlockAddition&);
   BlockAddition& operator=(const BlockAddition&);
-  virtual ~BlockAddition();
+  ~BlockAddition() override;
 
 
   /// Set/unset active
@@ -87,8 +88,8 @@ class BlockAddition :
   void setCentRotate(const Geometry::Vec3D& C) { rotCent=C; }
   HeadRule createCut(const size_t) const;
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::LayerComp&,

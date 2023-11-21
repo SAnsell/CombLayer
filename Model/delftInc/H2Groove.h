@@ -51,7 +51,7 @@ class H2Groove :
   double siTemp;           ///< Moderator temperature
   int siMat;                ///< Moderator material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -61,12 +61,12 @@ class H2Groove :
   H2Groove(const std::string&,const int);
   H2Groove(const H2Groove&);
   H2Groove& operator=(const H2Groove&);
-  ~H2Groove();
+  ~H2Groove() override;
   
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

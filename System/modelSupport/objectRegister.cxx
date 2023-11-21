@@ -3,7 +3,7 @@
  
  * File:   modelSupport/objectRegister.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,6 +137,46 @@ objectRegister::addObject(const std::string& Name,
   return;
 }
 
+void
+objectRegister::reAddObject(const std::string& Name,
+			    const CTYPE& Ptr)
+  /*!
+    Register a shared_ptr of an object. 
+    Requirement that 
+    - (a) The object already exists as a range
+    - (b) if it exist in data base replace
+    All failures result in an exception.
+    \param Name :: Name of the object						
+    \param Ptr :: Shared_ptr
+  */
+{
+  ELog::RegMethod RegA("objectRegister","reAddObject");
+
+  if (GPtr)
+    GPtr->reAddObject(Name,Ptr);
+  return;
+}
+
+void
+objectRegister::reAddObject(const CTYPE& Ptr)
+  /*! 
+    Register a shared_ptr of an object. 
+    Requirement that 
+    - (a) The object already exists as a range
+    - (b) No repeat object
+    All failures result in an exception.
+    \param Ptr :: FixedComp object [shared_ptr]
+  */
+{
+  ELog::RegMethod RegA("objectRegister","reAddObject(Obj)");
+  if (Ptr)
+    reAddObject(Ptr->getKeyName(),Ptr);
+  else
+    throw ColErr::EmptyValue<void>("Ptr Shared_ptr");
+  return;
+}
+  
+  
   
 int
 objectRegister::cell(const std::string& Name,const size_t size)

@@ -88,7 +88,7 @@ class BilbaoWheelCassette :
   double getBrickGapThick(const size_t&) const;
   void   buildBricks();
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createSurfacesBricks();
   void createObjects(Simulation&);
@@ -102,13 +102,13 @@ class BilbaoWheelCassette :
   BilbaoWheelCassette(const BilbaoWheelCassette&);
   BilbaoWheelCassette& operator=(const BilbaoWheelCassette&);
   virtual BilbaoWheelCassette* clone() const;
-  virtual ~BilbaoWheelCassette();
+  ~BilbaoWheelCassette() override;
 
   void setRotAngle(const double XY) { rotAngle=XY; }
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

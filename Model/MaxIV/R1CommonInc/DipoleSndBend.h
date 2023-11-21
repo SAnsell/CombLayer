@@ -64,7 +64,7 @@ class DipoleSndBend :
   int wallMat;                  ///< wall material
   int outerMat;                 ///< inner material
   
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -74,11 +74,11 @@ class DipoleSndBend :
   DipoleSndBend(const std::string&);
   DipoleSndBend(const DipoleSndBend&);
   DipoleSndBend& operator=(const DipoleSndBend&);
-  virtual ~DipoleSndBend();
+  ~DipoleSndBend() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

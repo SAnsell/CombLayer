@@ -91,7 +91,7 @@ EPBVariables(FuncDataBase& Control)
   Control.addVariable("MagnetWidth",90.0); 
   Control.addVariable("MagnetHeight",90.0); 
   Control.addVariable("MagnetLength",180.0); 
-  Control.addVariable("MagnetFeMat",5); 
+  Control.addVariable("MagnetPipeMat",5); 
   Control.addVariable("Magnet1SegIndex",3); 
   Control.addVariable("Magnet1SegLen",2); 
 
@@ -112,7 +112,7 @@ EPBVariables(FuncDataBase& Control)
   Control.addVariable("FocusWidth",50.0); 
   Control.addVariable("FocusHeight",50.0); 
   Control.addVariable("FocusLength",100.0); 
-  Control.addVariable("FocusFeMat",3); 
+  Control.addVariable("FocusPipeMat",3); 
 
   Control.addVariable("Focus1SegIndex",4); 
   Control.addVariable("Focus1SegLen",2); 

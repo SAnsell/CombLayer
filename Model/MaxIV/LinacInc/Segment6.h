@@ -79,14 +79,14 @@ class Segment6 :
   Segment6(const std::string&);
   Segment6(const Segment6&);
   Segment6& operator=(const Segment6&);
-  ~Segment6();
+  ~Segment6() override;
 
   /// very ugly accessor
   std::shared_ptr<EBeamStop> getBeamStop() const { return beamStop; }
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

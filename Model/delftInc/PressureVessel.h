@@ -61,7 +61,7 @@ class PressureVessel :
 
   int wallMat;                  ///< Wall Material number
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,12 +71,12 @@ class PressureVessel :
   PressureVessel(const std::string&);
   PressureVessel(const PressureVessel&);
   PressureVessel& operator=(const PressureVessel&);
-  virtual ~PressureVessel();
+  ~PressureVessel() override;
 
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

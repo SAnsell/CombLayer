@@ -55,7 +55,7 @@ class VanePoison :
   int bladeMat;               ///< Moderator material
   int absMat;               ///< Moderator material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createLinks();
   void createSurfaces();
   void createObjects(Simulation&,
@@ -69,11 +69,11 @@ class VanePoison :
   VanePoison& operator=(const VanePoison&);
   /// Clone function
   virtual VanePoison* clone() const { return new VanePoison(*this); }
-  virtual ~VanePoison();
+  ~VanePoison() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

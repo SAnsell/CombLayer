@@ -3,7 +3,7 @@
  
  * File:   test/testXML.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <iostream>
@@ -40,6 +40,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "XMLload.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
@@ -369,7 +371,7 @@ testXML::testNextGrp()
   Tests.push_back(TTYPE(1,"testA",1,"f=\"44\"::"));
   Tests.push_back(TTYPE(2,"testA",0,""));
   Tests.push_back(TTYPE(-1,"testB",0,""));
-  Tests.push_back(TTYPE(-1,"testC",2,"a=\"10\"::b=\"39\"::"));
+  Tests.push_back(TTYPE(-1,"testC",2,R"(a="10"::b="39"::)"));
   Tests.push_back(TTYPE(2,"Out",0,""));
 
 
@@ -627,7 +629,7 @@ testXML::testCutString()
 {
   ELog::RegMethod RegA("testXML","testCutString");
 
-  std::string AList = " file = \"test\" ref =\"Time\"";
+  std::string AList = R"( file = "test" ref ="Time")";
   std::string Key;
   std::string Part;
   int flag=XML::splitAttribute(AList,Key,Part);
@@ -673,7 +675,7 @@ testXML::testLoadSystem()
   CO.loadXML("testXML.xml");
   std::ostringstream cx; 
   CO.writeXML(cx);
-  In="<?xmlversion=\"1.0\"encoding=\"ISO-8859-1\"?>"+In;
+  In=R"(<?xmlversion="1.0"encoding="ISO-8859-1"?>)"+In;
   if (StrFunc::removeAllSpace(cx.str())!=
       StrFunc::removeAllSpace(In))
     {
@@ -1085,15 +1087,15 @@ testXML::testDataBlock()
   XMLcollect CO;
   CO.addGrp("Spectra");
   // SET the multi_array
-  typedef boost::multi_array<double,2> mapArray;
-  mapArray TX(boost::extents[3][4]);
-  
-  for(int i=0;i<3;i++)
-    for(int j=0;j<4;j++)
-      TX[i][j]=1.0+i*j;
+  multiData<double> TX(3,4);
 
-  XMLdatablock<double,2>* DB=
-    new XMLdatablock<double,2>(CO.getCurrent(),"DB");
+  
+  for(size_t i=0;i<3;i++)
+    for(size_t j=0;j<4;j++)
+      TX.get()[i][j]=1.0+static_cast<double>(i*j);
+
+  XMLdatablock<double>* DB=
+    new XMLdatablock<double>(CO.getCurrent(),"DB");
   DB->setUnManagedComp(&TX);
   CO.getCurrent()->addManagedObj(DB);
   CO.closeGrp();
@@ -1104,7 +1106,7 @@ testXML::testDataBlock()
   if (StrFunc::stripMultSpc(cx.str())
       !=StrFunc::stripMultSpc(DBout))
     {
-      std::string Actual=StrFunc::stripMultSpc(cx.str());
+      const std::string Actual=StrFunc::stripMultSpc(cx.str());
       ELog::EM<<"DBOut  == "<<DBout<<ELog::endDiag;
       ELog::EM<<"Actual == "<<Actual<<ELog::endDiag;
       size_t index;

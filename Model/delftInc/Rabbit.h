@@ -3,7 +3,7 @@
  
  * File:   delftInc/Rabbit.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,8 @@ class Rabbit :
   double capThick;              ///< Cap thickness
   int capMat;                   ///< Cap material
  
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
+  using FixedComp::createUnitVector;
   void createUnitVector(const ReactorGrid&);
 
   void createSurfaces();
@@ -77,12 +78,12 @@ class Rabbit :
   Rabbit(const std::string&,const int);
   Rabbit(const Rabbit&);
   Rabbit& operator=(const Rabbit&);
-  virtual ~Rabbit();
+  ~Rabbit() override;
 
   int build(Simulation&,const ReactorGrid&);
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
   
 
 };

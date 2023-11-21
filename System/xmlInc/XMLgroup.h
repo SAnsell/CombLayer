@@ -57,9 +57,9 @@ class XMLgroup : public XMLobject
   XMLgroup(XMLobject*,const std::string&);
   XMLgroup(XMLobject*,const std::string&,const int);
   XMLgroup(const XMLgroup&);
-  virtual XMLgroup* clone() const;
+  XMLgroup* clone() const override;
   XMLgroup& operator=(const XMLgroup&);
-  virtual ~XMLgroup();
+  ~XMLgroup() override;
 
   const holdType& getMap() const { return Index; }  ///< Get Map
 
@@ -88,17 +88,17 @@ class XMLgroup : public XMLobject
 
   const XMLobject* findParent(const XMLobject*) const;
   
-  int isEmpty() const { return Grp.empty(); }
+  int isEmpty() const override { return Grp.empty(); }
   
-  virtual int hasComponent(const std::string&) const;
-  virtual std::string getComponent(const std::string&) const;
+  int hasComponent(const std::string&) const override;
+  std::string getComponent(const std::string&) const override;
   
   
 
   std::vector<XMLobject*>::iterator begin() { return Grp.begin(); }   ///< Start of XMLObjects
   std::vector<XMLobject*>::iterator end() { return Grp.end(); }       ///< End of XMLObjects
 
-  virtual void writeXML(std::ostream&) const;
+  void writeXML(std::ostream&) const override;
   
 };
 

@@ -94,9 +94,9 @@ class TwinBase :
   
   // protected:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
+				const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -110,7 +110,7 @@ class TwinBase :
   TwinBase(const std::string&);
   TwinBase(const TwinBase&);
   TwinBase& operator=(const TwinBase&);
-  virtual ~TwinBase();
+  ~TwinBase() override;
 
   void insertAxle(Simulation&,const attachSystem::CellMap&,
 		  const attachSystem::CellMap&) const;

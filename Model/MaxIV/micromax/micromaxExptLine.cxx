@@ -3,7 +3,7 @@
  
  * File: micromax/micromaxExptLine.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -72,14 +71,13 @@
 #include "insertObject.h"
 #include "insertSphere.h"
 
-#include "SplitFlangePipe.h"
+#include "GeneralPipe.h"
 #include "Bellows.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "portItem.h"
 #include "FlangePlate.h"
 
-#include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "VacuumBox.h"
 #include "Mirror.h"

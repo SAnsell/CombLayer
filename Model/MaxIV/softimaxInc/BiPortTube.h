@@ -75,7 +75,7 @@ class BiPortTube :
   int wallMat;                ///< Fe material layer
   int capMat;                 ///< flange cap material layer
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,7 +85,7 @@ class BiPortTube :
   BiPortTube(const std::string&);
   BiPortTube(const BiPortTube&);
   BiPortTube& operator=(const BiPortTube&);
-  virtual ~BiPortTube();
+  ~BiPortTube() override;
 
   void setLeftPort(const attachSystem::FixedComp&,const long int);
   void setRightPort(const attachSystem::FixedComp&,const long int);
@@ -93,8 +93,8 @@ class BiPortTube :
   void setRightPort(const attachSystem::FixedComp&,const std::string&);
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

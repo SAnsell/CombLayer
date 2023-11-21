@@ -49,7 +49,7 @@ class RefCutOut :
   
   int mat;                     ///< Material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -58,11 +58,11 @@ class RefCutOut :
   RefCutOut(const std::string&);
   RefCutOut(const RefCutOut&);
   RefCutOut& operator=(const RefCutOut&);
-  ~RefCutOut();
+  ~RefCutOut() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -158,8 +158,7 @@ WorkData::setData(const std::vector<DError::doubleErr>& X,
 
   XCoord.resize(X.size());
   transform(X.begin(),X.end(),XCoord.begin(),
-	    std::bind(&DError::doubleErr::getVal,
-			std::placeholders::_1));
+	    [](const DError::doubleErr& V) { return V.getVal(); });
   Yvec=YD;
   return;
 }
@@ -445,8 +444,8 @@ WorkData::operator+=(const double V)
     \return This + V
    */
 {
-  transform(Yvec.begin(),Yvec.end(),Yvec.begin(),
-	    std::bind2nd(std::plus<DError::doubleErr>(),V));
+  for(DError::doubleErr& value : Yvec)
+    value+=V;
   return *this;
 }
 
@@ -458,8 +457,8 @@ WorkData::operator-=(const double V)
     \return This - V
    */
 {
-  transform(Yvec.begin(),Yvec.end(),Yvec.begin(),
-	    std::bind2nd(std::minus<DError::doubleErr>(),V));
+  for(DError::doubleErr& value : Yvec)
+    value-=V;
   return *this;
 }
 
@@ -471,8 +470,8 @@ WorkData::operator*=(const double V)
     \return this * V
    */
 {
-  transform(Yvec.begin(),Yvec.end(),Yvec.begin(),
-	    std::bind2nd(std::multiplies<DError::doubleErr>(),V));
+  for(DError::doubleErr& value : Yvec)
+    value*=V;
   return *this;
 }
 
@@ -486,8 +485,8 @@ WorkData::operator/=(const double V)
 {
   if (V!=0.0)
     {
-      transform(Yvec.begin(),Yvec.end(),Yvec.begin(),
-		std::bind2nd(std::divides<DError::doubleErr>(),V));
+      for(DError::doubleErr& value : Yvec)
+	value/=V;
     }
   return *this;
 }
@@ -627,9 +626,8 @@ WorkData::xScale(const double Scale)
     \return *this
   */
 {
-
-  transform(XCoord.begin(),XCoord.end(),XCoord.begin(),
-	    std::bind2nd(std::multiplies<double>(),Scale));
+  for(double& value : XCoord)
+    value*=Scale;
   
   return *this;
 }
@@ -715,7 +713,7 @@ WorkData::binDivide(const double power)
   for(size_t i=0;i<Yvec.size();i++)
     {
       const double factor=pow(XCoord[i+1]-XCoord[i],power);
-      if (fabs(factor)>1e-20)
+      if (std::abs(factor)>1e-20)
 	Yvec[i]/=factor;
     }
   return *this;

@@ -50,18 +50,18 @@ class userBin : public flukaTally
   userBin(const int,const int);
   userBin(const std::string&,const int,const int);
   userBin(const userBin&);
-  virtual userBin* clone() const; 
+  userBin* clone() const override; 
   userBin& operator=(const userBin&);
-  virtual ~userBin();
+  ~userBin() override;
 
   /// return fluke name
-  virtual std::string getType() const { return "USRBIN"; };
+  std::string getType() const override { return "USRBIN"; };
   
   void setPointMesh() { meshType=0; }  ///< Set as a point mesh
   void setGridMesh() { meshType=10; }  ///< Set as a grid [default] mesh
   
   void setParticle(const std::string&);
-  virtual void setDoseType(const std::string&,const std::string&);
+  void setDoseType(const std::string&,const std::string&) override;
  
   void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
@@ -76,8 +76,8 @@ class userBin : public flukaTally
   const std::array<size_t,3>& getNPt() const { return Pts; }
 
   void writeCoordinates(std::ostream&) const;
-  virtual void writeAuxScore(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void writeAuxScore(std::ostream&) const override;
+  void write(std::ostream&) const override;
   
 };
 

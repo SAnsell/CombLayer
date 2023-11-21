@@ -3,7 +3,7 @@
  
  * File:   constructInc/anglePortItem.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,16 +29,14 @@ namespace constructSystem
 
   /*!
     \class anglePortItem
-    \brief Calculates the intersection port with an object
+    \brief Port with an intermediate bend
     \author S. Ansell
     \date January 2018
     \version 1.0
-    
-    This is NOT a standard FixedComp  because it 
-    is an adjoint to an existing FixedComp. 
-    The problem is the that this item MUST establish
-    a full basis set or createUnitVector cannot work 
-    when called from this object.
+
+    This is a port with a bend in the main length
+    effectively two pieces of pipe without a flange.
+    It is good for 90 deg bends etc.
   */
 
 class anglePortItem :
@@ -51,7 +49,7 @@ protected:
   double lengthA;            ///< length to centre of turn
   double lengthB;            ///< length to cap from centre of turn
  
-  virtual void createSurfaces();
+  void createSurfaces() override;
   virtual void createLinks();
   
  public:
@@ -60,20 +58,20 @@ protected:
   anglePortItem(const std::string&,const std::string&);
   anglePortItem(const anglePortItem&);
   anglePortItem& operator=(const anglePortItem&);
-  ~anglePortItem();
+  ~anglePortItem() override;
 
   // make public as accessor function:
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
       
-  virtual void constructObject(Simulation&,
-		      const HeadRule&,const HeadRule&);
+  void constructObject(Simulation&,
+		      const HeadRule&,const HeadRule&) override;
   
   virtual void addFlangeCut(MonteCarlo::Object*) const;
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 				       
 };
   

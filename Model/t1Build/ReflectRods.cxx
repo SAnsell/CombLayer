@@ -3,7 +3,7 @@
  
  * File:   t1Build/ReflectRods.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -360,7 +360,6 @@ ReflectRods::createCentres(const Geometry::Plane* PX)
   const int pNum(PX->getName());
   splitRefObj();
 
-  int cnt(0);
   std::vector<Geometry::Vec3D> TopPts;
   std::vector<Geometry::Vec3D> BasePts;
   Geometry::Vec3D InPt;
@@ -396,8 +395,6 @@ ReflectRods::createCentres(const Geometry::Plane* PX)
 			HPtr->setCutSurf(calcCornerCut(InPt,TopPts));
 		      }
 		    acceptFlag=1;
-		    cnt++;
-
 		    HVec.insert(MTYPE::value_type(i*1000+j,HPtr));
 		  }
 	      }

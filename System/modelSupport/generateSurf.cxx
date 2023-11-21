@@ -3,7 +3,7 @@
  
  * File:   modelSupport/generateSurf.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 #include "Quaternion.h"
 #include "stringCombine.h"
 #include "surfIndex.h"
@@ -329,6 +331,97 @@ buildCylinder(surfRegister& SMap,const int N,
   return SMap.realPtr<Geometry::Cylinder>(NFound);
 }
 
+Geometry::Cylinder*
+buildCylinder(surfRegister& SMap,const int N,
+	      const Geometry::Vec3D& A,
+	      const Geometry::Vec3D& B,
+	      const Geometry::Vec3D& C,
+	      const Geometry::Vec3D& Axis)
+  /*!
+    Simple constructor to build a surface [type Cylinder]
+    \param SMap :: Surface Map
+    \param N :: Surface number
+    \param A :: Point on cylinder
+    \param B :: Point on cylinder
+    \param C :: Point on cylinder
+    \param Axis :: Axis of cylinder
+    \return cylinder pointer
+   */
+{
+  ELog::RegMethod("generateSurf","buildCylinder(V,V,V,A)");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
+  Geometry::Cylinder* CX=SurI.createUniqSurf<Geometry::Cylinder>(N);  
+
+  /*!
+    Define centre as c, and points as a,b
+    Project onto the r.axis=D plane for point a->p , b->q
+  */
+  const Geometry::Vec3D u=Axis.unit();
+  
+  const Geometry::Vec3D p=A-u*A.dotProd(u);
+  const Geometry::Vec3D q=B-u*B.dotProd(u);
+  const Geometry::Vec3D r=C-u*C.dotProd(u);
+
+  // Now generate unit vectors across plane
+  const Geometry::Vec3D alpha=u.crossNormal();
+  const Geometry::Vec3D beta=alpha*u;
+
+  const double x[3]=
+    {
+      alpha.dotProd(p),
+      alpha.dotProd(q),
+      alpha.dotProd(r)
+    };
+  const double y[3]=
+    {
+      beta.dotProd(p),
+      beta.dotProd(q),
+      beta.dotProd(r)
+    };
+
+
+  Geometry::Matrix<double> M(3,3);
+  for(size_t i=0;i<3;i++)
+    {
+      M[i][0]=2.0*x[i];
+      M[i][1]=2.0*y[i];
+      M[i][2]=1.0;
+    }
+  
+  const double d=M.determinant();
+
+  if (std::abs<double>(d)<Geometry::zeroTol)
+    throw ColErr::ConstructionError("generateSurf::buildCylinder",
+				    "(Determinate error) M.determinate()",
+				    "A="+StrFunc::makeString(A),
+				    "B="+StrFunc::makeString(B),
+				    "C="+StrFunc::makeString(C),
+				    "Dir    = "+StrFunc::makeString(Axis));
+
+  M.Invert();
+  const Geometry::Vec3D V({
+      -(x[0]*x[0]+y[0]*y[0]),
+	-(x[1]*x[1]+y[1]*y[1]),
+	-(x[2]*x[2]+y[2]*y[2])
+    });
+  Geometry::Vec3D Components=M*V;
+  Components*=-1.0;
+  const Geometry::Vec3D centre(alpha*Components[0]+beta*Components[1]);
+
+  const double R=centre.Distance(p);
+  
+  if (CX->setCylinder(centre,Axis,R))
+    throw ColErr::ConstructionError("setCylinder","(3V)",
+				 "Origin = "+StrFunc::makeString(centre),
+				 "Dir    = "+StrFunc::makeString(Axis),
+				 "Radius = "+StrFunc::makeString(R));
+  const int NFound=SMap.registerSurf(N,CX);
+
+  return SMap.realPtr<Geometry::Cylinder>(NFound);
+}
+
 
 Geometry::Cone*
 buildCone(surfRegister& SMap,const int N,
@@ -578,6 +671,30 @@ buildShiftedSurf(surfRegister& SMap,
 } 
 
 
+Geometry::Cylinder*
+buildExpandedCylinder(ModelSupport::surfRegister& SMap,
+		      const int refSN,
+		      const int newSN,
+		      const double dExtra) 
+  /*!
+    Support function to calculate the expanded cylinder from centre
+    \param SMap :: local surface register
+    \param refSN :: surface to expand
+    \param newSN :: new surface
+    \param dExtra :: displacement extra [cm]
+    \return Surface ptr [nullPtr on failure]
+  */
+{
+  ELog::RegMethod RegA("generateSurf","buildExpandedSurf");
+
+  // throws:
+  const Geometry::Cylinder* CPtr=SMap.realPtr<Geometry::Cylinder>(refSN);
+
+  ModelSupport::buildCylinder
+    (SMap,newSN,CPtr->getCentre(),CPtr->getNormal(),CPtr->getRadius()+dExtra);
+  return SMap.realPtr<Geometry::Cylinder>(newSN);
+} 
+
 Geometry::Surface*
 buildExpandedSurf(ModelSupport::surfRegister& SMap,
 		 const int refSN,
@@ -615,13 +732,6 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
   // Cylinder case:
   if (CPtr)
     {
-      // // this may not alway be what we want:
-      Geometry::Vec3D NVec=(CPtr->getCentre()-expandCentre);
-      const Geometry::Vec3D CAxis=CPtr->getNormal();
-      // now must remove component in axis direction
-      NVec-= CAxis * NVec.dotProd(CAxis);
-      NVec.makeUnit();
-      //	  const Geometry::Vec3D NC=CPtr->getCentre()+NVec*dExtra;
       const Geometry::Vec3D NC=CPtr->getCentre();
       
       ModelSupport::buildCylinder
@@ -630,7 +740,5 @@ buildExpandedSurf(ModelSupport::surfRegister& SMap,
     }
   return 0;
 } 
-
-
 
 } // ModelSupport

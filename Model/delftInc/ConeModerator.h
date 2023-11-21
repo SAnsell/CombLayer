@@ -54,7 +54,7 @@ class ConeModerator : public virtualMod
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,15 +64,15 @@ class ConeModerator : public virtualMod
   ConeModerator(const std::string&);
   ConeModerator(const ConeModerator&);
   ConeModerator& operator=(const ConeModerator&);
-  virtual ConeModerator* clone() const;
-  virtual ~ConeModerator();
+  ConeModerator* clone() const override;
+  ~ConeModerator() override;
 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
-  virtual void postCreateWork(Simulation&);
+  void postCreateWork(Simulation&) override;
 };
 
 }

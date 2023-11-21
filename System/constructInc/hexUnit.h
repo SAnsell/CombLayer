@@ -42,10 +42,10 @@ class hexUnit : public gridUnit
   hexUnit(const long int,const long int,const bool,const Geometry::Vec3D&);
   hexUnit(const hexUnit&);
   hexUnit& operator=(const hexUnit&); 
-  ~hexUnit() {}  ///< Destructor
+  ~hexUnit() override {}  ///< Destructor
 
-  virtual bool isConnected(const gridUnit&) const;
-  virtual int gridIndex(const size_t) const;
+  bool isConnected(const gridUnit&) const override;
+  int gridIndex(const size_t) const override;
 
 };
 

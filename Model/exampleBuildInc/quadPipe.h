@@ -55,7 +55,7 @@ class quadPipe : public attachSystem::FixedRotate,
   
   int outerMat;                     ///< coil material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -64,14 +64,14 @@ class quadPipe : public attachSystem::FixedRotate,
  public:
 
   quadPipe(const std::string&);
-  quadPipe(const std::string&,const std::string&);
+  quadPipe(std::string ,const std::string&);
   quadPipe(const quadPipe&);
   quadPipe& operator=(const quadPipe&);
-  virtual ~quadPipe();
+  ~quadPipe() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

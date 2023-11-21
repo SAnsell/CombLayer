@@ -66,7 +66,7 @@ class ControlElement :
   int absMat;                   ///< control material
   int cladMat;                  ///< Cladding material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -75,15 +75,15 @@ class ControlElement :
  public:
 
   ControlElement(const size_t,const size_t,
-		 const std::string&,const std::string&);
+		 const std::string&,std::string );
   ControlElement(const ControlElement&);
   ControlElement& operator=(const ControlElement&);
-  virtual ~ControlElement() {}   ///< Destructor
+  ~ControlElement() override {}   ///< Destructor
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   constructInc/Bellows.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,15 +36,33 @@ namespace constructSystem
 */
 
 class Bellows :
-  public SplitFlangePipe
+  public GeneralPipe
 {
+ private:
+
+  double bellowThick; ///< Total thickness 
+  double bellowStep;  ///< step from inner flange
+
+  int bellowMat;      ///< Material for bellow (def main)
+  
+  virtual void populate(const FuncDataBase&) override;
+  void createSurfaces() override;
+  void createObjects(Simulation&);
+  void createLinks();
 
  public:
 
   Bellows(const std::string&);
   Bellows(const Bellows&);
   Bellows& operator=(const Bellows&);
-  virtual ~Bellows();
+  virtual ~Bellows() override;
+
+
+  using FixedComp::createAll;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
+
+
   
 };
 

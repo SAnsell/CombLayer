@@ -57,15 +57,15 @@ class mergeDist : public surfDBase
   mergeDist();
   mergeDist(const mergeDist&);
   mergeDist& operator=(const mergeDist&);
-  virtual mergeDist* clone() const;
-  virtual ~mergeDist();
+  mergeDist* clone() const override;
+  ~mergeDist() override;
 
   // SETTING METHODS
   void addSurf(const int,const double);
 
-  virtual void populate();
-  virtual int createSurf(const double,int&);
-  virtual void processInnerOuter(const int,std::vector<Token>&) const;
+  void populate() override;
+  int createSurf(const double,int&) override;
+  void processInnerOuter(const int,std::vector<Token>&) const override;
 
 };
 

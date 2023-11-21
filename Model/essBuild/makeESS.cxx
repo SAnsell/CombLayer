@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -283,82 +283,6 @@ makeESS::makeTarget(Simulation& System,
   OR.addObject(Target);
   return;
 }
-
-void
-makeESS::makeTargetClearance(Simulation& System,
-			     const bool twisterActive)
-  /*!
-    Build clearance above and below the taret wheel
-    \param System :: Simulation
-    \param twisterActive :: Engineering active flag 
-  */
-{
-  ELog::RegMethod RegA("makeESS","makeTargetClearance");
-  
-  TargetTopClearance =
-    std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
-  TargetLowClearance =
-    std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetLowClearance"));
-
-  if (twisterActive)
-    {
-      // these numbers are horrific!!
-      buildTwister(System);
-      TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16,
-				    *GBArray[0],4,
-				    *GBArray[1],3);
-      TargetLowClearance->createAll(System,*Target,5,3,13,*Twister,-16,
-				    *GBArray[0],4,
-				    *GBArray[1],3);
-    }
-  else
-    {
-      TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9,
-				    *GBArray[0],4,
-				    *GBArray[1],3);
-      TargetLowClearance->createAll(System,*Target,5,3,13,*Bulk,-9,
-				    *GBArray[0],4,
-				    *GBArray[1],3);
-    }
-
-  for (const std::shared_ptr<GuideBay>& GB : GBArray)
-    {
-      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
-      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetLowClearance);
-
-      const std::vector<std::shared_ptr<GuideItem>>& GUnit =
-	GB->getGuideItems();
-      for (const std::shared_ptr<GuideItem>& GItem : GUnit)
-	{
-	  
-	  if (GItem->isActive())
-	    {
-	      ELog::EM<<"Inserting "<<GItem->getKeyName()
-		      <<" into TargetTopClearance"<< ELog::endDiag;
-	      attachSystem::addToInsertSurfCtrl
-		(System,*GItem,*TargetTopClearance);
-	    }
-	}
-    }
-
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  OR.addObject(TargetTopClearance);
-  OR.addObject(TargetLowClearance);
-
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
-  attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
-  attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
-
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetLowClearance);
-  attachSystem::addToInsertSurfCtrl(System,*LowAFL,*TargetLowClearance);
-  attachSystem::addToInsertSurfCtrl(System,*LowBFL,*TargetLowClearance);
-
-  return;
-}
-
   
 void 
 makeESS::createGuides(Simulation& System)
@@ -377,13 +301,13 @@ makeESS::createGuides(Simulation& System)
       OR.addObject(GB);
       GB->addInsertCell("Inner",ShutterBayObj->getCell("MainCell"));
       GB->addInsertCell("Outer",ShutterBayObj->getCell("MainCell"));
-      GB->setCylBoundary(Bulk->getLinkSurf(3),
-			 ShutterBayObj->getLinkSurf(7));
+      GB->setCutSurf("innerCyl",*Bulk,"OuterCyl");
+      GB->setCutSurf("outerCyl",*ShutterBayObj,"InnerCyl");
+      GB->setCutSurf("wheel",Target->getCC("Wheel").getOuterSurf());
 
-      GB->createAll(System,*ShutterBayObj,0);  
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
+      GB->createAll(System,*ShutterBayObj,0);
+      GB->insertComponent(System,"Inner",Target->getCC("Wheel"));      
       GBArray.push_back(GB);
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
     }
   
   GBArray[0]->createGuideItems(System,"Top",Target->getKeyName());
@@ -640,7 +564,6 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           BF->buildAll(System,*BPtr,segNumber,feedName);  
           
           bFeedArray.push_back(BF);
-          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));          
         }
     }
   return;
@@ -901,7 +824,7 @@ makeESS::makeBunker(Simulation& System,
       // THIS IS HORRIFFICALLY INEFFICENT :: FIX
       TopCurtain->addInsertCell("RoofCut",ABunker->getCells("roof"));
       TopCurtain->addInsertCell("RoofCut",BBunker->getCells("roof"));
-      TopCurtain->createAll(System,*ShutterBayObj,6,4);
+      TopCurtain->buildAll(System,*ShutterBayObj,6,4);
       /*
       ABHighBay->setCurtainCut
 	(TopCurtain->combine("-OuterRadius -OuterZStep"));
@@ -1033,6 +956,7 @@ makeESS::buildTwister(Simulation& System)
 
   Twister->createAll(System,*Bulk,0);
 
+
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
@@ -1145,6 +1069,10 @@ makeESS::build(Simulation& System,
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Bulk->setCutSurf("Reflector",Reflector->getExclude());
+  Bulk->setCutSurf("TargetBase",*Target,"VoidBase");
+  Bulk->setCutSurf("TargetTop",*Target,"VoidTop");
+  Bulk->setCutSurf("ReflectorRadius",*Reflector,"OuterRadius");
+  Bulk->setCutSurf("TargetRadius",*Target,"front");
   Bulk->createAll(System,*Reflector,0);
 
   // Build flightlines after bulk
@@ -1168,22 +1096,47 @@ makeESS::build(Simulation& System,
     }
   
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
+  // ALL OF THES addto insert surf calls are AWFUL!!!!
+  // ----
 
-  attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
+  // two part (top/base)
+  // this can have further specialization
+
+  Bulk->insertComponent(System,"Layer1Base",Target->getCC("Wheel"));
+  Bulk->insertComponent(System,"Layer1Top",Target->getCC("Wheel"));
+  Bulk->insertComponent(System,"Layer2Base",Target->getCC("Wheel"));
+  Bulk->insertComponent(System,"Layer2Top",Target->getCC("Wheel"));
+  Bulk->insertComponent(System,"Layer2Base",Target->getCC("Shaft"));
+  Bulk->insertComponent(System,"Layer2Top",Target->getCC("Shaft"));
+
   if (lowModType != "None")
     {
-      attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
-      attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer0",0,LowAFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer0",0,LowBFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer1Base",LowAFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer1Base",LowBFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer2Base",LowAFL->getCC("outer"));
+      Bulk->insertComponent(System,"Layer2Base",LowBFL->getCC("outer"));
     }
-  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
+
+  Bulk->insertComponent(System,"Layer0",1,TopAFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer0",1,TopBFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer1Top",TopAFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer1Top",TopBFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer2Top",TopAFL->getCC("outer"));
+  Bulk->insertComponent(System,"Layer2Top",TopBFL->getCC("outer"));
+  //  attachSystem::addToInsertForced(System,*Bulk,
+  //				  TopAFL->getCC("outer"));
+  //  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
   buildIradComponent(System,IParam);
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->setCutSurf("Bulk",Bulk->getExclude());
   ShutterBayObj->createAll(System,*Bulk,0);
+
+  ELog::EM<<"Target CC == "<<Target->getCC("Wheel")<<ELog::endDiag;
+  
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*ShutterBayObj,
@@ -1191,7 +1144,6 @@ makeESS::build(Simulation& System,
 
 
   createGuides(System);
-  makeTargetClearance(System,hasEngineering("Twister"));
   makeBunker(System,IParam);
 
   // THIS CANNOT BE RIGHT--- VERY INEFFICIENT

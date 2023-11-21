@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   test/testSurfExpand.cxx
+ * File:   test/testGenerateSurf.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -34,6 +34,7 @@
 #include <functional>
 #include <memory>
 #include <tuple>
+#include <random>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -45,7 +46,9 @@
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
+#include "Cylinder.h"
 #include "surfRegister.h"
+#include "Random.h"
 #include "generateSurf.h"
 
 #include "testFunc.h"
@@ -80,12 +83,14 @@ testGenerateSurf::applyTest(const int extra)
   typedef int (testGenerateSurf::*testPtr)();
   testPtr TPtr[]=
     {
+      &testGenerateSurf::testCylinder,
       &testGenerateSurf::testExpandedSurf,
       &testGenerateSurf::testPlane
     };
 
   const std::string TestName[]=
     {
+      "Cylinder",
       "ExpandedSurf",
       "Plane"
     };
@@ -153,7 +158,7 @@ testGenerateSurf::testExpandedSurf()
       if (sideFlag==0) sideFlag=1;
       const Geometry::Plane* OutX=
 	ModelSupport::buildShiftedPlane(SMap,surfN,PX,-sideFlag*D);
-
+ 
       
       if (!OutX || (*OutX!=*AimX))
 	{
@@ -232,6 +237,95 @@ testGenerateSurf::testPlane()
 	    
       delete PX;
       delete AimX;
+      surfN++;
+    }
+  return 0;
+}
+
+
+int
+testGenerateSurf::testCylinder()
+  /*!
+    Test the cylinder built from three point + axis
+    \returns 0 on succes and -ve on failure
+  */
+{
+  ELog::RegMethod RegA("testGenerateSurf","testCylinder");
+
+
+
+  
+  // Centre : Axis : Radius
+  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,double> TTYPE;
+
+  const double RDist(20.0);
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),5.0),
+      TTYPE(Geometry::Vec3D(4,7,8),Geometry::Vec3D(0,1,0),5.0),
+      TTYPE(Geometry::Vec3D(4,7,8),Geometry::Vec3D(0,1,1),5.0)
+    };
+
+  surfRegister SMap;
+
+  int surfN=2;
+
+
+  for(const TTYPE& tc : Tests)
+    {
+      const Geometry::Vec3D C(std::get<0>(tc));
+      const Geometry::Vec3D A(std::get<1>(tc).unit());
+      const double radius(std::get<2>(tc));
+
+      // Generate three random points on the cylinder
+      const Geometry::Vec3D pX=A.crossNormal();
+      const Geometry::Vec3D pY=pX*A;
+      std::vector<Geometry::Vec3D> Pts;
+      for(size_t i=0;i<3;i++)
+	{
+	  const double RD=RDist*(Random::rand()-0.5);
+	  const double theta=2.0*M_PI*Random::rand();
+	  Pts.push_back(pX*radius*std::cos(theta)+
+			pY*radius*std::sin(theta)+
+			A*RD+
+			C);
+	  
+	}
+      const Geometry::Cylinder* OutX=
+	ModelSupport::buildCylinder(SMap,surfN,Pts[0],Pts[1],Pts[2],A);
+
+
+      if (OutX)
+	{
+	  int flag(0);
+	  const Geometry::Vec3D& CAxis=OutX->getNormal();
+	  const Geometry::Vec3D& CCent=OutX->getCentre();
+	  if ((CAxis!=A) && (CAxis != -A)) flag=1;
+	  const Geometry::Vec3D CProject=C.cutComponent(CAxis);
+	  if (CProject!=CCent) flag+=2;
+	  if (flag)
+	    {
+	      
+	      const Geometry::Vec3D outC=OutX->getCentre();
+	      const Geometry::Vec3D outA=OutX->getNormal();
+	      ELog::EM<<"Flag== "<<flag<<" :: "
+		      <<*OutX<<ELog::endDiag;
+	      ELog::EM<<"Cylinder== "<<outC<<" :: "<<outA<<ELog::endDiag;
+	      ELog::EM<<"Require== "<<C<<" [ "<<CProject<<" ]"<<ELog::endDiag;
+	      ELog::EM<<"Axis== "<<A<<ELog::endDiag;
+	      return -1;
+	    }
+	}
+      else
+	{
+	  ELog::EM<<"Failed to init Cylinder "<<ELog::endDiag;
+	  ELog::EM<<"Init with :"<<ELog::endDiag;
+	  for(size_t i=0;i<3;i++)
+	    ELog::EM<<"Pt["<<i<<"] == "<<Pts[i]<<ELog::endDiag;
+	  ELog::EM<<"Axis == "<<A<<ELog::endDiag;
+	  return -1;
+	}
+
       surfN++;
     }
   return 0;

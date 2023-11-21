@@ -63,7 +63,7 @@ class Dipole :
   int poleMat;                     ///< pole piece of magnet
   int coilMat;                     ///< coil material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,14 +71,14 @@ class Dipole :
  public:
 
   Dipole(const std::string&);
-  Dipole(const std::string&,const std::string&);
+  Dipole(std::string ,const std::string&);
   Dipole(const Dipole&);
   Dipole& operator=(const Dipole&);
-  virtual ~Dipole();
+  ~Dipole() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

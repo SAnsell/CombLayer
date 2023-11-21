@@ -42,17 +42,17 @@ class sswTally : public Tally
   explicit sswTally(const int);
   sswTally(const sswTally&);
   sswTally& operator=(const sswTally&);
-  virtual ~sswTally();
-  virtual sswTally* clone() const; 
+  ~sswTally() override;
+  sswTally* clone() const override; 
     
   /// ClassName
-  virtual std::string className() const 
+  std::string className() const override 
       { return "sswTally"; }
 
   void addSurfaces(const std::vector<int>&);
-  virtual void renumberSurf(const int,const int);
+  void renumberSurf(const int,const int) override;
 
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 };
 
 

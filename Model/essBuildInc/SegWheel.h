@@ -98,7 +98,7 @@ class SegWheel : public WheelBase
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -111,17 +111,17 @@ class SegWheel : public WheelBase
   SegWheel(const std::string&);
   SegWheel(const SegWheel&);
   SegWheel& operator=(const SegWheel&);
-  virtual SegWheel* clone() const;
-  virtual ~SegWheel();
+  SegWheel* clone() const override;
+  ~SegWheel() override;
 
   /// total wheel void size
-  virtual double wheelHeight() const
+  double wheelHeight() const override
   { return targetHeight/2.0 ;}
   /// access ot main shaft
   int getCell() const { return mainShaftCell; }
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

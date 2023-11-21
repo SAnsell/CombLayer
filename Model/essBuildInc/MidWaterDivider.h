@@ -74,7 +74,7 @@ class MidWaterDivider :
   MidWaterDivider(const MidWaterDivider&);
   MidWaterDivider& operator=(const MidWaterDivider&);
   virtual MidWaterDivider* clone() const;
-  virtual ~MidWaterDivider();
+  ~MidWaterDivider() override;
 
   /// What is this rubbish
   void setH2Wing(const H2Wing& A,const H2Wing& B)
@@ -85,7 +85,7 @@ class MidWaterDivider :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

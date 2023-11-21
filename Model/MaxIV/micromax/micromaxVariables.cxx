@@ -3,7 +3,7 @@
  
  * File:   micromax/micromaxVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -44,7 +45,6 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BremBlockGenerator.h"
 #include "BeamScrapperGenerator.h"
@@ -146,7 +146,7 @@ undulatorVariables(FuncDataBase& Control,
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
-  Control.addVariable(undKey+"UPipeFeThick",0.2);
+  Control.addVariable(undKey+"UPipePipeThick",0.2);
 
   // undulator  
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm

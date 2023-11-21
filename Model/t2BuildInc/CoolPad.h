@@ -61,10 +61,10 @@ class CoolPad :
   double IDepth;                     ///< Inner height
   int IMat;                           ///< Inner material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createWaterTrack(Simulation&);
@@ -74,11 +74,11 @@ class CoolPad :
   CoolPad(const std::string&,const size_t);
   CoolPad(const CoolPad&);
   CoolPad& operator=(const CoolPad&);
-  virtual ~CoolPad();
+  ~CoolPad() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

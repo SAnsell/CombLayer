@@ -53,7 +53,7 @@ class DPreMod :
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,11 +63,11 @@ class DPreMod :
   DPreMod(const std::string&);
   DPreMod(const DPreMod&);
   DPreMod& operator=(const DPreMod&);
-  virtual ~DPreMod();
+  ~DPreMod() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

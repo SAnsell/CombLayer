@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESSBL.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,10 +96,10 @@
 namespace essSystem
 {
 
-makeESSBL::makeESSBL(const std::string& SN,
-		     const std::string& BName) : 
+makeESSBL::makeESSBL(std::string  SN,
+		     std::string  BName) : 
   beamlineSystem::beamlineConstructor(),
-  shutterName(SN),beamName(BName)
+  shutterName(std::move(SN)),beamName(std::move(BName))
  /*!
     Constructor
     \param SN :: Shutter name
@@ -150,8 +150,8 @@ makeESSBL::getBeamNum(const std::string& Name)
   ELog::RegMethod RegA("makeESSBL","getBeamNum");
   
   if (Name.length()<11)
-    throw ColErr::InvalidLine(Name,
-			      "Name not in form : GxBLineTopjj/GxBLineLowjj");
+    throw ColErr::InvalidLine
+      (Name,"Name not in form : GxBLineTopjj/GxBLineLowjj");
   
   std::pair<int,int> Out(0,0);
   std::string BN(Name);
@@ -159,10 +159,8 @@ makeESSBL::getBeamNum(const std::string& Name)
   BN.replace(2,8,"     ");
   if (!StrFunc::section(BN,Out.first) ||
       !StrFunc::section(BN,Out.second))
-    {
+    throw ColErr::InvalidLine(Name,"Name processable in from : GxBLineyy");
 
-      throw ColErr::InvalidLine(Name,"Name processable in from : GxBLineyy");
-    }
   return Out;
 }
   
@@ -188,6 +186,12 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   if (beamName=="BEER")
     {
       BEER beerBL("beer");
+      // beer cuts (sometimes the main wheel void!!!!
+      if (mainGIPtr->isActive("wheel"))
+	{
+	  beerBL.copyCutSurf("wheel",*mainGIPtr,"wheel");
+	  ELog::EM<<"Bl added"<<ELog::endDiag;
+	}
       beerBL.build(System,*mainGIPtr,bunkerObj,voidCell);      
     }  
   else if (beamName=="BIFROST")

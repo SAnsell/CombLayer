@@ -49,9 +49,9 @@ class TCross : public phitsTally
 
   explicit TCross(const int);
   TCross(const TCross&);
-  virtual TCross* clone() const;  
+  TCross* clone() const override;  
   TCross& operator=(const TCross&);
-  virtual ~TCross();
+  ~TCross() override;
 
   void setFlux() { fluxFlag=1; }  ///< set the tally as a flux tally
   void setRegions(const int A,const int B) { regionA=A; regionB=B;}
@@ -59,11 +59,11 @@ class TCross : public phitsTally
   void setUnit(const int A) { unit=A; }
   void setUnit(const std::string&);
 
-  virtual void renumberCell(const int,const int);
-  virtual void setEnergy(const eType& A) { energy = A; }
-  virtual void setAngle(const aType& A) { angle = A; }
+  void renumberCell(const int,const int) override;
+  void setEnergy(const eType& A) override { energy = A; }
+  void setAngle(const aType& A) override { angle = A; }
   
-  virtual void write(std::ostream&,const std::string&) const;
+  void write(std::ostream&,const std::string&) const override;
   
 };
 

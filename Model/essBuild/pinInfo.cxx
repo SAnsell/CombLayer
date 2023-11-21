@@ -19,17 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -39,16 +40,16 @@
 namespace essSystem
 {
 
-pinInfo::pinInfo(const std::string& S,
+pinInfo::pinInfo(std::string  S,
 		 const size_t RNum,
 		 const size_t SNum,
 		 const size_t OIndex,
 		 const double L,const double BR,
 		 const double CR,
-		 const Geometry::Vec3D& CP) :
-  Name(S),radN(RNum),sectN(SNum),index(OIndex),
+		 Geometry::Vec3D  CP) :
+  Name(std::move(S)),radN(RNum),sectN(SNum),index(OIndex),
   length(L),boltRadius(BR),clearRadius(CR),
-  basePoint(CP)
+  basePoint(std::move(CP))
   /*!
     Constructor
     \param S :: Name

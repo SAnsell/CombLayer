@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1BuildInc/TubeCollimator.h
+ * File:   photonInc/TubeCollimator.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,8 +80,8 @@ class TubeCollimator :
   void setBoundary(const FuncDataBase&);
   void setLayout();
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createLinks();
 
   void createCentres();
@@ -100,11 +100,11 @@ class TubeCollimator :
   TubeCollimator(const std::string&);
   TubeCollimator(const TubeCollimator&);
   TubeCollimator& operator=(const TubeCollimator&);
-  ~TubeCollimator();
+  ~TubeCollimator() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

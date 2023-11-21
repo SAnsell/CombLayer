@@ -66,7 +66,7 @@ class Sexupole :
   int coilMat;                     ///< coil material
   int frameMat;                    ///< Iron material
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -74,14 +74,14 @@ class Sexupole :
  public:
 
   Sexupole(const std::string&);
-  Sexupole(const std::string&,const std::string&);
+  Sexupole(std::string ,const std::string&);
   Sexupole(const Sexupole&);
   Sexupole& operator=(const Sexupole&);
-  virtual ~Sexupole();
+  ~Sexupole() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

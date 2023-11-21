@@ -61,7 +61,7 @@ class WForm
  public:
   
   WForm();
-  explicit WForm(const std::string&);
+  explicit WForm(std::string );
   WForm(const WForm&);
   WForm& operator=(const WForm&);
   virtual ~WForm() {}  ///< Destructor

@@ -3,7 +3,7 @@
 
  * File:   softimax/softimaxVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "BiPortGenerator.h"
 #include "BremCollGenerator.h"
@@ -66,7 +65,10 @@
 #include "TankMonoVesselGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
+#include "MonoBoxGenerator.h"
 #include "MirrorGenerator.h"
+#include "M1DetailGenerator.h"
+#include "DomeConnectorGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
@@ -110,7 +112,7 @@ undulatorVariables(FuncDataBase& Control,
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
-  Control.addVariable(undKey+"UPipeFeThick",0.2);
+  Control.addVariable(undKey+"UPipePipeThick",0.2);
 
   // undulator I Vacuum
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm
@@ -286,83 +288,100 @@ opticsHutVariables(FuncDataBase& Control,
   return;
 }
 
+  
 void
-m1MirrorVariables(FuncDataBase& Control,
+m1DetailVariables(FuncDataBase& Control,
 		  const std::string& mirrorKey)
-/*!
-  Builds the variables for the M1 Mirror
-  \param Control :: Database
-  \param mirrorKey :: prename
-*/
+  /*!
+    Builds the variables for the M1 Mirror
+    \param Control :: Database
+    \param mirrorKey :: prename
+  */
 {
-  ELog::RegMethod RegA("softimaxVariables[F]","m1MirrorVariables");
+  ELog::RegMethod RegA("softimaxVariables[F]","m1DetailVariables");
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::MirrorGenerator MirrGen;
+  setVariable::M1DetailGenerator M1DGen;
   setVariable::PipeGenerator PipeGen;
+  setVariable::DomeConnectorGenerator DCGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::MonoBoxGenerator VBoxGen;
+      
+  const std::string boxName(mirrorKey+"M1Box");
+  const double monoBoxLen(62.0);
+  const double theta(1.0);
+  const double xPortStep=
+    0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angle
+  
+  VBoxGen.setMat("Titanium");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setCF<CF63>();
+  VBoxGen.setPortLength(5.2,10.15); // La/Lb
+  // note overhang is from inner wall 
+  VBoxGen.setLids(3.0,3.5/2.0,3.5/2.0); // over/base/roof 
+
+  VBoxGen.setBPortOffset(xPortStep,0.0);
+  VBoxGen.setBPortAngle(2.0*theta,0.0);  
+  // width/height/depth/length
+  VBoxGen.generateBox(Control,boxName, 35.0,6.95,14.6, 62.0);
 
   const std::string frontName=mirrorKey+"M1TubeFront";
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF63>();
-  PipeGen.setBFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,frontName,7.6);
-  Control.addVariable(frontName+"WindowActive",0);
-  constexpr double xstep(2.2);
-  Control.addVariable(frontName+"FlangeBackXStep",-xstep);
+  const std::string tubeName=mirrorKey+"M1Tube";
+  const std::string backName=mirrorKey+"M1TubeBack";
 
-  ////////////////////////
-  constexpr double theta = -1.0; // incident beam angle
-  constexpr double phi = 0.0;   // rotation angle
-  //  const double normialAngle=0.2;
-  constexpr double vAngle=180.0;
-  constexpr double centreDist(0.0); // along the beam line
-  constexpr double tubeLength=50.0;
-  ////////////////////////
+  // Parts for tube connection:
+  const double tubeLength(40.5);
+  const double portXStep(2.0);
+  const double mExtra=30.0*sin(M_PI*theta/180.0);
 
+  DCGen.setSphere(7.0,2.5);
+  DCGen.setFlangeCF<CF150>(0.8);
+  DCGen.setLengths(2.5,2.0,3.0);
+  DCGen.generateDome(Control,frontName,1);
+
+  PItemGen.setCF<setVariable::CF63>(6.0);
+  PItemGen.setNoPlate();
+  PItemGen.generatePort(Control,frontName+"Port0",
+			Geometry::Vec3D(portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0.0, -1.0, 0.0));
+  Control.addVariable(frontName+"ZAngle",-theta*0.0);
   const std::string mName=mirrorKey+"M1Tube";
+
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.generateTube(Control,mName,tubeLength);
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
+  
+  DCGen.generateDome(Control,backName,1);
+  PItemGen.generatePort(Control,backName+"Port0",
+			Geometry::Vec3D(-portXStep, 0.0, 0.0),
+			Geometry::Vec3D(0,-1,0));
+  Control.addVariable(backName+"ZAngle",-theta*0.0);
 
-  // mirror in M1Tube
-  constexpr double thick(6.0); // messured in .step
-  MirrGen.setPlate(28.0, thick, 9.0);  //guess: length, thick, width
-  constexpr double top(0.1);
-  constexpr double depth(thick+1.0);
-  constexpr double gap(0.5);
-  constexpr double extra(1.0);
-  MirrGen.setSupport(top, depth, gap, extra);
-  MirrGen.setPrimaryAngle(0,vAngle,0);
-  // x/y/z/theta/phi/radius
-  MirrGen.generateMirror(Control,mirrorKey+"M1Mirror",
-			 -xstep,
-			 centreDist/2.0,
-			 0.0,
-			 theta,
-			 phi,
-			 0.0);
-  Control.addVariable(mirrorKey+"M1MirrorYAngle",270.0); // to reflect horizontally
+  // --------------------------------
+  // Mirror
+  // -------------------------------------
 
+  // Mirror has no angle (?)
+  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,(mExtra+portXStep/2.0),0.0);
+  ELog::EM<<"Xstep == "<<mExtra+portXStep/2.0<<ELog::endDiag;
+  // ONLY for tube version:
+  //  Control.addVariable(mirrorKey+"M1XStep",);
+    
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
   Control.addVariable(mirrorKey+"M1StandLength",30.0);
   Control.addVariable(mirrorKey+"M1StandMat","SiO2");
 
-  const std::string backName=mirrorKey+"M1TubeBack";
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF63>();
-  PipeGen.setAFlange(8.05,0.3);
-  PipeGen.generatePipe(Control,backName,4.5); // yStep, length
-  Control.addVariable(backName+"WindowActive",0);
-  Control.addVariable(backName+"XYAngle",2*theta);
-
-  const double TL=0.5*(tubeLength)*sin(2.0*theta*M_PI/180.0);
-  Control.addVariable(backName+"XStep",xstep-TL);
-  Control.addVariable(backName+"FlangeFrontXStep",TL-xstep);
-
+  // DCGen.generateDome(Control,backName,1);
+  // PItemGen.generatePort(Control,backName+"Port0",
+  // 			Geometry::Vec3D(-portXStep, 0.0, 0.0),
+  // 			Geometry::Vec3D(0,-1,0));
+  // Control.addVariable(backName+"ZAngle",-1.0);
   return;
 }
+
+  
 
 void
 splitterVariables(FuncDataBase& Control,
@@ -424,9 +443,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
   PipeGen.generatePipe(Control,splitKey+"JoinPipeAA",90.3);
-  Control.addVariable(splitKey+"JoinPipeAAFlangeBackRadius", 6.7);
-  Control.addVariable(splitKey+"JoinPipeAAFlangeBackLength", 1.0);
-  Control.addVariable(splitKey+"JoinPipeAAWindowActive", 0);
+  Control.addVariable(splitKey+"JoinPipeAAFlangeBRadius", 6.7);
+  Control.addVariable(splitKey+"JoinPipeAAFlangeBLength", 1.0);
 
   setVariable::BremOpticsCollGenerator OpticsCollGen;
   //OpticsCollGen.setCF<setVariable::CF63>();
@@ -449,8 +467,8 @@ splitterVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setBFlangeCF<CF40>();
   PipeGen.generatePipe(Control,splitKey+"JoinPipeAB",100.0);
-  Control.addVariable(splitKey+"JoinPipeABFlangeFrontRadius", 6.7);
-  Control.addVariable(splitKey+"JoinPipeABFlangeFrontLength", 1.0);
+  Control.addVariable(splitKey+"JoinPipeABFlangeARadius", 6.7);
+  Control.addVariable(splitKey+"JoinPipeABFlangeALength", 1.0);
   Control.addVariable(splitKey+"JoinPipeABWindowActive", 0);
 
   // RIGHT BRANCH
@@ -628,7 +646,6 @@ opticsVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
-  setVariable::VacBoxGenerator VBoxGen;
   setVariable::FlangeMountGenerator FlangeGen;
   setVariable::BremCollGenerator BremGen;
   setVariable::BremMonoCollGenerator BremMonoGen;
@@ -716,7 +733,7 @@ opticsVariables(FuncDataBase& Control,
   //  BellowGen.setBFlangeCF<setVariable::CF150>();
   BellowGen.generateBellow(Control,preName+"BellowB",17.6);
 
-  m1MirrorVariables(Control,preName);
+  m1DetailVariables(Control,preName);
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,preName+"BellowC",19.7);

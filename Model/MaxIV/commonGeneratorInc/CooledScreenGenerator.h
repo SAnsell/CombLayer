@@ -59,11 +59,11 @@ class CooledScreenGenerator :
   CooledScreenGenerator();
   CooledScreenGenerator(const CooledScreenGenerator&);
   CooledScreenGenerator& operator=(const CooledScreenGenerator&);
-  virtual ~CooledScreenGenerator();
+  ~CooledScreenGenerator() override;
 
 
-  virtual void generateScreen(FuncDataBase&,const std::string&,
-			      const bool) const;
+  void generateScreen(FuncDataBase&,const std::string&,
+			      const bool) const override;
   
 };
 

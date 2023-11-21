@@ -3,7 +3,7 @@
  
  * File:   weights/WItem.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,9 +117,9 @@ WItem::isMasked() const
     \return 1 if all masked 0 otherwize
   */
 {
-  return (find_if(Val.begin(),Val.end(),
-		  std::bind2nd(std::greater<double>(),0.0))) == Val.end() ?
-    1 : 0;
+  return (std::find_if(Val.begin(),Val.end(),
+		       [](const double& V) { return V>0.0; } )
+	  ==Val.end())  ? 1 : 0;
 }
 
 void
@@ -211,8 +211,10 @@ WItem::rescale(const double Tscale,const double SF)
   // Most cell Tmp == 0 [assume 293.0K]
   
   if (Tmp<Tscale && (Tscale>293.0 || Tmp>1.0))
-    transform(Val.begin(),Val.end(),Val.begin(),
-	      std::bind2nd(std::divides<double>(),SF));
+    {
+      for(double& value : Val)
+	value/=SF;
+    }
   return;
 }
   

@@ -155,7 +155,7 @@ class formaxExptLine :
 			   const attachSystem::FixedComp&,
 			   const std::string&); 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -165,7 +165,7 @@ class formaxExptLine :
   formaxExptLine(const std::string&);
   formaxExptLine(const formaxExptLine&);
   formaxExptLine& operator=(const formaxExptLine&);
-  ~formaxExptLine();
+  ~formaxExptLine() override;
 
   /// Assignment to outer void
   void setOuterMat(const int M) { outerMat=M; }
@@ -177,7 +177,7 @@ class formaxExptLine :
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

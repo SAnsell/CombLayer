@@ -46,26 +46,26 @@ class Ellipse : public Intersect
  public:
   
   Ellipse();
-  Ellipse(const Vec3D&,const Vec3D&,const Vec3D&,const Vec3D&);
-  Ellipse(const int,const Vec3D&,const Vec3D&,const Vec3D&,const Vec3D&);
+  Ellipse(Vec3D ,Vec3D ,Vec3D ,const Vec3D&);
+  Ellipse(const int,Vec3D ,Vec3D ,Vec3D ,const Vec3D&);
   Ellipse(const Ellipse&);
   Ellipse& operator=(const Ellipse&);
-  virtual ~Ellipse() {}  ///< Destructor
+  ~Ellipse() override {}  ///< Destructor
   Ellipse& operator()(const Vec3D&,const Vec3D&,const Vec3D&,const Vec3D&);
 
   /// Debug function to get index
   int getIndex() const { return index; }
 
   /// Calc area
-  double area() const { return -1.0;}
+  double area() const override { return -1.0;}
   /// Calc centre
-  bool hasCentre() const { return true; }
+  bool hasCentre() const override { return true; }
   /// calculate the centre
-  Vec3D centre() const { return Cent; }  
+  Vec3D centre() const override { return Cent; }  
 
-  Vec3D ParamPt(const double) const;
+  Vec3D ParamPt(const double) const override;
 
-  void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 };
 
 }   // NAMESPACE Geometry

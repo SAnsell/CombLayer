@@ -69,7 +69,7 @@ class SkadiHut:
   int pipeL1Mat;
   int pipeL2Mat;  
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -79,11 +79,11 @@ class SkadiHut:
   SkadiHut(const std::string&);
   SkadiHut(const SkadiHut&);
   SkadiHut& operator=(const SkadiHut&);
-  virtual ~SkadiHut();
+  ~SkadiHut() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

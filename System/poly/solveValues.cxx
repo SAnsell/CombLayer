@@ -3,7 +3,7 @@
  
  * File:   poly/solveValues.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -377,10 +377,12 @@ solveValues::checkSolutions()
 {
   ELog::RegMethod RegA("solveValues","checkSolutions");
 
+  
   Ans.erase(remove_if(Ans.begin(),Ans.end(),
-		      std::bind(&solveValues::notValid,
-				this,std::placeholders::_1)),
+		      [this](const Geometry::Vec3D& Pt)
+		      { return this->notValid(Pt); }),
 	    Ans.end());
+
 
   sort(Ans.begin(),Ans.end(),Geometry::vecOrder());
   Ans.erase(unique(Ans.begin(),Ans.end()),Ans.end());

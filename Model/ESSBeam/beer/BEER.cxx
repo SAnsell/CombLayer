@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/beer/BEER.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,6 +93,7 @@ namespace essSystem
 
 BEER::BEER(const std::string& keyName) :
   attachSystem::CopiedComp("beer",keyName),
+  attachSystem::ExternalCut(),        // extra for target cut
   stopPoint(0),
   beerAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
 
@@ -484,21 +485,23 @@ BEER::build(Simulation& System,
    */
 {
   ELog::RegMethod RegA("BEER","build");
-  
-  
 
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
-	  <<ELog::endDiag;
   essBeamSystem::setBeamAxis(*beerAxis,Control,GItem,1);
-  
+
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setFront(GItem.getKey("Beam"),-1);
   BendA->setBack(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*beerAxis,-3);
+  // wheel cuts outer guide void !!!!!!!!!
+  if (isActive("wheel") && BendA->hasCell("Layer2"))
+    BendA->insertComponent(System,"Layer2",getComplementRule("wheel"));
+
+  // NOTE: Beer intersects the target void !!!!!
+  
   ELog::EM<<"BeerAxis == "<<beerAxis->getLinkAxis(-3)<<ELog::endDiag;
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge

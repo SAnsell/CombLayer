@@ -61,7 +61,7 @@ class SimPhoton : public Simulation
   SimPhoton();
   SimPhoton(const SimPhoton&);
   SimPhoton& operator=(const SimPhoton&);
-  virtual ~SimPhoton();
+  ~SimPhoton() override;
 
   void clearAll();
 
@@ -73,7 +73,7 @@ class SimPhoton : public Simulation
   void addDetector(const Transport::ChannelDet&);
   void writeDetectors(const std::string&,const double) const;
 
-  virtual void write(const std::string&) const;
+  void write(const std::string&) const override;
 };
 
 #endif

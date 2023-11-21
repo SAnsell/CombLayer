@@ -3,7 +3,7 @@
  
  * File:   test/testSupport.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <tuple>
+#include <iterator>
 
 #ifndef NO_REGEX
 #include <regex>
@@ -80,6 +81,7 @@ testSupport::applyTest(const int extra)
       &testSupport::testConvPartNum,
       &testSupport::testExtractWord,
       &testSupport::testFullBlock,
+      &testSupport::testGetDelimUnit,
       &testSupport::testItemize,
       &testSupport::testSection,
       &testSupport::testSectionCinder,
@@ -99,6 +101,7 @@ testSupport::applyTest(const int extra)
       "ConvPartNum",
       "ExtractWord",
       "FullBlock",
+      "GetDelimUnit",
       "Itemize",
       "Section",
       "SectionCinder",
@@ -139,7 +142,11 @@ testSupport::applyTest(const int extra)
 int
 testSupport::testConvert()
   /*!
-    Applies a test to convert
+    Applies a test to convert.
+    -Takes the first part of the string (space delimited)
+      and convert that part into a string/number etc.
+    - Must consume everything up to the delimiter.
+      
     \retval -1 :: failed to convert a good double
     \retval -2 :: converted a number with leading stuff
     \retval -3 :: converted a number with trailing stuff
@@ -214,7 +221,11 @@ testSupport::testConvert()
 int
 testSupport::testConvPartNum()
   /*!
-    Applies a test to convPartNum
+    -Takes the first part of the string (space delimited)
+      and convert that part into a string/number etc.
+    - Must consume everything up to the delimiter but can
+    consume part of the string e.g. 3.4a will convert to 3.4
+
     \return -ve on error
   */
 {
@@ -272,6 +283,52 @@ testSupport::testConvPartNum()
   return 0;
 }
 
+
+int
+testSupport::testGetDelimUnit()
+  /*!
+    Test teh getDelimUnit which finds a block
+    of text between two delimiters
+    \retval -1 :: failed find word in string
+    when the pattern exists.
+  */
+{
+  ELog::RegMethod RegA("testSupport","testGetDelimUnit");
+  // main : dA dB : mid : newMain
+  typedef std::tuple<std::string,std::string,std::string,
+		     std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests({
+      {"[This]","[","]","This",""},
+      {"[ This ]","[","]"," This ",""},
+      {"[ This] and some","[","]"," This"," and some"},
+      {"key[ This] and some","[","]"," This","key and some"},
+      {"key[ This] and [ other ] some","[","]"," This","key and [ other ] some"}
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      std::string line=std::get<0>(tc);
+      const std::string dA=std::get<1>(tc);
+      const std::string dB=std::get<2>(tc);
+      const std::string mid=std::get<3>(tc);
+      const std::string remain=std::get<4>(tc);
+
+      const std::string item=
+	StrFunc::getDelimUnit(dA,dB,line);
+      if (line!=remain || mid!=item)
+	{
+	  ELog::EM<<"Input  =="<<std::get<0>(tc)<<"=="<<ELog::endDiag;
+	  ELog::EM<<"Item   =="<<item<<"=="<<ELog::endDiag;
+	  ELog::EM<<"Expect =="<<mid<<"=="<<ELog::endDiag;
+	  ELog::EM<<"Remain =="<<line<<"=="<<ELog::endDiag;
+	  ELog::EM<<"Expect =="<<remain<<"=="<<ELog::endDiag;
+		  
+	  return -1;
+	}
+    }
+
+  return 0;  
+}
 
 int
 testSupport::testExtractWord()
@@ -625,7 +682,7 @@ testSupport::testStrComp()
   ELog::RegMethod RegA("testSupport","testStrComp");
 
   std::string Target ="6log 8.9 90.0";
-  std::string searchString="(^|\\s)(\\d+)log(\\s|$)";
+  std::string searchString=R"((^|\s)(\d+)log(\s|$))";
 #ifndef NO_REGEX
   std::regex Re(searchString);
 
@@ -665,7 +722,7 @@ testSupport::testStrFullCut()
 
   // remove space/> at start then split on 
   Tests.push_back(TTYPE("xxx $var 4.5     6.7 8.9 90.0",
-			"\\s*\\$\\S+\\s+(\\S+)\\s+\\S+",
+			R"(\s*\$\S+\s+(\S+)\s+\S+)",
 			4.5,"",
 			"xxx 8.9 90.0"));
 
@@ -870,7 +927,7 @@ testSupport::testStrSplit()
 
   // Start with a <(name)<spc> !> >       
   Out.clear();
-  searchString="(\\d+)\\.(\\d\\d)(\\S)";
+  searchString=R"((\d+)\.(\d\d)(\S))";
   Target=" 54097.70c 4506.80c";
   std::regex ReY(searchString);
   StrFunc::StrSingleSplit(Target,ReY,Out);

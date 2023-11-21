@@ -28,7 +28,9 @@ namespace xraySystem
 {
 
   class MLMCrystal;
+  class MLMRadialSupport;
   class MLMSupportWheel;
+  class MLMWheelPlate;
   
 /*!
   \class MLMonoDetail
@@ -48,11 +50,13 @@ class MLMonoDetail :
 
   std::shared_ptr<MLMCrystal> xstalA;
   std::shared_ptr<MLMCrystal> xstalB;
+  std::shared_ptr<MLMRadialSupport> aRadial;
   std::shared_ptr<MLMSupportWheel> bWheel;
+  std::shared_ptr<MLMWheelPlate> wheelPlate;
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -62,11 +66,11 @@ class MLMonoDetail :
   MLMonoDetail(const std::string&);
   MLMonoDetail(const MLMonoDetail&);
   MLMonoDetail& operator=(const MLMonoDetail&);
-  virtual ~MLMonoDetail();
+  ~MLMonoDetail() override;
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
+#include <sstream>
 #include <string>
-#include <algorithm>
 #include <typeinfo>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -60,8 +61,8 @@ operator<<(std::ostream& OX,const IItem& A)
   return OX;
 }
 
-IItem::IItem(const std::string& K) :
-  Key(K),active(0),activeSet(0),activeItem(0),
+IItem::IItem(std::string  K) :
+  Key(std::move(K)),active(0),activeSet(0),activeItem(0),
   maxSets(0),maxItems(0),reqItems(0)
   /*!
     Constructor only with  descriptor
@@ -69,8 +70,8 @@ IItem::IItem(const std::string& K) :
   */
 {}
 
-IItem::IItem(const std::string& K,const std::string& L) :
-  Key(K),Long(L),active(0),activeSet(0),activeItem(0),
+IItem::IItem(std::string  K,std::string  L) :
+  Key(std::move(K)),Long(std::move(L)),active(0),activeSet(0),activeItem(0),
   maxSets(0),maxItems(0),reqItems(0)
   /*!
     Full Constructor

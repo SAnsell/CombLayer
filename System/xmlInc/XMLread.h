@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   xmlInc/XMLread.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef XMLread_h
 #define XMLread_h
+
+template<typename T> class multiData;
 
 namespace XML
 {
@@ -33,7 +35,6 @@ namespace XML
   \version 1.0
   
   This holds the input in a vector of strings
-
 */
 
 class XMLread : public XMLobject
@@ -49,9 +50,9 @@ class XMLread : public XMLobject
   XMLread(XMLobject*,const std::string&,
 	  const std::vector<std::string>&);
   XMLread(const XMLread&);
-  virtual XMLread* clone() const;       ///< virtual constructor
+  XMLread* clone() const override;       ///< virtual constructor
   XMLread& operator=(const XMLread&);     
-  virtual ~XMLread();
+  ~XMLread() override;
 
   void addLine(const std::string&);          
   void setObject(const std::vector<std::string>&);  
@@ -70,15 +71,15 @@ class XMLread : public XMLobject
   template<template<typename T,typename A> class V,typename T,typename A> 
   int convertToContainer(const int,V<T,A>&,V<T,A>&) const;
 
-  template<typename T,int Size>
-  int convertToArray(boost::multi_array<T,Size>&) const;
+  template<typename T>
+  int convertToArray(multiData<T>&) const;
 
   template<typename T> 
   int convertToObject(T&) const;
   
-  virtual int isEmpty() const { return Comp.empty(); }
+  int isEmpty() const override { return Comp.empty(); }
 
-  void writeXML(std::ostream&) const;
+  void writeXML(std::ostream&) const override;
 
 };
 

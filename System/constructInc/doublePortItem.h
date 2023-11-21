@@ -3,7 +3,7 @@
  
  * File:   constructInc/doublePortItem.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,9 +52,9 @@ class doublePortItem :
   double radiusB;             ///< larger radius of pipe
   double wallB;               ///< Wall thickness of B
 
-  void createSurfaces();
+  void createSurfaces() override;
   
-  virtual void constructObject(Simulation&,const HeadRule&,const HeadRule&);
+  void constructObject(Simulation&,const HeadRule&,const HeadRule&) override;
   void constructObjectIncreasing(Simulation&,const HeadRule&,const HeadRule&);
   void constructObjectReducing(Simulation&,const HeadRule&,const HeadRule&);
   
@@ -64,9 +64,9 @@ class doublePortItem :
   doublePortItem(const std::string&,const std::string&);
   doublePortItem(const doublePortItem&);
   doublePortItem& operator=(const doublePortItem&);
-  virtual ~doublePortItem();
+  ~doublePortItem() override;
 
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
 };
   

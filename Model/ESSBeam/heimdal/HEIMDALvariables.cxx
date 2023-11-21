@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/heimdal/HEIMDALvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,12 +42,12 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "ShieldGenerator.h"
 #include "FocusGenerator.h"
 #include "ChopperGenerator.h"
 #include "PitGenerator.h"
 #include "PipeGenerator.h"
-#include "RectPipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
 #include "CryoGenerator.h"
@@ -55,7 +55,6 @@
 namespace setVariable
 {
 
- 
   
 void
 HEIMDALvariables(FuncDataBase& Control)
@@ -72,7 +71,7 @@ HEIMDALvariables(FuncDataBase& Control)
   setVariable::ShieldGenerator SGen;
   setVariable::PitGenerator PGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::RectPipeGenerator RPipeGen;
+  setVariable::PipeGenerator RPipeGen;
   setVariable::BladeGenerator BGen;
   setVariable::JawGenerator JawGen;
 
@@ -82,12 +81,13 @@ HEIMDALvariables(FuncDataBase& Control)
   Control.addVariable("heimdalAxisZStep",0.0);
   
   PipeGen.setPipe(14.0,0.5);
-  PipeGen.setWindow(-1.0,0.5);
+  PipeGen.setNoWindow();
   PipeGen.setFlange(-2.0,1.0);
 
-  RPipeGen.setPipe(6.0,22.0,0.5);
-  RPipeGen.setWindow(-2.0,-2.0,0.5);
-  RPipeGen.setFlange(-4.0,-4.0,1.0);
+  RPipeGen.setCF<CF200>();
+  RPipeGen.setRectPipe(16.0,22.0);
+  RPipeGen.setRectWindow(16.0,16.0,0.5); 
+  RPipeGen.setRectFlange(20.0,26.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
@@ -96,20 +96,31 @@ HEIMDALvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  FGen.setLayer(1,0.5,"Copper");
-  FGen.setLayer(2,0.5,"Void");
-  FGen.setYOffset(2.0);
-  FGen.generateTaper(Control,"heimdalFTA",350.0, 3.0,3.0, 3.0,3.0);
-  FGen.generateRectangle(Control,"heimdalFCA",350.0,2.0,2.0);
+  // Double guide: increased wedge:
+  Control.addVariable("G1BLineTop8Depth1",14.0);
   
-  Control.addVariable("heimdalFTAZStep",0.0);   
-  Control.addVariable("heimdalFCAZStep",-5.0);   
-  Control.addVariable("heimdalFTAXAngle",0.0);   
-  Control.addVariable("heimdalFCAXAngle",-1.3);   
-  Control.addVariable("heimdalFTAZAngle",0.0);  // 1
-  Control.addVariable("heimdalFCAZAngle",0.0);  // -1.   
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.2,"Void");
+  FGen.setYOffset(2.0);
+  FGen.generateGeneralTaper(Control,"heimdalFTA",334.819,
+			    7.096,2.584,
+			    3.154,2.584,
+			    1.724,2.507,
+			    1.724,2.507);
 
-  RPipeGen.generatePipe(Control,"heimdalPipeB",6.5,46.0);
+  FGen.generateRectangle(Control,"heimdalFCA",350.0,2.0,2.0);
+
+  Control.addVariable("heimdalFTAXStep",2.35);
+  Control.addVariable("heimdalFCAXStep",-2.85);
+  Control.addVariable("heimdalFTAZStep",0.0);   
+  Control.addVariable("heimdalFCAZStep",-4.71);   
+  Control.addVariable("heimdalFTAXAngle",0.0);   
+  Control.addVariable("heimdalFCAXAngle",-1.39);   
+  Control.addVariable("heimdalFTAZAngle",1.1);  
+  Control.addVariable("heimdalFCAZAngle",-0.4);  
+
+  RPipeGen.generatePipe(Control,"heimdalPipeB",46.0);
+  Control.addVariable("heimdalPipeBYStep",6.5);
   Control.addVariable("heimdalPipeBZStep",-8.0);
 
   
@@ -120,8 +131,9 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"heimdalFTB",44.0,4.0,4.0,4.0,4.0);
   FGen.generateTaper(Control,"heimdalFCB",44.0,2.0,2.0,2.0,2.0);
 
-  RPipeGen.setPipe(7.0,24.0,0.5);
-  RPipeGen.generatePipe(Control,"heimdalPipeC",3.5,46.0);
+  RPipeGen.setPipe(7.0,24.0);
+  RPipeGen.generatePipe(Control,"heimdalPipeC",46.0);
+  Control.addVariable("heimdalPipeCYStep",3.5);
   
   FGen.setYOffset(5.5);
   FGen.generateTaper(Control,"heimdalFTC",44.0,4.0,4.0,4.0,4.0);

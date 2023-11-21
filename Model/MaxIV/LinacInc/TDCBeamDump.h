@@ -35,11 +35,12 @@ namespace tdcSystem
   \brief TDC beam dump
 */
 
-class TDCBeamDump : public attachSystem::ContainedComp,
-		    public attachSystem::FixedRotateGroup,
-                    public attachSystem::CellMap,
-                    public attachSystem::SurfMap,
-                    public attachSystem::ExternalCut
+class TDCBeamDump :
+    public attachSystem::FixedRotateGroup,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap,
+    public attachSystem::ExternalCut
 {
  private:
 
@@ -69,13 +70,9 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   int airMat;                   ///< Air material
   int frontPlateMat;            ///< Front plate material (to reduce activation dose rate)
   int carbonMat;                ///< Carbon plate material
-
-  attachSystem::FixedComp* mainFC1;
-  long int mainFCSide;
-
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const attachSystem::FixedComp&,const long int);
+  
+  void populate(const FuncDataBase&) override;
+  using FixedRotateGroup::createUnitVector;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,13 +82,11 @@ class TDCBeamDump : public attachSystem::ContainedComp,
   TDCBeamDump(const std::string&);
   TDCBeamDump(const TDCBeamDump&);
   TDCBeamDump& operator=(const TDCBeamDump&);
-  virtual TDCBeamDump* clone() const;
-  virtual ~TDCBeamDump();
-
-  void setMainAxis(const attachSystem::FixedComp&, const long int); //std::string&);
+  ~TDCBeamDump() override;
 
   using attachSystem::FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

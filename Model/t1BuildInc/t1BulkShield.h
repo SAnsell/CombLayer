@@ -85,7 +85,7 @@ class t1BulkShield :
   t1BulkShield(const std::string&);
   t1BulkShield(const t1BulkShield&);
   t1BulkShield& operator=(const t1BulkShield&);
-  virtual ~t1BulkShield();
+  ~t1BulkShield() override;
 
   /// Access outer limit
   double getORadius() const { return outerRadius; }
@@ -102,8 +102,8 @@ class t1BulkShield :
   void processVoid(Simulation&);
 
   using attachSystem::FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
   
 
 

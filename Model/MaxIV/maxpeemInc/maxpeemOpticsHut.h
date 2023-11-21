@@ -82,7 +82,7 @@ class maxpeemOpticsHut :
   /// Chicanes 
   std::vector<std::shared_ptr<SimpleChicane>> PChicane;  
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -93,11 +93,11 @@ class maxpeemOpticsHut :
   maxpeemOpticsHut(const std::string&);
   maxpeemOpticsHut(const maxpeemOpticsHut&);
   maxpeemOpticsHut& operator=(const maxpeemOpticsHut&);
-  virtual ~maxpeemOpticsHut();
+  ~maxpeemOpticsHut() override;
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

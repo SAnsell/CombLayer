@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/MaterialSupport.h
+ * File:   modelSupportInc/MaterialSupport.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #ifndef ModelSupport_MaterialSupport_h
 #define ModelSupport_MaterialSupport_h
 
+class FuncDataBase;
 
 namespace ModelSupport
 {

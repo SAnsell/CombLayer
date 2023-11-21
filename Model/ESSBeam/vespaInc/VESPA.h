@@ -3,7 +3,7 @@
  
  * File:   vespaInc/VESPA.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,13 +55,14 @@ namespace constructSystem
   class JawSet;
   class LineShield;
   class TriangleShield;
+  class RectanglePipe;
   class RotaryCollimator;
-  class VacuumBox;
-  class VacuumPipe;
-  class VacuumWindow;
   class HoleShape;
   class CrystalMount;
   class TubeDetBox;
+  class VacuumWindow;
+  class VacuumBox;
+  class VacuumPipe;
 }
 
 namespace essSystem
@@ -114,7 +115,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<essConstruct::DiskChopper> PSCDiskBottomA;
 
   /// Joining pipe between Choppers: A-B
-  std::shared_ptr<constructSystem::VacuumPipe> JPipeAB;
+  std::shared_ptr<constructSystem::RectanglePipe> JPipeAB;
   /// Guide in Join AB
   std::shared_ptr<beamlineSystem::PlateUnit> FocusD;
   
@@ -126,7 +127,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<essConstruct::DiskChopper> PSCDiskBottomB;
 
   /// Joining pipe between Choppers: B-C
-  std::shared_ptr<constructSystem::VacuumPipe> JPipeBC;
+  std::shared_ptr<constructSystem::RectanglePipe> JPipeBC;
   /// Guide in Join AB
   std::shared_ptr<beamlineSystem::PlateUnit> FocusE;
 
@@ -256,7 +257,7 @@ class VESPA : public attachSystem::CopiedComp
   VESPA(const std::string&);
   VESPA(const VESPA&);
   VESPA& operator=(const VESPA&);
-  ~VESPA();
+  ~VESPA() override;
   
   void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,

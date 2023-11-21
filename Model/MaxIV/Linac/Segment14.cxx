@@ -3,7 +3,7 @@
 
  * File: Linac/Segment14.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 
 #include "DipoleDIBMag.h"
@@ -136,7 +135,7 @@ Segment14::buildObjects(Simulation& System)
 
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
 
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");

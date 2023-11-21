@@ -55,20 +55,20 @@ class softimaxFrontEnd :
   /// Undulator in vacuum box
   std::shared_ptr<xraySystem::Undulator> undulator;
 
-  virtual const attachSystem::FixedComp&
+  const attachSystem::FixedComp&
     buildUndulator(Simulation&,
-		   const attachSystem::FixedComp&,const long int);
+		   const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void buildObjects(Simulation&);
-  virtual void createLinks();
+  void createLinks() override;
 
  public:
 
   softimaxFrontEnd(const std::string&);
   softimaxFrontEnd(const softimaxFrontEnd&);
   softimaxFrontEnd& operator=(const softimaxFrontEnd&);
-  virtual ~softimaxFrontEnd();
+  ~softimaxFrontEnd() override;
 
 };
 

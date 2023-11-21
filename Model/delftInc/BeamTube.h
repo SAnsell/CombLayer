@@ -77,10 +77,10 @@ class BeamTube :
 
   int innerVoid;                ///< Inner void cell
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void populatePortals(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -92,14 +92,14 @@ class BeamTube :
   BeamTube(const std::string&);
   BeamTube(const BeamTube&);
   BeamTube& operator=(const BeamTube&);
-  virtual ~BeamTube();
+  ~BeamTube() override;
 
   // Accessor to inner void cell
   int getInnerVoid() const { return innerVoid; }
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -72,7 +72,7 @@ class TrexHut:
   int L2Mat;                  ///< Second layer material
   int L3Mat;                  ///< Third layer material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -82,11 +82,11 @@ class TrexHut:
   TrexHut(const std::string&);
   TrexHut(const TrexHut&);
   TrexHut& operator=(const TrexHut&);
-  virtual ~TrexHut();
+  ~TrexHut() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

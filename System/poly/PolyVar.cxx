@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+   CombLayer : MCNP(X) Input builder
  
  * File:   poly/PolyVar.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -404,9 +404,11 @@ PolyVar<VCount>::operator*=(const PolyVar<VCount>& A)
 {
   std::vector<PolyVar<VCount-1> > POut(iDegree+A.iDegree+2); 
   std::vector<int> Zero(A.iDegree+1);
+  
+  
   transform(A.PCoeff.begin(),A.PCoeff.end(),Zero.begin(),
-    std::bind2nd(std::mem_fun_ref(&PolyVar<VCount-1>::isZero),this->Eaccuracy));
-   
+	    [this](const PolyVar<VCount-1>& pv)
+	    { return pv.isZero(this->Eaccuracy); });
   for(size_t i=0;i<=iDegree;i++)
     {
       if (!PCoeff[i].isZero(this->Eaccuracy)) 

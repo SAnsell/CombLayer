@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <sstream>
+#include <cmath>
 #include <fstream>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <typeinfo>
-#include <stdexcept>
+#include <utility>
 #include <vector>
-#include <map>
-#include <cmath>
 
 #include "TypeString.h"
 #include "FileReport.h"
@@ -107,13 +108,15 @@ ExBase::what() const throw()
 //---------------------------------------
 
 template<typename T>
-IndexError<T>::IndexError(const T& V,const T& B,
-		       const std::string& Place) :
-  ExBase(0,Place),Val(V),maxVal(B)
+IndexError<T>::IndexError(T requestValue,
+			  T maxValue,
+			  const std::string& Place) :
+  ExBase(0,Place),Val(std::move(requestValue)),
+  maxVal(std::move(maxValue))
   /*!
     Constructor 
-    \param V :: Valued access
-    \param B :: Max value allowed
+    \param requestValue :: Valued accessed
+    \param maxValue :: Max value allowed
     \param Place :: Description string
    */
 {
@@ -157,6 +160,67 @@ IndexError<T>::setOutLine()
   std::stringstream cx;
   cx<<"\nEXCEPTION TYPE :: IndexError< "<<typeIDName<T>()<<" > \n";
   cx<<ExBase::getErr()<<" "<<Val<<" :: 0 <==> "<<maxVal;
+  OutLine=cx.str();
+  return;
+}
+
+//---------------------------------------
+//           LinearError class
+//---------------------------------------
+
+template<typename T>
+LinearError<T>::LinearError(std::vector<T> V,
+		       const std::string& Place) :
+  ExBase(0,Place),Val(std::move(V))
+  /*!
+    Constructor 
+    \param V :: Valued access
+    \param B :: Max value allowed
+    \param Place :: Description string
+   */
+{
+  setOutLine();
+}
+
+template<typename T> 
+LinearError<T>::LinearError(const LinearError<T>& A) :
+  ExBase(A),Val(A.Val)
+  /*!
+    Copy constructor
+    \param A :: Object to copy
+  */
+{}
+
+template<typename T>
+LinearError<T>&
+LinearError<T>::operator=(const LinearError<T>& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+    }
+  return *this;
+}
+
+
+template<typename T>
+void
+LinearError<T>::setOutLine()
+  /*!
+    Writes out the range and limits
+    to the outline
+  */
+{
+  std::stringstream cx;
+  cx<<"\nEXCEPTION TYPE :: LinearError< "<<typeIDName<T>()<<" > \n";
+  cx<<ExBase::getErr()<<" :: \n";
+  for(const T& item : Val)
+    cx<<item<<" ";
   OutLine=cx.str();
   return;
 }
@@ -224,9 +288,9 @@ SizeError<T>::setOutLine()
 // FileError
 //-------------------------
 
-FileError::FileError(const int V,const std::string& FName,
+FileError::FileError(const int V,std::string  FName,
 		     const std::string& Place) :
-  ExBase(V,Place),fileName(FName)
+  ExBase(V,Place),fileName(std::move(FName))
   /*!
     Constructor
     \param V :: Error number
@@ -385,8 +449,9 @@ EmptyContainer::setOutLine()
 //-------------------------
 
 template<typename T>
-InContainerError<T>::InContainerError(const T& V,const std::string& Place) :
-  ExBase(0,Place),SearchObj(V)
+InContainerError<T>::InContainerError(T searchValue,
+				      const std::string& Place) :
+  ExBase(0,Place),SearchObj(std::move(searchValue))
   /*!
     Constructor
     \param V :: Value not found
@@ -441,14 +506,15 @@ InContainerError<T>::setOutLine()
 // RangeError
 //-------------------------
 template<typename T>
-RangeError<T>::RangeError(const T& V,const T& aV,const T& bV,
-		       const std::string& Place) :
-  ExBase(0,Place),Index(V),minV(aV),maxV(bV)
+RangeError<T>::RangeError(const T& indexValue,
+			  const T& lowV,const T& highV,
+			  const std::string& Place) :
+  ExBase(0,Place),Index(indexValue),minV(lowV),maxV(highV)
   /*!
     Set a RangeError
-    \param V :: Value that caused the problem
-    \param aV :: low value 
-    \param bV :: high value 
+    \param indexValue :: Value that caused the problem
+    \param lowV :: low value 
+    \param highV :: high value 
     \param Place :: String describing the place
   */
 {
@@ -562,9 +628,10 @@ OrderError<T>::setOutLine()
 // DimensionError
 //-------------------------
 
-template<unsigned int ndim,typename T>
-DimensionError<ndim,T>::DimensionError(const T* A,const T* R,
-				       const std::string& Place) :
+template<typename T>
+DimensionError<T>::DimensionError(std::vector<T> A,
+				  std::vector<T> R,
+				  const std::string& Place) :
   ExBase(0,Place)
   /*!
     Set a DimensionError
@@ -573,53 +640,24 @@ DimensionError<ndim,T>::DimensionError(const T* A,const T* R,
     \param Place :: String describing the place
   */
 {
-  for(unsigned int i=0;i<ndim;i++)
-    {
-      indexSize[i]=A[i];
-      reqSize[i]=R[i];
-    }  
-  setOutLine();
-}
-
-template<unsigned int ndim,typename T>
-DimensionError<ndim,T>::DimensionError(const std::vector<T>& A,
-				       const std::vector<T>& R,
-				       const std::string& Place) :
-  ExBase(0,Place)
-  /*!
-    Set a DimensionError
-    \param A :: Array size
-    \param R :: Required size
-    \param Place :: String describing the place
-  */
-{
-  for(size_t i=0;i<ndim;i++)
-    {
-      indexSize[i]=(i<A.size()) ? A[i] : T(0);
-      reqSize[i]=(i<R.size()) ? R[i] : T(0);
-    }
+  indexSize=std::move(A);
+  reqSize=std::move(R);
   setOutLine();
 }
 
 
-template<unsigned int ndim,typename T>
-DimensionError<ndim,T>::DimensionError(const DimensionError<ndim,T>& A) :
-  ExBase(A)
+template<typename T>
+DimensionError<T>::DimensionError(const DimensionError<T>& A) :
+  ExBase(A),indexSize(A.indexSize),reqSize(A.reqSize)
   /*!
     Copy constructor 
     \param A :: Object to copy
   */
-{
-  for(unsigned int i=0;i<ndim;i++)
-    {
-      indexSize[i]=A.indexSize[i];
-      reqSize[i]=A.reqSize[i];
-    }  
-}
+{}
 
-template<unsigned int ndim,typename T>
-DimensionError<ndim,T>&
-DimensionError<ndim,T>::operator=(const DimensionError<ndim,T>& A) 
+template<typename T>
+DimensionError<T>&
+DimensionError<T>::operator=(const DimensionError<T>& A) 
   /*!
     Assignment operator
     \param A :: Object to copy
@@ -629,32 +667,33 @@ DimensionError<ndim,T>::operator=(const DimensionError<ndim,T>& A)
   if (this!=&A)
     {
       ExBase::operator=(A);
-      for(unsigned int i=0;i<ndim;i++)
-        {
-	  indexSize[i]=A.indexSize[i];
-	  reqSize[i]=A.reqSize[i];
-	}
+      indexSize=A.indexSize;
+      reqSize=A.reqSize;
     }
   return *this;
 }
 
-template<unsigned int ndim,typename T>
+template<typename T>
 void
-DimensionError<ndim,T>::setOutLine()
+DimensionError<T>::setOutLine()
   /*!
     Writes out the range and aim point
     to OutLine
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: DimensionError< "<<ndim<<" , "
+  cx<<"\nEXCEPTION TYPE :: DimensionError< "
     <<typeIDName<T>()<<" >\n";
 
   cx<<getErr()<<":";
 
-  for(unsigned int i=0;i<ndim;i++)
+  for(unsigned int i=0;i<indexSize.size();i++)
     {
-      cx<<indexSize[i]<<" ("<<reqSize[i]<<") ";
+      cx<<indexSize[i]<<" (";
+      if (i>=reqSize.size())
+	cx<<" -- ) ";
+      else
+	cx<<reqSize[i]<<") ";
     }
   OutLine=cx.str();
   return;
@@ -805,10 +844,10 @@ MisMatch<T>::setOutLine()
 // TypeMatch
 //-------------------------
 
-TypeMatch::TypeMatch(const std::string& A,
-		     const std::string& B,
+TypeMatch::TypeMatch(std::string  A,
+		     std::string  B,
 		     const std::string& Place) :
-  ExBase(0,Place),AName(A),BName(B) 
+  ExBase(0,Place),AName(std::move(A)),BName(std::move(B)) 
   /*!
     Constructor store two mismatched items
     \param A :: Item to store
@@ -863,8 +902,8 @@ TypeMatch::setOutLine()
 //-------------------------
 
 InvalidLine::InvalidLine(const std::string& Place,
-			 const std::string& L,const size_t P) :
-  ExBase(0,Place),pos(P),Line(L)
+			 std::string  L,const size_t P) :
+  ExBase(0,Place),pos(P),Line(std::move(L))
   /*!
     Constructor of an invalid line
     \param Place :: Reason/Code item for error
@@ -983,9 +1022,9 @@ CastError<Ptr>::setOutLine()
 //--------------------
 
 template<typename T,typename U>
-TypeConvError<T,U>::TypeConvError(const T& B,
+TypeConvError<T,U>::TypeConvError(T baseType,
 				  const std::string& Place)  :
-  ExBase(0,Place),ABase(B)
+  ExBase(0,Place),ABase(std::move(baseType))
   /*!
     Constructor of an invalid line
     \param B :: Point of base object
@@ -1046,9 +1085,9 @@ TypeConvError<T,U>::setOutLine()
 //--------------------
 
 
-DynamicConv::DynamicConv(const std::string& B,const std::string& D,
+DynamicConv::DynamicConv(std::string  B,std::string  D,
 			 const std::string& Place)  :
-  ExBase(0,Place),Base(B),Derived(D)
+  ExBase(0,Place),Base(std::move(B)),Derived(std::move(D))
   /*!
     Constructor of an invalid line
     \param B :: Base class
@@ -1106,8 +1145,8 @@ DynamicConv::setOutLine()
 //           CommandError
 // ----------------------------------------------
 
-CommandError::CommandError(const std::string& C,const std::string& Place) :
-  ExBase(0,Place),Cmd(C)
+CommandError::CommandError(std::string  C,const std::string& Place) :
+  ExBase(0,Place),Cmd(std::move(C))
   /*!
     Constructor 
     \param C :: Command that failed
@@ -1159,9 +1198,9 @@ CommandError::setOutLine()
 //           ConstructionError
 // ----------------------------------------------
 
-ConstructionError::ConstructionError(const std::string& N,
+ConstructionError::ConstructionError(std::string  N,
 				     const std::string& Place) :
-  ExBase(0,Place),Name(N)
+  ExBase(0,Place),Name(std::move(N))
   /*!
     Constructor 
     \param N :: Name of object/thing that failed
@@ -1172,10 +1211,10 @@ ConstructionError::ConstructionError(const std::string& N,
 }
 
   
-ConstructionError::ConstructionError(const std::string& N,
+ConstructionError::ConstructionError(std::string  N,
 				     const std::string& Place,
-				     const std::string& M) :
-  ExBase(0,Place),Name(N),method(M)
+				     std::string  M) :
+  ExBase(0,Place),Name(std::move(N)),method(std::move(M))
   /*!
     Constructor 
     \param N :: Name of object/thing that failed
@@ -1186,11 +1225,11 @@ ConstructionError::ConstructionError(const std::string& N,
   setOutLine();
 }
 
-ConstructionError::ConstructionError(const std::string& N,
+ConstructionError::ConstructionError(std::string  N,
 				     const std::string& Place,
-				     const std::string& M,
+				     std::string  M,
 				     const std::string& IP1) :
-  ExBase(0,Place),Name(N),method(M),input({IP1})
+  ExBase(0,Place),Name(std::move(N)),method(std::move(M)),input({IP1})
   /*!
     Constructor 
     \param N :: Name of object/thing that failed
@@ -1202,12 +1241,12 @@ ConstructionError::ConstructionError(const std::string& N,
   setOutLine();
 }
 
-ConstructionError::ConstructionError(const std::string& N,
+ConstructionError::ConstructionError(std::string  N,
 				     const std::string& Place,
-				     const std::string& M,
+				     std::string  M,
 				     const std::string& IP1,
 				     const std::string& IP2) :
-  ExBase(0,Place),Name(N),method(M),input({IP1,IP2})
+  ExBase(0,Place),Name(std::move(N)),method(std::move(M)),input({IP1,IP2})
   /*!
     Constructor 
     \param N :: Name of object/thing that failed
@@ -1220,14 +1259,14 @@ ConstructionError::ConstructionError(const std::string& N,
   setOutLine();
 }
 
-ConstructionError::ConstructionError(const std::string& N,
+ConstructionError::ConstructionError(std::string  N,
 				     const std::string& Place,
-				     const std::string& M,
+				     std::string  M,
 				     const std::string& IP1,
 				     const std::string& IP2,
 				     const std::string& IP3) :
 								     
-  ExBase(0,Place),Name(N),method(M),input({IP1,IP2,IP3})
+  ExBase(0,Place),Name(std::move(N)),method(std::move(M)),input({IP1,IP2,IP3})
   /*!
     Constructor 
     \param N :: Name of object/thing that failed
@@ -1396,8 +1435,8 @@ NumericalAbort::setOutLine()
   return;
 }
 
-ExitAbort::ExitAbort(const std::string& Err,const int flag) :
-  std::exception(),fullPath(flag),OutLine(Err),
+ExitAbort::ExitAbort(std::string  Err,const int flag) :
+  std::exception(),fullPath(flag),OutLine(std::move(Err)),
   CodeLocation(ELog::RegMethod::getFull())
   /*!
     Constructor
@@ -1514,8 +1553,8 @@ template class ColErr::MisMatch<unsigned int>;
 template class ColErr::MisMatch<long int>;
 template class ColErr::MisMatch<unsigned long int>;
 template class ColErr::ArrayError<2>;
-template class ColErr::DimensionError<4,long int>;
-template class ColErr::DimensionError<3,size_t>;
+template class ColErr::DimensionError<long int>;
+template class ColErr::DimensionError<size_t>;
 template class ColErr::CastError<mainSystem::IItemBase>;
 template class ColErr::CastError<TimeData::WorkSpace>;
 template class ColErr::CastError<SDef::SrcBase>;
@@ -1528,6 +1567,7 @@ template class ColErr::RangeError<long int>;
 template class ColErr::RangeError<size_t>;
 template class ColErr::TypeConvError<Geometry::Vec3D,double>;
 template class ColErr::TypeConvError<double,Geometry::Vec3D>;
+template class ColErr::LinearError<double>;
 
 ///\endcond TEMPLATE
  

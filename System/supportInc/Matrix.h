@@ -3,7 +3,7 @@
  
  * File:   supportInc/Matrix.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,12 +62,13 @@ class Matrix : public MatrixBase<T>
  public:
 
   Matrix(const size_t =0,const size_t =0);
+  Matrix(std::vector<std::vector<T>>);
   Matrix(const std::vector<T>&,const std::vector<T>&); 
   Matrix(const Matrix<T>&);
   Matrix(const MatrixBase<T>&);
   Matrix(const Matrix<T>&,const size_t,const size_t);
   Matrix<T>& operator=(const Matrix<T>&); 
-  virtual ~Matrix();
+  ~Matrix() override;
 
   Matrix<T>& operator+=(const MatrixBase<T>&);  
   Matrix<T> operator+(const MatrixBase<T>&) const;    

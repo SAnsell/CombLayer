@@ -19,20 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
 #include <cmath>
 #include <complex>
-#include <string>
-#include <sstream>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
 #include <list>
 #include <map>
-#include <set>
-#include <vector>
-#include <iterator>
 #include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -64,9 +64,9 @@ volUnit::volUnit() :
 {}
 
 
-volUnit::volUnit(const int MN,const std::string& CM,
+volUnit::volUnit(const int MN,std::string  CM,
 		 const std::vector<int>& CList) : 
-  npts(0),lineSum(0.0),comment(CM),matNum(MN)
+  npts(0),lineSum(0.0),comment(std::move(CM)),matNum(MN)
   /*!
     Constructor
     \param MN :: Material number

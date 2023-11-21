@@ -66,12 +66,12 @@ class Segment5 :
   Segment5(const std::string&);
   Segment5(const Segment5&);
   Segment5& operator=(const Segment5&);
-  ~Segment5();
+  ~Segment5() override;
 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

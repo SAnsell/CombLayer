@@ -49,9 +49,9 @@ class ConicInfo
 
  public:
 
-  ConicInfo(const Geometry::Vec3D&,const Geometry::Vec3D&,
+  ConicInfo(Geometry::Vec3D ,Geometry::Vec3D ,
 	    const double,const int,const double,const int);
-  ConicInfo(const Geometry::Vec3D&,const Geometry::Vec3D&,
+  ConicInfo(Geometry::Vec3D ,Geometry::Vec3D ,
 	    const double,const int,const double,const int,const int);
   ConicInfo(const ConicInfo&);
   ConicInfo& operator=(const ConicInfo&);

@@ -79,7 +79,7 @@ class R3FrontEndCave :
   bool doorActive;           ///< Flag if door active
   std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -92,12 +92,12 @@ class R3FrontEndCave :
   R3FrontEndCave(const std::string&);
   R3FrontEndCave(const R3FrontEndCave&);
   R3FrontEndCave& operator=(const R3FrontEndCave&);
-  virtual ~R3FrontEndCave();
+  ~R3FrontEndCave() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

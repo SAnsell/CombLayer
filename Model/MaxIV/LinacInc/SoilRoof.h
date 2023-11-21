@@ -63,9 +63,9 @@ class SoilRoof :
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
 
-  void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,
+				const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -76,12 +76,12 @@ class SoilRoof :
   SoilRoof(const std::string&);
   SoilRoof(const SoilRoof&);
   SoilRoof& operator=(const SoilRoof&);
-  virtual ~SoilRoof() =default;
+  ~SoilRoof() override =default;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

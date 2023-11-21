@@ -3,7 +3,7 @@
 
  * File:   constructVarInc/PipeGenerator.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,16 @@ class FuncDataBase;
 namespace setVariable
 {
 
+struct segInfo
+{
+  int type;
+  double radius;
+  double height;
+  double width;
+  double thick;
+  std::string mat;
+};
+  
 /*!
   \class PipeGenerator
   \version 1.0
@@ -39,43 +49,40 @@ class PipeGenerator
 {
  private:
 
-  int pipeType;                 ///< type [0 for round / 1 for square]
-  double pipeRadius;            ///< main radius
-  double pipeHeight;            ///< main height
-  double pipeWidth;             ///< main width
-  double pipeThick;             ///< metal thickness
-  double claddingThick;         ///< cladding radius
-  double flangeARadius;          ///< flange Radius (>radius)
-  double flangeALen;             ///< flange Length
-  double flangeBRadius;          ///< flange Radius (>radius)
-  double flangeBLen;             ///< flange Length
-  double windowRadius;          ///< window radius (radius > WR > flangeR)
-  double windowThick;           ///< window thickness
+  segInfo pipe;
 
-  std::string pipeMat;          ///< Primary default mat
-  std::string frontWindowMat;   ///< window mat
-  std::string backWindowMat;    ///< window mat
+  segInfo flangeA;
+  segInfo flangeB;
+  segInfo windowA;
+  segInfo windowB;
+
+  double claddingThick;         ///< cladding radius
+  
   std::string voidMat;          ///< void mat
   std::string claddingMat;      ///< Primary default mat
-  std::string flangeMat;        ///< Flange material
 
   int outerVoid;                ///< Flag to build the outer void cell between flanges
 
  public:
 
   PipeGenerator();
-  PipeGenerator(const PipeGenerator&);
-  PipeGenerator& operator=(const PipeGenerator&);
-  ~PipeGenerator();
+  PipeGenerator(const PipeGenerator&) =default;
+  PipeGenerator& operator=(const PipeGenerator&) =default;
+  ~PipeGenerator() =default;
 
   void setPipe(const double,const double);
-  void setRectPipe(const double,const double,const double);
+  void setRectPipe(const double,const double,const double =-1.0);
   void setNoWindow();
   void setWindow(const double,const double);
+  void setRectWindow(const double,const double,const double);
   void setFlange(const double,const double);
+  void setRectFlange(const double,const double,const double);
   void setAFlange(const double,const double);
+  void setARectFlange(const double,const double,const double);
   void setBFlange(const double,const double);
+  void setBRectFlange(const double,const double,const double);
   void setFlangePair(const double,const double,const double,const double);
+  void setFlangeLength(const double,const double);
 
   template<typename CF> void setCF();
   template<typename CF> void setAFlangeCF();
@@ -89,6 +96,10 @@ class PipeGenerator
 
   void setOuterVoid(const int val =1) { outerVoid = val; }
 
+  /// accessor
+  const std::string& getPipeMat() const { return pipe.mat; }
+
+ 
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double) const;
 

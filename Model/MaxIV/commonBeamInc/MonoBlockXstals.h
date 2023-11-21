@@ -81,7 +81,7 @@ class MonoBlockXstals :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -91,12 +91,12 @@ class MonoBlockXstals :
   MonoBlockXstals(const std::string&);
   MonoBlockXstals(const MonoBlockXstals&);
   MonoBlockXstals& operator=(const MonoBlockXstals&);
-  virtual ~MonoBlockXstals();
+  ~MonoBlockXstals() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

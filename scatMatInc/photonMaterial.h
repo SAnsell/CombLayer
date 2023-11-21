@@ -65,7 +65,7 @@ class photonMaterial :
   photonMaterial(const photonMaterial&);
   virtual photonMaterial* clone() const;
   photonMaterial& operator=(const photonMaterial&);
-  virtual ~photonMaterial();
+  ~photonMaterial() override;
   
   virtual void write(std::ostream&) const;
 

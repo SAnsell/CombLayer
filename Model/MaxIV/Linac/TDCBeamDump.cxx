@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/TDCBeamDump.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,14 +68,11 @@ namespace tdcSystem
 {
 
 TDCBeamDump::TDCBeamDump(const std::string& Key)  :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",4),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::ExternalCut(),
-  mainFC1(nullptr),
-  mainFCSide(0)
-
+  attachSystem::ExternalCut()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -83,8 +80,8 @@ TDCBeamDump::TDCBeamDump(const std::string& Key)  :
 {}
 
 TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
-  attachSystem::ContainedComp(A),
   attachSystem::FixedRotateGroup(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
@@ -112,9 +109,7 @@ TDCBeamDump::TDCBeamDump(const TDCBeamDump& A) :
   skinRightMat(A.skinRightMat),
   airMat(A.airMat),
   frontPlateMat(A.frontPlateMat),
-  carbonMat(A.carbonMat),
-  mainFC1(A.mainFC1),
-  mainFCSide(A.mainFCSide)
+  carbonMat(A.carbonMat)
   /*!
     Copy constructor
     \param A :: TDCBeamDump to copy
@@ -159,20 +154,8 @@ TDCBeamDump::operator=(const TDCBeamDump& A)
       airMat=A.airMat;
       frontPlateMat=A.frontPlateMat;
       carbonMat=A.carbonMat;
-      mainFC1=A.mainFC1;
-      mainFCSide=A.mainFCSide;
     }
   return *this;
-}
-
-TDCBeamDump*
-TDCBeamDump::clone() const
-/*!
-  Clone self
-  \return new (this)
- */
-{
-    return new TDCBeamDump(*this);
 }
 
 TDCBeamDump::~TDCBeamDump()
@@ -221,39 +204,6 @@ TDCBeamDump::populate(const FuncDataBase& Control)
 
   return;
 }
-
-void
-TDCBeamDump::createUnitVector(const attachSystem::FixedComp& centreFC,
-			   const long int cIndex,
-			   const attachSystem::FixedComp& pipeFC,
-			   const long int pIndex)
-  /*!
-    Create the unit vectors.
-    The first beamFC is to set the X,Y,Z relative to the beam
-    and the origin at the beam centre position.
-
-    \param centreFC :: FixedComp for origin
-    \param cIndex :: link point of centre [and axis]
-    \param pipeFC :: link point of pipe centre
-    \param pIndex :: direction for links
-  */
-{
-  ELog::RegMethod RegA("TDCBeamDump","createUnitVector");
-
-  attachSystem::FixedComp& mainFC=getKey("Main");
-  attachSystem::FixedComp& beamFC=getKey("Beam");
-
-  mainFC.createUnitVector(centreFC,cIndex);
-  beamFC.createUnitVector(pipeFC,pIndex);
-
-  applyOffset();
-  // if (upFlag)
-  //   beamFC.applyShift(0,0,lift);  // only beam offset
-  setDefault("Beam");
-  setSecondary("Main");
-  return;
-}
-
 
 void
 TDCBeamDump::createSurfaces()
@@ -411,19 +361,6 @@ TDCBeamDump::createLinks()
 }
 
 void
-TDCBeamDump::setMainAxis(const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
-/*!
-  Main axis setter
-  \param FC :: Main axis fixed component (origin)
-  \param sideIndex :: link point for origin
- */
-{
-  mainFC1 = const_cast<attachSystem::FixedComp*>(&FC);
-  mainFCSide = sideIndex;//attachSystem::getLinkNumber(sideName);
-}
-
-void
 TDCBeamDump::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
@@ -436,18 +373,9 @@ TDCBeamDump::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("TDCBeamDump","createAll");
 
-  if (!mainFC1)
-    {
-      mainFC1 = const_cast<attachSystem::FixedComp*>(&FC);
-      mainFCSide = sideIndex;
-    }
-
   populate(System.getDataBase());
-  // ELog::EM << keyName << " createAll: mainFC1: " << mainFC1->getZ() << ELog::endDiag;
-  // ELog::EM << keyName << " createAll: beam: " << getKey("Beam").getZ() << ELog::endDiag;
-  createUnitVector(*mainFC1,mainFCSide, FC,sideIndex);
-  // ELog::EM << keyName << " createAll: mainFC1: " << mainFC1->getZ() << ELog::endDiag;
-  // ELog::EM << keyName << " createAll: beam: " << getKey("Beam").getZ() << ELog::endDiag;
+
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -456,4 +384,4 @@ TDCBeamDump::createAll(Simulation& System,
   return;
 }
 
-}  // tdcSystem
+}  // namespace tdcSystem

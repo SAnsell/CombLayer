@@ -85,7 +85,7 @@ class TS2FlatTarget : public TMRSystem::TargetBase
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();  
   void createObjects(Simulation&);
   void createLinks();
@@ -95,8 +95,8 @@ class TS2FlatTarget : public TMRSystem::TargetBase
   TS2FlatTarget(const std::string&);
   TS2FlatTarget(const TS2FlatTarget&);
   TS2FlatTarget& operator=(const TS2FlatTarget&);
-  virtual TS2FlatTarget* clone() const; 
-  virtual ~TS2FlatTarget();
+  TS2FlatTarget* clone() const override; 
+  ~TS2FlatTarget() override;
 
   /// Main cell body
   int getMainBody() const  { return mainCell; }
@@ -109,11 +109,11 @@ class TS2FlatTarget : public TMRSystem::TargetBase
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }
 
-  void addProtonLine(Simulation&);
+  void addProtonLine(Simulation&) override;
   void layerProcess(Simulation&);
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
   
 
 };

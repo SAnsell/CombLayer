@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/GuideBay.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ namespace essSystem
 class GuideBay :
     public attachSystem::FixedRotate,
     public attachSystem::ContainedGroup,
+    public attachSystem::ExternalCut,
     public attachSystem::CellMap
 {
  private:
@@ -55,14 +56,15 @@ class GuideBay :
   double midRadius;     ///< Mid divide
   int mat;              ///< Material
   size_t nItems;        ///< Number of guide items
-  
-  int innerCyl;        ///< Inner cylinder surface
-  int outerCyl;        ///< Outer cylinder surface
 
+  double RInner;
+  double ROuter;
+  
   /// Guide units
   std::vector<std::shared_ptr<GuideItem> > GUnit;
-
-  void populate(const FuncDataBase&);
+  void calcRadii();
+  
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -73,9 +75,8 @@ class GuideBay :
   GuideBay(const std::string&,const size_t);
   GuideBay(const GuideBay&);
   GuideBay& operator=(const GuideBay&);
-  virtual ~GuideBay();
+  ~GuideBay() override;
 
-  void setCylBoundary(const int,const int);
   /// accessor to guid units
   const std::vector<std::shared_ptr<GuideItem>>& getGuideItems() const
      {return GUnit;}
@@ -85,7 +86,7 @@ class GuideBay :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

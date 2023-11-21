@@ -55,9 +55,9 @@ class GammaSource :
   
   Geometry::Vec3D FocusPoint;   ///< Focus point
   
-  void populate(const mainSystem::MITYPE&);
+  void populate(const mainSystem::MITYPE&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   void calcPosition();
   void createRectangleSource(SDef::Source&) const;
   void createRadialSource(SDef::Source&) const;
@@ -67,8 +67,8 @@ class GammaSource :
   GammaSource(const std::string&);
   GammaSource(const GammaSource&);
   GammaSource& operator=(const GammaSource&);
-  virtual GammaSource* clone() const;
-  virtual ~GammaSource();
+  GammaSource* clone() const override;
+  ~GammaSource() override;
 
   void setPoint();
   void setRectangle(const double,const double);
@@ -81,11 +81,11 @@ class GammaSource :
 		 const long int);
 
 
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
+  void write(std::ostream&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
 };
 
 }

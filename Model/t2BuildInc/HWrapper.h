@@ -67,11 +67,11 @@ class HWrapper :
   HWrapper(const std::string&);
   HWrapper(const HWrapper&);
   HWrapper& operator=(const HWrapper&);
-  ~HWrapper();
+  ~HWrapper() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

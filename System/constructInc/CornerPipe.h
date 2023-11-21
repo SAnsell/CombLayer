@@ -65,7 +65,7 @@ class CornerPipe :
 
   int outerVoid;                 ///< Flag to build the outer void cell between flanges
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -75,11 +75,11 @@ class CornerPipe :
   CornerPipe(const std::string&);
   CornerPipe(const CornerPipe&);
   CornerPipe& operator=(const CornerPipe&);
-  virtual ~CornerPipe();
+  ~CornerPipe() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

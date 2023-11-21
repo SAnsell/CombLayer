@@ -88,7 +88,7 @@ class FLEXPES :
   FLEXPES(const std::string&);
   FLEXPES(const FLEXPES&);
   FLEXPES& operator=(const FLEXPES&);
-  ~FLEXPES();
+  ~FLEXPES() override;
 
   /// set ring
   void setRing(std::shared_ptr<R1Ring> R) { r1Ring=R; }
@@ -96,7 +96,7 @@ class FLEXPES :
   /// Accessor to stop point
   void setStopPoint(const std::string& SP)  { stopPoint=SP; }
   void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+	     const long int) override;
 
 };
 

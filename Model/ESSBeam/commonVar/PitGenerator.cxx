@@ -3,7 +3,7 @@
  
  * File:   commonVar/PitGenerator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ PitGenerator::generatePit(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"FeWidth",feWidth);
   Control.addVariable(keyName+"FeFront",feFront);
   Control.addVariable(keyName+"FeBack",feBack);
-  Control.addVariable(keyName+"FeMat",feMat);
+  Control.addVariable(keyName+"PipeMat",feMat);
   
   Control.addVariable(keyName+"ConcHeight",concHeight);
   Control.addVariable(keyName+"ConcDepth",concDepth);

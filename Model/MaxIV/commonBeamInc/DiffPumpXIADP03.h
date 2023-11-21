@@ -66,7 +66,7 @@ class DiffPumpXIADP03 :
   int magnetMat;             ///< Magnet material
   int flangeMat;             ///< Flange material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -76,11 +76,11 @@ class DiffPumpXIADP03 :
   DiffPumpXIADP03(const std::string&);
   DiffPumpXIADP03(const DiffPumpXIADP03&);
   DiffPumpXIADP03& operator=(const DiffPumpXIADP03&);
-  virtual ~DiffPumpXIADP03();
+  ~DiffPumpXIADP03() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

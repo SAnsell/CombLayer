@@ -51,15 +51,15 @@ class TGShow : public phitsTally
 
   explicit TGShow(const int);
   TGShow(const TGShow&);
-  virtual TGShow* clone() const;  
+  TGShow* clone() const override;  
   TGShow& operator=(const TGShow&);
-  virtual ~TGShow();
+  ~TGShow() override;
      
   void setIndex(const std::array<size_t,3>&);
   void setOutputStyle(const bool,const bool);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
   
-  virtual void write(std::ostream&,const std::string&) const;
+  void write(std::ostream&,const std::string&) const override;
   
 };
 

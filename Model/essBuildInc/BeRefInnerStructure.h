@@ -55,10 +55,10 @@ class BeRefInnerStructure :
   BeRefInnerStructure(const std::string&);
   BeRefInnerStructure(const BeRefInnerStructure&);
   BeRefInnerStructure& operator=(const BeRefInnerStructure&);
-  virtual ~BeRefInnerStructure();
+  ~BeRefInnerStructure() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

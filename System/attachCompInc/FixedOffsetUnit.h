@@ -98,9 +98,9 @@ class FixedOffsetUnit : public FixedOffset
 
   FixedOffsetUnit(const FixedOffsetUnit& A) : FixedOffset(A) {}
   FixedOffsetUnit(const FixedOffset& A) : FixedOffset(A) {}
-  virtual ~FixedOffsetUnit() {}     ///< Destructor
+  ~FixedOffsetUnit() override {}     ///< Destructor
 
-  void createAll(Simulation&,const FixedComp&,const long int) {}
+  void createAll(Simulation&,const FixedComp&,const long int) override {}
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   test/testMathSupport.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "testMathSupport.h"
 
 
-
 testMathSupport::testMathSupport() 
   /*!
     Constructor
@@ -70,6 +69,7 @@ testMathSupport::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testMathSupport","applyTest");
+  
   TestFunc::regSector("testMathSupport");
 
   typedef int (testMathSupport::*testPtr)();
@@ -78,7 +78,8 @@ testMathSupport::applyTest(const int extra)
       &testMathSupport::testBinSearch,
       &testMathSupport::testClebschGordan,
       &testMathSupport::testCountBits,
-      &testMathSupport::testCubic,      
+      &testMathSupport::testCubic,
+      &testMathSupport::testDeriv,
       &testMathSupport::testFibinacci,
       &testMathSupport::testIndexSort,
       &testMathSupport::testLowBitIndex,
@@ -86,9 +87,10 @@ testMathSupport::applyTest(const int extra)
       &testMathSupport::testNormalDist,
       &testMathSupport::testOrder,
       &testMathSupport::testPairCombine,
-      &testMathSupport::testPairSort,
       &testMathSupport::testPermSort,
-      &testMathSupport::testPolInterp
+      &testMathSupport::testPolInterp,
+      &testMathSupport::testQuadratic,
+      &testMathSupport::testRangePos
     };
   const std::string TestName[]=
     {
@@ -96,6 +98,7 @@ testMathSupport::applyTest(const int extra)
       "ClebschGordan",
       "CountBits",
       "Cubic",
+      "Deriv",
       "Fibinacci",
       "IndexSort",
       "LowBitIndex",
@@ -103,9 +106,10 @@ testMathSupport::applyTest(const int extra)
       "NormalDist",
       "Order",
       "PairCombine",
-      "PairSort",
       "PermSort",
-      "PolInterp"
+      "PolInterp",
+      "Quadratic",
+      "RangePos"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -234,6 +238,37 @@ testMathSupport::testCountBits()
 }
 
 int
+testMathSupport::testDeriv()
+  /*!
+    Applies a simple test to check the bit counting 
+    \retval -1 on failure
+    \retval 0 on success
+  */
+{
+  ELog::RegMethod RegA("testMathSupport","testDeriv");
+
+  typedef std::tuple<double,double,double> TTYPE;
+  const std::vector<TTYPE> Tests({
+      {3.0,4.0,5.0}
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      const double x0=0.0;
+      const double x1=1.0;
+      const double x2=2.0;
+      const double y0=std::get<0>(tc);
+      const double y1=std::get<1>(tc);
+      const double y2=std::get<2>(tc);
+      const double value=
+	d2dxQuadratic<double>({x0,x1,x2},{y0,y1,y2});
+	
+
+    }
+  return 0;
+}
+
+int
 testMathSupport::testLowBitIndex()
   /*!
     Applies a simple test to check the bit counting 
@@ -241,7 +276,7 @@ testMathSupport::testLowBitIndex()
     \retval 0 on success
   */
 {
-  ELog::RegMethod RegA("testMathSupport","testCountBits");
+  ELog::RegMethod RegA("testMathSupport","testLowBitIndex");
   
   unsigned int A[]={7,16,140,160};
   unsigned int Res[]={1,5,3,6};
@@ -266,6 +301,8 @@ testMathSupport::testQuadratic()
     \retval 0 on success
   */
 {
+  ELog::RegMethod RegA("testMathSupport","testQuadratic");
+  
   typedef std::complex<double> CP ;
   std::pair<CP,CP > Ans;
   // (x-2)(2x+3)
@@ -465,77 +502,6 @@ testMathSupport::testOrder()
   return 0;
 }
 
-int
-testMathSupport::testPairSort()
-  /*!
-    Test of the mathsupport PSep component to do sorted
-    and to do finding.
-    \returns -ve on error 0 on success.
-   */
-{
-  ELog::RegMethod RegA("testMathSupport","testPairSort");
-  std::vector<std::pair<int,int> > GList;
-
-  GList.push_back(std::pair<int,int>(3,4));
-  GList.push_back(std::pair<int,int>(6,2));
-  GList.push_back(std::pair<int,int>(7,8));
-  GList.push_back(std::pair<int,int>(2,6));
-  // using second term
-  sort(GList.begin(),GList.end());  
-  std::vector<std::pair<int,int> >::const_iterator vc;    
-  int a(-10);
-  int flag(0);
-  for(vc=GList.begin();vc!=GList.end();vc++)
-    {
-      if (vc->first<a)
-	flag=-1;
-      a=vc->first;
-    }
-  if (flag)
-    return -1;
-
-  a=-10;
-  sort(GList.begin(),GList.end(),mathSupport::PairSndLess<int,int>());  
-  for(vc=GList.begin();vc!=GList.end();vc++)
-    {
-      if (vc->second<a)
-	flag=-1;
-      a=vc->second;
-    }
-  if (flag)  return -2;
-
-
-  std::vector<std::pair<int,int> >::iterator fc;
-  fc=find_if(GList.begin(),GList.end(),
-	  std::bind2nd(mathSupport::PairSndEq<int,int>(),8));
-
-  if (fc==GList.end())
-    return -3;
-  if (fc->first!=7)
-    return -4;
-
-  // Now check a bound sorting
-  fc=lower_bound(GList.begin(),GList.end(),4,
-		 mathSupport::PairSndLess<int,int>());
-  if (fc->first!=3)
-    return -5;
-
-  // Check inserting
-  fc=lower_bound(GList.begin(),GList.end(),5,
-		 mathSupport::PairSndLess<int,int>());
-  GList.insert(fc,std::pair<int,int>(9,5));
-  a=-10;
-  for(vc=GList.begin();vc!=GList.end();vc++)
-    {
-      if (vc->second<a)
-	flag=-1;
-      a=vc->second;
-    }
-  if (flag)
-    return -6;
-
-  return 0; 
-}
 
 int
 testMathSupport::testPairCombine()
@@ -546,6 +512,8 @@ testMathSupport::testPairCombine()
     \retval 0 on success
   */ 
 {
+  ELog::RegMethod RegA("testMathSupport","testPairCombine");
+
   std::vector<int> A;
   std::vector<double> B;
   for(int i=0;i<10;i++)
@@ -722,6 +690,48 @@ testMathSupport::testFibinacci()
       const double tmp=FNB;
       FNB+=FNA;
       FNA=tmp;
+    }
+  return 0;  
+}
+
+int
+testMathSupport::testRangePos()
+  /*!
+    Test a fibinacci series [first 50 terms]
+    \return -1 :: failed to find end
+  */
+{
+  ELog::RegMethod RegA ("testMathSupport","testRangePos");
+
+  std::vector<double> V(100);
+  for(size_t i=0;i<100;i++)
+    V[i]=static_cast<double>(i);
+
+  typedef std::tuple<double,size_t> TTYPE;
+  std::vector<TTYPE> Tests({
+      {23.1,23},
+      {-10.0,0},
+      {102.0,99}
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      const double testValue(std::get<0>(tc));
+      const size_t outIndex(std::get<1>(tc));
+      
+      const size_t index=rangePos(V,testValue);
+      if (index!=outIndex)
+	{
+	  ELog::EM<<"TV == "<<testValue<<ELog::endDiag;
+	  ELog::EM<<"index == "<<index<<" :: "<<outIndex<<ELog::endDiag;
+	  const size_t a(std::max(1UL,index)-1);
+	  const size_t b((index>=0 && index<=99) ? index : 0);
+	  const size_t c(std::min(98UL,index)+1);
+	  ELog::EM<<"Vector values : V["<<a<<"] ="<<V[a]
+		  <<" V["<<index<<"] ="<<V[b]
+		  <<" V["<<c<<"] ="<<V[c]<<ELog::endDiag;
+	  return -1;
+	}
     }
   return 0;  
 }

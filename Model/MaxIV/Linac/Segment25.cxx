@@ -3,7 +3,7 @@
 
  * File: Linac/Segment25.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@
 #include "BlockZone.h"
 #include "generalConstruct.h"
 
-#include "SplitFlangePipe.h"
+#include "GeneralPipe.h"
 #include "Bellows.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -132,7 +132,7 @@ Segment25::buildObjects(Simulation& System)
   bellowA->createAll(System,*this,0);
 
   outerCell=buildZone->createUnit(System,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
 
   triPipeA->setFront(*bellowA,2);
   triPipeA->createAll(System,*bellowA,"back");
@@ -154,17 +154,17 @@ Segment25::buildObjects(Simulation& System)
 
   // BELLOWS:
   bellowAA->createAll(System,*multiPipe,2);
-  bellowBA->addInsertCell(outerCellMulti);
+  bellowBA->addAllInsertCell(outerCellMulti);
   bellowBA->createAll(System,*multiPipe,3);
 
-  bellowCA->addInsertCell(outerCellMulti);
+  bellowCA->addAllInsertCell(outerCellMulti);
   bellowCA->createAll(System,*multiPipe,4);
 
   const int outerCellBellow=
     buildZone->createUnit(System,*bellowAA,2);
-  bellowAA->insertInCell(System,outerCellBellow);
-  bellowBA->insertInCell(System,outerCellBellow);
-  bellowCA->insertInCell(System,outerCellBellow);
+  bellowAA->insertAllInCell(System,outerCellBellow);
+  bellowBA->insertAllInCell(System,outerCellBellow);
+  bellowCA->insertAllInCell(System,outerCellBellow);
 
   CellMap::addCell("MultiCell",outerCellMulti);
   CellMap::addCell("BellowCell",outerCellBellow);

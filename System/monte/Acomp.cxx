@@ -3,7 +3,7 @@
  
  * File:   monte/Acomp.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@
 #include "mathSupport.h"
 #include "MatrixBase.h"
 #include "MapSupport.h"
-#include "RotCounter.h"
+#include "IndexCounter.h"
 #include "BnId.h"
 #include "AcompTools.h"
 #include "Acomp.h"
@@ -1152,8 +1152,8 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
       Tmod.clear();                  // erase all at the start
 
       //set PI status to 1
-      for_each( Work.begin(),Work.end(),
-		std::bind2nd(std::mem_fun_ref(&BnId::setPI),1) );
+      for_each(Work.begin(),Work.end(),
+	       [](BnId& item){ item.setPI(1); });
 
       //Collect into pairs which have a difference of +/- one 
       // object
@@ -1331,7 +1331,7 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
       // This counter is a ripple counter, ie 1,2,3 where no numbers 
       // are the same. BUT it is acutally 0->N 0->N 0->N
       // index by A, A+1 ,A+2  etc
-      RotaryCounter<size_t> Index(Icount,Psize);
+      IndexCounter<size_t> Index(Icount,Psize);
       do {
 	size_t di;
 	for(di=0;di<Dsize;di++)   //check each orignal position

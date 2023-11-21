@@ -73,7 +73,7 @@ class SixPortTube :
   int flangeMat;               ///< flange material
   int plateMat;                ///< plate material
  
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -84,11 +84,11 @@ class SixPortTube :
   SixPortTube(const std::string&,const std::string&);
   SixPortTube(const SixPortTube&);
   SixPortTube& operator=(const SixPortTube&);
-  virtual ~SixPortTube();
+  ~SixPortTube() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

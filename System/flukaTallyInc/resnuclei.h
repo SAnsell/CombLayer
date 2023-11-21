@@ -50,19 +50,19 @@ public:
   resnuclei(const int,const int);
   resnuclei(const std::string&,const int,const int);
   resnuclei(const resnuclei&);
-  virtual resnuclei* clone() const;
+  resnuclei* clone() const override;
   resnuclei& operator=(const resnuclei&);
-  virtual ~resnuclei();
+  ~resnuclei() override;
 
   /// return fluka name
-  virtual std::string getType() const { return "RESNUCLE"; }
+  std::string getType() const override { return "RESNUCLE"; }
   /// set cell for tally
   void setCell(const int CN) { cellA=CN; }
   void setZaid(const int,const int);
   int getZMax() const { return ZMax; }
   int getAMax() const { return AMax; }
   void setMaxAZ(const int,const int);
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 };
 
 }

@@ -50,7 +50,7 @@ class t1WaterModerator :
   int alMat;                    ///< Al
   int waterMat;                   ///< water
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -60,10 +60,10 @@ class t1WaterModerator :
   t1WaterModerator(const std::string&);
   t1WaterModerator(const t1WaterModerator&);
   t1WaterModerator& operator=(const t1WaterModerator&);
-  virtual ~t1WaterModerator();
+  ~t1WaterModerator() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   visitInc/Visit.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,8 +56,8 @@ class Visit
   Geometry::Vec3D Origin;     ///< Origin
   Geometry::Vec3D XYZ;        ///< XYZ extent
 
-  std::array<long int,3> nPts;        ///< Number x/y/z points
-  boost::multi_array<double,3> mesh;  ///< results mesh
+  std::array<size_t,3> nPts;        ///< Number x/y/z points
+  multiData<double> mesh;  ///< results mesh
 
   static long int procDist(double&,const double,double,double&);
   static long int procPoint(double&,const double);
@@ -65,8 +65,9 @@ class Visit
   double getResult(const MonteCarlo::Object*) const;
   size_t getMaxIndex() const;
 
-  double& getMeshUnit(const size_t,const long int,const long in
-		      ,const long int);
+  double& getMeshUnit(const size_t,const size_t,
+		      const size_t,const size_t);
+  
  public:
 
   Visit();

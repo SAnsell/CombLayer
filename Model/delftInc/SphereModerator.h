@@ -60,7 +60,7 @@ class SphereModerator : public virtualMod
   ModelSupport::PipeLine InnerA;       ///< In-going H2
   ModelSupport::PipeLine InnerB;       ///< In-going H2
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -70,14 +70,14 @@ class SphereModerator : public virtualMod
   SphereModerator(const std::string&);
   SphereModerator(const SphereModerator&);
   SphereModerator& operator=(const SphereModerator&);
-  virtual SphereModerator* clone() const;
-  virtual ~SphereModerator();
+  SphereModerator* clone() const override;
+  ~SphereModerator() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
-  virtual void postCreateWork(Simulation&);
+  void postCreateWork(Simulation&) override;
 
 };
 

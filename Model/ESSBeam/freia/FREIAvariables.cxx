@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/freia/FREIAvariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
+
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
@@ -77,9 +79,8 @@ FREIAvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  PipeGen.setPipe(12.0,0.5);
-  PipeGen.setWindow(-2.0,0.3);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setCF<CF250>();
+  PipeGen.setNoWindow();
 
   //  setVariable::ShieldGenerator SGen;
   // extent of beamline

@@ -73,7 +73,7 @@ class BulkInsert :
   void createSurfaces();
   void createObjects(Simulation&);
 
-  void createUnitVector(const FixedComp&,const long int);
+  void createUnitVector(const FixedComp&,const long int) override;
   void createLinks();
 
  public:
@@ -81,7 +81,7 @@ class BulkInsert :
   BulkInsert(const size_t,const std::string&);
   BulkInsert(const BulkInsert&);
   BulkInsert& operator=(const BulkInsert&);
-  virtual ~BulkInsert();
+  ~BulkInsert() override;
 
   /// Access shutter number
   size_t getShutterNumber() const { return shutterNumber; }
@@ -97,8 +97,8 @@ class BulkInsert :
   const std::string& getOuterInc() const { return outerInclude; }
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

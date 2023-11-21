@@ -83,11 +83,11 @@ class Segment35 :
   Segment35(const std::string&);
   Segment35(const Segment35&);
   Segment35& operator=(const Segment35&);
-  ~Segment35();
+  ~Segment35() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

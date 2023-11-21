@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   xml/XMLmap.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <utility>
 
 #include "XMLattribute.h"
 #include "XMLobject.h"
@@ -51,9 +52,10 @@ XMLmap<V,K,T,Comp,Alloc>::XMLmap(XMLobject* B,const std::string& Kval) :
 
 template<template<typename K,typename T,typename Comp,typename Alloc> 
         class V,typename K,typename T,typename Comp,typename Alloc> 
-XMLmap<V,K,T,Comp,Alloc>::XMLmap(XMLobject* B,const std::string& Kval,
-				 const GType& M) :
-  XMLobject(B,Kval),Grid(M)
+XMLmap<V,K,T,Comp,Alloc>::XMLmap(XMLobject* B,
+				 const std::string& Kval,
+				 GType M) :
+  XMLobject(B,Kval),Grid(std::move(M))
   /*!
     Constructor with key and object
     \param B :: XMLobject to used as parent

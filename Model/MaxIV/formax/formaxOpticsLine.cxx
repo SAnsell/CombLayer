@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -82,7 +83,6 @@
 #include "insertPlate.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumBox.h"
 #include "portItem.h"
@@ -110,6 +110,7 @@
 #include "BeamPair.h"
 #include "MonoBlockXstals.h"
 #include "MLMono.h"
+#include "MLMonoDetail.h"
 #include "DCMTank.h"
 #include "BremTube.h"
 #include "HPJaws.h"
@@ -151,7 +152,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
-  MLM(new xraySystem::MLMono(newName+"MLM")),
+  MLM(new xraySystem::MLMonoDetail(newName+"MLM")),
   
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
@@ -522,7 +523,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
   // in the hut beam port
   pipeInit->createAll(System,*this,0);
   outerCell=buildZone.createUnit(System,*pipeInit,2);
-  pipeInit->insertInCell(System,outerCell);
+  pipeInit->insertAllInCell(System,outerCell);
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 

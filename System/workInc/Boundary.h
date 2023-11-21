@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   workInc/Boundary.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:  workInc/Boundary.h
+ *
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ struct BItems
   /// Fraction list of items to include
   FTYPE FList;
 
-  BItems();
+  BItems() {}
   BItems(const BItems&);
   BItems& operator=(const BItems&);
   ~BItems() {}  ///< Destructor 

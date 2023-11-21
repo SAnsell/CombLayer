@@ -78,7 +78,7 @@ class Linac :
 		    const long int, const long int,
 		    const size_t, const int);
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -89,11 +89,11 @@ class Linac :
   Linac(const std::string&);
   Linac(const Linac&);
   Linac& operator=(const Linac&);
-  virtual ~Linac();
+  ~Linac() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

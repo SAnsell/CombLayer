@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/heimdal/HEIMDAL.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "DiskChopper.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "RectanglePipe.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
 
@@ -89,7 +90,8 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusTA(new beamlineSystem::PlateUnit(newName+"FTA")),
   FocusCA(new beamlineSystem::PlateUnit(newName+"FCA")),
 
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  VPipeB(new constructSystem::RectanglePipe(newName+"PipeB")),
+
   FocusTB(new beamlineSystem::PlateUnit(newName+"FTB")),
   FocusCB(new beamlineSystem::PlateUnit(newName+"FCB")),
 
@@ -190,6 +192,7 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
 
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
 
+
   VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FTA,thermalIndex);
 
@@ -205,6 +208,9 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   ELog::EM<<"Thermal = "<<FocusTB->getLinkAxis(2)
 	  <<ELog::endDiag;
 
+  ELog::EM<<"EARLY RETURN"<<ELog::endDiag;
+  return;
+  
   VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*VPipeB,2);
 
@@ -386,7 +392,12 @@ HEIMDAL::build(Simulation& System,
 
   if (stopPoint==4) return;                      // STOP At hutch
   //  buildHut(System,ChopperOutB->getKey("Beam"),2,voidCell);
-  
+
+  ELog::EM<<"FocusCA Axis == "<<FocusCA->getLinkPt(0)
+	  <<" : "<<FocusCA->getY()<<ELog::endDiag;;
+  ELog::EM<<"FocusTA Axis == "<<FocusTA->getLinkPt(0)
+	  <<" : "<<FocusTA->getY()<<ELog::endDiag;;
+
   return;
 }
 

@@ -93,7 +93,7 @@ class BremTube :
   void createFrontPorts(Simulation&);
   void createBasePorts(Simulation&);
   
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -104,18 +104,18 @@ class BremTube :
   BremTube(const std::string&,const std::string&);
   BremTube(const BremTube&);
   BremTube& operator=(const BremTube&);
-  virtual ~BremTube();
+  ~BremTube() override;
 
-  virtual void insertInCell(Simulation&,const int) const;
-  virtual void insertInCell(Simulation&,const std::vector<int>&) const;
-  virtual void insertInCell(MonteCarlo::Object&) const;
+  void insertInCell(Simulation&,const int) const override;
+  void insertInCell(Simulation&,const std::vector<int>&) const override;
+  void insertInCell(MonteCarlo::Object&) const override;
 
   const constructSystem::portItem& getFrontPort(const size_t) const;
   const constructSystem::portItem& getMainPort(const size_t) const;
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

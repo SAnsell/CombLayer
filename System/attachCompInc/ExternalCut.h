@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ExternalCut.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,8 @@ class ExternalCut
 
   cutUnit& getUnit(const std::string&);
   const cutUnit* findUnit(const std::string&) const;
-  
+
+  void swapCutSurf(const std::string&,const std::string&);
   void copyCutSurf(const std::string&,const ExternalCut&,const std::string&);
 
   void setCutSurf(const std::string&,const int);

@@ -50,7 +50,7 @@ class Bucket :
   
   int mat;                     ///< Material Number [Cd]
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
 
@@ -59,11 +59,11 @@ class Bucket :
   Bucket(const std::string&);
   Bucket(const Bucket&);
   Bucket& operator=(const Bucket&);
-  ~Bucket();
+  ~Bucket() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

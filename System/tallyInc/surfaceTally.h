@@ -48,13 +48,13 @@ class surfaceTally : public Tally
     surfaceTally(const bool,const int);
     explicit surfaceTally(const int);
     surfaceTally(const surfaceTally&);
-    virtual surfaceTally* clone() const; 
+    surfaceTally* clone() const override; 
     surfaceTally& operator=(const surfaceTally&);
-    virtual ~surfaceTally();
-    virtual std::string className() const 
+    ~surfaceTally() override;
+    std::string className() const override 
       { return "surfaceTally"; }
 
-    virtual int addLine(const std::string&); 
+    int addLine(const std::string&) override; 
     /// Add a surface to the list
     void addSurface(const int N) { SurfList.push_back(N); }
 
@@ -63,10 +63,10 @@ class surfaceTally : public Tally
     void setSurfDivider(const std::vector<int>&);
     void setCellDivider(const std::vector<int>&);
     
-    virtual void renumberCell(const int,const int);
-    virtual void renumberSurf(const int,const int);
+    void renumberCell(const int,const int) override;
+    void renumberSurf(const int,const int) override;
 
-    virtual void write(std::ostream&) const;
+    void write(std::ostream&) const override;
     
   };
 };

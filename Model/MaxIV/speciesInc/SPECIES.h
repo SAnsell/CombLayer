@@ -85,10 +85,10 @@ class SPECIES :
   SPECIES(const std::string&);
   SPECIES(const SPECIES&);
   SPECIES& operator=(const SPECIES&);
-  virtual ~SPECIES();
+  ~SPECIES() override;
 
-  virtual void build(Simulation&,const attachSystem::FixedComp&,
-	     const long int);
+  void build(Simulation&,const attachSystem::FixedComp&,
+	     const long int) override;
 
 };
 

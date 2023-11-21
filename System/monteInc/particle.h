@@ -57,8 +57,8 @@ class particle
 
   const Object* OPtr;       ///< Object for collision [if set]
 
-  particle(const Geometry::Vec3D&,const Geometry::Vec3D&);
-  particle(const std::string&,const Geometry::Vec3D&,
+  particle(Geometry::Vec3D ,const Geometry::Vec3D&);
+  particle(const std::string&,Geometry::Vec3D ,
 	   const Geometry::Vec3D&,const double);
   particle(const particle&);
   particle& operator=(const particle&);

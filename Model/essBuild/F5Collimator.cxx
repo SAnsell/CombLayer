@@ -33,7 +33,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "F5Calc.h"
 #include "F5Collimator.h"
@@ -42,8 +42,8 @@ namespace essSystem
 {
 
 F5Collimator::F5Collimator(const std::string& Key) :
-  attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp()
   /*!
      Constructor
      \param Key :: Name of construction key
@@ -51,21 +51,15 @@ F5Collimator::F5Collimator(const std::string& Key) :
 {}
 
 
-F5Collimator::~F5Collimator()
-/*!
-  Destructor
-*/
-{}
-
 void
-F5Collimator::populate(FuncDataBase& Control)
+F5Collimator::modifyPopulate(FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
   ELog::RegMethod RegA("F5Collimator","populate");
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
   
   length=Control.EvalVar<double>(keyName+"Length"); // along x
   wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
@@ -125,8 +119,8 @@ F5Collimator::populate(FuncDataBase& Control)
   SetTally(xStep, yStep, zStep);
   SetPoints(gB, gC, gB2);
   SetLength(length);
-  xyAngle = GetXYAngle();
-  zAngle  = GetZAngle();
+  zAngle = GetXYAngle();
+  xAngle  = GetZAngle();
   width = 2*GetHalfSizeX();
   height = 2*GetHalfSizeZ();
   
@@ -241,7 +235,7 @@ F5Collimator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("F5Collimator","createAll");
-  populate(System.getDataBase());
+  modifyPopulate(System.getDataBase());
   
   createUnitVector(FC,sideIndex);
   createSurfaces();

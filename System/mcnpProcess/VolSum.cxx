@@ -19,20 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <fstream>
+#include <boost/format.hpp>
 #include <cmath>
 #include <complex>
-#include <string>
-#include <sstream>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <list>
 #include <map>
-#include <set>
-#include <vector>
 #include <memory>
 #include <random>
-#include <boost/format.hpp>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -64,9 +65,9 @@
 namespace ModelSupport
 {
 
-VolSum::VolSum(const Geometry::Vec3D& OPt,
+VolSum::VolSum(Geometry::Vec3D  OPt,
 	       const Geometry::Vec3D& AxisRange) : 
-  Origin(OPt),X(std::abs(AxisRange[0]),0,0),
+  Origin(std::move(OPt)),X(std::abs(AxisRange[0]),0,0),
   Y(0,std::abs(AxisRange[1]),0),Z(0,0,std::abs(AxisRange[2])),
   fullVol(0.0),totalDist(0),nTracks(0)
   /*!g

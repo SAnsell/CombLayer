@@ -51,7 +51,7 @@ class Segment49 :
 
   void constructHole(Simulation&);
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -61,11 +61,11 @@ class Segment49 :
   Segment49(const std::string&);
   Segment49(const Segment49&);
   Segment49& operator=(const Segment49&);
-  ~Segment49();
+  ~Segment49() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

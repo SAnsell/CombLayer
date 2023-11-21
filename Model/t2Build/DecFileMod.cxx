@@ -176,7 +176,6 @@ DecFileMod::readFile(Simulation& System,const std::string& FName)
   ELog::EM<<"Read "<<surfCnt<<" extra surfaces for "<<keyName<<ELog::endDebug;
  
   // REBASE and recentre
-  ModelSupport::surfIndex& SI=ModelSupport::surfIndex::Instance();
   const ModelSupport::surfIndex::STYPE& SMap
     =ModelSupport::surfIndex::Instance().surMap();
 
@@ -191,10 +190,12 @@ DecFileMod::readFile(Simulation& System,const std::string& FName)
     }
   reMapSurf(OMap);
 
-  // RE-ADJUST 
-  std::map<int,Geometry::Surface*> EQMap;
-  if (SI.findEqualSurf(buildIndex,buildIndex+10000,EQMap))
-    ModelSupport::ObjSurfMap::removeEqualSurf(EQMap,OMap);
+  // RE-ADJUST
+  //    ModelSupport::surfIndex& SI=ModelSupport::surfIndex::Instance();
+
+  // std::map<int,Geometry::Surface*> EQMap;
+  // if (SI.findEqualSurf(buildIndex,buildIndex+10000,EQMap))
+  //   ModelSupport::ObjSurfMap::removeEqualSurf(EQMap,OMap);
 
   ReadFunc::OTYPE& SysOMap=System.getCells();
   ReadFunc::mapInsert(OMap,SysOMap);

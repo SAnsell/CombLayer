@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BaseVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -218,7 +218,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("TPlateBPlateIOffset",2.95);    // Backplate thickness
   Control.addVariable("TPlateBPlatePinRadius",0.4);    // Backplate thickness
   
-  Control.addVariable("TPlateFeMat","Stainless304");            // Steel
+  Control.addVariable("TPlatePipeMat","Stainless304");            // Steel
   Control.addVariable("TPlateWMat","Tungsten");            // Tungsten 
   Control.addVariable("TPlateWTemp",600.0);            // Tungsten Temp
   Control.addVariable("TPlateWaterMat","D2O");        // Water [D2O]
@@ -344,7 +344,7 @@ TS1BulletTarget(FuncDataBase& Control)
   Control.addVariable("BPlatesBPlateIOffset",2.95);    // Backplate thickness
   Control.addVariable("BPlatesBPlatePinRadius",0.4);    // Backplate thickness
   
-  Control.addVariable("BPlatesFeMat","Stainless304");            // Steel
+  Control.addVariable("BPlatesPipeMat","Stainless304");            // Steel
   Control.addVariable("BPlatesWMat","Tungsten");            // Tungsten 
   Control.addVariable("BPlatesWTemp",600.0);            // Tungsten Temp
   Control.addVariable("BPlatesWaterMat","D2O");        // Water [D2O]
@@ -1036,7 +1036,7 @@ TS1base(FuncDataBase& Control)
   BSGen.generateBox(Control,"sandals",-1.6,0.0,   -1.6, 0.0,  6.17,8.61, 0.35,0.47);  // USE ABOVE
   BSGen.generateBox(Control,"prisma", -1.7,0.0,    0.0,0.0,   6.17,8.61, 0.35,0.47);
   BSGen.generateBox(Control,"surf",    2.2,0.0,    2.0,-1.5,  6.74,4.8,  0.05,0.44); 
-  BSGen.generateBox(Control,"crisp",   2.2,0.0,    2.2,-1.5,  7.91,4.57, 0.22,0.275); 
+  BSGen.generateBox(Control,"crisp",   2.55,0.0,    2.2,-1.5,  7.91,4.57, 0.22,0.275); 
   BSGen.generateBox(Control,"loq",     2.2,0.0,    0.0,0.0,   7.9, 7.9,  0.395,0.395); 
   BSGen.generateBox(Control,"iris",    2.0,0.0,    0.0,0.0,   6.79,6.79, 0.0,0.0); 
   BSGen.generateBox(Control,"polaris",-1.7,0.0,    0.0,0.0,   8.22,7.93, 0.35,0.22); 

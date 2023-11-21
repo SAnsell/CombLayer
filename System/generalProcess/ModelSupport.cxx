@@ -873,10 +873,10 @@ getSetHeadRule(const surfRegister& SMap,const int offset,
 		const std::string& baseString)
   /*!
     Given a base string add an offset to the numbers
-    If a cell does not exist ignore [no error]
+    If a surface does not exist ignore [no error]
     If a number is preceeded by T then it is a true number.
     Use T-4000 etc.
-    \param SMap :: Surf register 
+    \param SMap :: Surface register 
     \param Offset :: Offset nubmer to add
     \param minorOffset :: minor Offset nubmer to add [M]
     \param baseString :: BaseString number
@@ -892,10 +892,10 @@ getSetHeadRule(const surfRegister& SMap,const int offset,
 		const int minorOffset,const std::string& baseString)
   /*!
     Given a base string add an offset to the numbers
-    If a cell does not exist ignore [no error]
+    If a surface does not exist ignore [no error]
     If a number is preceeded by T then it is a true number.
     Use T-4000 etc.
-    \param SMap :: Surf register 
+    \param SMap :: Surface register 
     \param offset :: Offset nubmer to add
     \param minorOffset :: minor Offset nubmer to add [M]
     \param baseString :: BaseString number
@@ -910,10 +910,10 @@ getSetHeadRule(const surfRegister& SMap,const int offset,
 		const std::string& baseString)
   /*!
     Given a base string add an offset to the numbers
-    If a cell does not exist ignore [no error]
+    If a surface does not exist ignore [no error]
     If a number is preceeded by T then it is a true number.
     Use T-4000 etc.
-    \param SMap :: Surf register 
+    \param SMap :: Surface register 
     \param offset :: Offset nubmer to add
     \param baseString :: BaseString number
     \return String with offset components

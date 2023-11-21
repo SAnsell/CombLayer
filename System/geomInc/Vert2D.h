@@ -50,7 +50,7 @@ class Vert2D
  public:
   
   Vert2D();
-  Vert2D(const size_t,const Vec3D&);
+  Vert2D(const size_t,Vec3D );
   Vert2D(const Vert2D&);
   Vert2D& operator=(const Vert2D&);
   ~Vert2D() {}  ///< Destructor

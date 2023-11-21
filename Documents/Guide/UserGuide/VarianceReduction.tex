@@ -305,54 +305,54 @@ maxiv -w -wWWG \
     X,Y,Z cells 100, 50 and 200 respectively. This is a lot of cells!
   \item Example 2 : This is a box which start at x=-100 and goes to the
     PointMap positon given in FixedComp BeamStop
-  
-\item[--wwgCreate] Fill a energy/grid mesh  from a source point
-  Syntax:
-\begin{description}
-  \item {\bf SS0} New name for the mesh (it can be any string).
-  \item {\bf all} particles to use for mesh, using full name e.g. neutron
-    they can be listed together e.g. photon,electron with a comma.
-  \item {\bf M1} Name of the grid to use for this mesh (defined with --wwgMesh)
-  \item {\bf E1[1]} Name of the energy vector (--wwgEnergy)
-    and the index of the energy boundary
-  \item {\bf S0} Name of the source point/plane (--wwgSource)
-  \item {\bf 0.009} density factor. Normally the trick is to decrease density in order to populate remote cells.
-  \item {\bf 1.0} fractional change of length
-  \item {\bf 1.5} the power of $r^2$. It is an effective buildup term.
-\end{description}
 
-\item[--wwgCADIS] The CADIS approximation basically calculates the weighted
-  fraction between source to cell and cell to tally. This is carries out on
-  a energy point by energy point basis. Currently both meshes in the CADIS
-  calculation have to be identical, the energy groups do not need to be.
+  \item[--wwgCreate] Fill a energy/grid mesh  from a source point
+    Syntax:
+    \begin{description}
+    \item {\bf SS0} New name for the mesh (it can be any string).
+    \item {\bf all} particles to use for mesh, using full name e.g. neutron
+      they can be listed together e.g. photon,electron with a comma.
+    \item {\bf M1} Name of the grid to use for this mesh (defined with --wwgMesh)
+    \item {\bf E1[1]} Name of the energy vector (--wwgEnergy)
+      and the index of the energy boundary
+    \item {\bf S0} Name of the source point/plane (--wwgSource)
+    \item {\bf 0.009} density factor. Normally the trick is to decrease density in order to populate remote cells.
+    \item {\bf 1.0} fractional change of length
+    \item {\bf 1.5} the power of $r^2$. It is an effective buildup term.
+    \end{description}
 
-\begin{description}
-  \item {\bf SSX[0]} Create a new group called SSX and carry out the
-    CADIS calculation for the first energy bin. The mesh/energy bins
-    will be taken from the source mesh.    
-  \item {\bf SS0[0]} Use mesh SS0 and use the first energy bin as the source
-  \item {\bf TS0[0]} Use mesh SS1 as the adjoint (tally).
-  \item {\bf S0} The source point to use for tracking from source to cell.
-  \item {\bf S1} The source point that is use for tracking from cell to point. It is the effective
-    tally point.
-  \item {\bf 0.009} density factor. Normally the trick is to decrease density in order to populate remote cells.
-  \item {\bf 1.0} fractional change of length
-  \item {\bf 1.5} the power of $r^2$. It is an effective buildup term.
-\end{description}
+  \item[--wwgCADIS] The CADIS approximation basically calculates the weighted
+    fraction between source to cell and cell to tally. This is carries out on
+    a energy point by energy point basis. Currently both meshes in the CADIS
+    calculation have to be identical, the energy groups do not need to be.
+    
+    \begin{description}
+    \item {\bf SSX[0]} Create a new group called SSX and carry out the
+      CADIS calculation for the first energy bin. The mesh/energy bins
+      will be taken from the source mesh.    
+    \item {\bf SS0[0]} Use mesh SS0 and use the first energy bin as the source
+    \item {\bf TS0[0]} Use mesh SS1 as the adjoint (tally).
+    \item {\bf S0} The source point to use for tracking from source to cell.
+    \item {\bf S1} The source point that is use for tracking from cell to point. It is the effective
+      tally point.
+    \item {\bf 0.009} density factor. Normally the trick is to decrease density in order to populate remote cells.
+    \item {\bf 1.0} fractional change of length
+    \item {\bf 1.5} the power of $r^2$. It is an effective buildup term.
+    \end{description}
+    
 
-
-\item[--wwgNORM] The command applied renormalization to part (all) of a mesh, so the weights
-  are between 1.0 and a very low number. The command works in natural log space.
-\begin{description}
-  \item {\bf SSX[1]} The mesh and energy bin to be normalized
-  \item {\bf 8} The range for the weight values (exp(8))
-  \item {\bf -1} The highest value in the weights.
-       Thus the range runs from exp(-1) to exp(-9) in the output.
-  \item {\bf 0} All values above exp(0) in the un-normalized mesh are
-       treaded as exp(0).
-  \item {\bf -20} All values below exp(-20) in the un-normalized mesh are treaded as exp(-20).
-\end{description}
-
+  \item[--wwgNORM] The command applied renormalization to part (all) of a mesh, so the weights
+    are between 1.0 and a very low number. The command works in natural log space.
+    \begin{description}
+    \item {\bf SSX[1]} The mesh and energy bin to be normalized
+    \item {\bf 8} The range for the weight values (exp(8))
+    \item {\bf -1} The highest value in the weights.
+      Thus the range runs from exp(-1) to exp(-9) in the output.
+    \item {\bf 0} All values above exp(0) in the un-normalized mesh are
+      treaded as exp(0).
+    \item {\bf -20} All values below exp(-20) in the un-normalized mesh are treaded as exp(-20).
+    \end{description}
+    
 \item[--wwgVTK] Write out the mesh to a VTK file.
 \begin{description}
   \item {\bf testA.vtk} Filename for the output
@@ -363,6 +363,7 @@ maxiv -w -wWWG \
 
 \end{description}
 
+\end{description}
 In MCNP, the input deck, the weight-window parameters are defined as
 \begin{deck}
  wwp:n 8 1.4 5 -1 -2 0

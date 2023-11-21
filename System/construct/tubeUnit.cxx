@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -59,8 +60,8 @@ operator<<(std::ostream& OX,const tubeUnit& A)
 }
 
 tubeUnit::tubeUnit(const int aI,const int bI,
-		   const Geometry::Vec3D& C) : 
-  empty(0),iA(aI),iB(bI),Centre(C) 
+		   Geometry::Vec3D  C) : 
+  empty(0),iA(aI),iB(bI),Centre(std::move(C)) 
   /*!
     Constructor
     \param aI :: Index A

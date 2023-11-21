@@ -54,7 +54,7 @@ namespace essSystem
 {
 
 WheelBase::WheelBase(const std::string& Key) :
-  attachSystem::FixedRotate(Key,13),
+  attachSystem::FixedRotate(Key,16),
   attachSystem::ContainedGroup("Wheel","Shaft"),
   attachSystem::CellMap(),
   engActive(0)

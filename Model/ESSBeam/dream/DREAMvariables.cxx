@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/dream/DREAMvariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -216,7 +216,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamShieldAYStep",171.5);
 
   // Guide Section 2 (after wall) [+17.6m]  
-  PipeGen.setPipe(6.0,0.5);
+  PipeGen.setCF<CF150>();
   PipeGen.generatePipe(Control,"dreamPipeOutA",1314.5);
   Control.addVariable("dreamPipeOutAYStep",0.5);
   FGen.clearYOffset();
@@ -237,7 +237,7 @@ DREAMvariables(FuncDataBase& Control)
   FGen.generateOctagon(Control,"dreamFOutC",1183.0,5.86,4.34); 
 
   PipeGen.setWindowMat("Void"); 
-  PipeGen.setWindow(-2.0,0.0);
+  PipeGen.setNoWindow();
   // Part of Guide Section 4 inside Cave
   PipeGen.generatePipe(Control,"dreamPipeCaveA",516.36);
   Control.addVariable("dreamPipeCaveAYStep",0.0);
@@ -271,7 +271,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamCaveConcFloor",50.0);
   Control.addVariable("dreamCaveConcBack",35.0);
 
-  Control.addVariable("dreamCaveFeMat","Stainless304");
+  Control.addVariable("dreamCavePipeMat","Stainless304");
   Control.addVariable("dreamCaveConcMat","Concrete");
 
   

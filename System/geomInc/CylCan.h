@@ -3,7 +3,7 @@
  
  * File:   geomInc/CylCan.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,22 +53,25 @@ class CylCan : public Surface
   /// Effective TYPENAME 
   static std::string classType() { return "CylCan"; }
   /// Effective typeid
-  virtual std::string className() const 
+  std::string className() const override 
     { return "CylCan"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::CylCan; }
+
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
   CylCan();
   CylCan(const CylCan&);
-  CylCan* clone() const;
+  CylCan* clone() const override;
   CylCan& operator=(const CylCan&);
   bool operator==(const CylCan&) const;
   bool operator!=(const CylCan&) const;
-  virtual ~CylCan();
+  ~CylCan() override;
 
 
   /// Access centre
@@ -80,28 +83,28 @@ class CylCan : public Surface
   double getRadius() const { return radius; } ///< Access radius
 
 
-  int setSurface(const std::string&);
+  int setSurface(const std::string&) override;
   int setCylCan(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		const double);
   int setCylCan(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		const double,const double);
 
-  virtual int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
 
   // stuff for finding intersections etc.
-  double distance(const Geometry::Vec3D&) const;     
-  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;
+  double distance(const Geometry::Vec3D&) const override;     
+  Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;
   
-  void rotate(const Geometry::Matrix<double>&);
-  void displace(const Geometry::Vec3D&);
-  void mirror(const Geometry::Plane&);
+  void rotate(const Geometry::Matrix<double>&) override;
+  void displace(const Geometry::Vec3D&) override;
+  void mirror(const Geometry::Plane&) override;
 
-  void print() const;
+  void print() const override;
 
-  virtual void writeFLUKA(std::ostream&) const;       
-  virtual void writePOVRay(std::ostream&) const;    
-  void write(std::ostream&) const;        
+  void writeFLUKA(std::ostream&) const override;       
+  void writePOVRay(std::ostream&) const override;    
+  void write(std::ostream&) const override;        
 };
 
 }  // NAMESPACE Geometry

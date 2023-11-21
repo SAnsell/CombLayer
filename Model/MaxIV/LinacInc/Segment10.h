@@ -84,7 +84,7 @@ class Segment10 :
 
   void constructHole(Simulation&);
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -94,11 +94,11 @@ class Segment10 :
   Segment10(const std::string&);
   Segment10(const Segment10&);
   Segment10& operator=(const Segment10&);
-  ~Segment10();
+  ~Segment10() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

@@ -51,7 +51,7 @@ class TankMonoVesselGenerator : public VacBoxGenerator
   TankMonoVesselGenerator();
   TankMonoVesselGenerator(const TankMonoVesselGenerator&);
   TankMonoVesselGenerator& operator=(const TankMonoVesselGenerator&);
-  virtual ~TankMonoVesselGenerator();
+  ~TankMonoVesselGenerator() override;
 
   void setLid(const double,const double,const double);
   

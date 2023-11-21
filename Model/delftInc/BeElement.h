@@ -46,7 +46,7 @@ class BeElement  : public RElement
   size_t nLayer;          ///< number of layers
   int beMat;              ///< Default be material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -57,10 +57,10 @@ class BeElement  : public RElement
   BeElement(const size_t,const size_t,const std::string&);
   BeElement(const BeElement&);
   BeElement& operator=(const BeElement&);
-  virtual ~BeElement() {}   ///< Destructor
+  ~BeElement() override {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

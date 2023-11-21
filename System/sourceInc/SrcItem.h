@@ -81,22 +81,22 @@ class SrcItem : public SrcBase
 
  public:
    
-  SrcItem(const std::string&);
+  SrcItem(std::string );
   SrcItem(const SrcItem&);
   SrcItem& operator=(const SrcItem&);
-  virtual SrcItem* clone() const;
-  virtual ~SrcItem();
+  SrcItem* clone() const override;
+  ~SrcItem() override;
 
 
   void setValue(const OutType&);
   /// access data
   const OutType& getData() const { return Data; }
-  virtual void setDataType(const int);
-  virtual void setDepType(const std::string&,const int);
-  virtual int getDataType() const { return dtype; }  ///< get data
-  virtual bool isActive() const { return active; }  ///< Is active
+  void setDataType(const int) override;
+  void setDepType(const std::string&,const int) override;
+  int getDataType() const override { return dtype; }  ///< get data
+  bool isActive() const override { return active; }  ///< Is active
   int isData() const { return (!dtype) ? 1 : 0 ; }  ///< has a data card
-  virtual std::string getString() const;
+  std::string getString() const override;
 };
 
 }   

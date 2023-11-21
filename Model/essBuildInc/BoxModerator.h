@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BoxModerator.h
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov / Stuart Ansell
+ * Copyright (c) 2004-2023 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,11 +52,11 @@ class BoxModerator :
   double wallDepth;                       ///< upper wall thickness
   double wallHeight;                      ///< bottom wall thickness
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int,
 			const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createExternal();
   void createSurfaces();
@@ -68,29 +68,29 @@ class BoxModerator :
   BoxModerator(const std::string&);
   BoxModerator(const BoxModerator&);
   BoxModerator& operator=(const BoxModerator&);
-  virtual BoxModerator* clone() const;
-  virtual ~BoxModerator();
+  BoxModerator* clone() const override;
+  ~BoxModerator() override;
   
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   /// Accessor to radius
   void setRadiusX(const double R) { outerRadius=R; }
-  virtual const attachSystem::FixedComp&
-    getComponent(const std::string&) const;
+  const attachSystem::FixedComp&
+    getComponent(const std::string&) const override;
 
   HeadRule getSideRule() const;
-  std::string getLeftRightWaterSideRule() const;
+  HeadRule getLeftRightWaterSideRule() const;
   Geometry::Vec3D getFocalPoint(const long int) const;
   std::vector<Geometry::Vec3D> getFocalPoints() const;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

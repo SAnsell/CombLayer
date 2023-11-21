@@ -72,8 +72,9 @@ CSPECvariables(FuncDataBase& Control)
   setVariable::BladeGenerator BGen;
   setVariable::TwinGenerator TGen;
 
+  PipeGen.setCF<CF250>();
   PipeGen.setNoWindow();
-  PipeGen.setCF<CF200>();
+
 
   // extent of beamline
   Control.addVariable("cspecStopPoint",0);
@@ -90,9 +91,10 @@ CSPECvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"cspecFB",44.0, 10.6,14.8);   
 
+  
   PipeGen.generatePipe(Control,"cspecPipeC",1260.0);
   Control.addVariable("cspecPipeCYStep",4.0);
-  FGen.generateRectangle(Control,"cspecFC",1256.0, 10.6,14.8);   
+  FGen.generateRectangle(Control,"cspecFC",1256.0,10.6,14.8);   
 
   CGen.setMainRadius(38.122);   // diameter 70.0 internal
   CGen.setFrame(86.5,86.5);

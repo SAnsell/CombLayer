@@ -59,8 +59,8 @@ class RingSeal :
   bool standardInsert;          ///< If set do standard object insert
   int setFlag;                  ///< Structures set
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,7 +71,7 @@ class RingSeal :
   RingSeal(const std::string&);
   RingSeal(const RingSeal&);
   RingSeal& operator=(const RingSeal&);
-  virtual ~RingSeal();
+  ~RingSeal() override;
 
   /// Normal object insert path
   void setStandardInsert() { standardInsert=1; }
@@ -79,7 +79,7 @@ class RingSeal :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

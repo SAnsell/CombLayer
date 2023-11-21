@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <string>
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -61,8 +62,8 @@ Vertex::Vertex() :
   ELog::RegMethod RegA("Vertex","Constructor()");
 }
 
-Vertex::Vertex(const int N,const Geometry::Vec3D& PVec) :
-  done(0),onHull(1),vIndex(N),V(PVec),coneEdge(0)
+Vertex::Vertex(const int N,Geometry::Vec3D  PVec) :
+  done(0),onHull(1),vIndex(N),V(std::move(PVec)),coneEdge(0)
   /*!
     Constructor 
     \param N :: vertex index (identifier)

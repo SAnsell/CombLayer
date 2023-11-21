@@ -114,7 +114,7 @@ VespaInner::populate(const FuncDataBase& Control)
   concRightWall=Control.EvalVar<double>(keyName+"ConcRightWall");
   concRoof=Control.EvalVar<double>(keyName+"ConcRoof");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
   return;

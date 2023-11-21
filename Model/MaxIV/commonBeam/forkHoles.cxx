@@ -19,20 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
-#include <array>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -69,8 +70,8 @@
 namespace xraySystem
 {
 
-forkHoles::forkHoles(const std::string& Key) :
-  masterName(Key),nForks(0)
+forkHoles::forkHoles(std::string  Key) :
+  masterName(std::move(Key)),nForks(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName

@@ -75,7 +75,7 @@ class LinkWrapper :
   LinkWrapper(const std::string&);
   LinkWrapper(const LinkWrapper&);
   LinkWrapper& operator=(const LinkWrapper&);
-  virtual ~LinkWrapper();
+  ~LinkWrapper() override;
 
   void addSurface(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void addSurface(const attachSystem::FixedComp&,const long int);
@@ -100,8 +100,8 @@ class LinkWrapper :
   const HeadRule& getExcludeSpace() const { return excludeSpace; }
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 };
 
 }

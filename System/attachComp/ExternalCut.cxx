@@ -154,6 +154,34 @@ ExternalCut::getUnit(const std::string& extName)
   return mx.first->second;
 }
 
+void
+ExternalCut::swapCutSurf(const std::string& aName,
+			 const std::string& bName)
+  /*!
+    Swap both external cuts. If both exists swap but
+    if only one exists then copy A->B and remove A
+    \param aName :: first name
+    \param bName :: second name
+  */
+{
+  cutTYPE::iterator ac=cutItems.find(aName);
+  cutTYPE::iterator bc=cutItems.find(bName);
+
+  if (ac!=cutItems.end() && bc!=cutItems.end())
+    std::swap(ac->second,bc->second);
+  else if (ac!=cutItems.end())
+    {
+      cutItems.emplace(bName,ac->second);
+      cutItems.erase(ac);
+    }
+  else if (bc!=cutItems.end())
+    {
+      cutItems.emplace(aName,bc->second);
+      cutItems.erase(bc);
+    }
+  return;
+}
+
 
 void
 ExternalCut::copyCutSurf(const std::string& extName,

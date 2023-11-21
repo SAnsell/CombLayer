@@ -3,7 +3,7 @@
  
  * File:   essBuild/DefUnitsESS.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -365,8 +365,7 @@ setESSFull(defaultConfig& A)
   
   const std::set<std::string> beamFilled=
     {"NMX","CSPEC","DREAM","FREIA","SHORTDREAM","SHORTDREAM2",
-     "SHORTNMX","LOKI",
-     "MAGIC","VESPA","VOR"};
+     "SHORTNMX","LOKI","MAGIC","VESPA","VOR"};
 
   size_t index(0);
   std::map<std::string,std::string>::const_iterator mc;
@@ -450,7 +449,7 @@ setESSSingle(defaultConfig& A,
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
-     {"HEIMDAL","G1BLineTop18"},       // S2
+     {"HEIMDAL2","G1BLineTop18"},       // S2
      {"SLEIPNIR","G1BLineLow13"},      // N9
      {"ANNI","G2BLineTop4"},           // E4
      {"SURFSCATTER","G2BLineTop8"},    // E8

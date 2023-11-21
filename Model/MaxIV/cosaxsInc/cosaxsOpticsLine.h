@@ -186,7 +186,7 @@ class cosaxsOpticsLine :
      const attachSystem::FixedComp&,
      const std::string&);
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -196,7 +196,7 @@ class cosaxsOpticsLine :
   cosaxsOpticsLine(const std::string&);
   cosaxsOpticsLine(const cosaxsOpticsLine&);
   cosaxsOpticsLine& operator=(const cosaxsOpticsLine&);
-  ~cosaxsOpticsLine();
+  ~cosaxsOpticsLine() override;
 
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -206,7 +206,7 @@ class cosaxsOpticsLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

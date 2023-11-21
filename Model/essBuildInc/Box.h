@@ -53,7 +53,7 @@ class Box :
   
   HeadRule sideRuleHR; ///< Side rule
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,10 +64,10 @@ class Box :
   Box(const Box&);
   Box& operator=(const Box&);
   virtual Box* clone() const;
-  virtual ~Box();
+  ~Box() override;
 
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
+  HeadRule getLayerHR(const size_t,const long int) const override;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
 
   const HeadRule& getSideRule() const { return sideRuleHR; }
 
@@ -77,7 +77,7 @@ class Box :
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

@@ -47,7 +47,7 @@ class MonoBeamStop :
   double radius;  ///< Radius
   int    mat;     ///< Material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -57,10 +57,10 @@ class MonoBeamStop :
   MonoBeamStop(const std::string&);
   MonoBeamStop(const MonoBeamStop&);
   MonoBeamStop& operator=(const MonoBeamStop&);
-  virtual ~MonoBeamStop();
+  ~MonoBeamStop() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

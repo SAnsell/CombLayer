@@ -59,7 +59,7 @@ class TargetBase :
   TargetBase(const std::string&,const size_t);
   TargetBase(const TargetBase&);
   TargetBase& operator=(const TargetBase&);
-  virtual ~TargetBase() {}   ///< Destructor
+  ~TargetBase() override {}   ///< Destructor
   virtual TargetBase* clone() const =0;
 
   virtual void addProtonLine(Simulation&) =0;

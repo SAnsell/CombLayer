@@ -100,13 +100,13 @@ class Segment27 :
   Segment27(const std::string&);
   Segment27(const Segment27&);
   Segment27& operator=(const Segment27&);
-  ~Segment27();
+  ~Segment27() override;
 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

@@ -54,7 +54,7 @@ class photon : public particle
   photon(const Geometry::Vec3D&,const Geometry::Vec3D&,const double);
   photon(const photon&);
   photon& operator=(const photon&);
-  virtual ~photon() {}  ///< Destructor
+  ~photon() override {}  ///< Destructor
   
 };
 

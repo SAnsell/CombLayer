@@ -65,9 +65,10 @@ namespace xraySystem
 {
 
 Mirror::Mirror(const std::string& Key) :
-  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,8),
-  attachSystem::CellMap(),attachSystem::SurfMap()
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -76,7 +77,8 @@ Mirror::Mirror(const std::string& Key) :
 {}
 
 Mirror::Mirror(const Mirror& A) :
-  attachSystem::ContainedComp(A),attachSystem::FixedRotate(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   theta(A.theta),phi(A.phi),radius(A.radius),width(A.width),
   thick(A.thick),length(A.length),baseTop(A.baseTop),
@@ -98,8 +100,8 @@ Mirror::operator=(const Mirror& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       theta=A.theta;

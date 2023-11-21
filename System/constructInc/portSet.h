@@ -3,7 +3,7 @@
  
  * File:   constructInc/portSet.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@ class portSet
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
+  std::vector<double> PLen;              ///< Port lengths
   /// Vector of ports FixedComp
   std::vector<std::shared_ptr<portItem>> Ports;     
 
@@ -68,6 +69,8 @@ class portSet
 
   /// Return true if no ports defined
   bool empty() { return Ports.empty(); }
+  /// Return size
+  size_t size() { return Ports.size(); }
   
   int splitVoidPorts(Simulation&,const std::string&,
 		     const int,const int);
@@ -81,7 +84,9 @@ class portSet
   void addInsertPortCells(const int);
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
+
   const portItem& getPort(const size_t) const;
+  portItem& getPort(const size_t);
 
   void insertAllInCell(MonteCarlo::Object&) const;
   void insertAllInCell(Simulation&,const int) const;
@@ -92,6 +97,13 @@ class portSet
   /// set outer void [expect "outerVoid"  as name]
   void setOuterVoid(const std::string& ON)
     { outerVoid=1; outerVoidName=ON;}
+
+  std::tuple<Geometry::Vec3D,Geometry::Vec3D,double>
+  getPortInfo(const size_t) const ;
+  
+  void constructPortAxis(const FuncDataBase&);
+  void copyPortLinks(const size_t,attachSystem::FixedComp&) const;
+  
   void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
   void createPorts(Simulation&,const std::string&);

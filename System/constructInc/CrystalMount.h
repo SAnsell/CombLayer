@@ -64,9 +64,9 @@ class CrystalMount :
   
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -77,12 +77,12 @@ class CrystalMount :
   CrystalMount(const std::string&,const size_t);
   CrystalMount(const CrystalMount&);
   CrystalMount& operator=(const CrystalMount&);
-  virtual ~CrystalMount();
+  ~CrystalMount() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

@@ -49,11 +49,11 @@ class PancakeModerator :
   double totalHeight;                     ///< Total height
   double outerRadius;                     ///< Main outer radius
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int,
 			const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createExternal();
   void createSurfaces();
@@ -65,17 +65,17 @@ class PancakeModerator :
   PancakeModerator(const std::string&);
   PancakeModerator(const PancakeModerator&);
   PancakeModerator& operator=(const PancakeModerator&);
-  virtual PancakeModerator* clone() const;
-  virtual ~PancakeModerator();
+  PancakeModerator* clone() const override;
+  ~PancakeModerator() override;
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   /// Accessor to radius
   void setRadiusX(const double R) { outerRadius=R; }
 
-  virtual const attachSystem::FixedComp&
-    getComponent(const std::string&) const;
+  const attachSystem::FixedComp&
+    getComponent(const std::string&) const override;
 
   HeadRule getLeftExclude() const;
   HeadRule getRightExclude() const;
@@ -84,12 +84,12 @@ class PancakeModerator :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

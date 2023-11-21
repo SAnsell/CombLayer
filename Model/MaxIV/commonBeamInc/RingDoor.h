@@ -67,9 +67,9 @@ class RingDoor :
   int tubeMat;                        ///< tube material material
   int doorMat;                        ///< wall material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -79,11 +79,11 @@ class RingDoor :
   RingDoor(const std::string&);
   RingDoor(const RingDoor&);
   RingDoor& operator=(const RingDoor&);
-  virtual ~RingDoor() {}  ///< Destructor
+  ~RingDoor() override {}  ///< Destructor
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

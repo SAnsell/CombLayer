@@ -221,7 +221,7 @@ class R3FrontEnd :
 			 const std::string&);  
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   virtual void createLinks()=0;
 
@@ -232,14 +232,14 @@ class R3FrontEnd :
   R3FrontEnd(const std::string&);
   R3FrontEnd(const R3FrontEnd&);
   R3FrontEnd& operator=(const R3FrontEnd&);
-  virtual ~R3FrontEnd();
+  ~R3FrontEnd() override;
 
   /// remove FM3
   void deactivateFM3() { collFM3Active=0; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

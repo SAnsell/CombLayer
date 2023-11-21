@@ -36,7 +36,7 @@ namespace setVariable
 */
 
 class BellowGenerator :
-  public SplitPipeGenerator
+  public PipeGenerator
 {
  private:
 
@@ -53,6 +53,7 @@ class BellowGenerator :
   ~BellowGenerator() =default;
 
   template<typename CF> void setCF();
+
   void setPipe(const double,const double,const double,const double);
   void setMat(const std::string&,const double);
   void setMat(const std::string&,const std::string&);

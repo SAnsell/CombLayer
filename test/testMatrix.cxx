@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testMatrix.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,10 +176,13 @@ testMatrix::testEigenvectors()
   ELog::EM<<ELog::endDebug;
 
   ELog::EM<<"lam*X == ";
-  transform(X.begin(),X.end(),X.begin(),
-	    std::bind2nd(std::multiplies<double>(),Diag[1][1]));
-  copy(X.begin(),X.end(),
-       std::ostream_iterator<double>(ELog::EM.Estream()," : "));
+
+  const double D=Diag[1][1];
+  for(double& v : X)
+    {
+      v*=D;
+      ELog::EM<<v<<" : ";
+    }
   ELog::EM<<ELog::endDebug;
 
   if (MA==MV)
@@ -228,10 +231,13 @@ testMatrix::testEigenvectors2()
   std::cout<<std::endl;
 
   std::cout<<"lam*X == ";
-  transform(X.begin(),X.end(),X.begin(),std::bind2nd(std::multiplies<double>(),Diag[0][0]));
-  copy(X.begin(),X.end(),std::ostream_iterator<double>(std::cout," : "));
+  const double D(Diag[0][0]);
+  for(double& v : X)
+    {
+      v*=D;
+      std::cout<<v<<" : ";
+    }
   std::cout<<std::endl;
-
 
   return (MA==MV) ? 0 : -1;
 }

@@ -3,7 +3,7 @@
  
  * File:   visit/MD5sum.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #include <iostream>
@@ -32,7 +32,6 @@
 #include <vector>
 #include <memory>
 #include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -210,7 +209,6 @@ MD5sum::populate(const Simulation* SimPtr)
     }
   return;
 }
-
 
 void 
 MD5sum::write(std::ostream& OX) const

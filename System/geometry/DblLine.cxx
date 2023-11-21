@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <string>
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -38,11 +39,11 @@
 namespace Geometry
 {
 
-DblLine::DblLine(const Geometry::Vec3D& APoint,
-		 const Geometry::Vec3D& BPoint,
+DblLine::DblLine(Geometry::Vec3D  APoint,
+		 Geometry::Vec3D  BPoint,
 		 const Geometry::Vec3D& NV) :
   Intersect(),index(0),
-  APt(APoint),BPt(BPoint),NormV(NV.unit())
+  APt(std::move(APoint)),BPt(std::move(BPoint)),NormV(NV.unit())
   /*!
     Constructor 
     \param APoint :: Line start (1st)
@@ -52,11 +53,11 @@ DblLine::DblLine(const Geometry::Vec3D& APoint,
 {}  
 
 DblLine::DblLine(const int I,
-		 const Geometry::Vec3D& APoint,
-		 const Geometry::Vec3D& BPoint,
+		 Geometry::Vec3D  APoint,
+		 Geometry::Vec3D  BPoint,
 		 const Geometry::Vec3D& NV) :
   Intersect(),index(I),
-  APt(APoint),BPt(BPoint),NormV(NV.unit())
+  APt(std::move(APoint)),BPt(std::move(BPoint)),NormV(NV.unit())
   /*!
     Constructor 
     \param I :: Index value

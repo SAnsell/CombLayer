@@ -45,11 +45,11 @@ class Circle : public Intersect
  public:
   
   Circle();
-  Circle(const Vec3D&,const Vec3D&,const double);
-  Circle(const int,const Vec3D&,const Vec3D&,const double);
+  Circle(Vec3D ,const Vec3D&,const double);
+  Circle(const int,Vec3D ,const Vec3D&,const double);
   Circle(const Circle&);
   Circle& operator=(const Circle&);
-  virtual ~Circle() {}  ///< Destructor
+  ~Circle() override {}  ///< Destructor
   Circle& operator()(const Vec3D&,const Vec3D&,const double);
 
   /// Debug function to get index
@@ -61,17 +61,17 @@ class Circle : public Intersect
   /// Get Radius
   double getRadius() const { return Radius; }   
   /// Calc area
-  double area() const { return Radius*Radius*M_PI;}
+  double area() const override { return Radius*Radius*M_PI;}
 
   
   /// Calc centre
-  bool hasCentre() const { return true; }
+  bool hasCentre() const override { return true; }
 
   /// calculate the centre
-  Vec3D centre() const { return Cent; }  
-  Vec3D ParamPt(const double) const;
+  Vec3D centre() const override { return Cent; }  
+  Vec3D ParamPt(const double) const override;
 
-  void write(std::ostream&) const;
+  void write(std::ostream&) const override;
 };
 
 }   // NAMESPACE Geometry

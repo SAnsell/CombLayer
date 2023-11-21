@@ -44,10 +44,10 @@ class LWOuter : public LinkWrapper
   LWOuter(const std::string&);
   LWOuter(const LWOuter&);
   LWOuter& operator=(const LWOuter&);
-  virtual ~LWOuter();
+  ~LWOuter() override;
 
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
 
 };
 

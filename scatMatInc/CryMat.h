@@ -64,9 +64,9 @@ class CryMat : public neutMaterial
   CryMat(const double,const double,const double,
 	 const double,const double,const double);
   CryMat(const CryMat&);
-  virtual CryMat* clone() const;
+  CryMat* clone() const override;
   CryMat& operator=(const CryMat&);
-  virtual ~CryMat();
+  ~CryMat() override;
   
   /// Effective typeid
   virtual std::string className() const { return "CryMat"; }
@@ -78,7 +78,7 @@ class CryMat : public neutMaterial
     {  A.Accept(*this); }
 
   void setTemperatures(const double,const double);
-  void setMass(const double);
+  void setMass(const double) override;
   void setCif(const std::string&);
 
   Crystal::CifStore& getCIF() { return XStruct; }

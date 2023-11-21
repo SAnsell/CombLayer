@@ -67,7 +67,7 @@ class FaradayCup :
   double shieldInnerLength;     ///< shielding inner length
   int shieldMat;                ///< shielding material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,10 +78,10 @@ class FaradayCup :
   FaradayCup(const FaradayCup&);
   FaradayCup& operator=(const FaradayCup&);
   virtual FaradayCup* clone() const;
-  virtual ~FaradayCup();
+  ~FaradayCup() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

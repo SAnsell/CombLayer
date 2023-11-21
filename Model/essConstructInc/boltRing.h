@@ -69,7 +69,7 @@ class boltRing :
   int mainMat;                  ///< Main Wall material layer
   int sealMat;                  ///< Seal material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -79,7 +79,7 @@ class boltRing :
   boltRing(const std::string&,const std::string&);
   boltRing(const boltRing&);
   boltRing& operator=(const boltRing&);
-  virtual ~boltRing();
+  ~boltRing() override;
 
   void setDimensions(const size_t,const double,const double,
 		     const double,const double,const double);
@@ -90,7 +90,7 @@ class boltRing :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/Mirror.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ namespace xraySystem
 */
 
 class Mirror :
-  public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -61,7 +61,7 @@ class Mirror :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -71,12 +71,12 @@ class Mirror :
   Mirror(const std::string&);
   Mirror(const Mirror&);
   Mirror& operator=(const Mirror&);
-  virtual ~Mirror();
+  ~Mirror() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

@@ -84,10 +84,10 @@ class MAXPEEM :
   MAXPEEM(const std::string&);
   MAXPEEM(const MAXPEEM&);
   MAXPEEM& operator=(const MAXPEEM&);
-  virtual ~MAXPEEM();
+  ~MAXPEEM() override;
 
-  virtual void build(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+  void build(Simulation&,const attachSystem::FixedComp&,
+		     const long int) override;
 
 };
 

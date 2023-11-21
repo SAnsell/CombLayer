@@ -164,7 +164,7 @@ ChopperPit::populate(const FuncDataBase& Control)
   feFront=Control.EvalVar<double>(keyName+"FeFront");
   feBack=Control.EvalVar<double>(keyName+"FeBack");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
   concHeight=Control.EvalVar<double>(keyName+"ConcHeight");

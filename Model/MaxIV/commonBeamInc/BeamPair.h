@@ -70,10 +70,10 @@ class BeamPair :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   using FixedGroup::createUnitVector;
   void createUnitVector(const attachSystem::FixedComp&,const long int,
-			const attachSystem::FixedComp&,const long int);
+			const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -85,12 +85,12 @@ class BeamPair :
   BeamPair(const std::string&);
   BeamPair(const BeamPair&);
   BeamPair& operator=(const BeamPair&);
-  virtual ~BeamPair();
+  ~BeamPair() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+		 const attachSystem::FixedComp&,const long int) override;
   
 };
 

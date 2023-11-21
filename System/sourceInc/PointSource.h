@@ -46,17 +46,17 @@ class PointSource :
   
   double angleSpread;           ///< Angle spread
   
-  void populate(const mainSystem::MITYPE&);
+  void populate(const mainSystem::MITYPE&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
  public:
 
   PointSource(const std::string&);
   PointSource(const PointSource&);
   PointSource& operator=(const PointSource&);
-  virtual PointSource* clone() const;
-  virtual ~PointSource();
+  PointSource* clone() const override;
+  ~PointSource() override;
 
   /// accessor to angle
   void setAngleSpread(const double D) { angleSpread=D; }
@@ -66,11 +66,11 @@ class PointSource :
 		 const long int);
 
 
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
+  void write(std::ostream&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
 };
 
 }

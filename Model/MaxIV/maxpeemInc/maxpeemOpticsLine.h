@@ -213,7 +213,7 @@ class maxpeemOpticsLine :
   void buildSplitter
   (Simulation&,const attachSystem::FixedComp&,const std::string&);
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -223,7 +223,7 @@ class maxpeemOpticsLine :
   maxpeemOpticsLine(const std::string&);
   maxpeemOpticsLine(const maxpeemOpticsLine&);
   maxpeemOpticsLine& operator=(const maxpeemOpticsLine&);
-  ~maxpeemOpticsLine();
+  ~maxpeemOpticsLine() override;
 
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -235,7 +235,7 @@ class maxpeemOpticsLine :
   
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

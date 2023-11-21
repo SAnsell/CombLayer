@@ -54,7 +54,7 @@ class Vertex
  public:
   
   Vertex();
-  Vertex(const int,const Vec3D&);
+  Vertex(const int,Vec3D );
   Vertex(const Vertex&);
   Vertex& operator=(const Vertex&);
   ~Vertex() {}  ///< Destructor

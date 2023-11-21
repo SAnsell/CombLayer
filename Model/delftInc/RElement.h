@@ -52,14 +52,14 @@ class RElement  :
   const FuelLoad* FuelPtr;     ///< Fuel load (or null)
   int insertCell;               ///< Cell to insert into
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
  public:
 
   RElement(const size_t,const size_t,const std::string&);
   RElement(const RElement&);
   RElement& operator=(const RElement&);
-  virtual ~RElement() {}   
+  ~RElement() override {}   
 
   /// set fuel load
   void setFuelLoad(const FuelLoad& FL) { FuelPtr=&FL; }
@@ -67,8 +67,8 @@ class RElement  :
   virtual std::string getItemKeyName() const;  
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int) =0;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override =0;
 
 
 };

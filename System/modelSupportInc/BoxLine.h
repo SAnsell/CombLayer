@@ -69,7 +69,7 @@ class BoxLine
 
  public:
 
-  BoxLine(const std::string&);
+  BoxLine(std::string );
   BoxLine(const BoxLine&);
   BoxLine& operator=(const BoxLine&);
   ~BoxLine();

@@ -84,7 +84,7 @@ class balderExptLine :
   int beamStopMat;           ///< beamStop Mat
 
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -94,10 +94,10 @@ class balderExptLine :
   balderExptLine(const std::string&);
   balderExptLine(const balderExptLine&);
   balderExptLine& operator=(const balderExptLine&);
-  ~balderExptLine();
+  ~balderExptLine() override;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

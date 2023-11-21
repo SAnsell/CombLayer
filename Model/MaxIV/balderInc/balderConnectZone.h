@@ -101,7 +101,7 @@ class balderConnectZone :
 	       const constructSystem::LeadPipe&,const long int,
 	       LeadBox&,MidTYPE&,constructSystem::LeadPipe&);
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&,const attachSystem::FixedComp&);
   void createLinks();
@@ -111,7 +111,7 @@ class balderConnectZone :
   balderConnectZone(const std::string&);
   balderConnectZone(const balderConnectZone&);
   balderConnectZone& operator=(const balderConnectZone&);
-  ~balderConnectZone();
+  ~balderConnectZone() override;
 
   /// external registration
   void registerJoinPipe(std::shared_ptr<constructSystem::LeadPipe> JP)
@@ -125,7 +125,7 @@ class balderConnectZone :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@ long int hasComment(const std::string&);
 long int hasComment(const std::string&,const std::string&,const std::string&);
 /// strip trialing comments
 int stripComment(std::string&);
+std::string stripNotNumber(std::string);
 
 void upperString(std::string&);
 void lowerString(std::string&);
@@ -143,6 +144,8 @@ template<template<typename T,typename Alloc> class V,typename T,typename Alloc>
 bool removeItem(V<T,Alloc>&,const T&);
  
 std::vector<std::string> StrParts(std::string);
+std::pair<std::string,std::string>
+splitPair(const std::string&,const char delim);
 std::vector<std::string>
 splitParts(const std::string&,const char delim);
 

@@ -58,7 +58,7 @@ class GuideUnit :
   std::vector<double> layerThick;   ///< Thickness [inner->outer]
   std::vector<int> layerMat;        ///< Mat
 
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   virtual void createSurfaces() =0;
   virtual void createObjects(Simulation&) =0;
   virtual void createLinks();
@@ -68,12 +68,12 @@ class GuideUnit :
   GuideUnit(const std::string&);
   GuideUnit(const GuideUnit&);
   GuideUnit& operator=(const GuideUnit&);
-  virtual ~GuideUnit();
+  ~GuideUnit() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
   
 };
 

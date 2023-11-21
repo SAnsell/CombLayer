@@ -53,7 +53,7 @@ class BeamInsert :
 
   int mat;                      ///< Inter Material number
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,10 +63,10 @@ class BeamInsert :
   BeamInsert(const std::string&);
   BeamInsert(const BeamInsert&);
   BeamInsert& operator=(const BeamInsert&);
-  virtual ~BeamInsert();
+  ~BeamInsert() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

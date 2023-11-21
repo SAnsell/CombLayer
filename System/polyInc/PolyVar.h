@@ -3,7 +3,7 @@
  
  * File:   polyInc/PolyVar.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ class PolyVar  : public PolyFunction
   PolyVar<VCount>& operator=(const PolyVar<VCount>&);
   template<size_t ICount> PolyVar<VCount>& operator=(const PolyVar<ICount>&);
   PolyVar<VCount>& operator=(const double&);
-  virtual ~PolyVar();
+  ~PolyVar() override;
 
     // member access
   void setDegree(const size_t);
@@ -96,10 +96,10 @@ class PolyVar  : public PolyFunction
 
 
  // input is degree 0 poly
-  PolyVar<VCount>& operator+=(const double); 
-  PolyVar<VCount>& operator-=(const double); 
-  PolyVar<VCount>& operator*=(const double);
-  PolyVar<VCount>& operator/=(const double);
+  PolyVar<VCount>& operator+=(const double) override; 
+  PolyVar<VCount>& operator-=(const double) override; 
+  PolyVar<VCount>& operator*=(const double) override;
+  PolyVar<VCount>& operator/=(const double) override;
 
   int operator==(const PolyVar<VCount>&) const;
   int operator!=(const PolyVar<VCount>&) const;
@@ -138,8 +138,8 @@ class PolyVar  : public PolyFunction
 
   //  PolyVar<1> substitute(const std::vector<double>&) const;
   PolyVar<VCount>& makeTriplet(const std::vector<double>&);
-  virtual int read(const std::string&);
-  virtual int write(std::ostream&,const int=0) const;
+  int read(const std::string&) override;
+  int write(std::ostream&,const int=0) const override;
 };
 
 template<size_t VCount> 
@@ -166,15 +166,15 @@ class PolyVar<1> : public PolyFunction
  public:
 
   explicit PolyVar<1>(const size_t =0);
-  PolyVar<1>(const size_t,const double);
-  PolyVar<1>(const std::vector<double>&);
+  PolyVar(const size_t,const double);
+  PolyVar(const std::vector<double>&);
   //  PolyVar<1>(const double);
-  PolyVar<1>(const size_t,const double,const double);
-  PolyVar<1>(const size_t,const double,const double,const double);
-  PolyVar<1>(const PolyVar<1>&);
-  PolyVar<1>& operator=(const PolyVar<1>&);
-  PolyVar<1>& operator=(const double&);
-  virtual ~PolyVar<1>();
+  PolyVar(const size_t,const double,const double);
+  PolyVar(const size_t,const double,const double,const double);
+  PolyVar(const PolyVar<1>&);
+  PolyVar& operator=(const PolyVar<1>&);
+  PolyVar& operator=(const double&);
+  ~PolyVar() override;
 
     // member access
   void setDegree(const size_t);
@@ -213,10 +213,10 @@ class PolyVar<1> : public PolyFunction
   PolyVar<1> operator-() const;
 
  // input is degree 0 poly
-  PolyVar<1>& operator+=(const double); 
-  PolyVar<1>& operator-=(const double); 
-  PolyVar<1>& operator*=(const double);
-  PolyVar<1>& operator/=(const double);
+  PolyVar<1>& operator+=(const double) override; 
+  PolyVar<1>& operator-=(const double) override; 
+  PolyVar<1>& operator*=(const double) override;
+  PolyVar<1>& operator/=(const double) override;
 
   int operator==(const PolyVar<1>&) const;
   int operator!=(const PolyVar<1>&) const;
@@ -260,8 +260,8 @@ class PolyVar<1> : public PolyFunction
 
   int expand(const PolyVar<1>&);
 
-  virtual int read(const std::string&);
-  virtual int write(std::ostream&,const int =0) const;
+  int read(const std::string&) override;
+  int write(std::ostream&,const int =0) const override;
 };
 
 }  // NAMESPACE mathlevel

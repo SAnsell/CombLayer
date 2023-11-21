@@ -3,7 +3,7 @@
  
  * File:   delftInc/AirBoxElement.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ class AirBoxElement  : public RElement
   int wallMat;            ///< Wall material 
   int waterMat;           ///< Water coolant 
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -61,10 +61,10 @@ class AirBoxElement  : public RElement
   AirBoxElement(const size_t,const size_t,const std::string&,const int);
   AirBoxElement(const AirBoxElement&);
   AirBoxElement& operator=(const AirBoxElement&);
-  virtual ~AirBoxElement() {}   ///< Destructor
+  ~AirBoxElement() override {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) override;
 
 };
 

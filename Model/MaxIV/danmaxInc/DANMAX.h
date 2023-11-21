@@ -105,10 +105,10 @@ class DANMAX : public R3Beamline
   DANMAX(const std::string&);
   DANMAX(const DANMAX&);
   DANMAX& operator=(const DANMAX&);
-  virtual ~DANMAX();
+  ~DANMAX() override;
 
-  virtual  void build(Simulation&,const attachSystem::FixedComp&,
-		      const long int);
+   void build(Simulation&,const attachSystem::FixedComp&,
+		      const long int) override;
 
 };
 

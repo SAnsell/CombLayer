@@ -3,7 +3,7 @@
  
  * File:   constructInc/portItem.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,9 @@ namespace constructSystem
 class portItem :
   public attachSystem::FixedComp,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap
 {
-
  protected:
 
   const std::string portBase;  ///< Base key name
@@ -88,10 +88,10 @@ class portItem :
  public:
 
   portItem(const std::string&);
-  portItem(const std::string&,const std::string&);
+  portItem(std::string ,const std::string&);
   portItem(const portItem&);
   portItem& operator=(const portItem&);
-  ~portItem();
+  ~portItem() override;
 
   // make public as accessor function:
   virtual void populate(const FuncDataBase&);
@@ -100,7 +100,7 @@ class portItem :
   double getCapLength() const
     { return std::max(capThick,0.0); }
   
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void setCentLine(const attachSystem::FixedComp&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
   void reNormZ(const Geometry::Vec3D&);
@@ -128,9 +128,9 @@ class portItem :
   void addFlangeCut(MonteCarlo::Object*) const;
   
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 				       
 };
   

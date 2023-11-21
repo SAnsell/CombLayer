@@ -47,15 +47,15 @@ class BeamSource :
   double radius;                ///< spot size
   double angleSpread;           ///< Angle spread [deg]
   
-  void populate(const ITYPE&);
+  void populate(const ITYPE&) override;
 
  public:
 
   BeamSource(const std::string&);
   BeamSource(const BeamSource&);
   BeamSource& operator=(const BeamSource&);
-  virtual BeamSource* clone() const;
-  virtual ~BeamSource();
+  BeamSource* clone() const override;
+  ~BeamSource() override;
 
   /// Set radius
   void setRadius(const double R) { radius=R; }
@@ -70,12 +70,12 @@ class BeamSource :
   void createAll(const attachSystem::FixedComp&,
 		 const long int);
 
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
 
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
+  void write(std::ostream&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
 
 };
 

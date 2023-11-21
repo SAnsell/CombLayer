@@ -63,9 +63,9 @@ class DetectorArray : public attachSystem::ContainedComp,
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -76,11 +76,11 @@ class DetectorArray : public attachSystem::ContainedComp,
   DetectorArray(const std::string&);
   DetectorArray(const DetectorArray&);
   DetectorArray& operator=(const DetectorArray&);
-  virtual ~DetectorArray();
+  ~DetectorArray() override;
 
   void createTally(Simulation&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

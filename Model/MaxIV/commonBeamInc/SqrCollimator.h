@@ -67,13 +67,13 @@ class SqrCollimator :
   SqrCollimator(const std::string&);
   SqrCollimator(const SqrCollimator&);
   SqrCollimator& operator=(const SqrCollimator&);
-  virtual ~SqrCollimator() {}  ///< Destructor
+  ~SqrCollimator() override {}  ///< Destructor
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

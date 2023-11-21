@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SurfNormSource.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ namespace SDef
 */
 
 class SurfNormSource :
-  public attachSystem::FixedOffsetUnit,
-  public SourceBase
+    public attachSystem::FixedRotate,
+    public SourceBase
 {
  private:
     
@@ -50,7 +50,7 @@ class SurfNormSource :
   double width;                 ///< Width of source
   double height;                ///< Height of source
     
-  void populate(const mainSystem::MITYPE&);
+  void populate(const mainSystem::MITYPE&) override;
   void setSurf(const attachSystem::FixedComp&,
 			const long int);
 
@@ -59,21 +59,22 @@ class SurfNormSource :
   SurfNormSource(const std::string&);
   SurfNormSource(const SurfNormSource&);
   SurfNormSource& operator=(const SurfNormSource&);
-  SurfNormSource* clone() const;
-  ~SurfNormSource();
+  SurfNormSource* clone() const override;
+  ~SurfNormSource() override;
 
+
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
+  void write(std::ostream&) const override;
+
+  using FixedComp::createAll;
   void createAll(const mainSystem::MITYPE&,
 		 const attachSystem::FixedComp&,
 		 const long int);
   void createAll(const attachSystem::FixedComp&,const long int);
 
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void write(std::ostream&) const;
-
-  
 };
 
 }

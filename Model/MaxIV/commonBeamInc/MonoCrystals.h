@@ -72,7 +72,7 @@ class MonoCrystals :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -82,12 +82,12 @@ class MonoCrystals :
   MonoCrystals(const std::string&);
   MonoCrystals(const MonoCrystals&);
   MonoCrystals& operator=(const MonoCrystals&);
-  virtual ~MonoCrystals();
+  ~MonoCrystals() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

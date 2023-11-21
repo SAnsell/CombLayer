@@ -3,7 +3,7 @@
 
  * File:   construct/CornerPipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -301,8 +301,9 @@ CornerPipe::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 23 -24 25 -26");
       addOuterSurf("Main",HR);
     }
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 25 -26");
-  addOuterSurf("Tube",HR);
+  addOuterSurf("Tube",HR*frontHR*backHR);
 
   return;
 }

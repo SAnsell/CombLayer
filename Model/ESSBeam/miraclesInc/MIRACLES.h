@@ -3,7 +3,7 @@
  
  * File:   miriclesInc/MIRACLES.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ namespace constructSystem
   class DiskChopper;
   class Jaws;
   class LineShield;
+  class RectanglePipe;
   class RotaryCollimator;
   class TwinChopper;
   class VacuumPipe;
@@ -118,7 +119,7 @@ class MIRACLES : public attachSystem::CopiedComp
   std::shared_ptr<essConstruct::DiskChopper> CDiskLow;
 
   /// Pipe from Chopper C to D
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
+  std::shared_ptr<constructSystem::RectanglePipe> VPipeE;
   /// Guide from 7.5 to 11.25 m
   std::shared_ptr<beamlineSystem::PlateUnit> FocusE;
 
@@ -131,12 +132,12 @@ class MIRACLES : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::BeamShutter> ShutterA;
 
   /// Pipe from second single chopper 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
+  std::shared_ptr<constructSystem::RectanglePipe> VPipeF;
   /// Guide between single choppers
   std::shared_ptr<beamlineSystem::PlateUnit> FocusF;
 
   /// Pipe around bender [rectangular?]
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
+  std::shared_ptr<constructSystem::RectanglePipe> VPipeG;
   /// Bender in bunker
   std::shared_ptr<beamlineSystem::BenderUnit> BendG;
 
@@ -172,7 +173,7 @@ class MIRACLES : public attachSystem::CopiedComp
   MIRACLES(const std::string&);
   MIRACLES(const MIRACLES&);
   MIRACLES& operator=(const MIRACLES&);
-  ~MIRACLES();
+  ~MIRACLES() override;
 
   void buildIsolated(Simulation&,const int);
     

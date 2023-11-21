@@ -236,7 +236,7 @@ class micromaxOpticsLine :
   void constructMonoShutter(Simulation&,const attachSystem::FixedComp&, 
 			    const std::string&);
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -246,7 +246,7 @@ class micromaxOpticsLine :
   micromaxOpticsLine(const std::string&);
   micromaxOpticsLine(const micromaxOpticsLine&);
   micromaxOpticsLine& operator=(const micromaxOpticsLine&);
-  ~micromaxOpticsLine();
+  ~micromaxOpticsLine() override;
 
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -256,7 +256,7 @@ class micromaxOpticsLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

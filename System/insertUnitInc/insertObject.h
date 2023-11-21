@@ -53,7 +53,7 @@ class insertObject :
   int defMat;             ///< Material
   bool delayInsert;       ///< Delay insertion         
   
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   virtual void findObjects(Simulation&);
 
   using FixedRotate::createUnitVector;
@@ -61,10 +61,10 @@ class insertObject :
  public:
 
   insertObject(const std::string&);
-  insertObject(const std::string&,const std::string&);
+  insertObject(std::string ,const std::string&);
   insertObject(const insertObject&);
   insertObject& operator=(const insertObject&);
-  ~insertObject();
+  ~insertObject() override;
 
   /// set delay flag
   void setNoInsert() { delayInsert=1; }
@@ -77,8 +77,8 @@ class insertObject :
   void setAngles(const double,const double);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const FixedComp&,
-			 const long int) =0;
+  void createAll(Simulation&,const FixedComp&,
+			 const long int) override =0;
 };
 
 }

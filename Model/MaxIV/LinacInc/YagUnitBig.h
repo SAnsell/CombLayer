@@ -86,7 +86,7 @@ class YagUnitBig :
   int voidMat;               ///< void material
   int mainMat;               ///< electrode material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -97,11 +97,11 @@ class YagUnitBig :
   YagUnitBig(const std::string&,const std::string&);
   YagUnitBig(const YagUnitBig&);
   YagUnitBig& operator=(const YagUnitBig&);
-  virtual ~YagUnitBig();
+  ~YagUnitBig() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

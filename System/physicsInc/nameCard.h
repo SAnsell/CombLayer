@@ -69,7 +69,7 @@ class nameCard
   
  public:
    
-  nameCard(const std::string&,const int);
+  nameCard(std::string ,const int);
   nameCard(const nameCard&);
   nameCard& operator=(const nameCard&);
   virtual ~nameCard();

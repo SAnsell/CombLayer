@@ -43,7 +43,7 @@ class eTrack : public particle
   eTrack(const Geometry::Vec3D&,const Geometry::Vec3D&);
   eTrack(const eTrack&);
   eTrack& operator=(const eTrack&);
-  virtual ~eTrack() {}  ///< Destructor
+  ~eTrack() override {}  ///< Destructor
   
   virtual double velocity() const { return 1; }
   virtual void setEnergy(const double) { return; }

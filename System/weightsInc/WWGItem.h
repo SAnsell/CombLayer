@@ -40,7 +40,7 @@ class WWGItem
   const Geometry::Vec3D Pt;     ///< Centre point
   std::vector<double> weight;          ///< weight for the cell[eneryg]
 
-  explicit WWGItem(const Geometry::Vec3D&);
+  explicit WWGItem(Geometry::Vec3D );
 
   WWGItem(const WWGItem&);
   WWGItem& operator=(const WWGItem&);

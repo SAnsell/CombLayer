@@ -47,21 +47,21 @@ class CentredHoleShape :
   Geometry::Vec3D rotCentre;       ///< Centre position
   double rotAngle;                 ///< Angle of whole system [true pos]
 
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int) override;
   
  public:
   
   CentredHoleShape(const std::string&);
   CentredHoleShape(const CentredHoleShape&);
   CentredHoleShape& operator=(const CentredHoleShape&);
-  virtual ~CentredHoleShape() {}
+  ~CentredHoleShape() override {}
 
   void setMasterAngle(const double);
   /// accessor to central angle
   double getCentreAngle() const { return angleCentre; }
 
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
 };
 

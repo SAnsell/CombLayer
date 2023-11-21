@@ -76,7 +76,7 @@ class WallLead :
   int wallMat;                 ///< main lead material
   int steelMat;                ///< steel material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -86,10 +86,10 @@ class WallLead :
   WallLead(const std::string&);
   WallLead(const WallLead&);
   WallLead& operator=(const WallLead&);
-  virtual ~WallLead();
+  ~WallLead() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

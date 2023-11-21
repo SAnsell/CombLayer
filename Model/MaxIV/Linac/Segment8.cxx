@@ -3,7 +3,7 @@
 
  * File: Linac/Segment8.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -64,7 +63,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "EBeamStop.h"
 
@@ -124,7 +122,7 @@ Segment8::buildObjects(Simulation& System)
     bellowA->copyCutSurf("front",*this,"front");
   bellowA->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*bellowA,2);
-  bellowA->insertInCell(System,outerCell);
+  bellowA->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,*buildZone,*bellowA,"back",*beamStop);

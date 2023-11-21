@@ -62,7 +62,7 @@ class ShieldRoom :
   int innerMat;                ///< main material
   int earthMat;                ///< floor material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -72,11 +72,11 @@ class ShieldRoom :
   ShieldRoom(const std::string&);
   ShieldRoom(const ShieldRoom&);
   ShieldRoom& operator=(const ShieldRoom&);
-  virtual ~ShieldRoom();
+  ~ShieldRoom() override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

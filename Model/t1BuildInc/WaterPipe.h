@@ -62,7 +62,7 @@ class WaterPipe :
   double ofullLen;              ///< Outer Height
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void insertPipes(Simulation&);
 
@@ -71,11 +71,11 @@ class WaterPipe :
   WaterPipe(const std::string&);
   WaterPipe(const WaterPipe&);
   WaterPipe& operator=(const WaterPipe&);
-  ~WaterPipe();
+  ~WaterPipe() override;
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -54,9 +54,9 @@ class cosaxsSampleArea :
   int airMat;                   ///< Air material
   int sampleMat;                ///< Sample material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -68,9 +68,9 @@ class cosaxsSampleArea :
   cosaxsSampleArea(const cosaxsSampleArea&);
   cosaxsSampleArea& operator=(const cosaxsSampleArea&);
   virtual cosaxsSampleArea* clone() const;
-  virtual ~cosaxsSampleArea();
+  ~cosaxsSampleArea() override;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

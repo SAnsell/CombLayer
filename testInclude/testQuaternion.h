@@ -36,6 +36,7 @@ private:
 
   //Tests 
   int testInverse();
+  int testMatrixRot();
   int testMultiplication();
   int testRotation();
   int testVecRot();

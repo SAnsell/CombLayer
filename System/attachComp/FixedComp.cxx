@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -50,12 +51,13 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedUnit.h"
+#include "FixedGroup.h"
 
 namespace attachSystem
 {
   
-FixedComp::FixedComp(const size_t NL,const std::string& KN) :
-  keyName(KN),buildIndex(0),
+FixedComp::FixedComp(const size_t NL,std::string  KN) :
+  keyName(std::move(KN)),buildIndex(0),
   cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
@@ -84,16 +86,17 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
     Constructor 
     \param KN :: KeyName
     \param NL :: Number of links
+    \param resSize :: Reserved size for indexes [normally 10000]
   */
 {}
 
 FixedComp::FixedComp(const std::string& KN,const size_t NL,
-		     const Geometry::Vec3D& O) :
+		     Geometry::Vec3D  O) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
   cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
-  Z(Geometry::Vec3D(0,0,1)),Origin(O),primeAxis(0),LU(NL)
+  Z(Geometry::Vec3D(0,0,1)),Origin(std::move(O)),primeAxis(0),LU(NL)
   /*!
     Constructor 
     \param KN :: KeyName
@@ -103,7 +106,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 {}
 
 FixedComp::FixedComp(const std::string& KN,const size_t NL,
-		     const Geometry::Vec3D& O,
+		     Geometry::Vec3D  O,
 		     const Geometry::Vec3D& xV,
 		     const Geometry::Vec3D& yV,
 		     const Geometry::Vec3D& zV) :
@@ -111,7 +114,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
   cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(xV.unit()),Y(yV.unit()),Z(zV.unit()),
-  Origin(O),primeAxis(0),LU(NL)
+  Origin(std::move(O)),primeAxis(0),LU(NL)
   /*!
     Constructor with defined axis / origin
     \param KN :: KeyName
@@ -2365,6 +2368,8 @@ FixedComp::createAll(Simulation& System,
   return;
 }
 
+
+
 void
 FixedComp::createAll(Simulation& System,
 		     const FixedComp& FCA,
@@ -2386,6 +2391,48 @@ FixedComp::createAll(Simulation& System,
   this->createAll(System,
 		  FCA,FCA.getSideIndex(linkNameA),
 		  FCB,FCB.getSideIndex(linkNameB));
+  return;
+}
+
+
+void
+FixedComp::createAll(Simulation& System,
+		     const FixedGroup& FG,
+		     const std::string& groupName,
+		     const std::string& linkName)
+  /*!
+    Modification accessor to get createAll based on a name
+    \param System :: Simulation to build component in
+    \param FC :: FixedComp to use as origin/basis set
+    \param linkName :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(FG,group,name)");
+
+  const FixedComp& FC=FG.getKey(groupName);
+  if (FC.hasSideIndex(groupName))
+    this->createAll(System,FC,FC.getSideIndex(linkName));
+  else
+    this->createAll(System,FC,FG.getSideIndex(linkName));
+  return;
+}
+
+void
+FixedComp::createAll(Simulation& System,
+		     const FixedGroup& FG,
+		     const std::string& groupName,
+		     const long int sideIndex)
+  /*!
+    Modification accessor to get createAll based on a name
+    \param System :: Simulation to build component in
+    \param FG :: FixedComp to use as origin/basis set
+    \param groupName :: GroupName
+    \param sideIndex :: linkPoint
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createAll(FG,group,index)");
+  
+  this->createAll(System,FG.getKey(groupName),sideIndex);
   return;
 }
 

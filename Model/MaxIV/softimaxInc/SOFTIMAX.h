@@ -63,11 +63,11 @@ class SOFTIMAX : public R3Beamline
     SOFTIMAX(const std::string&);
     SOFTIMAX(const SOFTIMAX&);
     SOFTIMAX& operator=(const SOFTIMAX&);
-    virtual ~SOFTIMAX();
+    ~SOFTIMAX() override;
 
-    virtual void build(Simulation&,
+    void build(Simulation&,
 		       const attachSystem::FixedComp&,
-		       const long int);
+		       const long int) override;
 
   };
 

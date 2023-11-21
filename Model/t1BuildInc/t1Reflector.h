@@ -69,7 +69,7 @@ class t1Reflector :
   double baseZCut;              ///< Distance down to base cut
 
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -79,7 +79,7 @@ class t1Reflector :
   t1Reflector(const std::string&);
   t1Reflector(const t1Reflector&);
   t1Reflector& operator=(const t1Reflector&);
-  virtual ~t1Reflector();
+  ~t1Reflector() override;
 
   HeadRule getHeadRule(const std::string&) const;
 
@@ -88,7 +88,7 @@ class t1Reflector :
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

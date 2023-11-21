@@ -87,13 +87,13 @@ class ReflectorAssembly :
   ReflectorAssembly(const std::string&);
   ReflectorAssembly(const ReflectorAssembly&);
   ReflectorAssembly& operator=(const ReflectorAssembly&);
-  virtual ~ReflectorAssembly();
+  ~ReflectorAssembly() override;
 
   void insertPipeObjects(Simulation&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 
 };

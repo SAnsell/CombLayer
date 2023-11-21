@@ -19,21 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <boost/format.hpp>
+#include <cmath>
+#include <complex>
 #include <fstream> 
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
 #include <random>
-#include <boost/format.hpp>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "Random.h"
@@ -49,11 +50,11 @@ namespace SDef
 {
 
 activeUnit::activeUnit(const double IF,
-                       const std::vector<double>& E,
-                       const std::vector<double>& G) :
+                       std::vector<double>  E,
+                       std::vector<double>  G) :
   volume(0.0),integralFlux(IF),
   scaleCnt(0),scaleIntegral(0.0),
-  energy(E),cellFlux(G)
+  energy(std::move(E)),cellFlux(std::move(G))
   /*!
     Constructor 
     \param IF :: integral flux

@@ -90,7 +90,7 @@ class MagnetM1 :
   /// Octupole [third]
   std::shared_ptr<xraySystem::Octupole> Oyy;
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -101,10 +101,10 @@ class MagnetM1 :
   MagnetM1(const std::string&);
   MagnetM1(const MagnetM1&);
   MagnetM1& operator=(const MagnetM1&);
-  virtual ~MagnetM1();
+  ~MagnetM1() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

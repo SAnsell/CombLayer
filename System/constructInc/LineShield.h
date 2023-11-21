@@ -67,7 +67,7 @@ class LineShield :
 
   void removeFrontOverLap();
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -77,13 +77,13 @@ class LineShield :
   LineShield(const std::string&);
   LineShield(const LineShield&);
   LineShield& operator=(const LineShield&);
-  virtual ~LineShield();
+  ~LineShield() override;
 
   HeadRule getXSectionIn() const;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

@@ -19,18 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iomanip>
-#include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <fstream>
-#include <vector>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
 #include <map>
 #include <set>
-#include <string>
 #include <sstream>
-#include <iterator>
-#include <functional>
-#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -50,7 +51,7 @@ WForm::WForm()  :  pType("n"),
   */
 {} 
 
-WForm::WForm(const std::string& P)  :  pType(P),
+WForm::WForm(std::string  P)  :  pType(std::move(P)),
   wupn(2.0),wsurv(0.7*wupn),maxsp(5),
   mwhere(0),mtime(0)
   /*!

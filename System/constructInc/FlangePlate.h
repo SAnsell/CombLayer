@@ -53,7 +53,7 @@ class FlangePlate :
   int windowMat;                 ///< inner (Void) materia;
   int flangeMat;                ///< Main material  
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,11 +63,11 @@ class FlangePlate :
   FlangePlate(const std::string&);
   FlangePlate(const FlangePlate&);
   FlangePlate& operator=(const FlangePlate&);
-  virtual ~FlangePlate();
+  ~FlangePlate() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

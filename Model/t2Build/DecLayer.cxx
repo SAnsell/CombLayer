@@ -19,20 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
+#include <algorithm>
 #include <cmath>
 #include <complex>
-#include <list>
-#include <vector>
-#include <set>
-#include <map>
-#include <string>
-#include <algorithm>
+#include <fstream>
 #include <functional>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <map>
 #include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -65,8 +66,8 @@ namespace moderatorSystem
 {
 
 DecLayer::DecLayer(const std::string& Key,
-		   const std::string& LKey)  :
-  Decoupled(Key),lkeyName(LKey)
+		   std::string  LKey)  :
+  Decoupled(Key),lkeyName(std::move(LKey))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for base decoupled object

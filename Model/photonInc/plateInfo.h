@@ -47,7 +47,7 @@ struct plateInfo
 
 
   plateInfo();
-  plateInfo(const std::string&);
+  plateInfo(std::string );
   plateInfo(const plateInfo&);
   plateInfo& operator=(const plateInfo&);
   ~plateInfo() {}

@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/nnbar/NNBARvariables.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,8 +87,8 @@ NNBARvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"nnbarFA",350.0, 30.0,50.0, 30.0,50.0);
 
   PipeGen.setPipe(35.0,1.0);
-  PipeGen.setWindow(-4.0,1.0);
-  PipeGen.setFlange(-8.0,4.0);
+  PipeGen.setNoWindow();
+  PipeGen.setFlange(39.0,4.0);
   PipeGen.generatePipe(Control,"nnbarPipeB",46.0);
   Control.addVariable("nnbarPipeBYStep",8.0);
 
@@ -157,7 +157,7 @@ NNBARvariables(FuncDataBase& Control)
   Control.addVariable("nnbarCaveConcFloor",50.0);
   Control.addVariable("nnbarCaveConcBack",35.0);
 
-  Control.addVariable("nnbarCaveFeMat","Stainless304");
+  Control.addVariable("nnbarCavePipeMat","Stainless304");
   Control.addVariable("nnbarCaveConcMat","Concrete");
 
   // Beam port through front of cave

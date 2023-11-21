@@ -3,7 +3,7 @@
 
  * File:   essBuild/BilbaoWheel.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -435,13 +435,17 @@ BilbaoWheel::createShaftSurfaces()
   const double stiffTheta(atan(shaftUpperBigStiffHeight/shaftUpperBigStiffLength)*180.0/M_PI);
   const double stiffL(shaftRadius[nShaftLayers-2]+shaftUpperBigStiffLength);
   const double stiffH(tan(stiffTheta*M_PI/180)*stiffL+shaft2StepHeight);
-  ModelSupport::buildCone(SMap,buildIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
+
+  // cone divider
+  ModelSupport::buildPlane(SMap,buildIndex+6148,Origin+Z*stiffH,Z);  // cone divider
+  ModelSupport::buildCone(SMap,buildIndex+2148,Origin+Z*stiffH,Z,90.0-stiffTheta);
 
   if (engActive) // create surfaces for large upper/lower stiffeners
     createRadialSurfaces(buildIndex+3000, nSectors/2, shaftUpperBigStiffThick);
 
   H = stiffH+voidThick/cos(stiffTheta);
-  ModelSupport::buildCone(SMap,buildIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);
+  ModelSupport::buildPlane(SMap,buildIndex+6149,Origin+Z*H,Z);  // cone divider
+  ModelSupport::buildCone(SMap,buildIndex+2149,Origin+Z*H,Z,90.0-stiffTheta);
 
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
@@ -477,13 +481,15 @@ BilbaoWheel::createShaftSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+2207,Origin,Z,R);
 
   H = shaftBaseDepth-catcherBaseRadius*tan(catcherBaseAngle*M_PI/180);
-  ModelSupport::buildCone(SMap, buildIndex+2208, Origin-Z*(H),
-			  Z, 90-catcherBaseAngle, -1);
+  ModelSupport::buildPlane(SMap,buildIndex+6208,Origin-Z*H,Z);  // cone divider
+  ModelSupport::buildCone(SMap, buildIndex+2208, Origin-Z*H,
+			  Z, 90.0-catcherBaseAngle);
 
   const double gap(p2215->getDistance()-p2205->getDistance());
   H -= gap/sin(catcherBaseAngle*M_PI/180);
-  ModelSupport::buildCone(SMap, buildIndex+2218, Origin-Z*(H),
-			  Z, 90-catcherBaseAngle, -1);
+  ModelSupport::buildPlane(SMap,buildIndex+6218,Origin-Z*H,Z);  // cone divider
+  ModelSupport::buildCone(SMap, buildIndex+2218,Origin-Z*H,
+			  Z,90.0-catcherBaseAngle);
 
   R = catcherNotchRadius;
   ModelSupport::buildCylinder(SMap,buildIndex+2217,Origin,Z,R);
@@ -504,12 +510,14 @@ BilbaoWheel::createShaftSurfaces()
       (shaftLowerBigStiffLongLength-shaftLowerBigStiffShortLength))*180/M_PI);
 
   H = L * tan(lowerBigStiffTheta*M_PI/180)-C.Z();
-  ModelSupport::buildCone(SMap, buildIndex+2238, Origin-Z*(H),
-			  -Z, 90-lowerBigStiffTheta, -1);
+  ModelSupport::buildPlane(SMap,buildIndex+6238,Origin-Z*H,Z);  // cone divider
+  ModelSupport::buildCone(SMap, buildIndex+2238, Origin-Z*H,
+			  -Z, 90.0-lowerBigStiffTheta);
 
   H+= voidThick/cos(lowerBigStiffTheta*M_PI/180);
-  ModelSupport::buildCone(SMap, buildIndex+2239, Origin-Z*(H),
-			  -Z, 90-lowerBigStiffTheta, -1);
+  ModelSupport::buildPlane(SMap,buildIndex+6239,Origin-Z*H,Z);  // cone divider
+  ModelSupport::buildCone(SMap, buildIndex+2239, Origin-Z*H,
+			  -Z, 90.0-lowerBigStiffTheta);
 
   R += voidThick;
   ModelSupport::buildCylinder(SMap,buildIndex+2247,Origin,Z,R);
@@ -617,18 +625,18 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // Connection flange:
   //   stiffener
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2116 -2146 -2148");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2116 -2146 -2148 -6148");
   if (engActive)
     buildStiffeners(System,HR*RsurfHR,buildIndex+3000);
   else
     System.addCell(cellIndex++,shaftUpperBigStiffHomoMat,mainTemp,HR*RsurfHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2116 -2126 2148 -2118 2157");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2116 -2126 2148 -6148 -2118 2157");
   System.addCell(cellIndex++,0,mainTemp,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2126 2148 -2149 2157");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2126 2148 -6148 -2149 -6149 2157");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2116 -2146 2148 -2157");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2116 -2146 2148 -6148 -2157");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
   //   ring
@@ -650,40 +658,40 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // wheel catcher
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2247 2238 -2239 -2125");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2247 2238 6238 -2239 6239 -2125");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2125 -2115  2238 -2118");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "2125 -2115  2238 6238 -2118");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex, " 2237 -2247 2238 2205");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, " 2237 -2247 2238 6238 2205");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
   //     floor gap
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2147 2208 2205 -2215");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2147 2208 -6208 2205 -2215");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2205 -2245 -2208");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2205 -2245 -2208 -6208");
   System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2217 2205 -2245 2208 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2217 2205 -2245 2208 -6208");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2217 2205 2245 -2115 ");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2227 2217 2215 -2115 2218 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2227 2217 2215 -2115 2218 -6218");
   System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // small cell between base cones
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2217 -2218 2208 2215 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2217 -2218 -6218 2208 -6208 2215 ");
   System.addCell(cellIndex++,0,mainTemp,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex, " 2227 -2237 2215 -2225 ");
   System.addCell(cellIndex++,steelMat,mainTemp,HR);
 
   // notch: big conical cell
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2238 2227 2225 -2115");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2238 6238 2227 2225 -2115");
   if (engActive)
     buildStiffeners(System,HR,buildIndex+3000);
   else
@@ -724,13 +732,12 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,SI-10,
-     " (-2007M -2006 2125) : " // connection
-     " (2126 -2149) : " // upper stiffeners
-     " (2126 -2186 -2157) : "  // above upper stiffeners
-     " (-2118 2125 -2126) : " // 2nd step
-     " ((-2239:-2247) 2205 -2125) "); // base
+     " (-2007M -2006 2125) : "    // connection
+     " (2126 -2149 -6149) : "     // upper stiffeners
+     " (2126 -2186 -2157) : "     // above upper stiffeners
+     " (-2118 2125 -2126) : "     // 2nd step
+     " (((-2239 6239):-2247) 2205 -2125)"); // base
   addOuterSurf("Shaft",HR);
-
   return;
 }
 
@@ -1316,6 +1323,10 @@ BilbaoWheel::createLinks()
   FixedComp::setConnect(5,Origin+Z*H,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+46));
 
+
+  nameSideIndex(4,"VoidBase");
+  nameSideIndex(5,"VoidTop");
+  
   // inner links (normally) point towards
   // top/bottom of the spallation material (innet cell)
   const double TH=targetHeight/2.0;
@@ -1330,30 +1341,30 @@ BilbaoWheel::createLinks()
   FixedComp::setBridgeSurf(12,-SMap.realSurf(buildIndex+1));
 
   int SI(buildIndex);
-  for (size_t i=0; i<nLayers; i++)
+  size_t i;
+  for (i=0; i<nLayers && matTYPE[i]!=3; SI+=10,i++) ;
+  if (matTYPE[i]==3) // Tungsten layer
     {
-      if (matTYPE[i]==3) // Tungsten layer
-  	{
-  	  // 8 and 9 - the layer before Tungsten (He)
-  	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
-  					     steelTungstenInnerThick), -Y);
-  	  FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+117));
-
-  	  FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
-  	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
-
-  	  // 10 and 11 - Tungsten layer
-  	  FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
-  	  FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
-
-  	  FixedComp::setConnect(11, Origin-Y*radius[i], Y);
-  	  FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
-
-  	  return; // !!! we assume that there is only one Tungsten layer
-  	}
-      SI+=10;
+      // 8 and 9 - the layer before Tungsten (He)
+      FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
+					 steelTungstenInnerThick), -Y);
+      FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+117));
+      
+      FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
+      FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
+      
+      // 10 and 11 - Tungsten layer
+      FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
+      FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
+      
+      FixedComp::setConnect(11, Origin-Y*radius[i], Y);
+      FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
     }
 
+  FixedComp::setConnect(13, Origin-Y*voidRadius,Y);
+  FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+537));
+  nameSideIndex(13,"VoidRadius");
+  
   return;
 }
 

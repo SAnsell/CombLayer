@@ -89,7 +89,7 @@ class targetOuter : public TMRSystem::TargetBase
 
   int mainCell;                 ///< Main tungsten cylinder
 
-  void populate(const FuncDataBase&);  
+  void populate(const FuncDataBase&) override;  
   void createSurfaces();  
   void createObjects(Simulation&);
   void createLinks();
@@ -99,16 +99,16 @@ class targetOuter : public TMRSystem::TargetBase
   targetOuter(const std::string&);
   targetOuter(const targetOuter&);
   targetOuter& operator=(const targetOuter&);
-  virtual targetOuter* clone() const; 
-  virtual ~targetOuter();
+  targetOuter* clone() const override; 
+  ~targetOuter() override;
 
   /// Main mercury cell body
   int getMainBody() const  { return mainCell; }
 
-  void addProtonLine(Simulation&);
+  void addProtonLine(Simulation&) override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 
 };

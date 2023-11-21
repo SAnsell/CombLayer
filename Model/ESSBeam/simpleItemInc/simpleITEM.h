@@ -65,7 +65,7 @@ class simpleITEM : public attachSystem::CopiedComp
   simpleITEM(const std::string&);
   simpleITEM(const simpleITEM&);
   simpleITEM& operator=(const simpleITEM&);
-  ~simpleITEM();
+  ~simpleITEM() override;
   
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);

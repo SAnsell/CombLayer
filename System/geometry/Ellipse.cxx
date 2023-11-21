@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <cmath>
-#include <vector>
-#include <map>
-#include <string>
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -45,12 +46,12 @@ Ellipse::Ellipse() : Intersect(),
   */
 {}  
 
-Ellipse::Ellipse(const Geometry::Vec3D& C,
-		 const Geometry::Vec3D& mnA,
-		 const Geometry::Vec3D& mxA,
+Ellipse::Ellipse(Geometry::Vec3D  C,
+		 Geometry::Vec3D  mnA,
+		 Geometry::Vec3D  mxA,
 		 const Geometry::Vec3D& nV) :
-  Intersect(),index(0),Cent(C),minorAxis(mnA),
-  majorAxis(mxA),NormV(nV.unit())
+  Intersect(),index(0),Cent(std::move(C)),minorAxis(std::move(mnA)),
+  majorAxis(std::move(mxA)),NormV(nV.unit())
   /*!
     Constructor 
     \param C :: Centre
@@ -61,12 +62,12 @@ Ellipse::Ellipse(const Geometry::Vec3D& C,
 {}  
 
 Ellipse::Ellipse(const int I,
-		 const Geometry::Vec3D& C,
-		 const Geometry::Vec3D& mnA,
-		 const Geometry::Vec3D& mxA,
+		 Geometry::Vec3D  C,
+		 Geometry::Vec3D  mnA,
+		 Geometry::Vec3D  mxA,
 		 const Geometry::Vec3D& nV) :
-  Intersect(),index(I),Cent(C),minorAxis(mnA),
-  majorAxis(mxA),NormV(nV.unit())
+  Intersect(),index(I),Cent(std::move(C)),minorAxis(std::move(mnA)),
+  majorAxis(std::move(mxA)),NormV(nV.unit())
   /*!
     Constructor 
     \param I :: Index value

@@ -3,7 +3,7 @@
  
  * File:   species/speciesVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,6 @@
 #include "RingDoorGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "SimpleChicaneGenerator.h"
-#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
 #include "TriggerGenerator.h"
 #include "SqrFMaskGenerator.h"
@@ -125,16 +124,16 @@ undulatorVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("speciesVariables[F]","collimatorVariables");
   setVariable::PipeGenerator PipeGen;
 
-  const double L(280.0);
+  const double undulatorLen(280.0);
   PipeGen.setMat("Aluminium");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,undKey+"UPipe",L);
+  PipeGen.generatePipe(Control,undKey+"UPipe",undulatorLen);
 
   Control.addVariable(undKey+"UPipeWidth",6.0);
   Control.addVariable(undKey+"UPipeHeight",0.6);
-  Control.addVariable<double>(undKey+"UPipeYStep",-L/2.0);
-  Control.addVariable(undKey+"UPipeFeThick",0.2);
+  Control.addVariable<double>(undKey+"UPipeYStep",-undulatorLen/2.0);
+  Control.addVariable(undKey+"UPipePipeThick",0.2);
 
   // undulator  
   Control.addVariable(undKey+"UndulatorVGap",1.1);  // mininum 11mm

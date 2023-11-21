@@ -49,17 +49,17 @@ class PSimple : public PhysCard
 
  public:
 
-  PSimple(const std::string&);
+  PSimple(std::string );
   PSimple(const PSimple&);
   PSimple& operator=(const PSimple&);
-  PSimple* clone() const;
-  virtual ~PSimple();
+  PSimple* clone() const override;
+  ~PSimple() override;
 
   // NOP function from PhysCard
-  virtual void setEnergyCut(const double);
-  virtual void clear();
+  void setEnergyCut(const double) override;
+  void clear() override;
   /// Access key
-  virtual std::string getKey() const { return KeyName; }   
+  std::string getKey() const override { return KeyName; }   
 
   double getValue(const size_t) const;
   void setValue(const size_t,const double);
@@ -68,7 +68,7 @@ class PSimple : public PhysCard
   void setValues(const std::string&);
   void setDef(const size_t);
 
-  virtual void write(std::ostream&) const;
+  void write(std::ostream&) const override;
   
 };
 

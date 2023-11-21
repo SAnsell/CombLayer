@@ -78,7 +78,7 @@ class Reflector :
   // The pads
   std::vector<moderatorSystem::CoolPad> Pads;
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createFlightLineSurfaces();
   void createObjects(Simulation&);
@@ -89,10 +89,10 @@ class Reflector :
   Reflector(const std::string&);
   Reflector(const Reflector&);
   Reflector& operator=(const Reflector&);
-  virtual ~Reflector();
+  ~Reflector() override;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 
 };

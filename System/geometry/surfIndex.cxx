@@ -38,7 +38,6 @@
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "regexBuild.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
@@ -664,117 +663,6 @@ surfIndex::keepVector() const
   for(mc=holdMap.begin();mc!=holdMap.end();mc++)
     Out.push_back(mc->first);
   return Out;
-}
-
-int
-surfIndex::readOutputSurfaces(const std::string& FName)
-  /*!
-    Reads the surface from the output file from MCNPX
-    \param FName :: File to read
-    \return -ve on error / 0 on success
-  */
-{
-  ELog::RegMethod RegA("surfIndex","readOutputSurfaces");
-
-  int Scount(0);
-
-#ifndef NO_REGEX
-
-  if (FName.empty()) return -1;
-  std::ifstream IX(FName.c_str(),std::ios::in);
-  //failed to open
-  if (!IX) 
-    {
-      ELog::EM<<"Failed to find file "<<FName<<ELog::endErr;
-      return -1;
-    }
-
-  const std::string startSea("SURFACE CARDS");
-  const std::string surfUnit("^\\s*(\\d+)-\\s+(\\S.*)$");
-  const std::string stopSea("\\+\\+\\s*END\\s*\\+\\+");
-
-  std::string InputLine;
-  std::string Line;
-  if (!StrFunc::findPattern(IX,startSea,InputLine))
-    {
-      ELog::EM<<"No start"<<ELog::endErr;
-      return -2;
-    }
-  
-  std::string readLine=StrFunc::getLine(IX);
-  Line="";
-  std::vector<std::string> errLine;
-  while(IX.good() && !StrFunc::StrLook(readLine,stopSea))
-    {
-      if (StrFunc::StrComp(readLine,surfUnit,InputLine,1))
-	{
-	  Line+=InputLine+" ";
-	  const int monoLine=processSurfaces(Line);
-	  // Good line / comment / void surface
-	  if (monoLine==1 || monoLine==2 || monoLine==3)   
-	    {
-	      Line="";
-	      errLine.clear();
-	      Scount++;
-	    }
-	  else if ((!errLine.empty() && monoLine>1) ||
-		   errLine.size()>4)
-	    {
-	      ELog::EM<<"Error with line grp:"<<ELog::endCrit;
-	      for(unsigned int i=0;i<errLine.size();i++)
-		ELog::EM<<"   "<<errLine[i]<<ELog::endCrit;
-	      throw ColErr::InvalidLine(Line,"Line",0);
-	    }
-	  else
-	    {
-	      errLine.push_back(InputLine);
-	    }
-	}
-      readLine=StrFunc::getLine(IX);
-    }
-  IX.close();
-  ELog::EM<<"Read in "<<Scount<<" surfaces"<<ELog::endDiag;
-
-#endif
-
-  return (Scount) ? 0 : -3;
-}
-
-int
-surfIndex::processSurfaces(const std::string& InputLine)
-/*! 
-  Job is to decide which type of surface the 
-  current line is attached too. It also must decide if 
-  there is enough information on the current line 
-  \param InputLine :: Line to process (Stripped of comments on return)
-  \retval 0 More information required
-  \retval -1 failed
-  \retval 1 good
-  \retval 2 pure comment 
-  \retval 3 valid but void surface
-*/
-{
-  ELog::RegMethod RegItem("SurfData","processSurface");
-
-  std::string Line=StrFunc::removeOuterSpace(InputLine);
-  StrFunc::stripComment(Line);
-  if (Line.size()<1 ||               // comments blank line, ^c or ^c<spc> 
-      (tolower(Line[0])=='c' && 
-       (Line.size()==1 || isspace(Line[1])) ))
-    return 2;
-
-  StrFunc::lowerString(Line);  
-  int name;
-  if (!StrFunc::section(Line,name) || Line.empty())
-    return -1; 
-  
-  // Get transform if it exists.
-  int transN(0);
-  StrFunc::section(Line,transN);
-
-  createSurface(name,transN,Line);
-
-  return 1;
 }
 
 int

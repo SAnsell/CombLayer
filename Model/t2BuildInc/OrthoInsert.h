@@ -68,7 +68,7 @@ class OrthoInsert :
   OrthoInsert(const std::string&);
   OrthoInsert(const OrthoInsert&);
   OrthoInsert& operator=(const OrthoInsert&);
-  ~OrthoInsert();
+  ~OrthoInsert() override;
 
   int viewSurf() const;
 

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/SurfMap.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,12 @@
 class Simulation;
 class HeadRule;
 
+namespace Geometry
+{
+  class Cylinder;
+  class Plane;
+}
+  
 namespace ModelSupport
 {
   class surfRegister;
@@ -51,7 +57,7 @@ class SurfMap : public BaseMap
   SurfMap();         
   SurfMap(const SurfMap&);
   SurfMap& operator=(const SurfMap&);
-  virtual ~SurfMap() {}     ///< Destructor
+  ~SurfMap() override {}     ///< Destructor
 
   //@{
   /*!
@@ -62,6 +68,10 @@ class SurfMap : public BaseMap
   
   bool hasSurf(const std::string& K,const size_t index =0) const
   { return BaseMap::hasItem(K,index); }
+
+  void setSurf(const std::string& K,const SurfMap& SM,
+	       const std::string& AKey,const size_t index =0)
+  { BaseMap::setItem(K,SM.getSurf(AKey,index)); }
 
   void setSurf(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }
@@ -111,10 +121,18 @@ class SurfMap : public BaseMap
   std::string getSurfComplement(const std::string&) const;
 
 
-  void makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
+  Geometry::Cylinder*
+  makeExpandedCylinder(const std::string&,ModelSupport::surfRegister&,
+		       const int,const double);
+  Geometry::Plane*
+  makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
+		   const int,const Geometry::Vec3D&,const double);
+  Geometry::Plane*
+  makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
 			const int,const std::string&,
 			const Geometry::Vec3D&,const double);
-  void makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
+  Geometry::Plane*
+  makeShiftedPlane(const std::string&,ModelSupport::surfRegister&,
 			const int,const int,
 			const Geometry::Vec3D&,const double);
   

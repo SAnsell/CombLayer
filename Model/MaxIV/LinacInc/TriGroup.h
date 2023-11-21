@@ -85,7 +85,7 @@ class TriGroup :
   int wallMat;                   ///< Pipe material
   int flangeMat;                 ///< Flange material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -95,11 +95,11 @@ class TriGroup :
   TriGroup(const std::string&);
   TriGroup(const TriGroup&);
   TriGroup& operator=(const TriGroup&);
-  virtual ~TriGroup();
+  ~TriGroup() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

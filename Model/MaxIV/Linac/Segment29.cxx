@@ -3,7 +3,7 @@
 
  * File: Linac/Segment29.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedRotateGroup.h"
 
-#include "SplitFlangePipe.h"
+#include "GeneralPipe.h"
 #include "Bellows.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"

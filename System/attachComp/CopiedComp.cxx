@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <algorithm>
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
-#include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -54,9 +55,9 @@ CopiedComp::CopiedComp()
   */
 {}
 
-CopiedComp::CopiedComp(const std::string& baseKey,
-		       const std::string& newKey) :
-  baseName(baseKey),newName(newKey)
+CopiedComp::CopiedComp(std::string  baseKey,
+		       std::string  newKey) :
+  baseName(std::move(baseKey)),newName(std::move(newKey))
  /*!
     Constructor to set base/new name
     \param baseKey :: base key name

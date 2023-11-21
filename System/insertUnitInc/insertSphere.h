@@ -44,12 +44,12 @@ class insertSphere : public insertObject
 
   double radius;             ///< Full Width
 
-  virtual void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  virtual void findObjects(Simulation&);
+  void findObjects(Simulation&) override;
 
   void mainAll(Simulation&);
 
@@ -59,7 +59,7 @@ class insertSphere : public insertObject
   insertSphere(const std::string&,const std::string&);
   insertSphere(const insertSphere&);
   insertSphere& operator=(const insertSphere&);
-  virtual ~insertSphere();
+  ~insertSphere() override;
 
   void setValues(const double,const int);
   void setValues(const double,const std::string&);
@@ -69,7 +69,7 @@ class insertSphere : public insertObject
 		 const attachSystem::FixedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   void createAll(Simulation&,const Geometry::Vec3D&);
 
   

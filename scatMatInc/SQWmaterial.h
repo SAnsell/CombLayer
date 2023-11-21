@@ -52,9 +52,9 @@ class SQWmaterial : public neutMaterial
   SQWmaterial(const double,const double,const double,
 	      const double,const double,const double);
   SQWmaterial(const SQWmaterial&);
-  virtual SQWmaterial* clone() const;
+  SQWmaterial* clone() const override;
   SQWmaterial& operator=(const SQWmaterial&);
-  virtual ~SQWmaterial();
+  ~SQWmaterial() override;
   
   /// Effective typeid
   virtual std::string className() const { return "SQWmaterial"; }
@@ -83,8 +83,8 @@ class SQWmaterial : public neutMaterial
   virtual double calcAtten(const double,const double) const;
   virtual void scatterNeutron(MonteCarlo::neutron&) const;
 
-  virtual double dSdOdE(const MonteCarlo::neutron&,
-			const MonteCarlo::neutron&) const;
+  double dSdOdE(const MonteCarlo::neutron&,
+			const MonteCarlo::neutron&) const override;
 
 
 };

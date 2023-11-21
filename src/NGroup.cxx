@@ -3,7 +3,7 @@
  
  * File:   src/NGroup.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -629,8 +629,10 @@ NGroup<T>::processString(const std::string& N)
   // Work with part of the string first
 
   std::string MS(N);
-  
-  transform(MS.begin(),MS.end(),MS.begin(),std::ptr_fun(&tolower));
+
+  transform(MS.begin(),MS.end(),MS.begin(),
+	    [](unsigned int c) -> int { return std::tolower(c);}
+	    );
 
   // From now on in we have a string type (definately)
   // check if the next number is a number or doesn't

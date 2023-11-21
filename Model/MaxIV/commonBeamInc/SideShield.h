@@ -54,9 +54,9 @@ class SideShield :
   
   int mat;                          ///< wall material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -64,15 +64,15 @@ class SideShield :
  public:
   
   SideShield(const std::string&);
-  SideShield(const std::string&,const std::string&);
+  SideShield(std::string ,const std::string&);
   SideShield(const SideShield&);
   SideShield& operator=(const SideShield&);
-  virtual ~SideShield() {}  ///< Destructor
+  ~SideShield() override {}  ///< Destructor
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

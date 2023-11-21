@@ -56,9 +56,9 @@ class TableSupport : public attachSystem::ContainedComp,
  
   int mat;                     ///< Outer material
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const long int) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -69,10 +69,10 @@ class TableSupport : public attachSystem::ContainedComp,
   TableSupport(const std::string&);
   TableSupport(const TableSupport&);
   TableSupport& operator=(const TableSupport&);
-  virtual ~TableSupport();
+  ~TableSupport() override;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

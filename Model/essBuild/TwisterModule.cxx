@@ -3,7 +3,7 @@
  
  * File:   essBuild/TwisterModule.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -66,8 +64,8 @@ namespace essSystem
 {
 
 TwisterModule::TwisterModule(const std::string& Key) :
-  attachSystem::ContainedGroup("PlugFrame","Shaft","ShaftBearing"),
   attachSystem::FixedOffset(Key,15),
+  attachSystem::ContainedGroup("PlugFrame","Shaft","ShaftBearing"),
   attachSystem::CellMap()
   /*!
     Constructor
@@ -77,7 +75,8 @@ TwisterModule::TwisterModule(const std::string& Key) :
 }
 
 TwisterModule::TwisterModule(const TwisterModule& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),  
   shaftRadius(A.shaftRadius),
   shaftHeight(A.shaftHeight),shaftWallThick(A.shaftWallThick),
@@ -105,9 +104,9 @@ TwisterModule::operator=(const TwisterModule& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      CellMap::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
 
       shaftRadius=A.shaftRadius;
       shaftHeight=A.shaftHeight;
@@ -182,22 +181,6 @@ TwisterModule::populate(const FuncDataBase& Control)
 }
 
 void
-TwisterModule::createUnitVector(const attachSystem::FixedComp& FC,
-                                const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Link point [signed]
-  */
-{
-  ELog::RegMethod RegA("TwisterModule","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  
-  return;
-}
-
-void
 TwisterModule::createSurfaces()
   /*!
     Create Surfaces for the Be
@@ -265,54 +248,56 @@ TwisterModule::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TwisterModule","createObjects");
 
-  std::string Out;
+  HeadRule HR;
+
   // shaft
-  Out=ModelSupport::getComposite(SMap,buildIndex," -7 25 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shaftMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 25 -16");
+  System.addCell(cellIndex++,shaftMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 25 -16 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 25 -16");
+  System.addCell(cellIndex++,shaftWallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 5 -16 ");
-  addOuterSurf("Shaft", Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 5 -16");
+  addOuterSurf("Shaft",HR);
 
   // plug frame
   //  inside sector
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 -1 11");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 25 -26 17 2 -1 11");
+  System.addCell(cellIndex++,plugFrameMat,0.0,HR);
 
   //  inside sector wall x+
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 -21 1");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 25 -26 17 2 -21 1");
+  System.addCell(cellIndex++,plugFrameWallMat,0.0,HR);
 
   // outside sector
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 17 (-2:21:-31)");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 5 -6 17 (-2:21:-31)");
+  System.addCell(cellIndex++,plugFrameMat,0.0,HR);
 
   //  inside sector wall x-
-  Out=ModelSupport::getComposite(SMap,buildIndex," -37 25 -26 17 2 31 -11");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 25 -26 17 2 31 -11");
+  System.addCell(cellIndex++,plugFrameWallMat,0.0,HR);
 
   // outer wall inside sector
-  Out=ModelSupport::getComposite(SMap,buildIndex," -27 5 -6 (37:-25:26) 17 2 -21 31 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,plugFrameWallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-27 5 -6 (37:-25:26) 17 2 -21 31");
+  System.addCell(cellIndex++,plugFrameWallMat,0.0,HR);
 
   // bottom wall of the shaft
-  Out=ModelSupport::getComposite(SMap,buildIndex," -17 47 5 -25 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 47 5 -25");
+  System.addCell(cellIndex++,shaftWallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -27 5 -6 ");
-  addOuterSurf("PlugFrame", Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 5 -6");
+  addOuterSurf("PlugFrame",HR);
 
   // shaft bearing
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -47 35 -25 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shaftMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-47 35 -25");
+  System.addCell(cellIndex++,shaftMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -57 47 35 -5 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,shaftWallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-57 47 35 -5");
+  System.addCell(cellIndex++,shaftWallMat,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex, " -57 35 -5 ");
-  addOuterSurf("ShaftBearing", Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-57 35 -5");
+  addOuterSurf("ShaftBearing",HR);
     
   return; 
 }
@@ -405,9 +390,8 @@ TwisterModule::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("TwisterModule","createAll");
-  populate(System.getDataBase());
-  
 
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);

@@ -46,7 +46,7 @@ class FrontBackCut :
   FrontBackCut();
   FrontBackCut(const FrontBackCut&);
   FrontBackCut& operator=(const FrontBackCut&);
-  virtual ~FrontBackCut();
+  ~FrontBackCut() override;
 
   void setFront(const ExternalCut&);
   void setBack(const ExternalCut&);

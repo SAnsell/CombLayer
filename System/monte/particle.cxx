@@ -19,16 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#include <cmath>
+#include <complex>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <cmath>
-#include <complex>
 #include <list>
-#include <vector>
 #include <map>
+#include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "RefCon.h"
 #include "FileReport.h"
@@ -58,13 +59,13 @@ operator<<(std::ostream& OX,const particle& A)
 }
 
 particle::particle(const std::string& pName,
-		   const Geometry::Vec3D& Pt,
+		   Geometry::Vec3D  Pt,
 		   const Geometry::Vec3D& D,
 		   const double E) :
   typeID(particleConv::Instance().mcplITYP(pName)),
   ID(++masterID),energy(E),
   wavelength(particleConv::Instance().mcplKEWavelength(typeID,E)),
-  Pos(Pt),uVec(D.unit()),weight(1.0),
+  Pos(std::move(Pt)),uVec(D.unit()),weight(1.0),
   travel(0.0),time(0.0),nCollision(0),
   OPtr(0)
   /*!
@@ -75,11 +76,11 @@ particle::particle(const std::string& pName,
   */
 {}
 
-particle::particle(const Geometry::Vec3D& Pt,
+particle::particle(Geometry::Vec3D  Pt,
 		   const Geometry::Vec3D& D) :
   typeID(0),ID(++masterID),energy(1.0),
   wavelength(1.0),
-  Pos(Pt),uVec(D.unit()),weight(1.0),
+  Pos(std::move(Pt)),uVec(D.unit()),weight(1.0),
   travel(0.0),time(0.0),nCollision(0),
   OPtr(0)
   /*!

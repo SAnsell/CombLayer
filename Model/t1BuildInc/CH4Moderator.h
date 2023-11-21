@@ -72,7 +72,7 @@ class CH4Moderator :
   
   double ch4Temp;                ///< CH4 temperature
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -83,16 +83,16 @@ class CH4Moderator :
   CH4Moderator(const std::string&);
   CH4Moderator(const CH4Moderator&);
   CH4Moderator& operator=(const CH4Moderator&);
-  virtual ~CH4Moderator();
+  ~CH4Moderator() override;
 
 
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual HeadRule getLayerHR(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
+  HeadRule getLayerHR(const size_t,const long int) const override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

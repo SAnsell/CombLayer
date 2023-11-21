@@ -61,7 +61,7 @@ class BeamMount :
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createPairVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
 
@@ -76,12 +76,12 @@ class BeamMount :
   BeamMount(const std::string&);
   BeamMount(const BeamMount&);
   BeamMount& operator=(const BeamMount&);
-  virtual ~BeamMount();
+  ~BeamMount() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+		 const attachSystem::FixedComp&,const long int) override;
  
 };
 

@@ -64,13 +64,13 @@ class LCollimator :
   LCollimator(const std::string&);
   LCollimator(const LCollimator&);
   LCollimator& operator=(const LCollimator&);
-  virtual ~LCollimator() {}  ///< Destructor
+  ~LCollimator() override {}  ///< Destructor
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
   
 };
 

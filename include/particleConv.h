@@ -3,7 +3,7 @@
  
  * File:   include/particleConv.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,9 +42,9 @@ struct pName
   const double mass;                  ///< mass in MeV/c^2
   const int nucleon;                  ///< number of nucleons
   
-  pName(const std::string&,const int,
-	const std::string&,const int,
-	const std::string&,const int,
+  pName(std::string ,const int,
+	std::string ,const int,
+	std::string ,const int,
 	const int,const double,const int);
 
   pName(const pName&);

@@ -92,7 +92,7 @@ class MagnetBlock :
   /// electron cut cell [with magnetic field]
   std::shared_ptr<insertSystem::insertPlate> eCutWallDisk;
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -106,14 +106,14 @@ class MagnetBlock :
   MagnetBlock(const std::string&);
   MagnetBlock(const MagnetBlock&);
   MagnetBlock& operator=(const MagnetBlock&);
-  virtual ~MagnetBlock();
+  ~MagnetBlock() override;
 
   /// setter for stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

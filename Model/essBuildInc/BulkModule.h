@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BulkModule.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,9 @@ namespace essSystem
 */
 
 class BulkModule :
+    public attachSystem::FixedRotate,
     public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset,
+    public attachSystem::CellMap,
     public attachSystem::SurfMap,
     public attachSystem::ExternalCut
 {
@@ -51,8 +52,8 @@ class BulkModule :
   std::vector<Geometry::Vec3D> COffset;   ///< Centre offset
   std::vector<int> Mat;             ///< Default materials
 
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
   void createLinks();
@@ -63,14 +64,14 @@ class BulkModule :
   BulkModule(const std::string&);
   BulkModule(const BulkModule&);
   BulkModule& operator=(const BulkModule&);
-  virtual ~BulkModule();
+  ~BulkModule() override;
 
 
 
   void addFlightUnit(Simulation&,const attachSystem::FixedComp&);
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

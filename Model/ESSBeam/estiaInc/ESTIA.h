@@ -105,7 +105,7 @@ class ESTIA : public attachSystem::CopiedComp
   ESTIA(const std::string&);
   ESTIA(const ESTIA&);
   ESTIA& operator=(const ESTIA&);
-  ~ESTIA();
+  ~ESTIA() override;
   
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);

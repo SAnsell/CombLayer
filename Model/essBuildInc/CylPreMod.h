@@ -87,16 +87,16 @@ class CylPreMod : public attachSystem::ContainedGroup,
   CylPreMod(const std::string&);
   CylPreMod(const CylPreMod&);
   CylPreMod& operator=(const CylPreMod&);
-  virtual ~CylPreMod();
+  ~CylPreMod() override;
 
 
   const std::shared_ptr<BlockAddition>& getBox(const char) const;
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const override;
   virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
     
 };
 

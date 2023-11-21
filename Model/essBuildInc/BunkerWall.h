@@ -82,7 +82,7 @@ class BunkerWall : public attachSystem::ContainedComp,
   BunkerWall(const std::string&);
   BunkerWall(const BunkerWall&);
   BunkerWall& operator=(const BunkerWall&);
-  virtual ~BunkerWall();
+  ~BunkerWall() override;
 
   void setVertSurf(const int,const int);
   void setRadialSurf(const int,const int);
@@ -92,9 +92,9 @@ class BunkerWall : public attachSystem::ContainedComp,
 		    const int,const int);
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

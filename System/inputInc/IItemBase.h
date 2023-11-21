@@ -56,8 +56,8 @@ class IItem
   
  public:
 
-  explicit IItem(const std::string&);
-  IItem(const std::string&,const std::string&);
+  explicit IItem(std::string );
+  IItem(std::string ,std::string );
 
   IItem(const IItem&);
   IItem& operator=(const IItem&);

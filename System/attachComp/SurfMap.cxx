@@ -3,7 +3,7 @@
  
  * File:   attachComp/SurfMap.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -399,8 +399,55 @@ SurfMap::makePlane(const std::string& Key,
   return;
 }
 
-void
-SurfMap::makeShiftedPlane(const std::string& Key,
+Geometry::Cylinder*
+SurfMap::makeExpandedCylinder(const std::string& refKey,
+			      ModelSupport::surfRegister& SMap,
+			      const int newSN,
+			      const double D) 
+  /*!
+    Simple constructor to build shifted cylinder: The refkey
+    the surface name of the cylinder to extract
+    \param refKey :: KeyName
+    \param SMap :: Surface Map
+    \param newSN :: Surface number
+    \param D :: Distance of shift (along radius)
+  */
+{
+  ELog::RegMethod RegA("SurfMap","makeExpandedCylinder(ref)");
+
+  const int refSurfNum=SurfMap::getSurf(refKey);
+  
+  return ModelSupport::buildExpandedCylinder(SMap,refSurfNum,newSN,D);
+}
+
+Geometry::Plane*
+SurfMap::makeShiftedPlane(const std::string& refKey,
+			  ModelSupport::surfRegister& SMap,
+			  const int newSN,
+			  const Geometry::Vec3D& YAxis,
+			  const double D) 
+  /*!
+    Simple constructor to build shifted plane: The refSN is
+    the surface name of the plane to extract and build the shifted
+    plane from.
+    \param refKey :: KeyName
+    \param SMap :: Surface Map
+    \param newSN :: Surface number
+    \param YAxis :: Axis direction (to get sign -- not exact direction)
+    \param D :: Distance of shift (along refSN.normal)
+  */
+{
+  ELog::RegMethod RegA("SurfMap","makeShiftedPlane(ref)");
+
+  const int refSurfNum=
+    SurfMap::getSurf(refKey);
+  
+  return
+    ModelSupport::buildShiftedPlane(SMap,newSN,refSurfNum,YAxis,D);
+}
+
+Geometry::Plane*
+SurfMap::makeShiftedPlane(const std::string& newKey,
 			  ModelSupport::surfRegister& SMap,
 			  const int newSN,
 			  const std::string& refSN,
@@ -423,15 +470,14 @@ SurfMap::makeShiftedPlane(const std::string& Key,
   const int refSurfNum=
     SurfMap::getSurf(refSN);
   
-  const Geometry::Plane* newSurfPtr=
+  Geometry::Plane* newSurfPtr=
     ModelSupport::buildShiftedPlane(SMap,newSN,refSurfNum,YAxis,D);
 
-  
-  setSurf(Key,newSurfPtr->getName());
-  return;
+  setSurf(newKey,newSurfPtr->getName());
+  return newSurfPtr;
 }
 
-void
+Geometry::Plane*
 SurfMap::makeShiftedPlane(const std::string& Key,
 			  ModelSupport::surfRegister& SMap,
 			  const int newSN,
@@ -442,7 +488,7 @@ SurfMap::makeShiftedPlane(const std::string& Key,
     Simple constructor to build shifted plane: The refSN is
     the surface name of the plane to extract and build the shifted
     plane from.
-    \param Key :: KeyName
+    \param Key :: KeyName (new)
     \param SMap :: Surface Map
     \param newSN :: Surface number
     \param refN :: Surface name of reference plane
@@ -452,11 +498,11 @@ SurfMap::makeShiftedPlane(const std::string& Key,
 {
   ELog::RegMethod RegA("SurfMap","makeShiftedPlane");
   
-  const Geometry::Plane* newSurfPtr=
+  Geometry::Plane* newSurfPtr=
     ModelSupport::buildShiftedPlane(SMap,newSN,refSN,YAxis,D);
 
   setSurf(Key,newSurfPtr->getName());
-  return;
+  return newSurfPtr;
 }
 
 void

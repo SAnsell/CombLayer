@@ -45,10 +45,10 @@ class LWInner : public LinkWrapper
   LWInner(const std::string&);
   LWInner(const LWInner&);
   LWInner& operator=(const LWInner&);
-  virtual ~LWInner();
+  ~LWInner() override;
 
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
+  void createSurfaces() override;
+  void createObjects(Simulation&) override;
 };
 
 }

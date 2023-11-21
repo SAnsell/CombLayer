@@ -56,7 +56,7 @@ class HfElement :
   double absHeight;             ///< Hf bar height
   double lift;                  ///< Lift on the hf blades.
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -65,16 +65,16 @@ class HfElement :
  public:
 
   HfElement(const size_t,const size_t,
-		 const std::string&,const std::string&);
+		 const std::string&,std::string );
   HfElement(const HfElement&);
   HfElement& operator=(const HfElement&);
-  virtual ~HfElement() {}   ///< Destructor
+  ~HfElement() override {}   ///< Destructor
 
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,
+  void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const long int);
+			 const long int) override;
 
 };
 

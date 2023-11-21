@@ -94,13 +94,13 @@ class Segment26 :
   Segment26(const std::string&);
   Segment26(const Segment26&);
   Segment26& operator=(const Segment26&);
-  ~Segment26();
+  ~Segment26() override;
 
-  virtual void insertPrevSegment(Simulation&,const TDCsegment*) const;
+  void insertPrevSegment(Simulation&,const TDCsegment*) const override;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 

@@ -48,7 +48,7 @@ class MonoBoxGenerator : public VacBoxGenerator
   MonoBoxGenerator();
   MonoBoxGenerator(const MonoBoxGenerator&);
   MonoBoxGenerator& operator=(const MonoBoxGenerator&);
-  virtual ~MonoBoxGenerator();
+  ~MonoBoxGenerator() override;
 
   void setLids(const double,const double,const double);
   

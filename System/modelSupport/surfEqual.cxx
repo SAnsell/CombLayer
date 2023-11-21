@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/surfEqual.cxx
+ * File:   modelProcess/surfEqual.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,18 +33,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/any.hpp>
-#include <boost/type_traits.hpp>
-#include <boost/multi_array.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/range_c.hpp>
-#include <boost/mpl/at.hpp>
-#include <boost/mpl/size.hpp>
-#include <boost/mpl/find.hpp>
-#include <boost/mpl/vector.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/type_traits/is_convertible.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -70,8 +58,6 @@
 #include "Torus.h"
 #include "General.h"
 #include "Plane.h"
-#include "surfaceFactory.h"
-#include "surfVector.h"
 #include "surfEqual.h"
 
 //typedef ModelSupport::surfIndex::STYPE SMAP;
@@ -80,99 +66,10 @@ typedef std::map<int,Geometry::Surface*> SMAP;
 namespace ModelSupport
 {
 
-/*!
-  \struct unknownSurface
-  \author S. Ansell
-  \date December 2009
-  \version 1.0
-  \brief mis-match class
-*/
-template<typename RetType>
-struct unknownSurface
-{
-  /// Handle Index out of range
-  static RetType 
-  dispatch(const int Index,const Geometry::Surface*,
-	   const std::map<int,Geometry::Surface*>&)
-    {
-      throw ColErr::IndexError<int>(Index,
-				    Geometry::ExportSize,"unknownSurface");
-    }
-};
-
-/*!
-  \struct EqualSurface
-  \brief calls pointer directed EqualSurface
-  \author S. Ansell
-  \version 1.0
-  \date December 2009
-  \tparam State (list of types - this one) 
-  \tparam Index :: Type id number to execute on (runtime)
-*/
-
-template<class State,class Index,typename RetType>
-struct EqualSurface
-{
-  static RetType
-  dispatch(const int I,RetType SPtr,
-	   const std::map<int,Geometry::Surface*>& SMap)
-    /*!
-      Creates the pointer to the surface
-      Index refers to the positon on the Geometry::ExportClass list
-      \param I :: Index of runtime value (check with Index)
-      \param SPtr :: Surface pointer      
-      \param SMap :: Surface to use
-      \retval Ptr :: success
-    */
-    {
-      if (I==Index())
-        {
-	  typedef typename 
-	    boost::mpl::at<Geometry::ExportClass,Index>::type ObjectType;
-	  typedef typename 
-	    boost::mpl::if_<boost::is_convertible<RetType,Geometry::Surface*>,
-	    ObjectType*,const ObjectType*>::type TX;
-	  
-	  TX ObjPtr=dynamic_cast<TX>(SPtr);
-
-	  return EqualSurf<TX,RetType>(ObjPtr,SMap);
-	}
-      else
-        {
-	  // Dispatches next in list
-	  return State::dispatch(I,SPtr,SMap);
-	}
-    }
-};
-
 //----------------------------------------------------------------------
 //                    OUTSIDE
 //----------------------------------------------------------------------
-
-
-
-const Geometry::Surface*
-equalSurface(const Geometry::Surface* SPtr)
-  /*!
-    Process a equal surface request
-    \param SPtr :: surface pointer
-    \return Surface pointer 
-   */
-{
-  if (!SPtr)
-    throw ColErr::EmptyValue<Geometry::Surface*>("equalSurface(const)");
   
-  const int Index=
-    Geometry::surfaceFactory::Instance().getIndex(SPtr->className());
-  
-  typedef boost::mpl::fold<boost::mpl::range_c<int,0,Geometry::ExportSize>,
-    unknownSurface<Geometry::Surface*>,
-    EqualSurface<boost::mpl::_1 , boost::mpl::_2,const Geometry::Surface*> >::type FTYPE;
-  
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  return FTYPE::dispatch(Index,SPtr,SurI.surMap());
-}
-
 Geometry::Surface*
 equalSurface(Geometry::Surface* SPtr)
   /*!
@@ -183,44 +80,38 @@ equalSurface(Geometry::Surface* SPtr)
 {
   if (!SPtr)
     throw ColErr::EmptyValue<Geometry::Surface*>("equalSurface");
+  const SMAP& sMap=surfIndex::Instance().surMap();
   
-  const int Index=
-    Geometry::surfaceFactory::Instance().getIndex(SPtr->className());
-  
-  typedef boost::mpl::fold<boost::mpl::range_c<int,0,Geometry::ExportSize>,
-    unknownSurface<Geometry::Surface*>,
-    EqualSurface<boost::mpl::_1 , boost::mpl::_2,Geometry::Surface*> >::type FTYPE;
-  
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  return FTYPE::dispatch(Index,SPtr,SurI.surMap());
+  const Geometry::SurfKey cIndex=SPtr->classIndex();
+  for(const auto& [N, TPtr] : sMap)
+    {
+      if (TPtr->classIndex()==cIndex &&
+	  cmpSurfaces(SPtr,TPtr))
+	return TPtr;
+    }
+      
+  return SPtr;
 }
 
-
-template<typename SurfType,typename RetType>
-RetType
-EqualSurf(SurfType surf,const SMAP& SurMap)
+const Geometry::Surface*
+equalSurface(const Geometry::Surface* SPtr)
   /*!
-    Helper function to determine if the surface object
-    is similar to any we currently have
-    \param surf : Surface to find [Ptr]
-    \param SurMap :: surface map to objects
-    \returns Surface Ptr (either new/old)
+    Process a equal surface request
+    \param SPtr :: surface pointer
+    \return Surface pointer 
   */
 {
-  ELog::RegMethod RegA("surfEqual","EqualSurf<>");
-		       //+SurfType::classType()+">");  // remove ptr (*)
-  const int index=surf->getName();
-  SMAP::const_iterator mc;
-  for(mc=SurMap.begin();mc!=SurMap.end();mc++)
+  if (!SPtr)
+    throw ColErr::EmptyValue<Geometry::Surface*>("equalSurface(const)");
+  const SMAP& sMap=surfIndex::Instance().surMap();
+
+  for(const auto& [N, TPtr] : sMap)
     {
-      if (mc->first!=index) 
-        {
-	  SurfType sndObj=dynamic_cast<SurfType>(mc->second);
-          if (sndObj && sndObj->operator==(*surf))
-	    return static_cast<RetType>(sndObj);
-	}
+      if (cmpSurfaces(SPtr,TPtr))
+	return TPtr;
     }
-  return static_cast<RetType>(surf);
+  
+  return SPtr;
 }
 
 int
@@ -233,17 +124,9 @@ equalSurfNum(const Geometry::Surface* SPtr)
 {
   if (!SPtr)
     throw ColErr::EmptyValue<Geometry::Surface*>("equalSurfNum");
-  
-  const int Index=
-    Geometry::surfaceFactory::Instance().getIndex(SPtr->className());
- 
-  typedef boost::mpl::fold<boost::mpl::range_c<int,0,Geometry::ExportSize>,
-    unknownSurface<Geometry::Surface*>,
-    EqualSurface<boost::mpl::_1 , boost::mpl::_2,const Geometry::Surface*> >::type FTYPE;
-  
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
-  const Geometry::Surface* OutPtr=FTYPE::dispatch(Index,SPtr,SurI.surMap());
+  const Geometry::Surface* OutPtr=
+    equalSurface(SPtr);
   return OutPtr->getName();
 }
 
@@ -252,27 +135,105 @@ cmpSurfaces(const Geometry::Surface* SPtr,
 	    const Geometry::Surface* TPtr)
   /*!
     Simple comparison of two surfaces
+    NOTE: the quadratic nature of quadratic surfaces are so extreme
+    that simple comparison is almost impossible
+    Therefore need to convert to dynamic type. This was done
+    by double-dispatch but was a mess.
+    
     \param SPtr :: First surface
     \param TPtr :: Second surface
     \return true if surfaces are equal
   */
 {
   ELog::RegMethod RegA("surfEqual","cmpSurfaces");
+
   if (SPtr==TPtr) return 1;
-  if (!SPtr || !TPtr) return 0;
-  
+  if (!SPtr || !TPtr) return 0; 
   // Strip out planes is a quick optimization:
   const Geometry::Plane* SP=dynamic_cast<const Geometry::Plane*>(SPtr);
   const Geometry::Plane* TP=dynamic_cast<const Geometry::Plane*>(TPtr);
-  if (!SP && !TP) 
-    {
-      const Geometry::Quadratic* SQ=dynamic_cast<const Geometry::Quadratic*>(SPtr);
-      const Geometry::Quadratic* TQ=dynamic_cast<const Geometry::Quadratic*>(TPtr);
+  if (SP && TP)
+    return (SP->operator==(*TP));
+  if (SP || TP) return 0;   // definately failed
 
-      if (!SQ || !TQ) return 0;
-      return (*SQ==(*TQ));
+  const Geometry::SurfKey sKey=SPtr->classIndex();
+  if (sKey!=TPtr->classIndex())
+    return 0;
+  
+  if (sKey == Geometry::SurfKey::Cone)
+    {
+      const Geometry::Cone* SQ=
+	dynamic_cast<const Geometry::Cone*>(SPtr);
+      const Geometry::Cone* TQ=
+	dynamic_cast<const Geometry::Cone*>(TPtr);
+      return SQ->operator==(*TQ);
     }
-  return (!SP || !TP) ? 0 : *SP==(*TP);
+  else if (sKey == Geometry::SurfKey::Cylinder)
+    {
+      const Geometry::Cylinder* SQ=
+	dynamic_cast<const Geometry::Cylinder*>(SPtr);
+      const Geometry::Cylinder* TQ=
+	dynamic_cast<const Geometry::Cylinder*>(TPtr);
+      return SQ->operator==(*TQ);
+    }
+  else if (sKey == Geometry::SurfKey::General)
+    {
+      const Geometry::General* SQ=
+	dynamic_cast<const Geometry::General*>(SPtr);
+      const Geometry::General* TQ=
+	dynamic_cast<const Geometry::General*>(TPtr);
+      return SQ->operator==(*TQ);
+    }
+
+  if (sKey == Geometry::SurfKey::Sphere)
+    {
+      const Geometry::Sphere* SQ=
+	dynamic_cast<const Geometry::Sphere*>(SPtr);
+      const Geometry::Sphere* TQ=
+	dynamic_cast<const Geometry::Sphere*>(TPtr);
+      return SQ->operator==(*TQ);
+    }
+  else if (sKey == Geometry::SurfKey::ArbPoly)
+    {
+      const Geometry::ArbPoly* SQ=
+	dynamic_cast<const Geometry::ArbPoly*>(SPtr);
+      const Geometry::ArbPoly* TQ=
+	dynamic_cast<const Geometry::ArbPoly*>(TPtr);
+      return SQ->operator==(*TQ);
+    }
+  else if (sKey == Geometry::SurfKey::CylCan)
+    {
+      const Geometry::CylCan* SQ=
+	dynamic_cast<const Geometry::CylCan*>(SPtr);
+      const Geometry::CylCan* TQ=
+	dynamic_cast<const Geometry::CylCan*>(TPtr);
+      return SQ->operator==(*TQ);
+    }
+  else if (sKey == Geometry::SurfKey::EllipticCyl)
+    {
+      const Geometry::EllipticCyl* SQ=
+	dynamic_cast<const Geometry::EllipticCyl*>(SPtr);
+      const Geometry::EllipticCyl* TQ=
+	dynamic_cast<const Geometry::EllipticCyl*>(TPtr);
+      return SQ->operator==(*TQ);
+    }
+  else if (sKey == Geometry::SurfKey::MBrect)
+    {
+      const Geometry::MBrect* SQ=
+	dynamic_cast<const Geometry::MBrect*>(SPtr);
+      const Geometry::MBrect* TQ=
+	dynamic_cast<const Geometry::MBrect*>(TPtr);
+      return SQ->operator==(*TQ);
+    }
+  else if (sKey == Geometry::SurfKey::Quadratic)
+    {
+      const Geometry::Quadratic* SQ=
+	dynamic_cast<const Geometry::Quadratic*>(SPtr);
+      const Geometry::Quadratic* TQ=
+	dynamic_cast<const Geometry::Quadratic*>(TPtr);
+      return SQ->operator==(*TQ);
+    }
+  return 0;
 }
 
 bool
@@ -294,58 +255,5 @@ oppositeSurfaces(const Geometry::Surface* SPtr,
   if (!SP || !TP) return 0;
   return (SP->isEqual(*TP)==-1) ? 1 : 0;
 }
-
-
-///\cond TEMPLATE
-
-template const Geometry::Surface* 
-EqualSurf<const Geometry::ArbPoly*,const Geometry::Surface*>(const Geometry::ArbPoly*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::Cone*,const Geometry::Surface*>(const Geometry::Cone*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::CylCan*,const Geometry::Surface*>(const Geometry::CylCan*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::Cylinder*,const Geometry::Surface*>(const Geometry::Cylinder*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::General*,const Geometry::Surface*>(const Geometry::General*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::MBrect*,const Geometry::Surface*>(const Geometry::MBrect*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::NullSurface*,const Geometry::Surface*>(const Geometry::NullSurface*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::Plane*,const Geometry::Surface*>(const Geometry::Plane*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::Quadratic*,const Geometry::Surface*>(const Geometry::Quadratic*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::Sphere*,const Geometry::Surface*>(const Geometry::Sphere*,const SMAP&);
-template const Geometry::Surface* 
-EqualSurf<const Geometry::Torus*,const Geometry::Surface*>(const Geometry::Torus*,const SMAP&);
-
-template Geometry::Surface* 
-EqualSurf<Geometry::ArbPoly*,Geometry::Surface*>(Geometry::ArbPoly*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::Cone*,Geometry::Surface*>(Geometry::Cone*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::CylCan*,Geometry::Surface*>(Geometry::CylCan*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::Cylinder*,Geometry::Surface*>(Geometry::Cylinder*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::General*,Geometry::Surface*>(Geometry::General*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::MBrect*,Geometry::Surface*>(Geometry::MBrect*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::NullSurface*,Geometry::Surface*>(Geometry::NullSurface*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::Plane*,Geometry::Surface*>(Geometry::Plane*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::Quadratic*,Geometry::Surface*>(Geometry::Quadratic*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::Sphere*,Geometry::Surface*>(Geometry::Sphere*,const SMAP&);
-template Geometry::Surface* 
-EqualSurf<Geometry::Torus*,Geometry::Surface*>(Geometry::Torus*,const SMAP&);
-
-
-///\endcond TEMPLATE
-
 
 } // NAMESPACE ModelSuppot

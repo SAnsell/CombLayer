@@ -44,7 +44,7 @@ class CopiedComp
  public:
 
   CopiedComp();
-  CopiedComp(const std::string&,const std::string&);         
+  CopiedComp(std::string ,std::string );         
   CopiedComp(const CopiedComp&);
   CopiedComp& operator=(const CopiedComp&);
   virtual ~CopiedComp() {}     ///< Destructor

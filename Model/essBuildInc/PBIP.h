@@ -65,7 +65,7 @@ class PBIP :
   double foilThick; ///< foil thickness
   int foilMat; ///< foil material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -76,11 +76,11 @@ class PBIP :
   PBIP(const PBIP&);
   PBIP& operator=(const PBIP&);
   virtual PBIP* clone() const;
-  virtual ~PBIP();
+  ~PBIP() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 };
 
 }

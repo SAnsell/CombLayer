@@ -150,7 +150,7 @@ sourceSelection(Simulation& System,
     FC.getSideIndex(DSnd);
 
   // NOTE: No return to allow active SSW systems  
-  const std::string sdefType=IParam.getValue<std::string>("sdefType");
+  const std::string sdefType=IParam.getDefValue<std::string>("Beam","sdefType");
   std::string sName;
   
   if (sdefType=="kcode")

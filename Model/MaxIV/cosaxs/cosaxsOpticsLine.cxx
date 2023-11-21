@@ -3,7 +3,7 @@
 
  * File: cosaxs/cosaxsOpticsLine.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -73,7 +74,6 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumBox.h"
 #include "portItem.h"
@@ -372,7 +372,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   pipeInit->createAll(System,*this,0);
 
   outerCell=buildZone.createUnit(System,*pipeInit,"back");
-  pipeInit->insertInCell(System,outerCell);
+  pipeInit->insertAllInCell(System,outerCell);
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 

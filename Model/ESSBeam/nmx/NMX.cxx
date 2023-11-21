@@ -70,7 +70,6 @@
 #include "BenderUnit.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "WindowPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "BeamShutter.h"
@@ -89,15 +88,15 @@ NMX::NMX(const std::string& keyName) :
   stopPoint(0),
   nmxAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
-  VPipeA(new constructSystem::WindowPipe(newName+"PipeA")),
+  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   BendA(new beamlineSystem::BenderUnit(newName+"BA")),
-  VPipeB(new constructSystem::WindowPipe(newName+"PipeB")),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   BendB(new beamlineSystem::BenderUnit(newName+"BB")),
-  VPipeC(new constructSystem::WindowPipe(newName+"PipeC")),
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::BenderUnit(newName+"BC")),
-  VPipeD(new constructSystem::WindowPipe(newName+"PipeD")),
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   BendD(new beamlineSystem::BenderUnit(newName+"BD")),
-  VPipeE(new constructSystem::WindowPipe(newName+"PipeE")),
+  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   BendE(new beamlineSystem::BenderUnit(newName+"BE")),
   CollA(new constructSystem::PipeCollimator(newName+"CollA")),
   BInsert(new BunkerInsert(newName+"BInsert")),

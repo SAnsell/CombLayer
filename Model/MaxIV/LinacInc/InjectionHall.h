@@ -206,7 +206,7 @@ class InjectionHall :
   void layerProcess(Simulation&,const std::string&,
                     const int,const int,const size_t);
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -216,7 +216,7 @@ class InjectionHall :
   InjectionHall(const std::string&);
   //  InjectionHall(const InjectionHall&);
   InjectionHall& operator=(const InjectionHall&);
-  virtual ~InjectionHall();
+  ~InjectionHall() override;
 
   /// accessor to void mat
   int getVoidMat() const { return voidMat; }
@@ -226,7 +226,7 @@ class InjectionHall :
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

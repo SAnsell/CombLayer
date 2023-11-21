@@ -3,7 +3,7 @@
  
  * File:   phitsTally/T3DShow.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,14 +52,6 @@ T3DShow::T3DShow(const int ID) :
   */
 {}
 
-T3DShow::T3DShow(const T3DShow& A) : 
-  phitsTally(A),
-  xyz(A.xyz)
-  /*!
-    Copy constructor
-    \param A :: T3DShow to copy
-  */
-{}
 
 T3DShow&
 T3DShow::operator=(const T3DShow& A)
@@ -88,11 +80,6 @@ T3DShow::clone() const
   return new T3DShow(*this);
 }
 
-T3DShow::~T3DShow()
-  /*!
-    Destructor
-  */
-{}
   
 void
 T3DShow::write(std::ostream& OX,const std::string& fileHead) const

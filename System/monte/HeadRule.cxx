@@ -719,6 +719,44 @@ HeadRule::isComplementary() const
   return 0;
 }
 
+bool
+HeadRule::isZeroVolume() const
+  /*!
+    Determine if the object is volume zero. This is
+    an incomplete test as it only looks at plane system
+    \retval 1 :: true [definately zero]
+    \retval 0 :: false [maybe zero but maybe not]
+  */
+{
+  if (!HeadNode || HeadNode->isEmpty()) return 1;
+
+  const std::set<int> allSurf=getSignedSurfaceNumbers();
+  std::vector<const Geometry::Plane*> PSurf;
+  for(const int SNum : allSurf)
+    {
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(getSurface(SNum));
+      if (!PPtr) return 0;
+      PSurf.push_back(PPtr);
+    }
+  
+  for(size_t i=0;i<PSurf.size();i++)
+    for(size_t j=i+1;j<PSurf.size();j++)
+      for(size_t k=j+1;k<PSurf.size();k++)
+	{
+	  const std::vector<Geometry::Vec3D> PVec=
+	    SurInter::makePoint(PSurf[i],PSurf[j],PSurf[k]);
+	  if (!PVec.empty())
+	    {
+	      const Geometry::Vec3D& tPt(PVec.front());
+	      ELog::EM<<"Pt == "<<tPt<<ELog::endDiag;	      
+	      if (isValid(tPt)) return 0;
+	    }
+	}
+  // all planes and all points not valid,
+  return 1;
+}
+
 void
 HeadRule::populateSurf()
   /*!
@@ -2002,7 +2040,55 @@ HeadRule::removeCommon()
   return;
 }
 
+int
+HeadRule::substituteSurf(const ModelSupport::surfRegister& SMap,
+			 const int buildIndex,
+			 const int surfN,const int newSurfN)
+  /*!
+    Substitues a surface item if it within a rule (both signed versions)
+    +surfN is converted to newSurfN, and -surfN is converted to -newSurfN.
+    \param SMap :: surface register for sufraces
+    \parma buildIndex :: Offset number
+    \param surfN :: Number number to change [+ve]
+    \param newSurfN :: New surface number (if -ve then the key is reversed)
+    \returns number of substitutions
+  */
+{
+  ELog::RegMethod RegA("HeadRule","substitueSurf(SMAP,3int)");
+  // Quick check:
+  if (surfN==newSurfN) return 0;
+  int surfPair[2]={surfN,newSurfN};
 
+  for(int& SN : surfPair)
+    {
+      const int ASurf=(SN>0) ? buildIndex+SN : -(buildIndex-SN);
+      if (SMap.hasSurf(ASurf))
+	SN=SMap.realSurf(ASurf);
+    }
+  
+  return substituteSurf(surfPair[0],surfPair[1],
+			SMap.realSurfPtr(surfPair[1]));
+}
+
+int
+HeadRule::substituteSurf(const ModelSupport::surfRegister& SMap,
+			 const int surfN,const int newSurfN)
+  /*!
+    Substitues a surface item if it within a rule (both signed versions)
+    +surfN is converted to newSurfN, and -surfN is converted to -newSurfN.
+    \param SMap :: surface register for sufraces
+    \param surfN :: Number number to change [+ve]
+    \param newSurfN :: New surface number (if -ve then the key is reversed)
+    \returns number of substitutions
+  */
+{
+  ELog::RegMethod RegA("HeadRule","substitueSurf(SMAP)");
+  // Quick check:
+  if (surfN==newSurfN) return 0;
+  return substituteSurf
+    (SMap.realSurf(surfN),SMap.realSurf(newSurfN),
+     SMap.realSurfPtr(newSurfN));
+}
 
 int
 HeadRule::substituteSurf(const int SurfN,const int newSurfN,
@@ -2013,7 +2099,7 @@ HeadRule::substituteSurf(const int SurfN,const int newSurfN,
 
     \param SurfN :: Number number to change [+ve]
     \param newSurfN :: New surface number (if -ve then the key is reversed)
-    \param SPtr :: New surface Pointer
+    \param SPtr :: New surface Pointer [if given]
     \returns number of substitutions
   */
 {

@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,10 +30,9 @@
 #include <set>
 #include <map>
 #include <memory>
-
+#include <array>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -43,6 +42,8 @@
 #include "support.h"
 #include "stringCombine.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -321,18 +322,19 @@ ReactorGrid::populate(const FuncDataBase& Control)
     throw ColErr::IndexError<size_t>(NX*NY,4000,
 				     "NXYZ array size");
 
-  GType.resize(boost::extents[static_cast<long int>(NX)]
-	      [static_cast<long int>(NY)]);
-  Grid.resize(boost::extents[static_cast<long int>(NX)]
-	      [static_cast<long int>(NY)]);
+  GType.resize(NX,NY);
+  Grid.resize(NX,NY);
+  // GType.resize(boost::extents[static_cast<long int>(NX)]
+  // 	      [static_cast<long int>(NY)]);
+  // Grid.resize(boost::extents[static_cast<long int>(NX)]
+  // 	      [static_cast<long int>(NY)]);
   
   // Populate grid type:
   for(size_t  i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       {
-	const long int li(static_cast<long int>(i));
-	const long int lj(static_cast<long int>(j));
-	GType[li][lj]=getElement<std::string>(Control,keyName+"Type",i,j);
+	GType.get()[i][j]=
+	  getElement<std::string>(Control,keyName+"Type",i,j);
       }
 
   return;
@@ -429,18 +431,18 @@ ReactorGrid::createObjects(Simulation& System)
   
   // Note GridNumbers created at offset values:
   int cNum(buildIndex+5000);
-  for(int i=0;i<static_cast<int>(NX);i++)
+  for(size_t i=0;i<NX;i++)
     {
+      const int BI(buildIndex+static_cast<int>(i*10));
       const HeadRule XPartHR=
-	ModelSupport::getHeadRule(SMap,buildIndex+i*10,"7 -17");
-      for(int j=0;j<static_cast<int>(NY);j++)
+	ModelSupport::getHeadRule(SMap,BI,"7 -17");
+      for(size_t j=0;j<NY;j++)
 	{
+	  const int JI(buildIndex+static_cast<int>(j*10));
 	  const HeadRule YPartHR=
-	    ModelSupport::getHeadRule(SMap,buildIndex+j*10,"8 -18");
+	    ModelSupport::getHeadRule(SMap,JI,"8 -18");
 	  
-	  const size_t si=static_cast<size_t>(i);
-	  const size_t sj=static_cast<size_t>(j);
-	  const int MatN=getMatElement(Control,keyName+"Mat",si,sj);
+	  const int MatN=getMatElement(Control,keyName+"Mat",i,j);
 	  System.addCell(getCellNumber(i,j),MatN,0.0,XPartHR*YPartHR*ZPartHR);
 
 	  // Plates:
@@ -463,7 +465,7 @@ ReactorGrid::createObjects(Simulation& System)
 }
 
 int
-ReactorGrid::getCellNumber(const long int i,const long int j) const
+ReactorGrid::getCellNumber(const size_t i,const size_t j) const
   /*!
     Get Cell number
     \param i :: index of X
@@ -507,51 +509,49 @@ ReactorGrid::createElements(Simulation& System)
   */
 {
   ELog::RegMethod RegA("ReactorGrid","createElements");
+  
   for(size_t i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       {
-	const long int li(static_cast<long int>(i));
-	const long int lj(static_cast<long int>(j));
-	if (GType[li][lj]=="Null")
-	  Grid[li][lj]=RTYPE(new DefElement(i,j,"delftElement"));
+	if (GType.get()[i][j]=="Null")
+	  Grid.get()[i][j]=RTYPE(new DefElement(i,j,"delftElement"));
 
-	else if (GType[li][lj]=="Fuel")
-	  Grid[li][lj]=RTYPE(new FuelElement(i,j,"delftElement"));
+	else if (GType.get()[i][j]=="Fuel")
+	  Grid.get()[i][j]=RTYPE(new FuelElement(i,j,"delftElement"));
 
-	else if (GType[li][lj]=="Control")
-	  Grid[li][lj]=
+	else if (GType.get()[i][j]=="Control")
+	  Grid.get()[i][j]=
 	    RTYPE(new ControlElement(i,j,"delftElement","delftControl"));
 
-	else if (GType[li][lj]=="IRad")
-	    Grid[li][lj]=
+	else if (GType.get()[i][j]=="IRad")
+	    Grid.get()[i][j]=
 	      RTYPE(new IrradElement(i,j,"delftIrrad"));
 
-	else if (GType[li][lj]=="HfControl")
-	    Grid[li][lj]=
+	else if (GType.get()[i][j]=="HfControl")
+	    Grid.get()[i][j]=
 	      RTYPE(new HfElement(i,j,"delftElement","delftHf"));
 
-	else if (GType[li][lj]=="Be")
-	    Grid[li][lj]=
+	else if (GType.get()[i][j]=="Be")
+	    Grid.get()[i][j]=
 	      RTYPE(new BeElement(i,j,"delftBe"));
 
-	else if (GType[li][lj]=="BeO")
-	    Grid[li][lj]=
+	else if (GType.get()[i][j]=="BeO")
+	    Grid.get()[i][j]=
 	      RTYPE(new BeOElement(i,j,"delftBeO"));
 
-	else if (GType[li][lj]=="Air")
-	  Grid[li][lj]=
+	else if (GType.get()[i][j]=="Air")
+	  Grid.get()[i][j]=
 	    RTYPE(new AirBoxElement(i,j,"delftAirBox",waterMat));
 
 	else
 	  {
-	    throw ColErr::InContainerError<std::string>(GType[li][lj],"GType");
+	    throw ColErr::InContainerError<std::string>
+	      (GType.get()[i][j],"GType");
 	  }
-
-	Grid[li][lj]->addInsertCell(getCellNumber(li,lj));
-	Grid[li][lj]->setFuelLoad(FuelSystem);
-	//	Grid[li][lj]->createAll(System,*this,getCellOrigin(i,j));
-	Grid[li][lj]->setCutSurf("BasePlate",SMap.realSurf(buildIndex+5));
-	Grid[li][lj]->createAll(System,*this,getElementName("Grid",i,j));
+	Grid.get()[i][j]->addInsertCell(getCellNumber(i,j));
+	Grid.get()[i][j]->setFuelLoad(FuelSystem);
+	Grid.get()[i][j]->setCutSurf("BasePlate",SMap.realSurf(buildIndex+5));
+	Grid.get()[i][j]->createAll(System,*this,getElementName("Grid",i,j));
       }
   return;
 }
@@ -607,11 +607,12 @@ ReactorGrid::fuelCentres() const
   ELog::RegMethod RegA("ReactorGrid","FuelCentres");
 
   std::vector<Geometry::Vec3D> CPos;
-  for(long int i=0;i<static_cast<long int>(NX);i++)
-    for(long int j=0;j<static_cast<long int>(NY);j++)
+  for(size_t i=0;i<NX;i++)
+    for(size_t j=0;j<NY;j++)
        {
-	 const FuelElement* FPtr=
-	   dynamic_cast<FuelElement*>(Grid[i][j].get());
+	 std::shared_ptr<FuelElement>
+	   FPtr=std::dynamic_pointer_cast<FuelElement>
+	   (Grid.get()[i][j].get());
 	 if (FPtr)
 	   {
 	     const std::vector<Geometry::Vec3D>& CV=
@@ -635,12 +636,12 @@ ReactorGrid::getFuelCells(const Simulation& System,
   ELog::RegMethod RegA("ReactorGrid","getFuelCells");
   
   std::vector<int> cellOut;
-  for(long int i=0;i<static_cast<long int>(NX);i++)
+  for(size_t i=0;i<NX;i++)
     {
-      for(long int j=0;j<static_cast<long int>(NY);j++)
+      for(size_t j=0;j<NY;j++)
 	{
 	  const std::set<int> cellVec=
-	    System.getObjectRange(Grid[i][j]->getItemKeyName());
+	    System.getObjectRange(Grid.get()[i][j]->getItemKeyName());
 	  for(const int index : cellVec)
 	    {
 	      const MonteCarlo::Object* OPtr=
@@ -668,12 +669,12 @@ ReactorGrid::getAllCells(const Simulation& System) const
   ELog::RegMethod RegA("ReactorGrid","getAllCells");
 
   std::vector<int> cellOut;
-  for(long int i=0;i<static_cast<long int>(NX);i++)
+  for(size_t i=0;i<NX;i++)
     {
-      for(long int j=0;j<static_cast<long int>(NY);j++)
+      for(size_t j=0;j<NY;j++)
 	{
 	  const std::set<int> cellVec=
-	    System.getObjectRange(Grid[i][j]->getItemKeyName());
+	    System.getObjectRange(Grid.get()[i][j]->getItemKeyName());
 	  for(const int index : cellVec)
 	    {
 	      if (System.existCell(index))
@@ -714,11 +715,10 @@ ReactorGrid::writeFuelXML(const std::string& FName)
    FuelLoad OutSystem;
    for(size_t i=0;i<NX;i++)
      for(size_t j=0;j<NY;j++)
-       {
-	 const long int li(static_cast<long int>(i));
-	 const long int lj(static_cast<long int>(j));
-	 const FuelElement* FPtr=
-	   dynamic_cast<FuelElement*>(Grid[li][lj].get());
+       {	 
+	 std::shared_ptr<const FuelElement> FPtr=
+	   std::dynamic_pointer_cast<const FuelElement>
+	   (Grid.get()[i][j].get());
 	 if (FPtr)
 	   {
 	     for(size_t nE=0;nE<FPtr->getNElements();nE++)

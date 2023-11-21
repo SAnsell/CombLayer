@@ -3,7 +3,7 @@
  
  * File:   src/SrcData.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,9 +268,11 @@ SrcData::renormalize()
         {
 	  const double IV=
 	    accumulate(P.begin(),P.end(),0.0,std::plus<double>());
-	  if (IV>1e-6) 
-	    transform(P.begin(),P.end(),P.begin(),
-		      std::bind2nd(std::divides<double>(),IV));
+	  if (IV>1e-6)
+	    {
+	      for(double& probValue : P)
+		probValue/=IV;
+	    }
 	}
     }
   if (DS)
@@ -283,9 +285,11 @@ SrcData::renormalize()
 	    {
 	      const double IV=
 		accumulate(P.begin(),P.end(),0.0,std::plus<double>());
-	      if (IV>1e-6) 
-		transform(P.begin(),P.end(),P.begin(),
-			  std::bind2nd(std::divides<double>(),IV));
+	      if (IV>1e-6)
+		{
+		  for(double& probValue : P)
+		    probValue/=IV;
+		}
 	    }
 	}
     }

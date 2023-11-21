@@ -77,7 +77,7 @@ class MonoBox :
   int voidMat;                ///< void material
   int feMat;                  ///< Fe material layer
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -87,11 +87,11 @@ class MonoBox :
   MonoBox(const std::string&,const bool =0);
   MonoBox(const MonoBox&);
   MonoBox& operator=(const MonoBox&);
-  virtual ~MonoBox();
+  ~MonoBox() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

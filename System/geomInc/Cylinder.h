@@ -3,7 +3,7 @@
  
  * File:   geomInc/Cylinder.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,12 +53,12 @@ class Cylinder : public Quadratic
 
   Cylinder();
   Cylinder(const int,const int);
-  Cylinder(const int,const Geometry::Vec3D&,
+  Cylinder(const int,Geometry::Vec3D ,
 	   const Geometry::Vec3D&,const double);
   Cylinder(const Cylinder&);
-  Cylinder* clone() const;
+  Cylinder* clone() const override;
   Cylinder& operator=(const Cylinder&);
-  virtual ~Cylinder();
+  ~Cylinder() override;
 
 
   bool operator==(const Cylinder&) const;
@@ -67,19 +67,21 @@ class Cylinder : public Quadratic
   /// Effective TYPENAME 
   static std::string classType() { return "Cylinder"; }
   /// Public identifer
-  virtual std::string className() const { return "Cylinder"; }  
+  std::string className() const override { return "Cylinder"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::Cylinder; }
   /// Visitor acceptance
-  virtual void acceptVisitor(Global::BaseVisit& A) const
+  void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
   /// Accept visitor for input
-  virtual void acceptVisitor(Global::BaseModVisit& A)
+  void acceptVisitor(Global::BaseModVisit& A) override
     { A.Accept(*this); }
 
-  int side(const Geometry::Vec3D&) const;
-  int onSurface(const Geometry::Vec3D&) const;
-  double distance(const Geometry::Vec3D&) const;
+  int side(const Geometry::Vec3D&) const override;
+  int onSurface(const Geometry::Vec3D&) const override;
+  double distance(const Geometry::Vec3D&) const override;
 
-  int setSurface(const std::string&);
+  int setSurface(const std::string&) override;
   int setCylinder(const Geometry::Vec3D&,const Geometry::Vec3D&,const double);
   void setCentre(const Geometry::Vec3D&);              
   void setNorm(const Geometry::Vec3D&);       
@@ -91,17 +93,17 @@ class Cylinder : public Quadratic
   const Geometry::Vec3D& getNormal() const { return Normal; }  
 
   double getRadius() const { return Radius; }  ///< Get Radius      
-  void setBaseEqn();
+  void setBaseEqn() override;
 
-  void mirror(const Geometry::Plane&);
-  void rotate(const Geometry::Matrix<double>&);
-  void rotate(const Geometry::Quaternion&);
-  void displace(const Geometry::Vec3D&);
+  void mirror(const Geometry::Plane&) override;
+  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::Quaternion&) override;
+  void displace(const Geometry::Vec3D&) override;
 
-  virtual void print() const;
+  void print() const override;
   
-  virtual void writeFLUKA(std::ostream&) const;
-  virtual void write(std::ostream&) const;
+  void writeFLUKA(std::ostream&) const override;
+  void write(std::ostream&) const override;
 
 
 };

@@ -57,7 +57,7 @@ class CleaningMagnet :
   int yokeMat;               ///< Yoke material
   int voidMat;                  ///< Void material
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -69,10 +69,10 @@ class CleaningMagnet :
   CleaningMagnet(const CleaningMagnet&);
   CleaningMagnet& operator=(const CleaningMagnet&);
   virtual CleaningMagnet* clone() const;
-  virtual ~CleaningMagnet();
+  ~CleaningMagnet() override;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
 
 };
 

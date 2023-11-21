@@ -81,8 +81,8 @@ class EPCombine :
   Geometry::Vec3D elecXAxis;       ///< Electron X-axis
   Geometry::Vec3D elecYAxis;       ///< Electron beam axis
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -93,7 +93,7 @@ class EPCombine :
   EPCombine(const std::string&);
   EPCombine(const EPCombine&);
   EPCombine& operator=(const EPCombine&);
-  virtual ~EPCombine();
+  ~EPCombine() override;
 
   void setEPOriginPair(const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,
@@ -105,7 +105,7 @@ class EPCombine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

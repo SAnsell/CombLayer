@@ -3,7 +3,7 @@
 
  * File:   constructVarInc/CornerPipeGenerator.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,8 @@ class CornerPipeGenerator
   /// set out vied
   void setOuterVoid(const int val =1) { outerVoid = val; }
 
-  void generatePipe(FuncDataBase&,const std::string&,    const double) const;
+  void generatePipe(FuncDataBase&,const std::string&,
+		    const double) const;
 
 };
 

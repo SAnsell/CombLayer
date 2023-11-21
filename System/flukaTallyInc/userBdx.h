@@ -60,21 +60,21 @@ class userBdx : public flukaTally
 
   userBdx(const std::string&,const int,const int);
   userBdx(const userBdx&);
-  virtual userBdx* clone() const; 
+  userBdx* clone() const override; 
   userBdx& operator=(const userBdx&);
-  virtual ~userBdx();
+  ~userBdx() override;
 
   /// return fluke name
-  virtual std::string getType() const { return "USRBDX"; };
+  std::string getType() const override { return "USRBDX"; };
 
   void setParticle(const std::string&);
   void setCell(const int,const int);
-  virtual void setAngle(const bool,const double,
-		const double,const size_t);
-  virtual void setEnergy(const bool,const double,
-			 const double,const size_t);
+  void setAngle(const bool,const double,
+		const double,const size_t) override;
+  void setEnergy(const bool,const double,
+			 const double,const size_t) override;
   
-  virtual void write(std::ostream&) const;  
+  void write(std::ostream&) const override;  
 };
 
 }

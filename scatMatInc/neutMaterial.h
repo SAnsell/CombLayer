@@ -66,7 +66,7 @@ class neutMaterial : public MonteCarlo::Material
   neutMaterial(const neutMaterial&);
   virtual neutMaterial* clone() const;
   neutMaterial& operator=(const neutMaterial&);
-  virtual ~neutMaterial();
+  ~neutMaterial() override;
   
   virtual void setMass(const double M) { Amass=M; }  ///< Set Mass
 

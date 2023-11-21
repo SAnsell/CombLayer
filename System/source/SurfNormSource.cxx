@@ -3,7 +3,7 @@
  
  * File:   source/SurfNormSource.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,8 +44,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "SurfNormSource.h"
@@ -54,7 +53,7 @@ namespace SDef
 {
 
 SurfNormSource::SurfNormSource(const std::string& K) :
-  attachSystem::FixedOffsetUnit(K,0),SourceBase(),
+  attachSystem::FixedRotate(K,0),SourceBase(),
   angleSpread(0.0),surfNum(0),
   width(0.0),height(0.0)
   /*!
@@ -64,7 +63,7 @@ SurfNormSource::SurfNormSource(const std::string& K) :
 {}
 
 SurfNormSource::SurfNormSource(const SurfNormSource& A) : 
-  attachSystem::FixedOffsetUnit(A),SourceBase(A),
+  attachSystem::FixedRotate(A),SourceBase(A),
   angleSpread(A.angleSpread),
   surfNum(A.surfNum),width(A.width),height(A.height)
   /*!
@@ -83,7 +82,7 @@ SurfNormSource::operator=(const SurfNormSource& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       SourceBase::operator=(A);
       angleSpread=A.angleSpread;
       surfNum=A.surfNum;
@@ -119,7 +118,7 @@ SurfNormSource::populate(const mainSystem::MITYPE& inputMap)
 {
   ELog::RegMethod RegA("SurfNormSource","populate");
 
-  attachSystem::FixedOffset::populate(inputMap);
+  attachSystem::FixedRotate::populate(inputMap);
   SourceBase::populate(inputMap);
 
   angleSpread=mainSystem::getDefInput<double>(inputMap,"aSpread",0,0.0);

@@ -3,7 +3,7 @@
 
  * File:   softimaxInc/softimaxOpticsLine.h
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,21 +25,27 @@
 namespace constructSystem
 {
   class JawValveTube;
+  class DomeConnector;
+  class OffsetFlangePipe;
 }
 
 namespace xraySystem
 {
+  class BeamPair;
   class BiPortTube;
   class BlockStand;
-  class Mirror;
-  class BeamPair;
-  class TankMonoVessel;
-  class GratingUnit;
-  class FlangeMount;
-  class TwinPipe;
   class BremOpticsColl;
+  class FlangeMount;
+  class GratingUnit;
+  class Mirror;
+  class M1Detail;
+  class M1Mirror;
+  class M1BackPlate;
+  class MonoBox;
   class PipeShield;
-  class TriggerTube;
+  class TankMonoVessel;
+  class TriggerTube;  
+  class TwinPipe;
 
   /*!
     \class softimaxOpticsLine
@@ -86,11 +92,13 @@ class softimaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// M1 - Mirror box
-  std::shared_ptr<constructSystem::OffsetFlangePipe> M1TubeFront;
+  std::shared_ptr<constructSystem::DomeConnector> M1TubeFront;
   std::shared_ptr<constructSystem::PipeTube> M1Tube;
-  std::shared_ptr<constructSystem::OffsetFlangePipe> M1TubeBack;
+  std::shared_ptr<constructSystem::DomeConnector> M1TubeBack;
+  std::shared_ptr<xraySystem::MonoBox> M1Box;
   /// M1 - Mirror
-  std::shared_ptr<xraySystem::Mirror> M1Mirror;
+  std::shared_ptr<xraySystem::M1Detail> M1Detail;
+  
   std::shared_ptr<xraySystem::BlockStand> M1Stand;
   std::shared_ptr<constructSystem::Bellows> bellowC;
   // Pumping tube for the ion pump
@@ -187,7 +195,8 @@ class softimaxOpticsLine :
   void buildM1Mirror(Simulation&,const attachSystem::FixedComp&,
 		     const std::string&);
   
-  void buildM3Mirror(Simulation&,const attachSystem::FixedComp&,
+  void buildM3Mirror(Simulation&,
+		     const attachSystem::FixedComp&,
 		     const std::string&);
   
   void buildM3STXMMirror(Simulation&,
@@ -200,7 +209,7 @@ class softimaxOpticsLine :
 		     const long int);
   void buildExtras(Simulation&);
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
@@ -211,7 +220,7 @@ class softimaxOpticsLine :
   softimaxOpticsLine(const std::string&);
   softimaxOpticsLine(const softimaxOpticsLine&);
   softimaxOpticsLine& operator=(const softimaxOpticsLine&);
-  ~softimaxOpticsLine();
+  ~softimaxOpticsLine() override;
   
   /// Assignment to inner void
   void setInnerMat(const int M) {  innerMat=M; }
@@ -222,7 +231,7 @@ class softimaxOpticsLine :
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
 };
 

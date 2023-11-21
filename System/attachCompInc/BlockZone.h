@@ -73,7 +73,7 @@ class BlockZone  :
   BlockZone(const std::string&);
   BlockZone(const BlockZone&);
   BlockZone& operator=(const BlockZone&);
-  ~BlockZone() {}         ///< Destructor
+  ~BlockZone() override {}         ///< Destructor
 
   void rebuildInsertCells(Simulation&);
   
@@ -126,7 +126,7 @@ class BlockZone  :
   using FixedComp::createAll;  
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int) override;
 
   void write(std::ostream&) const;
   

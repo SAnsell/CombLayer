@@ -86,7 +86,7 @@ class boxUnit :
   void createSurfaces();
   void createObjects(Simulation&);
   void createOuterObjects();
-  void insertObjects(Simulation&);
+  void insertObjects(Simulation&) override;
   
  public:
   
@@ -95,7 +95,7 @@ class boxUnit :
   /// Virtual constructor
   virtual boxUnit* clone() const { return new boxUnit(*this); }  
   boxUnit& operator=(const boxUnit&);
-  virtual ~boxUnit();
+  ~boxUnit() override;
 
 
   /// Access ZUnit vector

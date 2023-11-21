@@ -19,15 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <cmath>
-#include <string>
-#include <vector>
-#include <map>
 #include <boost/format.hpp>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -41,8 +42,8 @@ namespace SDef
 {
 
 template<typename OutType>
-SrcItem<OutType>::SrcItem(const std::string& K) : 
-  SrcBase(),KeyType(K),active(0),dtype(9999),
+SrcItem<OutType>::SrcItem(std::string  K) : 
+  SrcBase(),KeyType(std::move(K)),active(0),dtype(9999),
   Data()
   /*!
     Constructor

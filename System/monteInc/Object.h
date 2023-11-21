@@ -3,7 +3,7 @@
  
  * File:   monteInc/Object.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,12 +89,12 @@ class Object
  public:
 
   Object();
-  Object(const std::string&,const int,const int,
+  Object(std::string ,const int,const int,
 	 const double,const std::string&);
-  Object(const std::string&,const int,const int,
-	 const double,const HeadRule&);
+  Object(std::string ,const int,const int,
+	 const double,HeadRule );
   Object(const int,const int,const double,const std::string&);
-  Object(const int,const int,const double,const HeadRule&);
+  Object(const int,const int,const double,HeadRule );
 
   Object(const Object&);
   Object& operator=(const Object&);

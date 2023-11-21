@@ -189,10 +189,10 @@ Curtain::populate(const FuncDataBase& Control)
 }
   
 void
-Curtain::createUnitVector(const attachSystem::FixedComp& FC,
+Curtain::createLocalUnitVector(const attachSystem::FixedComp& FC,
 			  const long int topIndex,
 			  const long int sideIndex)
-  /*!
+/*!
     Create the unit vectors
     \param MainCentre :: Main rotation centre
     \param FC :: object for origin/radius
@@ -446,7 +446,7 @@ Curtain::createLinks()
 }
 
 void
-Curtain::createAll(Simulation& System,
+Curtain::buildAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
 		   const long int topIndex,
 		   const long int sideIndex)
@@ -458,10 +458,10 @@ Curtain::createAll(Simulation& System,
     \param sideIndex :: Side of monolith
   */
 {
-  ELog::RegMethod RegA("Curtain","createAll");
+  ELog::RegMethod RegA("Curtain","buildAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,topIndex,sideIndex);
+  createLocalUnitVector(FC,topIndex,sideIndex);
   createSurfaces();
   createLinks();
   createObjects(System,FC,topIndex,sideIndex);

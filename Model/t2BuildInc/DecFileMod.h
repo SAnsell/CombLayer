@@ -41,9 +41,9 @@ class DecFileMod : public Decoupled
 
   Geometry::Matrix<double> RBase;  ///< ReBase matrix
   
-  void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
+  void populate(const FuncDataBase&) override;
+  void createUnitVector(const attachSystem::FixedComp&,
+				const long int) override;
   int readFile(Simulation&,const std::string&);
   void reMapSurf(ReadFunc::OTYPE&) const;
 
@@ -53,8 +53,8 @@ class DecFileMod : public Decoupled
   DecFileMod(const DecFileMod&);
   DecFileMod& operator=(const DecFileMod&);
   /// Clone function
-  virtual DecFileMod* clone() const { return new DecFileMod(*this); }
-  virtual ~DecFileMod();
+  DecFileMod* clone() const override { return new DecFileMod(*this); }
+  ~DecFileMod() override;
 
   void createAllFromFile(Simulation&,const attachSystem::FixedComp&,
 			 const long int,const std::string&);

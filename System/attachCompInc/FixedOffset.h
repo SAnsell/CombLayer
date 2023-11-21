@@ -54,7 +54,7 @@ class FixedOffset  : public FixedComp
   FixedOffset(const std::string&,const size_t,const size_t);
   FixedOffset(const FixedOffset&);
   FixedOffset& operator=(const FixedOffset&);
-  virtual ~FixedOffset() {}     ///< Destructor
+  ~FixedOffset() override {}     ///< Destructor
 
   virtual void populate(const FuncDataBase&);
   virtual void populate(const std::map<std::string,
@@ -62,8 +62,8 @@ class FixedOffset  : public FixedComp
   
   virtual void populate(const std::string&,const FuncDataBase&);
 
-  virtual void createUnitVector(const attachSystem::FixedComp&,
-				const long int);
+  void createUnitVector(const attachSystem::FixedComp&,
+				const long int) override;
   virtual void createCentredUnitVector
     (const attachSystem::FixedComp&,const long int,const double);
   

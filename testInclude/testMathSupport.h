@@ -3,7 +3,7 @@
  
  * File:   testInclude/testMathSupport.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
   \author S.Ansell
   
   This class currently only checks the
-  - Order function and PairSort class
+  - Order function class
   - crossOrder and PCombine class
 */
 
@@ -45,6 +45,7 @@ private:
   int testClebschGordan();
   int testCountBits();
   int testCubic();
+  int testDeriv();
   int testFibinacci();
   int testIndexSort();
   int testLowBitIndex();
@@ -52,10 +53,10 @@ private:
   int testNormalDist();  
   int testOrder();
   int testPairCombine();   
-  int testPairSort();
   int testPermSort();
   int testPolInterp();   
   int testQuadratic();
+  int testRangePos();
 
 public:
 

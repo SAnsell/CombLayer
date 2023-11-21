@@ -56,22 +56,22 @@ class SynchrotonBeam :
 
   Geometry::Vec3D beamXYZ;      ///< Start point of beam [origin for emission]
   
-  void populate(const mainSystem::MITYPE&);
+  void populate(const mainSystem::MITYPE&) override;
 
  public:
 
   SynchrotonBeam(const std::string&);
   SynchrotonBeam(const SynchrotonBeam&);
   SynchrotonBeam& operator=(const SynchrotonBeam&);
-  virtual SynchrotonBeam* clone() const;
-  virtual ~SynchrotonBeam();
+  SynchrotonBeam* clone() const override;
+  ~SynchrotonBeam() override;
 
 
-  virtual void rotate(const localRotate&);
-  virtual void createSource(SDef::Source&) const;
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-  virtual void writeFLUKA(std::ostream&) const;
+  void rotate(const localRotate&) override;
+  void createSource(SDef::Source&) const override;
+  void write(std::ostream&) const override;
+  void writePHITS(std::ostream&) const override;
+  void writeFLUKA(std::ostream&) const override;
 
   using FixedComp::createAll;
   void createAll(const mainSystem::MITYPE&,

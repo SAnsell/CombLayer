@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerFeed.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@ class BunkerFeed :
   std::vector<Geometry::Vec3D> CPts;  ///< Points relative to origin
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const Bunker&,const size_t);
+  using FixedComp::createAll;
+  void createLocalUnitVector(const Bunker&,const size_t);
   void insertColl(Simulation&);
   void moveToLayer(const Bunker&,const std::string&);
   
@@ -67,7 +68,7 @@ class BunkerFeed :
   BunkerFeed(const std::string&,const size_t);
   BunkerFeed(const BunkerFeed&);
   BunkerFeed& operator=(const BunkerFeed&);
-  ~BunkerFeed();
+  ~BunkerFeed() override;
   
   void buildAll(Simulation&,const Bunker&,
 		 const size_t,const std::string&);

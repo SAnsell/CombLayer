@@ -44,14 +44,14 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
-#include "SplitPipeGenerator.h"
+#include "PipeGenerator.h"
 #include "BellowGenerator.h"
 
 namespace setVariable
 {
 
 BellowGenerator::BellowGenerator() :
-  SplitPipeGenerator(),
+  PipeGenerator(),
   bellowStep(1.0),bellowThick(1.0),
   bellowMat("Stainless304%Void%10.0")
   /*!
@@ -68,13 +68,13 @@ BellowGenerator::setCF()
   */
 {
   ELog::RegMethod RegA("BellowGenerator","setCF");
-  SplitPipeGenerator::setCF<CF>();
+  PipeGenerator::setCF<CF>();
 
   bellowStep=CF::bellowStep;
   bellowThick=CF::bellowThick;
 
   // this sets to 10% the materials fraction based on a 50/50 split
-  setMat(SplitPipeGenerator::getPipeMat(),
+  setMat(PipeGenerator::getPipeMat(),
 	 20.0*CF::wallThick/CF::bellowThick);
   return;
 }
@@ -90,7 +90,7 @@ BellowGenerator::setPipe(const double R,const double T,
     \param BT :: Bellow Thickness
    */
 {
-  SplitPipeGenerator::setPipe(R,T);
+  PipeGenerator::setPipe(R,T);
   bellowStep=S;
   bellowThick=BT;
   return;
@@ -106,7 +106,7 @@ BellowGenerator::setMat(const std::string& M,const double T)
     \param T :: Percentage of material
   */
 {
-  SplitPipeGenerator::setMat(M);
+  PipeGenerator::setMat(M);
   bellowMat=M+"%Void%"+std::to_string(T);
   return;
 }
@@ -121,7 +121,7 @@ BellowGenerator::setMat(const std::string& PMat,
     \param CMat :: cladding
   */
 {
-  SplitPipeGenerator::setMat(PMat);
+  PipeGenerator::setMat(PMat);
   bellowMat=CMat;
   return;
 }
@@ -140,7 +140,7 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BellowGenerator","generatorBellow");
 
-  SplitPipeGenerator::generatePipe(Control,keyName,length);
+  PipeGenerator::generatePipe(Control,keyName,length);
   // VACUUM PIPES:
   Control.addVariable(keyName+"BellowThick",bellowThick);
   Control.addVariable(keyName+"BellowStep",bellowStep);

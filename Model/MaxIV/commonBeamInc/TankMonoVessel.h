@@ -92,7 +92,7 @@ class TankMonoVessel :
 
   bool delayPortBuild;        ///< Delay port to manual construct
   
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -102,7 +102,7 @@ class TankMonoVessel :
   TankMonoVessel(const std::string&);
   TankMonoVessel(const TankMonoVessel&);
   TankMonoVessel& operator=(const TankMonoVessel&);
-  virtual ~TankMonoVessel();
+  ~TankMonoVessel() override;
 
   /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
@@ -111,8 +111,8 @@ class TankMonoVessel :
   void insertPortInCell(Simulation&,const size_t,const int) const;
 
   using FixedComp::createAll;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
 
 };
 
