@@ -5,6 +5,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(GSL REQUIRED)
+find_package (fmt REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
