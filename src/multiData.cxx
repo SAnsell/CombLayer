@@ -290,8 +290,8 @@ multiData<T>::operator+=(const multiData<T>& A)
     return this->operator=(A);
 
   throwMatchCheck(A,"operator+=");
-  
-  if constexpr (requires (T a,T b) { a+b; })
+
+  if constexpr (!std::is_same<T,std::string>::value)
     {
       std::transform(flatData.begin(),flatData.end(),
 		     A.flatData.begin(),flatData.begin(),
@@ -385,7 +385,7 @@ multiData<T>::operator+=(const T& V)
     \param V :: Value to multiply by
   */
 {
-  if constexpr (requires (T a,T b) { a+b; })
+  if constexpr (!std::is_same<T,std::string>::value)
     {
       for(T& vItem : flatData)
 	vItem+=V;
@@ -493,7 +493,8 @@ multiData<T>::getRangeSumImpl(T& out,
      \param index :: current index to work on     y
     */
 {
-  if constexpr (requires (T a,T b) { a+b; })
+  if constexpr (!std::is_same<T,std::string>::value)
+    
     {
       const sRange& RR=sR[dim];
       if (dim+1==sR.size())
@@ -1052,7 +1053,7 @@ multiData<T>::write(std::ostream& OX) const
     \param OX :: Output
   */
 {
-  if constexpr (requires (std::ostream& OX,T A) { OX<<A; })
+  if constexpr (!std::is_same<T,std::string>::value)
     {
       OX<<"Index =";
       for(const size_t i : index)
@@ -1102,7 +1103,6 @@ template class multiData<DError::doubleErr>;
 template class multiData<float>;
 template class multiData<std::string>;
 template class multiData<int>;
-template class multiData<std::shared_ptr<delftSystem::RElement>>;
 
 template std::ostream& operator<<(std::ostream&,const multiData<int>&);
 template std::ostream& operator<<(std::ostream&,const multiData<float>&);
