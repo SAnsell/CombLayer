@@ -15,6 +15,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_COMPILER g++-11)
 set(CMAKE_CXX_FLAGS "-Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++20 -O2")
 
+if(NOT fmt_INCLUDE_DIR)
+    set(fmt_INCLUDE_DIR "/usr/include/fmt")
+endif()
+
 set(SYSTEM_INCLUDE
   ${CMAKE_SOURCE_DIR}/System/geomInc
   ${CMAKE_SOURCE_DIR}/globalInc
