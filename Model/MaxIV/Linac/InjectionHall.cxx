@@ -1147,12 +1147,19 @@ InjectionHall::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -211 14 -114 6 -26");
   makeCell("Roof",System,cellIndex++,roofMat,0.0,HR);
 
+  // middle wall (part with THz penetration)
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 -5003 1003 5 -6 2007");
+  makeCell("MidT0BottomLeft",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 1003 5003 -5004 5 -5005");
+  makeCell("MidT0BelowTHz",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1001 1003 5003 -5004 5006 -6");
+  makeCell("MidT0AboveTHz",System,cellIndex++,wallMat,0.0,HR);
+
   // MidT wall ducts
   int SJ = buildIndex+7700;
-
-  // middle wall (part with THz penetration)
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,SJ,
-				"1011 -1M 1003 -1004 5 -6 (-5003:5004:-5005:5006)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,SJ,"1001 5004 -1M 1003 -1004 5 -6");
   makeCell("MidT0",System,cellIndex++,wallMat,0.0,HR);
 
   HeadRule MidTDucts1; // TDC modulator klystron duct and D1-D4
@@ -1201,11 +1208,6 @@ InjectionHall::createObjects(Simulation& System)
   				"22M -6112 1003 -1004 5 -6");
   makeCell("MidT6",System,cellIndex++,wallMat,0.0,HR);
 
-
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				"1001 -1011 1003 -1004 5 -6 2007 (-5003:5004:-5005:5006)");
-  makeCell("MidTFrontWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				"1001 -1011 1004 -1104 5 -6");
