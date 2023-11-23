@@ -5,7 +5,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(GSL REQUIRED)
-find_package(Boost COMPONENTS system REQUIRED)
+# find_package(Boost COMPONENTS system REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -240,7 +240,6 @@ target_link_libraries (singleItem
   estia freia heimdal loki magic miracles nmx nnbar 
   odin simpleItem skadi testBeam trex vespa vor  
   GSL::gsl
-  Boost::filesystem
 )
 
 target_link_libraries(t1Real
