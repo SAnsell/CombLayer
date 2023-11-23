@@ -131,7 +131,6 @@ add_subdirectory(instrument)
 add_subdirectory(scatMat)
 add_subdirectory(transport)
 add_subdirectory(Main)
-add_subdirectory(test)
 
 add_executable (ess
   Main/ess.cxx
@@ -271,7 +270,6 @@ target_link_libraries(xrayHut
 
 target_link_libraries(testMain
   ${SYSTEM_LIB}
-  test
   GSL::gsl
   Boost::filesystem
 )
