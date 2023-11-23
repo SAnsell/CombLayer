@@ -217,12 +217,6 @@ target_link_libraries (maxiv
   GSL::gsl
 )
 
-target_link_libraries(reactor
-  ${SYSTEM_LIB}
-  delft
-  GSL::gsl
-)
-
 target_link_libraries(saxsSim
   ${SYSTEM_LIB}
   saxs
@@ -280,13 +274,6 @@ target_include_directories (ess
 target_include_directories (maxiv
   PUBLIC
   Model/maxivBuildInc
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
-)
-
-target_include_directories (reactor
-  PUBLIC
-  Model/delftInc
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
 )

@@ -3,7 +3,7 @@
  
  * File:   transport/BandDetector.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 #include <cmath>
 #include <complex>
 #include <fstream>
@@ -42,6 +40,8 @@
 #include "mathSupport.h"
 #include "Random.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "particle.h"
 #include "Detector.h"
 #include "BandDetector.h"
@@ -71,7 +71,7 @@ BandDetector::BandDetector(const int Hpts,const int Vpts,const int Epts,
   Cent(std::move(CV)),H(Hvec.unit()),V(Vvec.unit()),
   hSize(Hvec.abs()),vSize(Vvec.abs()),
   PlnNorm((V*H).unit()),PlnDist(Cent.dotProd(PlnNorm)),
-  EData(boost::extents[nV][nH][nE])
+  EData(nV,nH,nE)
  /*!
    Constructor 
    \param Hpts :: Number of horrizontal bins
@@ -88,7 +88,7 @@ BandDetector::BandDetector(const int Hpts,const int Vpts,const int Epts,
   for(int i=0;i<nV;i++)
     for(int j=0;j<nH;j++)
       for(int k=0;k<nE;k++)
-	EData[i][j][k]=0.0;
+	EData.get()[i][j][k]=0.0;
   if (Epts>0)
     setEnergy(ES,EE);
 }
@@ -126,13 +126,6 @@ BandDetector::operator=(const BandDetector& A)
       PlnNorm=A.PlnNorm;
       PlnDist=A.PlnDist;
       EGrid=A.EGrid;
-      if (EData.shape()!=A.EData.shape())
-	{
-	  EData.resize(boost::extents[nH][nV][nE]);
-	  ELog::EM<<"Data size == "<<A.EData.shape()[0]<<" "
-		  <<A.EData.shape()[1]<<" "
-		  <<A.EData.shape()[2]<<ELog::endCrit;
-	}
       EData=A.EData;
     }
   return *this;
@@ -154,7 +147,7 @@ BandDetector::clear()
   for(int i=0;i<nV;i++)
     for(int j=0;j<nH;j++)
       for(int k=0;k<nE;k++)
-	EData[i][j][k]=0.0;
+	EData.get()[i][j][k]=0.0;
   return;
 }
 		       
@@ -216,7 +209,7 @@ BandDetector::setDataSize(const int Hpts,const int Vpts,
       nH=Hpts;
       nV=Vpts;
       nE=(Epts>0) ? Epts : 1;
-      EData=boost::multi_array<double,3>(boost::extents[nV][nH][nE]);
+      EData.resize(nV,nH,nE);
       clear();
     }
   return;
@@ -296,7 +289,7 @@ BandDetector::addEvent(const MonteCarlo::particle& N)
   const long int ePoint=calcWavePoint(N.wavelength);
   if (ePoint>=0 || ePoint<static_cast<long int>(EGrid.size())-1)
     {
-      EData[vpt][hpt][ePoint]+=
+      EData.get()[vpt][hpt][ePoint]+=
 	N.weight/((N.travel+u)*(N.travel+u)*fabs(DdotN));
       nps++;
     }
@@ -395,14 +388,14 @@ BandDetector::write(std::ostream& OX) const
   ELog::EM<<"EDATA == "<<EData.shape()[0]<<" "
 	  <<EData.shape()[1]<<" "
 	  <<EData.shape()[2]<<ELog::endCrit;
-  boost::format FMR("%1$12.8e%|20t|");
+  //  boost::format FMR("%1$12.8e%|20t|");
   OX<<"#hvn "<<nH<<" "<<nV<<" from "<<nps<<std::endl;
   OX<<"#cvh "<<Cent<<" : "<<H*hSize<<" : "<<V*vSize<<std::endl;
 
   for(int i=0;i<nV;i++)
     {
       for(int j=0;j<nH;j++)
-	OX<<FMR % EData[i][j][EBin];
+	OX<<EData.get()[i][j][EBin];
       OX<<std::endl;
 
     }
