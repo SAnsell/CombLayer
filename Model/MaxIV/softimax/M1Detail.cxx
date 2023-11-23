@@ -240,30 +240,11 @@ M1Detail::createObjects(Simulation& System)
 
   elecShield->addInsertCell(getCells("MainVoid"));
   elecShield->createAll(System,*mirror,0);
-  //  elecShield->joinRing(System,ringB->getRule("RingGap"),
-  //		       ringB->getFullRule("InnerRing"));
 
 
-  // frame->setCell("BackCVoid",*cClamp,"CVoid");
-  // frame->setCell("LowCVoid",*cClamp,"CVoid",1);
-  // frame->setCell("TopCVoid",*cClamp,"CVoid",2);
-  // frame->setCell("PlateVoid",*cClamp,"PlateVoid");
-  // frame->setCell("OuterVoid",*cClamp,"OuterVoid",1);
-  // frame->setCell("FaceVoid",*cClamp,"FaceVoid");
-    
-  // frame->setSurf("InnerRadius",*cClamp,"CylRadius");
-  // frame->setSurf("RingRadius",*cClamp,"RingRadius");
-  // frame->setSurf("FSurf",*cClamp,"FCylInner");
-  // frame->setSurf("BSurf",*cClamp,"BCylInner");
-  // frame->setSurf("BeamEdge",*cClamp,"BeamEdge");
-  // frame->setSurf("FarEdge",*cClamp,"FarEdge");
+  ELog::EM<<"MPipe A == "<<mirror->getLinkPt("downPipeA")<<ELog::endDiag;
+  ELog::EM<<"MPipe B == "<<mirror->getLinkPt("downPipeB")<<ELog::endDiag;
   
-  //  frame->createAll(System,*mirror,"centreAxis");
-
-  // cClamp->adjustExtraVoids(System,
-  // 			   frame->getSurf("mirrorVoid"),
-  // 			   frame->getSurf("outVoid"),
-  // 			   frame->getSurf("baseVoid"));
   cClamp->insertInCell(System,getCells("MainVoid"));
 
   return;

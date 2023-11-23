@@ -56,6 +56,10 @@ class M1ElectronShield :
   double connectGap;          ///< thickness of gap 
   double connectThick;        ///< thickness of strips
 
+  double nCut;                ///< Number of cuts
+  double cutRadius;           ///< Radius of cut circles
+  double cutGap;              ///< Distance between cuts
+  
   double blockOffset;         ///< Offset of block from wall
   double blockWidth;          ///< Width of block Outward to plate         
 

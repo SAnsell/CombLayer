@@ -141,9 +141,13 @@ class M1DetailGenerator
   double eEdge;                 ///< Internal step (10.3)
   double eHoleRadius;           ///< Hole in centre (2.36/2)
 
-  double eConnectLength;       ///< External Length
-  double eConnectGap;          ///< thickness of gap
-  double eConnectThick;        ///< thickness of strips
+  double eConnectLength;        ///< External Length
+  double eConnectGap;           ///< thickness of gap
+  double eConnectThick;         ///< thickness of strips
+
+  double eNCut;                 ///< Number of cut hole
+  double eCutRadius;            ///< Radius of cuts
+  double eCutGap;               ///< size of gaps
 
   double eBlockOffset;         ///< Offset of block from wall
   double eBlockWidth;          ///< Width of block Outward to plate
@@ -152,9 +156,8 @@ class M1DetailGenerator
   double ePlateThick;          ///< Thickness of plate
   double ePlateHeight;         ///< Extent up / down of plate
 
-  double ePipeRadius;         ///< Radius of long pipe
-  double ePipeThick;            ///< Thickenss of pipe
-  
+  double ePipeRadius;          ///< Radius of long pipe
+  double ePipeThick;           ///< Thickenss of pipe
 
   //
   double fBladeInRad;            ///< Increase in radius

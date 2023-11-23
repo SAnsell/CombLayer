@@ -3,7 +3,7 @@
  
  * File:   transportInc/BandDetector.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ class BandDetector : public Detector
   
   std::vector<double> EGrid;   ///< Energy Grid [eV]
 
-  boost::multi_array<double,3> EData;  ///< Energy data set
+  multiData<double> EData;
 
  public:
   

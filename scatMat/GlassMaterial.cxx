@@ -31,7 +31,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
 
 #include "FileReport.h"
 #include "OutputLog.h"

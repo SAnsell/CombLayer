@@ -1,8 +1,8 @@
 set (softimaxSources
     BiPortTube.cxx BremOpticsColl.cxx M1BackPlate.cxx 
     M1Connectors.cxx M1Detail.cxx M1ElectronShield.cxx 
-    M1FrontShield.cxx M1Mirror.cxx M1Ring.cxx
-    M1Support.cxx 
+    M1FrontShield.cxx M1Mirror.cxx M1Pipe.cxx
+    M1Ring.cxx M1Support.cxx 
     SOFTIMAX.cxx softimaxFrontEnd.cxx softimaxOpticsLine.cxx 
     softimaxVariables.cxx 
 )
