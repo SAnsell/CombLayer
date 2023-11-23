@@ -5,12 +5,11 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(GSL REQUIRED)
-# find_package(Boost COMPONENTS system REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_FLAGS "-Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++20 -O2")
