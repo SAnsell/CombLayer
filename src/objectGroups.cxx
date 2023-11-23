@@ -33,7 +33,8 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/format.hpp>
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -58,6 +59,16 @@
 #include "LayerComp.h"
 
 #include "objectGroups.h"
+
+std::string
+fmtBlock(const Geometry::Vec3D& A)
+{
+  std::string out= fmt::format("{} {} {}",A.X(),A.Y(),A.Z());
+  return fmt::format("{:<40}",out);
+  //  std::cout<<fmt::format("{ }","sadfafds");
+  //  std::string out;
+
+} 
 
 objectGroups::objectGroups() :
   cellZone(10000),cellNumber(1000000)
@@ -1086,8 +1097,6 @@ objectGroups::write(const std::string& OFile,
       const char* FStatus[]={"void","fixed"};
       std::ofstream OX(OFile.c_str());
 
-      boost::format FMT("%s%|40t|(%s)");
-      boost::format FMTVec("%|3t| %s %g %|40t|");
       MTYPE::const_iterator mc;
       for(mc=regionMap.begin();mc!=regionMap.end();mc++)
 	{
@@ -1095,15 +1104,16 @@ objectGroups::write(const std::string& OFile,
 	    getObject<CTYPE::element_type>(mc->first);
 
 	  const int flag=(FPTR) ? 1 : 0;
-	  OX<<(FMT % mc->first) % FStatus[flag];
-
+	  OX<<fmt::format("{:<40}{}",mc->first,FStatus[flag]);
+			  
 	  if (flag)
-	    OX<<(FMTVec % "C: " % FPTR->getCentre());
-
+	    OX<<"C: "<<fmtBlock(FPTR->getCentre());	      
+			  
 	  if (fullFlag && FPTR)
-	    OX<<(FMTVec % "X:" % FPTR->getX())
-	      <<(FMTVec % "Y:" % FPTR->getY())
-	      <<(FMTVec % "Z:" % FPTR->getZ());
+	    OX<< "X:"<<fmtBlock(FPTR->getX())
+	      << "Y:"<<fmtBlock(FPTR->getY())
+	      << "Z:"<<fmtBlock(FPTR->getZ());
+
 	  OX<<" :: "<<mc->second;
 	  OX<<std::endl;
 	  

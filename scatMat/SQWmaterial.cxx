@@ -3,7 +3,7 @@
  
  * File:   scatMat/SQWmaterial.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
 
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
@@ -41,6 +40,8 @@
 #include "OutputLog.h"
 #include "RefCon.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "particle.h"
 #include "neutron.h"
 #include "SQWtable.h"

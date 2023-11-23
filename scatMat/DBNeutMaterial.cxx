@@ -3,7 +3,7 @@
  
  * File:   scatMat/DBNeutMaterial.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <functional>
 #include <iterator>
 #include <numeric>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,6 +46,8 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "SQWtable.h"
 #include "SEtable.h"
 #include "ENDFmaterial.h"

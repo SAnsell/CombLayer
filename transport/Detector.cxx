@@ -29,8 +29,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include "FileReport.h"
 #include "OutputLog.h"

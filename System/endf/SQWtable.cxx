@@ -3,7 +3,7 @@
  
  * File:   endf/SQWtable.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,6 +38,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Triple.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "mathSupport.h"
 #include "ENDF.h"
 #include "SQWtable.h"
@@ -99,9 +100,7 @@ SQWtable::setNAlpha(const size_t NA)
   nAlpha=NA;
   Alpha.resize(NA);
   if ((nBeta*nAlpha)!=0)
-    SAB.resize(boost::extents
-	       [static_cast<long int>(nAlpha)]
-	       [static_cast<long int>(nBeta)]);
+    SAB.resize(nAlpha,nBeta);
   return;
 }
 
@@ -115,9 +114,7 @@ SQWtable::setNBeta(const size_t NB)
   nBeta=NB;
   Beta.resize(NB);
   if ((nBeta*nAlpha)!=0)
-    SAB.resize(boost::extents
-       [static_cast<long int>(nAlpha)]
-       [static_cast<long int>(nBeta)]);
+    SAB.resize(nAlpha,nBeta);
 
   return;
 }
@@ -212,9 +209,8 @@ SQWtable::setData(const size_t index,const std::vector<double>& aVec,
 					 "SQWtable::setData"); 
       copy(aVec.begin(),aVec.end(),Alpha.begin());
     }
-  const long int LI(static_cast<long int>(index));
   for(size_t i=0;i<sVec.size();i++)
-    SAB[static_cast<long int>(i)][LI]=sVec[i];
+    SAB.get()[i][index]=sVec[i];
 
   return;
 }
@@ -266,12 +262,15 @@ SQWtable::Sab(const double alphaV,const double betaV) const
 
   const size_t saInt(static_cast<size_t>(aInt));
   const size_t sbInt(static_cast<size_t>(bInt));
+  
   const double Alow=loglinear(Alpha[saInt],Alpha[saInt+1],
-			      SAB[aInt][bInt],SAB[aInt+1][bInt],
+			      SAB.get()[aInt][bInt],
+			      SAB.get()[aInt+1][bInt],
 			      alphaV);
 
   const double Ahigh=loglinear(Alpha[saInt],Alpha[saInt+1],
-			       SAB[aInt][bInt+1],SAB[aInt+1][bInt+1],
+			       SAB.get()[aInt][bInt+1],
+			       SAB.get()[aInt+1][bInt+1],
 			       alphaV);
 
   // ELog::EM<<Alow<<" "<<Ahigh<<" :: "<<alphaV<<" "

@@ -157,10 +157,6 @@ add_executable(essLinacModel
   Main/essLinacModel.cxx
 )
 
-add_executable(reactor
-  Main/reactor.cxx
-)
-
 add_executable(saxsSim
   Main/saxsSim.cxx
 )
@@ -210,24 +206,28 @@ target_link_libraries(essLinacModel
   ${ESS_LIB}
   essLinac
   GSL::gsl
+  fmt::fmt
 )
 
 target_link_libraries (fullBuild
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
+  fmt::fmt
 )
 
 target_link_libraries (maxiv
   ${SYSTEM_LIB}
   ${MAXIV_LIB}
   GSL::gsl
+  fmt::fmt
 )
 
 target_link_libraries(saxsSim
   ${SYSTEM_LIB}
   saxs
   GSL::gsl
+  fmt::fmt
 )
 
 
@@ -240,12 +240,14 @@ target_link_libraries (singleItem
   estia freia heimdal loki magic miracles nmx nnbar 
   odin simpleItem skadi testBeam trex vespa vor  
   GSL::gsl
+  fmt::fmt
 )
 
 target_link_libraries(t1Real
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
+  fmt::fmt
 )
 
 
@@ -253,6 +255,7 @@ target_link_libraries(xrayHut
   ${SYSTEM_LIB}
   xrayHutch
   GSL::gsl
+  fmt::fmt
 )
 
 

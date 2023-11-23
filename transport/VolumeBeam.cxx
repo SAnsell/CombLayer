@@ -28,7 +28,6 @@
 #include <map>
 #include <vector>
 #include <random>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

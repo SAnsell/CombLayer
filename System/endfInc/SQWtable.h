@@ -3,7 +3,7 @@
  
  * File:   endfInc/SQWtable.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ struct SQWtable
   size_t nBeta;                     ///< Number of beta
   std::vector<double> Alpha;     ///< Alpha values
   std::vector<double> Beta;      ///< Beta values
-  boost::multi_array<double,2> SAB;               ///< S(Alpha:Beta)
+  multiData<double> SAB;               ///< S(Alpha:Beta)
 
   std::vector<int> alphaInterp;          ///< Alpha intep type
   std::vector<int> alphaIBoundary;       ///< Alpha inter Cut point 
