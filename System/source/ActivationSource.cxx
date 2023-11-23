@@ -33,9 +33,6 @@
 #include <algorithm>
 #include <memory>
 #include <random>
-#ifndef NO_REGEX
-#include <boost/filesystem.hpp>
-#endif
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -305,8 +302,9 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
 {
   ELog::RegMethod RegA("ActivationSource","readFluxes");
 
-#ifndef NO_REGEX
-  
+  //#ifndef NO_REGEX
+
+  /*
   boost::filesystem::directory_iterator curDIR
     (boost::filesystem::current_path());
   const boost::filesystem::directory_iterator endDIR;
@@ -340,6 +338,7 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
   
   processFluxFiles(fileNames,cellNumList);
 #endif
+  */
   return;
 }
 

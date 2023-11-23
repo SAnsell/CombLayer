@@ -168,10 +168,6 @@ add_executable(xrayHut
   Main/xrayHut.cxx
 )
 
-add_executable(testMain
-  Main/testMain.cxx
-)
-
 set(SYSTEM_LIB
   src beamline global scatMat transport
   attachComp compWeights construct constructVar
@@ -201,7 +197,6 @@ target_link_libraries(ess
   ${SYSTEM_LIB}
   ${ESS_LIB}
   GSL::gsl
-  Boost::filesystem
 )
 
 target_link_libraries(essLinacModel
@@ -209,35 +204,30 @@ target_link_libraries(essLinacModel
   ${ESS_LIB}
   essLinac
   GSL::gsl
-  Boost::filesystem
 )
 
 target_link_libraries (fullBuild
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
-  Boost::filesystem
 )
 
 target_link_libraries (maxiv
   ${SYSTEM_LIB}
   ${MAXIV_LIB}
   GSL::gsl
-  Boost::filesystem
 )
 
 target_link_libraries(reactor
   ${SYSTEM_LIB}
   delft
   GSL::gsl
-  Boost::filesystem
 )
 
 target_link_libraries(saxsSim
   ${SYSTEM_LIB}
   saxs
   GSL::gsl
-  Boost::filesystem
 )
 
 
@@ -257,7 +247,6 @@ target_link_libraries(t1Real
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
-  Boost::filesystem
 )
 
 
@@ -265,14 +254,8 @@ target_link_libraries(xrayHut
   ${SYSTEM_LIB}
   xrayHutch
   GSL::gsl
-  Boost::filesystem
 )
 
-target_link_libraries(testMain
-  ${SYSTEM_LIB}
-  GSL::gsl
-  Boost::filesystem
-)
 
 target_include_directories (maxiv
   PUBLIC
@@ -286,12 +269,6 @@ target_include_directories (singleItem
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_include_directories (testMain
-  PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
-  testInclude
-)
 
 target_include_directories (ess
   PUBLIC
