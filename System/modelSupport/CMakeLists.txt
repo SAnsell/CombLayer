@@ -7,7 +7,7 @@ set (modelSupportSources
     ObjectTrackPlane.cxx ObjectTrackPoint.cxx ObjSurfMap.cxx 
     ObjTrackItem.cxx PipeLine.cxx pipeSupport.cxx 
     pipeUnit.cxx ReportSelector.cxx SimImportance.cxx 
-    SimInput.cxx SpecialSurf.cxx surfCompare.cxx 
+    SimInput.cxx SpecialSurf.cxx 
     surfDBase.cxx surfDIter.cxx surfEqual.cxx 
     surfExpand.cxx surfRegister.cxx vertexCalc.cxx 
     Volumes.cxx volUnit.cxx Wrapper.cxx 

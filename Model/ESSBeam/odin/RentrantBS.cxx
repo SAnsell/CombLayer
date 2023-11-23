@@ -162,7 +162,7 @@ RentrantBS::populate(const FuncDataBase& Control)
   innerCut=Control.EvalVar<double>(keyName+"InnerCut");
 
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
   return;

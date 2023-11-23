@@ -3,7 +3,7 @@
  
  * File:   buildInc/Torpedo.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@ class Torpedo :
   Geometry::Convex vBox;              ///< Convex box of torpedo
 
   double voidXoffset;                 ///< Main void vessel offset 
-  double xyAngle;                     ///< Angle of beamline
   double innerRadius;                 ///< Inner radius
 
   double Height;                      ///< Total height 

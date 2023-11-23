@@ -91,14 +91,20 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportThick(1.0),bFrontSupportCut(2.0),
   bFrontSupportZCut(0.2),
 
-  bRingYPos(17.0),bRingThick(1.0),
-  bRingBackPt(-0.6,-16.0,-1.0),
-  bRingTopPt(-2.4,-16.0,2.4),
-  bRingGap(5.0),bRingClampThick(1.0),
+  bRingYStep(17.30),
+  bRingOuterThick(0.3),bRingOuterLength(0.2),
+  bRingInnerYStep(0.3),
+  bRingInnerThick(1.2),bRingInnerLength(1.2),
   
-  eXOut(7.98),eLength(38.0),eThick(0.1),eHeight(6.8),
-  eEdge(1.03),eHoleRadius(1.18),
-
+  eXOut(1.78),eLength(38.0),eThick(0.1),eHeight(6.8),
+  eEdge(2.20),eHoleRadius(1.18),
+  eConnectLength(1.5),eConnectGap(1.3),
+  eConnectThick(0.35),
+  eBlockOffset(0.5),eBlockWidth(1.2),
+  ePlateOffset(2.1),ePlateThick(0.2),
+  ePlateHeight(5.2),ePipeRadius(0.2),
+  ePipeThick(0.15),
+  
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
   fBladeThick(1.0),fBladeTopAngle(40.0),
@@ -108,8 +114,10 @@ M1DetailGenerator::M1DetailGenerator() :
   mirrorMat("Silicon300K"),waterMat("H2O"),
   supportMat("Aluminium"),springMat("Aluminium"),
   clipMat("Aluminium"),
-  electronMat("Aluminium"),pipeMat("Aluminium"),
+  electronMat("Aluminium"),
+  ringMat("Copper"),pipeMat("Aluminium"),
   outerMat("Aluminium"),frontMat("Copper"),
+  
   voidMat("Void")
   /*!
     Constructor and defaults
@@ -145,15 +153,6 @@ M1DetailGenerator::makeSupport(FuncDataBase& Control,
   
   Control.addVariable(keyName+"SupportMat",supportMat);
   Control.addVariable(keyName+"SpringMat",springMat);
-
-  Control.addVariable(keyName+"ElecXOut",eXOut);
-  Control.addVariable(keyName+"ElecLength",eLength);
-  Control.addVariable(keyName+"ElecHeight",eHeight);
-  Control.addVariable(keyName+"ElecEdge",eEdge);
-  Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);
-  Control.addVariable(keyName+"ElecThick",eThick);
-
-  Control.addVariable(keyName+"ElectronMat",electronMat);
 
   return;
 }
@@ -257,6 +256,34 @@ M1DetailGenerator::makeConnectors(FuncDataBase& Control,
 }
 
 void
+M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
+				   const std::string& keyName) const
+  /*!
+    Set the rings arround the beam
+   */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeRingSupport");
+
+  for(const std::string& key : {"A","B"})
+    {
+      const std::string kName=keyName+key;
+      Control.addVariable(kName+"YStep",bRingYStep);
+      Control.addVariable(kName+"OuterThick",bRingOuterThick);
+      Control.addVariable(kName+"OuterLength",bRingOuterLength);
+      Control.addVariable(kName+"InnerThick",bRingInnerThick);
+      Control.addVariable(kName+"InnerLength",bRingInnerLength);
+      Control.addVariable(kName+"InnerYStep",bRingInnerYStep);
+      
+      Control.addVariable(kName+"Mat",ringMat);
+      Control.addVariable(kName+"VoidMat",voidMat);
+    }
+  Control.addVariable(keyName+"BPreXAngle",180.0);
+  
+  return;
+}
+
+
+void
 M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
 				    const std::string& keyName) const
   /*!
@@ -265,17 +292,20 @@ M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeOuterSupport");
 
+  /*
   Control.addVariable(keyName+"FrontSupportThick",bFrontSupportThick);
   Control.addVariable(keyName+"FrontSupportCut",bFrontSupportCut);
   Control.addVariable(keyName+"FrontSupportZCut",bFrontSupportZCut);
+  */
 
+ /*
   Control.addVariable(keyName+"RingYPos",bRingYPos);
   Control.addVariable(keyName+"RingThick",bRingThick);
   Control.addVariable(keyName+"RingGap",bRingGap);
   Control.addVariable(keyName+"RingClampThick",bRingClampThick);
   Control.addVariable(keyName+"RingBackPt",bRingBackPt);
   Control.addVariable(keyName+"RingTopPt",bRingTopPt);
-
+  */
   return;
 }
 
@@ -298,6 +328,44 @@ M1DetailGenerator::makeFrame(FuncDataBase& Control,
   Control.addVariable(keyName+"BladeFullHeight",fBladeFullHeight);
   
   Control.addVariable(keyName+"SupportMat",supportMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  
+  return;
+}
+
+void
+M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
+				      const std::string& keyName) const
+  /*!
+    Build the electron shield
+  */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeElectronShield");
+
+  Control.addVariable(keyName+"ElecXOut",eXOut);
+  Control.addVariable(keyName+"ElecLength",eLength);
+  Control.addVariable(keyName+"ElecHeight",eHeight);
+  Control.addVariable(keyName+"ElecEdge",eEdge);
+  Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);
+  Control.addVariable(keyName+"ElecThick",eThick);
+
+  
+  Control.addVariable(keyName+"ConnectLength",eConnectLength);
+  Control.addVariable(keyName+"ConnectGap",eConnectGap);
+  Control.addVariable(keyName+"ConnectThick",eConnectThick);
+
+  Control.addVariable(keyName+"BlockOffset",eBlockOffset);
+  Control.addVariable(keyName+"BlockWidth",eBlockWidth);
+  Control.addVariable(keyName+"PlateThick",ePlateThick);
+  Control.addVariable(keyName+"PlateOffset",ePlateOffset);
+  Control.addVariable(keyName+"PlateHeight",ePlateHeight);
+
+  Control.addVariable(keyName+"PipeRadius",ePipeRadius);
+  Control.addVariable(keyName+"PipeThick",ePipeThick);
+  
+  Control.addVariable(keyName+"ElectronMat",electronMat);
+
+  Control.addVariable(keyName+"WaterMat",waterMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   
   return;
@@ -367,6 +435,7 @@ void
 M1DetailGenerator::generateMirror(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const double theta,
+				  const double xStep,
 				  const double zStep) const
 /*!
     Primary funciton for setting the variables
@@ -378,13 +447,17 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","generateMirror");
 
+
+  Control.addVariable(keyName+"XStep",xStep);
   // guess of separation
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
   makeFrontPlate(Control,keyName+"FPlate");
   makeBackPlate(Control,keyName+"CClamp");
+  makeElectronShield(Control,keyName+"ElectronShield");
   makeSupport(Control,keyName+"CClamp");
   makeConnectors(Control,keyName+"Connect");
   makeFrame(Control,keyName+"Frame");
+  makeRingSupport(Control,keyName+"Ring");
   makeOuterSupport(Control,keyName+"CClamp");
   
   return;

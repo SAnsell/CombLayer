@@ -127,12 +127,12 @@ class M1DetailGenerator
   double bFrontSupportCut;     ///< Distance to start of cut from mirror face
   double bFrontSupportZCut;    ///< Distance up to cut
 
-  double bRingYPos;            ///< Positive displacment of ring section
-  double bRingThick;           ///< Thickness of ring plate
-  Geometry::Vec3D bRingBackPt; ///< Offset to point from top/base of back plane
-  Geometry::Vec3D bRingTopPt;  ///< Offset to point from top to cut
-  double bRingGap;             ///< Gap between ring sections
-  double bRingClampThick;      ///< Thickess of outer support ring [only front]
+  double bRingYStep;             ///< Positive displacment of ring section
+  double bRingOuterThick;        ///< Radial thickness of outer (thin) ring
+  double bRingOuterLength;       ///< Length along mirror of outer ring
+  double bRingInnerYStep;        ///< Step of inner ring relative to outer
+  double bRingInnerThick;        ///< Radial thickness of inner (fat) ring
+  double bRingInnerLength;       ///< Length along mirror of inner ring
   
   double eXOut;                 ///< Step from the back plane (79.8)
   double eLength;               ///< Length of electorn shield (38.0)
@@ -140,6 +140,21 @@ class M1DetailGenerator
   double eHeight;               ///< Height (internal) of electorn shield (6.8)
   double eEdge;                 ///< Internal step (10.3)
   double eHoleRadius;           ///< Hole in centre (2.36/2)
+
+  double eConnectLength;       ///< External Length
+  double eConnectGap;          ///< thickness of gap
+  double eConnectThick;        ///< thickness of strips
+
+  double eBlockOffset;         ///< Offset of block from wall
+  double eBlockWidth;          ///< Width of block Outward to plate
+
+  double ePlateOffset;         ///< Distance to start of plate
+  double ePlateThick;          ///< Thickness of plate
+  double ePlateHeight;         ///< Extent up / down of plate
+
+  double ePipeRadius;         ///< Radius of long pipe
+  double ePipeThick;            ///< Thickenss of pipe
+  
 
   //
   double fBladeInRad;            ///< Increase in radius
@@ -157,6 +172,7 @@ class M1DetailGenerator
   std::string springMat;             ///< Separator material
   std::string clipMat;               ///< Separator material
   std::string electronMat;           ///< Electron shield material
+  std::string ringMat;               ///< Ring material
   std::string pipeMat;               ///< Base material
   std::string outerMat;              ///< Base material
   std::string frontMat;              ///< front heat material
@@ -165,13 +181,15 @@ class M1DetailGenerator
   
   void makeCrystal(FuncDataBase&,const std::string&,
 		   const double,const double) const;
+  void makeElectronShield(FuncDataBase&,const std::string&) const;
   void makeFrame(FuncDataBase&,const std::string&) const;
   void makeSupport(FuncDataBase&,const std::string&) const;
   void makeFrontPlate(FuncDataBase&,const std::string&) const;
   void makeBackPlate(FuncDataBase&,const std::string&) const;
   void makeConnectors(FuncDataBase&,const std::string&) const;
   void makeOuterSupport(FuncDataBase&,const std::string&) const;
-
+  void makeRingSupport(FuncDataBase&,const std::string&) const;
+  
  public:
 
   M1DetailGenerator();
@@ -180,7 +198,8 @@ class M1DetailGenerator
   virtual ~M1DetailGenerator();
 
   void generateMirror(FuncDataBase&,const std::string&,
-		      const double,const double) const;
+		      const double,const double,
+		      const double) const;
 
 };
 

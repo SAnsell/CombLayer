@@ -29,9 +29,11 @@ namespace xraySystem
 
   class M1Mirror;
   class M1BackPlate;
+  class M1ElectronShield;
   class M1FrontShield;
   class M1Connectors;
   class M1Frame;
+  class M1Ring;
   
 /*!
   \class M1Detail
@@ -44,6 +46,7 @@ namespace xraySystem
 class M1Detail :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -53,7 +56,9 @@ class M1Detail :
   std::shared_ptr<M1BackPlate> cClamp;
   std::shared_ptr<M1Connectors> connectors;
   std::shared_ptr<M1FrontShield> frontShield;
-  std::shared_ptr<M1Frame> frame;  
+  std::shared_ptr<M1ElectronShield> elecShield;
+  std::shared_ptr<M1Ring> ringA;
+  std::shared_ptr<M1Ring> ringB;
   // Functions:
 
   void populate(const FuncDataBase&) override;

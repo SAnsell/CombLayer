@@ -120,17 +120,39 @@ Quadratic::operator==(const Quadratic& A) const
     \return A==This
   */
 {
-  if (&A==this) return 1;
-  for(size_t i=0;i<BaseEqn.size();i++)
-    if (fabs(BaseEqn[i]-A.BaseEqn[i])>Geometry::zeroTol)
-      {
-	if (fabs(BaseEqn[i]+A.BaseEqn[i])>Geometry::zeroTol)
-	  return 0;
-	// Now test negative:
-	for(size_t j=0;j<BaseEqn.size();j++)
-	  if (fabs(BaseEqn[j]+A.BaseEqn[j])>Geometry::zeroTol)
+  if (this!=&A)
+    {
+      // All quadratic surfaces can be scaled by a number
+      // at not change
+
+      double scaleA(0.0);
+      double scaleB(0.0);
+      for(size_t i=0;i<10;i++)
+	{
+	  if (std::abs(BaseEqn[i])>scaleA)
+	    {
+	      scaleA=BaseEqn[i]*BaseEqn[i];
+	      scaleB=A.BaseEqn[i]*A.BaseEqn[i];
+	    }
+	}
+      scaleA=std::sqrt(scaleA);
+      scaleB=std::sqrt(scaleB);
+      scaleA/=10.0;
+      scaleB/=10.0;
+      
+      if (std::abs(scaleA)<Geometry::zeroTol ||
+	  std::abs(scaleB)<Geometry::zeroTol)
+	return 0;
+
+      for(size_t i=0;i<10;i++)
+	{
+	  const double AScale=BaseEqn[i]/scaleA;
+	  const double BScale=A.BaseEqn[i]/scaleB;
+	  const double D=AScale-BScale;
+	  if (std::abs(D)>Geometry::zeroTol)
 	    return 0;
-      }
+	}
+    }
   return 1;
 }
 

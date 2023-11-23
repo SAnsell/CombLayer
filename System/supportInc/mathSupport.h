@@ -129,6 +129,12 @@ T derivQuadratic(const typename std::vector<T>::const_iterator&,
 template<typename T>
 T d2dxQuadratic(const typename std::vector<T>::const_iterator&,
 		const typename std::vector<T>::const_iterator&);
+template<typename T>
+T derivQuadratic(const typename std::vector<T>&,
+		 const typename std::vector<T>&);
+
+template<typename T>
+T d2dxQuadratic(const typename std::vector<T>&,const typename std::vector<T>&);
 
 template<typename T>
 T norm(const std::vector<T>&);
@@ -200,17 +206,6 @@ namespace mathFunc
 namespace mathSupport
 {
 
-  /*!
-    \struct Rsol
-    \brief A simple imagenary class (replace by complex)
-    \version 1.0
-    \author S. Ansell
-  */
-struct Rsol
-{
-  double re;    ///< real value
-  double im;    ///< imag value
-};
 
 /*!
   \class PIndex 
@@ -275,9 +270,6 @@ public:
 
 };
 
-
-
-
 /*!
   \class tolEqual
   \brief Class to compare near numbers
@@ -301,7 +293,6 @@ class tolEqual
     }
 
 };
-
 
 } // NAMESPACE mathSupport
 #endif

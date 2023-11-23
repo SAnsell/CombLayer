@@ -243,7 +243,7 @@ SingleItemVariables(FuncDataBase& Control)
   TCGen.generateChopper(Control,"singleTwinD",80.0,16.0,10.0);
 
   setVariable::PipeGenerator RPipeGen;
-  RPipeGen.setCF<CF100>(); 
+  RPipeGen.setCF<CF100>();
   RPipeGen.setRectPipe(5.0,6.0);
   RPipeGen.generatePipe(Control,"singleBoxPipeA",80.0);
   RPipeGen.generatePipe(Control,"singleBoxPipeB",90.0);
@@ -562,17 +562,17 @@ SingleItemVariables(FuncDataBase& Control)
   const double flangeLength(3.7);
 
   setVariable::PipeGenerator TWPipeGen;
-  TWPipeGen.setCF<CF100>(); 
+  TWPipeGen.setCF<CF100>();
 
   TWPipeGen.generatePipe(Control,"PipeA",4*flangeLength);
   Control.addVariable("PipeARadius",1.16);
-  Control.addVariable("PipeAFeThick",0.2);
+  Control.addVariable("PipeAPipeThick",0.2);
 
   TDCGen.generate(Control,"TWCavity");
 
   TWPipeGen.generatePipe(Control,"PipeB",4.0*flangeLength);
   Control.addParse<double>("PipeBRadius","PipeARadius");
-  Control.addParse<double>("PipeBFeThick","PipeAFeThick");
+  Control.addParse<double>("PipeBPipeThick","PipeAPipeThick");
 
   // Bellow
   setVariable::BellowGenerator BellowGen;
@@ -591,9 +591,9 @@ SingleItemVariables(FuncDataBase& Control)
   OPipeGen.generatePipe(Control,"OFP",20.0);
   Control.addVariable("OFPFlangeAXYAngle",20.0);
   Control.addVariable("OFPFlangeAXStep",-1.5);
-  Control.addVariable("OFPFlangeAZStep",1.3);  
+  Control.addVariable("OFPFlangeAZStep",1.3);
   Control.addVariable("OFPFlangeBXStep",1.0);
-  Control.addVariable("OFPFlangeBZStep",2.0);  
+  Control.addVariable("OFPFlangeBZStep",2.0);
 
 
   // UTube Pipe
@@ -814,7 +814,7 @@ SingleItemVariables(FuncDataBase& Control)
 void
 m1chamberDetails(FuncDataBase& Control)
   /*!
-    Construct the M1 detail 
+    Construct the M1 detail
    */
 {
   ELog::RegMethod RegA("singleItemVariable[F]","m1chamberDetails");
@@ -829,15 +829,15 @@ m1chamberDetails(FuncDataBase& Control)
   const double portXStep(2.0);
   const double theta(-0.0*M_PI/180.0);
   const double mExtra=30.0*sin(theta);
-    
-  
+
+
   const std::string frontName="M1TubeFront";
   const std::string tubeName="M1Tube";
   const std::string backName="M1TubeBack";
 
   PItemGen.setCF<setVariable::CF63>(6.0);
   PItemGen.setNoPlate();
-  
+
   DCGen.setSphere(7.0,2.5);
   DCGen.setFlangeCF<CF150>(0.8);
   DCGen.setLengths(2.5,2.0,3.0);
@@ -854,9 +854,9 @@ m1chamberDetails(FuncDataBase& Control)
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
 
-  M1DGen.generateMirror(Control,"M1",0.0,0.0);
+  M1DGen.generateMirror(Control,"M1",0.0,0.0,0.0);
   Control.addVariable("M1XStep",portXStep+mExtra);
-    
+
   DCGen.generateDome(Control,backName,1);
   PItemGen.generatePort(Control,backName+"Port0",
 			Geometry::Vec3D(-portXStep, 0.0, 0.0),
@@ -864,7 +864,7 @@ m1chamberDetails(FuncDataBase& Control)
 
 }
 
-  
+
 void
 targetShieldVariables(FuncDataBase& Control)
 {

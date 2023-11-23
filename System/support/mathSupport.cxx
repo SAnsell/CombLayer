@@ -128,7 +128,9 @@ countBits(const unsigned int& u)
 size_t
 countBits(const size_t& u)
   /*!
-    Clever trick from MIT to obtain number of bits 
+    Clever trick from MIT to obtain number of bits
+    Note: 3 bits are 4a+2b+c. Shift right 2a+b and double shift a
+    Add all together == a+b+c  . number of bits set
     \param u :: Number to test
     \return number of bits
   */
@@ -443,7 +445,7 @@ rangePos(const std::vector<T>& xArray,const T& Aim)
 /*!
   Detemine the point that matches an array.
   Such that  \f$ xArray[index] > Aim> xArray[index+1] \f$
-  This also gives -1 and size-1
+  This also gives 0 and size-1
   \param xArray :: Array to search
   \param Aim :: Aim Point
   \return position in array  [ranged between: -1 and size-1  ] 
@@ -456,7 +458,8 @@ rangePos(const std::vector<T>& xArray,const T& Aim)
   
   typename std::vector<T>::const_iterator 
     xV=lower_bound(xArray.begin(),xArray.end(),Aim);
-  return static_cast<size_t>(distance(xArray.begin(),xV)-1);
+  const size_t out=static_cast<size_t>(distance(xArray.begin(),xV));
+  return (out) ? out-1 : 0;
 }
 
 template<typename T>
@@ -641,7 +644,7 @@ d2dxQuadratic(const typename std::vector<T>::const_iterator& Xpts,
   for the three points Xpts,Ypts. It assumes that Xpts are random.
   \param Xpts :: XPoints
   \param Ypts :: YPoints 
-  \return dy/dx at Xpts[1]
+  \return d2y/dx2 at Xpts[1]
 */
 {
   const T C = Ypts[0];
@@ -658,6 +661,42 @@ d2dxQuadratic(const typename std::vector<T>::const_iterator& Xpts,
   return A*static_cast<T>(2.0);
 }
 
+template<typename T>
+T
+d2dxQuadratic(const std::vector<T>& Xpts,const  std::vector<T>& Ypts) 
+/*!
+  This function carries out a quadratic polynominal differentuation
+  for the three points Xpts,Ypts. It assumes that Xpts are random.
+  \param Xpts :: XPoints
+  \param Ypts :: YPoints 
+  \return dy/dx at Xpts[1]
+*/
+{
+  if (Xpts.size()<3 || Ypts.size()<3)
+    throw ColErr::SizeError<size_t>
+      (Xpts.size(),3,"Vector size to small:");
+    
+  return d2dxQuadratic<T>(Xpts.begin(),Ypts.begin());
+}
+
+template<typename T>
+T
+derivQuadratic(const std::vector<T>& Xpts,
+	       const std::vector<T>& Ypts) 
+/*!
+  This function carries out a quadratic polynominal differentuation
+  for the three points Xpts,Ypts. It assumes that Xpts are random.
+  \param Xpts :: vector for three X-points
+  \param Ypts :: vector for three Y-points
+  \return derivative at midpoint
+*/
+{
+  if (Xpts.size()<3 || Ypts.size()<3)
+    throw ColErr::SizeError<size_t>
+      (Xpts.size(),3,"Vector size to small:");
+    
+  return derivQuadratic<T>(Xpts.begin(),Ypts.begin());
+}
 
 
 template<typename T>
@@ -924,12 +963,31 @@ template
 double
 derivQuadratic(const std::vector<double>::const_iterator&,
 	       const std::vector<double>::const_iterator&);
+template 
+float
+derivQuadratic(const std::vector<float>::const_iterator&,
+	       const std::vector<float>::const_iterator&);
+
+template 
+double
+d2dxQuadratic(const std::vector<double>::const_iterator&,
+	      const std::vector<double>::const_iterator&);
+
+template 
+double derivQuadratic(const std::vector<double>&,const std::vector<double>&);
+template 
+float derivQuadratic(const std::vector<float>&,const std::vector<float>&);
+
+template 
+double
+d2dxQuadratic(const std::vector<double>&,const std::vector<double>&);
 
 
 template class mathSupport::PIndex<double>;
 template class mathSupport::PSep<double>;
 
 template size_t rangePos(const std::vector<float>&,const float&);
+template size_t rangePos(const std::vector<int>&,const int&);
 template size_t rangePos(const std::vector<double>&,const double&);
 template size_t rangePos(const std::vector<DError::doubleErr>&,
                            const DError::doubleErr&);
@@ -978,9 +1036,8 @@ template double mathFunc::minDifference(const std::vector<double>&,
 
 
 template
-size_t inUnorderedRange(const std::vector<int>&,const std::vector<int>&,
-			const int&);
-
+size_t inUnorderedRange(const std::vector<int>&,
+			const std::vector<int>&,const int&);
 
 template void signSplit(const long int&,long int&,size_t&);
 template void signSplit(const long int&,long int&,long int&);

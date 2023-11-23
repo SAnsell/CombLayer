@@ -4,8 +4,6 @@
  * File:   singleItemBuild/makeSingleItem.cxx
  *
  * Modified: Isabel Llamas-Jansa, November 2023
- * - added LegoBrick to valid Items list (line 243)
- * - added #include "Jaws.h" * 
  * 
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -183,6 +181,9 @@
 #include "M1Detail.h"
 
 #include "makeSingleItem.h"
+
+// * - added LegoBrick to valid Items list (line 243)
+// * - added #include "Jaws.h" * 
 
 namespace singleItemSystem
 {

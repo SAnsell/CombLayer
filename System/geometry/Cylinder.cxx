@@ -423,7 +423,7 @@ Cylinder::setRadius(const double R)
     \param R :: New radius (forced +ve)
   */
 {
-  Radius=fabs(R);
+  Radius=std::abs(R);
   setBaseEqn();
   return;
 }

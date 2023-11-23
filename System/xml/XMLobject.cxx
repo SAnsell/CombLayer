@@ -29,7 +29,6 @@
 #include <cmath>
 #include <vector>
 #include <map>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/surfCompare.h
+ * File:   testInclude/testIndexCounter.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,36 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_surfCompare_h
-#define ModelSupport_surfCompare_h
+#ifndef testIndexCounter_h
+#define testIndexCounter_h 
 
-namespace ModelSupport
+/*!
+  \class testIndexCounter
+  \brief Tests the limited range counter
+  \author S. Ansell
+  \date Aug. 2023
+  \version 1.0
+  
+  Test the ability to loop over correctly
+*/
+
+class testIndexCounter 
 {
+private:
 
-int equalSurface(const Geometry::Surface*,const Geometry::Surface*);
 
-}
+  //Tests 
+  int testAddition();
+ 
+public:
+
+  testIndexCounter();
+  ~testIndexCounter();
+
+  int applyTest(const int);     
+};
 
 #endif

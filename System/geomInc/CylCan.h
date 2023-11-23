@@ -3,7 +3,7 @@
  
  * File:   geomInc/CylCan.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,9 @@ class CylCan : public Surface
   /// Effective typeid
   std::string className() const override 
     { return "CylCan"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::CylCan; }
+
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }

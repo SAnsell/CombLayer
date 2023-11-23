@@ -53,11 +53,12 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "ContainedComp.h"
 
 #include "M1FrontShield.h"
 
@@ -67,7 +68,7 @@ namespace xraySystem
 
 M1FrontShield::M1FrontShield(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Main","Extra"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -200,21 +201,27 @@ M1FrontShield::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-304 -317 307");
   makeCell("Pipe",System,cellIndex++,mat,0.0,HR*baseCompHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"405 -6 -304  317 -2");
-  makeCell("PipeVoid",System,cellIndex++,voidMat,0.0,HR*baseCompHR*frontHR);
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"405 -6 -304  317 -2");
+  //  makeCell("PipeVoid",System,cellIndex++,voidMat,0.0,HR*baseCompHR*frontHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"405 -5 -407");
   makeCell("Pipe",System,cellIndex++,voidMat,0.0,HR);
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"405 -5 -417 407");
   makeCell("Pipe",System,cellIndex++,mat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -5 405 -2 417");
-  makeCell("PipeVoid",System,cellIndex++,voidMat,0.0,HR*baseHR*frontHR);
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2  4 -304 405 -6 ");
-  addOuterSurf(HR*frontHR);
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -5 405 -2 417");
+  //  makeCell("PipeVoid",System,cellIndex++,voidMat,0.0,HR*baseHR*frontHR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 4 5 -6");
+  addOuterSurf("Main",HR*frontHR*baseHR);
+  addOuterSurf("Extra",HR*frontHR*baseHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-304 -317");
+  addOuterUnionSurf("Extra",HR*baseCompHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"405 -5 -417");
+  addOuterUnionSurf("Extra",HR);
 
 
   return;

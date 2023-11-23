@@ -109,7 +109,7 @@ DetectorChamber::populate(const FuncDataBase& Control)
   concRoof=Control.EvalVar<double>(keyName+"ConcRoof");
   concBack=Control.EvalVar<double>(keyName+"ConcBack");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
   return;

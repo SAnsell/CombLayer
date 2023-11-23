@@ -3,7 +3,7 @@
  
  * File:   geomInc/EllipticCyl.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,9 @@ class EllipticCyl : public Quadratic
   /// Effective TYPENAME 
   static std::string classType() { return "EllipticCyl"; }
   /// Public identifer
-  std::string className() const override { return "EllipticCyl"; }  
+  std::string className() const override { return "EllipticCyl"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::EllipticCyl; }
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }

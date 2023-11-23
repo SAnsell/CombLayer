@@ -28,11 +28,7 @@ namespace ModelSupport
 const Geometry::Surface* equalSurface(const Geometry::Surface*);
 Geometry::Surface* equalSurface(Geometry::Surface*);
  
-template<typename SurfType,typename RetType>
-RetType EqualSurf(SurfType,const std::map<int,Geometry::Surface*>&);
-
-int
-equalSurfNum(const Geometry::Surface*);
+int equalSurfNum(const Geometry::Surface*);
 
 bool cmpSurfaces(const Geometry::Surface*,const Geometry::Surface*);
 bool oppositeSurfaces(const Geometry::Surface*,const Geometry::Surface*);

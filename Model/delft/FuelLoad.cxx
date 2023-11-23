@@ -3,7 +3,7 @@
  
  * File:   delft/FuelLoad.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,16 +31,13 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "XMLload.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
@@ -111,7 +108,7 @@ FuelLoad::gridName(const size_t NX,const size_t NY)
 {
   std::string Out;
   Out=(!NX) ? '-' : static_cast<char>('A'+(NX-1));
-  Out+=(!NY) ? "-" : StrFunc::makeString(NY-1);
+  Out+=(!NY) ? "-" : std::to_string(NY-1);
   return Out;
 }
 

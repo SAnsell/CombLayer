@@ -45,7 +45,7 @@
 #include "mathSupport.h"
 #include "MatrixBase.h"
 #include "MapSupport.h"
-#include "RotCounter.h"
+#include "IndexCounter.h"
 #include "BnId.h"
 #include "AcompTools.h"
 #include "Acomp.h"
@@ -1331,7 +1331,7 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
       // This counter is a ripple counter, ie 1,2,3 where no numbers 
       // are the same. BUT it is acutally 0->N 0->N 0->N
       // index by A, A+1 ,A+2  etc
-      RotaryCounter<size_t> Index(Icount,Psize);
+      IndexCounter<size_t> Index(Icount,Psize);
       do {
 	size_t di;
 	for(di=0;di<Dsize;di++)   //check each orignal position

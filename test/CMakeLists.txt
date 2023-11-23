@@ -7,19 +7,20 @@ set (testSources
     testEllipsoid.cxx testEllipticCyl.cxx testExtControl.cxx 
     testFace.cxx testFortranWrite.cxx testFunc.cxx 
     testFunction.cxx testGenerateSurf.cxx testGeomSupport.cxx 
-    testGroupRange.cxx testHeadRule.cxx testInputParam.cxx 
-    testInsertComp.cxx testLine.cxx testLineTrack.cxx 
-    testLog.cxx testMapRange.cxx testMapSupport.cxx 
+    testGroupRange.cxx testHeadRule.cxx testIndexCounter.cxx
+    testInputParam.cxx testInsertComp.cxx testLine.cxx
+    testLineTrack.cxx testLog.cxx testMapRange.cxx testMapSupport.cxx 
     testMasterRotate.cxx testMaterial.cxx testMathSupport.cxx 
     testMatrix.cxx testMD5.cxx testMesh3D.cxx 
-    testModelSupport.cxx testNeutron.cxx testNList.cxx 
+    testModelSupport.cxx testMultiData.cxx
+    testMultiString.cxx testNeutron.cxx testNList.cxx 
     testNRange.cxx testObject.cxx testObjectRegister.cxx 
     testObjectTrackAct.cxx testObjSurfMap.cxx testObjTrackItem.cxx 
     testPipeLine.cxx testPipeUnit.cxx testPlane.cxx 
     testPoly.cxx testQuadratic.cxx testQuaternion.cxx 
-    testRecTriangle.cxx testRotCounter.cxx testRules.cxx 
-    testSimpleObj.cxx testSimpson.cxx testSimulation.cxx 
-    testSolveValues.cxx testSource.cxx testSupport.cxx 
+    testRecTriangle.cxx testRules.cxx testSimpleObj.cxx
+    testSimpson.cxx testSimulation.cxx testSolveValues.cxx
+    testSource.cxx testSupport.cxx 
     testSurfDIter.cxx testSurfDivide.cxx testSurfEqual.cxx 
     testSurfExpand.cxx testSurfImplicate.cxx testSurfRegister.cxx 
     testSurIntersect.cxx testSVD.cxx testTally.cxx 
@@ -72,6 +73,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/testGeomSupport.cxx
   ${tarDIR}/testGroupRange.cxx
   ${tarDIR}/testHeadRule.cxx
+  ${tarDIR}/testIndexCounter.cxx
   ${tarDIR}/testInputParam.cxx
   ${tarDIR}/testInsertComp.cxx
   ${tarDIR}/testLine.cxx
@@ -86,6 +88,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/testMD5.cxx
   ${tarDIR}/testMesh3D.cxx
   ${tarDIR}/testModelSupport.cxx
+  ${tarDIR}/testMultiData.cxx
+  ${tarDIR}/testMultiString.cxx			
   ${tarDIR}/testNeutron.cxx
   ${tarDIR}/testNList.cxx
   ${tarDIR}/testNRange.cxx
@@ -153,6 +157,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/testGeomSupport.h
   ${tarINC}/testGroupRange.h
   ${tarINC}/testHeadRule.h
+  ${tarINC}/testIndexCounter.h
   ${tarINC}/testInputParam.h
   ${tarINC}/testInsertComp.h
   ${tarINC}/testLine.h
@@ -167,6 +172,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/testMD5.h
   ${tarINC}/testMesh3D.h
   ${tarINC}/testModelSupport.h
+  ${tarINC}/testMultiData.h
+  ${tarINC}/testMultiString.h	
   ${tarINC}/testNeutron.h
   ${tarINC}/testNList.h
   ${tarINC}/testNRange.h

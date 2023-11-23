@@ -150,7 +150,7 @@ MonoBox::populate(const FuncDataBase& Control)
        "Flange to small for "+keyName+" port B");
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
 
   return;
 }

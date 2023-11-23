@@ -1,13 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   heimdalInc/LegoBrack.h
- *  Modified: Isabel Llamas-Jansa, November 2023 
- * - added comments for self
- * - added public attachSystem::CellMap
- * - added void createLinks()
- * - added override, to avoid errors
-
+ * File:   softimaxInc/M1Ring.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -25,38 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_LegoBrick_h
-#define essSystem_LegoBrick_h
+#ifndef xraySystem_M1Ring_h
+#define xraySystem_M1Ring_h
 
 class Simulation;
 
-namespace essSystem
+namespace xraySystem
 {
 
 /*!
-  \class LegoBrick
-  \version 1.0
+  \class M1Ring
   \author S. Ansell
-  \date Sept 2023
-  \brief LegoBrick for cave system
+  \version 1.0
+  \date January 2018
+  \brief Focusable mirror in mount
 */
 
-class LegoBrick : 
+class M1Ring :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
-  public attachSystem::ExternalCut
+  public attachSystem::SurfMap
 {
  private:
+  
 
-  double width;                 ///< full width (x)
-  double height;                ///< full height (z)
-  double depth;                 ///< full depth (y)
+  double outerThick;          ///< thickness from outer surf (<inner)
+  double outerLength;
+  double innerYStep;          ///< front back shift
+  double innerThick;          ///< thickness from outer surf
+  double innerLength;         ///< inner lenfth 
+  
+  int ringMat;            ///< Electron shield material
+  int voidMat;                ///< void material
 
-  int mat;
+  // Functions:
 
-  // functions used in the .cxx file
-  // I have added variables to be the same as in .cxx
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
@@ -64,15 +63,17 @@ class LegoBrick :
 
  public:
 
-  LegoBrick(const std::string&);
-  LegoBrick(const LegoBrick&);
-  LegoBrick& operator=(const LegoBrick&);
-  ~LegoBrick()override;
-
+  M1Ring(const std::string&);
+  M1Ring(const M1Ring&);
+  M1Ring& operator=(const M1Ring&);
+  ~M1Ring() override;
+  void adjustExtraVoids(Simulation&,const int,const int,const int);
+  
   using FixedComp::createAll;
-  void createAll(Simulation& System,
-                  const attachSystem::FixedComp& FC,
-		              const long int sideIndex)override;
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int) override;
+  
 };
 
 }

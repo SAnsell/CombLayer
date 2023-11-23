@@ -59,6 +59,8 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ExternalCut.h"
 
 #include "LegoBrick.h"
@@ -69,6 +71,7 @@ namespace essSystem
 LegoBrick::LegoBrick(const std::string& Key)  :
   attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   attachSystem::ExternalCut()
   /*!
     This is a Constructor, with 3 geometry item classes from the
@@ -81,6 +84,7 @@ LegoBrick::LegoBrick(const std::string& Key)  :
 LegoBrick::LegoBrick(const LegoBrick& A) :
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   attachSystem::ExternalCut(A),
   width(A.width),height(A.height),
   depth(A.depth),mat(A.mat)
@@ -105,6 +109,7 @@ LegoBrick::operator=(const LegoBrick& A)
     {
       attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       attachSystem::ExternalCut::operator=(A);
       width=A.width;
       height=A.height;
@@ -125,9 +130,12 @@ void LegoBrick::populate(const FuncDataBase& Control)
   /*!
     Creates some empty variables and Populates them using the
     parameter Control
-    \param Control :: DataBase of variables
+
     For the brick box: FixedRotate, depth(y-axis), height(z-axis),
-    width (x-axis)
+    width (x-axis) and mat
+
+    \param Control :: DataBase of variables
+	
   */
 
 {
@@ -165,7 +173,8 @@ void LegoBrick::createSurfaces()
   return;
 }
 
-void LegoBrick::createObjects(Simulation& System)
+void
+LegoBrick::createObjects(Simulation& System)
   /*!
     Creates a brick object/cell that can be used in simulation. The material is included here too.
     Also, it creates an outer boundary around the box to account for irregularities on the brick's surfaces.
@@ -176,6 +185,9 @@ void LegoBrick::createObjects(Simulation& System)
 
   HeadRule HR;
 
+  ELog::EM<<"ASDFASFD"<<ELog::endDiag;
+
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
   
   // here, it makes a box/cell out of the planes defined above

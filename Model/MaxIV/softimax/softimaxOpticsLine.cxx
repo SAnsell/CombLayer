@@ -337,7 +337,7 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
 
   int outerCell;
 
-  /*
+  // This is the tube options
   M1TubeFront->setCutSurf("portJoin",initFC,sideName);  
   M1TubeFront->setPortRotate(2);   // port 0
   constructSystem::constructUnit
@@ -348,20 +348,28 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
 
   outerCell=buildZone.createUnit(System,*M1Tube,"back");
   M1Tube->insertAllInCell(System,outerCell);
-  */
 
+  
+  M1TubeBack->setPortRotate(1);   // Back
+  constructSystem::constructUnit
+    (System,buildZone,*M1Tube,"back",*M1TubeBack,"port0");
+
+  // this is the box options
+  /*
   outerCell=constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*M1Box);
 
+  
   //  M1Box->splitObject(System,2001,outerCell,
   //		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   //  cellIndex++;
-
-
   M1Detail->addInsertCell(M1Box->getCell("Void"));
-  //  M1Detail->setCell("FrontVoid",M1TubeFront->getCell("Void",3));
-  M1Detail->createAll(System,*M1Box,0);
-  ELog::EM<<"Y == "<<M1Detail->getY()<<ELog::endDiag;
+  */
+
+  M1Detail->addInsertCell(M1Tube->getCell("Void"));
+  M1Detail->setCell("FrontVoid",M1TubeFront->getCell("Void",3));
+  M1Detail->setCutSurf("TubeRadius",*M1Tube,"InnerSide");
+  M1Detail->createAll(System,*M1Tube,0);
 
   /*  M1Stand->setCutSurf("floor",this->getRule("floor"));
   M1Stand->setCutSurf("front",*M1Tube,-1);
@@ -654,7 +662,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);
 
-
   constructSystem::constructUnit
     (System,buildZone,*triggerPipe,"back",*gateTubeA);
 
@@ -717,8 +724,13 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   buildM1Mirror(System,*bellowB,"back");
 
+
+  // version for box outer
+  //  constructSystem::constructUnit
+  //    (System,buildZone,*M1Box,"back",*bellowC);
+
   constructSystem::constructUnit
-    (System,buildZone,*M1Box,"back",*bellowC);
+    (System,buildZone,*M1TubeBack,"port0",*bellowC);
 
   ELog::EM<<"Early return"<<ELog::endDiag;
   //  System.removeCell(buildZone.getLastCell("Unit"));

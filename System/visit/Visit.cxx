@@ -31,7 +31,6 @@
 #include <set>
 #include <vector>
 #include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -40,6 +39,8 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -133,10 +134,10 @@ Visit::setIndex(const size_t A,const size_t B,const size_t C)
     \param C :: Zcoordinate division
   */
 {
-  nPts[0]=static_cast<long int>(A);
-  nPts[1]=static_cast<long int>(B);
-  nPts[2]=static_cast<long int>(C);
-  mesh.resize(boost::extents[nPts[0]][nPts[1]][nPts[2]]);
+  nPts[0]=A;
+  nPts[1]=B;
+  nPts[2]=C;
+  mesh.resize(A,B,C);
   return;
 }
 
@@ -193,8 +194,8 @@ Visit::populateLine(const Simulation& System,
   const size_t IA = (IMax) ? 0: 1;
   const size_t IB = (IMax!=2) ? 2 : 1;
   
-  const long int nA = nPts[IA];
-  const long int nB = nPts[IB];
+  const size_t nA = nPts[IA];
+  const size_t nB = nPts[IB];
     
   Geometry::Vec3D aVec;  
 
@@ -214,8 +215,8 @@ Visit::populateLine(const Simulation& System,
     (IMax==1) ? (YStep*XStep).unit()*XYZ[IMax] :
     (XStep*YStep).unit()*XYZ[IMax];
 
-  for(long int i=0;i<nA;i++)
-    for(long int j=0;j<nB;j++)
+  for(size_t i=0;i<nA;i++)
+    for(size_t j=0;j<nB;j++)
       { 
 	std::vector<double> distVec;
 	std::vector<MonteCarlo::Object*> cellVec;
@@ -229,7 +230,7 @@ Visit::populateLine(const Simulation& System,
 	OTrack.createCellPath(cellVec,distVec);
 
 	double T=0.0;
-	long int index(0);
+	size_t index(0);
 	for(size_t ii=0;ii<cellVec.size();ii++)
 	  {
 	    T+=distVec[ii];
@@ -245,30 +246,31 @@ Visit::populateLine(const Simulation& System,
 }
 
 double&
-Visit::getMeshUnit(const size_t posIndex,const long int index,
-		   const long int i,const long int j)
+Visit::getMeshUnit(const size_t posIndex,const size_t index,
+		   const size_t i,const size_t j)
   /*!
     Get mesh unit based on posIndex being index place [0-2]
     and i,j begin the other two coordinates
     \param posIndex :: Index Max
+    \param index :: primary index
     \param i :: other index in mesh
     \param j :: other index in mesh
     \return mesh[i][j] / [index]
   */
 { 
   if (posIndex==0)
-    return mesh[index][i][j];
+    return mesh.get()[index][i][j];
   else if (posIndex==1)
-    return mesh[i][index][j];
+    return mesh.get()[i][index][j];
   
-  return mesh[i][j][index];
+  return mesh.get()[i][j][index];
 }
   
 long int
 Visit::procDist(double& fullLen,const double lStep,
 		double unitLen,double& aFrac)
   /*!
-    Allows unit steps through a length returing
+    Allows unit steps through a length returning
     the index 
 
     \param fullLen :: Length remaining
@@ -331,13 +333,13 @@ Visit::populatePoint(const Simulation& System,
   for(size_t i=0;i<3;i++)
     stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
 
-  for(long int i=0;i<nPts[0];i++)
+  for(size_t i=0;i<nPts[0];i++)
     {
       aVec[0]=stepXYZ[0]*(static_cast<double>(i)+0.5);
-      for(long int j=0;j<nPts[1];j++)
+      for(size_t j=0;j<nPts[1];j++)
         {
 	  aVec[1]=stepXYZ[1]*(0.5+static_cast<double>(j));
-	  for(long int k=0;k<nPts[2];k++)
+	  for(size_t k=0;k<nPts[2];k++)
 	    {
 	      aVec[2]=stepXYZ[2]*(0.5+static_cast<double>(k));
 	      const Geometry::Vec3D Pt=Origin+aVec;
@@ -350,16 +352,16 @@ Visit::populatePoint(const Simulation& System,
 		    System.inRange(ObjPtr->getName());
 		  
 		  if (Active.find(rangeStr)!=Active.end())
-		    mesh[i][j][k]=getResult(ObjPtr);
+		    mesh.get()[i][j][k]=getResult(ObjPtr);
 		  else
-		    mesh[i][j][k]=0.0;
+		    mesh.get()[i][j][k]=0.0;
 		}
 	      // OLD Code:
 	      else
 		{
 		  if (!ObjPtr)
 		    ELog::EM<<"Zero Cell == "<<Pt<<ELog::endErr;
-		  mesh[i][j][k]=getResult(ObjPtr);
+		  mesh.get()[i][j][k]=getResult(ObjPtr);
 		}
 
 	    }
@@ -409,17 +411,17 @@ Visit::writeVTK(const std::string& FName) const
   OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
-  for(int i=0;i<nPts[0];i++)
+  for(size_t i=0;i<nPts[0];i++)
     OX<<(fFMT % (Origin[0]+stepXYZ[0]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
-  for(long int i=0;i<nPts[1];i++)
+  for(size_t i=0;i<nPts[1];i++)
     OX<<(fFMT % (Origin[1]+stepXYZ[1]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
-  for(int i=0;i<nPts[2];i++) 
+  for(size_t i=0;i<nPts[2];i++) 
     OX<<(fFMT % (Origin[2]+stepXYZ[2]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
@@ -427,11 +429,11 @@ Visit::writeVTK(const std::string& FName) const
   OX<<"SCALARS cellID float 1.0"<<std::endl;
   OX<<"LOOKUP_TABLE default"<<std::endl;
 
-  for(long int k=0;k<nPts[2];k++)
-    for(long int j=0;j<nPts[1];j++)
+  for(size_t k=0;k<nPts[2];k++)
+    for(size_t j=0;j<nPts[1];j++)
       {
-	for(long int i=0;i<nPts[0];i++)
-	  OX<<(fFMT % (mesh[i][j][k]));
+	for(size_t i=0;i<nPts[0];i++)
+	  OX<<(fFMT % (mesh.get()[i][j][k]));
 	OX<<std::endl;
       }
   OX.close();
@@ -461,17 +463,17 @@ Visit::writeIntegerVTK(const std::string& FName) const
   OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
-  for(int i=0;i<nPts[0];i++)
+  for(size_t i=0;i<nPts[0];i++)
     OX<<(fFMT % (Origin[0]+stepXYZ[0]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
-  for(long int i=0;i<nPts[1];i++)
+  for(size_t i=0;i<nPts[1];i++)
     OX<<(fFMT % (Origin[1]+stepXYZ[1]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
-  for(int i=0;i<nPts[2];i++) 
+  for(size_t i=0;i<nPts[2];i++) 
     OX<<(fFMT % (Origin[2]+stepXYZ[2]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
@@ -480,13 +482,13 @@ Visit::writeIntegerVTK(const std::string& FName) const
   OX<<"LOOKUP_TABLE default"<<std::endl;
 
 
-  for(long int k=0;k<nPts[2];k++)
-    for(long int j=0;j<nPts[1];j++)
+  for(size_t k=0;k<nPts[2];k++)
+    for(size_t j=0;j<nPts[1];j++)
       {
-	for(long int i=0;i<nPts[0];i++)
+	for(size_t i=0;i<nPts[0];i++)
 	  
 	  OX<<(iFMT %
-	       static_cast<long int>(std::round(mesh[i][j][k])));
+	       static_cast<int>(std::round(mesh.get()[i][j][k])));
 	OX<<std::endl;
       }
   OX.close();

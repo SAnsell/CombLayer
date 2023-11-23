@@ -3,10 +3,8 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Modified: Isabel Llamas-Jansa, November 2023
- * - added LegoBrick to valid Items list 
  * 
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell/Isabel Llamas-Jansa
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

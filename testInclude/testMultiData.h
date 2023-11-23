@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonVarInc/LegoBrickGenerator.h
+ * File:   testInclude/testMultiData.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -16,46 +16,45 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_LegoBrickGenerator_h
-#define setVariable_LegoBrickGenerator_h
-
-class FuncDataBase;
-
-namespace setVariable
-{
+#ifndef testMultiData_h
+#define testMultiData_h 
 
 /*!
-  \class LegoBrickGenerator
+  \class testMultiData 
+  \brief Test class for the multiData layout
   \version 1.0
-  \author S. Ansell
-  \date May 2023
-  \brief LegoBrickGenerator for variables
+  \date October 2023
+  \author S.Ansell
+  
+
 */
 
-class LegoBrickGenerator
+class testMultiData 
 {
- private:
+private:
 
-  double width;                 ///< full width
-  double height;                ///< full height
-  double depth;                 ///< full depth (z)
-
-  std::string mat;              ///< Material
+  //Tests 
+  int testExchange();
+  int testGetAxisRange();
+  int testIntegrateMap();
+  int testIntegrateMapRange();
+  int testIntegrateValue();
+  int testMultiRange();
+  int testProjectMap();
+  int testProjectMapDebug();
+  int testRange();
+  int testSet();
   
- public:
+public:
 
-  LegoBrickGenerator();
-  LegoBrickGenerator(const LegoBrickGenerator&);
-  LegoBrickGenerator& operator=(const LegoBrickGenerator&);
-  ~LegoBrickGenerator();  
+  testMultiData();
+  ~testMultiData();
 
-  void generateBrick(FuncDataBase&,const std::string&) const;
+  int applyTest(const int extra);
+  
 };
 
-}
-
 #endif
- 

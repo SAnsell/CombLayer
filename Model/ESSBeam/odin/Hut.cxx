@@ -184,7 +184,7 @@ Hut::populate(const FuncDataBase& Control)
   wallYStep=Control.EvalVar<double>(keyName+"WallYStep");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 

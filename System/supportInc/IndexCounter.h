@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monteInc/RotCounter.h
+ * File:   monteInc/IndexCounter.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -19,11 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef RotaryCounter_h
-#define RotaryCounter_h
+#ifndef IndexCounter_h
+#define IndexCounter_h
 
 /*!
-  \class RotaryCounter
+  \class IndexCounter
   \version 1.0
   \date September 2005
   \author S. Ansell
@@ -34,35 +34,45 @@
 */
 
 template<typename T>
-class RotaryCounter
+class IndexCounter
 {
  private:
 
-  T Rmax;                 ///< Number to over cycle
-  std::vector<T> RC;        ///< rotation list
+  std::vector<T> Rmax;         ///< Numbers to over cycle
+  std::vector<T> RC;           ///< rotation list
 
  public:
-  
-  RotaryCounter(const size_t,const T&);  ///<Size,Max
-  RotaryCounter(const RotaryCounter&);
-  RotaryCounter& operator=(const RotaryCounter&);
-  ~RotaryCounter();
 
-  bool operator==(const RotaryCounter&) const;
-  bool operator<(const RotaryCounter&) const;
-  bool operator>(const RotaryCounter&) const;
+  template<typename InputIter>
+  IndexCounter(InputIter,InputIter);              
+  IndexCounter(std::vector<T>);              
+  IndexCounter(const size_t,const T&);
+  IndexCounter(const T&,const T&,const T&);  
+  IndexCounter(const IndexCounter&);
+  IndexCounter(IndexCounter&&);
+  IndexCounter& operator=(const IndexCounter&);
+  IndexCounter& operator=(IndexCounter&&);
+  ~IndexCounter() =default;
+
+  bool operator==(const IndexCounter<T>&) const;
+  bool operator<(const IndexCounter<T>&) const;
+  bool operator>(const IndexCounter<T>&) const;
   /// Accessor operator
   T operator[](const size_t I) const { return RC[I]; }
+
   bool operator++();
   bool operator++(const int);
   bool operator--();
   bool operator--(const int);
-  
+
+  void setSingleMax(const T&);
+  /// access to vector
+  const std::vector<T>& getVector() const { return RC; }
   void write(std::ostream&) const;
 };
 
 template<typename T>
-std::ostream& operator<<(std::ostream&,const RotaryCounter<T>&);
+std::ostream& operator<<(std::ostream&,const IndexCounter<T>&);
 
 
 #endif

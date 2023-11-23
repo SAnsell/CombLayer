@@ -157,7 +157,7 @@ NNBARvariables(FuncDataBase& Control)
   Control.addVariable("nnbarCaveConcFloor",50.0);
   Control.addVariable("nnbarCaveConcBack",35.0);
 
-  Control.addVariable("nnbarCaveFeMat","Stainless304");
+  Control.addVariable("nnbarCavePipeMat","Stainless304");
   Control.addVariable("nnbarCaveConcMat","Concrete");
 
   // Beam port through front of cave

@@ -128,7 +128,7 @@ TwinPipe::populate(const FuncDataBase& Control)
 
   
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   
   return;
 }

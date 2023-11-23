@@ -9,7 +9,7 @@ set (geometrySources
     MeshGrid.cxx NullSurface.cxx Plane.cxx 
     Pnt.cxx Quadratic.cxx Quadrilateral.cxx 
     Quaternion.cxx RecTriangle.cxx SglLine.cxx 
-    Sphere.cxx Surface.cxx surfaceFactory.cxx 
+    Sphere.cxx Surface.cxx surfaceFactory.cxx
     surfImplicates.cxx surfIndex.cxx surfProg.cxx 
     SurInter.cxx Torus.cxx Transform.cxx 
     Triangle.cxx Vec2D.cxx Vec3D.cxx 

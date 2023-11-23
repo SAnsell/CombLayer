@@ -3,7 +3,7 @@
  
  * File:   test/testSurfDivide.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,8 @@
 #include "SimMCNP.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"
+#include "surfEqual.h"
 #include "surfDivide.h"
-#include "surfCompare.h"
 
 #include "testFunc.h"
 #include "testSurfDivide.h"
@@ -346,7 +346,7 @@ testSurfDivide::checkSurfaceEqual
   int retval(-1);
   if (!TPtr)
     ELog::EM<<"Failed to find surface number:"<<SN<<ELog::endCrit;
-  else if (!ModelSupport::equalSurface(SPtr,TPtr))
+  else if (!ModelSupport::cmpSurfaces(SPtr,TPtr))
     {
       ELog::EM<<"Surfaces not equal:"<<ELog::endCrit;
       ELog::EM<<"SPtr :"<<*SPtr<<ELog::endCrit;

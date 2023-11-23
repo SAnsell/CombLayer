@@ -104,6 +104,7 @@
 #include "testGenerateSurf.h"
 #include "testGroupRange.h"
 #include "testHeadRule.h"
+#include "testIndexCounter.h"
 #include "testInputParam.h"
 #include "testInsertComp.h"
 #include "testLine.h"
@@ -118,6 +119,8 @@
 #include "testMD5.h"
 #include "testMesh3D.h"
 #include "testModelSupport.h"
+#include "testMultiData.h"
+#include "testMultiString.h"
 #include "testNeutron.h"
 #include "testNList.h"
 #include "testNRange.h"
@@ -132,7 +135,6 @@
 #include "testPoly.h"
 #include "testQuaternion.h"
 #include "testRecTriangle.h"
-#include "testRotCounter.h"
 #include "testRules.h"
 #include "testSimpleObj.h"
 #include "testSimpson.h"
@@ -377,9 +379,10 @@ globalTest(const int type,const int extra)
       "testInsertComp",
       "testMapRange",
       "testMapSupport",
+      "testMultiData",
+      "testMultiString",
       "testNList",
       "testNRange",
-      "testRotCounter",
       "testRules",
       "testSimulation",
       "testSource",
@@ -434,6 +437,18 @@ globalTest(const int type,const int extra)
       cnt++;
       if(index==cnt)
 	{
+	  testMultiData A;
+	  X=A.applyTest(extra);
+	}
+      cnt++;
+      if(index==cnt)
+	{
+	  testMultiString A;
+	  X=A.applyTest(extra);
+	}
+      cnt++;
+      if(index==cnt)
+	{
 	  testNList A;
 	  X=A.applyTest(extra);
 	}
@@ -441,12 +456,6 @@ globalTest(const int type,const int extra)
       if(index==cnt)
 	{
 	  testNRange A;
-	  X=A.applyTest(extra);
-	}
-      cnt++;
-      if(index==cnt)
-	{
-	  testRotCounter A;
 	  X=A.applyTest(extra);
 	}
       cnt++;
@@ -1063,68 +1072,90 @@ supportTest(const int type,const int extra)
       std::cout<<"testDoubleErr           (1)"<<std::endl;
       std::cout<<"testFortranWrite        (2)"<<std::endl;
       std::cout<<"testGroupRange          (3)"<<std::endl;
-      std::cout<<"testMathSupport         (4)"<<std::endl;
-      std::cout<<"testMatrix              (5)"<<std::endl;
-      std::cout<<"testModelSupport        (6)"<<std::endl;
-      std::cout<<"testSimpson             (7)"<<std::endl;
-      std::cout<<"testSupport             (8)"<<std::endl;
-      std::cout<<"testWriteSupport        (9)"<<std::endl;
+      std::cout<<"testIndexCounter        (4)"<<std::endl;
+      std::cout<<"testMathSupport         (5)"<<std::endl;
+      std::cout<<"testMatrix              (6)"<<std::endl;
+      std::cout<<"testModelSupport        (7)"<<std::endl;
+      std::cout<<"testSimpson             (8)"<<std::endl;
+      std::cout<<"testSupport             (9)"<<std::endl;
+      std::cout<<"testWriteSupport       (10)"<<std::endl;
       return 0;
     }
 
-  if (type==1 || type<0)
+  int index(1);
+  if(type==index || type<0)
     {
       testDoubleErr A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-
-  if(type==2 || type<0)
+  index++;
+  
+  if(type==index || type<0)
     {
       testFortranWrite A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-
-  if(type==3 || type<0)
+  index++;
+  
+  if(type==index || type<0)
     {
       testGroupRange A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-
-  if(type==4 || type<0)
+  index++;
+  
+  if(type==index || type<0)
+    {
+      testIndexCounter A;
+      int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  index++;
+  
+  if(type==index || type<0)
     {
       testMathSupport A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-
-  if(type==5 || type<0)
+  index++;
+  
+  if(type==index || type<0)
     {
       testMatrix A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-  if(type==6 || type<0)
+  index++;
+  
+  if(type==index || type<0)
     {
       testModelSupport A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-  if(type==7 || type<0)
+  index++;
+  
+  if(type==index || type<0)
     {
       testSimpson A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-  if(type==8 || type<0)
+  index++;
+    
+  if(type==index || type<0)
     {
       testSupport A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-  if(type==9 || type<0)
+  index++;
+  
+  if(type==index || type<0)
     {
       testWriteSupport A;
       int X=A.applyTest(extra);

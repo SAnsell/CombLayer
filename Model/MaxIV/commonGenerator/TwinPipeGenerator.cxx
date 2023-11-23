@@ -261,7 +261,7 @@ TwinPipeGenerator::generateTwin(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeBLength",flangeBLength);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"FeMat",pipeMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
 
   return;
 

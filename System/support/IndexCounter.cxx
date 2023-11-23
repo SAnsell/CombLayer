@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monte/RotCounter.cxx
+ * File:   support/IndexCounter.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,15 +26,15 @@
 #include <iterator>
 #include <vector>
 
-#include "RotCounter.h"
+#include "IndexCounter.h"
 
 template<typename T>
 std::ostream&
-operator<<(std::ostream& OX,const RotaryCounter<T>& A) 
+operator<<(std::ostream& OX,const IndexCounter<T>& A) 
   /*!
     Output stream assesor
     \param OX :: Output stream
-    \param A :: RotaryCounter to writeout
+    \param A :: IndexCounter to writeout
     \return output stream
    */
 {
@@ -43,21 +43,56 @@ operator<<(std::ostream& OX,const RotaryCounter<T>& A)
 } 
 
 template<typename T>
-RotaryCounter<T>::RotaryCounter(const size_t S,const T& N) :
-  Rmax(N),RC(S)
+template<typename InputIter>
+IndexCounter<T>::IndexCounter(InputIter iBeg,InputIter iEnd) :
+  Rmax(iBeg,iEnd),RC(Rmax.size(),T(0))
   /*!
-    Simple constructor with fixed size and number.
-    Fills RC with a flat 0->N number list
-    \param S :: Size  (number of components)
-    \param N :: Max number to get to
+    Simple constructor for two interators
+    \param iBeg :: First iterator
+    \param iEnd :: Second iterator
   */
 {
-  for(size_t i=0;i<S;i++)
-    RC[i]=static_cast<T>(i);
+  for(size_t& i : Rmax)
+    i--;
 }
 
 template<typename T>
-RotaryCounter<T>::RotaryCounter(const RotaryCounter<T>& A) :
+IndexCounter<T>::IndexCounter(const size_t NP,const T& defValue) :
+  Rmax(NP,defValue),RC(NP,0)
+  /*!
+    Simple constructor with fixed NP object
+    \param NP :: number of objects
+    \param defValue :: value (all same)
+  */
+{ }
+
+template<typename T>
+IndexCounter<T>::IndexCounter(const T& nA,const T& nB,
+			      const T& nC) :
+  Rmax({nA-1,nB-1,nC-1}),RC({0,0,0})
+  /*!
+    Simple constructor with fixed 3d system
+    \param nA :: First index
+    \param nB :: Second index
+    \param nC :: Second index
+  */
+{}
+
+
+template<typename T>
+IndexCounter<T>::IndexCounter(std::vector<T> sizeArray) :
+  Rmax(std::move(sizeArray)),RC(Rmax.size(),T(0))
+  /*!
+    Simple constructor with size based on input vector
+    Note that Rmax holds max valid value so input is +1 value
+  */
+{
+  for(T& I : Rmax)
+    I--;  
+}
+
+template<typename T>
+IndexCounter<T>::IndexCounter(const IndexCounter<T>& A) :
   Rmax(A.Rmax),RC(A.RC)
   /*!
     Standard copy constructor
@@ -66,8 +101,17 @@ RotaryCounter<T>::RotaryCounter(const RotaryCounter<T>& A) :
 { }
 
 template<typename T>
-RotaryCounter<T>&
-RotaryCounter<T>::operator=(const RotaryCounter<T>& A)
+IndexCounter<T>::IndexCounter(IndexCounter<T>&& A) :
+  Rmax(std::move(A.Rmax)),RC(std::move(A.RC))
+  /*!
+    Standard move constructor
+    \param A :: Object to copy
+  */ 
+{ }
+
+template<typename T>
+IndexCounter<T>&
+IndexCounter<T>::operator=(const IndexCounter<T>& A)
   /*!
     Assignment operator
     \param A :: Object to copy
@@ -83,15 +127,25 @@ RotaryCounter<T>::operator=(const RotaryCounter<T>& A)
 }
 
 template<typename T>
-RotaryCounter<T>::~RotaryCounter()
+IndexCounter<T>&
+IndexCounter<T>::operator=(IndexCounter<T>&& A)
   /*!
-    Standard Destructor
-  */
-{}
+    Assignment operator with move
+    \param A :: Object to move
+    \return *this
+   */
+{
+  if (this!=&A)
+    {
+      Rmax=std::move(A.Rmax);
+      RC=std::move(A.RC);
+    }
+  return *this;
+}
 
 template<typename T>
 bool
-RotaryCounter<T>::operator==(const RotaryCounter<T>& A) const
+IndexCounter<T>::operator==(const IndexCounter<T>& A) const
   /*!
     Chec to find if Counters identical in ALL respects
     \param A :: Counter to compare
@@ -110,11 +164,11 @@ RotaryCounter<T>::operator==(const RotaryCounter<T>& A) const
 
 template<typename T>
 bool
-RotaryCounter<T>::operator>(const RotaryCounter<T>& A) const 
+IndexCounter<T>::operator>(const IndexCounter<T>& A) const 
   /*! 
-    Determines the precidence of the RotaryCounters
+    Determines the precidence of the IndexCounters
     Operator works on the 0 to high index 
-    \param A :: RotaryCounter to compare
+    \param A :: IndexCounter to compare
     \return This > A
    */
 {
@@ -129,11 +183,11 @@ RotaryCounter<T>::operator>(const RotaryCounter<T>& A) const
 
 template<typename T>
 bool
-RotaryCounter<T>::operator<(const RotaryCounter<T>& A) const
+IndexCounter<T>::operator<(const IndexCounter<T>& A) const
   /*! 
-    Determines the precidence of the RotaryCounters
+    Determines the precidence of the IndexCounters
     Operator works on the 0 to high index 
-    \param A :: RotaryCounter to compare
+    \param A :: IndexCounter to compare
     \return This < A
    */
 {
@@ -152,7 +206,7 @@ RotaryCounter<T>::operator<(const RotaryCounter<T>& A) const
 
 template<typename T>
 bool
-RotaryCounter<T>::operator++(int)
+IndexCounter<T>::operator++(int)
   /*!
     Convertion to ++operator (prefix) 
     from operator++ (postfix)
@@ -165,7 +219,7 @@ RotaryCounter<T>::operator++(int)
 
 template<typename T>
 bool
-RotaryCounter<T>::operator++()
+IndexCounter<T>::operator++()
   /*!
     Carrys out a rotational addition.
     Objective is a rolling integer stream ie 1,2,3
@@ -175,29 +229,27 @@ RotaryCounter<T>::operator++()
   */
 {
   if (RC.empty()) 
-    return 0;
-						 
-  T Npart=Rmax-1;
+    return 1;
   size_t I;
-  for(I=RC.size();I && RC[I-1]==Npart;I--,Npart--) ;
+  for(I=RC.size();I>0 && RC[I-1]==Rmax[I-1];I--) ;
   
   if (!I)
     {
       for(size_t i=0;i<RC.size();i++)
-        RC[i]=static_cast<T>(i);
+        RC[i]=T(0);
       return 1;
     }
   // I > 0 here: 
   RC[I-1]++;
   for(;I<RC.size();I++)
-    RC[I]=RC[I-1]+1;
+    RC[I]=T(0);
 
   return 0;
 }
 
 template<typename T>
 bool
-RotaryCounter<T>::operator--(int)
+IndexCounter<T>::operator--(int)
   /*!
     convertion to --operator (prefix) 
     from operator-- (postfix)
@@ -210,7 +262,7 @@ RotaryCounter<T>::operator--(int)
 
 template<typename T>
 bool
-RotaryCounter<T>::operator--()
+IndexCounter<T>::operator--()
   /*!
     Carrys out a rotational addition.
     Objective is a rolling integer stream ie 1,2,3
@@ -219,41 +271,42 @@ RotaryCounter<T>::operator--()
     \retval 0 :: no loop occored
   */
 {
-  const size_t Size(RC.size());
+  size_t I;
+  for(I=RC.size();I>0 && RC[I-1]==T(0);I--) ;
 
-  size_t Index;
-  for(Index=RC.size()-1;Index>0 && RC[Index]==RC[Index-1]+1;Index--) ;
   // Loop case
-  if(!Index && !RC[0])    
+  if(!I)    
     {
-      // In case of loop go to
-      for(size_t i=0;i<RC.size();i++)
-	RC[i]=Rmax-static_cast<T>(Size-i);
+      RC=Rmax;
       return 1;
     }
-  
-  RC[Index]--;
-  for(Index++;Index<Size;Index++)
-    RC[Index]=Rmax-static_cast<T>(Size-Index);
+
+  // I > 0 here:
+  RC[I-1]--;
+  for(;I<RC.size();I++)
+    RC[I]=Rmax[I];
   return 0;
 }
 
 template<typename T>
 void
-RotaryCounter<T>::write(std::ostream& OX) const
+IndexCounter<T>::write(std::ostream& OX) const
   /*!
     Write out object to a stream
     \param OX :: output stream
   */
 {
-  OX<<" ";
-  copy(RC.begin(),RC.end()-1,std::ostream_iterator<int>(OX,":"));
-  OX<<RC.back()<<" ";
+
+  for(const T& v : RC)
+    OX<<"["<<v<<"]";
   return;
 }
 
-template class RotaryCounter<size_t>;
-template class RotaryCounter<int>;
+template class IndexCounter<size_t>;
+template class IndexCounter<int>;
 
-template std::ostream& operator<<(std::ostream&,const RotaryCounter<size_t>&);
-template std::ostream& operator<<(std::ostream&,const RotaryCounter<int>&);
+template IndexCounter<size_t>::IndexCounter
+(std::vector<size_t>::const_iterator,std::vector<size_t>::const_iterator);
+
+template std::ostream& operator<<(std::ostream&,const IndexCounter<size_t>&);
+template std::ostream& operator<<(std::ostream&,const IndexCounter<int>&);

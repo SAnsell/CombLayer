@@ -17,7 +17,7 @@ set (commonGeneratorSources
     GratingMonoGenerator.cxx GratingUnitGenerator.cxx HeatDumpGenerator.cxx 
     HPJawsGenerator.cxx IonGaugeGenerator.cxx IonPTubeGenerator.cxx 
     LBeamStopGenerator.cxx LinacQuadGenerator.cxx LinacSexuGenerator.cxx 
-    LocalShieldingGenerator.cxx M1DetailGenerator.cxx MagnetBlockGenerator.cxx 
+    LocalShieldingGenerator.cxx M1DetailGenerator.cxx  MagnetBlockGenerator.cxx 
     MagnetGenerator.cxx MagnetM1Generator.cxx MagnetU1Generator.cxx 
     MainBeamDumpGenerator.cxx MazeGenerator.cxx MirrorGenerator.cxx 
     MLMDetailGenerator.cxx MLMonoGenerator.cxx MonoBlockXstalsGenerator.cxx 

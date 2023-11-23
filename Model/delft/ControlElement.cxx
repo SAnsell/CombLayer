@@ -3,7 +3,7 @@
  
  * File:   delft/ControlElement.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <boost/multi_array.hpp>
 #include <complex>
 #include <fstream>
 #include <iomanip>
@@ -39,6 +38,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -66,14 +67,12 @@
 #include "FuelElement.h"
 #include "ControlElement.h"
 
-
 namespace delftSystem
 {
 
-
 ControlElement::ControlElement(const size_t XI,const size_t YI,
 			       const std::string& Key,
-			       std::string  CKey) :
+			       std::string CKey) :
   FuelElement(XI,YI,Key),
   attachSystem::ContainedGroup("Track","Rod","Cap"),
   cntlKey(std::move(CKey)),
