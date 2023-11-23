@@ -18,6 +18,7 @@ set(CMAKE_CXX_FLAGS "-Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -st
 set(SYSTEM_INCLUDE
   ${CMAKE_SOURCE_DIR}/System/geomInc
   ${CMAKE_SOURCE_DIR}/globalInc
+  ${fmt_INCLUDE_DIR}
 )
 
 set(SYSTEM_INCLUDE 
@@ -197,6 +198,7 @@ target_link_libraries(ess
   ${SYSTEM_LIB}
   ${ESS_LIB}
   GSL::gsl
+  fmt::fmt
 )
 
 target_link_libraries(essLinacModel
