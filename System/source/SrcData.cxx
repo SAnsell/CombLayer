@@ -421,9 +421,8 @@ SrcInfo::write(const size_t Index,std::ostream& OX) const
   cx<<"si"<<Index<<" "<<option<<" ";
   if (!Values.empty())
     {
-      std::vector<double>::const_iterator vc;
-      for(vc=Values.begin();vc!=Values.end();vc++)
-	cx<<FMTStr % *vc;
+      for(const double V : Values)
+	cx<<FMTStr % V;
     }
   else
     {

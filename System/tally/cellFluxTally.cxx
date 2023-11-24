@@ -3,7 +3,7 @@
  
  * File:   tally/cellFluxTally.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -311,13 +311,11 @@ cellFluxTally::writeHTape(const std::string& Name,
   T14<<"114,,,,,"<<(FMT4 % cells.size())<<",,,,1/"<<std::endl;
   T15<<"115,,,,,"<<(FMT4 % cells.size())<<",,,,1/"<<std::endl;
 
-
-  std::vector<int>::const_iterator vc;
-  for(vc=cells.begin();vc!=cells.end();vc++)
+  for(const int CN : cells)
     {
-      T08<<(FMT % *vc);
-      T14<<(FMT % *vc);      
-      T15<<(FMT % *vc);
+      T08<<(FMT % CN);
+      T14<<(FMT % CN);      
+      T15<<(FMT % CN);
     }
   T08<<"/"<<std::endl;
   T14<<"/"<<std::endl;

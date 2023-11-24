@@ -444,8 +444,7 @@ WWGWeight::scaleMeshItem(const size_t I,const size_t J,
 {
   ELog::RegMethod RegA("WWGWeight","scaleMeshItem");
 
-  if (I>=WX || J>=WY || K>=WZ || EI>=WE ||
-      I<0 || J<0 || K<0 || EI<0)
+  if (I>=WX || J>=WY || K>=WZ || EI>=WE)
     throw ColErr::DimensionError<size_t>
 		      ({I,J,K,EI},{WX,WY,WZ,WE},"Index values");
   
