@@ -3,7 +3,7 @@
  
  * File:   support/writeSupport.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "Vec3D.h"
@@ -52,15 +52,11 @@ flukaNum(const long int I)
     \param I :: Number to use
   */
 {
-
-  static boost::format FMTnum("%1$10.1f");
-  static boost::format FMTlnum("%1$10.5g");
-
   const double D=static_cast<double>(I);
   if (D > 1e8 || D < -1e7)
-    return (FMTlnum % D).str();
+    return fmt::format("{:10.5g}",D);
 
-  return (FMTnum % D).str();
+  return fmt::format("{:10.1f}",D);
 }
 
 std::string
@@ -71,8 +67,8 @@ flukaNum(const double D,const double zeroTol,
     \param D :: Number to use
   */
 {
-  static boost::format FMTANum("%1$10.6f");
-  static std::vector<std::string> FNum
+
+  const static std::vector<std::string> FNum
     ({
       "%1$10.8f",
       "%1$10.7f",
@@ -82,7 +78,7 @@ flukaNum(const double D,const double zeroTol,
       "%1$10.3f"
       });
 
-  static std::vector<std::string> FG
+  const static std::vector<std::string> FG
     ({
       "%1$10.8g",
       "%1$10.7g",
@@ -95,14 +91,14 @@ flukaNum(const double D,const double zeroTol,
   const double lowExpTol(1.0/exponentTol);
 
   if (D>-zeroTol && D<zeroTol)  // float point limits
-    return (FMTANum % 0.0).str();
+    return fmt::format("{:10.6f}",0.0);
 
   std::string out;  
   if (std::abs(D)<exponentTol && std::abs(D) >lowExpTol)      // +ve low range
     {
       for(const std::string& FMTStr : FNum)
 	{
-	  out=(boost::format(FMTStr) % D).str();
+	  out=fmt::format(fmt::runtime(FMTStr),D);
 	  if (out.size()<=10) return out;
 	}
     }
@@ -110,7 +106,7 @@ flukaNum(const double D,const double zeroTol,
     {
       for(const std::string& FMTStr : FG)
 	{
-	  out=(boost::format(FMTStr) % D).str();
+	  out=fmt::format(fmt::runtime(FMTStr),D);
 	  if (out.size()<=10) return out;
 	}
     }

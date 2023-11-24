@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -389,7 +388,6 @@ WWG::writeVTK(const std::string& FName,
   // const long int YSize=WMesh.getYSize();
   // const long int ZSize=WMesh.getZSize();
   
-  boost::format fFMT("%1$11.6g%|14t|");  
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"WWG-MESH Data"<<std::endl;
   OX<<"ASCII"<<std::endl;

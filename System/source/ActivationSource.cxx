@@ -3,7 +3,7 @@
  
  * File:   source/ActivationSource.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -302,43 +302,6 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
 {
   ELog::RegMethod RegA("ActivationSource","readFluxes");
 
-  //#ifndef NO_REGEX
-
-  /*
-  boost::filesystem::directory_iterator curDIR
-    (boost::filesystem::current_path());
-  const boost::filesystem::directory_iterator endDIR;
-
-  std::vector<std::string> fileNames;
-  std::vector<int> cellNumList;
-  while(curDIR != endDIR)
-    {
-      if (boost::filesystem::is_directory(*curDIR))
-        {
-          const size_t iLen=inputFileBase.length();
-          const std::string fileName(curDIR->path().filename().string());
-	  if (fileName.length()>iLen)
-	    {
-	      const std::string testBase(fileName.substr(0,iLen));
-	      const std::string testNumber(fileName.substr(iLen));
-	      int cellNumber;
-	      if (testBase==inputFileBase &&
-		  StrFunc::convert(testNumber,cellNumber))
-		{
-		  const std::string fluxFile=fileName+"/spectra";
-		  fileNames.push_back(fluxFile);
-		  cellNumList.push_back(cellNumber);
-		}
-	    }
-	}
-      ++curDIR;
-    }
-  if (cellNumList.empty())
-    throw ColErr::InContainerError<std::string>(inputFileBase,"cellNumList empty");
-  
-  processFluxFiles(fileNames,cellNumList);
-#endif
-  */
   return;
 }
 

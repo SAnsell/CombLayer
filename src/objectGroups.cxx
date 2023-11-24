@@ -65,9 +65,6 @@ fmtBlock(const Geometry::Vec3D& A)
 {
   std::string out= fmt::format("{} {} {}",A.X(),A.Y(),A.Z());
   return fmt::format("{:<40}",out);
-  //  std::cout<<fmt::format("{ }","sadfafds");
-  //  std::string out;
-
 } 
 
 objectGroups::objectGroups() :

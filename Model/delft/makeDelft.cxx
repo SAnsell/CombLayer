@@ -34,7 +34,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"

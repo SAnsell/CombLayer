@@ -37,8 +37,8 @@ class masterWrite
   double zeroTol;         ///< All numbers below this value are zero
   size_t sigFig;             ///< Number of significant figures
 
-  boost::format* FMTdouble;       ///< Format statement for double output
-  boost::format* FMTinteger;      ///< Format statement for integer
+  std::string FMTdouble;       ///< Format statement for double output
+  std::string FMTinteger;      ///< Format statement for integer
 
   masterWrite();
 

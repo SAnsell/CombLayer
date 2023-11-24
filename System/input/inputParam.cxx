@@ -3,7 +3,7 @@
  
  * File:   input/inputParam.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,9 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-
-#include <boost/algorithm/string.hpp>  // lower / upper
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -787,11 +785,12 @@ inputParam::compNoCaseValue(const std::string& K,
 
   const size_t N=IPtr->getNItems();
   std::string NCValue(Value);
-  boost::algorithm::to_lower(NCValue);
+  
+  //  boost::algorithm::to_lower(NCValue);
   for(size_t i=0;i<N;i++)
     {
       std::string OStr=IPtr->getObj<std::string>(i); 
-      boost::algorithm::to_lower(OStr);      
+      //      boost::algorithm::to_lower(OStr);      
       if (NCValue==OStr)
 	return 1;
     }
@@ -1230,15 +1229,16 @@ inputParam::writeDescription(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  boost::format FMTstr(" -%1$s%|20t|%2$s%|50t|%3$s");
   std::vector<std::string> K,N,L;
 
   MTYPE::const_iterator mc;
   for(mc=Keys.begin();mc!=Keys.end();mc++)
     {
       const IItem* IPtr=mc->second;
-      OX<<(FMTstr % IPtr->getKey() % IPtr->getLong() % 
-	   IPtr->getDesc() )<<std::endl;
+      OX<<fmt::format(" -{:<20}{:<30}{}",
+		      IPtr->getKey(),IPtr->getLong(),
+		      IPtr->getDesc() )
+	<<std::endl;
     }
   return;
 }
@@ -1250,13 +1250,13 @@ inputParam::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  boost::format FMTstr(" -%1$s%|10t|%2$s%|20t|%3$s");
   MTYPE::const_iterator mc;
   for(mc=Keys.begin();mc!=Keys.end();mc++)
     {
       const IItem* IPtr=mc->second;
-      OX<<(FMTstr % IPtr->getKey() % IPtr->getLong() % 
-	   (IPtr->flag() ? " set " : " not-set "));
+      OX<<fmt::format(" -{:<10}{:<10}{}",
+		      IPtr->getKey(),IPtr->getLong(),
+		      (IPtr->flag() ? " set " : " not-set "));
       OX<<":: "<<*IPtr<<"\n";
     }
 

@@ -28,7 +28,6 @@
 #include <algorithm>
 #include <iterator>
 #include <functional>
-#include <boost/format.hpp>
 
 #ifndef NO_GSL
 #include <gsl/gsl_poly.h> 

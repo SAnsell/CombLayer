@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -106,8 +105,8 @@ reactorTallyConstruct::processPower(SimMCNP& System,
 
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");
-  boost::format Cmt("tally: %d Cell %s ");
-  const std::string Comment=(Cmt % nTally % "ReactorGrid" ).str();
+  const std::string Comment=
+    "tally: "+std::to_string(nTally)+" Cell ReactorGrid";
   TX->setComment(Comment);
 
   return;

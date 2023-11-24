@@ -30,7 +30,7 @@
 #include <set>
 #include <map>
 #include <string>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "Vec3D.h"
@@ -38,8 +38,8 @@
 
 masterWrite::masterWrite() :
   zeroTol(1e-20),sigFig(6),
-  FMTdouble(new boost::format("%1.6g")),
-  FMTinteger(new boost::format("%1d"))
+  FMTdouble("{:.6g"),
+  FMTinteger("{:d}")
   /*!
     Constructor
   */
@@ -49,10 +49,7 @@ masterWrite::~masterWrite()
  /*!
    Destructor
  */
-{
-  delete FMTdouble;
-  delete FMTinteger;
-}
+{}
 
 masterWrite&
 masterWrite::Instance()
@@ -75,9 +72,9 @@ masterWrite::setSigFig(const size_t S)
   if (S==0)
     throw ColErr::IndexError<size_t>(S,0,"masterWrite::setSigFig");
   std::ostringstream cx;
-  cx<<"\%1."<<S<<"g";
+  cx<<"{:."<<S<<"g}";
   sigFig=S;
-  *FMTdouble =boost::format(cx.str());
+  FMTdouble=cx.str();
   return;
 }
 
@@ -90,6 +87,7 @@ masterWrite::setZero(const double Z)
 {
   zeroTol=std::abs(Z);
   return;
+  
 }
 
 std::string
@@ -103,7 +101,7 @@ masterWrite::Num(const double& D)
   if (std::abs(D)<zeroTol)
     return "0.0";
 
-  return ((*FMTdouble) % D).str();
+  return fmt::format(fmt::runtime(FMTdouble),D);
 }
 
 std::string
@@ -114,7 +112,7 @@ masterWrite::Num(const int& I)
     \return formated number
   */
 {
-  return ((*FMTinteger) % I).str();
+  return fmt::format(fmt::runtime(FMTinteger),I);
 }
 
 std::string
@@ -129,7 +127,7 @@ masterWrite::Num(const Geometry::Vec3D& V)
   for(int i=0;i<3;i++)
     {
       Out +=(std::abs(V[i])<zeroTol) ? "0.0" :
-	((*FMTdouble) % V[i]).str();
+	fmt::format(fmt::runtime(FMTdouble),V[i]);
       if (i!=2) Out+=" ";
     }
   return Out;
@@ -147,7 +145,7 @@ masterWrite::NumComma(const Geometry::Vec3D& V)
   for(int i=0;i<3;i++)
     {
       Out +=(std::abs(V[i])<zeroTol) ? "0.0" :
-	((*FMTdouble) % V[i]).str();
+	fmt::format(fmt::runtime(FMTdouble),V[i]);
       if (i!=2) Out+=",";
     }
   return Out;

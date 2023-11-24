@@ -29,7 +29,7 @@
 #include <map> 
 #include <string>
 #include <algorithm>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -132,13 +132,11 @@ ObjTrackItem::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  boost::format FMT("%1$d %2$5.2e ");
-
   OX<<"Pts == "<<InitPt<<"::"<<EndPt<<std::endl;
 
   std::map<int,double>::const_iterator mc;
   for(mc=MTrack.begin();mc!=MTrack.end();mc++)
-    OX<<(FMT % mc->first % mc->second);
+    OX<<fmt::format("{:d} {:5.2e}",mc->first,mc->second);
 
   OX<<std::endl;
   return;

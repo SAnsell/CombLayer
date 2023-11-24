@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/format.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"

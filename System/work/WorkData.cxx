@@ -31,8 +31,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -1166,11 +1165,11 @@ WorkData::stream(std::ostream& OX) const
     \param OX :: output file 
   */
 {
-  boost::format FMT("%1$=12.6g%|16t|%2$=12.6g%|16t|%3$=12.6g");
-
   OX<<"# Pts "<<XCoord.size()<<std::endl;
-  for(unsigned int i=0;i<Yvec.size();i++)
-      OX<<(FMT % XCoord[i+1] % Yvec[i].getVal() % Yvec[i].getErr())<<std::endl;
+  for(size_t i=0;i<Yvec.size();i++)
+    OX<<fmt::format("{:<12.6g}    {:<12.6g}    {:<12.6g}",
+		    XCoord[i+1],Yvec[i].getVal(),Yvec[i].getErr())<<std::endl;
+    
 
   return;
  

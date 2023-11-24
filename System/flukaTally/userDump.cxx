@@ -32,7 +32,6 @@
 #include <iterator>
 #include <array>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "FileReport.h"
 #include "OutputLog.h"

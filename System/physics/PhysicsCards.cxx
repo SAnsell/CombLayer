@@ -3,7 +3,7 @@
  
  * File:   physics/PhysicsCards.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <functional>
 #include <memory>
 #include <array>
-#include <boost/algorithm/string.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -377,9 +376,13 @@ PhysicsCards::processCard(const std::string& Line)
       if (StrFunc::section(Comd,Item))
         {
 	  std::vector<std::string> part;
-	  boost::split(part,Item,boost::is_any_of(","));
+	  ELog::EM<<"WARNING POOR CODE"<<ELog::endDiag;
+	  //	  boost::split(part,Item,boost::is_any_of(","));
 	  for(std::string& PStr : part)
-	    boost::trim(PStr,std::locale());
+	    {
+	      ELog::EM<<"WARNING POOR CODE"<<ELog::endDiag;
+	      //	      boost::trim(PStr,std::locale());
+	    }
 	  // ensure no empty particles
 	  part.erase(
 		     remove_if(part.begin(),part.end(),

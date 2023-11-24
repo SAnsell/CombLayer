@@ -33,7 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "Vec3D.h"
@@ -1347,16 +1347,15 @@ writeLine(std::ostream& OX,const T& V,
     \param lineCut :: Number of unit to put in line before CR
    */
 {
-  static boost::format DblFMT("%13.4f");
-  static boost::format SciFMT("%13.4e");
-
   const double VUnit=static_cast<double>(V);
 
-  const double AVal(std::fabs(VUnit));
+  const double AVal(std::abs<double>(VUnit));
+
+
   if (AVal>9.9e4 || (AVal<1e-2 && AVal>1e-38))
-    OX<<(SciFMT % VUnit);
+    OX<<fmt::format("{:13.4e}",VUnit);
   else
-    OX<<(DblFMT % VUnit);
+    OX<<fmt::format("{:13.4f}",VUnit);
   
   itemCnt++;
   if (itemCnt==lineCut)

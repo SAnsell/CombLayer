@@ -29,7 +29,7 @@
 #include <map>
 #include <algorithm>
 #include <iterator>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -259,7 +259,6 @@ LSwitchCard::write(std::ostream& OX) const
     \param OX :: output stream
   */
 {
-  boost::format FMT("%04d ");
   std::ostringstream cx;
   if (lcaActive)
     {
@@ -269,7 +268,7 @@ LSwitchCard::write(std::ostream& OX) const
 	  if (i!=3)
 	    cx<<lcaVal[i]<<" ";
 	  else
-	    cx<<(FMT % lcaVal[i]);
+	    cx<<fmt::format("{:04d}",lcaVal[i]);
 	}
       StrFunc::writeMCNPX(cx.str(),OX);      
     }

@@ -3,7 +3,7 @@
  
  * File:   generalProcess/MainProcess.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@
 #include <string>
 #include <iterator>
 #include <memory>
-
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -629,14 +627,15 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
     \param OName :: output file name
    */
 {
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimMCNP");
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
 
-  
-  
+
   mcnpSystem::setDefaultPhysics(*SimMCPtr,IParam);
   SimMCPtr->prepareWrite();
+  
 
   // From tallybuilder
   tallySystem::tallySelection(*SimMCPtr,IParam);
@@ -651,6 +650,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   SDef::sourceSelection(*SimMCPtr,IParam);
   //  SimMCPtr->masterSourceRotation();
   // Ensure we done loop
+
   do
     {
       SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
@@ -722,7 +722,7 @@ buildFullSimulation(Simulation* SimPtr,
 
   // generalized setting:
   ModelSupport::setWImp(*SimPtr,IParam);
-  
+
   //  UGLY CASTS to be removed
   SimMCNP* SimMCPtr=dynamic_cast<SimMCNP*>(SimPtr);
   if (SimMCPtr)

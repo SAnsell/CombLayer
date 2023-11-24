@@ -34,7 +34,7 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -464,23 +464,22 @@ BasicMesh3D::writeVTK(std::ostream& OX) const
   ELog::RegMethod RegA("BasicMesh3D","writePHITS");
 
   
-  boost::format fFMT("%1$11.6g%|14t|");  
   OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
 
   OX<<"DIMENSIONS "<<NX<<" "<<NY<<" "<<NZ<<std::endl;
   OX<<"X_COORDINATES "<<NX<<" float"<<std::endl;
   for(size_t i=0;i<static_cast<size_t>(NX);i++)
-    OX<<(fFMT % getXCoordinate(i));
+    OX<<fmt::format("{:11.6g}  ",getXCoordinate(i));
   OX<<std::endl;
   
   OX<<"Y_COORDINATES "<<NY<<" float"<<std::endl;
   for(size_t i=0;i<static_cast<size_t>(NY);i++)
-    OX<<(fFMT % getYCoordinate(i));
+    OX<<fmt::format("{:11.6g}  ",getYCoordinate(i));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<NZ<<" float"<<std::endl;
   for(size_t i=0;i<static_cast<size_t>(NZ);i++)
-    OX<<(fFMT % getZCoordinate(i));
+    OX<<fmt::format("{:11.6g}  ",getZCoordinate(i));
   OX<<std::endl;
   
 

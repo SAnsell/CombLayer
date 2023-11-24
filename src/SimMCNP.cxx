@@ -3,7 +3,7 @@
  
  * File:   src/SimMCNP.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -462,7 +462,7 @@ SimMCNP::writeSurfaces(std::ostream& OX) const
 
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
-  
+
   for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
     sm.second->write(OX);
 
@@ -736,7 +736,9 @@ SimMCNP::write(const std::string& Fname) const
   StrFunc::writeMCNPXcomment("RunCmd:"+cmdLine,OX);
   writeVariables(OX);
   writeCells(OX);
+  ELog::EM<<"ADSFSADF"<<ELog::endDiag;
   writeSurfaces(OX);
+  ELog::EM<<"ADSFSADF"<<ELog::endDiag;
   writeMaterial(OX);
   writeTransform(OX);
   writeWeights(OX);
