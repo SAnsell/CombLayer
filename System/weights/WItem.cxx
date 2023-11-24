@@ -260,9 +260,9 @@ WItem::write(std::ostream& OX) const
   std::ostringstream cx;
   cx<<cellN<<"   ";
 
-  std::vector<double>::const_iterator vc;
-  for(vc=Val.begin();vc!=Val.end();vc++)
-    cx<<FMT % (*vc);
+  for(const double V : Val)
+    cx<<FMT % V;
+
 
   StrFunc::writeMCNPX(cx.str(),OX);
   return;

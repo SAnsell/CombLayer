@@ -3,7 +3,7 @@
  
  * File:   weight/MarkovProcess.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,9 +38,10 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "BasicMesh3D.h"
 #include "BaseMap.h"
-
 
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
@@ -111,13 +111,13 @@ MarkovProcess::initializeData(const WWG& wSet,
   const WWGWeight& wMesh=wSet.getMesh(meshIndex);
   const Geometry::BasicMesh3D& grid=wMesh.getGeomGrid();
   
-  WX=static_cast<long int>(grid.getXSize());
-  WY=static_cast<long int>(grid.getYSize());
-  WZ=static_cast<long int>(grid.getZSize());
+  WX=grid.getXSize();
+  WY=grid.getYSize();
+  WZ=grid.getZSize();
 
   FSize=WX*WY*WZ;
   
-  fluxField.resize(boost::extents[FSize][FSize]);
+  fluxField.resize(FSize,FSize);
   
   return;
 }
@@ -145,29 +145,33 @@ MarkovProcess::computeMatrix(const Simulation& System,
   const Geometry::BasicMesh3D& grid=wMesh.getGeomGrid();
   const std::vector<Geometry::Vec3D> midPts=grid.midPoints();
 
-  if (static_cast<long int>(midPts.size())!=FSize)
-    throw ColErr::MisMatch<long int>
-      (static_cast<long int>(midPts.size()),FSize,"MidPts.size != FSize");
+  if (midPts.size()!=FSize)
+    throw ColErr::MisMatch<size_t>
+      (midPts.size(),FSize,"MidPts.size != FSize");
 
-  for(long int i=0;i<FSize;i++)
-    fluxField[i][i]=1.0;
+  for(size_t i=0;i<FSize;i++)
+    fluxField.get()[i][i]=1.0;
 
-  for(long int i=0;i<FSize;i++)
+  for(size_t i=0;i<FSize;i++)
     {
-      const size_t uI(static_cast<size_t>(i));
-      ModelSupport::ObjectTrackPoint OTrack(midPts[uI]); 
-      for(long int j=i+1;j<FSize;j++)
+      ModelSupport::ObjectTrackPoint OTrack(midPts[i]); 
+      for(size_t j=i+1;j<FSize;j++)
 	{
-	  const size_t uJ(static_cast<size_t>(i));
-	  OTrack.addUnit(System,j,midPts[uJ]);
-	  double DistT=OTrack.getDistance(j)/r2Length;
+	  OTrack.addUnit(System,j,midPts[j]);
+	  double DistT=OTrack.getDistance(static_cast<long int>(j))/r2Length;
 	  if (DistT<1.0) DistT=1.0;
-	  const double AT=OTrack.getAttnSum(j);  // this can take an
+	  const double AT=OTrack.getAttnSum(static_cast<long int>(j));  // this can take an
 	  const double WFactor= -densityFactor*AT-r2Power*log(DistT);
 	  if (WFactor>-20)
-	    fluxField[i][j]=fluxField[j][i]= -WFactor;
+	    {
+	      fluxField.get()[i][j]= -WFactor;
+	      fluxField.get()[j][i]= -WFactor;
+	    }
 	  else
-	    fluxField[i][j]=fluxField[j][i]=0.0;
+	    {
+	      fluxField.get()[i][j]= 0.0;
+	      fluxField.get()[j][i]= 0.0;
+	    }
 	}
     }
   return;

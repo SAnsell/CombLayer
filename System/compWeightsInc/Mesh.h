@@ -3,7 +3,7 @@
  
  * File:   compWeightsInc/Mesh.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
  ****************************************************************************/
 #ifndef compSystem_Mesh_h
 #define compSystem_Mesh_h
-
 
 namespace compSystem
 {
@@ -54,7 +53,7 @@ class Mesh
   std::vector<double> Z;     ///< Z/theta coordinates
 
   /// Mesh values  [Note many for different energy arrangements ???]
-  boost::multi_array<double,3> MData;
+  multiData<double> MData;
 
   std::string getType() const;
   

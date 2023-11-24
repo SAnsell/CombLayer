@@ -288,7 +288,6 @@ XMLread::writeXML(std::ostream& OX) const
 
 ///\cond TEMPLATE
 
-// template int XMLread::convertToObject(boost::multi_araray<double,2>&) const;
 template int XMLread::convertToObject(Geometry::Vec3D&) const;
 template int XMLread::convertToArray(multiData<double>&) const;
 template int XMLread::convertToContainer(std::vector<int>&) const;
