@@ -133,6 +133,9 @@ class M1DetailGenerator
   double bRingInnerYStep;        ///< Step of inner ring relative to outer
   double bRingInnerThick;        ///< Radial thickness of inner (fat) ring
   double bRingInnerLength;       ///< Length along mirror of inner ring
+
+  // Electron shield
+  // ---------------
   
   double eXOut;                 ///< Step from the back plane (79.8)
   double eLength;               ///< Length of electorn shield (38.0)
@@ -159,8 +162,10 @@ class M1DetailGenerator
   double ePipeRadius;          ///< Radius of long pipe
   double ePipeThick;           ///< Thickenss of pipe
 
-  //
-  double fBladeInRad;            ///< Increase in radius
+  // -------------
+  // SUBSTRUCTURE for Box system
+  // -------------
+  double fBladeInRad;             ///< Increase in radius
   double fBladeOutRad;            ///< Increase in radius
   double fBladeThick;             ///< Thickness of one fBlade
   double fBladeTopAngle;          ///< Angle to stop the top part of circle
@@ -191,6 +196,7 @@ class M1DetailGenerator
   void makeBackPlate(FuncDataBase&,const std::string&) const;
   void makeConnectors(FuncDataBase&,const std::string&) const;
   void makeOuterSupport(FuncDataBase&,const std::string&) const;
+  void makePipe(FuncDataBase&,const std::string&) const;
   void makeRingSupport(FuncDataBase&,const std::string&) const;
   
  public:

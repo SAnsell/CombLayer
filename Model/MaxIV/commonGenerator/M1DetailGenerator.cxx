@@ -191,6 +191,14 @@ M1DetailGenerator::makeFrontPlate(FuncDataBase& Control,
 
   return;
 }
+
+void
+M1DetailGenerator::makePipe(FuncDataBase& Control,
+			    const std::string& keyName) const
+{
+}
+
+  
   
 void
 M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
