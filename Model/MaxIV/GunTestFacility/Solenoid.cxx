@@ -250,6 +250,8 @@ Solenoid::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Solenoid","createObjects");
 
+  const HeadRule ICellHR=getRule("Inner");
+
   HeadRule HR;
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
@@ -296,7 +298,8 @@ Solenoid::createObjects(Simulation& System)
   makeCell("FrameBack",System,cellIndex++,frameMat,0.0,HR*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
-  makeCell("AxialPenetration",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr);
+  makeCell("AxialPenetration",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr*ICellHR);
+
 
   return;
 }

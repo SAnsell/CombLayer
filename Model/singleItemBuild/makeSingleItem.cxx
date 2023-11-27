@@ -1703,10 +1703,22 @@ makeSingleItem::build(Simulation& System,
 
   if (item == "Solenoid")
     {
+      // Intentionally using the name of a previously defined vacuum
+      // pipe (see the VacuumPipe item above) in order to avoid
+      // defining its variables
+      const auto pipe = std::make_shared<constructSystem::VacuumPipe>("VC");
       const auto solenoid = std::make_shared<xraySystem::Solenoid>("Solenoid");
+
+      OR.addObject(pipe);
       OR.addObject(solenoid);
+
+      pipe->addAllInsertCell(voidCell);
+      pipe->createAll(System,World::masterOrigin(),0);
+
+      solenoid->setCutSurf("Inner",*pipe,"outerPipe");
       solenoid->addInsertCell(voidCell);
-      solenoid->createAll(System,World::masterOrigin(),0);
+      solenoid->createAll(System,*pipe,0);
+
       return;
     }
 
