@@ -48,6 +48,7 @@
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
 #include "BellowGenerator.h"
+#include "SolenoidGenerator.h"
 
 namespace setVariable
 {
@@ -233,7 +234,8 @@ namespace setVariable
     PipeGen.generatePipe(Control,"Extension",11.0);
     Control.addVariable("ExtensionFeThick", 0.2);
 
-
+    setVariable::SolenoidGenerator SolGen;
+    SolGen.generate(Control,"Solenoid");
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

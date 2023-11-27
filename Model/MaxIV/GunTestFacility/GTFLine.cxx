@@ -68,10 +68,7 @@
 #include "IonPumpGammaVacuum.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-
-
-
-
+#include "Solenoid.h"
 
 #include "GTFLine.h"
 
@@ -88,7 +85,8 @@ GTFLine::GTFLine(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(Key+"BuildZone"),
   ionPump(std::make_shared<IonPumpGammaVacuum>("IonPump")),
-  extension(std::make_shared<constructSystem::VacuumPipe>("Extension"))
+  extension(std::make_shared<constructSystem::VacuumPipe>("Extension")),
+  solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -99,6 +97,7 @@ GTFLine::GTFLine(const std::string& Key) :
 
   OR.addObject(ionPump);
   OR.addObject(extension);
+  OR.addObject(solenoid);
 }
 
 GTFLine::~GTFLine()
@@ -174,13 +173,15 @@ GTFLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*ionPump,"back",*extension);
 
+  constructSystem::constructUnit
+    (System,buildZone,*extension,"back",*solenoid);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=extension;
+  lastComp=solenoid;
 
   return;
 }
