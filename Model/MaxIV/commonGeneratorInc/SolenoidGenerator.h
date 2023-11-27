@@ -46,10 +46,14 @@ class SolenoidGenerator
   double coilRadius;            ///< Wire coil radius
   double coilGap;               ///< Radial gap between coil and frame
   double penRadius;             ///< Axial penetration radius
+  double shellRadius;           ///< Shell radius
+  double shellThick;            ///< Shell thickness
+  double shellLength;           ///< Shell length
 
   std::string frameMat;         ///< Frame material
   std::string coilMat;          ///< Coil material
   std::string voidMat;          ///< Void material
+  std::string shellMat;         ///< Shell material
   int nCoils;                   ///< Number of coils
   int nFrameFacets;             ///< Number of frame facets
 

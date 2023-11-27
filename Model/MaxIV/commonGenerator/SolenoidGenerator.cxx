@@ -54,8 +54,13 @@ SolenoidGenerator::SolenoidGenerator() :
   coilThick(3.0),coilRadius(17),
   coilGap(0.3),
   penRadius(3.8),
-  frameMat("Iron"),coilMat("Copper"), // TODO: maybe StbTCABL?
+  shellRadius(25.0), // dummy TODO
+  shellThick(1.0), // Dionis says - TODO check,
+  shellLength(25.0),
+  frameMat("Iron"),
+  coilMat("Copper"), // checked with Dionis (almost no insulation since low voltage ~6 V (but high current))
   voidMat("Void"),
+  shellMat("Stainless304"),
   nCoils(4),
   nFrameFacets(8)
   /*!
@@ -87,9 +92,13 @@ SolenoidGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CoilRadius",coilRadius);
   Control.addVariable(keyName+"CoilGap",coilGap);
   Control.addVariable(keyName+"PenetraionRadius",penRadius);
+  Control.addVariable(keyName+"ShellRadius",shellRadius);
+  Control.addVariable(keyName+"ShellThick",shellThick);
+  Control.addVariable(keyName+"ShellLength",shellLength);
   Control.addVariable(keyName+"FrameMat",frameMat);
   Control.addVariable(keyName+"CoilMat",coilMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"ShellMat",shellMat);
   Control.addVariable(keyName+"NCoils",nCoils);
   Control.addVariable(keyName+"NFrameFacets",nFrameFacets);
 

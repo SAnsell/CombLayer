@@ -51,12 +51,18 @@ class Solenoid :
   double coilRadius;            ///< Wire coil radius
   double coilGap;               ///< Radial gap between coil and frame
   double penRadius;             ///< Axial penetration radius
+  double shellRadius;           ///< Shell radius
+  double shellThick;            ///< Shell thickness
+  double shellLength;           ///< Shell length
 
   int frameMat;                 ///< Frame material
   int coilMat;                  ///< Coil material
   int voidMat;                  ///< Void material
+  int shellMat;                 ///< Shell material
   size_t nCoils;                ///< Number of coils
   size_t nFrameFacets;          ///< Number of frame facets
+
+  double getFrameRadius() const;
 
   void populate(const FuncDataBase&);
 

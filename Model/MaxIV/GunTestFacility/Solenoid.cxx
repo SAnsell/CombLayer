@@ -90,8 +90,12 @@ Solenoid::Solenoid(const Solenoid& A) :
   coilRadius(A.coilRadius),
   coilGap(A.coilGap),
   penRadius(A.penRadius),
+  shellRadius(A.shellRadius),
+  shellThick(A.shellThick),
+  shellLength(A.shellLength),
   frameMat(A.frameMat),coilMat(A.coilMat),
   voidMat(A.voidMat),
+  shellMat(A.shellMat),
   nCoils(A.nCoils),
   nFrameFacets(A.nFrameFacets)
   /*!
@@ -122,9 +126,13 @@ Solenoid::operator=(const Solenoid& A)
       coilRadius=A.coilRadius;
       coilGap=A.coilGap;
       penRadius=A.penRadius;
+      shellRadius=A.shellRadius;
+      shellThick=A.shellThick;
+      shellLength=A.shellLength;
       frameMat=A.frameMat;
       coilMat=A.coilMat;
       voidMat=A.voidMat;
+      shellMat=A.shellMat;
       nCoils=A.nCoils;
       nFrameFacets=A.nFrameFacets;
     }
@@ -147,6 +155,21 @@ Solenoid::~Solenoid()
   */
 {}
 
+double
+Solenoid::getFrameRadius() const
+/*!
+  Return the radius of the circumscribed circle around the frame
+ */
+{
+  ELog::RegMethod RegA("Solenoid","getFrameRadius");
+
+  const double n = static_cast<double>(nFrameFacets);
+  const double angle = M_PI/n; // half of angle between the facets
+  const double a = frameWidth*tan(angle); // facet length (2D)
+
+  return a/(2.0 * sin(M_PI/n));
+}
+
 void
 Solenoid::populate(const FuncDataBase& Control)
   /*!
@@ -165,12 +188,21 @@ Solenoid::populate(const FuncDataBase& Control)
   coilRadius=Control.EvalVar<double>(keyName+"CoilRadius");
   coilGap=Control.EvalVar<double>(keyName+"CoilGap");
   penRadius=Control.EvalVar<double>(keyName+"PenetraionRadius");
+  shellRadius=Control.EvalVar<double>(keyName+"ShellRadius");
+  shellThick=Control.EvalVar<double>(keyName+"ShellThick");
+  shellLength=Control.EvalVar<double>(keyName+"ShellLength");
 
   frameMat=ModelSupport::EvalMat<int>(Control,keyName+"FrameMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
+  shellMat=ModelSupport::EvalMat<int>(Control,keyName+"ShellMat");
   nCoils=Control.EvalVar<size_t>(keyName+"NCoils");
   nFrameFacets=Control.EvalVar<size_t>(keyName+"NFrameFacets");
+
+  const double R = getFrameRadius() + shellThick + Geometry::zeroTol;
+  if (shellRadius < R)
+    throw ColErr::RangeError<double_t>(shellRadius,R,std::numeric_limits<double>::infinity(),
+				       "shellRadius must exceed the one of the circumscribed frame circle + shellThick.");
 
   return;
 }
@@ -183,31 +215,39 @@ Solenoid::createSurfaces()
 {
   ELog::RegMethod RegA("Solenoid","createSurfaces");
 
+  double dy = (shellLength - length)/2.0;
+
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(frameThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(frameThick+dy),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
 	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      frameThick);
+				      frameThick+dy);
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(shellLength),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
 
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length-frameThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+dy-frameThick),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
 	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
 				      -frameThick);
     }
+
+  ModelSupport::buildPlane(SMap,buildIndex+301,Origin+Y*(shellThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(shellLength-shellThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+311,Origin+Y*(dy),Y);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+312,buildIndex+311,Y,length);
+
 
   int CN(buildIndex+1000);
   double angle(0.0);
@@ -222,9 +262,11 @@ Solenoid::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,penRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,coilRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,coilRadius+coilGap);
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,shellRadius-shellThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+47,Origin,Y,shellRadius);
 
   int SI(buildIndex+20);
-  double dy(frameThick+coilThick);
+  dy += frameThick+coilThick;
   const double spacerThick = (length-2*frameThick - coilThick*static_cast<double>(nCoils))/(static_cast<double>(nCoils-1));
   if (spacerThick<0.0)
     throw ColErr::ExitAbort("Total length is less than the sum of coils/spacers");
@@ -256,12 +298,33 @@ Solenoid::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  std::string unitStr=ModelSupport::getSeqIntersection(-51, -(50+static_cast<int>(nFrameFacets)),1);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,unitStr);
-  addOuterSurf(HR*frontStr*backStr);
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"-301 7 -37");
+  makeCell("ShellFront",System,cellIndex++,shellMat,0.0,HR*frontStr);
 
-  HR *= ModelSupport::getHeadRule(SMap,buildIndex,"27");
-  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR*frontStr*backStr);
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 7 -37");
+  makeCell("ShellGapFront",System,cellIndex++,voidMat,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"312 -302 7 -37");
+  makeCell("ShellGapBack",System,cellIndex++,voidMat,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"302 7 -37");
+  makeCell("ShellBack",System,cellIndex++,shellMat,0.0,HR*backStr);
+
+
+  const std::string strFrame=
+    ModelSupport::getSeqIntersection(-51, -(50+static_cast<int>(nFrameFacets)),1);
+  const HeadRule HRFrame=ModelSupport::getHeadRule(SMap,buildIndex+1000,strFrame);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 27");
+  HR *= HRFrame;
+  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 -37");
+  HR *= HRFrame.complement();
+  makeCell("ShellGapSide",System,cellIndex++,voidMat,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"37 -47");
+  makeCell("Shell",System,cellIndex++,shellMat,0.0,HR*frontStr*backStr);
 
   // first coil
   HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,"1 -21 7 -17");
@@ -290,16 +353,17 @@ Solenoid::createObjects(Simulation& System)
     SI+=10;
   }
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"311 -1 7 -27");
+  makeCell("FrameFront",System,cellIndex++,frameMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 7 -27");
-  makeCell("FrameFront",System,cellIndex++,frameMat,0.0,HR*frontStr);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 7 -27");
-  makeCell("FrameBack",System,cellIndex++,frameMat,0.0,HR*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -312 7 -27");
+  makeCell("FrameBack",System,cellIndex++,frameMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
   makeCell("AxialPenetration",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr*ICellHR);
 
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"-47");
+  addOuterSurf(HR*frontStr*backStr);
 
   return;
 }
