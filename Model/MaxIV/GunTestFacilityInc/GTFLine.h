@@ -19,8 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_GTFLine_h
-#define xraySystem_GTFLine_h
+#ifndef maxiv_GTFLine_h
+#define maxiv_GTFLine_h
+
+namespace xraySystem
+{
+  class Solenoid;
+}
 
 namespace constructSystem
 {
@@ -60,6 +65,7 @@ class GTFLine :
   /// a dummy bellow
   std::shared_ptr<IonPumpGammaVacuum> ionPump;
   std::shared_ptr<constructSystem::VacuumPipe> extension;
+  std::shared_ptr<xraySystem::Solenoid> solenoid;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
