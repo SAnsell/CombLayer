@@ -1,9 +1,10 @@
 set (softimaxSources
-    BiPortTube.cxx BremOpticsColl.cxx M1BackPlate.cxx 
-    M1Connectors.cxx M1Detail.cxx M1ElectronShield.cxx 
-    M1Frame.cxx M1FrontShield.cxx M1Mirror.cxx 
-    M1Ring.cxx M1Support.cxx SOFTIMAX.cxx 
-    softimaxFrontEnd.cxx softimaxOpticsLine.cxx softimaxVariables.cxx 
+    BiPortTube.cxx BremOpticsColl.cxx M1BackPlate.cxx
+    M1Connectors.cxx M1Detail.cxx M1ElectronShield.cxx
+    M1FrontShield.cxx M1Mirror.cxx M1Pipe.cxx
+    M1Ring.cxx M1Support.cxx
+    SOFTIMAX.cxx softimaxFrontEnd.cxx softimaxOpticsLine.cxx
+    softimaxVariables.cxx
 )
 
 add_library (softimax SHARED
@@ -15,11 +16,11 @@ target_include_directories (softimax PUBLIC
    ${MAXIV_INCLUDE}
 )
 
-file(RELATIVE_PATH tarDIR 
+file(RELATIVE_PATH tarDIR
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-file(RELATIVE_PATH tarINC 
+file(RELATIVE_PATH tarINC
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/../softimaxInc")
 
@@ -54,4 +55,3 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/SOFTIMAX.h
   ${tarINC}/softimaxOpticsLine.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
-

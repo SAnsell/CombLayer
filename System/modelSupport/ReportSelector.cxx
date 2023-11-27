@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ReportSelector.cxx
+ * File:   modelSupport/ReportSelector.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-
 #include <boost/format.hpp>
 
 #include "FileReport.h"
@@ -71,7 +70,6 @@ reportSelection(Simulation& System,
 
   const size_t nP=IParam.setCnt("report");
 
-  //  boost::format FMTvec("%1$=%12.6g%2$=12.6g%3$=12.6g");
   for(size_t index=0;index<nP;index++)
     {
       std::vector<std::string> StrItem;
@@ -100,7 +98,6 @@ reportSelection(Simulation& System,
         }
       else if (key=="object")
 	{
-          boost::format FMTdouble("%12.6f");
           const std::string FObject=IParam.outputItem<std::string>
             ("report",index,1,"objectName not given");
           const attachSystem::FixedComp* FCPtr=

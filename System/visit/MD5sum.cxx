@@ -31,7 +31,6 @@
 #include <set>
 #include <vector>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

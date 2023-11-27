@@ -31,7 +31,7 @@
 #include <set>
 #include <vector>
 #include <memory>
-#include <boost/multi_array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -59,8 +59,6 @@
 #include "multiData.h"
 #include "Visit.h"
 #include "FEM.h"
-
-
 
 bool
 getTallyMesh(const Simulation* SimPtr,

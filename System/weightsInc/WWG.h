@@ -97,7 +97,7 @@ class WWG
 
   void writeWWINP(const std::string&) const;
   void writeVTK(const std::string&,const bool,
-		const std::string&,const long int =0) const;
+		const std::string&,const size_t =0) const;
 
   void write(std::ostream&) const;
   void writePHITS(std::ostream&) const;

@@ -39,6 +39,7 @@
 #include "OutputLog.h"
 #include "surfRegister.h"
 #include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "varList.h"
@@ -48,6 +49,8 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "Surface.h"
+#include "SurInter.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -173,9 +176,6 @@ M1Mirror::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+107,pBaseA,Z,pipeBaseRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,pBaseB,Z,pipeBaseRadius);
-
-
-
   
   ModelSupport::buildCylinder
     (SMap,buildIndex+117,pBaseA,Z,pipeBaseRadius+pipeWallThick);
@@ -232,8 +232,13 @@ M1Mirror::createSurfaces()
     }
 
   // Point for pipework connection
-  FixedComp::setConnect(7,pBaseA,-Z);
-  FixedComp::setConnect(8,pBaseB,-Z);
+  const Geometry::Vec3D pipePtA=
+    SurInter::getLinePoint(pBaseA,-Z,buildIndex+5);
+  const Geometry::Vec3D pipePtB=
+    SurInter::getLinePoint(pBaseB,-Z,buildIndex+5);
+
+  FixedComp::setConnect(7,pipePtA,-Z);
+  FixedComp::setConnect(8,pipePtB,-Z);
   FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+5));
   FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+5));
 
@@ -322,7 +327,6 @@ M1Mirror::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -111 -227 217");
   makeCell("pipe",System,cellIndex++,outerMat,0.0,HR);
-
 
   // skip first gap
   if (nWaterChannel)

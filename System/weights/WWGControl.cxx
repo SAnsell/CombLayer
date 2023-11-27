@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/multi_array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,6 +42,8 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -639,7 +641,7 @@ WWGControl::wwgVTK(const mainSystem::inputParam& IParam)
       std::string meshUnit=
         IParam.getValueError<std::string>("wwgVTK",i,1,"MeshUnit not given");
       
-      long int eIndex(0);
+      size_t eIndex(0);
       StrFunc::convertNameWithIndex(meshUnit,eIndex); // no need to check
       const std::string logFlagName=
         IParam.getDefValue<std::string>("Normal","wwgVTK",i,2);
@@ -695,7 +697,7 @@ WWGControl::wwgCADIS(const Simulation& System,
 	IParam.getDefValue<double>(2.0,wKey,iSet,itemCnt++);
 
 
-      long int mIndex(0),sIndex(0),aIndex(0);
+      size_t mIndex(0),sIndex(0),aIndex(0);
       StrFunc::convertNameWithIndex(meshUnit,mIndex);
       StrFunc::convertNameWithIndex(SUnit,sIndex);
       StrFunc::convertNameWithIndex(TUnit,aIndex);

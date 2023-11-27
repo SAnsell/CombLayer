@@ -3,7 +3,7 @@
  
  * File:   transport/Detector.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include "FileReport.h"
 #include "OutputLog.h"

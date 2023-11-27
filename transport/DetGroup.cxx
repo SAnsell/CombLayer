@@ -3,7 +3,7 @@
  
  * File:   transport/DetGroup.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -105,8 +104,8 @@ DetGroup::clear()
     Clear all the array
   */
 {
-  for_each(DetVec.begin(),DetVec.end(),
-	   std::bind(&Detector::clear,std::placeholders::_1));
+  for(Detector* dPtr : DetVec)
+    dPtr->clear();
   return;
 }
 		       

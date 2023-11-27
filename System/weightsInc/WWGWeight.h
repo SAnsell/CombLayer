@@ -3,7 +3,7 @@
  
  * File:   weightInc/WWGWeight.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,10 +41,10 @@ class WWGWeight
 
   size_t ID;               ///< Index
 
-  long int WE;             ///< Energy size
-  long int WX;             ///< Weight XIndex size
-  long int WY;             ///< Weight YIndex size
-  long int WZ;             ///< Weight ZIndex size
+  size_t WE;             ///< Energy size
+  size_t WX;             ///< Weight XIndex size
+  size_t WY;             ///< Weight YIndex size
+  size_t WZ;             ///< Weight ZIndex size
 
   std::set<std::string> particles;    ///< Particles
   std::vector<double> EBin;           ///< Energy bins
@@ -52,7 +52,7 @@ class WWGWeight
 
   bool logFlag;                       ///< Write output as log
   /// local storage for data [Energy,i,j,k]  in logspace [-ve to zero]
-  boost::multi_array<double,4> WGrid; 
+  multiData<double> WGrid; 
 
   void resize();
   
@@ -72,10 +72,10 @@ class WWGWeight
   */  
 
   size_t getID() const { return ID; }
-  long int getESize() const { return WE; }
-  long int getXSize() const { return WX; }
-  long int getYSize() const { return WY; }
-  long int getZSize() const { return WZ; }
+  size_t getESize() const { return WE; }
+  size_t getXSize() const { return WX; }
+  size_t getYSize() const { return WY; }
+  size_t getZSize() const { return WZ; }
 
   /// set log state
   //  void assignLogState(const bool L) { logFlag=L; }
@@ -89,7 +89,7 @@ class WWGWeight
   /// access to geometry
   const Geometry::BasicMesh3D& getGeomGrid() const { return Grid; }
   /// accessor to Cells
-  const boost::multi_array<double,4>& getGrid() const
+  const multiData<double>& getGrid() const
     { return WGrid; }
 
   //@}
@@ -100,26 +100,26 @@ class WWGWeight
   void setEnergy(const std::vector<double>&);
   void setDefault(const std::vector<double>&);
   void setMesh(const Geometry::Vec3D&,const Geometry::Vec3D&,
-	       const long int,const long int,const long int);
+	       const size_t,const size_t,const size_t);
   void setMesh(const Geometry::Vec3D&,const Geometry::Vec3D&,
 	       const std::array<size_t,3>&);
   void setMesh(const Geometry::BasicMesh3D&);
   void setParticles(const std::set<std::string>& P) {particles=P;}
   
-  bool isSized(const long int,const long int,const long int,
-	       const long int) const;
+  bool isSized(const size_t,const size_t,const size_t,
+	       const size_t) const;
 
   
   void zeroWGrid();
   
-  double calcMaxAttn(const long int) const;
+  double calcMaxAttn(const size_t) const;
   double calcMaxAttn() const;
 
-  void setLogPoint(const long int,const long int,const double);
-  void addLogPoint(const long int,const long int,const double);
+  void setLogPoint(const size_t,const size_t,const double);
+  void addLogPoint(const size_t,const size_t,const double);
 
-  void scaleMeshItem(const long int,const long int,const long int,
-		     const long int, const double);
+  void scaleMeshItem(const size_t,const size_t,const size_t,
+		     const size_t, const double);
   void scaleGrid(const double);
   void scalePower(const double);
   void scaleRange(const size_t eIndex,const double,const double,
@@ -139,9 +139,9 @@ class WWGWeight
 	      const double,const double,const double);
 
   template<typename T,typename U>
-  void CADISnorm(const Simulation&,const long int,
-		 const WWGWeight&,const long int,
-		 const WWGWeight&,const long int,
+  void CADISnorm(const Simulation&,const size_t,
+		 const WWGWeight&,const size_t,
+		 const WWGWeight&,const size_t,
 		 const T&,const U&,
 		 const double,const double,const double);
   
@@ -151,7 +151,7 @@ class WWGWeight
   void writeWWINP(std::ostream&) const;
   void writePHITS(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;
-  void writeVTK(std::ostream&,const long int,const bool =0) const;
+  void writeVTK(std::ostream&,const size_t,const bool =0) const;
   void write(std::ostream&) const;
 };
 

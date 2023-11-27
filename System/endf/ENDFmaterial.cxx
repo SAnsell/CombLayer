@@ -3,7 +3,7 @@
  
  * File:   endf/ENDFmaterial.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -38,6 +37,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Triple.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "support.h"
 #include "RefCon.h"
 #include "Simpson.h"
@@ -162,7 +163,9 @@ ENDFmaterial::procB(std::istream& IX)
   ELog::EM<<"Diag c1 c2:: "<<c1<<" "<<c2<<ELog::endDiag;
   ELog::EM<<"Diag lln,b,ni,ns,(B) :: "<<LLN<<" "<<b<<" "<<NI<<" "<<NS
 	  <<ELog::endDiag;
-  copy(B.begin(),B.end(),std::ostream_iterator<double>(ELog::EM.Estream(),":"));
+  for(const double bUnit : B)
+    ELog::EM<<bUnit<<":";
+
   ELog::EM<<ELog::endDiag;
 
   return;
@@ -484,11 +487,9 @@ ENDFmaterial::write(std::ostream& OX) const
     {
       for(size_t b=0;b<Sn.nBeta;b++)
 	{
-	  const long int AL(static_cast<long int>(a));
-	  const long int BL(static_cast<long int>(b));
 	  OX<<Sn.Alpha[a]<<" "
 	    <<Sn.Beta[b]<<" "
-	    <<Sn.SAB[AL][BL]<<std::endl;
+	    <<Sn.SAB.get()[a][b]<<std::endl;
 	}
       OX<<std::endl;
     }

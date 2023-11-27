@@ -33,7 +33,6 @@
 #include <functional>
 #include <algorithm>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,6 +41,8 @@
 #include "OutputLog.h"
 #include "writeSupport.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "Mesh.h"
 
 namespace compSystem

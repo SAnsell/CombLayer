@@ -1,0 +1,26 @@
+
+\section{Adding new components to CombLayer}
+
+\subsection{New file in directory}
+
+If you are just adding a new class to an existing directory, then it
+is necessary to tell {\it cmake} that it has a new file. Edit the
+CMakeLists.txt file to add your file to the source list at the top of the file.
+
+\subsection{New directory with multiple classes}
+
+Start with the toplevel CMakeLists.txt file:
+
+Add any include directories to the corresponding \_INCLUDE variable (e.g.
+MAXIV\_INCLIUDE
+
+If the directory is a top level directory (e.g. global), then add a
+add_subdirectory(your_file), however, if it is in a subdirectory (e.g. Model)
+find the corresponding CMakeList.txt file which is the parent of your new directory and place the new add_subdirectory(your_file) in that CMakeLists.txt file.
+
+Add the library name to the appropiate set(XXX\_LIB list) e.g.
+set(MAXIV\_LIB ...)
+
+Finally you need to add a CMakeLists.txt file to the directory with
+your new source code.
+

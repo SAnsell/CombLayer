@@ -3,7 +3,7 @@
  
  * File:   weights/WWG.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/multi_array.hpp>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -41,6 +39,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "support.h"
 #include "writeSupport.h"
 #include "phitsWriteSupport.h"
@@ -284,11 +284,7 @@ WWG::scaleMeshItem(const std::string& meshIndex,
 
   WWGWeight& WMesh=getMesh(meshIndex);
 
-  WMesh.scaleMeshItem(static_cast<long int>(I),
-		      static_cast<long int>(J),
-		      static_cast<long int>(K),
-		      static_cast<long int>(EI),
-		      W);
+  WMesh.scaleMeshItem(I,J,K,EI,W);
   return;
 }
 
@@ -371,7 +367,7 @@ void
 WWG::writeVTK(const std::string& FName,
 	      const bool logFlag,
 	      const std::string& meshName,
-	      const long int EIndex) const
+	      const size_t EIndex) const
   /*!
     Write out a VTK file
     \param FName :: filename 
@@ -392,7 +388,6 @@ WWG::writeVTK(const std::string& FName,
   // const long int YSize=WMesh.getYSize();
   // const long int ZSize=WMesh.getZSize();
   
-  boost::format fFMT("%1$11.6g%|14t|");  
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"WWG-MESH Data"<<std::endl;
   OX<<"ASCII"<<std::endl;

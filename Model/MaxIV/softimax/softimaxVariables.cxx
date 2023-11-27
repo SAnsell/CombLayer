@@ -300,6 +300,8 @@ m1DetailVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("softimaxVariables[F]","m1DetailVariables");
 
+  const double mirrorFlag(1.0);  // this is zero for flat and 1.0 for normal
+    
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::M1DetailGenerator M1DGen;
   setVariable::PipeGenerator PipeGen;
@@ -309,6 +311,7 @@ m1DetailVariables(FuncDataBase& Control,
       
   const std::string boxName(mirrorKey+"M1Box");
   const double monoBoxLen(62.0);
+
   const double theta(1.0);
   const double xPortStep=
     0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angle
@@ -344,7 +347,7 @@ m1DetailVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,frontName+"Port0",
 			Geometry::Vec3D(portXStep, 0.0, 0.0),
 			Geometry::Vec3D(0.0, -1.0, 0.0));
-  Control.addVariable(frontName+"ZAngle",-theta*0.0);
+  Control.addVariable(frontName+"ZAngle",-theta*mirrorFlag);
   const std::string mName=mirrorKey+"M1Tube";
 
   SimpleTubeGen.setCF<CF150>();
@@ -356,7 +359,7 @@ m1DetailVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,backName+"Port0",
 			Geometry::Vec3D(-portXStep, 0.0, 0.0),
 			Geometry::Vec3D(0,-1,0));
-  Control.addVariable(backName+"ZAngle",-theta*0.0);
+  Control.addVariable(backName+"ZAngle",-theta*mirrorFlag);
 
   // --------------------------------
   // Mirror
