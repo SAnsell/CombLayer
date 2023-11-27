@@ -23,5 +23,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/surfDivide.cxx
   ${tarINC}/mergeTemplate.h
   ${tarINC}/surfDivide.h
+  ${tarINC}/surfExpand.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
 

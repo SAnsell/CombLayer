@@ -11,17 +11,17 @@ set (essBuildSources
     EdgeWater.cxx EmptyCyl.cxx EssInputs.cxx 
     EssModBase.cxx ESSPipes.cxx EssPipeVariables.cxx 
     essVariables.cxx F5Calc.cxx F5Collimator.cxx 
-    FocusPoints.cxx FullBunker.cxx GuideBay.cxx 
-    GuideItem.cxx H2FlowGuide.cxx H2Wing.cxx 
-    HighBay.cxx IradCylinder.cxx iradVariables.cxx 
-    makeESSBL.cxx makeESS.cxx makeSingleLine.cxx 
-    MidWaterDivider.cxx moderatorVariables.cxx OnionCooling.cxx 
-    PancakeModerator.cxx PBIP.cxx PBW.cxx 
-    pillarInfo.cxx pinInfo.cxx PreModWing.cxx 
-    ProtonTube.cxx RoofPillars.cxx SegWheel.cxx 
-    ShutterBay.cxx targetVariables.cxx TelescopicPipe.cxx 
-    TSMainBuilding.cxx TwisterModule.cxx WedgeFlightLine.cxx 
-    WedgeItem.cxx WheelBase.cxx Wheel.cxx 
+    FocusPoints.cxx GuideBay.cxx GuideItem.cxx 
+    H2FlowGuide.cxx H2Wing.cxx HighBay.cxx 
+    IradCylinder.cxx iradVariables.cxx makeESSBL.cxx 
+    makeESS.cxx makeSingleLine.cxx MidWaterDivider.cxx 
+    moderatorVariables.cxx OnionCooling.cxx PancakeModerator.cxx 
+    PBIP.cxx PBW.cxx pillarInfo.cxx 
+    pinInfo.cxx PreModWing.cxx ProtonTube.cxx 
+    RoofPillars.cxx SegWheel.cxx ShutterBay.cxx 
+    targetVariables.cxx TelescopicPipe.cxx TSMainBuilding.cxx 
+    TwisterModule.cxx WedgeFlightLine.cxx WedgeItem.cxx 
+    WheelBase.cxx Wheel.cxx 
 )
 
 add_library (essBuild SHARED
@@ -80,7 +80,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/F5Calc.cxx
   ${tarDIR}/F5Collimator.cxx
   ${tarDIR}/FocusPoints.cxx
-  ${tarDIR}/FullBunker.cxx
   ${tarDIR}/GuideBay.cxx
   ${tarDIR}/GuideItem.cxx
   ${tarDIR}/H2FlowGuide.cxx
@@ -146,7 +145,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/F5Calc.h
   ${tarINC}/F5Collimator.h
   ${tarINC}/FocusPoints.h
-  ${tarINC}/FullBunker.h
   ${tarINC}/GuideBay.h
   ${tarINC}/GuideItem.h
   ${tarINC}/H2FlowGuide.h

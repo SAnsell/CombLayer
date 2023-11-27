@@ -7,11 +7,11 @@ set (monteSources
     LayerDivide1D.cxx LayerDivide3D.cxx LineIntersectVisit.cxx 
     mapIterator.cxx Material.cxx MXcards.cxx 
     neutron.cxx Object.cxx objectSupport.cxx 
-    particle.cxx photon.cxx RuleBinary.cxx 
-    RuleCheck.cxx RuleItems.cxx Rules.cxx 
-    RuleSupport.cxx SurfPoint.cxx SurfVertex.cxx 
-    Token.cxx Track.cxx Union.cxx 
-    Zaid.cxx 
+    particle.cxx photon.cxx 
+    RuleBinary.cxx RuleCheck.cxx RuleItems.cxx 
+    Rules.cxx RuleSupport.cxx SurfPoint.cxx 
+    SurfVertex.cxx Token.cxx Track.cxx 
+    Union.cxx Zaid.cxx 
 )
 
 add_library (monte SHARED
@@ -57,6 +57,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/objectSupport.cxx
   ${tarDIR}/particle.cxx
   ${tarDIR}/photon.cxx
+  ${tarDIR}/RotCounter.cxx
   ${tarDIR}/RuleBinary.cxx
   ${tarDIR}/RuleCheck.cxx
   ${tarDIR}/RuleItems.cxx
@@ -92,6 +93,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/particle.h
   ${tarINC}/photon.h
   ${tarINC}/RefCon.h
+  ${tarINC}/RotCounter.h
   ${tarINC}/RuleBinary.h
   ${tarINC}/RuleCheck.h
   ${tarINC}/Rules.h

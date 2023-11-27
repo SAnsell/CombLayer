@@ -7,10 +7,10 @@ set (modelSupportSources
     ObjectTrackPlane.cxx ObjectTrackPoint.cxx ObjSurfMap.cxx 
     ObjTrackItem.cxx PipeLine.cxx pipeSupport.cxx 
     pipeUnit.cxx ReportSelector.cxx SimImportance.cxx 
-    SimInput.cxx SpecialSurf.cxx surfDBase.cxx 
-    surfDIter.cxx surfEqual.cxx surfExpand.cxx 
-    surfRegister.cxx vertexCalc.cxx Volumes.cxx 
-    volUnit.cxx Wrapper.cxx 
+    SimInput.cxx SpecialSurf.cxx 
+    surfDBase.cxx surfDIter.cxx surfEqual.cxx 
+    surfExpand.cxx surfRegister.cxx vertexCalc.cxx 
+    Volumes.cxx volUnit.cxx Wrapper.cxx 
 )
 
 add_library (modelSupport SHARED
@@ -56,6 +56,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/SimImportance.cxx
   ${tarDIR}/SimInput.cxx
   ${tarDIR}/SpecialSurf.cxx
+  ${tarDIR}/surfCompare.cxx
   ${tarDIR}/surfDBase.cxx
   ${tarDIR}/surfDIter.cxx
   ${tarDIR}/surfEqual.cxx
@@ -92,10 +93,10 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/ReportSelector.h
   ${tarINC}/SimInput.h
   ${tarINC}/SpecialSurf.h
+  ${tarINC}/surfCompare.h
   ${tarINC}/surfDBase.h
   ${tarINC}/surfDIter.h
   ${tarINC}/surfEqual.h
-  ${tarINC}/surfExpand.h
   ${tarINC}/surfRegister.h
   ${tarINC}/vertexCalc.h
   ${tarINC}/Volumes.h

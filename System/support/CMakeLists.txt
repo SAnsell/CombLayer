@@ -1,11 +1,11 @@
 set (supportSources
     Binary.cxx ClebschGordan.cxx cycIterator.cxx 
     doubleErr.cxx Exception.cxx fileSupport.cxx 
-    fortranWrite.cxx groupRange.cxx IndexCounter.cxx 
-    InputControl.cxx MapRange.cxx MapSupport.cxx 
-    mathSupport.cxx MatrixBase.cxx Matrix.cxx 
-    mcnpStringSupport.cxx polySupport.cxx regexBuild.cxx 
-    regexSupport.cxx splineSupport.cxx stringCombine.cxx 
+    fortranWrite.cxx groupRange.cxx IndexCounter.cxx
+    InputControl.cxx MapRange.cxx MapSupport.cxx
+    mathSupport.cxx MatrixBase.cxx Matrix.cxx
+    mcnpStringSupport.cxx polySupport.cxx regexBuild.cxx
+    regexSupport.cxx splineSupport.cxx stringCombine.cxx
     support.cxx SVD.cxx writeSupport.cxx 
 )
 
@@ -34,8 +34,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/fileSupport.cxx
   ${tarDIR}/fortranWrite.cxx
   ${tarDIR}/groupRange.cxx
-  ${tarDIR}/IndexCounter.cxx
   ${tarDIR}/InputControl.cxx
+  ${tarDIR}/IndexCounter.cxx
   ${tarDIR}/MapRange.cxx
   ${tarDIR}/MapSupport.cxx
   ${tarDIR}/mathSupport.cxx
@@ -49,6 +49,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/stringCombine.cxx
   ${tarDIR}/support.cxx
   ${tarDIR}/SVD.cxx
+  ${tarDIR}/Tensor.cxx
+  ${tarDIR}/vectorSupport.cxx
   ${tarDIR}/writeSupport.cxx
   ${tarINC}/Binary.h
   ${tarINC}/ClebschGordan.h
@@ -58,8 +60,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/fileSupport.h
   ${tarINC}/fortranWrite.h
   ${tarINC}/groupRange.h
-  ${tarINC}/IndexCounter.h
   ${tarINC}/InputControl.h
+  ${tarINC}/IndexCounter.h
   ${tarINC}/ManagedPtr.h
   ${tarINC}/MapRange.h
   ${tarINC}/MapSupport.h
@@ -79,6 +81,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/stringWrite.h
   ${tarINC}/support.h
   ${tarINC}/SVD.h
+  ${tarINC}/Tensor.h
   ${tarINC}/TypeString.h
   ${tarINC}/vectorSupport.h
   ${tarINC}/writeSupport.h

@@ -1,6 +1,7 @@
 set (constructVarSources
     BellowGenerator.cxx CornerPipeGenerator.cxx CrossGenerator.cxx 
-    DomeConnectorGenerator.cxx DoublePortItemGenerator.cxx FlangeDomeGenerator.cxx 
+    DomeConnectorGenerator.cxx DoublePortItemGenerator.cxx
+    FlangeDomeGenerator.cxx 
     FlangePlateGenerator.cxx GateValveGenerator.cxx JawFlangeGenerator.cxx 
     JawValveGenerator.cxx LeadPipeGenerator.cxx PipeGenerator.cxx 
     PipeTubeGenerator.cxx PortItemGenerator.cxx PortTubeGenerator.cxx 

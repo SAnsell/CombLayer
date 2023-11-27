@@ -58,7 +58,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/LowMat.h
   ${tarINC}/mainJobs.h
   ${tarINC}/masterRotate.h
-  ${tarINC}/multiContainer.h
   ${tarINC}/multiData.h
   ${tarINC}/NGroup.h
   ${tarINC}/NList.h
