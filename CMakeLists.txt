@@ -19,11 +19,6 @@ if(NOT fmt_INCLUDE_DIR)
     set(fmt_INCLUDE_DIR "/usr/include/fmt")
 endif()
 
-set(SYSTEM_INCLUDE
-  ${CMAKE_SOURCE_DIR}/System/geomInc
-  ${CMAKE_SOURCE_DIR}/globalInc
-  ${fmt_INCLUDE_DIR}
-)
 
 set(SYSTEM_INCLUDE 
   ${CMAKE_SOURCE_DIR}/include
@@ -199,6 +194,7 @@ target_link_libraries(ess
   ${ESS_LIB}
   GSL::gsl
   fmt::fmt
+##  /usr/local/fmt/libfmt.a
 )
 
 target_link_libraries(essLinacModel
@@ -221,6 +217,7 @@ target_link_libraries (maxiv
   ${MAXIV_LIB}
   GSL::gsl
   fmt::fmt
+##  /usr/local/fmt/libfmt.a
 )
 
 target_link_libraries(saxsSim
