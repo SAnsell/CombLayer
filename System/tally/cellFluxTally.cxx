@@ -31,7 +31,7 @@
 #include <set>
 #include <map>
 #include <iterator>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -287,8 +287,6 @@ cellFluxTally::writeHTape(const std::string& Name,
     \param tail :: Tail part of the output
   */
 {
-  boost::format FMT("%6d");
-  boost::format FMT4("%4d");
   std::ofstream T08;
   std::ofstream T14;
   std::ofstream T15;
@@ -307,15 +305,15 @@ cellFluxTally::writeHTape(const std::string& Name,
   T14<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
   T15<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
 
-  T08<<"108,,,,,"<<(FMT4 % cells.size())<<",,,,1/"<<std::endl;
-  T14<<"114,,,,,"<<(FMT4 % cells.size())<<",,,,1/"<<std::endl;
-  T15<<"115,,,,,"<<(FMT4 % cells.size())<<",,,,1/"<<std::endl;
+  T08<<"108,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
+  T14<<"114,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
+  T15<<"115,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
 
   for(const int CN : cells)
     {
-      T08<<(FMT % CN);
-      T14<<(FMT % CN);      
-      T15<<(FMT % CN);
+      T08<<fmt::format("{:6d}",CN);
+      T14<<fmt::format("{:6d}",CN);
+      T15<<fmt::format("{:6d}",CN);
     }
   T08<<"/"<<std::endl;
   T14<<"/"<<std::endl;

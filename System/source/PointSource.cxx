@@ -3,7 +3,7 @@
  
  * File:   source/PointSource.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,8 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/format.hpp>
+#include <fmt/core.h>
+
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -217,12 +218,14 @@ PointSource::writePHITS(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("PointSource","writePHITS");
-  boost::format fFMT("%1$11.6g%|14t|");
   
   OX<<"  s-type =  9        # spherical source \n";
-  OX<<"  x0  =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
-  OX<<"  y0  =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
-  OX<<"  z0  =   "<<(fFMT % Origin[2])<<"  #  mininium of z-axis [cm]\n";
+  OX<<"  x0  =   "<<fmt::format("{:<11.6g}",Origin[0])
+    <<"     #  center position of x-axis [cm]\n";
+  OX<<"  x0  =   "<<fmt::format("{:<11.6g}",Origin[1])
+    <<"     #  center position of y-axis [cm]\n";
+  OX<<"  x0  =   "<<fmt::format("{:<11.6g}",Origin[2])
+    <<"     #  mininium of z-axis [cm]\n";
   OX<<"  r0  =   0.0 \n";
   OX<<"  r1  =   0.0 \n";
   OX<<"  dir =   all   # Isotropic from centre \n";

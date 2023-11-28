@@ -145,10 +145,6 @@ tubeUnit::nLinks() const
   ELog::RegMethod RegA("tubeUnit","nLinks");
 
   return linkPts.size();
-  // typedef std::map<int,tubeUnit*>::value_type VT;
-  // return static_cast<size_t>(count_if(linkPts.begin(),linkPts.end(),
-  // 	    boost::bind(&tubeUnit::isEmpty,
-  // 	        boost::bind(&VT::second,_1))));
 }
 
 tubeUnit*
@@ -410,4 +406,4 @@ tubeUnit::write(std::ostream& OX) const
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE constructSystem

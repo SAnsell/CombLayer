@@ -36,10 +36,6 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 
-/// Use boost float comparison 	
-// boost::test_tools::close_at_tolerance<double> 
-//qTol(boost::test_tools::percent_tolerance(1e-6));
-
 
 std::ostream& 
 Geometry::operator<<(std::ostream& OX,const Geometry::Quaternion& A)

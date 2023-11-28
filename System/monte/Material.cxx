@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #include <iterator>
 #include <numeric>
 #include <memory>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -808,12 +808,12 @@ Material::writeZaid(std::ostream& OX,const double F,const size_t ZD)
   */
 {
   ELog::RegMethod RegA("Material","writeZaid");
-  boost::format ZFMT("%3d%03d0  %10.7e");
 
   const size_t Z=ZD/1000;
   const size_t A=ZD % 1000;
   if (A)
-    OX<<(ZFMT % A % Z % F)<<std::endl;
+    OX<<fmt::format("{:3d}{:03d}0  {:10.7e}",A,Z,F)
+      <<std::endl;
   return;
 }
 
@@ -879,7 +879,6 @@ Material::writeFLUKA(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Material","writeFLUKA");
-  boost::format FMTnum("%1$.4g");
 
   const std::string matName("M"+std::to_string(matID));
   
@@ -895,8 +894,8 @@ Material::writeFLUKA(std::ostream& OX) const
   for(const Zaid& ZItem: zaidVec)
     {
       if (ZItem.getZ())
-	cx<<(FMTnum % ZItem.getDensity())<<" "
-	  <<ZItem.getFlukaName()<<" ";
+	cx<<fmt::format("{:.4g}",ZItem.getDensity())
+	  <<" "<<ZItem.getFlukaName()<<" ";
     }
   StrFunc::writeFLUKAhead("COMPOUND",matName,cx.str(),OX);
   return;

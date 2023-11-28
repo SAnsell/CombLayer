@@ -20,7 +20,6 @@
  *
  ****************************************************************************/
 #include <algorithm>
-#include <boost/format.hpp>
 #include <cmath>
 #include <complex>
 #include <fstream> 
@@ -35,6 +34,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "Random.h"
@@ -203,8 +203,6 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
     \param weight :: External Scaling factor 
   */
 {
-  boost::format FMT("% 12.6e %|14t| % 12.6e %|28t| % 12.6e");
-  boost::format FMTB("% 12.6e %|14t| % 12.6e");
   const double thetaAngle=2*M_PI*Random::rand();
   const double z=2.0*(Random::rand()-0.5);
   const double sinZ=sqrt(1-z*z);
@@ -216,9 +214,15 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
   //  OX<<(FMT % Pt.X() % Pt.Y() % Pt.Z())<<std::endl;
   if (E>1e-3)  // above threshold
     {
-      OX<<"2 "<<(FMT % Pt.X() % Pt.Y() % Pt.Z());
-      OX<<"  "<<(FMT % uvw.X() % uvw.Y() % uvw.Z());
-      OX<<"  "<<(FMTB % E % (weight*getScaleFlux()*integralFlux))<<std::endl;
+      
+      OX<<"2 "<<fmt::format(" {:<12.6e}  {:<12.6e}  {:<12.6e}",
+			    Pt.X(),Pt.Y(),Pt.Z());
+      OX<<" "<<fmt::format(" {:<12.6e}  {:<12.6e}  {:<12.6e}",
+			   uvw.X(),uvw.Y(),uvw.Z());
+      
+      OX<<" "<<fmt::format(" {:<12.6e}  {:<12.6e}",
+			   E,(weight*getScaleFlux()*integralFlux))
+	<<std::endl;
     }
   return;
 }

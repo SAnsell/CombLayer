@@ -5,7 +5,8 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(GSL REQUIRED)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package (fmt REQUIRED)
+# find_package(Boost COMPONENTS system filesystem REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -202,7 +203,7 @@ target_link_libraries(ess
   ${SYSTEM_LIB}
   ${ESS_LIB}
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 target_link_libraries(essLinacModel
@@ -210,35 +211,35 @@ target_link_libraries(essLinacModel
   ${ESS_LIB}
   essLinac
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 target_link_libraries (fullBuild
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 target_link_libraries (maxiv
   ${SYSTEM_LIB}
   ${MAXIV_LIB}
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 target_link_libraries(reactor
   ${SYSTEM_LIB}
   delft
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 target_link_libraries(saxsSim
   ${SYSTEM_LIB}
   saxs
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 
@@ -251,14 +252,14 @@ target_link_libraries (singleItem
   estia freia heimdal loki magic miracles nmx nnbar 
   odin simpleItem skadi testBeam trex vespa vor  
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 target_link_libraries(t1Real
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 
@@ -266,14 +267,14 @@ target_link_libraries(xrayHut
   ${SYSTEM_LIB}
   xrayHutch
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 target_link_libraries(testMain
   ${SYSTEM_LIB}
   test
   GSL::gsl
-  Boost::filesystem
+  fmt::fmt
 )
 
 target_include_directories (maxiv

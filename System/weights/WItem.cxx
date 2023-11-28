@@ -31,7 +31,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -256,13 +256,11 @@ WItem::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  boost::format FMT("%1$5.2e ");
   std::ostringstream cx;
   cx<<cellN<<"   ";
-
+ 
   for(const double V : Val)
-    cx<<FMT % V;
-
+    cx<<fmt::format("{:5.2e} ",V);
 
   StrFunc::writeMCNPX(cx.str(),OX);
   return;

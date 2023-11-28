@@ -3,7 +3,7 @@
  
  * File:   source/DSTerm.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <boost/format.hpp>
 #include <cmath>
 #include <complex>
 #include <fstream>
@@ -32,6 +31,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <fmt/core.h>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -197,14 +197,13 @@ DSTerm<double>::write(const size_t Index,std::ostream& OX) const
     \param OX :: Output stream
   */   
 {
-  boost::format FMTStr("%1$11.5g ");
+
   std::ostringstream cx;
   cx<<"ds"<<Index<<" "<<DSBase::option<<" ";
   if (!Values.empty())
     {
-      std::vector<double>::const_iterator vc;
-      for(vc=Values.begin();vc!=Values.end();vc++)
-	cx<<FMTStr % *vc;
+      for(const double& V : Values)
+	cx<<fmt::format("{:11.5g} ",V);
     }
   StrFunc::writeMCNPX(cx.str(),OX);
   return;

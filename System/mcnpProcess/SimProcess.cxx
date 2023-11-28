@@ -3,7 +3,7 @@
  
  * File:   mcnpProcess/SimProcess.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,9 @@ writeIndexSim(SimMCNP& System,
   // increase the RND seed by N*10 [10,20,40,etc]
   PC.setRND(PC.getRNDseed()+Number*10);
   System.prepareWrite();
+
   System.makeObjectsDNForCNF();
+
   System.write(OName+std::to_string(Number+1)+".x");
   
   return;

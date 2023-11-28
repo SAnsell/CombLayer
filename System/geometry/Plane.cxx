@@ -30,7 +30,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/format.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"

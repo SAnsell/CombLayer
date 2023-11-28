@@ -3,7 +3,7 @@
  
  * File:   mcnpProcess/VolSum.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <boost/format.hpp>
 #include <cmath>
 #include <complex>
 #include <fstream>
@@ -34,6 +33,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <fmt/core.h>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -275,7 +275,6 @@ VolSum::reset()
     Reset everthing
    */
 {
-  // Change to a boost::bind
   std::map<int,volUnit>::iterator mc;
   for(mc=tallyVols.begin();mc!=tallyVols.end();mc++)
     mc->second.reset();
@@ -428,7 +427,6 @@ VolSum::write(const std::string& OFile) const
   */
 {
   ELog::RegMethod RegA("VolSum","write");
-  boost::format FMTI3("%3d  %11.5e %c  mat%3d %s");
   
   std::ofstream OX(OFile.c_str());
   
@@ -441,10 +439,12 @@ VolSum::write(const std::string& OFile) const
   const double nT((nTracks) ? static_cast<double>(nTracks) : 1.0);
   for(mc=tallyVols.begin();mc!=tallyVols.end();mc++)
     {
-      OX<<"tally"<<(FMTI3 % mc->first % 
-		    (fullVol*mc->second.calcVol(1.0/nT)) %
-		    sf % mc->second.getMat() % 
-		    mc->second.getComment())<<std::endl;
+      OX<<"tally"<<fmt::format("{:3d}  {:11.5e} {:c}  mat{:3d} {}",
+			       mc->first,
+			       (fullVol*mc->second.calcVol(1.0/nT)),
+			       sf,mc->second.getMat(),
+			       mc->second.getComment())
+	<<std::endl;
       sf++;
     }
   OX.close();
