@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <algorithm>
 #include <fmt/core.h>
 
 #include "Exception.h"

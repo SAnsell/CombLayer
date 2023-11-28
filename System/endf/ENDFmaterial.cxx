@@ -163,7 +163,9 @@ ENDFmaterial::procB(std::istream& IX)
   ELog::EM<<"Diag c1 c2:: "<<c1<<" "<<c2<<ELog::endDiag;
   ELog::EM<<"Diag lln,b,ni,ns,(B) :: "<<LLN<<" "<<b<<" "<<NI<<" "<<NS
 	  <<ELog::endDiag;
-  copy(B.begin(),B.end(),std::ostream_iterator<double>(ELog::EM.Estream(),":"));
+  for(const double bUnit : B)
+    ELog::EM<<bUnit<<":";
+
   ELog::EM<<ELog::endDiag;
 
   return;

@@ -70,22 +70,22 @@ flukaNum(const double D,const double zeroTol,
 
   const static std::vector<std::string> FNum
     ({
-      "%1$10.8f",
-      "%1$10.7f",
-      "%1$10.6f",
-      "%1$10.5f",
-      "%1$10.4f",
-      "%1$10.3f"
+      "{:10.8f}",
+      "{:10.7f}",
+      "{:10.6f}",
+      "{:10.5f}",
+      "{:10.4f}",
+      "{:10.3f}"
       });
 
   const static std::vector<std::string> FG
     ({
-      "%1$10.8g",
-      "%1$10.7g",
-      "%1$10.6g",
-      "%1$10.5g",
-      "%1$10.4g",
-      "%1$10.3g"
+      "{:10.8g}",
+      "{:10.7g}",
+      "{:10.6g}",
+      "{:10.5g}",
+      "{:10.4g}",
+      "{:10.3g}"
     });
 
   const double lowExpTol(1.0/exponentTol);

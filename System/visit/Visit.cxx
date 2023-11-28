@@ -412,19 +412,19 @@ Visit::writeVTK(const std::string& FName) const
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[0];i++)
-    OX<<fmt::format("{:11.6g}   ",
+    OX<<fmt::format("{:<11.6g}   ",
 		    (Origin[0]+stepXYZ[0]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[1];i++)
-    OX<<fmt::format("{:11.6g}   ",
+    OX<<fmt::format("{:<11.6g}   ",
 		    (Origin[1]+stepXYZ[1]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[2];i++)
-    OX<<fmt::format("{:11.6g}   ",
+    OX<<fmt::format("{:<11.6g}   ",
 		    (Origin[2]+stepXYZ[2]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
@@ -436,7 +436,7 @@ Visit::writeVTK(const std::string& FName) const
     for(size_t j=0;j<nPts[1];j++)
       {
 	for(size_t i=0;i<nPts[0];i++)
-	  OX<<fmt::format("{:11.6g}   ",
+	  OX<<fmt::format("{:<11.6g}   ",
 			  static_cast<double>(mesh.get()[i][j][k]));
 	OX<<std::endl;
       }
@@ -466,19 +466,19 @@ Visit::writeIntegerVTK(const std::string& FName) const
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[0];i++)
-    OX<<fmt::format("{:11.6g}   ",
+    OX<<fmt::format("{:<11.6g}   ",
 		    (Origin[0]+stepXYZ[0]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[1];i++)
-    OX<<fmt::format("{:11.6g}   ",
+    OX<<fmt::format("{:<11.6g}   ",
 		    (Origin[1]+stepXYZ[1]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[2];i++)
-    OX<<fmt::format("{:11.6g}   ",
+    OX<<fmt::format("{:<11.6g}   ",
 		    (Origin[2]+stepXYZ[2]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
@@ -491,7 +491,7 @@ Visit::writeIntegerVTK(const std::string& FName) const
     for(size_t j=0;j<nPts[1];j++)
       {
 	for(size_t i=0;i<nPts[0];i++)
-	  OX<<fmt::format("{:12d}  ",
+	  OX<<fmt::format("{:<12d}  ",
 			  static_cast<int>(std::round(mesh.get()[i][j][k])));
 	OX<<std::endl;
       }

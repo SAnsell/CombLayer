@@ -305,9 +305,9 @@ cellFluxTally::writeHTape(const std::string& Name,
   T14<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
   T15<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
 
-  T08<<"108,,,,,"<<fmt::format("{:6d}",cells.size())<<",,,,1/"<<std::endl;
-  T14<<"108,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
-  T15<<"108,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
+  T08<<"108,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
+  T14<<"114,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
+  T15<<"115,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
 
   for(const int CN : cells)
     {

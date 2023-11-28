@@ -375,14 +375,8 @@ PhysicsCards::processCard(const std::string& Line)
       std::string Item;
       if (StrFunc::section(Comd,Item))
         {
-	  std::vector<std::string> part;
-	  ELog::EM<<"WARNING POOR CODE"<<ELog::endDiag;
-	  //	  boost::split(part,Item,boost::is_any_of(","));
-	  for(std::string& PStr : part)
-	    {
-	      ELog::EM<<"WARNING POOR CODE"<<ELog::endDiag;
-	      //	      boost::trim(PStr,std::locale());
-	    }
+	  std::vector<std::string> part=
+	    StrFunc::splitParts(Item,',');
 	  // ensure no empty particles
 	  part.erase(
 		     remove_if(part.begin(),part.end(),

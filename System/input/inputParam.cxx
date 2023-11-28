@@ -784,13 +784,13 @@ inputParam::compNoCaseValue(const std::string& K,
     throw ColErr::EmptyValue<void>("Key failed: "+K);
 
   const size_t N=IPtr->getNItems();
-  std::string NCValue(Value);
-  
+  const std::string NCValue=toLowerString(Value);
+
   //  boost::algorithm::to_lower(NCValue);
   for(size_t i=0;i<N;i++)
     {
-      std::string OStr=IPtr->getObj<std::string>(i); 
-      //      boost::algorithm::to_lower(OStr);      
+      const std::string OStr=
+	std::toLowerString(IPtr->getObj<std::string>(i)); 
       if (NCValue==OStr)
 	return 1;
     }
