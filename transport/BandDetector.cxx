@@ -389,7 +389,6 @@ BandDetector::write(std::ostream& OX) const
   ELog::EM<<"EDATA == "<<EData.shape()[0]<<" "
 	  <<EData.shape()[1]<<" "
 	  <<EData.shape()[2]<<ELog::endCrit;
-  //  boost::format FMR("%1$12.8e%|20t|");
 
   OX<<"#hvn "<<nH<<" "<<nV<<" from "<<nps<<std::endl;
   OX<<"#cvh "<<Cent<<" : "<<H*hSize<<" : "<<V*vSize<<std::endl;

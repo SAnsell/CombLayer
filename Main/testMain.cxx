@@ -33,8 +33,6 @@
 #include <algorithm>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -393,9 +391,7 @@ globalTest(const int type,const int extra)
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
-      boost::format FMT("%1$s%|20t|(%2$d)");
-      for(size_t i=0;i<TSize;i++)
-	std::cout<<FMT % TestName[i] % (i+1)<<std::endl;
+      TestFunc::writeTests(TestName);
       return 0;
     }
 
@@ -563,9 +559,7 @@ geometryTest(const int type,const int extra)
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
-      boost::format FMT("%1$s%|20t|(%2$d)");
-      for(size_t i=0;i<TestName.size();i++)
-	std::cout<<FMT % TestName[i] % (i+1)<<std::endl;
+      TestFunc::writeTests(TestName);
       return 0;
     }
 

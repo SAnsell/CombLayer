@@ -347,8 +347,7 @@ SimMCNP::renumberCells(const std::vector<int>& cOffset,
 void
 SimMCNP::writeTally(std::ostream& OX) const
   /*!
-    Writes out the tallies using a nice boost binding
-    construction.
+    Writes out the tallies 
     \param OX :: Output stream
    */
 {

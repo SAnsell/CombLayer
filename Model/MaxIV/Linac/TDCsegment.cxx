@@ -3,7 +3,7 @@
 
  * File: Linac/TDCsegment.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -398,11 +398,7 @@ TDCsegment::writeBasicItems
    \param :: Items :: Ordered list of items in the model
  */
 {
-  
   // NO ELog so the calling function segment name is used:
-
-  boost::format iFMT("%1$-20s%|30t| == %2$=12.6g %|60t| Len == %3$12.6g \n");
-
   if (!Items.empty())
     {
       ELog::EM<<"\n";
@@ -411,13 +407,16 @@ TDCsegment::writeBasicItems
 	{
 	  const Geometry::Vec3D endPt(FCptr->getLinkPt(2)*10.0);
 	  const Geometry::Vec3D DV=endPt-Org;
-	  ELog::EM<<(iFMT % FCptr->getKeyName() % DV % DV.abs());
+	  ELog::EM<<
+	    fmt::format("{:<20s}          == {:<12.6g} {:<12.6g} {:<12.6g}",
+			FCptr->getKeyName(),DV.X(),DV.Y(),DV.Z())
+		  <<std::string(21,' ')
+		  <<fmt::format("Len == {:12.6g}\n",DV.abs());
 	}
       ELog::EM<<ELog::endDiag;
     }	  
   return;
    
 }
-
 
 }   // NAMESPACE tdcSystem

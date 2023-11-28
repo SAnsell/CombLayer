@@ -3,7 +3,7 @@
  
  * File:   test/testSVD.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <functional>
 #include <numeric>
 #include <random>
-#include <boost/format.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -81,7 +80,7 @@ testSVD::applyTest(const int extra)
       &testSVD::testMakeSolLong
     };
 
-  const std::string TestName[] = 
+  const std::vector<std::string> TestName = 
     {
       "init",
       "makeSolution",
@@ -90,11 +89,9 @@ testSVD::applyTest(const int extra)
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
 
   int retValue(0);
-  boost::format FmtStr("test%1$s%|30t|(%2$d)\n");
   if (!extra)
     {
-      for(int i=0;i<TSize;i++)
-	std::cout<<FmtStr % TestName[i] % (i+1);
+      TestFunc::writeTests(TestName);
       return 0;
     }
 

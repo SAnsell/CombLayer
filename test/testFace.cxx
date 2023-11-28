@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testFace.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include <algorithm>
 #include <iterator>
 #include <tuple>
-#include <boost/format.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -148,26 +147,22 @@ testFace::applyTest(const int extra)
       &testFace::testPlanar
     };
 
-  std::string TestName[] = 
+  const std::vector<std::string> TestName = 
     {
       "InTriangle",
       "NonPlanar",
-      "Planar",
+      "Planar"
     };
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
 
-  int retValue(0);
-  boost::format FmtStr("test%1$s%|30t|(%2$d)\n");
   if (!extra)
     {
-      for(int i=0;i<TSize;i++)
-	std::cout<<FmtStr % TestName[i] % (i+1);
+      TestFunc::writeTests(TestName);
       return 0;
     }
-
-  for(int i=0;i<TSize;i++)
+  for(size_t i=0;i<TSize;i++)
     {
-      if (extra<0 || extra==i+1)
+      if (extra<0 || static_cast<size_t>(extra)==i+1)
         {
 	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();
@@ -176,7 +171,7 @@ testFace::applyTest(const int extra)
 	}
     }
  
-  return retValue;
+  return 0;
 }
 
 int
