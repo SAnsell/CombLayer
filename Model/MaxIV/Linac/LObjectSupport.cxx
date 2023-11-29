@@ -60,6 +60,8 @@
 #include "LSexupole.h"
 #include "DipoleDIBMag.h"
 #include "LocalShielding.h"
+#include "FrontBackCut.h"
+#include "Solenoid.h"
 #include "LObjectSupport.h"
 
 namespace tdcSystem
@@ -346,6 +348,14 @@ int pipeMagUnit(Simulation&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::LocalShielding>&);
 template
+int pipeMagUnit(Simulation&,
+		attachSystem::BlockZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
+		const std::shared_ptr<xraySystem::Solenoid>&);
+
+  template
 int pipeMagGroup(Simulation&,
 		 attachSystem::BlockZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,

@@ -70,6 +70,7 @@
 #include "VacuumPipe.h"
 #include "Solenoid.h"
 
+#include "LObjectSupport.h"
 #include "GTFLine.h"
 
 namespace MAXIV
@@ -178,19 +179,22 @@ GTFLine::buildObjects(Simulation& System)
   pipeA->setFront(*extension,"back");
   pipeA->createAll(System, *extension, "back");
 
-  solenoid->setCutSurf("Inner",*pipeA,"outerPipe");
-  solenoid->createAll(System,*pipeA,"#front");
+  // solenoid->setCutSurf("Inner",*pipeA,"outerPipe");
+  // solenoid->createAll(System,*pipeA,"#front");
+  // // outerCell is the buildZone cell between pipeA start and solenoid start
+  // outerCell=buildZone.createUnit(System, *solenoid, "#front");
+  // pipeA->insertAllInCell(System,outerCell);
 
-  // outerCell is the buildZone cell between pipeA start and solenoid start
-  outerCell=buildZone.createUnit(System, *solenoid, "#front");
-  pipeA->insertAllInCell(System,outerCell);
+  // // outerCell is the buildZone cell with colenoid
+  // outerCell=buildZone.createUnit(System, *solenoid, "back");
+  // solenoid->insertInCell(System,outerCell);
 
-  // outerCell is the buildZone cell with colenoid
-  outerCell=buildZone.createUnit(System, *solenoid, "back");
-  solenoid->insertInCell(System,outerCell);
+  tdcSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
 
-  outerCell=buildZone.createUnit(System, *pipeA, 2);
-  pipeA->insertAllInCell(System,outerCell);
+  // outerCell=buildZone.createUnit(System, *pipeA, 2);
+  // pipeA->insertAllInCell(System,outerCell);
+  tdcSystem::pipeTerminate(System,buildZone,pipeA);
+
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
