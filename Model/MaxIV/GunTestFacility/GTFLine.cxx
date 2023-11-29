@@ -86,6 +86,7 @@ GTFLine::GTFLine(const std::string& Key) :
   buildZone(Key+"BuildZone"),
   ionPump(std::make_shared<IonPumpGammaVacuum>("IonPump")),
   extension(std::make_shared<constructSystem::VacuumPipe>("Extension")),
+  pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid"))
   /*!
     Constructor
@@ -97,6 +98,7 @@ GTFLine::GTFLine(const std::string& Key) :
 
   OR.addObject(ionPump);
   OR.addObject(extension);
+  OR.addObject(pipeA);
   OR.addObject(solenoid);
 }
 
@@ -173,15 +175,29 @@ GTFLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*ionPump,"back",*extension);
 
-  constructSystem::constructUnit
-    (System,buildZone,*extension,"back",*solenoid);
+  pipeA->setFront(*extension,"back");
+  pipeA->createAll(System, *extension, "back");
+
+  solenoid->setCutSurf("Inner",*pipeA,"outerPipe");
+  solenoid->createAll(System,*pipeA,"#front");
+
+  // outerCell is the buildZone cell between pipeA start and solenoid start
+  outerCell=buildZone.createUnit(System, *solenoid, "#front");
+  pipeA->insertAllInCell(System,outerCell);
+
+  // outerCell is the buildZone cell with colenoid
+  outerCell=buildZone.createUnit(System, *solenoid, "back");
+  solenoid->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System, *pipeA, 2);
+  pipeA->insertAllInCell(System,outerCell);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=solenoid;
+  lastComp=pipeA;
 
   return;
 }

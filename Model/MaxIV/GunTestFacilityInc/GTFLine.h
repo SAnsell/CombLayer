@@ -65,6 +65,7 @@ class GTFLine :
   /// a dummy bellow
   std::shared_ptr<IonPumpGammaVacuum> ionPump;
   std::shared_ptr<constructSystem::VacuumPipe> extension;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<xraySystem::Solenoid> solenoid;
 
   double outerLeft;    ///< Left Width for cut rectangle

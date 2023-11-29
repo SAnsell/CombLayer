@@ -232,10 +232,15 @@ namespace setVariable
     PipeGen.setNoWindow();   // no window
     PipeGen.setCF<setVariable::CF100>();
     PipeGen.generatePipe(Control,"Extension",11.0);
-    Control.addVariable("ExtensionFeThick", 0.2);
+    Control.addVariable("ExtensionPipeThick", 0.2);
+
+    PipeGen.setCF<setVariable::CF63>(); // dummy - it's a conic pipe
+    PipeGen.generatePipe(Control,"PipeA",40.0);
+    Control.addVariable("PipeAPipeThick", 0.2);
 
     setVariable::SolenoidGenerator SolGen;
     SolGen.generate(Control,"Solenoid");
+    Control.addVariable("SolenoidYStep", 5.0); // dummy
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
