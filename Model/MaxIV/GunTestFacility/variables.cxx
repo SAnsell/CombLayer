@@ -172,75 +172,80 @@ namespace setVariable
 		     length2+backWallThick+mazeWidth-370.0-120.0); //[0], page 2
 
 
-    Control.addVariable("BldBConcreteDoorDoorMat","Concrete");
-    Control.addVariable("BldBConcreteDoorCornerCut",3.0); // measured
-    Control.addVariable("BldBConcreteDoorJambCornerCut",3.5); // measured
-    Control.addVariable("BldBConcreteDoorOuterWidth",153.1); // measured
-    Control.addVariable("BldBConcreteDoorInnerWidth",136.83); // set to have coorect distance of 6.3 cm to the outside right
-    Control.addVariable("BldBConcreteDoorInnerThick",20.0);
-    Control.addVariable("BldBConcreteDoorInnerXStep",10.0); // measured
-    Control.addVariable("BldBConcreteDoorInnerHeight",194.9); // measured
-    Control.addVariable("BldBConcreteDoorOuterHeight",205.0); // measured
-    Control.addVariable("BldBConcreteDoorInnerSideAngle",72.677); // adjusted to get 130.5 cm between corners a and b
-    Control.addVariable("BldBConcreteDoorOuterSideAngle",78.67);
-    Control.addVariable("BldBConcreteDoorUnderStepHeight",7.0); // measured
-    Control.addVariable("BldBConcreteDoorUnderStepWidth",110.5); // somewhat average of measured: 110.2 and 110.6
-    Control.addVariable("BldBConcreteDoorUnderStepXStep",1.4); //
+    Control.addVariable(name+"ConcreteDoorDoorMat","Concrete");
+    Control.addVariable(name+"ConcreteDoorCornerCut",3.0); // measured
+    Control.addVariable(name+"ConcreteDoorJambCornerCut",3.5); // measured
+    Control.addVariable(name+"ConcreteDoorOuterWidth",153.1); // measured
+    Control.addVariable(name+"ConcreteDoorInnerWidth",136.83); // set to have coorect distance of 6.3 cm to the outside right
+    Control.addVariable(name+"ConcreteDoorInnerThick",20.0);
+    Control.addVariable(name+"ConcreteDoorInnerXStep",10.0); // measured
+    Control.addVariable(name+"ConcreteDoorInnerHeight",194.9); // measured
+    Control.addVariable(name+"ConcreteDoorOuterHeight",205.0); // measured
+    Control.addVariable(name+"ConcreteDoorInnerSideAngle",72.677); // adjusted to get 130.5 cm between corners a and b
+    Control.addVariable(name+"ConcreteDoorOuterSideAngle",78.67);
+    Control.addVariable(name+"ConcreteDoorUnderStepHeight",7.0); // measured
+    Control.addVariable(name+"ConcreteDoorUnderStepWidth",110.5); // somewhat average of measured: 110.2 and 110.6
+    Control.addVariable(name+"ConcreteDoorUnderStepXStep",1.4); //
 
-    Control.addVariable("BldBConcreteDoorInnerSideGapLeft",3.0); // adjusted to have 8.5 cm gap to the jamb
-    Control.addVariable("BldBConcreteDoorInnerSideGapRight",1.17); // adjusted to have total inner jamb width of 141 cm
-    Control.addVariable("BldBConcreteDoorOuterSideGapLeft",7.7); // adjusted to have 4 cm gap to the jamb
-    Control.addVariable("BldBConcreteDoorOuterSideGapRight",2.0); // should be -0.8 to match total width of 1.6 m TODO: check
+    Control.addVariable(name+"ConcreteDoorInnerSideGapLeft",3.0); // adjusted to have 8.5 cm gap to the jamb
+    Control.addVariable(name+"ConcreteDoorInnerSideGapRight",1.17); // adjusted to have total inner jamb width of 141 cm
+    Control.addVariable(name+"ConcreteDoorOuterSideGapLeft",7.7); // adjusted to have 4 cm gap to the jamb
+    Control.addVariable(name+"ConcreteDoorOuterSideGapRight",2.0); // should be -0.8 to match total width of 1.6 m TODO: check
 
-    Control.addVariable("BldBConcreteDoorInnerThickGap",0.5); // TODO check
+    Control.addVariable(name+"ConcreteDoorInnerThickGap",0.5); // TODO check
 
-    Control.addVariable("BldBConcreteDoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
-    Control.addVariable("BldBConcreteDoorOuterTopGap",4.5);
+    Control.addVariable(name+"ConcreteDoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
+    Control.addVariable(name+"ConcreteDoorOuterTopGap",4.5);
   }
 
-  void BeamLineVariables(FuncDataBase& Control, const std::string& name)
+  void BeamLineVariables(FuncDataBase& Control)
   /*!
     Set Gun Test Facility Building variables
     \param Control :: Database to use
     \param name :: name prefix
   */
   {
-    Control.addVariable(name+"OuterLeft", 100.0);
+    Control.addVariable("GTFLineOuterLeft", 100.0);
 
+    std::string name = "IonPump";
 
     // Ion Pump produced by Gamma Vacuum
-    Control.addVariable("IonPumpLength",17.2);
-    Control.addVariable("IonPumpHeight",13.0);
-    Control.addVariable("IonPumpWallThick",1.3);
-    Control.addVariable("IonPumpMainMat","Void");
-    Control.addVariable("IonPumpWallMat","Stainless304L"); // dummy TODO
-    Control.addVariable("IonPumpPistonMat","Stainless304"); // dummy TODO
+    Control.addVariable(name+"Length",17.2);
+    Control.addVariable(name+"Height",13.0);
+    Control.addVariable(name+"WallThick",1.3);
+    Control.addVariable(name+"MainMat","Void");
+    Control.addVariable(name+"WallMat","Stainless304L"); // dummy TODO
+    Control.addVariable(name+"PistonMat","Stainless304"); // dummy TODO
 
-    Control.addVariable("IonPumpPistonWidth",26.3);
-    Control.addVariable("IonPumpPistonHeight",5.0);
-    Control.addVariable("IonPumpPistonBaseHeight",12.0);
-    Control.addVariable("IonPumpPistonBaseThick",4.5);
-    Control.addVariable("IonPumpPistonLength",15.0);
-    Control.addVariable("IonPumpFlangeRadius", 7.5);
-    Control.addVariable("IonPumpFlangeThick", 2.1);
-    Control.addVariable("IonPumpFlangeTubeRadius", 5.1); // CF100? TODO: check radius
-    Control.addVariable("IonPumpFlangeTubeThick", 0.2);
-    Control.addVariable("IonPumpFlangeTubeLength", 6.9);
+    Control.addVariable(name+"PistonWidth",26.3);
+    Control.addVariable(name+"PistonHeight",5.0);
+    Control.addVariable(name+"PistonBaseHeight",12.0);
+    Control.addVariable(name+"PistonBaseThick",4.5);
+    Control.addVariable(name+"PistonLength",15.0);
+    Control.addVariable(name+"FlangeRadius", 7.5);
+    Control.addVariable(name+"FlangeThick", 2.1);
+    Control.addVariable(name+"FlangeTubeRadius", 5.1); // CF100? TODO: check radius
+    Control.addVariable(name+"FlangeTubeThick", 0.2);
+    Control.addVariable(name+"FlangeTubeLength", 6.9);
 
+    name = "Extension";
     setVariable::PipeGenerator PipeGen;
 
     PipeGen.setNoWindow();   // no window
     PipeGen.setCF<setVariable::CF100>();
-    PipeGen.generatePipe(Control,"Extension",11.0);
-    Control.addVariable("ExtensionPipeThick", 0.2);
+    PipeGen.generatePipe(Control,name,11.0);
+    Control.addVariable(name+"PipeThick", 0.2);
 
-    PipeGen.setCF<setVariable::CF63>(); // dummy - it's a conic pipe
-    PipeGen.generatePipe(Control,"PipeA",40.0);
-    Control.addVariable("PipeAPipeThick", 0.2);
+    name = "PipeA";
+    PipeGen.setCF<setVariable::CF63>(); // dummy TODO - it's a conic pipe
+    PipeGen.generatePipe(Control,name,40.0);
+    Control.addVariable(name+"PipeThick", 0.2);
 
+    name = "Solenoid";
     setVariable::SolenoidGenerator SolGen;
-    SolGen.generate(Control,"Solenoid");
-    Control.addVariable("SolenoidYStep", 5.0); // dummy
+    SolGen.generate(Control,name);
+    Control.addVariable(name+"YStep", 5.0); // dummy TODO
+
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
@@ -252,7 +257,7 @@ namespace setVariable
     ELog::RegMethod RegA("", "GunTestFacilityVariables");
 
     BuildingBVariables(Control, "BldB");
-    BeamLineVariables(Control, "GTFLine");
+    BeamLineVariables(Control);
 
   }
 }
