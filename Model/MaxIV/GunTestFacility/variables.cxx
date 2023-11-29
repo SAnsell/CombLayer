@@ -49,6 +49,7 @@
 #include "PipeGenerator.h"
 #include "BellowGenerator.h"
 #include "SolenoidGenerator.h"
+#include "GateValveGenerator.h"
 
 namespace setVariable
 {
@@ -245,6 +246,17 @@ namespace setVariable
     setVariable::SolenoidGenerator SolGen;
     SolGen.generate(Control,name);
     Control.addVariable(name+"YStep", 5.0); // dummy TODO
+
+    name = "Gate";
+    setVariable::GateValveGenerator CGateGen;
+
+    CGateGen.setOuter(4.5, 15.5, 18.0, 8.2); // measured
+    CGateGen.setBladeMat("Stainless304L"); // TODO
+    CGateGen.setBladeThick(0.8); // TODO
+    CGateGen.setAPortCF<CF63>(); // TODO
+    CGateGen.setBPortCF<CF63>(); // TODO
+    //    CGateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO
+    CGateGen.generateValve(Control,"Gate",0.0,1);
 
   }
 

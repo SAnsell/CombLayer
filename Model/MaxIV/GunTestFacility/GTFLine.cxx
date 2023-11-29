@@ -68,6 +68,7 @@
 #include "IonPumpGammaVacuum.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "GateValveCube.h"
 #include "Solenoid.h"
 
 #include "LObjectSupport.h"
@@ -88,7 +89,8 @@ GTFLine::GTFLine(const std::string& Key) :
   ionPump(std::make_shared<IonPumpGammaVacuum>("IonPump")),
   extension(std::make_shared<constructSystem::VacuumPipe>("Extension")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
-  solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid"))
+  solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
+  gate(new constructSystem::GateValveCube("Gate"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -101,6 +103,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(extension);
   OR.addObject(pipeA);
   OR.addObject(solenoid);
+  OR.addObject(gate);
 }
 
 GTFLine::~GTFLine()
@@ -182,12 +185,15 @@ GTFLine::buildObjects(Simulation& System)
   tdcSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
   tdcSystem::pipeTerminate(System,buildZone,pipeA);
 
+  constructSystem::constructUnit
+    (System,buildZone,*pipeA,"back",*gate);
+
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=pipeA;
+  lastComp=gate;
 
   return;
 }
