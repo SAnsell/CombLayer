@@ -37,7 +37,6 @@
 
 
 #include "FileReport.h"
-#include "BaseVisit.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -64,7 +63,6 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 #include "generateSurf.h"
-#include "ModelSupport.h"
 #include "generalConstruct.h"
 
 #include "CylGateValve.h"

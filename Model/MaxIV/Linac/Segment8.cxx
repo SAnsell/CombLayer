@@ -66,9 +66,7 @@
 #include "Bellows.h"
 #include "EBeamStop.h"
 
-#include "AttachSupport.h"
 #include "TDCsegment.h"
-#include "Segment7.h"
 #include "Segment8.h"
 
 namespace tdcSystem

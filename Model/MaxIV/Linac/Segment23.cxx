@@ -71,10 +71,7 @@
 #include "YagUnit.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 
-#include "Line.h"
 #include "ContainedGroup.h"
 #include "YagScreen.h"
 

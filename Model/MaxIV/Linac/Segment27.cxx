@@ -73,8 +73,6 @@
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "TDCBeamDump.h"
-#include "FixedOffset.h"
-#include "InjectionHall.h"
 
 #include "TDCsegment.h"
 #include "Segment27.h"

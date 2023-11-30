@@ -44,7 +44,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -60,7 +59,6 @@
 #include "FixedRotateGroup.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
-#include "AttachSupport.h"
 
 #include "TDCBeamDump.h"
 

@@ -63,7 +63,6 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "BlockZone.h"
-#include "WrapperCell.h"
 #include "generalConstruct.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -73,8 +72,6 @@
 #include "SPFCameraShield.h"
 #include "FixedOffset.h"
 #include "InjectionHall.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Importance.h"
 #include "Object.h"
 

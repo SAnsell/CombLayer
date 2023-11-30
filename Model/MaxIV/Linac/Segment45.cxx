@@ -61,9 +61,6 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 #include "generateSurf.h"
-#include "FixedGroup.h"
-#include "FixedRotateGroup.h"
-#include "ModelSupport.h"
 #include "generalConstruct.h"
 
 #include "GeneralPipe.h"
@@ -74,12 +71,9 @@
 #include "FlangePlate.h"
 #include "MainBeamDump.h"
 
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Importance.h"
 #include "Object.h"
 
-#include "AttachSupport.h"
 #include "LObjectSupport.h"
 #include "TDCsegment.h"
 #include "InjectionHall.h"

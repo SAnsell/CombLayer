@@ -40,7 +40,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -65,8 +64,6 @@
 #include "ModelSupport.h"
 #include "generateSurf.h"
 
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Importance.h"
 #include "Object.h"
 
