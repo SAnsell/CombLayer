@@ -105,6 +105,12 @@ M1DetailGenerator::M1DetailGenerator() :
   ePlateOffset(2.1),ePlateThick(0.2),
   ePlateHeight(5.2),ePipeRadius(0.2),
   ePipeThick(0.15),
+
+  mainConnectRadius(1.25),mainConnectLength(1.0),
+  mainCubeWidth(2.80),mainCubeHeight(2.80),
+  mainCubeDepth(2.80),mainOutRadius(0.9),
+  mainOutRadius(1.7),mainFlangeRadius(1.7),
+  
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
   fBladeThick(1.0),fBladeTopAngle(40.0),
@@ -262,6 +268,17 @@ M1DetailGenerator::makeConnectors(FuncDataBase& Control,
 
   return;
 }
+
+void
+M1DetailGenerator::makeMainPipe(FuncDataBase& Control,
+				const std::string& keyName) const
+  /*!
+    Set teh main pipe connecting to the crystal via the
+    
+   */
+{
+}
+
 
 void
 M1DetailGenerator::makeRingSupport(FuncDataBase& Control,

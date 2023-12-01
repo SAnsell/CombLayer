@@ -100,7 +100,7 @@ M1Pipe::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("M1Pipe","populate");
 
   FixedRotate::populate(Control);
-
+\
   connectRadius=Control.EvalVar<double>(keyName+"ConnectRadius");
   connectLength=Control.EvalVar<double>(keyName+"ConnectLength");
 
@@ -159,24 +159,6 @@ M1Pipe::createObjects(Simulation& System)
   const HeadRule cylHR=getRule("TubeRadius");
 
   HeadRule HR;
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7");
-  makeCell("Outer",System,cellIndex++,pipeMat,0.0,HR*cylHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17 -7");
-  makeCell("Inner",System,cellIndex++,pipeMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 7");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*cylHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 7");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*cylHR);
-
-  // Create inner units:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17");
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17");
-  addOuterSurf("Main",HR);
   
   return;
 }
@@ -206,8 +188,11 @@ M1Pipe::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("M1Pipe","createAll");
   populate(System.getDataBase());
-
   createUnitVector(FC,sideIndex);
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
+  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
+      
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -70,6 +70,7 @@
 #include "M1ElectronShield.h"
 #include "M1Frame.h"
 #include "M1Ring.h"
+#include "M1Pipe.h"
 #include "M1Detail.h"
 
 #include "Importance.h"
@@ -89,6 +90,7 @@ M1Detail::M1Detail(const std::string& Key) :
   connectors(new M1Connectors(keyName+"Connect")),
   frontShield(new M1FrontShield(keyName+"FPlate")),
   elecShield(new M1ElectronShield(keyName+"ElectronShield")),
+  mainPipe(new M1Pipe(keyName+"MainPipe")),
   ringA(new M1Ring(keyName+"RingA")),
   ringB(new M1Ring(keyName+"RingB"))
   /*!
@@ -104,6 +106,7 @@ M1Detail::M1Detail(const std::string& Key) :
   OR.addObject(connectors);
   OR.addObject(frontShield);
   OR.addObject(elecShield);
+  OR.addObject(mainPipe);
   OR.addObject(ringA);
   OR.addObject(ringB);
 }
@@ -241,9 +244,11 @@ M1Detail::createObjects(Simulation& System)
   elecShield->addInsertCell(getCells("MainVoid"));
   elecShield->createAll(System,*mirror,0);
 
-
+  
   ELog::EM<<"MPipe A == "<<mirror->getLinkPt("downPipeA")<<ELog::endDiag;
   ELog::EM<<"MPipe B == "<<mirror->getLinkPt("downPipeB")<<ELog::endDiag;
+  mainPipe->createAll(System,*mirror,"downPipeA");
+
   
   cClamp->insertInCell(System,getCells("MainVoid"));
 

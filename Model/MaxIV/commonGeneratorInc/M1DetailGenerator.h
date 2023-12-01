@@ -134,6 +134,7 @@ class M1DetailGenerator
   double bRingInnerThick;        ///< Radial thickness of inner (fat) ring
   double bRingInnerLength;       ///< Length along mirror of inner ring
 
+  // ---------------
   // Electron shield
   // ---------------
   
@@ -161,6 +162,22 @@ class M1DetailGenerator
 
   double ePipeRadius;          ///< Radius of long pipe
   double ePipeThick;           ///< Thickenss of pipe
+
+  // -------------
+  // Main Connector Pipe
+  // -------------
+  double mainConnectRadius;   ///< radius (outer)
+  double mainConnectLength;   ///< distance down
+
+  double mainCubeWidth;      ///<
+  double mainCubeHeight;      ///<
+  double mainCubeDepth;      ///<  Y direction down beam
+
+  double mainOutRadius;   ///< radius (outer)
+  double mainOutLength;   ///< distance down
+
+  double mainFlangeRadius;   ///< radius (outer)
+  double mainFlangeLenght;   ///< radius (outer)
 
   // -------------
   // SUBSTRUCTURE for Box system
@@ -195,6 +212,7 @@ class M1DetailGenerator
   void makeFrontPlate(FuncDataBase&,const std::string&) const;
   void makeBackPlate(FuncDataBase&,const std::string&) const;
   void makeConnectors(FuncDataBase&,const std::string&) const;
+  void makeMainPipe(FuncDataBase&,const std::string&) const;
   void makeOuterSupport(FuncDataBase&,const std::string&) const;
   void makePipe(FuncDataBase&,const std::string&) const;
   void makeRingSupport(FuncDataBase&,const std::string&) const;
