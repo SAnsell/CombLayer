@@ -16,8 +16,8 @@ set(CMAKE_CXX_COMPILER g++-11)
 set(CMAKE_CXX_FLAGS "-DFMT_ENFORCE_COMPILE_STRING -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++20 -O2")
 
 if(NOT fmt_INCLUDE_DIR)
-    set(fmt_INCLUDE_DIR "/home/ansell/fmt-master/include")
-    set(fmtLIB "/home/ansell/fmt-master/libfmt.a")	
+    set(fmt_INCLUDE_DIR $ENV{HOME}/fmt-master/include)
+    set(fmtLIB "$ENV{HOME}/fmt-master/libfmt.a")	
 endif()
 
 
