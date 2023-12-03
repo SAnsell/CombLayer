@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
+#define FMT_HEADER_ONLY
 #include <fmt/core.h>
 
 #include "Exception.h"

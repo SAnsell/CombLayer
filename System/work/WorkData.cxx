@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#define FMT_HEADER_ONLY
 #include <fmt/core.h>
 
 #include "Exception.h"

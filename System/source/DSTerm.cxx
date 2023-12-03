@@ -31,6 +31,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#define FMT_HEADER_ONLY
 #include <fmt/core.h>
 
 #include "FileReport.h"

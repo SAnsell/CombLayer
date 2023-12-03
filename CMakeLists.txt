@@ -5,7 +5,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(GSL REQUIRED)
-find_package (fmt REQUIRED)
+# find_package (fmt REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -13,10 +13,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_COMPILER g++-11)
-set(CMAKE_CXX_FLAGS "-Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++20 -O2")
+set(CMAKE_CXX_FLAGS "-DFMT_ENFORCE_COMPILE_STRING -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++20 -O2")
 
 if(NOT fmt_INCLUDE_DIR)
-    set(fmt_INCLUDE_DIR "/usr/include/fmt")
+    set(fmt_INCLUDE_DIR "/home/ansell/fmt-master/include")
+    set(fmtLIB "/home/ansell/fmt-master/libfmt.a")	
 endif()
 
 
@@ -193,7 +194,7 @@ target_link_libraries(ess
   ${SYSTEM_LIB}
   ${ESS_LIB}
   GSL::gsl
-  fmt::fmt
+  ${fmtLIB}
 ##  /usr/local/fmt/libfmt.a
 )
 
@@ -202,21 +203,21 @@ target_link_libraries(essLinacModel
   ${ESS_LIB}
   essLinac
   GSL::gsl
-  fmt::fmt
+  ${fmtLIB}
 )
 
 target_link_libraries (fullBuild
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
-  fmt::fmt
+  ${fmtLIB}
 )
 
 target_link_libraries (maxiv
   ${SYSTEM_LIB}
   ${MAXIV_LIB}
   GSL::gsl
-  fmt::fmt
+  ${fmtLIB}
 ##  /usr/local/fmt/libfmt.a
 )
 
@@ -224,7 +225,7 @@ target_link_libraries(saxsSim
   ${SYSTEM_LIB}
   saxs
   GSL::gsl
-  fmt::fmt
+  ${fmtLIB}
 )
 
 
@@ -237,14 +238,14 @@ target_link_libraries (singleItem
   estia freia heimdal loki magic miracles nmx nnbar 
   odin simpleItem skadi testBeam trex vespa vor  
   GSL::gsl
-  fmt::fmt
+  ${fmtLIB}
 )
 
 target_link_libraries(t1Real
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
-  fmt::fmt
+  ${fmtLIB}
 )
 
 
@@ -252,7 +253,7 @@ target_link_libraries(xrayHut
   ${SYSTEM_LIB}
   xrayHutch
   GSL::gsl
-  fmt::fmt
+  ${fmtLIB}
 )
 
 
