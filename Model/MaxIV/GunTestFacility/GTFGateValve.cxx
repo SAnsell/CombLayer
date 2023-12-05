@@ -382,10 +382,10 @@ GTFGateValve::createObjects(Simulation& System)
       makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,HR*backComp);
     }
 
-  //  if (!clampActive) {
+  if (!clampActive) {
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
     addOuterSurf(HR);
-    // }
+  }
 
   if (portAExtends || portBExtends)
     {
@@ -428,8 +428,17 @@ GTFGateValve::createObjects(Simulation& System)
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 405 -15");
 	makeCell("ClampVoidBase",System,cellIndex++,voidMat,0.0,HR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -406");
-	addOuterUnionSurf(HR*frontHR*backHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -13 406 -16");
+	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -414 406 -16");
+	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -11 406 -16");
+	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 12 406 -16");
+	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*backHR);
+
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -16");
+	addOuterSurf(HR*frontHR*backHR);
       } else {
 	if (!portAExtends)
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -217");
