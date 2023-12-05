@@ -68,7 +68,7 @@
 #include "IonPumpGammaVacuum.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "GateValveCube.h"
+#include "GTFGateValve.h"
 #include "Solenoid.h"
 
 #include "LObjectSupport.h"
@@ -90,7 +90,7 @@ GTFLine::GTFLine(const std::string& Key) :
   extension(std::make_shared<constructSystem::VacuumPipe>("Extension")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
-  gate(new constructSystem::GateValveCube("Gate"))
+  gate(new constructSystem::GTFGateValve("Gate"))
   /*!
     Constructor
     \param Key :: Name of construction key

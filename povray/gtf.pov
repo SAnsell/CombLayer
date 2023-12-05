@@ -70,14 +70,14 @@ global_settings {
 
 #switch ( 0 )
   #case(strcmp(ITEM,"Gate"))
-    #declare cameraLocation = <175, -275, 0>;
+    #declare cameraLocation = <-90, 220, 40>;
     #declare cameraLookAt   = <0, 245, 0>;
-    #declare cameraAngle = 10;
+    #declare cameraAngle = 30;
     #declare projection = 0;
   #break
   #else // default view
-    #declare cameraLocation = <-500, 5200, 1000>;
-    #declare cameraLookAt   = <-600, 5100, 0>;
+    #declare cameraLocation = <175, -275, 0>;
+    #declare cameraLookAt   = <0, 245, 0>;
     #declare projection = 1;
 #break
 #end

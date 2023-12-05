@@ -7,7 +7,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-test -e maxiv || make -j$(nproc) maxiv
+make -j$(nproc) maxiv
 
 ITEM=${BASH_ARGV} # last argument is the view in povray/tdc.pov
 

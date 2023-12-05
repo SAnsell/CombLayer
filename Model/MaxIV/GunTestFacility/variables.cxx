@@ -48,7 +48,7 @@
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
 #include "SolenoidGenerator.h"
-#include "GateValveGenerator.h"
+#include "GTFGateValveGenerator.h"
 
 namespace setVariable
 {
@@ -247,15 +247,19 @@ namespace setVariable
     Control.addVariable(name+"YStep", 5.0); // dummy TODO
 
     name = "Gate";
-    setVariable::GateValveGenerator CGateGen;
+    GTFGateValveGenerator GateGen;
 
-    CGateGen.setOuter(4.5, 15.5, 18.0, 8.2); // measured
-    CGateGen.setBladeMat("Stainless304L"); // TODO
-    CGateGen.setBladeThick(0.8); // TODO
-    CGateGen.setAPortCF<CF63>(); // TODO
-    CGateGen.setBPortCF<CF63>(); // TODO
-    //    CGateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO
-    CGateGen.generateValve(Control,"Gate",0.0,1);
+    GateGen.setOuter(4.5-0.5, 15.5-1.0, 18.0-0.5, 8.2-0.5); // measured (-0.5 to account for wall thick)
+    GateGen.setBladeMat("Stainless304L"); // TODO
+    GateGen.setBladeThick(0.8); // TODO
+    GateGen.setAPortCF<CF63>(); // TODO
+    GateGen.setBPortCF<CF63>(); // TODO
+    //    GateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO
+    GateGen.generateValve(Control,"Gate",0.0,1);
+    Control.addVariable(name+"PortBRadius", 3.15); // measured
+    Control.addVariable(name+"PortBThick", 5.8); // measured
+    Control.addVariable(name+"ShieldActive", 1);
+    Control.addVariable(name+"ShieldMat", "Iron");  // guess TODO
 
   }
 
