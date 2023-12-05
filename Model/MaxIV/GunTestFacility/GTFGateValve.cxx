@@ -71,7 +71,7 @@ GTFGateValve::GTFGateValve(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  closed(0),shieldActive(1)
+  closed(0),clampActive(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -88,15 +88,15 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   portBRadius(A.portBRadius),portBThick(A.portBThick),
   portBLen(A.portBLen),closed(A.closed),bladeLift(A.bladeLift),
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
-  shieldActive(A.shieldActive),
-  shieldWidth(A.shieldWidth),
-  shieldDepth(A.shieldDepth),
-  shieldHeight(A.shieldHeight),
-  shieldBaseThick(A.shieldBaseThick),
-  shieldBaseWidth(A.shieldBaseWidth),
-  shieldTopWidth(A.shieldTopWidth),
+  clampActive(A.clampActive),
+  clampWidth(A.clampWidth),
+  clampDepth(A.clampDepth),
+  clampHeight(A.clampHeight),
+  clampBaseThick(A.clampBaseThick),
+  clampBaseWidth(A.clampBaseWidth),
+  clampTopWidth(A.clampTopWidth),
   voidMat(A.voidMat),bladeMat(A.bladeMat),wallMat(A.wallMat),
-  shieldMat(A.shieldMat)
+  clampMat(A.clampMat)
   /*!
     Copy constructor
     \param A :: GTFGateValve to copy
@@ -133,17 +133,17 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeLift=A.bladeLift;
       bladeThick=A.bladeThick;
       bladeRadius=A.bladeRadius;
-      shieldActive=A.shieldActive;
-      shieldWidth=A.shieldWidth;
-      shieldDepth=A.shieldDepth;
-      shieldHeight=A.shieldHeight;
-      shieldBaseThick=A.shieldBaseThick;
-      shieldBaseWidth=A.shieldBaseWidth;
-      shieldTopWidth=A.shieldTopWidth;
+      clampActive=A.clampActive;
+      clampWidth=A.clampWidth;
+      clampDepth=A.clampDepth;
+      clampHeight=A.clampHeight;
+      clampBaseThick=A.clampBaseThick;
+      clampBaseWidth=A.clampBaseWidth;
+      clampTopWidth=A.clampTopWidth;
       voidMat=A.voidMat;
       bladeMat=A.bladeMat;
       wallMat=A.wallMat;
-      shieldMat=A.shieldMat;
+      clampMat=A.clampMat;
     }
   return *this;
 }
@@ -192,18 +192,18 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeLift=Control.EvalVar<double>(keyName+"BladeLift");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
-  shieldActive=Control.EvalDefVar<int>(keyName+"ShieldActive",shieldActive);
-  shieldWidth=Control.EvalVar<int>(keyName+"ShieldWidth");
-  shieldDepth=Control.EvalVar<double>(keyName+"ShieldDepth");
-  shieldHeight=Control.EvalVar<double>(keyName+"ShieldHeight");
-  shieldBaseThick=Control.EvalVar<double>(keyName+"ShieldBaseThick");
-  shieldBaseWidth=Control.EvalVar<double>(keyName+"ShieldBaseWidth");
-  shieldTopWidth=Control.EvalVar<double>(keyName+"ShieldTopWidth");
+  clampActive=Control.EvalDefVar<int>(keyName+"ClampActive",clampActive);
+  clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
+  clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
+  clampHeight=Control.EvalVar<double>(keyName+"ClampHeight");
+  clampBaseThick=Control.EvalVar<double>(keyName+"ClampBaseThick");
+  clampBaseWidth=Control.EvalVar<double>(keyName+"ClampBaseWidth");
+  clampTopWidth=Control.EvalVar<double>(keyName+"ClampTopWidth");
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
+  clampMat=ModelSupport::EvalMat<int>(Control,keyName+"ClampMat");
 
   return;
 }
@@ -293,23 +293,23 @@ GTFGateValve::createSurfaces()
     ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Z*bladeLift,
 				Y,bladeRadius);
 
-  // Shield
-  ModelSupport::buildPlane(SMap,buildIndex+403,Origin-X*(shieldWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+404,Origin+X*(shieldWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*(shieldDepth),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+406,Origin+Z*(shieldHeight),Z);
+  // Clamp
+  ModelSupport::buildPlane(SMap,buildIndex+403,Origin-X*(clampWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+404,Origin+X*(clampWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+405,Origin-Z*(clampDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+406,Origin+Z*(clampHeight),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+413,Origin-X*(shieldBaseWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+414,Origin+X*(shieldBaseWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+415,Origin-Z*(shieldDepth+shieldBaseThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+413,Origin-X*(clampBaseWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+414,Origin+X*(clampBaseWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+415,Origin-Z*(clampDepth+clampBaseThick),Z);
 
   const Geometry::Quaternion qTop1 = Geometry::Quaternion::calcQRotDeg(-45, Y);
   const Geometry::Vec3D vTop1(qTop1.makeRotate(Z));
-  ModelSupport::buildPlane(SMap,buildIndex+417,Origin+Z*shieldHeight-X*(shieldTopWidth/2.0),vTop1);
+  ModelSupport::buildPlane(SMap,buildIndex+417,Origin+Z*clampHeight-X*(clampTopWidth/2.0),vTop1);
 
   const Geometry::Quaternion qTop2 = Geometry::Quaternion::calcQRotDeg(45, Y);
   const Geometry::Vec3D vTop2(qTop2.makeRotate(Z));
-  ModelSupport::buildPlane(SMap,buildIndex+418,Origin+Z*shieldHeight+X*(shieldTopWidth/2.0),vTop2);
+  ModelSupport::buildPlane(SMap,buildIndex+418,Origin+Z*clampHeight+X*(clampTopWidth/2.0),vTop2);
 
   return;
 }
@@ -378,40 +378,40 @@ GTFGateValve::createObjects(Simulation& System)
       makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,HR*backComp);
     }
 
-  //  if (!shieldActive) {
+  //  if (!clampActive) {
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
     addOuterSurf(HR);
     // }
 
   if (portAExtends || portBExtends)
     {
-      if (shieldActive) { // assume both port extend, otherwise the shield does not make sence
+      if (clampActive) { // assume both port extend, otherwise the clamp does not make sence
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 403 -404 117 405 -406 -417 -418");
-	makeCell("ShieldFront",System,cellIndex++,shieldMat,0.0,HR*frontHR);
+	makeCell("ClampFront",System,cellIndex++,clampMat,0.0,HR*frontHR);
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 417 403 -406");
-	makeCell("ShieldFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+	makeCell("ClampFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 418 -404 -406");
-	makeCell("ShieldFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+	makeCell("ClampFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 403 -404 217 405 -406");
-	makeCell("ShieldBack",System,cellIndex++,shieldMat,0.0,HR*backHR);
+	makeCell("ClampBack",System,cellIndex++,clampMat,0.0,HR*backHR);
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -405");
-	makeCell("ShieldBase",System,cellIndex++,shieldMat,0.0,HR*frontHR*backHR);
+	makeCell("ClampBase",System,cellIndex++,clampMat,0.0,HR*frontHR*backHR);
 
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -403 405 -406");
-	makeCell("ShieldVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+	makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 403 -13 405 -406");
-	makeCell("ShieldVoidInner",System,cellIndex++,voidMat,0.0,HR);
+	makeCell("ClampVoidInner",System,cellIndex++,voidMat,0.0,HR);
 
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 14 -404 405 -406");
-	makeCell("ShieldVoidInner",System,cellIndex++,voidMat,0.0,HR);
+	makeCell("ClampVoidInner",System,cellIndex++,voidMat,0.0,HR);
 
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 -414 405 -406");
-	makeCell("ShieldVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+	makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 405 -15");
-	makeCell("ShieldVoidBase",System,cellIndex++,voidMat,0.0,HR);
+	makeCell("ClampVoidBase",System,cellIndex++,voidMat,0.0,HR);
 
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -406");
 	addOuterUnionSurf(HR*frontHR*backHR);

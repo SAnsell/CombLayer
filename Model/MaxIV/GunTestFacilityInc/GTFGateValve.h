@@ -32,7 +32,7 @@ namespace constructSystem
   \version 1.0
   \author K. Batkov
   \date December 2023
-  \brief Gate valve used at the MAX IV Gun Test Facility
+  \brief Gate valve used at the MAX IV Gun Test Facility. See also: GateValveCube (similar object without clamp and lifting structure)
 */
 
 class GTFGateValve :
@@ -63,18 +63,18 @@ class GTFGateValve :
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
 
-  bool shieldActive;            ///< Shield active flag
-  double shieldWidth;           ///< Shield width
-  double shieldDepth;           ///< Shield depth
-  double shieldHeight;          ///< Shield height
-  double shieldBaseThick;       ///< Shield base plate thickness
-  double shieldBaseWidth;       ///< Shield base plate width
-  double shieldTopWidth;        ///< Shield top truncated part width
+  bool clampActive;            ///< Clamp active flag
+  double clampWidth;           ///< Clamp width
+  double clampDepth;           ///< Clamp depth
+  double clampHeight;          ///< Clamp height
+  double clampBaseThick;       ///< Clamp base plate thickness
+  double clampBaseWidth;       ///< Clamp base plate width
+  double clampTopWidth;        ///< Clamp top truncated part width
 
   int voidMat;                  ///< Void material
   int bladeMat;                 ///< blade material
   int wallMat;                  ///< Pipe material
-  int shieldMat;                ///< Shield material
+  int clampMat;                ///< Clamp material
 
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,const long int) override;

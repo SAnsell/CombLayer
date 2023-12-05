@@ -56,15 +56,15 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   portAThick(1.0),portALen(1.0),
   portBRadius(CF40::flangeRadius),portBThick(1.0),portBLen(1.0),
   bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),
-  shieldActive(0),shieldWidth(25.0),
-  shieldDepth(10.9),
-  shieldHeight(10.9),
-  shieldBaseThick(1.9),
-  shieldBaseWidth(32),
-  shieldTopWidth(10.0),
+  clampActive(1),clampWidth(25.0),
+  clampDepth(10.9),
+  clampHeight(10.9),
+  clampBaseThick(1.9),
+  clampBaseWidth(32),
+  clampTopWidth(10.0),
   liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
   bladeMat("Aluminium"),wallMat("Stainless304L"),
-  shieldMat("Stainless304L")
+  clampMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -273,18 +273,18 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"BladeThick",bladeThick);
   Control.addVariable(keyName+"BladeRadius",bladeRadius);
 
-  Control.addVariable(keyName+"ShieldActive",shieldActive);
-  Control.addVariable(keyName+"ShieldWidth",shieldWidth);
-  Control.addVariable(keyName+"ShieldDepth",shieldDepth);
-  Control.addVariable(keyName+"ShieldHeight",shieldHeight);
-  Control.addVariable(keyName+"ShieldBaseThick",shieldBaseThick);
-  Control.addVariable(keyName+"ShieldBaseWidth",shieldBaseWidth);
-  Control.addVariable(keyName+"ShieldTopWidth",shieldTopWidth);
+  Control.addVariable(keyName+"ClampActive",clampActive);
+  Control.addVariable(keyName+"ClampWidth",clampWidth);
+  Control.addVariable(keyName+"ClampDepth",clampDepth);
+  Control.addVariable(keyName+"ClampHeight",clampHeight);
+  Control.addVariable(keyName+"ClampBaseThick",clampBaseThick);
+  Control.addVariable(keyName+"ClampBaseWidth",clampBaseWidth);
+  Control.addVariable(keyName+"ClampTopWidth",clampTopWidth);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"BladeMat",bladeMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"ShieldMat",shieldMat);
+  Control.addVariable(keyName+"ClampMat",clampMat);
 
   return;
 

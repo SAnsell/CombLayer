@@ -258,8 +258,7 @@ namespace setVariable
     GateGen.generateValve(Control,"Gate",0.0,1);
     Control.addVariable(name+"PortBRadius", 3.15); // measured
     Control.addVariable(name+"PortBThick", 5.8); // measured
-    Control.addVariable(name+"ShieldActive", 1);
-    Control.addVariable(name+"ShieldMat", "Iron");  // guess TODO
+    Control.addVariable(name+"ClampMat", "Iron");  // guess TODO
 
   }
 

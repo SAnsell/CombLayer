@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/GateValveCube.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_GateValveCube_h
@@ -26,13 +26,13 @@ class Simulation;
 
 namespace constructSystem
 {
-  
+
 /*!
   \class GateValveCube
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief GateValveCube unit  
+  \brief GateValveCube unit. See also: GTFGateValve (very similar object with clamp and lifting structure)
 */
 
 class GateValveCube :
@@ -43,12 +43,12 @@ class GateValveCube :
   public attachSystem::FrontBackCut
 {
  private:
-  
+
   double length;                ///< Void length
   double width;                 ///< Void width (full)
-  double height;                ///< height 
+  double height;                ///< height
   double depth;                 ///< depth
-  
+
   double wallThick;             ///< Wall thickness
   double portARadius;            ///< Port inner radius (opening)
   double portAThick;             ///< Port outer ring
@@ -56,23 +56,23 @@ class GateValveCube :
 
   double portBRadius;            ///< Port inner radius (opening)
   double portBThick;             ///< Port outer ring
-  double portBLen;               ///< Forward step of port 
- 
+  double portBLen;               ///< Forward step of port
+
   bool closed;                  ///< Shutter closed
   double bladeLift;             ///< Height of blade up
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
-  
+
   int voidMat;                  ///< Void material
   int bladeMat;                 ///< blade material
   int wallMat;                  ///< Pipe material
-  
+
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   GateValveCube(const std::string&);
@@ -89,4 +89,3 @@ class GateValveCube :
 }
 
 #endif
- 

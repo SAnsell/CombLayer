@@ -30,9 +30,9 @@ namespace setVariable
 /*!
   \class GTFGateValveGenerator
   \version 1.0
-  \author S. Ansell
-  \date May 2016
-  \brief GTFGateValveGenerator for variables
+  \author S. Ansell and K. Batkov
+  \date Oct 2023
+  \brief GTFGateValveGenerator for the GTFGateValve variables
 */
 
 class GTFGateValveGenerator
@@ -59,13 +59,13 @@ class GTFGateValveGenerator
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
 
-  int shieldActive;             ///< Shield active flag
-  int shieldWidth;              ///< Shield width
-  double shieldDepth;           ///< Shield depth
-  double shieldHeight;          ///< Shield height
-  double shieldBaseThick;       ///< Shield base plate thickness
-  double shieldBaseWidth;       ///< Shield base plate width
-  double shieldTopWidth;        ///< Shield top truncated part width
+  int clampActive;             ///< Clamp active flag
+  int clampWidth;              ///< Clamp width
+  double clampDepth;           ///< Clamp depth
+  double clampHeight;          ///< Clamp height
+  double clampBaseThick;       ///< Clamp base plate thickness
+  double clampBaseWidth;       ///< Clamp base plate width
+  double clampTopWidth;        ///< Clamp top truncated part width
 
   double liftWidth;             ///< Lifting width
   double liftHeight;            ///< Height of lifting space
@@ -73,7 +73,7 @@ class GTFGateValveGenerator
   std::string voidMat;          ///< Void material
   std::string bladeMat;         ///< Void material
   std::string wallMat;          ///< Pipe material
-  std::string shieldMat;        ///< Shield material
+  std::string clampMat;        ///< Clamp material
 
  public:
 
