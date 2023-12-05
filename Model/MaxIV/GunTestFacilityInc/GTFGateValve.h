@@ -63,13 +63,14 @@ class GTFGateValve :
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
 
-  bool clampActive;            ///< Clamp active flag
-  double clampWidth;           ///< Clamp width
-  double clampDepth;           ///< Clamp depth
-  double clampHeight;          ///< Clamp height
-  double clampBaseThick;       ///< Clamp base plate thickness
-  double clampBaseWidth;       ///< Clamp base plate width
-  double clampTopWidth;        ///< Clamp top truncated part width
+  bool clampActive;             ///< Clamp active flag
+  double clampWidth;            ///< Clamp width
+  double clampDepth;            ///< Clamp depth
+  double clampHeight;           ///< Clamp height
+  double clampBulkHeight;       ///< Clamp height before the truncated section
+  double clampBaseThick;        ///< Clamp base plate thickness
+  double clampBaseWidth;        ///< Clamp base plate width
+  double clampTopWidth;         ///< Clamp top truncated part width
 
   int voidMat;                  ///< Void material
   int bladeMat;                 ///< blade material

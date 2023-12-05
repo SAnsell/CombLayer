@@ -92,6 +92,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   clampWidth(A.clampWidth),
   clampDepth(A.clampDepth),
   clampHeight(A.clampHeight),
+  clampBulkHeight(A.clampBulkHeight),
   clampBaseThick(A.clampBaseThick),
   clampBaseWidth(A.clampBaseWidth),
   clampTopWidth(A.clampTopWidth),
@@ -137,6 +138,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
       clampHeight=A.clampHeight;
+      clampBulkHeight=A.clampBulkHeight;
       clampBaseThick=A.clampBaseThick;
       clampBaseWidth=A.clampBaseWidth;
       clampTopWidth=A.clampTopWidth;
@@ -196,6 +198,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
   clampHeight=Control.EvalVar<double>(keyName+"ClampHeight");
+  clampBulkHeight=Control.EvalVar<double>(keyName+"ClampBulkHeight");
   clampBaseThick=Control.EvalVar<double>(keyName+"ClampBaseThick");
   clampBaseWidth=Control.EvalVar<double>(keyName+"ClampBaseWidth");
   clampTopWidth=Control.EvalVar<double>(keyName+"ClampTopWidth");
@@ -302,6 +305,7 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+413,Origin-X*(clampBaseWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+414,Origin+X*(clampBaseWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+415,Origin-Z*(clampDepth+clampBaseThick),Z);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+416,buildIndex+415,Z,clampBulkHeight);
 
   const Geometry::Quaternion qTop1 = Geometry::Quaternion::calcQRotDeg(-45, Y);
   const Geometry::Vec3D vTop1(qTop1.makeRotate(Z));
@@ -386,15 +390,26 @@ GTFGateValve::createObjects(Simulation& System)
   if (portAExtends || portBExtends)
     {
       if (clampActive) { // assume both port extend, otherwise the clamp does not make sence
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 403 -404 117 405 -406 -417 -418");
-	makeCell("ClampFront",System,cellIndex++,clampMat,0.0,HR*frontHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 417 403 -406");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 416 -406 -417 -418 117");
+	makeCell("ClampFrontTruncated",System,cellIndex++,clampMat,0.0,HR*frontHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 403 -404 405 -416 117");
+	makeCell("ClampFrontBulk",System,cellIndex++,clampMat,0.0,HR*frontHR);
+
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 417 403 416 -406");
 	makeCell("ClampFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 418 -404 -406");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 418 -404 416 -406");
 	makeCell("ClampFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 403 -404 217 405 -406");
-	makeCell("ClampBack",System,cellIndex++,clampMat,0.0,HR*backHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 416 -406 -417 -418 217");
+	makeCell("ClampBackTruncated",System,cellIndex++,clampMat,0.0,HR*backHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 403 -404 405 -416 217");
+	makeCell("ClampBackBulk",System,cellIndex++,clampMat,0.0,HR*backHR);
+
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 417 403 416 -406");
+	makeCell("ClampBackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 418 -404 416 -406");
+	makeCell("ClampBackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
+
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -405");
 	makeCell("ClampBase",System,cellIndex++,clampMat,0.0,HR*frontHR*backHR);
 

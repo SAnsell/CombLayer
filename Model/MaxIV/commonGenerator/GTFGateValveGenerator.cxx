@@ -59,6 +59,7 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   clampActive(1),clampWidth(25.0),
   clampDepth(10.9),
   clampHeight(10.9),
+  clampBulkHeight(17.0),
   clampBaseThick(1.9),
   clampBaseWidth(32),
   clampTopWidth(10.0),
@@ -277,6 +278,7 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"ClampWidth",clampWidth);
   Control.addVariable(keyName+"ClampDepth",clampDepth);
   Control.addVariable(keyName+"ClampHeight",clampHeight);
+  Control.addVariable(keyName+"ClampBulkHeight",clampBulkHeight);
   Control.addVariable(keyName+"ClampBaseThick",clampBaseThick);
   Control.addVariable(keyName+"ClampBaseWidth",clampBaseWidth);
   Control.addVariable(keyName+"ClampTopWidth",clampTopWidth);

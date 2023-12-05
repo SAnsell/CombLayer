@@ -256,7 +256,9 @@ namespace setVariable
     GateGen.setBPortCF<CF63>(); // TODO
     //    GateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO
     GateGen.generateValve(Control,"Gate",0.0,1);
+    Control.addVariable(name+"PortARadius", 3.15); // measured
     Control.addVariable(name+"PortBRadius", 3.15); // measured
+    Control.addVariable(name+"PortAThick", 5.8); // measured
     Control.addVariable(name+"PortBThick", 5.8); // measured
     Control.addVariable(name+"ClampMat", "Iron");  // guess TODO
 

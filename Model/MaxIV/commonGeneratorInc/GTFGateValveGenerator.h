@@ -63,6 +63,7 @@ class GTFGateValveGenerator
   int clampWidth;              ///< Clamp width
   double clampDepth;           ///< Clamp depth
   double clampHeight;          ///< Clamp height
+  double clampBulkHeight;       ///< Clamp height before the truncated section
   double clampBaseThick;       ///< Clamp base plate thickness
   double clampBaseWidth;       ///< Clamp base plate width
   double clampTopWidth;        ///< Clamp top truncated part width
