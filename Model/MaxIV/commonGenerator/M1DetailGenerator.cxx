@@ -109,7 +109,7 @@ M1DetailGenerator::M1DetailGenerator() :
   mainConnectRadius(1.25),mainConnectLength(1.0),
   mainCubeWidth(2.80),mainCubeHeight(2.80),
   mainCubeDepth(2.80),mainOutRadius(0.9),
-  mainOutRadius(1.7),mainFlangeRadius(1.7),
+  mainOutLength(1.7),mainFlangeRadius(1.7),
   
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
