@@ -65,6 +65,7 @@ class GTFGateValveGenerator
   double shieldHeight;          ///< Shield height
   double shieldBaseThick;       ///< Shield base plate thickness
   double shieldBaseWidth;       ///< Shield base plate width
+  double shieldTopWidth;        ///< Shield top truncated part width
 
   double liftWidth;             ///< Lifting width
   double liftHeight;            ///< Height of lifting space

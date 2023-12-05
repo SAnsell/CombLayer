@@ -61,6 +61,7 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   shieldHeight(10.9),
   shieldBaseThick(1.9),
   shieldBaseWidth(32),
+  shieldTopWidth(10.0),
   liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
   bladeMat("Aluminium"),wallMat("Stainless304L"),
   shieldMat("Stainless304L")
@@ -278,6 +279,7 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"ShieldHeight",shieldHeight);
   Control.addVariable(keyName+"ShieldBaseThick",shieldBaseThick);
   Control.addVariable(keyName+"ShieldBaseWidth",shieldBaseWidth);
+  Control.addVariable(keyName+"ShieldTopWidth",shieldTopWidth);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"BladeMat",bladeMat);

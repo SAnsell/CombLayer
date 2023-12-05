@@ -63,12 +63,13 @@ class GTFGateValve :
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
 
-  int shieldActive;             ///< Shield active flag
+  bool shieldActive;            ///< Shield active flag
   double shieldWidth;           ///< Shield width
   double shieldDepth;           ///< Shield depth
   double shieldHeight;          ///< Shield height
   double shieldBaseThick;       ///< Shield base plate thickness
   double shieldBaseWidth;       ///< Shield base plate width
+  double shieldTopWidth;        ///< Shield top truncated part width
 
   int voidMat;                  ///< Void material
   int bladeMat;                 ///< blade material

@@ -59,6 +59,7 @@
 #include "CellMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "Quaternion.h"
 #include "SurfMap.h"
 
 #include "GTFGateValve.h"
@@ -70,7 +71,7 @@ GTFGateValve::GTFGateValve(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  closed(0)
+  closed(0),shieldActive(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -93,6 +94,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   shieldHeight(A.shieldHeight),
   shieldBaseThick(A.shieldBaseThick),
   shieldBaseWidth(A.shieldBaseWidth),
+  shieldTopWidth(A.shieldTopWidth),
   voidMat(A.voidMat),bladeMat(A.bladeMat),wallMat(A.wallMat),
   shieldMat(A.shieldMat)
   /*!
@@ -137,6 +139,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       shieldHeight=A.shieldHeight;
       shieldBaseThick=A.shieldBaseThick;
       shieldBaseWidth=A.shieldBaseWidth;
+      shieldTopWidth=A.shieldTopWidth;
       voidMat=A.voidMat;
       bladeMat=A.bladeMat;
       wallMat=A.wallMat;
@@ -189,12 +192,13 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeLift=Control.EvalVar<double>(keyName+"BladeLift");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
-  shieldActive=Control.EvalDefVar<int>(keyName+"ShieldActive",0);
+  shieldActive=Control.EvalDefVar<int>(keyName+"ShieldActive",shieldActive);
   shieldWidth=Control.EvalVar<int>(keyName+"ShieldWidth");
   shieldDepth=Control.EvalVar<double>(keyName+"ShieldDepth");
   shieldHeight=Control.EvalVar<double>(keyName+"ShieldHeight");
   shieldBaseThick=Control.EvalVar<double>(keyName+"ShieldBaseThick");
   shieldBaseWidth=Control.EvalVar<double>(keyName+"ShieldBaseWidth");
+  shieldTopWidth=Control.EvalVar<double>(keyName+"ShieldTopWidth");
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
@@ -299,6 +303,14 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+414,Origin+X*(shieldBaseWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+415,Origin-Z*(shieldDepth+shieldBaseThick),Z);
 
+  const Geometry::Quaternion qTop1 = Geometry::Quaternion::calcQRotDeg(-45, Y);
+  const Geometry::Vec3D vTop1(qTop1.makeRotate(Z));
+  ModelSupport::buildPlane(SMap,buildIndex+417,Origin+Z*shieldHeight-X*(shieldTopWidth/2.0),vTop1);
+
+  const Geometry::Quaternion qTop2 = Geometry::Quaternion::calcQRotDeg(45, Y);
+  const Geometry::Vec3D vTop2(qTop2.makeRotate(Z));
+  ModelSupport::buildPlane(SMap,buildIndex+418,Origin+Z*shieldHeight+X*(shieldTopWidth/2.0),vTop2);
+
   return;
 }
 
@@ -374,8 +386,13 @@ GTFGateValve::createObjects(Simulation& System)
   if (portAExtends || portBExtends)
     {
       if (shieldActive) { // assume both port extend, otherwise the shield does not make sence
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 403 -404 117 405 -406");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 403 -404 117 405 -406 -417 -418");
 	makeCell("ShieldFront",System,cellIndex++,shieldMat,0.0,HR*frontHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 417 403 -406");
+	makeCell("ShieldFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 418 -404 -406");
+	makeCell("ShieldFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 403 -404 217 405 -406");
 	makeCell("ShieldBack",System,cellIndex++,shieldMat,0.0,HR*backHR);
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -405");
