@@ -56,7 +56,7 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   portAThick(1.0),portALen(1.0),
   portBRadius(CF40::flangeRadius),portBThick(1.0),portBLen(1.0),
   bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),
-  clampActive(1),clampWidth(25.0),
+  clampWidth(25.0),
   clampDepth(10.9),
   clampHeight(10.9),
   clampBulkHeight(17.0),
@@ -278,7 +278,6 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"BladeThick",bladeThick);
   Control.addVariable(keyName+"BladeRadius",bladeRadius);
 
-  Control.addVariable(keyName+"ClampActive",clampActive);
   Control.addVariable(keyName+"ClampWidth",clampWidth);
   Control.addVariable(keyName+"ClampDepth",clampDepth);
   Control.addVariable(keyName+"ClampHeight",clampHeight);

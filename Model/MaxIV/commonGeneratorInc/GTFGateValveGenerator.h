@@ -59,7 +59,6 @@ class GTFGateValveGenerator
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
 
-  int clampActive;             ///< Clamp active flag
   int clampWidth;              ///< Clamp width
   double clampDepth;           ///< Clamp depth
   double clampHeight;          ///< Clamp height

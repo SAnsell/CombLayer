@@ -63,7 +63,6 @@ class GTFGateValve :
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
 
-  bool clampActive;             ///< Clamp active flag
   double clampWidth;            ///< Clamp width
   double clampDepth;            ///< Clamp depth
   double clampHeight;           ///< Clamp height

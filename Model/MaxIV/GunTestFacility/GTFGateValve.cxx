@@ -71,7 +71,7 @@ GTFGateValve::GTFGateValve(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  closed(0),clampActive(1)
+  closed(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -88,7 +88,6 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   portBRadius(A.portBRadius),portBThick(A.portBThick),
   portBLen(A.portBLen),closed(A.closed),bladeLift(A.bladeLift),
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
-  clampActive(A.clampActive),
   clampWidth(A.clampWidth),
   clampDepth(A.clampDepth),
   clampHeight(A.clampHeight),
@@ -138,7 +137,6 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeLift=A.bladeLift;
       bladeThick=A.bladeThick;
       bladeRadius=A.bladeRadius;
-      clampActive=A.clampActive;
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
       clampHeight=A.clampHeight;
@@ -202,7 +200,6 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeLift=Control.EvalVar<double>(keyName+"BladeLift");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
-  clampActive=Control.EvalDefVar<int>(keyName+"ClampActive",clampActive);
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
   clampHeight=Control.EvalVar<double>(keyName+"ClampHeight");
@@ -348,9 +345,6 @@ GTFGateValve::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  const bool portAExtends(wallThick<=portALen);  // port extends
-  const bool portBExtends(wallThick<=portBLen);  // port extends
-
   const HeadRule frontHR=getFrontRule();  // 101
   const HeadRule backHR=getBackRule();    // -102
   const HeadRule frontComp=getFrontComplement();  // -101
@@ -381,12 +375,6 @@ GTFGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 -107");
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  if (!portAExtends)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -117");
-      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,HR*frontComp);
-    }
-
   // back plate
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 13 -14 15 -16 207");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,HR);
@@ -397,81 +385,56 @@ GTFGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -207");
   makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  if (!portBExtends)
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -217");
-      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,HR*backComp);
-    }
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 416 -406 -417 -418 117");
+  makeCell("ClampFrontTruncated",System,cellIndex++,clampMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 403 -404 405 -416 117");
+  makeCell("ClampFrontBulk",System,cellIndex++,clampMat,0.0,HR*frontHR);
 
-  if (!clampActive) {
-    HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
-    addOuterSurf(HR);
-  }
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 417 403 416 -406");
+  makeCell("ClampFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 418 -404 416 -406");
+  makeCell("ClampFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  if (portAExtends || portBExtends)
-    {
-      if (clampActive) { // assume both port extend, otherwise the clamp does not make sence
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 416 -406 -417 -418 117");
-	makeCell("ClampFrontTruncated",System,cellIndex++,clampMat,0.0,HR*frontHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 403 -404 405 -416 117");
-	makeCell("ClampFrontBulk",System,cellIndex++,clampMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 416 -406 -417 -418 217");
+  makeCell("ClampBackTruncated",System,cellIndex++,clampMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 403 -404 405 -416 217");
+  makeCell("ClampBackBulk",System,cellIndex++,clampMat,0.0,HR*backHR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 417 403 416 -406");
-	makeCell("ClampFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 418 -404 416 -406");
-	makeCell("ClampFrontVoid",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 417 403 416 -406");
+  makeCell("ClampBackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 418 -404 416 -406");
+  makeCell("ClampBackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 416 -406 -417 -418 217");
-	makeCell("ClampBackTruncated",System,cellIndex++,clampMat,0.0,HR*backHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 403 -404 405 -416 217");
-	makeCell("ClampBackBulk",System,cellIndex++,clampMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -405");
+  makeCell("ClampBase",System,cellIndex++,clampMat,0.0,HR*frontHR*backHR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 417 403 416 -406");
-	makeCell("ClampBackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 418 -404 416 -406");
-	makeCell("ClampBackVoid",System,cellIndex++,voidMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -403 405 -406");
+  makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -405");
-	makeCell("ClampBase",System,cellIndex++,clampMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 403 -13 405 -406");
+  makeCell("ClampVoidInner",System,cellIndex++,voidMat,0.0,HR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -403 405 -406");
-	makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 14 -404 405 -406");
+  makeCell("ClampVoidInner",System,cellIndex++,voidMat,0.0,HR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 403 -13 405 -406");
-	makeCell("ClampVoidInner",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 -414 405 -406");
+  makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 14 -404 405 -406");
-	makeCell("ClampVoidInner",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 405 -15");
+  makeCell("ClampVoidBase",System,cellIndex++,voidMat,0.0,HR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"404 -414 405 -406");
-	makeCell("ClampVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -13 406 -505");
+  makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -414 406 -505");
+  makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -11 406 -505");
+  makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 12 406 -505");
+  makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 405 -15");
-	makeCell("ClampVoidBase",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -16");
+  addOuterSurf(HR*frontHR*backHR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -13 406 -505");
-	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -414 406 -505");
-	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -11 406 -505");
-	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 12 406 -505");
-	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*backHR);
-
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -16");
-	addOuterSurf(HR*frontHR*backHR);
-      } else {
-	if (!portAExtends)
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -217");
-	else if (!portBExtends)
-	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -117");
-	else
-	  HR=ModelSupport::getHeadRule
-	    (SMap,buildIndex,"((-11 -117) : (12 -217))");
-
-	addOuterUnionSurf(HR*frontHR*backHR);
-      }
-    }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"503 -504 505 -16 (-11:12:-13:14)");
   makeCell("LSFlangeLow",System,cellIndex++,lsFlangeMat,0.0,HR*frontHR*backHR);
