@@ -356,13 +356,15 @@ GTFGateValve::createObjects(Simulation& System)
   const HeadRule frontComp=getFrontComplement();  // -101
   const HeadRule backComp=getBackComplement();    // 102
   // Void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				"1 -2 3 -4 5 -6 (307:-301:302)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -16 (307:-301:302)");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // Main body
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				"1 -2 13 -14 15 -16 (-3:4:-5:6)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -3 15 -16");
+  makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 4 -14 15 -16");
+  makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4  15 -5");
   makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
 
   // blade
