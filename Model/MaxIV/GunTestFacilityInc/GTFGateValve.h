@@ -72,10 +72,15 @@ class GTFGateValve :
   double clampBaseWidth;        ///< Clamp base plate width
   double clampTopWidth;         ///< Clamp top truncated part width
 
+  double lsFlangeWidth;         ///< Lifting structure square flange width
+  double lsFlangeDepth;         ///< Lifting structure square flange depth
+  double lsFlangeHeight;        ///< Lifting structure square flange height
+
   int voidMat;                  ///< Void material
   int bladeMat;                 ///< blade material
   int wallMat;                  ///< Pipe material
   int clampMat;                ///< Clamp material
+  int lsFlangeMat;              ///< Lifting structure square flange material
 
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,const long int) override;

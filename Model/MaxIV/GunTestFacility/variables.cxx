@@ -249,7 +249,7 @@ namespace setVariable
     name = "Gate";
     GTFGateValveGenerator GateGen;
 
-    GateGen.setOuter(4.5-0.5, 15.5-1.0, 18.0-0.5, 8.2-0.5); // measured (-0.5 to account for wall thick)
+    GateGen.setOuter(4.5-0.5, 15.5-1.0, 18.0-0.5+1, 8.2-0.5); // measured (-0.5 to account for wall thick, +1 for the square hutch)
     GateGen.setBladeMat("Stainless304L"); // TODO
     GateGen.setBladeThick(0.8); // TODO
     GateGen.setAPortCF<CF63>(); // TODO

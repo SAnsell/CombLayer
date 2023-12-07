@@ -96,8 +96,12 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   clampBaseThick(A.clampBaseThick),
   clampBaseWidth(A.clampBaseWidth),
   clampTopWidth(A.clampTopWidth),
+  lsFlangeWidth(A.lsFlangeWidth),
+  lsFlangeDepth(A.lsFlangeDepth),
+  lsFlangeHeight(A.lsFlangeHeight),
   voidMat(A.voidMat),bladeMat(A.bladeMat),wallMat(A.wallMat),
-  clampMat(A.clampMat)
+  clampMat(A.clampMat),
+  lsFlangeMat(A.lsFlangeMat)
   /*!
     Copy constructor
     \param A :: GTFGateValve to copy
@@ -142,10 +146,14 @@ GTFGateValve::operator=(const GTFGateValve& A)
       clampBaseThick=A.clampBaseThick;
       clampBaseWidth=A.clampBaseWidth;
       clampTopWidth=A.clampTopWidth;
+      lsFlangeWidth=A.lsFlangeWidth;
+      lsFlangeDepth=A.lsFlangeDepth;
+      lsFlangeHeight=A.lsFlangeHeight;
       voidMat=A.voidMat;
       bladeMat=A.bladeMat;
       wallMat=A.wallMat;
       clampMat=A.clampMat;
+      lsFlangeMat=A.lsFlangeMat;
     }
   return *this;
 }
@@ -202,11 +210,15 @@ GTFGateValve::populate(const FuncDataBase& Control)
   clampBaseThick=Control.EvalVar<double>(keyName+"ClampBaseThick");
   clampBaseWidth=Control.EvalVar<double>(keyName+"ClampBaseWidth");
   clampTopWidth=Control.EvalVar<double>(keyName+"ClampTopWidth");
+  lsFlangeWidth=Control.EvalVar<double>(keyName+"LSFlangeWidth");
+  lsFlangeDepth=Control.EvalVar<double>(keyName+"LSFlangeDepth");
+  lsFlangeHeight=Control.EvalVar<double>(keyName+"LSFlangeHeight");
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   clampMat=ModelSupport::EvalMat<int>(Control,keyName+"ClampMat");
+  lsFlangeMat=ModelSupport::EvalMat<int>(Control,keyName+"LSFlangeMat");
 
   return;
 }
@@ -314,6 +326,13 @@ GTFGateValve::createSurfaces()
   const Geometry::Quaternion qTop2 = Geometry::Quaternion::calcQRotDeg(45, Y);
   const Geometry::Vec3D vTop2(qTop2.makeRotate(Z));
   ModelSupport::buildPlane(SMap,buildIndex+418,Origin+Z*clampHeight+X*(clampTopWidth/2.0),vTop2);
+
+  // Lifting structure
+  /// Square flange
+  ModelSupport::buildPlane(SMap,buildIndex+503,Origin-X*(lsFlangeWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+504,Origin+X*(lsFlangeWidth/2.0),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+505,buildIndex+16,Z,-lsFlangeDepth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+506,buildIndex+16,Z,lsFlangeHeight);
 
   return;
 }
@@ -428,13 +447,13 @@ GTFGateValve::createObjects(Simulation& System)
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 405 -15");
 	makeCell("ClampVoidBase",System,cellIndex++,voidMat,0.0,HR);
 
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -13 406 -16");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -13 406 -505");
 	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -414 406 -16");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"14 -414 406 -505");
 	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -11 406 -16");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 -11 406 -505");
 	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*frontHR);
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 12 406 -16");
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 12 406 -505");
 	makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*backHR);
 
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -16");
@@ -451,6 +470,16 @@ GTFGateValve::createObjects(Simulation& System)
 	addOuterUnionSurf(HR*frontHR*backHR);
       }
     }
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"503 -504 505 -16 (-11:12:-13:14)");
+  makeCell("LSFlangeLow",System,cellIndex++,lsFlangeMat,0.0,HR*frontHR*backHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -503 505 -16");
+  makeCell("LSFlangeLowVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"504 -414 505 -16");
+  makeCell("LSFlangeLowVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+
 
   return;
 }

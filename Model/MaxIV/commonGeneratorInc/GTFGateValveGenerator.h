@@ -68,6 +68,10 @@ class GTFGateValveGenerator
   double clampBaseWidth;       ///< Clamp base plate width
   double clampTopWidth;        ///< Clamp top truncated part width
 
+  double lsFlangeWidth;         ///< Lifting structure square flange width
+  double lsFlangeDepth;         ///< Lifting structure square flange depth
+  double lsFlangeHeight;        ///< Lifting structure square flange height
+
   double liftWidth;             ///< Lifting width
   double liftHeight;            ///< Height of lifting space
 
@@ -75,6 +79,7 @@ class GTFGateValveGenerator
   std::string bladeMat;         ///< Void material
   std::string wallMat;          ///< Pipe material
   std::string clampMat;        ///< Clamp material
+  std::string lsFlangeMat;              ///< Lifting structure square flange material
 
  public:
 
