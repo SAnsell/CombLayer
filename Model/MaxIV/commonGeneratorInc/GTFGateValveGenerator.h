@@ -70,6 +70,7 @@ class GTFGateValveGenerator
   double lsFlangeWidth;         ///< Lifting structure square flange width
   double lsFlangeDepth;         ///< Lifting structure square flange depth
   double lsFlangeHeight;        ///< Lifting structure square flange height
+  double lsFlangeHoleRadius;    ///< Lifting structure square flange hole radius
 
   double liftWidth;             ///< Lifting width
   double liftHeight;            ///< Height of lifting space

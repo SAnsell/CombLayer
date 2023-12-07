@@ -74,6 +74,7 @@ class GTFGateValve :
   double lsFlangeWidth;         ///< Lifting structure square flange width
   double lsFlangeDepth;         ///< Lifting structure square flange depth
   double lsFlangeHeight;        ///< Lifting structure square flange height
+  double lsFlangeHoleRadius;    ///< Lifting structure square flange hole radius
 
   int voidMat;                  ///< Void material
   int bladeMat;                 ///< blade material

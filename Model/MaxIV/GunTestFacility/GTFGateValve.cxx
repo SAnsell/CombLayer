@@ -98,6 +98,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   lsFlangeWidth(A.lsFlangeWidth),
   lsFlangeDepth(A.lsFlangeDepth),
   lsFlangeHeight(A.lsFlangeHeight),
+  lsFlangeHoleRadius(A.lsFlangeHoleRadius),
   voidMat(A.voidMat),bladeMat(A.bladeMat),wallMat(A.wallMat),
   clampMat(A.clampMat),
   lsFlangeMat(A.lsFlangeMat)
@@ -147,6 +148,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       lsFlangeWidth=A.lsFlangeWidth;
       lsFlangeDepth=A.lsFlangeDepth;
       lsFlangeHeight=A.lsFlangeHeight;
+      lsFlangeHoleRadius=A.lsFlangeHoleRadius;
       voidMat=A.voidMat;
       bladeMat=A.bladeMat;
       wallMat=A.wallMat;
@@ -210,6 +212,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
   lsFlangeWidth=Control.EvalVar<double>(keyName+"LSFlangeWidth");
   lsFlangeDepth=Control.EvalVar<double>(keyName+"LSFlangeDepth");
   lsFlangeHeight=Control.EvalVar<double>(keyName+"LSFlangeHeight");
+  lsFlangeHoleRadius=Control.EvalVar<double>(keyName+"LSFlangeMatHoleRadius");
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
@@ -330,6 +333,7 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+504,Origin+X*(lsFlangeWidth/2.0),X);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+505,buildIndex+16,Z,-lsFlangeDepth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+506,buildIndex+16,Z,lsFlangeHeight);
+  ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,Z,lsFlangeHoleRadius);
 
   return;
 }
@@ -432,19 +436,20 @@ GTFGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 12 406 -505");
   makeCell("OuterVoidTop",System,cellIndex++,voidMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -16");
-  addOuterSurf(HR*frontHR*backHR);
-
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"503 -504 505 -16 (-11:12:-13:14)");
   makeCell("LSFlangeLow",System,cellIndex++,lsFlangeMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"503 -504 16 -506 507");
+  makeCell("LSFlangeUp",System,cellIndex++,lsFlangeMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"16 -506 -507");
+  makeCell("LSFlangeUpHole",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -503 505 -16");
-  makeCell("LSFlangeLowVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -503 505 -506");
+  makeCell("LSFlangeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"504 -414 505 -506");
+  makeCell("LSFlangeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"504 -414 505 -16");
-  makeCell("LSFlangeLowVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -506");
+  addOuterSurf(HR*frontHR*backHR);
 
   return;
 }
