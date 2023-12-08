@@ -353,8 +353,12 @@ GTFGateValve::createObjects(Simulation& System)
   const HeadRule backHR=getBackRule();    // -102
   const HeadRule frontComp=getFrontComplement();  // -101
   const HeadRule backComp=getBackComplement();    // 102
-  // Void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -16 (307:-301:302)");
+  // Inner void
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -301 3 -4 5 -16");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"302 -2 3 -4 5 -16");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 3 -4 5 -16 307");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   // Main body
