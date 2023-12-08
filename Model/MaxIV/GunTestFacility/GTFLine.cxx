@@ -168,7 +168,7 @@ GTFLine::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("GTFLine","buildObjects");
 
-  int outerCell;
+  int outerCell, outerCell1;
 
   buildZone.addInsertCells(this->getInsertCells());
 
@@ -183,13 +183,17 @@ GTFLine::buildObjects(Simulation& System)
   pipeA->createAll(System, *extension, "back");
 
   tdcSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
-  tdcSystem::pipeTerminate(System,buildZone,pipeA);
+  outerCell = tdcSystem::pipeTerminate(System,buildZone,pipeA);
 
-  constructSystem::constructUnit
+  outerCell1 = constructSystem::constructUnit
     (System,buildZone,*pipeA,"back",*gate);
+
+  gate->insertInCell("Shaft", System, outerCell);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
+
+  gate->insertInCell("Shaft", System, outerCell1+1);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
