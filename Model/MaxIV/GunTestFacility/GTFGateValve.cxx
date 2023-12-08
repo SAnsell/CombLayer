@@ -55,6 +55,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ExternalCut.h"
@@ -69,7 +70,7 @@ namespace constructSystem
 
 GTFGateValve::GTFGateValve(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedGroup("Main", "Flange", "Shaft"),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   closed(0)
   /*!
@@ -79,7 +80,7 @@ GTFGateValve::GTFGateValve(const std::string& Key) :
 {}
 
 GTFGateValve::GTFGateValve(const GTFGateValve& A) :
-  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
@@ -124,7 +125,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
   if (this!=&A)
     {
       attachSystem::FixedRotate::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -481,22 +482,19 @@ GTFGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"517 -527 506 -516");
   makeCell("LSShaft",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 525 -526 527");
-  makeCell("LSShaftVoidOuterMid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 506 -525 537");
-  makeCell("LSShaftVoidOuterLow",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 526 -516 537");
-  makeCell("LSShaftVoidOuterUp",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"527 -537 525 -526");
+  makeCell("LSShaftVoidOuter",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"506 -525 527 -537");
   makeCell("LSShaftFlangeLow",System,cellIndex++,wallMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"526 -516 527 -537");
   makeCell("LSShaftFlangeUp",System,cellIndex++,wallMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -506");
+  addOuterSurf("Main",HR*frontHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -516");
-  addOuterSurf(HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-537 506 -516");
+  addOuterSurf("Shaft",HR);
 
   return;
 }
