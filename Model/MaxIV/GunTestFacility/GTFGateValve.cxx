@@ -99,6 +99,11 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   lsFlangeDepth(A.lsFlangeDepth),
   lsFlangeHeight(A.lsFlangeHeight),
   lsFlangeHoleRadius(A.lsFlangeHoleRadius),
+  lsShaftRadius(A.lsShaftRadius),
+  lsShaftThick(A.lsShaftThick),
+  lsShaftLength(A.lsShaftLength),
+  lsShaftFlangeRadius(A.lsShaftFlangeRadius),
+  lsShaftFlangeThick(A.lsShaftFlangeThick),
   voidMat(A.voidMat),bladeMat(A.bladeMat),wallMat(A.wallMat),
   clampMat(A.clampMat),
   lsFlangeMat(A.lsFlangeMat)
@@ -149,6 +154,11 @@ GTFGateValve::operator=(const GTFGateValve& A)
       lsFlangeDepth=A.lsFlangeDepth;
       lsFlangeHeight=A.lsFlangeHeight;
       lsFlangeHoleRadius=A.lsFlangeHoleRadius;
+      lsShaftRadius=A.lsShaftRadius;
+      lsShaftThick=A.lsShaftThick;
+      lsShaftLength=A.lsShaftLength;
+      lsShaftFlangeRadius=A.lsShaftFlangeRadius;
+      lsShaftFlangeThick=A.lsShaftFlangeThick;
       voidMat=A.voidMat;
       bladeMat=A.bladeMat;
       wallMat=A.wallMat;
@@ -213,6 +223,11 @@ GTFGateValve::populate(const FuncDataBase& Control)
   lsFlangeDepth=Control.EvalVar<double>(keyName+"LSFlangeDepth");
   lsFlangeHeight=Control.EvalVar<double>(keyName+"LSFlangeHeight");
   lsFlangeHoleRadius=Control.EvalVar<double>(keyName+"LSFlangeMatHoleRadius");
+  lsShaftRadius=Control.EvalVar<double>(keyName+"LSShaftRadius");
+  lsShaftThick=Control.EvalVar<double>(keyName+"LSShaftThick");
+  lsShaftLength=Control.EvalVar<double>(keyName+"LSShaftLength");
+  lsShaftFlangeRadius=Control.EvalVar<double>(keyName+"LSShaftFlangeRadius");
+  lsShaftFlangeThick=Control.EvalVar<double>(keyName+"LSShaftFlangeThick");
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
@@ -334,6 +349,13 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+505,buildIndex+16,Z,-lsFlangeDepth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+506,buildIndex+16,Z,lsFlangeHeight);
   ModelSupport::buildCylinder(SMap,buildIndex+507,Origin,Z,lsFlangeHoleRadius);
+  /// Shaft
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+516,buildIndex+506,Z,lsShaftLength);
+  ModelSupport::buildCylinder(SMap,buildIndex+517,Origin,Z,lsShaftRadius);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+525,buildIndex+506,Z,lsShaftFlangeThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+526,buildIndex+516,Z,-lsShaftFlangeThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+527,Origin,Z,lsShaftRadius+lsShaftThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+537,Origin,Z,lsShaftFlangeRadius);
 
   return;
 }
@@ -452,7 +474,28 @@ GTFGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"504 -414 505 -506");
   makeCell("LSFlangeVoid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -506");
+  // Lifting structure shaft
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-517 506 -516");
+  makeCell("LSShaftVoidInner",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"517 -527 506 -516");
+  makeCell("LSShaft",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 525 -526 527");
+  makeCell("LSShaftVoidOuterMid",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 506 -525 537");
+  makeCell("LSShaftVoidOuterLow",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 526 -516 537");
+  makeCell("LSShaftVoidOuterUp",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"506 -525 527 -537");
+  makeCell("LSShaftFlangeLow",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"526 -516 527 -537");
+  makeCell("LSShaftFlangeUp",System,cellIndex++,wallMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"413 -414 415 -516");
   addOuterSurf(HR*frontHR*backHR);
 
   return;

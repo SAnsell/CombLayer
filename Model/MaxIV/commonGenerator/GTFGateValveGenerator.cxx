@@ -67,6 +67,11 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   lsFlangeDepth(2.2),
   lsFlangeHeight(2.0),
   lsFlangeHoleRadius(1.5),
+  lsShaftRadius(1.9),
+  lsShaftThick(0.3),
+  lsShaftLength(12.4),
+  lsShaftFlangeRadius(4.0),
+  lsShaftFlangeThick(1.0),
   liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
   bladeMat("Aluminium"),wallMat("Stainless304L"),
   clampMat("Stainless304L"),
@@ -290,6 +295,11 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"LSFlangeDepth",lsFlangeDepth);
   Control.addVariable(keyName+"LSFlangeHeight",lsFlangeHeight);
   Control.addVariable(keyName+"LSFlangeMatHoleRadius",lsFlangeHoleRadius);
+  Control.addVariable(keyName+"LSShaftRadius",lsShaftRadius);
+  Control.addVariable(keyName+"LSShaftThick",lsShaftThick);
+  Control.addVariable(keyName+"LSShaftLength",lsShaftLength);
+  Control.addVariable(keyName+"LSShaftFlangeRadius",lsShaftFlangeRadius);
+  Control.addVariable(keyName+"LSShaftFlangeThick",lsShaftFlangeThick);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"BladeMat",bladeMat);
