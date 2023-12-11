@@ -93,6 +93,8 @@ RFGun::RFGun(const RFGun& A) :
   length(A.length),cavityRadius(A.cavityRadius),cavityLength(A.cavityLength),
   cavitySideWallThick(A.cavitySideWallThick),
   cavityOffset(A.cavityOffset),
+  irisRadius(A.irisRadius),
+  irisStretch(A.irisStretch),
   wallThick(A.wallThick),
   frontFlangeThick(A.frontFlangeThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -122,6 +124,8 @@ RFGun::operator=(const RFGun& A)
       cavityLength=A.cavityLength;
       cavitySideWallThick=A.cavitySideWallThick;
       cavityOffset=A.cavityOffset;
+      irisRadius=A.irisRadius;
+      irisStretch=A.irisStretch;
       wallThick=A.wallThick;
       frontFlangeThick=A.frontFlangeThick;
       mainMat=A.mainMat;
@@ -146,6 +150,23 @@ RFGun::~RFGun()
   */
 {}
 
+std::string
+RFGun::irisSurf(const double A, const double R, const double y)
+/*!
+  Return sq surface with two-sheeted hyperboloid of revolution (iris surface)
+ */
+{
+  ELog::RegMethod RegA("RFGun","irisSurf");
+
+  const double B = -1;
+  const double C = A;
+  const double G = -C*R*R;
+  std::ostringstream cx;
+  cx<<"sq " << A << " " << B << " " << C << " 0 0 0 " << G << " 0 " << y << " 0";
+  return cx.str();
+}
+
+
 void
 RFGun::populate(const FuncDataBase& Control)
   /*!
@@ -162,6 +183,8 @@ RFGun::populate(const FuncDataBase& Control)
   cavityLength=Control.EvalVar<double>(keyName+"CavityLength");
   cavitySideWallThick=Control.EvalVar<double>(keyName+"CavitySideWallThick");
   cavityOffset=Control.EvalVar<double>(keyName+"CavityOffset");
+  irisRadius=Control.EvalVar<double>(keyName+"IrisRadius");
+  irisStretch=Control.EvalVar<double>(keyName+"IrisStretch");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   frontFlangeThick=Control.EvalVar<double>(keyName+"FrontFlangeThick");
 
@@ -213,17 +236,11 @@ RFGun::createSurfaces()
   const auto p31 = ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-cavitySideWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,cavitySideWallThick);
 
-  // Iris surface: hyperboloid of revolution of one sheet
+  // Iris surface
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  Geometry::General *GA;
-
   const double y = (p31->getDistance() + p21->getDistance())/2.0;
-  const double R = 0.225; // 0.225 -> 3 cm diameter
-  std::ostringstream cx;
-  cx<<"sq 0.1 -1 0.1    0 0 0 " << -R << " 0 " << y << " 0";
-
-  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
-  GA->setSurface(cx.str());
+  Geometry::General *GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
+  GA->setSurface(irisSurf(irisStretch, irisRadius, y));
   SMap.registerSurf(GA);
 
   return;

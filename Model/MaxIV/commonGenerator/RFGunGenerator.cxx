@@ -50,13 +50,15 @@ namespace setVariable
 {
 
 RFGunGenerator::RFGunGenerator() :
-  length(9.7), // +- 2 mm
+  length(9.7), // TODO
   cavityRadius(4.0),cavityLength(1.0),
-  cavitySideWallThick(1.9), // measured
-  cavityOffset(4.0), // measured
-  wallThick(1.0),
-  frontFlangeThick(2.2),
-  mainMat("Void"),wallMat("Stainless316L")
+  cavitySideWallThick(1.9), // TODO
+  cavityOffset(4.0), // TODO
+  irisRadius(1.5), // measured
+  irisStretch(0.1),
+  wallThick(1.0), // TODO
+  frontFlangeThick(2.2), // TODO
+  mainMat("Void"),wallMat("Stainless316L") // TODO
   /*!
     Constructor and defaults
   */
@@ -84,6 +86,8 @@ RFGunGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CavityLength",cavityLength);
   Control.addVariable(keyName+"CavitySideWallThick",cavitySideWallThick);
   Control.addVariable(keyName+"CavityOffset",cavityOffset);
+  Control.addVariable(keyName+"IrisRadius",irisRadius);
+  Control.addVariable(keyName+"IrisStretch",irisStretch);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"FrontFlangeThick",frontFlangeThick);
   Control.addVariable(keyName+"MainMat",mainMat);

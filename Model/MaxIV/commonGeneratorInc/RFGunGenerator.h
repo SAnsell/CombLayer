@@ -44,6 +44,8 @@ class RFGunGenerator
   double cavityLength;          ///< Cavity length
   double cavitySideWallThick;   ///< Main cavity side wall thickness
   double cavityOffset;          ///< Main cavity offset
+  double irisRadius;            ///< Cavity iris radius
+  double irisStretch;           ///< Cavity iris stretching
   double wallThick;             ///< Wall thickness
   double frontFlangeThick;      ///< Front flange thickness
 
