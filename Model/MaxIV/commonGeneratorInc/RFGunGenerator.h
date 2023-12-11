@@ -47,6 +47,8 @@ class RFGunGenerator
   double irisRadius;            ///< Cavity iris radius
   double irisStretch;           ///< Cavity iris stretching
   double wallThick;             ///< Wall thickness
+  size_t nFrameFacets;          ///< Number of frame facets
+  double frameWidth;            ///< Frame width
   double frontPreFlangeThick;   ///< Front pre flange outer radius (smaller)
   double frontPreFlangeRadius;  ///< Front pre flange outer radius (smaller)
   double frontFlangeThick;      ///< Front flange thickness

@@ -96,6 +96,8 @@ RFGun::RFGun(const RFGun& A) :
   irisRadius(A.irisRadius),
   irisStretch(A.irisStretch),
   wallThick(A.wallThick),
+  nFrameFacets(A.nFrameFacets),
+  frameWidth(A.frameWidth),
   frontPreFlangeThick(A.frontPreFlangeThick),
   frontPreFlangeRadius(A.frontPreFlangeRadius),
   frontFlangeThick(A.frontFlangeThick),
@@ -130,6 +132,8 @@ RFGun::operator=(const RFGun& A)
       irisRadius=A.irisRadius;
       irisStretch=A.irisStretch;
       wallThick=A.wallThick;
+      nFrameFacets=A.nFrameFacets;
+      frameWidth=A.frameWidth;
       frontPreFlangeThick=A.frontPreFlangeThick;
       frontPreFlangeRadius=A.frontPreFlangeRadius;
       frontFlangeThick=A.frontFlangeThick;
@@ -172,6 +176,21 @@ RFGun::irisSurf(const double A, const double R, const double y)
   return cx.str();
 }
 
+double
+RFGun::getFrameRadius() const
+/*!
+  Return the radius of the circumscribed circle around the frame
+ */
+{
+  ELog::RegMethod RegA("RFGun","getFrameRadius");
+
+  const double n = static_cast<double>(nFrameFacets);
+  const double angle = M_PI/n; // half of angle between the facets
+  const double a = frameWidth*tan(angle); // facet length (2D)
+
+  return a/(2.0 * sin(M_PI/n));
+}
+
 
 void
 RFGun::populate(const FuncDataBase& Control)
@@ -192,6 +211,8 @@ RFGun::populate(const FuncDataBase& Control)
   irisRadius=Control.EvalVar<double>(keyName+"IrisRadius");
   irisStretch=Control.EvalVar<double>(keyName+"IrisStretch");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  nFrameFacets=Control.EvalVar<size_t>(keyName+"NFrameFacets");
+  frameWidth=Control.EvalVar<double>(keyName+"FrameWidth");
   frontPreFlangeThick=Control.EvalVar<double>(keyName+"FrontPreFlangeThick");
   frontPreFlangeRadius=Control.EvalVar<double>(keyName+"FrontPreFlangeRadius");
   frontFlangeThick=Control.EvalVar<double>(keyName+"FrontFlangeThick");
@@ -239,8 +260,47 @@ RFGun::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,frontPreFlangeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,frontFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,cavityRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,irisRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+47,Origin,Y,irisRadius+wallThick);
 
   ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+1,Y,frontFlangeThick);
+  const auto p22 = ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Y,cavityOffset);
+  const auto p31 = ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+22,Y,irisThick);
+  const auto p32 = ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+31,Y,cavityLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+42,buildIndex+32,Y,irisThick/2.0);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+43,buildIndex+32,Y,wallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+53,buildIndex+42,Y,wallThick); // dummy
+
+  int CN(buildIndex+1000);
+  double angle(0.0);
+  const double dangle = 2.0*M_PI/static_cast<double>(nFrameFacets);
+  for (size_t i=0; i<nFrameFacets; ++i) {
+    const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
+    ModelSupport::buildPlane(SMap,CN+51,Origin+QR*(frameWidth/2.0),QR);
+    angle+=dangle;
+    CN++;
+  }
+  ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,getFrameRadius()+1.0);
+
+  // Iris1 surface
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  double y = (p22->getDistance() + p31->getDistance())/2.0;
+  Geometry::General *GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
+  GA->setSurface(irisSurf(irisStretch, irisRadius, y));
+  SMap.registerSurf(GA);
+
+  // Iris2 surface
+  y += cavityLength+irisThick;
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+527);
+  GA->setSurface(irisSurf(irisStretch, irisRadius, y));
+  SMap.registerSurf(GA);
+
+  // Back surface
+  GA = SurI.createUniqSurf<Geometry::General>(buildIndex+537);
+  GA->setSurface(irisSurf(irisStretch, irisRadius+wallThick, y+wallThick));
+  SMap.registerSurf(GA);
+
 
 
   // ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
@@ -250,12 +310,6 @@ RFGun::createSurfaces()
   // const auto p31 = ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-irisThick);
   // ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,irisThick);
 
-  // // Iris surface
-  // ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  // const double y = (p31->getDistance() + p21->getDistance())/2.0;
-  // Geometry::General *GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
-  // GA->setSurface(irisSurf(irisStretch, irisRadius, y));
-  // SMap.registerSurf(GA);
 
   return;
 }
@@ -284,14 +338,56 @@ RFGun::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 -7 ");
   makeCell("FrontFlangePre",System,cellIndex++,wallMat,0.0,HR*frontStr);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 7 -17");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 7 -1007");
   makeCell("FrontFlangePreVoid",System,cellIndex++,0,0.0,HR*frontStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 -17 ");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 17 -1007 ");
+  makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -17 ");
-  makeCell("Rest",System,cellIndex++,0,0.0,HR*backStr);
+  const std::string strFrame=
+    ModelSupport::getSeqIntersection(-51, -(50+static_cast<int>(nFrameFacets)),1);
+  const HeadRule HRFrame=ModelSupport::getHeadRule(SMap,buildIndex+1000,strFrame);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"21 27 -43");
+  HR *= HRFrame;
+  makeCell("Frame",System,cellIndex++,wallMat,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"21 -1007 -43");
+  HR *= HRFrame.complement();
+  makeCell("FrameOuterVoid",System,cellIndex++,0,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 -1007 43");
+  makeCell("FrameBackVoid",System,cellIndex++,0,0.0,HR*backStr);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 -27 ");
+  makeCell("06Cavity",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -31 -27 517 ");
+  makeCell("IrisWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -31 -517 ");
+  makeCell("Iris",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -27");
+  makeCell("Cavity",System,cellIndex++,0,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -42 -27 527 ");
+  makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 42 -37 : (32 -42 -527)");
+  makeCell("BackFlangeVoid",System,cellIndex++,0,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 42 37 -53 -537");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"53 37 -47");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"42 -53 -27 537 : 53 47 -27");
+  makeCell("BackFlangeOuterVoid",System,cellIndex++,0,0.0,HR*backStr);
 
   // HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 27 -17");
   // makeCell("FrontFlange",System,cellIndex++,0,0.0,HR*frontStr);
@@ -312,7 +408,7 @@ RFGun::createObjects(Simulation& System)
   // makeCell("MainCavityWallBack",System,cellIndex++,wallMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -17");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1007");
   addOuterSurf(HR*frontStr*backStr);
 
   return;

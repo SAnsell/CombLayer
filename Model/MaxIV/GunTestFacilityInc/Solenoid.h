@@ -32,7 +32,7 @@ namespace xraySystem
   \version 1.0
   \author Konstantin Batkov
   \date November 2023
-  \brief Solenoid
+  \brief Emittance compensating Solenoid
 */
 
 class Solenoid :

@@ -51,7 +51,9 @@ class RFGun :
   double irisThick;             ///< Iris thickness
   double irisRadius;            ///< Cavity iris radius
   double irisStretch;           ///< Cavity iris stretching
-  double wallThick;             ///< Wall thickness
+  double wallThick;             ///< Back wall thickness
+  size_t nFrameFacets;          ///< Number of frame facets
+  double frameWidth;            ///< Frame width
   double frontPreFlangeThick;   ///< Front pre flange outer radius (smaller)
   double frontPreFlangeRadius;  ///< Front pre flange outer radius (smaller)
   double frontFlangeThick;      ///< Front flange thickness
@@ -61,6 +63,7 @@ class RFGun :
   int wallMat;                  ///< Wall material
 
   std::string irisSurf(const double, const double, const double);
+  double getFrameRadius() const;
   void populate(const FuncDataBase&);
 
   void createSurfaces();
