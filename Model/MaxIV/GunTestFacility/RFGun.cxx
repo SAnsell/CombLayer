@@ -96,7 +96,10 @@ RFGun::RFGun(const RFGun& A) :
   irisRadius(A.irisRadius),
   irisStretch(A.irisStretch),
   wallThick(A.wallThick),
+  frontPreFlangeThick(A.frontPreFlangeThick),
+  frontPreFlangeRadius(A.frontPreFlangeRadius),
   frontFlangeThick(A.frontFlangeThick),
+  frontFlangeRadius(A.frontFlangeRadius),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -127,7 +130,10 @@ RFGun::operator=(const RFGun& A)
       irisRadius=A.irisRadius;
       irisStretch=A.irisStretch;
       wallThick=A.wallThick;
+      frontPreFlangeThick=A.frontPreFlangeThick;
+      frontPreFlangeRadius=A.frontPreFlangeRadius;
       frontFlangeThick=A.frontFlangeThick;
+      frontFlangeRadius=A.frontFlangeRadius;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -186,7 +192,10 @@ RFGun::populate(const FuncDataBase& Control)
   irisRadius=Control.EvalVar<double>(keyName+"IrisRadius");
   irisStretch=Control.EvalVar<double>(keyName+"IrisStretch");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  frontPreFlangeThick=Control.EvalVar<double>(keyName+"FrontPreFlangeThick");
+  frontPreFlangeRadius=Control.EvalVar<double>(keyName+"FrontPreFlangeRadius");
   frontFlangeThick=Control.EvalVar<double>(keyName+"FrontFlangeThick");
+  frontFlangeRadius=Control.EvalVar<double>(keyName+"FrontFlangeRadius");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -202,17 +211,17 @@ RFGun::createSurfaces()
 {
   ELog::RegMethod RegA("RFGun","createSurfaces");
 
-  if (!frontActive())
+   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(frontFlangeThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(frontPreFlangeThick),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+              SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+                                      frontPreFlangeThick);
     }
 
   if (!backActive())
@@ -224,24 +233,29 @@ RFGun::createSurfaces()
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
+              SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+                                      -wallThick);
     }
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,cavityRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,frontPreFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,frontFlangeRadius);
 
-  const auto p21 = ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(cavityOffset+frontFlangeThick),Y);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Y,cavityLength);
-  const auto p31 = ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-irisThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,irisThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+1,Y,frontFlangeThick);
 
-  // Iris surface
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  const double y = (p31->getDistance() + p21->getDistance())/2.0;
-  Geometry::General *GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
-  GA->setSurface(irisSurf(irisStretch, irisRadius, y));
-  SMap.registerSurf(GA);
+
+  // ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
+
+  // const auto p21 = ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(cavityOffset+frontPreFlangeThick+frontFlangeThick),Y);
+  // ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Y,cavityLength);
+  // const auto p31 = ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-irisThick);
+  // ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,irisThick);
+
+  // // Iris surface
+  // ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  // const double y = (p31->getDistance() + p21->getDistance())/2.0;
+  // Geometry::General *GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
+  // GA->setSurface(irisSurf(irisStretch, irisRadius, y));
+  // SMap.registerSurf(GA);
 
   return;
 }
@@ -259,32 +273,43 @@ RFGun::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -31 -7 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -31 -7 ");
+  // makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -2 -7 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -2 -7 ");
+  // makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 7 -17 ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 7 -17 ");
+  // makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 -17 ");
-  makeCell("WallFront",System,cellIndex++,wallMat,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 -7 ");
+  makeCell("FrontFlangePre",System,cellIndex++,wallMat,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 7 -17");
+  makeCell("FrontFlangePreVoid",System,cellIndex++,0,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 2 -17 ");
-  makeCell("WallBack",System,cellIndex++,wallMat,0.0,HR*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 -17 ");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 -7 ");
-  makeCell("MainCavity",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -17 ");
+  makeCell("Rest",System,cellIndex++,0,0.0,HR*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -21 -7 517 ");
-  makeCell("MainCavityWallFront",System,cellIndex++,wallMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 27 -17");
+  // makeCell("FrontFlange",System,cellIndex++,0,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -21  -517 ");
-  makeCell("MainCavityIrisFront",System,cellIndex++,mainMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 2 -17 ");
+  // makeCell("WallBack",System,cellIndex++,wallMat,0.0,HR*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -32 -7 ");
-  makeCell("MainCavityWallBack",System,cellIndex++,wallMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 -7 ");
+  // makeCell("MainCavity",System,cellIndex++,0,0.0,HR);
+
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -21 -7 517 ");
+  // makeCell("MainCavityWallFront",System,cellIndex++,wallMat,0.0,HR);
+
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -21  -517 ");
+  // makeCell("MainCavityIrisFront",System,cellIndex++,mainMat,0.0,HR);
+
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -32 -7 ");
+  // makeCell("MainCavityWallBack",System,cellIndex++,wallMat,0.0,HR);
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -17");

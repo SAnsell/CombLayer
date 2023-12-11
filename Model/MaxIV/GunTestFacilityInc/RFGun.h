@@ -52,7 +52,10 @@ class RFGun :
   double irisRadius;            ///< Cavity iris radius
   double irisStretch;           ///< Cavity iris stretching
   double wallThick;             ///< Wall thickness
+  double frontPreFlangeThick;   ///< Front pre flange outer radius (smaller)
+  double frontPreFlangeRadius;  ///< Front pre flange outer radius (smaller)
   double frontFlangeThick;      ///< Front flange thickness
+  double frontFlangeRadius;     ///< Front flange outer radius (bigger)
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material

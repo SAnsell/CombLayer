@@ -47,7 +47,10 @@ class RFGunGenerator
   double irisRadius;            ///< Cavity iris radius
   double irisStretch;           ///< Cavity iris stretching
   double wallThick;             ///< Wall thickness
+  double frontPreFlangeThick;   ///< Front pre flange outer radius (smaller)
+  double frontPreFlangeRadius;  ///< Front pre flange outer radius (smaller)
   double frontFlangeThick;      ///< Front flange thickness
+  double frontFlangeRadius;     ///< Front flange outer radius (bigger)
 
   std::string mainMat;          ///< Main material
   std::string wallMat;          ///< Wall material
