@@ -91,8 +91,8 @@ RFGun::RFGun(const RFGun& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),cavityRadius(A.cavityRadius),cavityLength(A.cavityLength),
-  cavitySideWallThick(A.cavitySideWallThick),
   cavityOffset(A.cavityOffset),
+  irisThick(A.irisThick),
   irisRadius(A.irisRadius),
   irisStretch(A.irisStretch),
   wallThick(A.wallThick),
@@ -122,7 +122,7 @@ RFGun::operator=(const RFGun& A)
       length=A.length;
       cavityRadius=A.cavityRadius;
       cavityLength=A.cavityLength;
-      cavitySideWallThick=A.cavitySideWallThick;
+      irisThick=A.irisThick;
       cavityOffset=A.cavityOffset;
       irisRadius=A.irisRadius;
       irisStretch=A.irisStretch;
@@ -181,8 +181,8 @@ RFGun::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   cavityRadius=Control.EvalVar<double>(keyName+"CavityRadius");
   cavityLength=Control.EvalVar<double>(keyName+"CavityLength");
-  cavitySideWallThick=Control.EvalVar<double>(keyName+"CavitySideWallThick");
   cavityOffset=Control.EvalVar<double>(keyName+"CavityOffset");
+  irisThick=Control.EvalVar<double>(keyName+"IrisThick");
   irisRadius=Control.EvalVar<double>(keyName+"IrisRadius");
   irisStretch=Control.EvalVar<double>(keyName+"IrisStretch");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -233,8 +233,8 @@ RFGun::createSurfaces()
 
   const auto p21 = ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(cavityOffset+frontFlangeThick),Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Y,cavityLength);
-  const auto p31 = ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-cavitySideWallThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,cavitySideWallThick);
+  const auto p31 = ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,Y,-irisThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+32,buildIndex+22,Y,irisThick);
 
   // Iris surface
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();

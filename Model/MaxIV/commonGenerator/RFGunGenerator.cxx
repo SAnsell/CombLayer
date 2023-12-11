@@ -52,7 +52,7 @@ namespace setVariable
 RFGunGenerator::RFGunGenerator() :
   length(9.7), // TODO
   cavityRadius(4.0),cavityLength(1.0),
-  cavitySideWallThick(1.9), // TODO
+  irisThick(1.9), // TODO
   cavityOffset(4.0), // TODO
   irisRadius(1.5), // measured
   irisStretch(0.1),
@@ -84,8 +84,8 @@ RFGunGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"CavityRadius",cavityRadius);
   Control.addVariable(keyName+"CavityLength",cavityLength);
-  Control.addVariable(keyName+"CavitySideWallThick",cavitySideWallThick);
   Control.addVariable(keyName+"CavityOffset",cavityOffset);
+  Control.addVariable(keyName+"IrisThick",irisThick);
   Control.addVariable(keyName+"IrisRadius",irisRadius);
   Control.addVariable(keyName+"IrisStretch",irisStretch);
   Control.addVariable(keyName+"WallThick",wallThick);
