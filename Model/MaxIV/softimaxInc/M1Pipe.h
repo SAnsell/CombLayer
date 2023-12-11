@@ -55,7 +55,7 @@ class M1Pipe :
   double outLength;   ///< distance down
 
   double flangeRadius;   ///< radius (outer)
-  double flangeLenght;   ///< radius (outer)
+  double flangeLength;   ///< radius (outer)
   
   int pipeMat;            ///< Electron shield material
   int innerMat;           ///< void material  

@@ -106,10 +106,11 @@ M1DetailGenerator::M1DetailGenerator() :
   ePlateHeight(5.2),ePipeRadius(0.2),
   ePipeThick(0.15),
 
-  mainConnectRadius(1.25),mainConnectLength(1.0),
+  mainConnectRadius(1.25),mainConnectLength(0.9),
   mainCubeWidth(2.80),mainCubeHeight(2.80),
   mainCubeDepth(2.80),mainOutRadius(0.9),
   mainOutLength(1.7),mainFlangeRadius(1.7),
+  mainFlangeLength(0.5),
   
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
@@ -273,10 +274,27 @@ void
 M1DetailGenerator::makeMainPipe(FuncDataBase& Control,
 				const std::string& keyName) const
   /*!
-    Set teh main pipe connecting to the crystal via the
-    
+    Set the main pipe connecting to the crystal via the
+    \param Control :: Func data base
    */
 {
+  ELog::RegMethod RegA("M1DetailGenerator","makeMainPipe");  
+
+  Control.addVariable(keyName+"ConnectRadius",mainConnectRadius);
+  Control.addVariable(keyName+"ConnectLength",mainConnectLength);
+  Control.addVariable(keyName+"CubeWidth",mainCubeWidth);
+  Control.addVariable(keyName+"CubeHeight",mainCubeHeight);
+  Control.addVariable(keyName+"CubeDepth",mainCubeDepth);
+  Control.addVariable(keyName+"OutRadius",mainOutRadius);
+  Control.addVariable(keyName+"OutLength",mainOutLength);
+  Control.addVariable(keyName+"FlangeRadius",mainFlangeRadius);
+  Control.addVariable(keyName+"FlangeLength",mainFlangeLength);
+
+  Control.addVariable(keyName+"PipeMat",pipeMat);
+  Control.addVariable(keyName+"InnerMat",waterMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+
+  return;
 }
 
 
@@ -486,6 +504,7 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   makeSupport(Control,keyName+"CClamp");
   makeConnectors(Control,keyName+"Connect");
   makeFrame(Control,keyName+"Frame");
+  makeMainPipe(Control,keyName+"MainPipe");
   makeRingSupport(Control,keyName+"Ring");
   makeOuterSupport(Control,keyName+"CClamp");
   

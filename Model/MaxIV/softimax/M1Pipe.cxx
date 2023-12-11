@@ -100,7 +100,7 @@ M1Pipe::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("M1Pipe","populate");
 
   FixedRotate::populate(Control);
-\
+
   connectRadius=Control.EvalVar<double>(keyName+"ConnectRadius");
   connectLength=Control.EvalVar<double>(keyName+"ConnectLength");
 
@@ -112,7 +112,7 @@ M1Pipe::populate(const FuncDataBase& Control)
   outLength=Control.EvalVar<double>(keyName+"OutLength");
 
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
-  flangeLenght=Control.EvalVar<double>(keyName+"FlangeLenght");
+  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
   pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
@@ -131,9 +131,9 @@ M1Pipe::createSurfaces()
 
   // Origin is pipe connection point:
 
+  ELog::EM<<"Base == "<<connectRadius<<ELog::endDiag;
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,connectRadius);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*connectLength,Z);
-
   
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(cubeDepth/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(cubeDepth/2.0),Y);
@@ -157,8 +157,14 @@ M1Pipe::createObjects(Simulation& System)
   ELog::RegMethod RegA("M1Pipe","createObjects");
 
   const HeadRule cylHR=getRule("TubeRadius");
+  const HeadRule baseHR=getRule("MirrorBase");
+  ELog::EM<<"Base == "<<baseHR<<ELog::endDiag;
 
   HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -7");
+  makeCell("pipe",System,cellIndex++,pipeMat,0.0,HR*baseHR);
+
+  addOuterSurf("Join",HR);
   
   return;
 }
@@ -189,6 +195,7 @@ M1Pipe::createAll(Simulation& System,
   ELog::RegMethod RegA("M1Pipe","createAll");
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+  ELog::EM<<"LC Point == "<<FC.getLinkPt(sideIndex)<<ELog::endDiag;
   ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   ELog::EM<<"Z == "<<Z<<ELog::endDiag;

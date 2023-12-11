@@ -255,6 +255,12 @@ M1Mirror::createSurfaces()
   FixedComp::setConnect(12,slotOrg-Z*(height/2.0-slotDepth),Z);
   FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+16));
 
+  // key normal orientation
+  FixedComp::setConnect(13,pipePtA,Y);
+  FixedComp::setConnect(14,pipePtB,Y);
+  FixedComp::setLinkSurf(13,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(14,-SMap.realSurf(buildIndex+5));
+
   
   return;
 }
@@ -385,8 +391,8 @@ M1Mirror::createLinks()
   FixedComp::setConnect(6,Origin-X*width,Y);
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
 
-  // note no origin:
-  FixedComp::setConnect(13,Origin-X*(width/2.0),Y);
+  // note no surf for base widht:
+  FixedComp::setConnect(15,Origin-X*(width/2.0),Y);
 
   nameSideIndex(2,"outSide");
   nameSideIndex(3,"beamSide");
@@ -400,7 +406,9 @@ M1Mirror::createLinks()
   nameSideIndex(10,"slotTop");
   nameSideIndex(11,"slotAMid");
   nameSideIndex(12,"slotBMid");
-  nameSideIndex(13,"centreAxis");
+  nameSideIndex(13,"normPipeA");
+  nameSideIndex(14,"normPipeB");
+  nameSideIndex(15,"centreAxis");
   
   return;
 }

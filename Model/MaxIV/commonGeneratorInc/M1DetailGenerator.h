@@ -177,7 +177,7 @@ class M1DetailGenerator
   double mainOutLength;   ///< distance down
 
   double mainFlangeRadius;   ///< radius (outer)
-  double mainFlangeLenght;   ///< radius (outer)
+  double mainFlangeLength;   ///< radius (outer)
 
   // -------------
   // SUBSTRUCTURE for Box system

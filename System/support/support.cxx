@@ -1348,7 +1348,6 @@ writeLine(std::ostream& OX,const T& V,
    */
 {
   const double VUnit=static_cast<double>(V);
-
   const double AVal(std::abs<double>(VUnit));
 
 

@@ -244,10 +244,8 @@ M1Detail::createObjects(Simulation& System)
   elecShield->addInsertCell(getCells("MainVoid"));
   elecShield->createAll(System,*mirror,0);
 
-  
-  ELog::EM<<"MPipe A == "<<mirror->getLinkPt("downPipeA")<<ELog::endDiag;
-  ELog::EM<<"MPipe B == "<<mirror->getLinkPt("downPipeB")<<ELog::endDiag;
-  mainPipe->createAll(System,*mirror,"downPipeA");
+  mainPipe->setCutSurf("MirrorBase",*mirror,"normPipeA");
+  mainPipe->createAll(System,*mirror,"normPipeA");
 
   
   cClamp->insertInCell(System,getCells("MainVoid"));
