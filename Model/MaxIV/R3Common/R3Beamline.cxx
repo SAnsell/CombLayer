@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: R3Common/R3Beamline.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -57,6 +57,10 @@
 #include "BlockZone.h"
 #include "forkHoles.h"
 #include "OpticsHutch.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -82,6 +86,21 @@ R3Beamline::~R3Beamline()
 {}
 
 void
+R3Beamline::populate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables
+    \param Control :: Variable data base
+  */
+{
+  ELog::RegMethod RegA("R3Beamline","populate");
+
+  exptType=Control.EvalDefVar<std::string>(newName+"ExptType","Sample");
+
+  return;
+}
+
+
+void
 R3Beamline::buildOpticsHutch
 (Simulation& System,
  const std::shared_ptr<xraySystem::OpticsHutch>& opticsHut,
@@ -89,14 +108,14 @@ R3Beamline::buildOpticsHutch
  const std::string& exitLink)
   /*!
     Build the optics hutch
-    \param segmentIndex :: segment number     
+    \param segmentIndex :: segment number
    */
 {
   ELog::RegMethod RegA("R3Beamline","buildHutch");
 
   const size_t NS=r3Ring->getNInnerSurf();
   const size_t prevSegment=(NS+segmentIndex-1) % NS;
-  
+
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",
 			r3Ring->getSurf("BeamOuter",segmentIndex));
@@ -117,8 +136,7 @@ R3Beamline::buildOpticsHutch
 
   return;
 }
-  
+
 
 
 }   // NAMESPACE xraySystem
-

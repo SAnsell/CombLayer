@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   micromaxInc/micromaxExptLine.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_micromaxExptLine_h
@@ -50,8 +50,8 @@ namespace xraySystem
   class RoundMonoShutter;
 
 
-  
-    
+
+
   /*!
     \class micromaxExptLine
     \version 1.0
@@ -69,14 +69,15 @@ class micromaxExptLine :
 {
  private:
 
+  std::string baseName;
   /// string for pre-insertion into mastercell:0
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::BlockZone buildZone;
   int outerMat;                         ///< outermaterial if used
 
-  std::string exptType;        ///< experiment type [bypass/diffract/sample]
-  
+  std::string exptType;        ///< experiment type [bypass/diffract/sample/rod test]
+
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
@@ -97,14 +98,14 @@ class micromaxExptLine :
   /// second gate valve
   std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
   /// connector to CRL
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;  
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
   /// Addaptor to CRL tube
   std::shared_ptr<constructSystem::VacuumPipe> crlPipeA;
-  /// First CRL System  
+  /// First CRL System
   std::shared_ptr<xraySystem::CRLTube> crlTubeA;
   /// Mid  CRL pipe
   std::shared_ptr<constructSystem::VacuumPipe> crlPipeB;
-  /// Second CRL System  
+  /// Second CRL System
   std::shared_ptr<xraySystem::CRLTube> crlTubeB;
   /// End  CRL pipe [note skip C as not in expt design]
   std::shared_ptr<constructSystem::VacuumPipe> crlPipeD;
@@ -119,7 +120,7 @@ class micromaxExptLine :
 
   /// The main mono shutter
   std::shared_ptr<xraySystem::RoundMonoShutter> monoShutterB;
-  
+
   //DIFFRACT:
   /// Tube to diffraction
   std::shared_ptr<constructSystem::VacuumPipe> diffractTube;
@@ -131,12 +132,10 @@ class micromaxExptLine :
   /// SAMPLE
   /// End point on mirror box
   std::shared_ptr<constructSystem::FlangePlate> endWindow;
-  /// Tube 
+  /// Tube
   std::shared_ptr<constructSystem::VacuumPipe> sampleTube;
   /// Narrow end pipe
   std::shared_ptr<insertSystem::insertSphere> sample;
-
-
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -144,24 +143,24 @@ class micromaxExptLine :
 
   void constructCRL(Simulation&,
 		    const attachSystem::FixedComp&,
-		    const std::string&); 
+		    const std::string&);
   void constructSampleStage(Simulation&,
 			    const attachSystem::FixedComp&,
-			    const std::string&); 
+			    const std::string&);
   void constructDiffractionStage(Simulation&,
 				 const attachSystem::FixedComp&,
-				 const std::string&); 
+				 const std::string&);
   void constructByPassStage(Simulation&);
-  
+
 
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks();
-  
+
  public:
-  
-  micromaxExptLine(const std::string&);
+
+  micromaxExptLine(const std::string&, const std::string&);
   micromaxExptLine(const micromaxExptLine&);
   micromaxExptLine& operator=(const micromaxExptLine&);
   ~micromaxExptLine() override;
@@ -173,7 +172,7 @@ class micromaxExptLine :
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
 
   void insertSample(Simulation&,const int) const;
-  
+
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;

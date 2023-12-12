@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   micromaxInc/MICROMAX.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_MICROMAX_h
@@ -60,7 +60,7 @@ namespace xraySystem
   class micromaxFrontEnd;
   class PipeShield;
   class WallLead;
-  
+
   /*!
     \class MICROMAX
     \version 1.0
@@ -77,14 +77,14 @@ class MICROMAX : public R3Beamline
   std::shared_ptr<micromaxFrontEnd> frontBeam;
 
   /// lead in beam wall
-  std::shared_ptr<WallLead> wallLead;       
-  
+  std::shared_ptr<WallLead> wallLead;
+
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
   std::shared_ptr<OpticsStepHutch> opticsHut;
-  
+
   /// Beamline
   std::shared_ptr<micromaxOpticsLine> opticsBeam;
 
@@ -109,8 +109,10 @@ class MICROMAX : public R3Beamline
   /// Beamline expt
   std::shared_ptr<micromaxExptLineB> exptBeamB;
 
+  void populate(const FuncDataBase&);
+
  public:
-  
+
   MICROMAX(const std::string&);
   MICROMAX(const MICROMAX&);
   MICROMAX& operator=(const MICROMAX&);

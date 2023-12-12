@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3CommonInc/R3Beamline.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_R3Beamline_h
@@ -44,9 +44,12 @@ class R3Beamline :
   std::shared_ptr<R3Ring> r3Ring;
   std::string startPoint;       ///< Start point
   std::string stopPoint;        ///< End point
+  std::string exptType;         ///< experiment type
+
+  void populate(const FuncDataBase&);
 
  public:
-  
+
   R3Beamline(const std::string&,const std::string&);
   R3Beamline(const R3Beamline&);
   R3Beamline& operator=(const R3Beamline&);
