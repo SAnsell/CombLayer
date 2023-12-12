@@ -3,26 +3,141 @@
 
 //#declare matConcrete     = texture {T_Stone28};
 //#declare matConcrete     = texture {T_Wood8};
-#declare matB4C          = texture { pigment{color rgb <0.1, 0.1, 0.1> }};
+#declare matB4C          = material{ texture { pigment{color rgb <0.1, 0.1, 0.1> }}};
+
+
+#declare matConcrete =  material {
+  texture {
+    pigment
+    { checker
+      pigment { granite color_map { [0 rgb 1][1 rgb .9] } }
+      pigment { granite color_map { [0 rgb .9][1 rgb .7] } }
+    }
+  }
+};
 
 
 // http://news.povray.org/povray.general/thread/%3C35D92C3C.AD869B36%40pacbell.net%3E/
-#declare matConcrete2 =
+#declare matConcrete2 = material {
    texture { pigment { granite turbulence 1.5 color_map {
     [0  .25 color White color Gray75] [.25  .5 color White color Gray75]
     [.5 .75 color White color Gray75] [.75 1.1 color White color Gray75]}}
     finish { ambient 0.2 diffuse 0.3 crand 0.03 reflection 0 } normal {
-    dents .5 scale .5 }}
+    dents .5 scale .5 }}};
 
-#declare matConcrete1 =
+#declare matConcrete1 = material{
    texture { pigment { granite turbulence 1.5 color_map {
     [0  .25 color White color Gray95] [.25  .5 color White color White]
     [.5 .75 color White color White] [.75 1.1 color White color Gray85]}}
     finish { ambient 0.2 diffuse 0.3 crand 0.003 reflection 0 } normal {
-    dents .5 scale .5 }}
+    dents .5 scale .5 }}};
 
-#declare matIron = texture { pigment{color rgb<0.0552288609,0.640654786,0.765840204> filter 0.9 } };
+#declare matIron = material{ texture { pigment{color rgb<0.0552288609,0.640654786,0.765840204> filter 0.9 } }};
 
-#declare matCopper = texture { pigment{color rgb<0.969028364,0.0335801908,0.244655676>  } };
+#declare matLead = material{ texture { pigment{color P_Chrome2 transmit 0.4 } }};
 
-#declare matLead = texture { pigment{color P_Chrome2 transmit 0.4 } };
+#declare matGlass =
+  // https://news.povray.org/povray.binaries.images/thread/%3Cpan.2005.07.03.05.36.51.508673%40speakeasy.net%3E/
+  material {
+   texture {
+    pigment { rgb 0 transmit 1 }
+    finish {
+     reflection { .01, .95 fresnel } conserve_energy
+     //big fat phong highlight, to give ethereal sheen to the material.
+     //make phong fade with angle, using pov's metallic effect on black
+     //(because there's no fresnel for phong)
+     phong 30 phong_size 20 metallic 1
+     specular 50 roughness .0004   //layer a sharp highlight on top.
+    }
+   }
+   interior {
+    ior 1.5
+    fade_colour <1,.25,.0>
+    fade_distance .5
+    fade_power 2
+   }
+  };
+
+#declare matCopper1 =
+  material{ texture {pigment
+  { bozo color_map
+    { [0 rgb <.8, .75, .5>]
+      [.6 rgb <.8, .75, .5>]
+      [.7 rgb <.7, .4, .2>]
+      [1 rgb <.5, .35, .15>]
+    }
+    turbulence 0.1
+    scale 1
+  }}};
+
+#declare matCopper2 =
+//  https://www.povray.org/documentation/view/3.6.1/355/
+material {
+texture {
+     material_map {
+        png "povray/copper.png"
+        texture {  //used with index 0
+           pigment {color red 0.3 green 0.1 blue 1}
+           normal  {ripples 0.85 frequency 10 }
+           finish  {specular 0.75}
+           scale 5
+        }
+        texture {  //used with index 1
+           pigment {White}
+           finish {
+             ambient 0 diffuse 0
+             reflection 0.9 specular 0.75
+           }
+        }
+        // used with index 2
+        texture {pigment{NeonPink} finish{Luminous}}
+        texture {  //used with index 3
+           pigment {
+              gradient y
+              color_map {
+                 [0.00 rgb < 1 , 0 , 0>]
+                 [0.33 rgb < 0 , 0 , 1>]
+                 [0.66 rgb < 0 , 1 , 0>]
+                 [1.00 rgb < 1 , 0 , 0>]
+              }
+           }
+           finish{specular 0.75}
+           scale 8
+        }
+     }
+     scale 30
+     translate <-15, -15, 0>
+  }};
+
+#declare matCopper1 =
+  material {
+    texture {
+      pigment { rgb <1, .9, .2> }
+      finish { specular 1 }
+      normal
+      { wood 1
+      }
+    }
+  };
+
+
+#declare Copper_Texture =
+  texture {
+    pigment { color rgb <0.722, 0.451, 0.200> }
+    finish {
+      ambient 0.2
+      diffuse 0.8
+      specular 0.9
+      reflection 0.3
+      brilliance 3
+      metallic 0.8
+    }
+  };
+
+#declare matCopper =
+  material {
+    texture { Copper_Texture }
+    interior {
+      ior 1.4
+    }
+  };

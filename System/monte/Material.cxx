@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   monte/Material.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -58,9 +58,9 @@ namespace MonteCarlo
 std::ostream&
 operator<<(std::ostream& OX,const Material& MT)
   /*!
-    Write out the material 
+    Write out the material
     \param OX :: Outstream
-    \param MT :: Material 
+    \param MT :: Material
    */
 {
   MT.write(OX);
@@ -72,19 +72,19 @@ Material::Material() :
   /*!
     Default Constructor
   */
-{} 
+{}
 
 Material::Material(const int mcnpNum,
 		   const std::string N,
 		   const double D) :
   matID(mcnpNum),Name(std::move(N)),atomDensity(D)
   /*!
-    Default Constructor 
+    Default Constructor
     \param mcnpNum :: mcnp number [must be unique]
     \param N :: name
     \param D :: density [atom/A^3]
   */
-{} 
+{}
 
 Material::Material(const Material& A) :
   matID(A.matID),Name(A.Name),
@@ -125,7 +125,7 @@ Material::~Material()
 { }
 
 Material&
-Material::operator*=(const double V) 
+Material::operator*=(const double V)
   /*!
     Scale the material by V
     \param V :: Scale value
@@ -136,12 +136,12 @@ Material::operator*=(const double V)
 
   for(Zaid& ZR : zaidVec)
     ZR.setDensity(ZR.getDensity()*V);
-  
+
   return *this;
 }
 
 Material&
-Material::operator+=(const Material& A) 
+Material::operator+=(const Material& A)
   /*!
     Material to add
     \param A :: Object to add
@@ -241,7 +241,7 @@ Material::getZaidIndex(const size_t ZNum,const size_t TNum,const char C) const
   /*!
     Determine if a Zaid exists
     \param ZNum :: Zaid number
-    \param TNum :: Tag number 
+    \param TNum :: Tag number
     \param C :: Character
     \return ULONG_MAX on no match / otherwize Index
   */
@@ -249,7 +249,7 @@ Material::getZaidIndex(const size_t ZNum,const size_t TNum,const char C) const
   for(size_t i=0;i<zaidVec.size();i++)
     if (zaidVec[i].isEquivalent(ZNum,TNum,C))
       return i;
-  
+
   return ULONG_MAX;
 }
 
@@ -263,7 +263,7 @@ Material::hasZaid(const size_t ZNum,const size_t TNum,const char C) const
     \return ULONG_MAX on no match / otherwize Index
   */
 {
-  return 
+  return
     (getZaidIndex(ZNum,TNum,C)==ULONG_MAX) ? 0 : 1;
 }
 
@@ -308,14 +308,14 @@ Material::removeMX(const std::string& P)
   MXTYPE::iterator mc=mxCards.find(P);
   if (mc!=mxCards.end())
     mxCards.erase(mc);
-  
+
   return;
 }
 
 void
 Material::removeLib(const std::string& lHead)
   /*!
-    Remove a given lib component card 
+    Remove a given lib component card
     \param lHead :: header for removal
    */
 {
@@ -330,7 +330,7 @@ Material::removeLib(const std::string& lHead)
   return;
 }
 
-  
+
 int
 Material::lineType(std::string& Line)
   /*!
@@ -345,18 +345,18 @@ Material::lineType(std::string& Line)
   // END is in a comment (normally):
   if (Line.find("END")!=std::string::npos)
     return -100;
-  
+
   StrFunc::stripComment(Line);
-  if (Line.size()<1 ||                     // comments blank line, ^c or ^c<spc> 
-      (tolower(Line[0])=='c' && 
+  if (Line.size()<1 ||                     // comments blank line, ^c or ^c<spc>
+      (tolower(Line[0])=='c' &&
        (Line.size()==1 || isspace(Line[1]))))
     return -1;
-  
-  Line=StrFunc::removeOuterSpace(Line);                
+
+  Line=StrFunc::removeOuterSpace(Line);
   int index;
   std::string part;
   if (!StrFunc::convert(Line,part)) return 0;
-  if (part.size()<2 || (part[0]!='m' && part[0]!='M')) 
+  if (part.size()<2 || (part[0]!='m' && part[0]!='M'))
     return 0;
   part[0]=' ';
   if (StrFunc::convert(part,index))
@@ -367,7 +367,7 @@ Material::lineType(std::string& Line)
     part[1]=' ';
   if (StrFunc::convert(part,index))
     return index;
-  
+
 
   return 0;
 }
@@ -380,7 +380,7 @@ Material::getExtraType(std::string& Line,std::string& particles)
     \param Line :: Line to process
     \param particles :: Extra particle after a :
     \retval 1 :: mt line
-    \retval 2 :: mx line 
+    \retval 2 :: mx line
     \retval 0 :: nothing
   */
 {
@@ -408,7 +408,7 @@ Material::getExtraType(std::string& Line,std::string& particles)
       // Put tail back  now ==>   : stuff
       FItem+=LCopy;
       std::string unit;
-      if (!StrFunc::section(FItem,unit) || 
+      if (!StrFunc::section(FItem,unit) ||
 	  unit[0]!=':')
 	return 2;
 
@@ -433,8 +433,8 @@ Material::setMaterial(const int MIndex,
 		      const std::string& LibLine)
   /*!
     Sets the material given a full line from MCNPX.
-    Passes strings of type 
-     - m1 56097.70c 0.034 
+    Passes strings of type
+     - m1 56097.70c 0.034
      - mt24 be77.0k hlib=.24h
     \param MIndex :: Index number
     \param N :: Name
@@ -450,7 +450,7 @@ Material::setMaterial(const int MIndex,
 
   const int retVal=setMaterial(MIndex,MLine,MTLine,LibLine);
   if (!retVal) Name=N;
-  return retVal; 
+  return retVal;
 }
 
 int
@@ -460,8 +460,8 @@ Material::setMaterial(const int MIndex,
 		      const std::string& LibLine)
   /*!
     Sets the material given a full line from MCNPX.
-    Passes strings of type 
-     - m1 56097.70c 0.034 
+    Passes strings of type
+     - m1 56097.70c 0.034
      - mt24 be77.0k hlib=.24h
     \param MIndex :: Index number
     \param MLine :: Zaid line
@@ -474,16 +474,16 @@ Material::setMaterial(const int MIndex,
 
   ELog::RegMethod RegA("Material","setMaterial(i,s,s,s)");
 
-  matID=MIndex;  
+  matID=MIndex;
   std::vector<std::string> Items=
     StrFunc::StrParts(MLine);
-  
-  if (Items.size()<2) 
+
+  if (Items.size()<2)
     {
       ELog::EM<<"MLine is empty: "<<MLine<<ELog::endErr;
       return -1;
     }
-  
+
   zaidVec.clear();
   mxCards.clear();
   Libs.clear();
@@ -514,7 +514,7 @@ Material::setMaterial(const int MIndex,
   std::vector<std::string> MTItems=StrFunc::StrParts(MTLine);
   for(const std::string& sUnit : MTItems)
     SQW.push_back(StrFunc::removeOuterSpace(sUnit));
-  
+
   // PROCESS LIBS
   std::vector<std::string> LibItems=StrFunc::StrParts(LibLine);
   Libs.insert(Libs.end(),LibItems.begin(),LibItems.end());
@@ -527,8 +527,8 @@ int
 Material::setMaterial(const std::vector<std::string>& PVec)
   /*!
     Sets the material given a full line from MCNPX.
-    Passes strings of type 
-     - m1 56097.70c 0.034 hlib=24h 
+    Passes strings of type
+     - m1 56097.70c 0.034 hlib=24h
      - mt24 be77.0k
     \param PVec :: full string from MCNPX
     \retval -ve :: on error
@@ -539,12 +539,12 @@ Material::setMaterial(const std::vector<std::string>& PVec)
 
   if (PVec.empty()) return -1;
 
-  // Process First line : 
+  // Process First line :
   // Divide line into zaid / density / extras:
   std::vector<std::string> Items=StrFunc::StrParts(PVec[0]);
   if (Items.size()<2) return -1;
 
-  std::string& FItem(Items[0]);  
+  std::string& FItem(Items[0]);
   const char pItem=FItem[0];
   FItem[0]=' ';
   if ((pItem!='m' && pItem!='M') || !StrFunc::convert(FItem,matID))
@@ -552,7 +552,7 @@ Material::setMaterial(const std::vector<std::string>& PVec)
       ELog::EM<<"Non material card at "<<pItem<<FItem<<ELog::endErr;
       return -2;
     }
-  
+
   Zaid AZ;
   double Dens;                   // density
 
@@ -671,7 +671,7 @@ Material::getMacroDensity() const
 double
 Material::getMeanA() const
   /*!
-    Return the mean A value 
+    Return the mean A value
     \return mean atomic number
   */
 {
@@ -686,9 +686,9 @@ Material::getMeanA() const
   AW/=sumDens;
   return AW;
 }
-  
+
 void
-Material::calcAtomicDensity() 
+Material::calcAtomicDensity()
   /*!
     Calculate the atomic density
    */
@@ -697,7 +697,7 @@ Material::calcAtomicDensity()
   for(const Zaid& ZC : zaidVec)
     if (ZC.getZ())
       atomDensity+=ZC.getDensity();
-  
+
   return;
 }
 
@@ -715,7 +715,7 @@ Material::listComponent() const
   return;
 }
 
-void 
+void
 Material::print() const
   /*!
     Prints out the information about the material
@@ -739,7 +739,7 @@ Material::print() const
   std::cout<<std::endl;
 
   return;
-} 
+}
 
 void
 Material::writeCinder(std::ostream& OX) const
@@ -753,7 +753,7 @@ Material::writeCinder(std::ostream& OX) const
   std::ostringstream cx;
   cx.precision(10);
   std::vector<size_t> cZaid;      // Cinder zaid list
-  std::vector<double> cFrac;   // Fraction 
+  std::vector<double> cFrac;   // Fraction
 
   // Construct zaid and fractions
   // normalize fractions
@@ -765,7 +765,7 @@ Material::writeCinder(std::ostream& OX) const
     }
   for(double& C : cFrac)
     C/=sum;
-  
+
   if (!cZaid.empty())
     {
       std::ios_base::fmtflags saveFlag=OX.flags();
@@ -798,12 +798,12 @@ Material::changeLibrary(const size_t T,const char key)
   return;
 }
 
-void 
-Material::writeZaid(std::ostream& OX,const double F,const size_t ZD) 
+void
+Material::writeZaid(std::ostream& OX,const double F,const size_t ZD)
   /*!
     Write the zaid file
     \param OX :: Output streamx
-    \param F :: Fraction 
+    \param F :: Fraction
     \param ZD :: Zaid number
   */
 {
@@ -817,7 +817,7 @@ Material::writeZaid(std::ostream& OX,const double F,const size_t ZD)
   return;
 }
 
-void 
+void
 Material::writePHITS(std::ostream& OX) const
   /*!
     Write out the information about the material
@@ -826,14 +826,14 @@ Material::writePHITS(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Material","writePHITS");
-  
+
 
   const Element& EL(Element::Instance());
 
   std::ostringstream cx;
   OX<<"$ Material : "<<Name<<" rho="<<getMacroDensity() << " g/cc"<<std::endl;
   OX<<"mat["<<matID<<"]\n";
-  
+
   cx.precision(10);
   for(const Zaid& ZItem: zaidVec)
     {
@@ -854,10 +854,10 @@ Material::writePHITS(std::ostream& OX) const
 		}
 	    }
 	}
-		  
+
       OX<<cx.str()<<std::endl;
     }
-  
+
   if (!SQW.empty())
     {
       cx.str("");
@@ -869,9 +869,9 @@ Material::writePHITS(std::ostream& OX) const
     }
 
   return;
-} 
+}
 
-void 
+void
 Material::writeFLUKA(std::ostream& OX) const
   /*!
     Write out material definitions in the fixed FLUKA format
@@ -882,7 +882,7 @@ Material::writeFLUKA(std::ostream& OX) const
   boost::format FMTnum("%1$.4g");
 
   const std::string matName("M"+std::to_string(matID));
-  
+
   std::ostringstream cx;
   cx<<"*\n* Material : "<<Name<<" rho="<<getMacroDensity()<<" g/cc";
   StrFunc::writeMCNPX(cx.str(),OX);
@@ -901,9 +901,9 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeFLUKAhead("COMPOUND",matName,cx.str(),OX);
   return;
 
-} 
+}
 
-void 
+void
 Material::writePOVRay(std::ostream& OX,
 		      const double V) const
   /*!
@@ -924,22 +924,22 @@ Material::writePOVRay(std::ostream& OX,
 
   if (V>0.0 && V<1.0)
     {
-      OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
+      OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = material { texture {"
 	<< " pigment{color rgb<"
 	<<   MW.NumComma(rgbCol)
-	<<"> transmit "<<V<<"} };"<<std::endl;
+	<<"> transmit "<<V<<"} } };"<<std::endl;
     }
   else
    {
-     OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = texture {"
+     OX<<"#declare mat"<<MW.NameNoDot(Name)<<" = material {texture {"
        << " pigment{color rgb<"
        <<   MW.NumComma(rgbCol)
-       <<"> } };"<<std::endl;
+       <<"> } } };"<<std::endl;
    }
   return;
-} 
+}
 
-void 
+void
 Material::write(std::ostream& OX) const
   /*!
     Write out the information about the material
@@ -948,13 +948,13 @@ Material::write(std::ostream& OX) const
   */
 {
   typedef std::map<std::string,MXcards> MXTYPE;
-  
+
   std::ostringstream cx;
   cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity<<"\n";
   cx<<"c           (rho= "<<getMacroDensity()<<" g/cc)";
   StrFunc::writeMCNPXcomment(cx.str(),OX);
   cx.str("");
-  
+
   cx.precision(10);
   cx<<"m"<<matID<<"     ";
   if (matID<10) cx<<" ";
@@ -986,6 +986,6 @@ Material::write(std::ostream& OX) const
       StrFunc::writeMCNPX(rx.str(),OX);
     }
   return;
-} 
+}
 
 }  // NAMESPACE MonteCarlo
