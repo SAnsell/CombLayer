@@ -72,23 +72,13 @@
 
 #include "GeneralPipe.h"
 #include "Bellows.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
-#include "portItem.h"
 
 
 #include "VacuumPipe.h"
-#include "VacuumBox.h"
-#include "Mirror.h"
-#include "CRLTube.h"
 #include "CylGateValve.h"
-#include "CRLTube.h"
 #include "HPJaws.h"
-#include "FourPortTube.h"
-#include "SixPortTube.h"
 #include "ViewScreenTube.h"
 #include "CooledScreen.h"
-#include "RoundMonoShutter.h"
 
 #include "micromaxExptLineB.h"
 
