@@ -404,6 +404,7 @@ SingleItemVariables(FuncDataBase& Control)
   DCMGen.setPortLength(7.5,7.5); // La/Lb
   DCMGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
   // radius : Height / depth  [need heigh = 0]
+  Control.addVariable("DMCPortBXStep",-0.6);      // from primary
   DCMGen.generateBox(Control,"DCMTank",30.0,0.0,16.0);
 
   // multipipe

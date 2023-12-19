@@ -628,7 +628,7 @@ makeSingleItem::build(Simulation& System,
   if (item == "DCMTank")
     {
       std::shared_ptr<xraySystem::DCMTank>
-	cm(new xraySystem::DCMTank("DMCTank"));
+	cm(new xraySystem::DCMTank("DCMTank"));
       OR.addObject(cm);
 
       cm->addInsertCell(voidCell);
