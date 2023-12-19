@@ -174,6 +174,7 @@
 #include "M1FrontShield.h"
 #include "BlockStand.h"
 #include "DomeConnector.h"
+#include "DCMTank.h"
 #include "LegoBrick.h"
 #include "M1Detail.h"
 
@@ -212,7 +213,7 @@ makeSingleItem::build(Simulation& System,
 	"CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder","CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
-	"MagnetBlock","Sexupole","MagnetM1","MagnetU1",
+	"DCMTank","MagnetBlock","Sexupole","MagnetM1","MagnetU1",
         "Octupole","CeramicGap","MainBeamDump",
 	"EBeamStop","FMask","R3ChokeChamber",
 	"DipoleExtract","DipoleSndBend","Dipole",
@@ -624,6 +625,18 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "DCMTank")
+    {
+      std::shared_ptr<xraySystem::DCMTank>
+	cm(new xraySystem::DCMTank("DMCTank"));
+      OR.addObject(cm);
+
+      cm->addInsertCell(voidCell);
+      cm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "FMask")
     {
       std::shared_ptr<xraySystem::SquareFMask>

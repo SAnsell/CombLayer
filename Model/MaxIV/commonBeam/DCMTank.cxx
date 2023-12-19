@@ -3,7 +3,7 @@
  
  * File:   commonBeam/DCMTank.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,13 +233,15 @@ DCMTank::createSurfaces()
 
   makeCylinder("innerCylinder",SMap,buildIndex+7,Origin,Z,voidRadius);
   setCutSurf("innerRadius",-SMap.realSurf(buildIndex+7));
-  makeCylinder("outerCylinder",SMap,buildIndex+17,Origin,Z,voidRadius+wallThick);
+  makeCylinder("outerCylinder",SMap,buildIndex+17,Origin,
+	       Z,voidRadius+wallThick);
     
   // Top plate
   const Geometry::Vec3D topCent=Origin-Z*(topRadius-(voidHeight+topLift));
   ModelSupport::buildSphere(SMap,buildIndex+108,topCent,topRadius);
-  ModelSupport::buildSphere(SMap,buildIndex+118,topCent,topRadius+wallThick);
-
+  ModelSupport::buildSphere(SMap,buildIndex+118,topCent,topRadius+wallThick+10);
+  ELog::EM<<"Wall == "<<wallThick<<" "<<topRadius<<ELog::endDiag;
+  ELog::EM<<"Wall == "<<wallThick<<ELog::endDiag;
   // base plate
 
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-X*(baseWidth/2.0),X);
@@ -361,8 +363,6 @@ DCMTank::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -15  1005");
   CellMap::makeCell("OuterBaseVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
-  
-  
   // Main exclusion box
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1005 -1006");
 

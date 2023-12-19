@@ -87,6 +87,8 @@
 #include "FlatPipeGenerator.h"
 #include "SixPortGenerator.h"
 #include "CrossWayGenerator.h"
+#include "VacBoxGenerator.h"
+#include "DCMTankGenerator.h"
 #include "GaugeGenerator.h"
 #include "BremBlockGenerator.h"
 #include "PrismaChamberGenerator.h"
@@ -396,6 +398,13 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::TriggerGenerator TrigGen;
   TrigGen.generateTube(Control,"TriggerTube");
+
+  setVariable::DCMTankGenerator DCMGen;
+  DCMGen.setCF<CF40>();   // set ports
+  DCMGen.setPortLength(7.5,7.5); // La/Lb
+  DCMGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
+  // radius : Height / depth  [need heigh = 0]
+  DCMGen.generateBox(Control,"DCMTank",30.0,0.0,16.0);
 
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
