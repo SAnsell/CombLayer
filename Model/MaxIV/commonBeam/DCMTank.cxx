@@ -240,8 +240,6 @@ DCMTank::createSurfaces()
   const Geometry::Vec3D topCent=Origin-Z*(topRadius-(voidHeight+topLift));
   ModelSupport::buildSphere(SMap,buildIndex+108,topCent,topRadius);
   ModelSupport::buildSphere(SMap,buildIndex+118,topCent,topRadius+wallThick);
-  ELog::EM<<"Wall == "<<wallThick<<" "<<topRadius<<ELog::endDiag;
-  ELog::EM<<"Wall == "<<wallThick<<ELog::endDiag;
   // base plate
 
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-X*(baseWidth/2.0),X);

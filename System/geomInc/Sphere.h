@@ -64,7 +64,7 @@ class Sphere : public Quadratic
   std::string className() const override 
     { return "Sphere"; }
   /// fast index accessor
-  SurfKey classIndex() const override { return SurfKey::Quadratic; }
+  SurfKey classIndex() const override { return SurfKey::Sphere; }
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }

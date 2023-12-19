@@ -81,7 +81,7 @@ equalSurface(Geometry::Surface* SPtr)
   if (!SPtr)
     throw ColErr::EmptyValue<Geometry::Surface*>("equalSurface");
   const SMAP& sMap=surfIndex::Instance().surMap();
-  
+
   const Geometry::SurfKey cIndex=SPtr->classIndex();
   for(const auto& [N, TPtr] : sMap)
     {
@@ -104,6 +104,7 @@ equalSurface(const Geometry::Surface* SPtr)
   if (!SPtr)
     throw ColErr::EmptyValue<Geometry::Surface*>("equalSurface(const)");
   const SMAP& sMap=surfIndex::Instance().surMap();
+  
 
   for(const auto& [N, TPtr] : sMap)
     {
@@ -191,6 +192,8 @@ cmpSurfaces(const Geometry::Surface* SPtr,
 	dynamic_cast<const Geometry::Sphere*>(SPtr);
       const Geometry::Sphere* TQ=
 	dynamic_cast<const Geometry::Sphere*>(TPtr);
+      	
+
       return SQ->operator==(*TQ);
     }
   else if (sKey == Geometry::SurfKey::ArbPoly)
