@@ -213,8 +213,6 @@ M1Detail::createObjects(Simulation& System)
   ringA->addInsertCell(cClamp->getCell("OuterVoid",1));
   ringA->addInsertCell(cClamp->getCell("BackVoid"));
   ringA->createAll(System,*mirror,0);
-  cClamp->joinRing(System,ringA->getRule("RingGap"),
-		   ringA->getFullRule("innerRing"));
 
   ringB->copyCutSurf("TubeRadius",*this,"TubeRadius");
   ringB->addInsertCell(getCells("MainVoid"));
@@ -222,11 +220,14 @@ M1Detail::createObjects(Simulation& System)
   ringB->addInsertCell(cClamp->getCell("OuterVoid",1));
   ringB->addInsertCell(cClamp->getCell("BackVoid"));
   ringB->createAll(System,*mirror,0);
+
+  cClamp->joinRing(System,ringA->getRule("RingGap"),
+		   ringA->getFullRule("innerRing"));
   cClamp->joinRing(System,ringB->getRule("RingGap"),
 		   ringB->getFullRule("innerRing"));
-
-  elecShield->setCell("TopVoid",*cClamp,"InnerVoid",0);
-  elecShield->setCell("BaseVoid",*cClamp,"InnerVoid",1);
+  
+  elecShield->setCell("TopVoid",*cClamp,"InnerVoid");
+  elecShield->setCell("BaseVoid",*cClamp,"BaseVoid");
   elecShield->setCell("BaseEndVoid",*cClamp,"HeatVoid",2);
   elecShield->setCell("TopEndVoid",*cClamp,"HeatVoid",3);
 
@@ -246,7 +247,7 @@ M1Detail::createObjects(Simulation& System)
 
   mainPipe->setCutSurf("MirrorBase",*mirror,"normPipeA");
   mainPipe->createAll(System,*mirror,"normPipeA");
-
+  mainPipe->insertInCell("Join",System,cClamp->getCell("BaseVoid"));
   
   cClamp->insertInCell(System,getCells("MainVoid"));
 

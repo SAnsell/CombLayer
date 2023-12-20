@@ -131,14 +131,13 @@ M1Pipe::createSurfaces()
 
   // Origin is pipe connection point:
 
-  ELog::EM<<"Base == "<<connectRadius<<ELog::endDiag;
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,connectRadius);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*connectLength,Z);
   
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(cubeDepth/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(cubeDepth/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cubeHeight/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cubeHeight/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cubeWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cubeWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,
 			   Origin-Z*(connectLength+cubeHeight),Z);
   
@@ -162,9 +161,17 @@ M1Pipe::createObjects(Simulation& System)
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -7");
-  makeCell("pipe",System,cellIndex++,pipeMat,0.0,HR*baseHR);
+  makeCell("Connect",System,cellIndex++,pipeMat,0.0,HR*baseHR);
 
-  addOuterSurf("Join",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 7 5");
+  makeCell("Connect",System,cellIndex++,voidMat,0.0,HR*baseHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -5 105");
+  makeCell("Cube",System,cellIndex++,pipeMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105");
+  addOuterSurf("Join",HR*baseHR);
   
   return;
 }

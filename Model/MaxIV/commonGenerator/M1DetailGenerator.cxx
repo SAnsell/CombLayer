@@ -76,8 +76,7 @@ M1DetailGenerator::M1DetailGenerator() :
   bBackThick(0.5),bMainThick(0.3),
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
-  bBaseExtent(2.1),bVoidExtra(3.5),
-  bVoidBaseExtra(8.5),bVoidXExtra(4.5),
+  bBaseExtent(2.1),bMidExtent(1.3),
   
   clipYStep(7.7),clipLen(1.2),
   clipSiThick(0.2),clipAlThick(0.4),
@@ -92,9 +91,9 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportZCut(0.2),
 
   bRingYStep(17.30),
-  bRingOuterThick(0.3),bRingOuterLength(0.2),
+  bRingOuterThick(0.1),bRingOuterLength(0.2),
   bRingInnerYStep(0.3),
-  bRingInnerThick(1.2),bRingInnerLength(1.2),
+  bRingInnerThick(0.9),bRingInnerLength(1.2),
   
   eXOut(1.78),eLength(38.0),eThick(0.1),eHeight(6.8),
   eEdge(2.20),eHoleRadius(1.18),
@@ -107,7 +106,7 @@ M1DetailGenerator::M1DetailGenerator() :
   ePipeThick(0.15),
 
   mainConnectRadius(1.25),mainConnectLength(0.9),
-  mainCubeWidth(2.80),mainCubeHeight(2.80),
+  mainCubeWidth(2.80),mainCubeHeight(2.20),
   mainCubeDepth(2.80),mainOutRadius(0.9),
   mainOutLength(1.7),mainFlangeRadius(1.7),
   mainFlangeLength(0.5),
@@ -226,9 +225,10 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"TopExtent",bTopExtent);
   Control.addVariable(keyName+"ExtentThick",bExtentThick);
   Control.addVariable(keyName+"BaseExtent",bBaseExtent);
-  Control.addVariable(keyName+"VoidExtra",bVoidExtra);
-  Control.addVariable(keyName+"VoidBaseExtra",bVoidBaseExtra);
-  Control.addVariable(keyName+"VoidXExtra",bVoidXExtra);
+  Control.addVariable(keyName+"MidExtent",bMidExtent);
+  //  Control.addVariable(keyName+"VoidExtra",bVoidExtra);
+  //  Control.addVariable(keyName+"VoidBaseExtra",bVoidBaseExtra);
+  //  Control.addVariable(keyName+"VoidXExtra",bVoidXExtra);
 
   Control.addVariable(keyName+"FrontPlateGap",fBaseGap);
   Control.addVariable(keyName+"FrontPlateWidth",fBaseWidth);
