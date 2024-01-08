@@ -164,7 +164,8 @@ class M1DetailGenerator
   // -------------
   // Main Connector Pipe
   // -------------
-  double mainConnectRadius;   ///< radius (outer)
+  double mainPipeRadius;   ///< radius (outer)
+  double mainConnectRadius;   ///< radius (oute)r
   double mainConnectLength;   ///< distance down
 
   double mainCubeWidth;      ///<

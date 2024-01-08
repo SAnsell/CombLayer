@@ -105,6 +105,7 @@ M1DetailGenerator::M1DetailGenerator() :
   ePlateHeight(5.2),ePipeRadius(0.2),
   ePipeThick(0.15),
 
+  mainPipeRadius(0.4),
   mainConnectRadius(1.25),mainConnectLength(0.9),
   mainCubeWidth(2.80),mainCubeHeight(2.20),
   mainCubeDepth(2.80),mainOutRadius(0.9),
@@ -280,6 +281,7 @@ M1DetailGenerator::makeMainPipe(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeMainPipe");  
 
+  Control.addVariable(keyName+"PipeRadius",mainPipeRadius);
   Control.addVariable(keyName+"ConnectRadius",mainConnectRadius);
   Control.addVariable(keyName+"ConnectLength",mainConnectLength);
   Control.addVariable(keyName+"CubeWidth",mainCubeWidth);

@@ -522,7 +522,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::BeamScrapperGenerator BeamSGen;
   BeamSGen.generateScreen(Control,"BeamScrapper");
-
+  //  Control.addVariable("BeamScrapperXStep",2668.0016244323656);
+  //  Control.addVariable("BeamScrapperYStep",0.0);
+  //  Control.addVariable("BeamScrapperZAngle",-180.0);
+  
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
   Control.addVariable("YAGYAngle",-90.0);

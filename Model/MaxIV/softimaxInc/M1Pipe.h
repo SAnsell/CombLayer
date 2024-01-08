@@ -44,11 +44,13 @@ class M1Pipe :
 {
  private:
 
+  double pipeRadius;     ///< Pipe radius (outer)
+
   double connectRadius;   ///< radius (outer)
   double connectLength;   ///< distance down
 
   double cubeWidth;      ///<
-  double cubeHeight;      ///<
+  double cubeHeight;     ///<
   double cubeDepth;      ///<  Y direction down beam
 
   double outRadius;   ///< radius (outer)

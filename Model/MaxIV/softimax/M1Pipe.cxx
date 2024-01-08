@@ -73,7 +73,7 @@ namespace xraySystem
 
 M1Pipe::M1Pipe(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
-  attachSystem::ContainedGroup("Join","Main"),
+  attachSystem::ContainedGroup("Join","Main","Out"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -101,6 +101,8 @@ M1Pipe::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
+  pipeRadius=Control.EvalVar<double>(keyName+"PipeRadius");
+  
   connectRadius=Control.EvalVar<double>(keyName+"ConnectRadius");
   connectLength=Control.EvalVar<double>(keyName+"ConnectLength");
 
@@ -140,7 +142,16 @@ M1Pipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cubeWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,
 			   Origin-Z*(connectLength+cubeHeight),Z);
-  
+
+  // pipe exit
+  const Geometry::Vec3D exitOrg=
+    Origin+Y*(cubeDepth/2.0)-Z*(connectLength+cubeHeight/2.0);
+  ModelSupport::buildCylinder(SMap,buildIndex+2017,exitOrg,Y,outRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+2027,exitOrg,Y,flangeRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+2002,exitOrg+Y*outLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2012,
+			   exitOrg+Y*(outLength+flangeLength),Y);
   
   return;
 }
@@ -157,7 +168,6 @@ M1Pipe::createObjects(Simulation& System)
 
   const HeadRule cylHR=getRule("TubeRadius");
   const HeadRule baseHR=getRule("MirrorBase");
-  ELog::EM<<"Base == "<<baseHR<<ELog::endDiag;
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -7");
@@ -169,9 +179,23 @@ M1Pipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -5 105");
   makeCell("Cube",System,cellIndex++,pipeMat,0.0,HR);
 
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105");
   addOuterSurf("Join",HR*baseHR);
+
+  // exit pipe
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -2017 -2012");
+  makeCell("Outer",System,cellIndex++,pipeMat,0.0,HR);
+  //flange
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2002 -2012 2017 -2027");
+  makeCell("OuterFlange",System,cellIndex++,pipeMat,0.0,HR);
+  //outer
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -2002 2017 -2027");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -2012 -2027");
+  addOuterSurf("Main",HR);
+
+  // outbound piper
   
   return;
 }
@@ -202,10 +226,6 @@ M1Pipe::createAll(Simulation& System,
   ELog::RegMethod RegA("M1Pipe","createAll");
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  ELog::EM<<"LC Point == "<<FC.getLinkPt(sideIndex)<<ELog::endDiag;
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
-  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
       
   createSurfaces();
   createObjects(System);

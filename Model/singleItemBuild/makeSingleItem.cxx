@@ -385,9 +385,12 @@ makeSingleItem::build(Simulation& System,
 	BS(new xraySystem::BeamScrapper("BeamScrapper"));
       OR.addObject(BS);
 
+      
       BS->addAllInsertCell(voidCell);
-      BS->setBeamAxis(Geometry::Vec3D(0,10,0),
-		       Geometry::Vec3D(1,0,0));
+
+	
+      BS->setBeamAxis(Geometry::Vec3D(-10.0,0.0,0.0),
+		      Geometry::Vec3D(1,0,0));
       BS->createAll(System,World::masterOrigin(),0);
 
       return;

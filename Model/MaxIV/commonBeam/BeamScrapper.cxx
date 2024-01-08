@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/commonBeam/BeamScrapper.cxx
  *
- * Copyright (c) 2004-2021 Stuart Ansell
+ * Copyright (c) 2004-2023 Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,8 +106,13 @@ BeamScrapper::calcImpactVector()
   std::tie(std::ignore,beamCentre)=
     beamAxis.closestPoints(Geometry::Line(Origin,Y));
 
+  ELog::EM<<"PlateCentre == "<<Origin<<" : "<<X<<" : "
+	  <<Y<<" : "<<Z<<ELog::endDiag;
+  ELog::EM<<"PlateCentre == "<<beamCentre<<":"<<beamAxis<<ELog::endDiag;
+
   // Thread point
   plateCentre=beamCentre-Y*plateOffset;
+    ELog::EM<<"NEW PlateCentre == "<<plateCentre<<ELog::endDiag;
 
   return;
 }
@@ -201,6 +206,9 @@ BeamScrapper::createSurfaces()
     -Y*(plateOffset-tubeOffset*tan(M_PI*plateAngle/180.0))
     +Z*inletZOffset;
 
+  ELog::EM<<"Main == "<<Origin<<":"<<X<<":"<<Y<<":"<<Z<<ELog::endDiag;
+  ELog::EM<<"Main == "<<beamCentre-Origin<<":"<<PX<<":"<<PY<<":"<<PZ<<ELog::endDiag;
+  
   // 45 centre bend 
   const Geometry::Vec3D inletA=inletCentreA+
     PZ*(tubeHeight-tubeOffset/sqrt(2.0));
@@ -369,8 +377,10 @@ BeamScrapper::setBeamAxis(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("BeamScrapper","setBeamAxis(FC)");
 
   beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
-			  FC.getLinkAxis(sIndex));
+			  -FC.getLinkAxis(sIndex));
 
+
+  ELog::EM<<"Set beamAxis:"<<beamAxis<<ELog::endDiag;
 
   return;
 }
@@ -386,6 +396,7 @@ BeamScrapper::setBeamAxis(const Geometry::Vec3D& Org,
 {
   ELog::RegMethod RegA("BeamScrapper","setBeamAxis(Vec3D)");
 
+  ELog::EM<<"Set beamAxis:"<<Org<<" : "<<Axis<<ELog::endDiag;
   beamAxis=Geometry::Line(Org,Axis);
   return;
 }

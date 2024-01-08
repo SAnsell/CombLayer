@@ -248,6 +248,8 @@ M1Detail::createObjects(Simulation& System)
   mainPipe->setCutSurf("MirrorBase",*mirror,"normPipeA");
   mainPipe->createAll(System,*mirror,"normPipeA");
   mainPipe->insertInCell("Join",System,cClamp->getCell("BaseVoid"));
+  mainPipe->insertInCell("Main",System,cClamp->getCell("BaseVoid"));
+  mainPipe->insertInCell("Main",System,getCells("MainVoid"));
   
   cClamp->insertInCell(System,getCells("MainVoid"));
 
