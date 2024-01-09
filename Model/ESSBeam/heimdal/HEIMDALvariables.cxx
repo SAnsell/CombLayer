@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/heimdal/HEIMDALvariables.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
 #include "CryoGenerator.h"
+#include "HeimdalCaveGenerator.h"
 
 namespace setVariable
 {
@@ -74,6 +75,7 @@ HEIMDALvariables(FuncDataBase& Control)
   setVariable::PipeGenerator RPipeGen;
   setVariable::BladeGenerator BGen;
   setVariable::JawGenerator JawGen;
+  setVariable::HeimdalCaveGenerator CaveGen;
 
   Control.addVariable("heimdalStartPoint",0);
   Control.addVariable("heimdalStopPoint",0);
@@ -210,6 +212,8 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateTaper(Control,"heimdalFTF",440.0,4.0,4.0,4.0,4.0);
 
+  CaveGen.generateCave(Control,"heimdalCave");
+  
   return;
 }
  

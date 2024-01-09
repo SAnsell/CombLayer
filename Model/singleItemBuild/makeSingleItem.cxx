@@ -176,6 +176,7 @@
 #include "DomeConnector.h"
 #include "DCMTank.h"
 #include "LegoBrick.h"
+#include "HeimdalCave.h"
 #include "M1Detail.h"
 
 #include "makeSingleItem.h"
@@ -225,7 +226,7 @@ makeSingleItem::build(Simulation& System,
 	"StriplineBPM","BeamDivider","BeamScrapper",
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
-	"HalfElectronPipe",
+	"HalfElectronPipe","HeimdalCave","LegoBrick",
 	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
 	"IonPTube","IonGauge","CollTube",
@@ -963,6 +964,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
   if (item=="DipoleSndBend")
     {
       std::shared_ptr<xraySystem::DipoleSndBend>
@@ -973,6 +975,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  
   if (item=="HalfElectronPipe")
     {
       std::shared_ptr<xraySystem::HalfElectronPipe>
@@ -1257,6 +1260,18 @@ makeSingleItem::build(Simulation& System,
 
       lego->addInsertCell(voidCell);
       lego->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "HeimdalCave")
+    {
+      std::shared_ptr<essSystem::HeimdalCave>
+	cave(new essSystem::HeimdalCave("HeimdalCave"));
+      OR.addObject(cave);
+
+      cave->addAllInsertCell(voidCell);
+      cave->createAll(System,World::masterOrigin(),0);
 
       return;
     }

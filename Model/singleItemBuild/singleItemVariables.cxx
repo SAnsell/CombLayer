@@ -136,6 +136,7 @@
 #include "FocusGenerator.h"
 #include "MLMDetailGenerator.h"
 #include "M1DetailGenerator.h"
+#include "HeimdalCaveGenerator.h"
 
 #include "RoundShutterGenerator.h"
 #include "TubeDetBoxGenerator.h"
@@ -544,6 +545,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CeramicGapGenerator CSGen;
   CSGen.generateCeramicGap(Control,"CerSep");
+
+  setVariable::HeimdalCaveGenerator HCaveGen;
+  HCaveGen.generateCave(Control,"HeimdalCave");
 
   setVariable::CF40 CF40unit;
   setVariable::BeamDividerGenerator BDGen(CF40unit);
