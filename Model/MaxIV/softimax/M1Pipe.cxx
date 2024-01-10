@@ -116,6 +116,11 @@ M1Pipe::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
+  exitLen=Control.EvalVar<double>(keyName+"ExitLen");
+  exitAngle=Control.EvalVar<double>(keyName+"ExitAngle");
+  exitRadius=Control.EvalVar<double>(keyName+"ExitRadius");
+  exitFullLength=Control.EvalVar<double>(keyName+"ExitFullLength");
+  
   pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -152,6 +157,16 @@ M1Pipe::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2002,exitOrg+Y*outLength,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2012,
 			   exitOrg+Y*(outLength+flangeLength),Y);
+
+  // exit pipe
+  const Geometry::Vec3D bendPt=
+    exitOrg+Y*(outLength+flangeLength+exitLen);
+  const Geometry::Quaternion Qxy=
+    Geometry::Quaternion::calcQRotDeg(exitAngle,Z);
+  const Geometry::Vec3D PY=Qxy.rotate(Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3001,bendPt,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3002,bendPt+Y*exitFullLength,PY);
+  ModelSupport::buildCylinder(SMap,buildIndex+3007,bendPt,PY,exitRadius);
   
   return;
 }
@@ -192,8 +207,20 @@ M1Pipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -2002 2017 -2027");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -2012 -2027");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2012 -2017 -3001");
+  makeCell("ExitStr",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3007 -3002");
+  makeCell("ExitPipe",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2012 -3001 2017 -2027");
+  makeCell("ExitVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -3001 -2027");
   addOuterSurf("Main",HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -3007");
+  addOuterSurf("Out",HR);
 
   // outbound piper
   

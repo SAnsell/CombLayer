@@ -3,7 +3,7 @@
  
  * File:   photonInc/CylContainer.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,6 @@ class CylContainer :
   std::vector<int> mat;               ///< Materials
   std::vector<double> temp;           ///< Temperatures
 
-
-  int mainCell;                      ///< Main cell [centre]
   // Functions:
 
   void populate(const FuncDataBase&) override;

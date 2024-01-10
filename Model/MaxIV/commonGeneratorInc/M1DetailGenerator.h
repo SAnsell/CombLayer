@@ -178,6 +178,11 @@ class M1DetailGenerator
   double mainFlangeRadius;   ///< radius (outer)
   double mainFlangeLength;   ///< radius (outer)
 
+  double mainExitLen;         ///< straight section after flangle
+  double mainAngle;           ///< angle to rotate (about Z)
+  double mainExitRadius;      ///< new radius at bend
+  double mainExitFull;        ///< length after bend
+
   // -------------
   // SUBSTRUCTURE for Box system
   // -------------

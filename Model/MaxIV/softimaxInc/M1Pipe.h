@@ -59,6 +59,11 @@ class M1Pipe :
   double flangeRadius;   ///< radius (outer)
   double flangeLength;   ///< radius (outer)
   
+  double exitLen;         ///< straight section after flangle
+  double exitAngle;       ///< angle to rotate (about Z)
+  double exitRadius;      ///< new radius at bend
+  double exitFullLength;  ///< length after bend
+
   int pipeMat;            ///< Electron shield material
   int innerMat;           ///< void material  
   int voidMat;            ///< void material  
