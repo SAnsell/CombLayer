@@ -105,14 +105,15 @@ M1DetailGenerator::M1DetailGenerator() :
   ePlateHeight(5.2),ePipeRadius(0.2),
   ePipeThick(0.15),
 
-  mainPipeRadius(0.4),
+  mainPipeRadius(0.4),mainPipeThick(0.2),
+  mainPipeOuter(0.1),
   mainConnectRadius(1.25),mainConnectLength(0.9),
   mainCubeWidth(2.80),mainCubeHeight(2.20),
   mainCubeDepth(2.80),mainOutRadius(0.9),
   mainOutLength(1.7),mainFlangeRadius(1.7),
   mainFlangeLength(1.0),mainExitLen(1.0),
   mainAngle(-5.0),mainExitRadius(1.25),
-  mainExitFull(10.0),
+  mainExitFull(30.0),
   
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
@@ -276,6 +277,8 @@ M1DetailGenerator::makeMainPipe(FuncDataBase& Control,
   ELog::RegMethod RegA("M1DetailGenerator","makeMainPipe");  
 
   Control.addVariable(keyName+"PipeRadius",mainPipeRadius);
+  Control.addVariable(keyName+"PipeThick",mainPipeThick);
+  Control.addVariable(keyName+"PipeOuter",mainPipeOuter);
   Control.addVariable(keyName+"ConnectRadius",mainConnectRadius);
   Control.addVariable(keyName+"ConnectLength",mainConnectLength);
   Control.addVariable(keyName+"CubeWidth",mainCubeWidth);
@@ -291,8 +294,8 @@ M1DetailGenerator::makeMainPipe(FuncDataBase& Control,
   Control.addVariable(keyName+"ExitRadius",mainExitRadius);
   Control.addVariable(keyName+"ExitFullLength",mainExitFull);
 
-  Control.addVariable(keyName+"PipeMat",pipeMat);
   Control.addVariable(keyName+"InnerMat",waterMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;

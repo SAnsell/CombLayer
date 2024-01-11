@@ -250,9 +250,9 @@ M1Detail::createObjects(Simulation& System)
   mainPipe->insertInCell("Join",System,cClamp->getCell("BaseVoid"));
   mainPipe->insertInCell("Main",System,cClamp->getCell("BaseVoid"));
   mainPipe->insertInCell("Main",System,getCells("MainVoid"));
-  for(const int cn : getCells("MainVoid"))
-    ELog::EM<<"Cn == "<<cn<<ELog::endDiag;
+  mainPipe->insertInCell("Out",System,cClamp->getCell("BaseVoid"));
   mainPipe->insertInCell("Out",System,getCells("MainVoid"));
+
   
   cClamp->insertInCell(System,getCells("MainVoid"));
 

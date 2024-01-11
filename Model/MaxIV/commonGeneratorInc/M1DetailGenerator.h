@@ -3,7 +3,7 @@
  
  * File:   commonGeneratorInc/M1DetailGenerator.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,6 +165,8 @@ class M1DetailGenerator
   // Main Connector Pipe
   // -------------
   double mainPipeRadius;   ///< radius (outer)
+  double mainPipeThick;   ///< radius (outer)
+  double mainPipeOuter;   ///< radius (outer)
   double mainConnectRadius;   ///< radius (oute)r
   double mainConnectLength;   ///< distance down
 

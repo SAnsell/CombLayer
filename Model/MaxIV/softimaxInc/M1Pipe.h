@@ -44,7 +44,9 @@ class M1Pipe :
 {
  private:
 
-  double pipeRadius;     ///< Pipe radius (outer)
+  double pipeRadius;     ///< Pipe radius (inner)
+  double pipeThick;     ///< Pipe radius (outer)
+  double pipeOuter;     ///< Pipe radius (outer)
 
   double connectRadius;   ///< radius (outer)
   double connectLength;   ///< distance down
@@ -64,8 +66,8 @@ class M1Pipe :
   double exitRadius;      ///< new radius at bend
   double exitFullLength;  ///< length after bend
 
-  int pipeMat;            ///< Electron shield material
   int innerMat;           ///< void material  
+  int pipeMat;            ///< Electron shield material
   int voidMat;            ///< void material  
 
   // Functions:
