@@ -45,9 +45,15 @@
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "inputParam.h"
+#include "support.h"
 #include "volUnit.h"
 #include "VolSum.h"
 #include "Volumes.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "World.h"
 
 namespace ModelSupport
 {
@@ -82,6 +88,58 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
       VTally.pointRun(*SimPtr,NP);
       ELog::EM<<"Volume == "<<Org<<" : "<<XYZ<<" : "<<NP<<ELog::endDiag;
       VTally.write("volumes");
+    }
+
+  return;
+}
+
+void
+materialCheck(const Simulation& System,
+	      const mainSystem::inputParam& IParam)
+  /*!
+    Check an external file for material values in the model
+    \param SimPtr :: Simulation to use
+    \param IParam :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("Volumes[F]","materialCheck");
+
+  if (IParam.flag("materialCheck"))
+    {
+      const std::string fileName=IParam.getValue<std::string>("materialCheck");
+      const std::string objName=
+	IParam.getDefValue<std::string>("","materialCheck",1);
+      const std::string linkName=
+	IParam.getDefValue<std::string>("Origin","materialCheck",2);
+      const Geometry::Vec3D linkOffset=
+	IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,0),
+					    "materialCheck",3);
+
+      const attachSystem::FixedComp& FC=
+	(objName.empty()) ?  World::masterOrigin() :
+	*(System.getObjectThrow<attachSystem::FixedComp>
+	  (objName,"Object not found"));
+
+
+  const long int linkIndex=(linkName.empty()) ?  0 :
+    FC.getSideIndex(linkName);
+
+      if (!fileName.empty())
+	{
+	  std::ifstream IX(fileName.c_str());
+	  while(IX.good())
+	    {
+	      std::string line=StrFunc::getLine(IX,512);
+	      Geometry::Vec3D Pt;
+	      int index;
+	      MonteCarlo::Object* OPtr;
+	      if (StrFunc::section(line,index) &&
+		  StrFunc::section(line,Pt) )
+		{
+		  OPtr=System.findCell(Pt,OPtr);
+		}
+	    }
+	}
     }
 
   return;

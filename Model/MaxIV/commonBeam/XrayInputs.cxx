@@ -62,6 +62,7 @@ createXrayInputs(inputParam& IParam)
   
   IParam.setValue("sdefType",std::string("Wiggler"));
 
+
   // IParam.setDesc("defaultMag",
   // 		 "Chooses which version of the magnetic fields are required\n"
   // 		 "This allows different tracks through a magnetic chicane");

@@ -256,8 +256,6 @@ class FixedComp
   int getNextCell() const { return cellIndex; }
 
   
-  void selectAltAxis(const long int,Geometry::Vec3D&,
-		     Geometry::Vec3D&,Geometry::Vec3D&) const;
   void calcLinkAxis(const long int,Geometry::Vec3D&,
 		    Geometry::Vec3D&,Geometry::Vec3D&) const;
 

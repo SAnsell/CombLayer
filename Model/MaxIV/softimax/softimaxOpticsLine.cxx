@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2024 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -563,7 +563,7 @@ softimaxOpticsLine::buildSplitter(Simulation& System,
   const Geometry::Vec3D DPoint(initFC.getLinkPt(sideIndex));
   Geometry::Vec3D crossX,crossY,crossZ;
 
-  initFC.selectAltAxis(sideIndex,crossX,crossY,crossZ);
+  initFC.calcLinkAxis(sideIndex,crossX,crossY,crossZ);
   SurfMap::makePlane("midDivider",SMap,buildIndex+5003,DPoint,crossX);
 
   HeadRule HSurroundA=buildZone.getSurround();

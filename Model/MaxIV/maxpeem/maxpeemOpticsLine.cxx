@@ -302,7 +302,7 @@ maxpeemOpticsLine::buildSplitter(Simulation& System,
   const Geometry::Vec3D DPoint(initFC.getLinkPt(sideName));
   Geometry::Vec3D crossX,crossY,crossZ;
 
-  initFC.selectAltAxis(2,crossX,crossY,crossZ);
+  initFC.calcLinkAxis(2,crossX,crossY,crossZ);
   SurfMap::makePlane("midDivider",SMap,buildIndex+5003,DPoint,crossX);
 
   HeadRule HSurroundA=buildZone.getSurround();

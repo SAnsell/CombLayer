@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/Volumes.h
+ * File:   modelSupportInc/Volumes.h
 *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ namespace ModelSupport
   class VolSum;
   
   void calcVolumes(Simulation*,const mainSystem::inputParam&);
+  void materialCheck(const Simulation&,const mainSystem::inputParam&);
   void populateCells(const Simulation&,const mainSystem::inputParam&,
 		     VolSum&);
 
