@@ -54,6 +54,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "World.h"
+#include "Importance.h"
+#include "Object.h"
 
 namespace ModelSupport
 {
@@ -94,6 +96,52 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
 }
 
 void
+generateCut(const std::string& fName,
+	    const Geometry::Vec3D& centPoint,
+	    const Geometry::Vec3D& xAxis,
+	    const Geometry::Vec3D& yAxis,
+	    const size_t nX,
+	    const size_t nY,
+	    const std::vector<Geometry::Vec3D> Pts)
+  /*!
+    Generate a simple plane plot from a mesh of data points
+    \param centPoint :: Origin
+    \param xAxis :: extent (half) about center
+    \param yAxis :: extent (half) about center
+    \param nX :: Number of x points
+    \param nY :: Number of y points
+  */
+{
+  ELog::RegMethod RegA("Volumes[F]","generatePlot");
+
+  std::ofstream OX(fName.c_str());
+  const double xLen=xAxis.abs();
+  const double yLen=yAxis.abs();
+
+  const Geometry::Vec3D lowCorner=Pt-xAxis*0.5-yAxis*0.5;
+  multiData<int> AreaMap(nX,nY);
+  for(Geometry::Vec3D Pt : Pts)
+    {
+      Pt-=lowCorner
+      const double LX=xAxis.dotProd(Pt)/xLen;
+      const double LY=yAxis.dotProd(Pt)/yLen;
+      if (LX>=0.0 && LX<=xLen &&
+	  LY>=0.0 && LY<=yLen)
+	{
+	  const size_t iX=LX/xLen;
+	  const size_t iY=LX/xLen;
+	  AreaMap.get()[iX][iY]++;
+	}
+    }
+
+  std::ofstream OX;
+  
+  
+
+  return;
+}
+  
+void
 materialCheck(const Simulation& System,
 	      const mainSystem::inputParam& IParam)
   /*!
@@ -119,29 +167,18 @@ materialCheck(const Simulation& System,
 	(objName.empty()) ?  World::masterOrigin() :
 	*(System.getObjectThrow<attachSystem::FixedComp>
 	  (objName,"Object not found"));
+      
+      
+      const long int linkIndex=(linkName.empty()) ?  0 :
+	FC.getSideIndex(linkName);
 
-
-  const long int linkIndex=(linkName.empty()) ?  0 :
-    FC.getSideIndex(linkName);
-
-      if (!fileName.empty())
-	{
-	  std::ifstream IX(fileName.c_str());
-	  while(IX.good())
-	    {
-	      std::string line=StrFunc::getLine(IX,512);
-	      Geometry::Vec3D Pt;
-	      int index;
-	      MonteCarlo::Object* OPtr;
-	      if (StrFunc::section(line,index) &&
-		  StrFunc::section(line,Pt) )
-		{
-		  OPtr=System.findCell(Pt,OPtr);
-		}
-	    }
-	}
-    }
-
+      const Geometry::Vec3D centre=FC.getLinkPt(linkIndex);
+      ELog::EM<<"Center = "<<centre<<ELog::endDiag;
+      Geometry::Vec3D X;
+      Geometry::Vec3D Y;
+      Geometry::Vec3D Z;
+      FC.calcLinkAxis(linkIndex,X,Y,Z)
+;
   return;
 }
 

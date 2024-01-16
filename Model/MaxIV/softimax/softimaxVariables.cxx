@@ -312,7 +312,8 @@ m1DetailVariables(FuncDataBase& Control,
   const std::string boxName(mirrorKey+"M1Box");
   const double monoBoxLen(62.0);
 
-  const double theta(1.0);
+  const double theta(0.0);
+  ELog::EM<<"NOTE THETA set to zero"<<ELog::endDiag;
   const double xPortStep=
     0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angle
   
