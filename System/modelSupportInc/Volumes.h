@@ -27,6 +27,16 @@ namespace ModelSupport
   class VolSum;
   
   void calcVolumes(Simulation*,const mainSystem::inputParam&);
+  void generatePlot(const std::string&,
+		    const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,
+		    const size_t,
+		    const size_t,
+		    const std::vector<Geometry::Vec3D>&,
+		    const std::vector<Geometry::Vec3D>&);
+
   void materialCheck(const Simulation&,const mainSystem::inputParam&);
   void populateCells(const Simulation&,const mainSystem::inputParam&,
 		     VolSum&);

@@ -47,7 +47,7 @@ namespace setVariable
 {
 
 M1DetailGenerator::M1DetailGenerator() :
-  mWidth(6.0),mHeight(6.0),        
+  mWidth(6.5),mHeight(6.0),        
   mLength(37.0),mSlotXStep(4.5),     
   mSlotWidth(1.0),mSlotDepth(0.90),     
   mPipeXStep(2.17),mPipeYStep(2.0),
@@ -95,8 +95,8 @@ M1DetailGenerator::M1DetailGenerator() :
   bRingInnerYStep(0.3),
   bRingInnerThick(0.9),bRingInnerLength(1.2),
   
-  eXOut(1.78),eLength(38.0),eThick(0.1),eHeight(6.8),
-  eEdge(2.20),eHoleRadius(1.18),
+  eXOut(1.83),eLength(38.0),eThick(0.2),eHeight(7.0),
+  eEdge(2.80),eHoleRadius(1.18),
   eConnectLength(1.5),eConnectGap(1.3),
   eConnectThick(0.35),
   eNCut(9),eCutRadius(1.4),eCutGap(3.7),
@@ -389,9 +389,9 @@ M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeElectronShield");
 
-  Control.addVariable(keyName+"ElecXOut",eXOut);
+  Control.addVariable(keyName+"ElecXOut",eXOut+eThick);
   Control.addVariable(keyName+"ElecLength",eLength);
-  Control.addVariable(keyName+"ElecHeight",eHeight);
+  Control.addVariable(keyName+"ElecHeight",eHeight+eThick);
   Control.addVariable(keyName+"ElecEdge",eEdge);
   Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);
   Control.addVariable(keyName+"ElecThick",eThick);
@@ -492,13 +492,13 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param xStep :: y-offset 
     
   */
 {
   ELog::RegMethod RegA("M1DetailGenerator","generateMirror");
 
-
+  ELog::EM<<"XStep == "<<xStep<<ELog::endDiag;
   Control.addVariable(keyName+"XStep",xStep);
   // guess of separation
   makeCrystal(Control,keyName+"Mirror",theta,zStep);

@@ -56,6 +56,8 @@
 #include "World.h"
 #include "Importance.h"
 #include "Object.h"
+#include "dataSlice.h"
+#include "multiData.h"
 
 namespace ModelSupport
 {
@@ -95,49 +97,88 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
   return;
 }
 
-void
-generateCut(const std::string& fName,
-	    const Geometry::Vec3D& centPoint,
-	    const Geometry::Vec3D& xAxis,
-	    const Geometry::Vec3D& yAxis,
-	    const size_t nX,
-	    const size_t nY,
-	    const std::vector<Geometry::Vec3D> Pts)
-  /*!
+void 
+generatePlot(const std::string& fName,
+	     const Geometry::Vec3D& centPoint,
+	     const Geometry::Vec3D& xAxis,
+	     const Geometry::Vec3D& yAxis,
+	     const Geometry::Vec3D& zAxis,
+	     const size_t nX,
+	     const size_t nY,
+	     const std::vector<Geometry::Vec3D>& PtsA,
+	     const std::vector<Geometry::Vec3D>& PtsB)
+ /*!
     Generate a simple plane plot from a mesh of data points
-    \param centPoint :: Origin
-    \param xAxis :: extent (half) about center
-    \param yAxis :: extent (half) about center
+    \param centPoint :: Origin 
+    \param xAxis :: full extent from left to right
+    \param yAxis :: full extent from base to top
+    \param zAxis :: volume acceptable
     \param nX :: Number of x points
     \param nY :: Number of y points
+    \param Pts :: coordinates to plot
   */
 {
   ELog::RegMethod RegA("Volumes[F]","generatePlot");
 
   std::ofstream OX(fName.c_str());
+  
   const double xLen=xAxis.abs();
   const double yLen=yAxis.abs();
+  const double zLen=zAxis.abs();
 
-  const Geometry::Vec3D lowCorner=Pt-xAxis*0.5-yAxis*0.5;
+  ELog::EM<<"X == "<<xAxis<<ELog::endDiag;
+  ELog::EM<<"Y == "<<yAxis<<ELog::endDiag;
+  ELog::EM<<"Z == "<<zAxis<<ELog::endDiag;
+  int cnt(0);
   multiData<int> AreaMap(nX,nY);
-  for(Geometry::Vec3D Pt : Pts)
+  for(Geometry::Vec3D Pt : PtsA)
     {
-      Pt-=lowCorner
+      Pt-=centPoint;
       const double LX=xAxis.dotProd(Pt)/xLen;
       const double LY=yAxis.dotProd(Pt)/yLen;
-      if (LX>=0.0 && LX<=xLen &&
-	  LY>=0.0 && LY<=yLen)
+      const double LZ=zAxis.dotProd(Pt)/zLen;
+      if (LX>=-xLen/2.0 && LX<=xLen/2.0 &&
+	  LY>=-yLen/2.0 && LY<=yLen/2.0 &&
+	  LZ>=-zLen/2.0 && LZ<=zLen/2.0)
 	{
-	  const size_t iX=LX/xLen;
-	  const size_t iY=LX/xLen;
-	  AreaMap.get()[iX][iY]++;
+	  const size_t iX=static_cast<size_t>(nX*(LX/xLen+0.5));
+	  const size_t iY=static_cast<size_t>(nY*(LY/yLen+0.5));
+	  AreaMap.get()[iX][iY]=10.0;
+	  cnt++;
+	  if (!(cnt % 5000))
+	    ELog::EM<<"A Point == "<<Pt+centPoint<<ELog::endDiag;
 	}
     }
-
-  std::ofstream OX;
+  for(Geometry::Vec3D Pt : PtsB)
+    {
+      Pt-=centPoint;
+      const double LX=xAxis.dotProd(Pt)/xLen;
+      const double LY=yAxis.dotProd(Pt)/yLen;
+      const double LZ=zAxis.dotProd(Pt)/zLen;
+      if (LX>=-xLen/2.0 && LX<=xLen/2.0 &&
+	  LY>=-yLen/2.0 && LY<=yLen/2.0 &&
+	  LZ>=-zLen/2.0 && LZ<=zLen/2.0)
+	{
+	  const size_t iX=static_cast<size_t>(nX*(LX/xLen+0.5));
+	  const size_t iY=static_cast<size_t>(nY*(LY/yLen+0.5));
+	  AreaMap.get()[iX][iY]=5.0;
+	  cnt++;
+	  if (!(cnt % 5000))
+	    ELog::EM<<"B Point == "<<Pt+centPoint<<" :"<<Pt
+		    <<":"<<LX<<" "<<LZ<<" == "<<zLen/2.0<<ELog::endDiag;
+	}
+    }
   
-  
-
+  const double xStep(xLen/static_cast<double>(nX));
+  const double yStep(yLen/static_cast<double>(nY));
+  for(size_t i=0;i<nX;i++)
+    for(size_t j=0;j<nY;j++)
+      {
+	const double xV=xStep*static_cast<double>(i);
+	const double yV=yStep*static_cast<double>(j);
+	OX<<xV<<" "<<yV<<" "<<AreaMap.get()[i][j]<<std::endl;
+      }
+  OX.close();
   return;
 }
   
@@ -168,17 +209,57 @@ materialCheck(const Simulation& System,
 	*(System.getObjectThrow<attachSystem::FixedComp>
 	  (objName,"Object not found"));
       
-      
       const long int linkIndex=(linkName.empty()) ?  0 :
 	FC.getSideIndex(linkName);
 
       const Geometry::Vec3D centre=FC.getLinkPt(linkIndex);
-      ELog::EM<<"Center = "<<centre<<ELog::endDiag;
       Geometry::Vec3D X;
       Geometry::Vec3D Y;
       Geometry::Vec3D Z;
-      FC.calcLinkAxis(linkIndex,X,Y,Z)
-;
+      FC.calcLinkAxis(linkIndex,X,Y,Z);
+
+      std::vector<Geometry::Vec3D> PtsGood;
+      std::vector<Geometry::Vec3D> PtsBad;
+      MonteCarlo::Object* OPtr(nullptr);
+      std::ifstream IX;
+      IX.open(fileName.c_str());
+
+      std::map<int,int> activeMap;
+      while(IX.good())
+	{
+	  int index;
+	  double x,y,z;
+	  std::string line = StrFunc::getLine(IX,512);
+	  if (StrFunc::section(line,index) &&
+	      StrFunc::section(line,x) &&
+	      StrFunc::section(line,y) &&
+	      StrFunc::section(line,z))
+	    {
+	      Geometry::Vec3D testPt(x,z,y);
+	      testPt*=100.0;
+	      testPt-=linkOffset;
+	      testPt=testPt.getInBasis(X,Y,Z);
+	      testPt+=centre;
+	      OPtr=System.findCell(testPt,OPtr);
+	      const int matID=OPtr->getMatID();
+	      activeMap[matID]++;
+	      if (!matID)
+		PtsBad.push_back(testPt);
+	      else
+		PtsGood.push_back(testPt);
+	    }
+	}
+      IX.close();
+      ELog::EM<<"CENT == "<<centre<<ELog::endDiag;
+      ELog::EM<<"PTS == "<<PtsBad[0]<<ELog::endDiag;
+      ELog::EM<<"Y == "<<Y<<ELog::endDiag;
+      ELog::EM<<"Z == "<<Z<<ELog::endDiag;
+      for(const auto& [i,n] : activeMap)
+	ELog::EM<<"Mat ["<<i<<"] == "<<n<<ELog::endDiag;
+      
+      generatePlot("testA.out",centre,X*20.0,Z*20.0,Y*1.0,400,400,PtsGood,PtsBad);
+      //      generatePlot("testB.out",centre,X*15.0,Z*15.0,Y,100,100,PtsBad);
+    }
   return;
 }
 
