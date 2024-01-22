@@ -7,6 +7,7 @@ set (commonGeneratorSources
     CleaningMagnetGenerator.cxx CollGenerator.cxx CollTubeGenerator.cxx
     CollUnitGenerator.cxx ConnectorGenerator.cxx CooledScreenGenerator.cxx
     CorrectorMagGenerator.cxx CRLTubeGenerator.cxx CrossWayGenerator.cxx
+    CurrentMonitorGenerator.cxx
     CurveMagGenerator.cxx CylGateValveGenerator.cxx DCMTankGenerator.cxx
     DiffXIADP03Generator.cxx DipoleChamberGenerator.cxx DipoleDIBMagGenerator.cxx
     DipoleExtractGenerator.cxx DipoleGenerator.cxx DipoleSndBendGenerator.cxx
@@ -78,6 +79,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/ConnectorGenerator.cxx
   ${tarDIR}/CooledScreenGenerator.cxx
   ${tarDIR}/CorrectorMagGenerator.cxx
+  ${tarDIR}/CurrentMonitorGenerator.cxx
   ${tarDIR}/CRLTubeGenerator.cxx
   ${tarDIR}/CrossWayGenerator.cxx
   ${tarDIR}/CurveMagGenerator.cxx

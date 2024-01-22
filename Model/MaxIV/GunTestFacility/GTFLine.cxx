@@ -71,6 +71,7 @@
 #include "VacuumPipe.h"
 #include "GTFGateValve.h"
 #include "Solenoid.h"
+#include "CurrentMonitor.h"
 
 #include "LObjectSupport.h"
 #include "GTFLine.h"
@@ -93,7 +94,8 @@ GTFLine::GTFLine(const std::string& Key) :
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
   gate(new constructSystem::GTFGateValve("Gate")),
   pipeB(std::make_shared<constructSystem::VacuumPipe>("PipeB")),
-  bellowA(std::make_shared<constructSystem::Bellows>("BellowA"))
+  bellowA(std::make_shared<constructSystem::Bellows>("BellowA")),
+  mon(std::make_shared<xraySystem::CurrentMonitor>("CurrentMonitor"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -109,6 +111,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(gate);
   OR.addObject(pipeB);
   OR.addObject(bellowA);
+  OR.addObject(mon);
 }
 
 GTFLine::~GTFLine()
@@ -202,13 +205,14 @@ GTFLine::buildObjects(Simulation& System)
   gate->insertInCell("Shaft", System, outerCell);
 
   constructSystem::constructUnit(System,buildZone,*pipeB,"back",*bellowA);
+  constructSystem::constructUnit(System,buildZone,*bellowA,"back",*mon);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=pipeB;
+  lastComp=mon;
 
   return;
 }

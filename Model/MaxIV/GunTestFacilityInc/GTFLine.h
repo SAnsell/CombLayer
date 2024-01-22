@@ -25,6 +25,7 @@
 namespace xraySystem
 {
   class Solenoid;
+  class CurrentMonitor;
 }
 
 namespace constructSystem
@@ -70,6 +71,7 @@ class GTFLine :
   std::shared_ptr<constructSystem::GTFGateValve> gate; // Gate Valve 48236-CE24, drawing 200564
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
   std::shared_ptr<constructSystem::Bellows> bellowA;
+  std::shared_ptr<xraySystem::CurrentMonitor> mon;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
