@@ -264,6 +264,12 @@ namespace setVariable
     Control.addVariable(name+"PortBThick", 5.8); // measured
     Control.addVariable(name+"ClampMat", "Iron");  // guess TODO
 
+    name = "PipeB";
+    PipeGen.setCF<setVariable::CF63>();
+    PipeGen.generatePipe(Control,name,7.9+CF63::flangeLength); // measured
+    Control.addVariable(name+"PipeThick", 0.2);
+    Control.addVariable(name+"FlangeBType", 1);
+    Control.addVariable(name+"FlangeBLength", 0.0);
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

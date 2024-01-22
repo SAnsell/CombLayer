@@ -90,7 +90,8 @@ GTFLine::GTFLine(const std::string& Key) :
   extension(std::make_shared<constructSystem::VacuumPipe>("Extension")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
-  gate(new constructSystem::GTFGateValve("Gate"))
+  gate(new constructSystem::GTFGateValve("Gate")),
+  pipeB(std::make_shared<constructSystem::VacuumPipe>("PipeB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -104,6 +105,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(solenoid);
   OR.addObject(gate);
+  OR.addObject(pipeB);
 }
 
 GTFLine::~GTFLine()
@@ -190,14 +192,21 @@ GTFLine::buildObjects(Simulation& System)
 
   gate->insertInCell("Shaft", System, outerCell);
 
-  buildZone.createUnit(System);
-  buildZone.rebuildInsertCells(System);
+  buildZone.createUnit(System,*gate,2);
 
   gate->insertInCell("Shaft", System, outerCell1+1);
 
+  outerCell = constructSystem::constructUnit
+    (System,buildZone,*gate,"back",*pipeB);
+
+  gate->insertInCell("Shaft", System, outerCell);
+
+  buildZone.createUnit(System);
+  buildZone.rebuildInsertCells(System);
+
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=gate;
+  lastComp=pipeB;
 
   return;
 }
