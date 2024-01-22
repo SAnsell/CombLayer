@@ -246,12 +246,14 @@ namespace setVariable
     SolGen.generate(Control,name);
     Control.addVariable(name+"YStep", 5.0); // dummy TODO
 
+    // 48.2 XHV All-Metal Gate Valve
+    // https://www.vatvalve.com/series/extreme-high-vacuum-all-metal-gate-valve-DN-63-100-160?_locale=en&region=SE
     name = "Gate";
     GTFGateValveGenerator GateGen;
 
     GateGen.setOuter(4.5-0.5, 15.5-1.0, 18.0-0.5+1, 8.2-0.5); // measured (-0.5 to account for wall thick, +1 for the square hutch)
-    GateGen.setBladeMat("Stainless304L"); // TODO
-    GateGen.setBladeThick(0.8); // TODO
+    GateGen.setBladeMat("SS316L"); // guess (see my email to AB 240122)
+    GateGen.setBladeThick(0.55); // email from AB 240116
     GateGen.setAPortCF<CF63>(); // TODO
     GateGen.setBPortCF<CF63>(); // TODO
     //    GateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO

@@ -73,8 +73,8 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   lsShaftFlangeRadius(4.0),
   lsShaftFlangeThick(1.0),
   liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
-  bladeMat("Aluminium"),wallMat("Stainless304L"),
-  clampMat("Stainless304L"),
+  bladeMat("Aluminium"),wallMat("SS316L"),
+  clampMat("SS316L"),
   lsFlangeMat("Copper") // TODO
   /*!
     Constructor and defaults
