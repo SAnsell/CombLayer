@@ -111,6 +111,7 @@ main(int argc,char* argv[])
 
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::materialCheck(*SimPtr,IParam);
+      ModelSupport::materialHeat(*SimPtr,IParam);
       SimPtr->objectGroups::write("ObjectRegister.txt",
 				  IParam.flag("fullOR"));
     }

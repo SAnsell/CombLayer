@@ -143,12 +143,35 @@ M1Detail::createSurfaces()
   if (!isActive("TubeRadius"))
     {
       ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,20.0);
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*100.0,Y);
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*100.0,Y);
+      makePlane("VoidFront",SMap,buildIndex+1,Origin-Y*100.0,Y);
+      makePlane("VoidBack",SMap,buildIndex+2,Origin+Y*100.0,Y);
+      setCutSurf("TubeFront",HeadRule(SMap,buildIndex,1));
+      setCutSurf("TubeBack",HeadRule(SMap,buildIndex,-2));
     }
   return; 
 }
 
+void
+M1Detail::splitMainCell(Simulation& System)
+{
+  ELog::RegMethod RegA("M1Detail","splitMainCell");
+  
+  MonteCarlo::Object* OPtr=
+    getCellObject(System,"MainVoid");
+
+  const int voidMat=mirror->getVoidMat();
+  
+  const HeadRule refHR=mirror->SurfMap::getSurfRule("RefSurf");
+  ELog::EM<<"SN -== "<<refHR<<ELog::endDiag;
+
+  OPtr->addIntersection(refHR.complement());
+  const HeadRule HR=OPtr->getHeadRule();
+  //  makeCell("MainVoidX",System,cellIndex++,voidMat,0.0,HR*refHR);  
+
+  return;
+}
+
+  
 void
 M1Detail::createObjects(Simulation& System)
   /*!
@@ -166,10 +189,13 @@ M1Detail::createObjects(Simulation& System)
       addOuterSurf(HR);
     }
   else
-    setCells("MainVoid",getInsertCells());
-
+    {
+      setCells("MainVoid",getInsertCells());
+    }
+  
   mirror->createAll(System,*this,0);
-
+  splitMainCell(System);
+  
   cClamp->copyCutSurf("TubeRadius",*this,"TubeRadius");
 
   cClamp->setCutSurf("FarEnd",*mirror,"back");
@@ -197,6 +223,7 @@ M1Detail::createObjects(Simulation& System)
   connectors->setCutSurf("CInnerBase",*cClamp,"innerBase");
   
   connectors->createAll(System,*mirror,"backPlateOrg");
+
   frontShield->addInsertCell("Main",getCells("MainVoid"));
   if (CellMap::hasCell("FrontVoid"))
     frontShield->addInsertCell("Extra",getCell("FrontVoid"));
@@ -232,6 +259,8 @@ M1Detail::createObjects(Simulation& System)
   elecShield->setCell("TopEndVoid",*cClamp,"HeatVoid",3);
 
   elecShield->copyCutSurf("TubeRadius",*this,"TubeRadius");
+  elecShield->copyCutSurf("TubeFront",*this,"TubeFront");
+  elecShield->copyCutSurf("TubeBack",*this,"TubeBack");
   elecShield->setCutSurf("Mirror",*mirror,"mirrorSide");
 
   elecShield->setCutSurf("ringAFront",*ringA,"front");
@@ -242,7 +271,11 @@ M1Detail::createObjects(Simulation& System)
   elecShield->setCutSurf("ringBBack",*ringB,"back");
   
 
-  elecShield->addInsertCell(getCells("MainVoid"));
+  elecShield->addInsertCell("Main",getCells("MainVoid"));
+  elecShield->addInsertCell("Extra",getCells("MainVoid"));
+  elecShield->addInsertCell("Extra",getCells("FrontVoid"));  
+  for(const int CN : getCells("MainVoid"))
+    ELog::EM<<"Cells == "<<CN<<ELog::endDiag;
   elecShield->createAll(System,*mirror,0);
 
   mainPipe->setCutSurf("MirrorBase",*mirror,"normPipeA");
@@ -251,7 +284,8 @@ M1Detail::createObjects(Simulation& System)
   mainPipe->insertInCell("Main",System,cClamp->getCell("BaseVoid"));
   mainPipe->insertInCell("Main",System,getCells("MainVoid"));
   mainPipe->insertInCell("Out",System,cClamp->getCell("BaseVoid"));
-  mainPipe->insertInCell("Out",System,getCells("MainVoid"));
+  //  mainPipe->insertInCell("Out",System,getCells("MainVoid"));
+  mainPipe->insertInCell("Out",System,elecShield->getCells("RingVoidBase"));
 
   
   cClamp->insertInCell(System,getCells("MainVoid"));

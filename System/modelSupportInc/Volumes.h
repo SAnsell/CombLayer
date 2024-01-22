@@ -22,11 +22,29 @@
 #ifndef ModelSupport_Volumes_h
 #define ModelSupport_Volumes_h
 
+template<typename T> class multiData;
+
 namespace ModelSupport
 {
   class VolSum;
   
   void calcVolumes(Simulation*,const mainSystem::inputParam&);
+  void readPts(const std::string&,
+	       const Geometry::Vec3D&,
+	       const Geometry::Vec3D&,
+	       const Geometry::Vec3D&,
+	       const Geometry::Vec3D&,
+	       std::vector<int>&,
+	       std::vector<Geometry::Vec3D>&,
+	       std::vector<Geometry::Vec3D>&);
+	       
+  void readHeat(const std::string&,
+		std::vector<double>&,
+		std::vector<double>&,
+		std::vector<double>&,
+		multiData<double>&);
+  
+  
   void generatePlot(const std::string&,
 		    const Geometry::Vec3D&,
 		    const Geometry::Vec3D&,
@@ -37,6 +55,7 @@ namespace ModelSupport
 		    const std::vector<Geometry::Vec3D>&,
 		    const std::vector<Geometry::Vec3D>&);
 
+  void materialHeat(const Simulation&,const mainSystem::inputParam&);
   void materialCheck(const Simulation&,const mainSystem::inputParam&);
   void populateCells(const Simulation&,const mainSystem::inputParam&,
 		     VolSum&);

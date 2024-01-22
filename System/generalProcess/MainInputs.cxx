@@ -116,6 +116,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("matFile","matFile");
   IParam.regItem("maxEnergy","maxEnergy");   // default max energy
   IParam.regMulti("materialCheck","materialCheck",1000);
+  IParam.regMulti("materialHeat","materialHeat",1000);
   IParam.regFlag("M","mesh");
   IParam.regItem("MA","meshA");
   IParam.regItem("MB","meshB");

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/Volumes.cxx
+ * File:   modelProcess/Volumes.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "Exception.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -46,9 +47,8 @@
 #include "SimMCNP.h"
 #include "inputParam.h"
 #include "support.h"
+#include "mathSupport.h"
 #include "volUnit.h"
-#include "VolSum.h"
-#include "Volumes.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
@@ -58,6 +58,8 @@
 #include "Object.h"
 #include "dataSlice.h"
 #include "multiData.h"
+#include "VolSum.h"
+#include "Volumes.h"
 
 namespace ModelSupport
 {
@@ -94,6 +96,262 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
       VTally.write("volumes");
     }
 
+  return;
+}
+
+void
+readHeat(const std::string& heatFile,
+	 std::vector<double>& xCoord,
+	 std::vector<double>& yCoord,
+	 std::vector<double>& zCoord,
+	 multiData<double>& heat)
+{
+  ELog::RegMethod RegA("Volumes[F]","readHeat");
+
+  if (heatFile.empty())
+    throw ColErr::EmptyValue<std::string>("Heat fileName");
+
+  std::ifstream IX(heatFile.c_str());
+  xCoord.clear();
+  yCoord.clear();
+  zCoord.clear();
+  std::vector<double> values;
+  int oldX(-1),oldY(-1),oldZ(-1);
+
+  double integral(0.0);
+  while(IX.good())
+    {
+      int a,b,c;
+      double x,y,z,val;
+      std::string line = StrFunc::getLine(IX,512);
+
+      if (StrFunc::section(line,a) &&
+	  StrFunc::section(line,b) &&
+	  StrFunc::section(line,c) &&
+	  StrFunc::section(line,x) &&
+	  StrFunc::section(line,y) &&
+	  StrFunc::section(line,z) &&
+	  StrFunc::section(line,val))
+	{
+	  if (oldX<a)
+	    {
+	      xCoord.push_back(x);
+	      oldX=a;
+	    }
+	  if (oldY<b)
+	    {
+	      yCoord.push_back(y);
+	      oldY=b;
+	    }
+	  if (oldZ<c)
+	    {
+	      zCoord.push_back(z);
+	      oldZ=c;
+	    }
+	  val*=1000000.0;   // m^3 from cm^3
+	  val*=5.03681e+18;    // GeV per second
+	  val*=1.6021766e-10;  // GeV to Joules
+	  values.push_back(val);
+	  integral+=val;
+	}
+    }
+  ELog::EM<<"XYZ size= "<<xCoord.size()<<" "<<yCoord.size()<<" "
+	  <<zCoord.size()<<" "<<
+	  zCoord.size()*yCoord.size()*zCoord.size()
+	  <<ELog::endDiag;
+  ELog::EM<<"Values size= "<<values.size()<<ELog::endDiag;
+
+  // pixels are 0.1*0.1*0.1 cm there divide by 
+  ELog::EM<<"Integral = "<<integral/1e9<<ELog::endDiag;
+  heat.setData(xCoord.size(),yCoord.size(),zCoord.size(),
+	       values);
+  return;
+}
+
+void
+readPts(const std::string& pointName,
+	const Geometry::Vec3D& centre,
+	const Geometry::Vec3D& X,
+	const Geometry::Vec3D& Y,
+	const Geometry::Vec3D& Z,
+	std::vector<int>& OrgIndex,
+	std::vector<Geometry::Vec3D>& OrgPts,
+	std::vector<Geometry::Vec3D>& Pts)
+{
+  ELog::RegMethod RegA("Volumes[F]","readPts");
+  
+  if (pointName.empty())
+    throw ColErr::EmptyValue<std::string>("Point Name");
+
+  std::ifstream IX(pointName.c_str());
+  
+  while(IX.good())
+    {
+      int index;
+      double x,y,z;
+      std::string line = StrFunc::getLine(IX,512);
+      if (StrFunc::section(line,index) &&
+	  StrFunc::section(line,x) &&
+	  StrFunc::section(line,y) &&
+	  StrFunc::section(line,z))
+	{
+	  OrgIndex.push_back(index);
+	  OrgPts.push_back(Geometry::Vec3D(x,y,z));
+	  Geometry::Vec3D testPt(x,z,y);
+	  testPt*=100.0;
+	  testPt=testPt.getInBasis(X,Y,Z);
+	  testPt+=centre;
+	  Pts.push_back(testPt);
+	}
+    }
+  IX.close();
+  if (Pts.empty())
+    throw ColErr::FileError(0,pointName,"Point file empty");
+  return;
+}
+  
+void 
+materialHeat(const Simulation& System,
+	     const mainSystem::inputParam& IParam)
+
+ /*!
+    Generate heat from heat file and for plot file
+    \param centPoint :: Origin 
+    \param xAxis :: full extent from left to right
+    \param yAxis :: full extent from base to top
+    \param zAxis :: volume acceptable
+  */
+{
+  ELog::RegMethod RegA("Volumes[F]","generateHeat");
+
+if (IParam.flag("materialHeat"))
+    {
+      const std::string ptsName=IParam.getValue<std::string>("materialHeat",0);
+      const std::string heatName=IParam.getValue<std::string>("materialHeat",1);
+      const std::string objName=
+	IParam.getDefValue<std::string>("","materialHeat",2);
+      const std::string linkName=
+	IParam.getDefValue<std::string>("Origin","materialHeat",3);
+      const Geometry::Vec3D linkOffset=
+	IParam.getDefValue<Geometry::Vec3D>(Geometry::Vec3D(0,0,0),
+					    "materialHeat",4);
+
+      const attachSystem::FixedComp& FC=
+	(objName.empty()) ?  World::masterOrigin() :
+	*(System.getObjectThrow<attachSystem::FixedComp>
+	  (objName,"Object not found"));
+      
+      const long int linkIndex=(linkName.empty()) ?  0 :
+	FC.getSideIndex(linkName);
+
+      const Geometry::Vec3D centre=FC.getLinkPt(linkIndex);
+      Geometry::Vec3D X;
+      Geometry::Vec3D Y;
+      Geometry::Vec3D Z;
+      FC.calcLinkAxis(linkIndex,X,Y,Z);
+
+      std::vector<double> xCoord;
+      std::vector<double> yCoord;
+      std::vector<double> zCoord;
+      multiData<double> heat;
+      readHeat(heatName,xCoord,yCoord,zCoord,heat);
+
+      std::vector<int> OrgIndex;
+      std::vector<Geometry::Vec3D> OrgPts;
+      std::vector<Geometry::Vec3D> Pts;
+      readPts(ptsName,centre,X,Y,Z,OrgIndex,OrgPts,Pts);
+
+      std::ofstream OX("heatOut.txt");
+
+      std::map<size_t,size_t> usageMap;
+      double integral(0.0);
+      multiData<int> useMesh(heat.shape());
+      for(size_t i=0;i<Pts.size();i++)
+	{
+	  const Geometry::Vec3D& OrgPt(OrgPts[i]);
+	  const Geometry::Vec3D& Pt(Pts[i]);
+	  const double x=Pt[0];
+	  const double y=Pt[1];
+	  const double z=Pt[2];
+	  const size_t ii=rangePos(xCoord,x);
+	  const size_t jj=rangePos(yCoord,y);
+	  const size_t kk=rangePos(zCoord,z);
+	  const size_t index=ii*1000000+jj*1000+kk;
+
+	  const std::vector<size_t>& shape=heat.shape();
+
+	  double vMax(0.0);
+
+	  size_t maxIndex(0);
+	  for(size_t alpha=ii;ii<ii+2 && alpha<shape[0];alpha++)
+	    for(size_t beta=jj;beta<jj+2 && beta<shape[1];beta++)
+	      for(size_t gamma=kk;gamma<kk+2 && gamma<shape[2];gamma++)
+		{
+		  const size_t index=ii*1000000+jj*1000+kk;
+		  const double value=heat.get()[alpha][beta][gamma];
+		  if (value>vMax)
+		    {
+		      vMax=value;
+		      maxIndex=index;
+		    }
+		}
+	  
+	  // vMax=heat.get()[alpha][beta][gamma];
+	  if (vMax>1e-4)
+	    {
+	      usageMap[maxIndex]++;
+	      if (usageMap[maxIndex]==1)
+		{
+		  integral+=vMax;
+		}
+	    }
+	  OX<<OrgIndex[i]<<" "
+	    <<OrgPt[0]<<" "<<OrgPt[1]<<" "<<OrgPt[2]<<" "
+	    <<vMax;
+	    
+	  OX<<std::endl;
+	}
+      OX.close();
+
+      ELog::EM<<"Size == "<<heat.size()<<" "
+	      <<usageMap.size()<<" "<<integral/1e9<<ELog::endDiag;
+
+      double integralUsed(0.0);
+      double integralMissing(0.0);
+      double maxV(0.0);
+      for(size_t i=0;i<xCoord.size();i++)
+	for(size_t j=0;j<yCoord.size();j++)
+	  for(size_t k=0;k<zCoord.size();k++)
+	    {
+	      const double value=heat.get()[i][j][k];
+	      const size_t index=i*1000000+j*1000+k;
+	      
+	      if (usageMap.find(index)==usageMap.end())
+		{
+		  if (value>maxV && value>1e10)
+		    {
+		      maxV=value;
+		      //			  integralUsed+=value;
+		      ELog::EM<<"Point "<<i<<" "<<j<<" "<<k<<" : "
+			      <<xCoord[i]<<" "
+			      <<yCoord[j]<<" "
+			      <<zCoord[k]<<" "
+			      <<value<<ELog::endDiag;
+		    }
+		  integralMissing+=value;
+		}
+	      else
+		integralUsed+=value;
+
+	    }
+      ELog::EM<<"Integral[Missing] == "<<integralMissing/1e9<<ELog::endDiag;
+      ELog::EM<<"Integral[Good]     == "<<integralUsed/1e9<<ELog::endDiag;
+		      
+		  
+	    
+    }
+
+ 
   return;
 }
 

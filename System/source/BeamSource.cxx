@@ -320,7 +320,6 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   // Note the cos directs fro the beamPos are for particle
   // leaving the beam NOT the orientation of the disk
   cx<<"BEAMPOS "<<MW.Num(Origin);
-  ELog::EM<<"Beam Pos == "<<Origin<<ELog::endDiag;
     
   StrFunc::writeFLUKA(cx.str(),OX);
 

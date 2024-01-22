@@ -3,7 +3,7 @@
 
  * File:   softimax/M1Mirror.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,10 +147,11 @@ M1Mirror::createSurfaces()
   ELog::RegMethod RegA("M1Mirror","createSurfaces");
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,Y);
+  makePlane("Divider",SMap,buildIndex+1000,Origin,Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin,X);
+  makePlane("RefSurf",SMap,buildIndex+4,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 

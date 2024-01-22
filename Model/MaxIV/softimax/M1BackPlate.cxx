@@ -307,7 +307,7 @@ M1BackPlate::joinRing(Simulation& System,
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-224 -15 25 13");
   makeCell("LowRingJoin",System,cellIndex++,
 	   baseMat,0.0,HR*fbHR*ringCyl);
-  ELog::EM<<"Celll == "<<cellIndex-1<<ELog::endDiag;
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-224 -25 125");
   makeCell("LowRingJoinVoid",System,cellIndex++,
 	   voidMat,0.0,HR*fbHR*ringCyl);

@@ -861,6 +861,27 @@ multiData<T>::setData(std::vector<T> D)
 }
 
 template<typename T>
+void
+multiData<T>::setData(const size_t A,const size_t B,
+		      const size_t C,
+		      std::vector<T> Data)
+  /*!
+    Raw setting :
+     Only sets if the stride number is correct
+    \param Data :: Vector to set
+
+   */
+{
+  if (A*B*C==Data.size())
+    {
+      index={A,B,C};
+      strides={B*C,C,1,0};
+      flatData=std::move(Data);
+    }
+  return;
+}
+
+template<typename T>
 std::vector<size_t>
 multiData<T>::reduceAxis(const size_t axisIndex) const
   /*!

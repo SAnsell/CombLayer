@@ -138,6 +138,7 @@ class M1DetailGenerator
   
   double eXOut;                 ///< Step from the back plane (79.8)
   double eLength;               ///< Length of electorn shield (38.0)
+  double eFrontLength;          ///< extra part at front (with curve)
   double eThick;                ///< Length of electorn shield (0.1)
   double eHeight;               ///< Height (internal) of electorn shield (6.8)
   double eEdge;                 ///< Internal step (10.3)

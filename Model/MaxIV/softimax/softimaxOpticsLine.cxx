@@ -367,8 +367,11 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   */
 
   M1Detail->addInsertCell(M1Tube->getCell("Void"));
+
   M1Detail->setCell("FrontVoid",M1TubeFront->getCell("Void",3));
   M1Detail->setCutSurf("TubeRadius",*M1Tube,"InnerSide");
+  M1Detail->setCutSurf("TubeFront",*M1Tube,"#front");
+  M1Detail->setCutSurf("TubeBack",*M1Tube,"#back");  
   M1Detail->createAll(System,*M1Tube,0);
 
   /*  M1Stand->setCutSurf("floor",this->getRule("floor"));

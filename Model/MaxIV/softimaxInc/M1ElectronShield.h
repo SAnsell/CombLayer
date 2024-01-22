@@ -37,7 +37,7 @@ namespace xraySystem
 
 class M1ElectronShield :
   public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
@@ -51,12 +51,13 @@ class M1ElectronShield :
   double elecHeight;          ///< height
   double elecEdge;            ///< edge thickness
   double elecHoleRadius;      ///< central hole radius
-
+  double elecFrontLength;        ///< extra a front
+  
   double connectLength;       ///< External Length
   double connectGap;          ///< thickness of gap 
   double connectThick;        ///< thickness of strips
 
-  double nCut;                ///< Number of cuts
+  size_t nCut;                ///< Number of cuts
   double cutRadius;           ///< Radius of cut circles
   double cutGap;              ///< Distance between cuts
   

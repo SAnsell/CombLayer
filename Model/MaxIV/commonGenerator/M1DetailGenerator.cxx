@@ -95,11 +95,12 @@ M1DetailGenerator::M1DetailGenerator() :
   bRingInnerYStep(0.3),
   bRingInnerThick(0.9),bRingInnerLength(1.2),
   
-  eXOut(1.83),eLength(38.0),eThick(0.2),eHeight(7.0),
+  eXOut(1.83),eLength(38.0),
+  eFrontLength(1.2),eThick(0.2),eHeight(7.0),
   eEdge(2.80),eHoleRadius(1.18),
   eConnectLength(1.5),eConnectGap(1.3),
   eConnectThick(0.35),
-  eNCut(9),eCutRadius(1.4),eCutGap(3.7),
+  eNCut(10),eCutRadius(1.4),eCutGap(3.7),
   eBlockOffset(0.5),eBlockWidth(1.2),
   ePlateOffset(2.1),ePlateThick(0.2),
   ePlateHeight(5.2),ePipeRadius(0.2),
@@ -391,6 +392,7 @@ M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
 
   Control.addVariable(keyName+"ElecXOut",eXOut+eThick);
   Control.addVariable(keyName+"ElecLength",eLength);
+  Control.addVariable(keyName+"ElecFrontLength",eFrontLength);
   Control.addVariable(keyName+"ElecHeight",eHeight+eThick);
   Control.addVariable(keyName+"ElecEdge",eEdge);
   Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);

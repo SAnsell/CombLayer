@@ -3,7 +3,7 @@
  
  * File:   softimaxInc/M1Detail.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,8 @@ class M1Detail :
   std::shared_ptr<M1Ring> ringB;
   // Functions:
 
+  void splitMainCell(Simulation&);
+  
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
