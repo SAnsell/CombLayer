@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/M1DetailGenerator.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -330,33 +330,6 @@ M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
   return;
 }
 
-
-void
-M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
-				    const std::string& keyName) const
-  /*!
-    Build the outer supports on the back plate
-  */
-{
-  ELog::RegMethod RegA("M1DetailGenerator","makeOuterSupport");
-
-  /*
-  Control.addVariable(keyName+"FrontSupportThick",bFrontSupportThick);
-  Control.addVariable(keyName+"FrontSupportCut",bFrontSupportCut);
-  Control.addVariable(keyName+"FrontSupportZCut",bFrontSupportZCut);
-  */
-
- /*
-  Control.addVariable(keyName+"RingYPos",bRingYPos);
-  Control.addVariable(keyName+"RingThick",bRingThick);
-  Control.addVariable(keyName+"RingGap",bRingGap);
-  Control.addVariable(keyName+"RingClampThick",bRingClampThick);
-  Control.addVariable(keyName+"RingBackPt",bRingBackPt);
-  Control.addVariable(keyName+"RingTopPt",bRingTopPt);
-  */
-  return;
-}
-
 void
 M1DetailGenerator::makeFrame(FuncDataBase& Control,
 			     const std::string& keyName) const
@@ -512,7 +485,6 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   makeFrame(Control,keyName+"Frame");
   makeMainPipe(Control,keyName+"MainPipe");
   makeRingSupport(Control,keyName+"Ring");
-  makeOuterSupport(Control,keyName+"CClamp");
   
   return;
 
