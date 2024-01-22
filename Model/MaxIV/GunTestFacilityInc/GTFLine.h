@@ -63,13 +63,13 @@ class GTFLine :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
-  /// a dummy bellow
   std::shared_ptr<IonPumpGammaVacuum> ionPump;
   std::shared_ptr<constructSystem::VacuumPipe> extension; // drawing 202964
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<xraySystem::Solenoid> solenoid; // drawing 204282
   std::shared_ptr<constructSystem::GTFGateValve> gate; // Gate Valve 48236-CE24, drawing 200564
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  std::shared_ptr<constructSystem::Bellows> bellowA;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

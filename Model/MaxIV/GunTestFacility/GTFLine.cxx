@@ -67,6 +67,7 @@
 
 #include "IonPumpGammaVacuum.h"
 #include "GeneralPipe.h"
+#include "Bellows.h"
 #include "VacuumPipe.h"
 #include "GTFGateValve.h"
 #include "Solenoid.h"
@@ -91,7 +92,8 @@ GTFLine::GTFLine(const std::string& Key) :
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
   gate(new constructSystem::GTFGateValve("Gate")),
-  pipeB(std::make_shared<constructSystem::VacuumPipe>("PipeB"))
+  pipeB(std::make_shared<constructSystem::VacuumPipe>("PipeB")),
+  bellowA(std::make_shared<constructSystem::Bellows>("BellowA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -106,6 +108,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(solenoid);
   OR.addObject(gate);
   OR.addObject(pipeB);
+  OR.addObject(bellowA);
 }
 
 GTFLine::~GTFLine()
@@ -178,8 +181,7 @@ GTFLine::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*ionPump,2);
   ionPump->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,buildZone,*ionPump,"back",*extension);
+  constructSystem::constructUnit(System,buildZone,*ionPump,"back",*extension);
 
   pipeA->setFront(*extension,"back");
   pipeA->createAll(System, *extension, "back");
@@ -187,8 +189,7 @@ GTFLine::buildObjects(Simulation& System)
   tdcSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
   outerCell = tdcSystem::pipeTerminate(System,buildZone,pipeA);
 
-  outerCell1 = constructSystem::constructUnit
-    (System,buildZone,*pipeA,"back",*gate);
+  outerCell1 = constructSystem::constructUnit(System,buildZone,*pipeA,"back",*gate);
 
   gate->insertInCell("Shaft", System, outerCell);
 
@@ -196,10 +197,11 @@ GTFLine::buildObjects(Simulation& System)
 
   gate->insertInCell("Shaft", System, outerCell1+1);
 
-  outerCell = constructSystem::constructUnit
-    (System,buildZone,*gate,"back",*pipeB);
+  outerCell = constructSystem::constructUnit(System,buildZone,*gate,"back",*pipeB);
 
   gate->insertInCell("Shaft", System, outerCell);
+
+  constructSystem::constructUnit(System,buildZone,*pipeB,"back",*bellowA);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

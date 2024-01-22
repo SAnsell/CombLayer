@@ -47,6 +47,7 @@
 #include "DuctGenerator.h"
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
+#include "BellowGenerator.h"
 #include "SolenoidGenerator.h"
 #include "GTFGateValveGenerator.h"
 
@@ -268,8 +269,18 @@ namespace setVariable
     PipeGen.setCF<setVariable::CF63>();
     PipeGen.generatePipe(Control,name,7.9+CF63::flangeLength); // measured
     Control.addVariable(name+"PipeThick", 0.2);
-    Control.addVariable(name+"FlangeBType", 1);
     Control.addVariable(name+"FlangeBLength", 0.0);
+
+    name = "BellowA";
+    setVariable::BellowGenerator BellowGen;
+    BellowGen.setCF<setVariable::CF63>();
+    BellowGen.generateBellow(Control,name,4.0); // measured
+    Control.addVariable(name+"PipeThick", 0.2);
+    Control.addVariable(name+"FlangeALength", 0.0);
+    Control.addVariable(name+"FlangeBLength", 0.0);
+    Control.addVariable(name+"BellowStep", 0.8); // measured
+
+
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
