@@ -85,14 +85,14 @@ Solenoid::Solenoid(const Solenoid& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),
   frameWidth(A.frameWidth),frameThick(A.frameThick),
+  frameRadius(A.frameRadius),
   coilThick(A.coilThick),
   coilRadius(A.coilRadius),
   coilGap(A.coilGap),
   penRadius(A.penRadius),
   frameMat(A.frameMat),coilMat(A.coilMat),
   voidMat(A.voidMat),
-  nCoils(A.nCoils),
-  nFrameFacets(A.nFrameFacets)
+  nCoils(A.nCoils)
   /*!
     Copy constructor
     \param A :: Solenoid to copy
@@ -118,6 +118,7 @@ Solenoid::operator=(const Solenoid& A)
       frameWidth=A.frameWidth;
       coilThick=A.coilThick;
       frameThick=A.frameThick;
+      frameRadius=A.frameRadius;
       coilRadius=A.coilRadius;
       coilGap=A.coilGap;
       penRadius=A.penRadius;
@@ -125,7 +126,6 @@ Solenoid::operator=(const Solenoid& A)
       coilMat=A.coilMat;
       voidMat=A.voidMat;
       nCoils=A.nCoils;
-      nFrameFacets=A.nFrameFacets;
     }
   return *this;
 }
@@ -160,6 +160,7 @@ Solenoid::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   frameWidth=Control.EvalVar<double>(keyName+"FrameWidth");
   frameThick=Control.EvalVar<double>(keyName+"FrameThick");
+  frameRadius=Control.EvalVar<double>(keyName+"FrameRadius");
   coilThick=Control.EvalVar<double>(keyName+"CoilThick");
   coilRadius=Control.EvalVar<double>(keyName+"CoilRadius");
   coilGap=Control.EvalVar<double>(keyName+"CoilGap");
@@ -169,7 +170,6 @@ Solenoid::populate(const FuncDataBase& Control)
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   nCoils=Control.EvalVar<size_t>(keyName+"NCoils");
-  nFrameFacets=Control.EvalVar<size_t>(keyName+"NFrameFacets");
 
   return;
 }
@@ -208,19 +208,10 @@ Solenoid::createSurfaces()
 				      -frameThick);
     }
 
-  int CN(buildIndex+1000);
-  double angle(0.0);
-  const double dangle = 2.0*M_PI/static_cast<double>(nFrameFacets);
-  for (size_t i=0; i<nFrameFacets; ++i) {
-    const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
-    ModelSupport::buildPlane(SMap,CN+51,Origin+QR*(frameWidth/2.0),QR);
-    angle+=dangle;
-    CN++;
-  }
-
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,penRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,coilRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,coilRadius+coilGap);
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,frameRadius);
 
   int SI(buildIndex+20);
   double dy(frameThick+coilThick);
@@ -255,12 +246,11 @@ Solenoid::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  std::string unitStr=ModelSupport::getSeqIntersection(-51, -(50+static_cast<int>(nFrameFacets)),1);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,unitStr);
-  addOuterSurf(HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37")*frontStr*backStr;
+  addOuterSurf(HR);
 
   HR *= ModelSupport::getHeadRule(SMap,buildIndex,"27");
-  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR*frontStr*backStr);
+  makeCell("Frame",System,cellIndex++,frameMat,0.0,HR);
 
   // first coil
   HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,"1 -21 7 -17");

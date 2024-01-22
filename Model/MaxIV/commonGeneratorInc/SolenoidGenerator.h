@@ -42,6 +42,7 @@ class SolenoidGenerator
   double length;                ///< Total length including void
   double frameWidth;            ///< Frame width
   double frameThick;            ///< Frame thickness (outer walls)
+  double frameRadius;           ///< FrameOuterRadius
   double coilThick;             ///< Single wire coil thickness
   double coilRadius;            ///< Wire coil radius
   double coilGap;               ///< Radial gap between coil and frame
@@ -51,7 +52,6 @@ class SolenoidGenerator
   std::string coilMat;          ///< Coil material
   std::string voidMat;          ///< Void material
   int nCoils;                   ///< Number of coils
-  int nFrameFacets;             ///< Number of frame facets
 
  public:
 

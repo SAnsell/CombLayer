@@ -51,13 +51,13 @@ namespace setVariable
 
 SolenoidGenerator::SolenoidGenerator() :
   length(20.0),frameWidth(39),frameThick(2.5),
+  frameRadius(19.5),
   coilThick(3.0),coilRadius(17),
   coilGap(0.3),
   penRadius(3.8),
   frameMat("Iron"),coilMat("Copper"), // TODO: maybe StbTCABL?
   voidMat("Void"),
-  nCoils(4),
-  nFrameFacets(8)
+  nCoils(4)
   /*!
     Constructor and defaults
   */
@@ -83,6 +83,7 @@ SolenoidGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FrameWidth",frameWidth);
   Control.addVariable(keyName+"FrameThick",frameThick);
+  Control.addVariable(keyName+"FrameRadius",frameRadius);
   Control.addVariable(keyName+"CoilThick",coilThick);
   Control.addVariable(keyName+"CoilRadius",coilRadius);
   Control.addVariable(keyName+"CoilGap",coilGap);
@@ -91,7 +92,6 @@ SolenoidGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"CoilMat",coilMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"NCoils",nCoils);
-  Control.addVariable(keyName+"NFrameFacets",nFrameFacets);
 
   return;
 

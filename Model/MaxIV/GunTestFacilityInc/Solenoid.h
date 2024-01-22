@@ -46,7 +46,8 @@ class Solenoid :
 
   double length;                ///< Total length including void
   double frameWidth;            ///< Frame width
-  double frameThick;            ///< Frame thickness (outer walls)
+  double frameThick;            ///< Frame thickness (outer side walls)
+  double frameRadius;           ///< FrameOuterRadius
   double coilThick;             ///< Single wire coil thickness
   double coilRadius;            ///< Wire coil radius
   double coilGap;               ///< Radial gap between coil and frame
@@ -56,7 +57,6 @@ class Solenoid :
   int coilMat;                  ///< Coil material
   int voidMat;                  ///< Void material
   size_t nCoils;                ///< Number of coils
-  size_t nFrameFacets;          ///< Number of frame facets
 
   void populate(const FuncDataBase&);
 
