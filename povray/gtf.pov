@@ -81,6 +81,12 @@ global_settings {
     #declare cameraAngle = 35;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"CurrentMonitor"))
+    #declare cameraLocation = <-90, 170, 40>;
+    #declare cameraLookAt   = <0, 216, 3>;
+    #declare cameraAngle = 35;
+    #declare projection = 0;
+  #break
   #else // default view
     #declare cameraLocation = <175, -275, 0>;
     #declare cameraLookAt   = <0, 245, 0>;
