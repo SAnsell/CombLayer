@@ -44,9 +44,11 @@ class CurrentMonitor :
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  double length;                ///< Total length
+  double frontRadius;           ///< Inner radius of the front segment
+  double midRadius;             ///< Inner radius of the middle segmen
+  double backRadius;            ///< Inner radius of the back segment
+  double outerRadius;           ///< Outer radius
   double wallThick;             ///< Wall thickness
 
   int mainMat;                  ///< Main material

@@ -50,7 +50,9 @@ namespace setVariable
 {
 
 CurrentMonitorGenerator::CurrentMonitorGenerator() :
-  length(10.0),width(5.0),height(15.0),wallThick(1.0),
+  length(10.0),frontRadius(3.3),midRadius(4.0),wallThick(1.0),
+  backRadius(5.5),
+  outerRadius(7.6),
   mainMat("Void"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
@@ -75,8 +77,10 @@ CurrentMonitorGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("CurrentMonitorGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"FrontRadius",frontRadius);
+  Control.addVariable(keyName+"MidRadius",midRadius);
+  Control.addVariable(keyName+"BackRadius",backRadius);
+  Control.addVariable(keyName+"OuterRadius",outerRadius);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);
