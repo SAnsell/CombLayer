@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 CurrentMonitorGenerator::CurrentMonitorGenerator() :
-  length(10.0),frontRadius(3.3),midRadius(4.0),wallThick(1.0),
+  length(10.0),frontRadius(3.3),midRadius(4.0),wallThick(2.0),
   backRadius(5.5),
   outerRadius(7.6),
   mainMat("Void"),wallMat("Stainless316L")

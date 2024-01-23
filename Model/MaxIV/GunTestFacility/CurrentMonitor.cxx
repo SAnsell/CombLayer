@@ -216,8 +216,14 @@ CurrentMonitor::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 -1");
+  makeCell("Front",System,cellIndex++,wallMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 1 -2");
+  makeCell("Mid",System,cellIndex++,wallMat,0.0,HR );
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 2");
+  makeCell("Back",System,cellIndex++,wallMat,0.0,HR*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37");
   addOuterSurf(HR*frontStr*backStr);

@@ -49,7 +49,7 @@ class CurrentMonitor :
   double midRadius;             ///< Inner radius of the middle segmen
   double backRadius;            ///< Inner radius of the back segment
   double outerRadius;           ///< Outer radius
-  double wallThick;             ///< Wall thickness
+  double wallThick;             ///< Front/back segment thickness
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
