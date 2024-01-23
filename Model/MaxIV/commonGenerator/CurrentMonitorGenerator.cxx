@@ -44,16 +44,18 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
+#include "CFFlanges.h"
 #include "CurrentMonitorGenerator.h"
 
 namespace setVariable
 {
 
 CurrentMonitorGenerator::CurrentMonitorGenerator() :
-  length(10.0),frontRadius(3.3),midRadius(4.0),wallThick(2.0),
+  length(10.0),frontRadius(CF63::innerRadius),midRadius(4.0),
   backRadius(5.5),
   outerRadius(7.6),
-  mainMat("Void"),wallMat("Stainless316L")
+  wallThick(2.0),
+  voidMat("Void"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
   */
@@ -82,7 +84,7 @@ CurrentMonitorGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"BackRadius",backRadius);
   Control.addVariable(keyName+"OuterRadius",outerRadius);
   Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
   return;

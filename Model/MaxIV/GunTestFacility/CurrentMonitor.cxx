@@ -87,7 +87,7 @@ CurrentMonitor::CurrentMonitor(const CurrentMonitor& A) :
   backRadius(A.backRadius),
   outerRadius(A.outerRadius),
   wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  voidMat(A.voidMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: CurrentMonitor to copy
@@ -115,7 +115,7 @@ CurrentMonitor::operator=(const CurrentMonitor& A)
       backRadius=A.backRadius;
       outerRadius=A.outerRadius;
       wallThick=A.wallThick;
-      mainMat=A.mainMat;
+      voidMat=A.voidMat;
       wallMat=A.wallMat;
     }
   return *this;
@@ -155,7 +155,7 @@ CurrentMonitor::populate(const FuncDataBase& Control)
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -216,14 +216,23 @@ CurrentMonitor::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 -1");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"7 -37 -1");
   makeCell("Front",System,cellIndex++,wallMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 1 -2");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -1");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"17 -37 1 -2");
   makeCell("Mid",System,cellIndex++,wallMat,0.0,HR );
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37 2");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 1 -2");
+  makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR );
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"27 -37 2");
   makeCell("Back",System,cellIndex++,wallMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-27 2");
+  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-37");
   addOuterSurf(HR*frontStr*backStr);

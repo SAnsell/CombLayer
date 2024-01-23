@@ -46,7 +46,7 @@ class CurrentMonitorGenerator
   double outerRadius;           ///< Outer radius
   double wallThick;             ///< Wall thickness
 
-  std::string mainMat;          ///< Main material
+  std::string voidMat;          ///< Void material
   std::string wallMat;          ///< Wall material
 
  public:

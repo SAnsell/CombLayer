@@ -51,7 +51,7 @@ class CurrentMonitor :
   double outerRadius;           ///< Outer radius
   double wallThick;             ///< Front/back segment thickness
 
-  int mainMat;                  ///< Main material
+  int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
