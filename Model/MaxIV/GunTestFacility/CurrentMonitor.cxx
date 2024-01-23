@@ -251,17 +251,21 @@ CurrentMonitor::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(frontRadius/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect(2,Origin-X*(outerRadius/2.0),-X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+37));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(40000));
 
-  FixedComp::setConnect(3,Origin+X*(frontRadius/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect(3,Origin+X*(outerRadius/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+37));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(40000));
 
-  FixedComp::setConnect(4,Origin-Z*(midRadius/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect(4,Origin-Z*(outerRadius/2.0),-Z);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+37));
+  FixedComp::setBridgeSurf(4,-SMap.realSurf(60000));
 
-  FixedComp::setConnect(5,Origin+Z*(midRadius/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect(5,Origin+Z*(outerRadius/2.0),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+37));
+  FixedComp::setBridgeSurf(5,SMap.realSurf(60000));
 
   return;
 }
