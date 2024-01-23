@@ -105,6 +105,10 @@ readHeat(const std::string& heatFile,
 	 std::vector<double>& yCoord,
 	 std::vector<double>& zCoord,
 	 multiData<double>& heat)
+  /*!
+    Given a heat file (node : x,y,z : value) : CombLayer values
+    calclulate the heat in the coordinates 
+   */
 {
   ELog::RegMethod RegA("Volumes[F]","readHeat");
 
@@ -177,6 +181,9 @@ readPts(const std::string& pointName,
 	std::vector<int>& OrgIndex,
 	std::vector<Geometry::Vec3D>& OrgPts,
 	std::vector<Geometry::Vec3D>& Pts)
+  /*!
+    Given a mesh file convert to main system
+   */
 {
   ELog::RegMethod RegA("Volumes[F]","readPts");
   
@@ -205,6 +212,10 @@ readPts(const std::string& pointName,
 	}
     }
   IX.close();
+  ELog::EM<<"XYZ Axis == "<<X<<ELog::endDiag;
+  ELog::EM<<"XYZ Axis == "<<Y<<ELog::endDiag;
+  ELog::EM<<"XYZ Axis == "<<Z<<ELog::endDiag;
+
   if (Pts.empty())
     throw ColErr::FileError(0,pointName,"Point file empty");
   return;
@@ -260,9 +271,9 @@ if (IParam.flag("materialHeat"))
       std::vector<Geometry::Vec3D> OrgPts;
       std::vector<Geometry::Vec3D> Pts;
       readPts(ptsName,centre,X,Y,Z,OrgIndex,OrgPts,Pts);
-
+      ELog::EM<<"Centere == "<<centre<<ELog::endDiag;
       std::ofstream OX("heatOut.txt");
-
+      
       std::map<size_t,size_t> usageMap;
       double integral(0.0);
       multiData<int> useMesh(heat.shape());
@@ -276,19 +287,27 @@ if (IParam.flag("materialHeat"))
 	  const size_t ii=rangePos(xCoord,x);
 	  const size_t jj=rangePos(yCoord,y);
 	  const size_t kk=rangePos(zCoord,z);
-	  const size_t index=ii*1000000+jj*1000+kk;
-
+	  //	  const size_t index=ii*1000000+jj*1000+kk;
+	  
 	  const std::vector<size_t>& shape=heat.shape();
-
+	  // ELog::EM<<"CXY ="<<xCoord.size()<<" "
+	  // 	  <<yCoord.size()<<" "<<zCoord.size()<<ELog::endDiag;
+	  // ELog::EM<<"Shape ="<<shape[0]<<" "
+	  // 	  <<shape[1]<<" "<<shape[2]<<ELog::endDiag;
 	  double vMax(0.0);
 
 	  size_t maxIndex(0);
-	  for(size_t alpha=ii;ii<ii+2 && alpha<shape[0];alpha++)
-	    for(size_t beta=jj;beta<jj+2 && beta<shape[1];beta++)
-	      for(size_t gamma=kk;gamma<kk+2 && gamma<shape[2];gamma++)
+	  const size_t aMinus((ii>10) ? 10 : ii);
+	  const size_t bMinus((jj>2) ? 2 : jj);
+	  const size_t cMinus((kk>2) ? 2 : kk);
+	  for(size_t alpha=ii-aMinus;ii<ii+2 && alpha<shape[0];alpha++)
+	    for(size_t beta=jj-bMinus;beta<jj+2 && beta<shape[1];beta++)
+	      for(size_t gamma=kk-cMinus;gamma<kk+2 && gamma<shape[2];gamma++)
 		{
 		  const size_t index=ii*1000000+jj*1000+kk;
 		  const double value=heat.get()[alpha][beta][gamma];
+		  if (value>1e-4)
+		    usageMap[index]++;
 		  if (value>vMax)
 		    {
 		      vMax=value;
@@ -297,14 +316,15 @@ if (IParam.flag("materialHeat"))
 		}
 	  
 	  // vMax=heat.get()[alpha][beta][gamma];
-	  if (vMax>1e-4)
+	  if (vMax>1e-12)
 	    {
-	      usageMap[maxIndex]++;
+	      //	      usageMap[maxIndex]++;
 	      if (usageMap[maxIndex]==1)
 		{
 		  integral+=vMax;
 		}
 	    }
+	  
 	  OX<<OrgIndex[i]<<" "
 	    <<OrgPt[0]<<" "<<OrgPt[1]<<" "<<OrgPt[2]<<" "
 	    <<vMax;
@@ -331,24 +351,30 @@ if (IParam.flag("materialHeat"))
 		  if (value>maxV && value>1e10)
 		    {
 		      maxV=value;
+
+		      Geometry::Vec3D testX(xCoord[i],
+					    yCoord[j],
+					    zCoord[k]);
+		      testX-=centre;
+		      testX/=100.0;
+		      Geometry::Vec3D testPt(-testX[0],testX[2],testX[1]);
+		      
 		      //			  integralUsed+=value;
 		      ELog::EM<<"Point "<<i<<" "<<j<<" "<<k<<" : "
 			      <<xCoord[i]<<" "
 			      <<yCoord[j]<<" "
 			      <<zCoord[k]<<" "
-			      <<value<<ELog::endDiag;
+			      <<value<<":::"<<testPt<<ELog::endDiag;
 		    }
 		  integralMissing+=value;
 		}
 	      else
 		integralUsed+=value;
-
 	    }
+
       ELog::EM<<"Integral[Missing] == "<<integralMissing/1e9<<ELog::endDiag;
       ELog::EM<<"Integral[Good]     == "<<integralUsed/1e9<<ELog::endDiag;
-		      
-		  
-	    
+
     }
 
  
@@ -493,7 +519,7 @@ materialCheck(const Simulation& System,
 	      StrFunc::section(line,y) &&
 	      StrFunc::section(line,z))
 	    {
-	      Geometry::Vec3D testPt(x,z,y);
+	      Geometry::Vec3D testPt(z,x,y);
 	      testPt*=100.0;
 	      testPt-=linkOffset;
 	      testPt=testPt.getInBasis(X,Y,Z);
@@ -508,7 +534,6 @@ materialCheck(const Simulation& System,
 	    }
 	}
       IX.close();
-      ELog::EM<<"CENT == "<<centre<<ELog::endDiag;
       ELog::EM<<"PTS == "<<PtsBad[0]<<ELog::endDiag;
       ELog::EM<<"Y == "<<Y<<ELog::endDiag;
       ELog::EM<<"Z == "<<Z<<ELog::endDiag;
