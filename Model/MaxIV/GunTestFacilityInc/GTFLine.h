@@ -34,6 +34,7 @@ namespace constructSystem
   class VacuumPipe;
   class GTFGateValve;
   class PipeTube;
+  class FlangePlate;
 }
 
 namespace MAXIV
@@ -74,6 +75,7 @@ class GTFLine :
   std::shared_ptr<constructSystem::Bellows> bellowA;
   std::shared_ptr<xraySystem::CurrentTransformer> mon;
   std::shared_ptr<constructSystem::PipeTube> laserChamber; // laser and viewing chamber
+  std::shared_ptr<constructSystem::FlangePlate> laserChamberBackPlate; // laser chamber back plate
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

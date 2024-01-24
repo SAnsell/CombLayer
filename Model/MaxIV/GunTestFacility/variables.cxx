@@ -53,6 +53,7 @@
 #include "CurrentTransformerGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
+#include "FlangePlateGenerator.h"
 
 namespace setVariable
 {
@@ -288,12 +289,14 @@ namespace setVariable
     CMGen.generate(Control,name);
 
     name = "LaserChamber";
+    constexpr double lcRadius = 5.0; // measured
+    constexpr double lcWall = 0.2; // measured
     setVariable::PipeTubeGenerator PipeTubeGen;
     PipeTubeGen.setCF<CF63>();
     PipeTubeGen.setCap();
     PipeTubeGen.generateTube(Control,name,12.0);
-    Control.addVariable(name+"Radius",5.0); // measured
-    Control.addVariable(name+"WallThick",0.2); // measured
+    Control.addVariable(name+"Radius",lcRadius);
+    Control.addVariable(name+"WallThick",lcWall);
     Control.addVariable(name+"FlangeACapThick",0.0);
     Control.addVariable(name+"FlangeBCapThick",0.0);
     Control.addVariable(name+"FlangeALength",1.3); // measured
@@ -302,15 +305,23 @@ namespace setVariable
     Control.addVariable(name+"NPorts",1);
 
     setVariable::PortItemGenerator PItemGen;
-    PItemGen.setCF<setVariable::CF35_TDC>(4.8);
-    PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"SiO2");
+    constexpr double dr = lcRadius-lcWall;
+    PItemGen.setCF<setVariable::CF35_TDC>(dr);
+    PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"Stainless304");
     PItemGen.generatePort(Control,name+"Port0",
 			  Geometry::Vec3D(-4.8,0,0),
 			  Geometry::Vec3D(-1,0,0));
     //    Control.addVariable(name+"Port0CapThick",0.0);
+    Control.addVariable(name+"Port0FlangeLength",0); // guess TODO
     Control.addVariable(name+"Port0WindowThick",1.0); // guess TODO
     Control.addVariable(name+"Port0WindowRadius",setVariable::CF35_TDC::innerRadius); // guess TODO
 
+    name += "BackPlate";
+    setVariable::FlangePlateGenerator FPGen;
+
+    FPGen.setCF<setVariable::CF63>(1.5); // measured
+    FPGen.setFlange(lcRadius+lcWall, 1.3); // 1.3 is measured
+    FPGen.generateFlangePlate(Control,name);
 
   }
 
