@@ -33,6 +33,7 @@ namespace constructSystem
   class Bellows;
   class VacuumPipe;
   class GTFGateValve;
+  class PipeTube;
 }
 
 namespace MAXIV
@@ -67,11 +68,12 @@ class GTFLine :
   std::shared_ptr<IonPumpGammaVacuum> ionPump;
   std::shared_ptr<constructSystem::VacuumPipe> extension; // drawing 202964
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  std::shared_ptr<xraySystem::Solenoid> solenoid; // drawing 204282
+  std::shared_ptr<xraySystem::Solenoid> solenoid; // emittance-compensating solenoid by Radiabeam, drawing 204282
   std::shared_ptr<constructSystem::GTFGateValve> gate; // Gate Valve 48236-CE24, drawing 200564
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
   std::shared_ptr<constructSystem::Bellows> bellowA;
   std::shared_ptr<xraySystem::CurrentTransformer> mon;
+  std::shared_ptr<constructSystem::PipeTube> laserChamber; // laser and viewing chamber
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

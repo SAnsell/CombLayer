@@ -51,6 +51,7 @@
 #include "SolenoidGenerator.h"
 #include "GTFGateValveGenerator.h"
 #include "CurrentTransformerGenerator.h"
+#include "PipeTubeGenerator.h"
 
 namespace setVariable
 {
@@ -284,6 +285,14 @@ namespace setVariable
     name = "CurrentTransformer";
     setVariable::CurrentTransformerGenerator CMGen;
     CMGen.generate(Control,name);
+
+    name = "LaserChamber";
+    setVariable::PipeTubeGenerator PipeTubeGen;
+    PipeTubeGen.setCF<CF63>();
+    PipeTubeGen.setCap();
+    PipeTubeGen.generateTube(Control,name,11.0);
+    Control.addVariable(name+"NPorts",0);
+
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
