@@ -74,6 +74,8 @@
    }
   };
 
+#declare matLeadGlass = matGlass;
+
 #declare matCopper1 =
   material{ texture {pigment
   { bozo color_map
