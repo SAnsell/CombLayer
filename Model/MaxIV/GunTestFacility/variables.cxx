@@ -302,7 +302,7 @@ namespace setVariable
     Control.addVariable(name+"FlangeALength",1.3); // measured
     Control.addVariable(name+"FlangeARadius",6.0); // measured
     Control.addVariable(name+"FlangeBLength",0.0);
-    Control.addVariable(name+"NPorts",1);
+    Control.addVariable(name+"NPorts",2);
 
     setVariable::PortItemGenerator PItemGen;
     constexpr double dr = lcRadius-lcWall;
@@ -315,6 +315,16 @@ namespace setVariable
     Control.addVariable(name+"Port0FlangeLength",0); // guess TODO
     Control.addVariable(name+"Port0WindowThick",1.0); // guess TODO
     Control.addVariable(name+"Port0WindowRadius",setVariable::CF35_TDC::innerRadius); // guess TODO
+
+    PItemGen.generatePort(Control,name+"Port1",
+			  Geometry::Vec3D(dr,0,0),
+			  Geometry::Vec3D(1,0,0));
+    const std::set<std::string> p1vars = {"FlangeLength", "WindowThick", "WindowRadius"};
+    std::for_each(p1vars.begin(), p1vars.end(),
+		  [&](const auto &m) {
+		    Control.copyVar(name+"Port1"+m,name+"Port0"+m);
+		  });
+
 
     name += "BackPlate";
     setVariable::FlangePlateGenerator FPGen;
