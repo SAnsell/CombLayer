@@ -222,6 +222,9 @@ GTFLine::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*laserChamberBackPlate,"back");
   laserChamberBackPlate->insertInCell(System,outerCell);
 
+  laserChamber->insertPortInCell(System,3,outerCell);
+
+
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

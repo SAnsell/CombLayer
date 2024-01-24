@@ -302,7 +302,7 @@ namespace setVariable
     Control.addVariable(name+"FlangeALength",1.3); // measured
     Control.addVariable(name+"FlangeARadius",6.0); // measured
     Control.addVariable(name+"FlangeBLength",0.0);
-    Control.addVariable(name+"NPorts",3);
+    Control.addVariable(name+"NPorts",4);
 
     setVariable::PortItemGenerator PItemGen;
     constexpr double dr = lcRadius-lcWall;
@@ -328,6 +328,14 @@ namespace setVariable
     PItemGen.generatePort(Control,name+"Port2",
 			  Geometry::Vec3D(0,0,dr),
 			  Geometry::Vec3D(0,0,1));
+
+    PItemGen.setCF<setVariable::CF66_TDC>(dr);
+    PItemGen.generatePort(Control,name+"Port3",
+			  Geometry::Vec3D(0,0.7,-dr),
+			  Geometry::Vec3D(0,0,-1));
+    Control.addVariable(name+"Port3Radius",5.0);
+    Control.addVariable(name+"Port3OuterVoid",0);
+    Control.addVariable(name+"Port3Length",9.5); // measured approx
 
 
     name += "BackPlate";
