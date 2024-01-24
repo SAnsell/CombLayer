@@ -302,14 +302,14 @@ namespace setVariable
     Control.addVariable(name+"FlangeALength",1.3); // measured
     Control.addVariable(name+"FlangeARadius",6.0); // measured
     Control.addVariable(name+"FlangeBLength",0.0);
-    Control.addVariable(name+"NPorts",2);
+    Control.addVariable(name+"NPorts",3);
 
     setVariable::PortItemGenerator PItemGen;
     constexpr double dr = lcRadius-lcWall;
     PItemGen.setCF<setVariable::CF35_TDC>(dr);
     PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"Stainless304");
     PItemGen.generatePort(Control,name+"Port0",
-			  Geometry::Vec3D(-4.8,0,0),
+			  Geometry::Vec3D(-dr,0,0),
 			  Geometry::Vec3D(-1,0,0));
     //    Control.addVariable(name+"Port0CapThick",0.0);
     Control.addVariable(name+"Port0FlangeLength",0); // guess TODO
@@ -324,6 +324,10 @@ namespace setVariable
 		  [&](const auto &m) {
 		    Control.copyVar(name+"Port1"+m,name+"Port0"+m);
 		  });
+
+    PItemGen.generatePort(Control,name+"Port2",
+			  Geometry::Vec3D(0,0,dr),
+			  Geometry::Vec3D(0,0,1));
 
 
     name += "BackPlate";
