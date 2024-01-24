@@ -220,7 +220,27 @@ readPts(const std::string& pointName,
     throw ColErr::FileError(0,pointName,"Point file empty");
   return;
 }
-  
+
+std::tuple<size_t,size_t,size_t,size_t>
+computeIndex(const std::vector<double>& xCoord,
+	     const std::vector<double>& yCoord,
+	     const std::vector<double>& zCoord,
+	     const Geometry::Vec3D& Pt)
+  /*!
+    Compute the bin that Pt is within
+  */
+{
+  const size_t ii=rangePos(xCoord,Pt[0]);
+  const size_t jj=rangePos(yCoord,Pt[1]);
+  const size_t kk=rangePos(zCoord,Pt[2]);
+  const size_t index=ii*1000000+jj*1000+kk;
+
+  return std::tuple<size_t,size_t,size_t,size_t>
+    (ii,jj,kk,index);
+}
+	  
+
+
 void 
 materialHeat(const Simulation& System,
 	     const mainSystem::inputParam& IParam)
@@ -281,48 +301,43 @@ if (IParam.flag("materialHeat"))
 	{
 	  const Geometry::Vec3D& OrgPt(OrgPts[i]);
 	  const Geometry::Vec3D& Pt(Pts[i]);
-	  const double x=Pt[0];
-	  const double y=Pt[1];
-	  const double z=Pt[2];
-	  const size_t ii=rangePos(xCoord,x);
-	  const size_t jj=rangePos(yCoord,y);
-	  const size_t kk=rangePos(zCoord,z);
-	  //	  const size_t index=ii*1000000+jj*1000+kk;
+	  const std::tuple<size_t,size_t,size_t,size_t>
+	    tUnit=computeIndex(xCoord,yCoord,zCoord,Pt);
+	  const size_t ii=std::get<0>(tUnit);
+	  const size_t jj=std::get<1>(tUnit);
+	  const size_t kk=std::get<2>(tUnit);
+	  size_t index=std::get<3>(tUnit);
 	  
 	  const std::vector<size_t>& shape=heat.shape();
 	  // ELog::EM<<"CXY ="<<xCoord.size()<<" "
 	  // 	  <<yCoord.size()<<" "<<zCoord.size()<<ELog::endDiag;
 	  // ELog::EM<<"Shape ="<<shape[0]<<" "
 	  // 	  <<shape[1]<<" "<<shape[2]<<ELog::endDiag;
-	  double vMax(0.0);
-
+	  double vMax=heat.get()[ii][jj][kk];
 	  size_t maxIndex(0);
-	  const size_t aMinus((ii>10) ? 10 : ii);
+	  const size_t aMinus((ii>2) ? 2 : ii);
 	  const size_t bMinus((jj>2) ? 2 : jj);
 	  const size_t cMinus((kk>2) ? 2 : kk);
-	  for(size_t alpha=ii-aMinus;ii<ii+2 && alpha<shape[0];alpha++)
+	  for(size_t alpha=ii-aMinus;alpha<ii+2 && alpha<shape[0];alpha++)
 	    for(size_t beta=jj-bMinus;beta<jj+2 && beta<shape[1];beta++)
 	      for(size_t gamma=kk-cMinus;gamma<kk+2 && gamma<shape[2];gamma++)
 		{
-		  const size_t index=ii*1000000+jj*1000+kk;
+		  //		      ELog::EM<<"ijk == "<<alpha<<" "<<beta<<" "<<gamma<<ELog::endDiag;
+		  index=alpha*1000000+beta*1000+gamma;
 		  const double value=heat.get()[alpha][beta][gamma];
-		  if (value>1e-4)
-		    usageMap[index]++;
 		  if (value>vMax)
 		    {
 		      vMax=value;
 		      maxIndex=index;
 		    }
 		}
+	  index=maxIndex;
 	  
-	  // vMax=heat.get()[alpha][beta][gamma];
 	  if (vMax>1e-12)
 	    {
-	      //	      usageMap[maxIndex]++;
-	      if (usageMap[maxIndex]==1)
-		{
-		  integral+=vMax;
-		}
+	      usageMap[index]++;
+	      if (usageMap[index]==1)
+		integral+=vMax;
 	    }
 	  
 	  OX<<OrgIndex[i]<<" "
@@ -351,13 +366,35 @@ if (IParam.flag("materialHeat"))
 		  if (value>maxV && value>1e10)
 		    {
 		      maxV=value;
-
+		      const Geometry::Vec3D testOrg(xCoord[i],
+						    yCoord[j],
+						    zCoord[k]);
 		      Geometry::Vec3D testX(xCoord[i],
 					    yCoord[j],
 					    zCoord[k]);
 		      testX-=centre;
 		      testX/=100.0;
 		      Geometry::Vec3D testPt(-testX[0],testX[2],testX[1]);
+		      double dist(1e38);
+		      size_t closeIndex(0);
+		      Geometry::Vec3D closePt;
+		      for(size_t ix=0;ix<Pts.size();ix++)
+			{
+			  const Geometry::Vec3D& Pt(Pts[ix]);
+			  const double D=Pt.Distance(testOrg);
+
+			  if (D<dist)
+			    {
+			      dist=D;
+			      closeIndex=ix;
+			      closePt=Pt;
+			    }
+			}
+		      ELog::EM<<"Close Point == "
+			      <<testOrg<<":"
+			      <<closePt<<" == "
+			      <<closeIndex<<" =: "
+			      <<dist<<ELog::endDiag;
 		      
 		      //			  integralUsed+=value;
 		      ELog::EM<<"Point "<<i<<" "<<j<<" "<<k<<" : "
@@ -365,6 +402,22 @@ if (IParam.flag("materialHeat"))
 			      <<yCoord[j]<<" "
 			      <<zCoord[k]<<" "
 			      <<value<<":::"<<testPt<<ELog::endDiag;
+		      const std::tuple<size_t,size_t,size_t,size_t>
+			tUnit=computeIndex(xCoord,yCoord,zCoord,closePt);
+		      const size_t ii=std::get<0>(tUnit);
+		      const size_t jj=std::get<1>(tUnit);
+		      const size_t kk=std::get<2>(tUnit);
+		      const size_t index=std::get<3>(tUnit);
+		      
+		      ELog::EM<<"CLOSE "
+			      <<ii<<" "<<jj<<" "<<kk<<" : "
+			      <<xCoord[ii]<<" "
+			      <<yCoord[jj]<<" "
+			      <<zCoord[kk]<<" \n"
+			      <<ELog::endDiag;
+		      
+		      
+
 		    }
 		  integralMissing+=value;
 		}

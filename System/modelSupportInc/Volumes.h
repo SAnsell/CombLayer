@@ -54,7 +54,11 @@ namespace ModelSupport
 		    const size_t,
 		    const std::vector<Geometry::Vec3D>&,
 		    const std::vector<Geometry::Vec3D>&);
-
+  std::tuple<size_t,size_t,size_t,size_t>
+  computeIndex(const std::vector<double>&,
+	       const std::vector<double>&,
+	       const std::vector<double>&,
+	       const Geometry::Vec3D&);
   void materialHeat(const Simulation&,const mainSystem::inputParam&);
   void materialCheck(const Simulation&,const mainSystem::inputParam&);
   void populateCells(const Simulation&,const mainSystem::inputParam&,
