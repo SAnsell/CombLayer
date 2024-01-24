@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/GunTestFacilityInc/CurrentMonitor.h
+ * File:   Model/MaxIV/GunTestFacilityInc/CurrentTransformer.h
  *
  * Copyright (c) 2004-2024 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_CurrentMonitor_h
-#define xraySystem_CurrentMonitor_h
+#ifndef xraySystem_CurrentTransformer_h
+#define xraySystem_CurrentTransformer_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class CurrentMonitor
+  \class CurrentTransformer
   \version 1.0
   \author Konstantin Batkov
   \date January 2024
   \brief Current Monitor
 */
 
-class CurrentMonitor :
+class CurrentTransformer :
     public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
     public attachSystem::CellMap,
@@ -62,11 +62,11 @@ class CurrentMonitor :
 
  public:
 
-  CurrentMonitor(const std::string&);
-  CurrentMonitor(const CurrentMonitor&);
-  CurrentMonitor& operator=(const CurrentMonitor&);
-  virtual CurrentMonitor* clone() const;
-  virtual ~CurrentMonitor();
+  CurrentTransformer(const std::string&);
+  CurrentTransformer(const CurrentTransformer&);
+  CurrentTransformer& operator=(const CurrentTransformer&);
+  virtual CurrentTransformer* clone() const;
+  virtual ~CurrentTransformer();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);

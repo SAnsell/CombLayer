@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/GunTestFacilityInc/CurrentMonitorGenerator.h
+ * File:   Model/MaxIV/GunTestFacilityInc/CurrentTransformerGenerator.h
  *
  * Copyright (c) 2004-2024 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_CurrentMonitorGenerator_h
-#define setVariable_CurrentMonitorGenerator_h
+#ifndef setVariable_CurrentTransformerGenerator_h
+#define setVariable_CurrentTransformerGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class CurrentMonitorGenerator
+  \class CurrentTransformerGenerator
   \version 1.0
   \author Konstantin Batkov
   \date January 2024
-  \brief CurrentMonitorGenerator for variables
+  \brief CurrentTransformerGenerator for variables
 */
 
-class CurrentMonitorGenerator
+class CurrentTransformerGenerator
 {
  private:
 
@@ -51,10 +51,10 @@ class CurrentMonitorGenerator
 
  public:
 
-  CurrentMonitorGenerator();
-  CurrentMonitorGenerator(const CurrentMonitorGenerator&);
-  CurrentMonitorGenerator& operator=(const CurrentMonitorGenerator&);
-  virtual ~CurrentMonitorGenerator();
+  CurrentTransformerGenerator();
+  CurrentTransformerGenerator(const CurrentTransformerGenerator&);
+  CurrentTransformerGenerator& operator=(const CurrentTransformerGenerator&);
+  virtual ~CurrentTransformerGenerator();
 
   virtual void generate(FuncDataBase&,const std::string&) const;
 

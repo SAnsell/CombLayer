@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/GunTestFacility/CurrentMonitor.cxx
+ * File:   Model/MaxIV/GunTestFacility/CurrentTransformer.cxx
  *
  * Copyright (c) 2004-2024 by Konstantin Batkov
  *
@@ -60,12 +60,12 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 
-#include "CurrentMonitor.h"
+#include "CurrentTransformer.h"
 
 namespace xraySystem
 {
 
-CurrentMonitor::CurrentMonitor(const std::string& Key)  :
+CurrentTransformer::CurrentTransformer(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
@@ -77,7 +77,7 @@ CurrentMonitor::CurrentMonitor(const std::string& Key)  :
   */
 {}
 
-CurrentMonitor::CurrentMonitor(const CurrentMonitor& A) :
+CurrentTransformer::CurrentTransformer(const CurrentTransformer& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
@@ -90,15 +90,15 @@ CurrentMonitor::CurrentMonitor(const CurrentMonitor& A) :
   voidMat(A.voidMat),wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: CurrentMonitor to copy
+    \param A :: CurrentTransformer to copy
   */
 {}
 
-CurrentMonitor&
-CurrentMonitor::operator=(const CurrentMonitor& A)
+CurrentTransformer&
+CurrentTransformer::operator=(const CurrentTransformer& A)
   /*!
     Assignment operator
-    \param A :: CurrentMonitor to copy
+    \param A :: CurrentTransformer to copy
     \return *this
   */
 {
@@ -121,30 +121,30 @@ CurrentMonitor::operator=(const CurrentMonitor& A)
   return *this;
 }
 
-CurrentMonitor*
-CurrentMonitor::clone() const
+CurrentTransformer*
+CurrentTransformer::clone() const
 /*!
   Clone self
   \return new (this)
  */
 {
-    return new CurrentMonitor(*this);
+    return new CurrentTransformer(*this);
 }
 
-CurrentMonitor::~CurrentMonitor()
+CurrentTransformer::~CurrentTransformer()
   /*!
     Destructor
   */
 {}
 
 void
-CurrentMonitor::populate(const FuncDataBase& Control)
+CurrentTransformer::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("CurrentMonitor","populate");
+  ELog::RegMethod RegA("CurrentTransformer","populate");
 
   FixedRotate::populate(Control);
 
@@ -162,12 +162,12 @@ CurrentMonitor::populate(const FuncDataBase& Control)
 }
 
 void
-CurrentMonitor::createSurfaces()
+CurrentTransformer::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("CurrentMonitor","createSurfaces");
+  ELog::RegMethod RegA("CurrentTransformer","createSurfaces");
 
   if (!frontActive())
     {
@@ -204,13 +204,13 @@ CurrentMonitor::createSurfaces()
 }
 
 void
-CurrentMonitor::createObjects(Simulation& System)
+CurrentTransformer::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("CurrentMonitor","createObjects");
+  ELog::RegMethod RegA("CurrentTransformer","createObjects");
 
   HeadRule HR;
   const HeadRule frontStr(frontRule());
@@ -242,12 +242,12 @@ CurrentMonitor::createObjects(Simulation& System)
 
 
 void
-CurrentMonitor::createLinks()
+CurrentTransformer::createLinks()
   /*!
     Create all the links
   */
 {
-  ELog::RegMethod RegA("CurrentMonitor","createLinks");
+  ELog::RegMethod RegA("CurrentTransformer","createLinks");
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
@@ -271,7 +271,7 @@ CurrentMonitor::createLinks()
 }
 
 void
-CurrentMonitor::createAll(Simulation& System,
+CurrentTransformer::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -281,7 +281,7 @@ CurrentMonitor::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("CurrentMonitor","createAll");
+  ELog::RegMethod RegA("CurrentTransformer","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

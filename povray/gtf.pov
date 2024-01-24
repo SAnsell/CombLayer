@@ -81,7 +81,7 @@ global_settings {
     #declare cameraAngle = 35;
     #declare projection = 0;
   #break
-  #case(strcmp(ITEM,"CurrentMonitor"))
+  #case(strcmp(ITEM,"CurrentTransformer"))
     #declare cameraLocation = <-90, 170, 40>;
     #declare cameraLookAt   = <0, 216, 3>;
     #declare cameraAngle = 35;

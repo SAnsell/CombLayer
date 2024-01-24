@@ -50,7 +50,7 @@
 #include "BellowGenerator.h"
 #include "SolenoidGenerator.h"
 #include "GTFGateValveGenerator.h"
-#include "CurrentMonitorGenerator.h"
+#include "CurrentTransformerGenerator.h"
 
 namespace setVariable
 {
@@ -281,8 +281,8 @@ namespace setVariable
     Control.addVariable(name+"FlangeBLength", 0.0);
     Control.addVariable(name+"BellowStep", 0.8); // measured
 
-    name = "CurrentMonitor";
-    setVariable::CurrentMonitorGenerator CMGen;
+    name = "CurrentTransformer";
+    setVariable::CurrentTransformerGenerator CMGen;
     CMGen.generate(Control,name);
   }
 

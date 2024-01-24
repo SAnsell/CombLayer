@@ -71,7 +71,7 @@
 #include "VacuumPipe.h"
 #include "GTFGateValve.h"
 #include "Solenoid.h"
-#include "CurrentMonitor.h"
+#include "CurrentTransformer.h"
 
 #include "LObjectSupport.h"
 #include "GTFLine.h"
@@ -95,7 +95,7 @@ GTFLine::GTFLine(const std::string& Key) :
   gate(new constructSystem::GTFGateValve("Gate")),
   pipeB(std::make_shared<constructSystem::VacuumPipe>("PipeB")),
   bellowA(std::make_shared<constructSystem::Bellows>("BellowA")),
-  mon(std::make_shared<xraySystem::CurrentMonitor>("CurrentMonitor"))
+  mon(std::make_shared<xraySystem::CurrentTransformer>("CurrentTransformer"))
   /*!
     Constructor
     \param Key :: Name of construction key

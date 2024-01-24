@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/CurrentMonitorGenerator.cxx
+ * File:   commonBeam/CurrentTransformerGenerator.cxx
  *
  * Copyright (c) 2004-2024 by Konstantin Batkov
  *
@@ -45,12 +45,12 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "CurrentMonitorGenerator.h"
+#include "CurrentTransformerGenerator.h"
 
 namespace setVariable
 {
 
-CurrentMonitorGenerator::CurrentMonitorGenerator() :
+CurrentTransformerGenerator::CurrentTransformerGenerator() :
   length(10.0),frontRadius(CF63::innerRadius),midRadius(4.0),
   backRadius(5.5),
   outerRadius(7.6),
@@ -61,14 +61,14 @@ CurrentMonitorGenerator::CurrentMonitorGenerator() :
   */
 {}
 
-CurrentMonitorGenerator::~CurrentMonitorGenerator()
+CurrentTransformerGenerator::~CurrentTransformerGenerator()
  /*!
    Destructor
  */
 {}
 
 void
-CurrentMonitorGenerator::generate(FuncDataBase& Control,
+CurrentTransformerGenerator::generate(FuncDataBase& Control,
 			       const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
@@ -76,7 +76,7 @@ CurrentMonitorGenerator::generate(FuncDataBase& Control,
     \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("CurrentMonitorGenerator","generate");
+  ELog::RegMethod RegA("CurrentTransformerGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FrontRadius",frontRadius);
