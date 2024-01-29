@@ -15,8 +15,10 @@ params=" +A +W800 +H600 "
 void=""
 
 echo $ITEM
-echo ${segments}
 echo $void
 
+trap "rm -f /tmp/gtf.txt" EXIT
+
 ./maxiv -defaultConfig Single GunTestFacility -povray $void a \
-    && povray ${params} povray/gtf.pov <<< \"$ITEM\" && exit 0
+    && echo \"$ITEM\" > /tmp/gtf.txt \
+    && povray ${params} povray/gtf.pov && exit 0

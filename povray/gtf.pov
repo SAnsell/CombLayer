@@ -1,5 +1,6 @@
 // Usage example:
-// povray povray/gtf.pov <<< '"Gate"'
+// povray povray/gtf.pov
+// (it is expected that /tmp/gtf.sh contains the item to show, e.g. "Line")
 
 #version 3.7;
 #include "colors.inc"
@@ -9,7 +10,7 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#fopen STDIN "/dev/stdin" read
+#fopen STDIN "/tmp/gtf.txt" read
 #read (STDIN, ITEM)
 
 // PROJECTION:
