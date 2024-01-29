@@ -333,7 +333,7 @@ namespace setVariable
     PItemGen.generatePort(Control,name+"Port3",
 			  Geometry::Vec3D(0,0.7,-dr),
 			  Geometry::Vec3D(0,0,-1));
-    Control.addVariable(name+"Port3Radius",5.0);
+    Control.addVariable(name+"Port3Radius",3.3);
     Control.addVariable(name+"Port3OuterVoid",0);
     Control.addVariable(name+"Port3Length",9.5); // measured approx
 
