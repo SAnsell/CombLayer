@@ -13,8 +13,15 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_COMPILER g++)
+
 set(CMAKE_CXX_FLAGS "-Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++20 -O2")
+#if (${CMAKE_CXX_COMPLILER}=="g++")
+#  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}."-Wl,--as-needed")
+#endif
+    
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--start-group")
+
 
 set(SYSTEM_INCLUDE
   ${CMAKE_SOURCE_DIR}/System/geomInc
@@ -200,50 +207,63 @@ set(MAXIV_LIB
 )
 
 target_link_libraries(ess
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   ${ESS_LIB}
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 target_link_libraries(essLinacModel
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   ${ESS_LIB}
   essLinac
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 target_link_libraries (fullBuild
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 target_link_libraries (maxiv
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   ${MAXIV_LIB}
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 target_link_libraries(reactor
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   delft
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 target_link_libraries(saxsSim
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   saxs
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 
 target_link_libraries (singleItem
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   ${MAXIV_LIB}
   singleItemBuild
@@ -253,28 +273,35 @@ target_link_libraries (singleItem
   odin simpleItem skadi testBeam trex vespa vor  
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 target_link_libraries(t1Real
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   ralBuild t1Build t2Build
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 
 target_link_libraries(xrayHut
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   xrayHutch
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 target_link_libraries(testMain
+  "-Wl,--start-group"
   ${SYSTEM_LIB}
   test
   GSL::gsl
   fmt::fmt
+  "-Wl,--end-group"
 )
 
 target_include_directories (maxiv
@@ -366,6 +393,7 @@ add_custom_target(tags COMMAND etags ${SRC_LIST})
 add_custom_target(words COMMAND 
     grep -v -e "^[[:space:][:cntrl:]]*$$" ${SRC_LIST} | wc)
 
+add_custom_target(doxygen  COMMAND  { cat Doxyfile \; echo "INPUT=" ${SRC_LIST} "" \;} | doxygen - )
   
 
 
