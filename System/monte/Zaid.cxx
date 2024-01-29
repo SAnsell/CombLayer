@@ -3,7 +3,7 @@
  
  * File:   monte/Zaid.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <set>
 #include <map>
 #include <algorithm>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -40,7 +40,7 @@
 #include "IsoTable.h"
 #include "Element.h"
 #include "Zaid.h"
-
+ 
 namespace MonteCarlo
 {
 
@@ -198,11 +198,10 @@ Zaid::getZaid() const
   Return zaid string (ZZZAAA.abX)
  */
 {
-  boost::format FMTstr("%1$d.%2$02d%3$c");
   std::ostringstream OX;
 
   if (index)  // avoid writing 00000 zaid
-    OX << FMTstr % index % tag % type;
+    OX << fmt::format("{:d}.{:02d}{:c}",index,tag,type);
 
   return OX.str();
 
@@ -247,13 +246,11 @@ Zaid::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  boost::format FMTnum("%1$.6g");
-
   if (index)  // avoid writing 00000 zaid
     {
       OX<<getZaid();
       if (type=='c')
-        OX<<" "<<FMTnum % density;
+        OX<<" "<<fmt::format("{:.6g}",density);
     }
   return;
 }

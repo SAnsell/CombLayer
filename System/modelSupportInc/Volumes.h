@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/Volumes.h
+ * File:   modelSupportInc/Volumes.h
 *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,45 @@
 #ifndef ModelSupport_Volumes_h
 #define ModelSupport_Volumes_h
 
+template<typename T> class multiData;
+
 namespace ModelSupport
 {
   class VolSum;
   
   void calcVolumes(Simulation*,const mainSystem::inputParam&);
+  void readPts(const std::string&,
+	       const Geometry::Vec3D&,
+	       const Geometry::Vec3D&,
+	       const Geometry::Vec3D&,
+	       const Geometry::Vec3D&,
+	       std::vector<int>&,
+	       std::vector<Geometry::Vec3D>&,
+	       std::vector<Geometry::Vec3D>&);
+	       
+  void readHeat(const std::string&,
+		std::vector<double>&,
+		std::vector<double>&,
+		std::vector<double>&,
+		multiData<double>&);
+  
+  
+  void generatePlot(const std::string&,
+		    const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,
+		    const size_t,
+		    const size_t,
+		    const std::vector<Geometry::Vec3D>&,
+		    const std::vector<Geometry::Vec3D>&);
+  std::tuple<size_t,size_t,size_t,size_t>
+  computeIndex(const std::vector<double>&,
+	       const std::vector<double>&,
+	       const std::vector<double>&,
+	       const Geometry::Vec3D&);
+  void materialHeat(const Simulation&,const mainSystem::inputParam&);
+  void materialCheck(const Simulation&,const mainSystem::inputParam&);
   void populateCells(const Simulation&,const mainSystem::inputParam&,
 		     VolSum&);
 

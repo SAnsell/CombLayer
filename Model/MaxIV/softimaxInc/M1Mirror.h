@@ -3,7 +3,7 @@
  
  * File:   softimaxInc/M1Mirror.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,9 @@ class M1Mirror :
   M1Mirror& operator=(const M1Mirror&);
   ~M1Mirror() override;
 
+
+  /// simple access to material
+  int getVoidMat() const { return voidMat; } 
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

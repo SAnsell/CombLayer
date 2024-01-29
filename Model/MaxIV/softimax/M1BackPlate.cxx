@@ -103,6 +103,7 @@ M1BackPlate::populate(const FuncDataBase& Control)
   topExtent=Control.EvalVar<double>(keyName+"TopExtent");
   extentThick=Control.EvalVar<double>(keyName+"ExtentThick");
   baseExtent=Control.EvalVar<double>(keyName+"BaseExtent");
+  midExtent=Control.EvalVar<double>(keyName+"MidExtent");
 
   frontPlateGap=Control.EvalVar<double>(keyName+"FrontPlateGap");
   frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
@@ -152,6 +153,7 @@ M1BackPlate::createSurfaces()
   
   // Extent
   makeShiftedSurf(SMap,"Base",buildIndex+25,Z,-(clearGap+cupHeight));
+  makeShiftedSurf(SMap,"Base",buildIndex+125,Z,-(midExtent+clearGap+cupHeight));
   makeShiftedSurf(SMap,"Top",buildIndex+26,Z,clearGap+cupHeight);
   makePlane("TopSideAttach",SMap,buildIndex+124,
 	    Origin+X*(topExtent-clearGap-extentThick),X);
@@ -196,7 +198,7 @@ M1BackPlate::createObjects(Simulation& System)
   
   const HeadRule tbUnionHR=topHR+backHR;
   const HeadRule bbUnionHR=baseHR+backHR;
-
+  const HeadRule tubeHR=getRule("TubeRadius");
 
   HeadRule HR;
 
@@ -219,13 +221,15 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -15 25 224 -204");
   makeCell("Plate",System,cellIndex++,baseMat,0.0,HR);
-  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -25 125 224 -204");
+  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR);
   
   // OUTER VOIDS:
   // main c voids
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -224 25 -15");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
-  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -224 125 -15");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -124 16 -26");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
   //  addOuterUnionSurf(HR);
@@ -244,10 +248,9 @@ M1BackPlate::createObjects(Simulation& System)
   makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
 	   HR*mirrorCompHR*topHR*nearCompHR);
   
-    
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 25 204");
-  makeCell("InnerVoid",System,cellIndex++,voidMat,0.0,
-	   HR*mirrorCompHR*baseHR*nearCompHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 125 204");
+  makeCell("BaseVoid",System,cellIndex++,voidMat,0.0,
+	   HR*mirrorCompHR*baseHR*nearCompHR*tubeHR);
   // small gaps between spring centres and electron plate:
   // cross support at 501/502
 
@@ -264,23 +267,24 @@ M1BackPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 3 -204 5 -2005");
   makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR);  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2005 25 204 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2005 125 204 ");
   makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR*mirrorCompHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 2006 -26 104 ");
   makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR*mirrorCompHR);
+  ELog::EM<<"Cells == "<<keyName<<" "<<cellIndex-1<<" "
+	  <<nearCompHR<<" "<<baseHR<<ELog::endDiag;
 
   if (isActive("TubeRadius"))
     {
-      const HeadRule tubeHR=getRule("TubeRadius");
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 25 -26 -13");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 125 -26 -13");
       makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*tubeHR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 25 -26");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 125 -26");
       addOuterSurf(HR*mirrorCompHR);
     }
   else
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 25 -26");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 125 -26");
       addOuterSurf(HR*mirrorCompHR);
     }
   
@@ -292,7 +296,9 @@ M1BackPlate::joinRing(Simulation& System,
 		      const HeadRule& fbHR,
 		      const HeadRule& ringCyl)
   /*!
-    construct join to ring
+    Construct join to ring
+    \param fbHR :: front/back of the ring system
+    \param fbHR :: ringCyl :: inner ring of the systemx
    */
 {
   ELog::RegMethod RegA("M1BackPlate","joinRing");
@@ -302,6 +308,10 @@ M1BackPlate::joinRing(Simulation& System,
   makeCell("LowRingJoin",System,cellIndex++,
 	   baseMat,0.0,HR*fbHR*ringCyl);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-224 -25 125");
+  makeCell("LowRingJoinVoid",System,cellIndex++,
+	   voidMat,0.0,HR*fbHR*ringCyl);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-124 16 -26 13");
 
   makeCell("TopRingJoin",System,cellIndex++,
@@ -309,10 +319,14 @@ M1BackPlate::joinRing(Simulation& System,
 
   insertComponent(System,"OuterVoid",0,fbHR.complement());
   insertComponent(System,"OuterVoid",1,fbHR.complement());
-  
+
+  HR=fbHR.complement()+ringCyl;
+
+  CellMap::insertComponent(System,"PlateVoid",HR);
+  CellMap::insertComponent(System,"BaseVoid",HR);
+
   return;  
 }
-  
 
 void
 M1BackPlate::createLinks()

@@ -18,8 +18,9 @@ segments=All
 
 ## SOFTIMAX removed because making the new M1 mirror
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
-   BALDER COSAXS DANMAX FORMAX MICROMAX SOFTIMAX SPECIES MAXPEEM || exit
+   BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
 
+## SOFTIMAX 
 
 
 ./maxiv --noLengthCheck --defaultConfig Linac ${segments} --validAll --validCheck $nValid AA || exit 
@@ -35,7 +36,7 @@ parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nVali
 
 parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
  ESTIA CSPEC  ODIN MAGIC BIFROST LOKI NMX  NNBAR  DREAM  BEER   \
- FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR      || exit
+ FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR    || exit
 # HEIMDAL :: Not currently correct -- update underway
 
 parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck $nValid AA" ::: \

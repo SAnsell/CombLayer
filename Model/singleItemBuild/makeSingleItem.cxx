@@ -178,7 +178,9 @@
 #include "M1FrontShield.h"
 #include "BlockStand.h"
 #include "DomeConnector.h"
+#include "DCMTank.h"
 #include "LegoBrick.h"
+#include "HeimdalCave.h"
 #include "M1Detail.h"
 
 #include "makeSingleItem.h"
@@ -216,7 +218,7 @@ makeSingleItem::build(Simulation& System,
 	"CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder","CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
-	"MagnetBlock","Sexupole","MagnetM1","MagnetU1",
+	"DCMTank","MagnetBlock","Sexupole","MagnetM1","MagnetU1",
         "Octupole","CeramicGap","MainBeamDump",
 	"EBeamStop","FMask","R3ChokeChamber",
 	"DipoleExtract","DipoleSndBend","Dipole",
@@ -228,7 +230,7 @@ makeSingleItem::build(Simulation& System,
 	"StriplineBPM","BeamDivider","BeamScrapper",
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
-	"HalfElectronPipe",
+	"HalfElectronPipe","HeimdalCave","LegoBrick",
 	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
 	"IonPTube","IonGauge","CollTube",
@@ -389,9 +391,12 @@ makeSingleItem::build(Simulation& System,
 	BS(new xraySystem::BeamScrapper("BeamScrapper"));
       OR.addObject(BS);
 
+      
       BS->addAllInsertCell(voidCell);
-      BS->setBeamAxis(Geometry::Vec3D(0,10,0),
-		       Geometry::Vec3D(1,0,0));
+
+	
+      BS->setBeamAxis(Geometry::Vec3D(-10.0,0.0,0.0),
+		      Geometry::Vec3D(1,0,0));
       BS->createAll(System,World::masterOrigin(),0);
 
       return;
@@ -629,6 +634,18 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "DCMTank")
+    {
+      std::shared_ptr<xraySystem::DCMTank>
+	cm(new xraySystem::DCMTank("DCMTank"));
+      OR.addObject(cm);
+
+      cm->addInsertCell(voidCell);
+      cm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "FMask")
     {
       std::shared_ptr<xraySystem::SquareFMask>
@@ -952,6 +969,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
   if (item=="DipoleSndBend")
     {
       std::shared_ptr<xraySystem::DipoleSndBend>
@@ -962,6 +980,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  
   if (item=="HalfElectronPipe")
     {
       std::shared_ptr<xraySystem::HalfElectronPipe>
@@ -1246,6 +1265,18 @@ makeSingleItem::build(Simulation& System,
 
       lego->addInsertCell(voidCell);
       lego->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "HeimdalCave")
+    {
+      std::shared_ptr<essSystem::HeimdalCave>
+	cave(new essSystem::HeimdalCave("HeimdalCave"));
+      OR.addObject(cave);
+
+      cave->addAllInsertCell(voidCell);
+      cave->createAll(System,World::masterOrigin(),0);
 
       return;
     }

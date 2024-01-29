@@ -3,7 +3,7 @@
  
  * File:   test/testVec3D.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,26 +108,28 @@ testVec3D::testDotProd()
   ELog::RegMethod RegA("testVec3D","testDotProd");
 
   typedef std::tuple<size_t,size_t,double> TTYPE;
-  std::vector<TTYPE> Tests;
-
+  const std::vector<TTYPE> Tests({
+      TTYPE(0,1,0.0),
+      TTYPE(0,2,1.0),
+      TTYPE(0,3,2.0),  
+      TTYPE(4,0,-1.0),
+      TTYPE(4,5,0.0),
+      TTYPE(0,0,5.0),   // test self and two comps
+      TTYPE(6,7,5.0)   // test self and two comps
+    });
+      
   // Set to test between:
-  std::vector<Vec3D> VSet;
-  VSet.push_back(Vec3D(1,2,0));  
-  VSet.push_back(Vec3D(0,0,-1)); 
-  VSet.push_back(Vec3D(1,0,0)); 
-  VSet.push_back(Vec3D(0,1,0)); 
-  VSet.push_back(Vec3D(-1,0,0)); 
-  VSet.push_back(Vec3D(0,-1,0)); 
-  VSet.push_back(Vec3D(1,-3,-4)); 
-  VSet.push_back(Vec3D(7,2,-1)); 
+  const std::vector<Vec3D> VSet({
+      Vec3D(1,2,0),  
+      Vec3D(0,0,-1), 
+      Vec3D(1,0,0), 
+      Vec3D(0,1,0), 
+      Vec3D(-1,0,0), 
+      Vec3D(0,-1,0), 
+      Vec3D(1,-3,-4), 
+      Vec3D(7,2,-1)
+    }); 
   
-  Tests.push_back(TTYPE(0,1,0.0));
-  Tests.push_back(TTYPE(0,2,1.0));
-  Tests.push_back(TTYPE(0,3,2.0));  
-  Tests.push_back(TTYPE(4,0,-1.0));
-  Tests.push_back(TTYPE(4,5,0.0));
-  Tests.push_back(TTYPE(0,0,5.0));   // test self and two comps
-  Tests.push_back(TTYPE(6,7,5.0));   // test self and two comps
 
   int cnt(1);
   for(const TTYPE& tc : Tests)
@@ -135,7 +137,7 @@ testVec3D::testDotProd()
       const size_t iA(std::get<0>(tc));
       const size_t iB(std::get<1>(tc));
       const double dp=VSet[iA].dotProd(VSet[iB]);
-      if (fabs(dp-std::get<2>(tc))>1e-5)
+      if (std::abs(dp-std::get<2>(tc))>1e-5)
 	{
 	  ELog::EM<<"Test Num   "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Vectors == "<<VSet[iA]<<ELog::endTrace;

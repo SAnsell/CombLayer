@@ -113,7 +113,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/surfImplicates.h
   ${tarINC}/surfIndex.h
   ${tarINC}/surfProg.h
-  ${tarINC}/surfVector.h
   ${tarINC}/SurInter.h
   ${tarINC}/Torus.h
   ${tarINC}/Transform.h

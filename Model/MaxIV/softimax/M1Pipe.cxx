@@ -73,7 +73,7 @@ namespace xraySystem
 
 M1Pipe::M1Pipe(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
-  attachSystem::ContainedGroup("Join","Main"),
+  attachSystem::ContainedGroup("Join","Main","Out"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -101,6 +101,10 @@ M1Pipe::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
+  pipeRadius=Control.EvalVar<double>(keyName+"PipeRadius");
+  pipeThick=Control.EvalVar<double>(keyName+"PipeThick");
+  pipeOuter=Control.EvalVar<double>(keyName+"PipeOuter");
+  
   connectRadius=Control.EvalVar<double>(keyName+"ConnectRadius");
   connectLength=Control.EvalVar<double>(keyName+"ConnectLength");
 
@@ -112,10 +116,15 @@ M1Pipe::populate(const FuncDataBase& Control)
   outLength=Control.EvalVar<double>(keyName+"OutLength");
 
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
-  flangeLenght=Control.EvalVar<double>(keyName+"FlangeLenght");
+  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
 
-  pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
+  exitLen=Control.EvalVar<double>(keyName+"ExitLen");
+  exitAngle=Control.EvalVar<double>(keyName+"ExitAngle");
+  exitRadius=Control.EvalVar<double>(keyName+"ExitRadius");
+  exitFullLength=Control.EvalVar<double>(keyName+"ExitFullLength");
+
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
+  pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   return;
@@ -131,17 +140,48 @@ M1Pipe::createSurfaces()
 
   // Origin is pipe connection point:
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,connectRadius);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*connectLength,Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,pipeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,connectRadius);
 
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*connectLength,Z);
   
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(cubeDepth/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(cubeDepth/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cubeHeight/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cubeHeight/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(cubeWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(cubeWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,
 			   Origin-Z*(connectLength+cubeHeight),Z);
-  
+
+  // pipe exit
+  const Geometry::Vec3D turnOrg=Origin-Z*(connectLength+cubeHeight/2.0);
+  const Geometry::Vec3D exitOrg=turnOrg+Y*(cubeDepth/2.0);
+
+  ELog::EM<<"Turn == "<<turnOrg<<ELog::endDiag;
+  // 45 deg divider:
+  ModelSupport::buildPlane(SMap,buildIndex+2005,turnOrg,(Z-Y));
+  ModelSupport::buildCylinder(SMap,buildIndex+2007,turnOrg,Y,pipeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+2017,exitOrg,Y,outRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+2027,exitOrg,Y,flangeRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+2002,exitOrg+Y*outLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2012,
+			   exitOrg+Y*(outLength+flangeLength),Y);
+
+  // exit pipe
+  const Geometry::Vec3D bendPt=
+    exitOrg+Y*(outLength+flangeLength+exitLen);
+  const Geometry::Quaternion Qxy=
+    Geometry::Quaternion::calcQRotDeg(exitAngle,Z);
+  const Geometry::Vec3D PY=Qxy.rotate(Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3001,bendPt,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3002,bendPt+Y*exitFullLength,PY);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+3007,bendPt,PY,pipeRadius);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+3017,bendPt,PY,pipeRadius+pipeThick);
+  ModelSupport::buildCylinder
+    (SMap,buildIndex+3027,bendPt,PY,exitRadius-pipeOuter);
+  ModelSupport::buildCylinder(SMap,buildIndex+3037,bendPt,PY,exitRadius);
   
   return;
 }
@@ -157,26 +197,64 @@ M1Pipe::createObjects(Simulation& System)
   ELog::RegMethod RegA("M1Pipe","createObjects");
 
   const HeadRule cylHR=getRule("TubeRadius");
+  const HeadRule baseHR=getRule("MirrorBase");
 
   HeadRule HR;
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2005 -7");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR*baseHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7");
-  makeCell("Outer",System,cellIndex++,pipeMat,0.0,HR*cylHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -17 7");
+  makeCell("Connect",System,cellIndex++,pipeMat,0.0,HR*baseHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17 -7");
-  makeCell("Inner",System,cellIndex++,pipeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 17 5");
+  makeCell("Connect",System,cellIndex++,voidMat,0.0,HR*baseHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -1 7");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR*cylHR);
+  // inner for all segments
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2005 -2007 -3001");
+  makeCell("Inner",System,cellIndex++,innerMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 7");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR*cylHR);
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"101 -102 103 -104 -5 105 (7:-2005) (2007:2005)");
+  makeCell("Cube",System,cellIndex++,pipeMat,0.0,HR);
 
-  // Create inner units:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17");
-  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 17");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105");
+  addOuterSurf("Join",HR*baseHR);
+
+  // exit pipe
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -2017 -2012 2007");
+  makeCell("Outer",System,cellIndex++,pipeMat,0.0,HR);
+  //flange
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2002 -2012 2017 -2027");
+  makeCell("OuterFlange",System,cellIndex++,pipeMat,0.0,HR);
+  //outer
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -2002 2017 -2027");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2012 -2017 -3001 2007");
+  makeCell("ExitStr",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3007 -3002");
+  makeCell("ExitPipe",System,cellIndex++,innerMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 3007 -3017 -3002");
+  makeCell("ExitPipe",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 3017 -3027 -3002");
+  makeCell("ExitPipe",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 3027 -3037 -3002");
+  makeCell("ExitPipe",System,cellIndex++,pipeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"2012 -3001 2017 -2027");
+  makeCell("ExitVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -3001 -2027");
   addOuterSurf("Main",HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 -3037");
+  addOuterSurf("Out",HR);
+
+  // outbound piper
   
   return;
 }
@@ -206,8 +284,8 @@ M1Pipe::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("M1Pipe","createAll");
   populate(System.getDataBase());
-
   createUnitVector(FC,sideIndex);
+      
   createSurfaces();
   createObjects(System);
   createLinks();

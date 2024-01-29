@@ -3,7 +3,7 @@
  
  * File:   modelSupport/ObjSurfMap.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -237,8 +237,8 @@ ObjSurfMap::addSurface(const int SurfN,MonteCarlo::Object* OPtr)
       STYPE& VItem=mc->second;
       STYPE::iterator vc=
 	find_if(VItem.begin(),VItem.end(),
-		std::bind(std::equal_to<MonteCarlo::Object*>(),
-			  std::placeholders::_1,OPtr));
+		[OPtr](MonteCarlo::Object* TObj) -> bool
+		{ return TObj==OPtr; } );
       if (vc==VItem.end())
 	mc->second.push_back(OPtr);
     }
@@ -415,19 +415,16 @@ ObjSurfMap::write(std::ostream& OX) const
   ELog::RegMethod RegA("ObjSurfMap","write");
 
   OX<<"# Object Map"<<std::endl;
-  OMTYPE::const_iterator mc;
 
-  for(mc=SMap.begin();mc!=SMap.end();mc++)
+  for(const auto& [Name,ObjVec]  : SMap)
     {
-      OX<<mc->first<<":";
+      OX<<Name<<":";
+      for(const MonteCarlo::Object* OPtr : ObjVec)
+	OX<<OPtr->getName()<<" ";
 
-      transform(mc->second.begin(),mc->second.end(),
-		std::ostream_iterator<int>(OX," "),
-		(std::bind(&MonteCarlo::Object::getName,
-			   std::placeholders::_1)));
       OX<<std::endl;
     }
-  
+  return;
 }
 
 

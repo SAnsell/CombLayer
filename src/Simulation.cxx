@@ -1763,8 +1763,7 @@ Simulation::minimizeObject(MonteCarlo::Object* OPtr)
 
   OPtr->populate();
   OPtr->createSurfaceList();
-  const int CN = OPtr->getName();
-  
+
   std::vector<std::pair<int,int>>
     IP=OPtr->getImplicatePairs();
 

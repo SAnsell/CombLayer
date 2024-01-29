@@ -3,7 +3,7 @@
 
  * File:   softimax/M1ElectronShield.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "Importance.h"
 #include "Object.h"
@@ -71,7 +72,7 @@ namespace xraySystem
 
 M1ElectronShield::M1ElectronShield(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Main","Extra"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -101,6 +102,7 @@ M1ElectronShield::populate(const FuncDataBase& Control)
 
   elecXOut=Control.EvalVar<double>(keyName+"ElecXOut");
   elecLength=Control.EvalVar<double>(keyName+"ElecLength");
+  elecFrontLength=Control.EvalVar<double>(keyName+"ElecFrontLength");
   elecHeight=Control.EvalVar<double>(keyName+"ElecHeight");
   elecThick=Control.EvalVar<double>(keyName+"ElecThick");
   elecEdge=Control.EvalVar<double>(keyName+"ElecEdge");
@@ -158,6 +160,12 @@ M1ElectronShield::createSurfaces()
     (SMap,buildIndex+16,Origin+Z*(elecHeight/2.0-elecThick),Z);
 
 
+  ModelSupport::buildPlane(SMap,buildIndex+11,
+			   Origin-Y*(elecFrontLength+elecLength/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
+			      Origin-Y*(elecFrontLength+elecLength/2.0),
+			      X,plateHeight/2.0);
+    
   // low heat join
   ModelSupport::buildPlane
     (SMap,buildIndex+105,Origin-Z*(connectGap+connectThick/2.0),Z);
@@ -275,7 +283,7 @@ M1ElectronShield::createObjects(Simulation& System)
       BI+=10;
     }
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 403 -404 405 -406");
+    (SMap,buildIndex,"(-17:11) -2 403 -404 405 -406");
   makeCell("Plate",System,cellIndex++,electronMat,0.0,HR*cutHR);  
 
   
@@ -326,7 +334,10 @@ M1ElectronShield::createObjects(Simulation& System)
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);  
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 5 -6");
-  addOuterSurf(HR);
+  addOuterSurf("Main",HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 403 -404 405 -406 (-17:11)");
+  addOuterSurf("Extra",HR);
 
   return;
 }
@@ -343,7 +354,10 @@ M1ElectronShield::createVoidObjects(Simulation& System)
   ELog::RegMethod RegA("M1ElectronShield","createObjects");
 
   const HeadRule tubeHR=getRule("TubeRadius");
-  
+  const HeadRule mirrorHR=getRule("Mirror");
+  const HeadRule tubeF=getRule("TubeFront");
+  const HeadRule tubeB=getRule("TubeBack");
+
   const HeadRule ACylHR=getRule("ringACyl");
   const HeadRule AFrontHR=getRule("ringAFront");
   const HeadRule ABackHR=getRule("ringABack");
@@ -354,13 +368,19 @@ M1ElectronShield::createVoidObjects(Simulation& System)
 
   const HeadRule mainBackHR(SMap,buildIndex,-2);
   const HeadRule mainFrontHR(SMap,buildIndex,1);
-  
+
+  const HeadRule outerBackHR(SMap,buildIndex,-2);
+  const HeadRule outerFrontHR(SMap,buildIndex,1);
+
   const HeadRule midUnitHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"404 405 -406");
   const HeadRule rightUnitHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"303 5 -405");
   const HeadRule leftUnitHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"303 406 -6");
+  const HeadRule topUnitHR=HeadRule(SMap,buildIndex,6)*mirrorHR;
+  const HeadRule baseUnitHR=HeadRule(SMap,buildIndex,-5)*mirrorHR;
+
 
   HeadRule HR;
   // Can we test stuff??
@@ -370,28 +390,50 @@ M1ElectronShield::createVoidObjects(Simulation& System)
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*topUnitHR);      
+      makeCell("RingVoidBase",System,cellIndex++,voidMat,0.0,HR*baseUnitHR);
 
       HR=ACylHR*ABackHR.complement()*AFrontHR.complement();
+
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*topUnitHR);
+      makeCell("RingVoidBase",System,cellIndex++,voidMat,0.0,HR*baseUnitHR);
 
 
       HR=tubeHR*BFrontHR*AFrontHR;
+
+	    
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*topUnitHR);
+      makeCell("RingVoidBase",System,cellIndex++,voidMat,0.0,HR*baseUnitHR);
 
       HR=BCylHR*BFrontHR.complement()*BBackHR.complement();
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*topUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*baseUnitHR);
 
       HR=tubeHR*mainFrontHR*BBackHR;
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*midUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*leftUnitHR);
       makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*rightUnitHR);
-    }  
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*topUnitHR);
+      makeCell("RingVoid",System,cellIndex++,voidMat,0.0,HR*baseUnitHR);
+      
+    }
+
+  // Special for electron shield:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-403:404:-405:406");
+  HR*=mirrorHR*tubeHR*mainFrontHR.complement()*tubeF;
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR);  
+  HR=mirrorHR*tubeHR*mainBackHR.complement()*tubeB;
+  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,HR);  
+  
   return;
 }
 

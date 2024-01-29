@@ -3,7 +3,7 @@
  
  * File:   src/SimMCNP.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -347,8 +347,7 @@ SimMCNP::renumberCells(const std::vector<int>& cOffset,
 void
 SimMCNP::writeTally(std::ostream& OX) const
   /*!
-    Writes out the tallies using a nice boost binding
-    construction.
+    Writes out the tallies 
     \param OX :: Output stream
    */
 {
@@ -462,7 +461,7 @@ SimMCNP::writeSurfaces(std::ostream& OX) const
 
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
-  
+
   for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
     sm.second->write(OX);
 

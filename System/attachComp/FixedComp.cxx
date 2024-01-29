@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2009,35 +2009,6 @@ FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
   return outIndex;
 }
   
-void
-FixedComp::selectAltAxis(const long int sideIndex,
-			 Geometry::Vec3D& XOut,Geometry::Vec3D& YOut,
-			 Geometry::Vec3D& ZOut) const
-  /*!
-    From a given index find the optimal X,Y,Z axis to use for the
-    output: YOut is compared with beam to find closes axis.
-    \param sideIndex :: Link surface to use
-    \param XOut :: X axis
-    \param YOut :: Y axis [ beam ]
-    \param ZOut :: Z axis 
-  */
-{
-  ELog::RegMethod RegA("FixedComp","selectAltAxis");
-  
-  YOut=getLinkAxis(sideIndex);
-
-  double dp[3];
-  dp[0]=std::abs(X.dotProd(YOut)); 
-  dp[1]=std::abs(Y.dotProd(YOut)); 
-  dp[2]=std::abs(Z.dotProd(YOut)); 
-  const double* dptr=std::max_element(dp,dp+3);
-
-  XOut=(dptr==dp) ? Y : X;
-  ZOut=(dptr==dp+2) ? Y : Z;
-    
-  return;
-}
-
 void
 FixedComp::applyRotation(const Geometry::Vec3D& Axis,
 			 const double Angle)

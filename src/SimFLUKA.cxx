@@ -3,7 +3,7 @@
 
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -304,8 +304,7 @@ SimFLUKA::addUserFlags(const std::string& Key,const std::string& Extra)
 void
 SimFLUKA::writeTally(std::ostream& OX) const
   /*!
-    Writes out the tallies using a nice boost binding
-    construction.
+    Writes out the tallies 
     \param OX :: Output stream
    */
 {
@@ -382,8 +381,7 @@ SimFLUKA::writeFlags(std::ostream& OX) const
 void
 SimFLUKA::writeMagField(std::ostream& OX) const
   /*!
-    Writes out the tallies using a nice boost binding
-    construction.
+    Writes out the magnetiv fields
     \param OX :: Output stream
    */
 {
@@ -430,8 +428,7 @@ SimFLUKA::writeMagField(std::ostream& OX) const
 void
 SimFLUKA::writeElecField(std::ostream& OX) const
   /*!
-    Writes out the tallies using a nice boost binding
-    construction.
+    Writes out the electric fields
     \param OX :: Output stream
    */
 {

@@ -586,7 +586,9 @@ buildSphere(surfRegister& SMap,const int N,
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
-  Geometry::Sphere* SX=SurI.createUniqSurf<Geometry::Sphere>(N);  
+  Geometry::Sphere* SX=SurI.createUniqSurf<Geometry::Sphere>(N);
+
+
   SX->setSphere(O,R);
   const int NFound=SMap.registerSurf(N,SX);
   return SMap.realPtr<Geometry::Sphere>(NFound);

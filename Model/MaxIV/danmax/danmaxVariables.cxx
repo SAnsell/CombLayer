@@ -630,7 +630,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.6);      // from primary
 
   const std::string portName=monoKey+"MonoVessel";
-  Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
+  Control.addVariable(monoKey+"MonoVesselNPorts",0);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(5.0+31.2);
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",

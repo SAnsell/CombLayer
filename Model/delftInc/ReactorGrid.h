@@ -66,8 +66,6 @@ class ReactorGrid :
   FuelLoad FuelSystem;          ///< System of fuel layout
   multiData<std::string> GType;      ///< Grid type
   multiData<RTYPE> Grid;             ///< Storage of the grid [size 3]
-  //  boost::multi_array<std::string,2> GType;      ///< Grid type
-  //  boost::multi_array<RTYPE,2> Grid;     ///< Storage of the grid [size 3]
 
   void populate(const FuncDataBase&) override;
   void createSurfaces();

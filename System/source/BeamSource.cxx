@@ -3,7 +3,7 @@
  
  * File:   source/BeamSource.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -52,7 +51,6 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedRotateUnit.h"
 #include "phitsWriteSupport.h"
 #include "flukaGenParticle.h"
 
@@ -63,7 +61,7 @@ namespace SDef
 {
 
 BeamSource::BeamSource(const std::string& keyName) : 
-  FixedRotateUnit(keyName,0),SourceBase(),
+  FixedRotate(keyName,0),SourceBase(),
   radius(1.0),angleSpread(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -72,7 +70,7 @@ BeamSource::BeamSource(const std::string& keyName) :
 {}
 
 BeamSource::BeamSource(const BeamSource& A) : 
-  attachSystem::FixedRotateUnit(A),SourceBase(A),
+  attachSystem::FixedRotate(A),SourceBase(A),
   radius(A.radius),angleSpread(A.angleSpread)
   /*!
     Copy constructor
@@ -213,7 +211,8 @@ BeamSource::createAll(const ITYPE& inputMap,
   ELog::EM<<"linkunit: == "<<FC.getKeyName()<<" "<<linkIndex<<ELog::endDiag;
 
   populate(inputMap);
-  createUnitVector(FC,linkIndex);
+  FixedRotate::createUnitVector(FC,linkIndex);
+  ELog::EM<<"zAxis "<<preZAngle<<" "<<Y<<":"<<Origin<<ELog::endDiag;
 
   return;
 }
@@ -321,7 +320,6 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   // Note the cos directs fro the beamPos are for particle
   // leaving the beam NOT the orientation of the disk
   cx<<"BEAMPOS "<<MW.Num(Origin);
-
     
   StrFunc::writeFLUKA(cx.str(),OX);
 

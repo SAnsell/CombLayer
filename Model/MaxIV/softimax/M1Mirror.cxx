@@ -3,7 +3,7 @@
 
  * File:   softimax/M1Mirror.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,10 +147,11 @@ M1Mirror::createSurfaces()
   ELog::RegMethod RegA("M1Mirror","createSurfaces");
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,Y);
+  makePlane("Divider",SMap,buildIndex+1000,Origin,Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width,X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin,X);
+  makePlane("RefSurf",SMap,buildIndex+4,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
@@ -232,10 +233,11 @@ M1Mirror::createSurfaces()
     }
 
   // Point for pipework connection
+  ELog::EM<<"Point == "<<SMap.realSurf(buildIndex+5)<<ELog::endDiag;
   const Geometry::Vec3D pipePtA=
-    SurInter::getLinePoint(pBaseA,-Z,buildIndex+5);
+    SurInter::getLinePoint(pBaseA,-Z,SMap.realSurf(buildIndex+5));
   const Geometry::Vec3D pipePtB=
-    SurInter::getLinePoint(pBaseB,-Z,buildIndex+5);
+    SurInter::getLinePoint(pBaseB,-Z,SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(7,pipePtA,-Z);
   FixedComp::setConnect(8,pipePtB,-Z);
@@ -253,6 +255,12 @@ M1Mirror::createSurfaces()
 
   FixedComp::setConnect(12,slotOrg-Z*(height/2.0-slotDepth),Z);
   FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+16));
+
+  // key normal orientation
+  FixedComp::setConnect(13,pipePtA,Y);
+  FixedComp::setConnect(14,pipePtB,Y);
+  FixedComp::setLinkSurf(13,-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(14,-SMap.realSurf(buildIndex+5));
 
   
   return;
@@ -384,8 +392,8 @@ M1Mirror::createLinks()
   FixedComp::setConnect(6,Origin-X*width,Y);
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
 
-  // note no origin:
-  FixedComp::setConnect(13,Origin-X*(width/2.0),Y);
+  // note no surf for base widht:
+  FixedComp::setConnect(15,Origin-X*(width/2.0),Y);
 
   nameSideIndex(2,"outSide");
   nameSideIndex(3,"beamSide");
@@ -399,7 +407,9 @@ M1Mirror::createLinks()
   nameSideIndex(10,"slotTop");
   nameSideIndex(11,"slotAMid");
   nameSideIndex(12,"slotBMid");
-  nameSideIndex(13,"centreAxis");
+  nameSideIndex(13,"normPipeA");
+  nameSideIndex(14,"normPipeB");
+  nameSideIndex(15,"centreAxis");
   
   return;
 }

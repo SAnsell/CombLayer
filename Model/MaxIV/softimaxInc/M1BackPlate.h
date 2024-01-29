@@ -51,7 +51,8 @@ class M1BackPlate :
   double extentThick;         ///< Thickness of extras
   double cupHeight;           ///< Height of C-cups 
   double topExtent;           ///< Length of top step
-  double baseExtent;          ///< Length of top step
+  double baseExtent;          ///< Length of base step
+  double midExtent;           ///< Length of mid step
 
   // spring supports 
   double supVOffset;           ///< offset from Crystal surface 

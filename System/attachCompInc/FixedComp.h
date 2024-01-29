@@ -62,7 +62,7 @@ class FixedComp
   int cellIndex;                   ///< Cell index    
 
   std::map<std::string,size_t> keyMap; ///< Keynames to linkPt index
-  
+
   Geometry::Vec3D X;            ///< X-coordinate 
   Geometry::Vec3D Y;            ///< Y-coordinate 
   Geometry::Vec3D Z;            ///< Z-coordinate 
@@ -256,8 +256,6 @@ class FixedComp
   int getNextCell() const { return cellIndex; }
 
   
-  void selectAltAxis(const long int,Geometry::Vec3D&,
-		     Geometry::Vec3D&,Geometry::Vec3D&) const;
   void calcLinkAxis(const long int,Geometry::Vec3D&,
 		    Geometry::Vec3D&,Geometry::Vec3D&) const;
 

@@ -3,7 +3,7 @@
  
  * File:   tally/fissionConstruct.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -147,8 +146,10 @@ fissionConstruct::processPower(SimMCNP& System,
   tallySystem::addF7Tally(System,nTally,cellVec);
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");
-  boost::format Cmt("tally: %d Cell %s ");
-  const std::string Comment=(Cmt % nTally % CellRegion ).str();
+
+  const std::string Comment=
+    "tally: "+std::to_string(nTally)+" Cell "+CellRegion;
+
   TX->setComment(Comment);
 
   return 0;

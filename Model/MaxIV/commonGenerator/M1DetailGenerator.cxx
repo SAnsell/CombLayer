@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/M1DetailGenerator.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ namespace setVariable
 {
 
 M1DetailGenerator::M1DetailGenerator() :
-  mWidth(6.0),mHeight(6.0),        
+  mWidth(6.5),mHeight(6.0),        
   mLength(37.0),mSlotXStep(4.5),     
   mSlotWidth(1.0),mSlotDepth(0.90),     
   mPipeXStep(2.17),mPipeYStep(2.0),
@@ -76,8 +76,7 @@ M1DetailGenerator::M1DetailGenerator() :
   bBackThick(0.5),bMainThick(0.3),
   bExtentThick(0.4),
   bCupHeight(1.8),bTopExtent(4.2),
-  bBaseExtent(2.1),bVoidExtra(3.5),
-  bVoidBaseExtra(8.5),bVoidXExtra(4.5),
+  bBaseExtent(2.1),bMidExtent(1.3),
   
   clipYStep(7.7),clipLen(1.2),
   clipSiThick(0.2),clipAlThick(0.4),
@@ -92,19 +91,31 @@ M1DetailGenerator::M1DetailGenerator() :
   bFrontSupportZCut(0.2),
 
   bRingYStep(17.30),
-  bRingOuterThick(0.3),bRingOuterLength(0.2),
+  bRingOuterThick(0.1),bRingOuterLength(0.2),
   bRingInnerYStep(0.3),
-  bRingInnerThick(1.2),bRingInnerLength(1.2),
+  bRingInnerThick(0.9),bRingInnerLength(1.2),
   
-  eXOut(1.78),eLength(38.0),eThick(0.1),eHeight(6.8),
-  eEdge(2.20),eHoleRadius(1.18),
+  eXOut(1.83),eLength(38.0),
+  eFrontLength(1.2),eThick(0.2),eHeight(7.0),
+  eEdge(2.80),eHoleRadius(1.18),
   eConnectLength(1.5),eConnectGap(1.3),
   eConnectThick(0.35),
-  eNCut(9),eCutRadius(1.4),eCutGap(3.7),
+  eNCut(10),eCutRadius(1.4),eCutGap(3.7),
   eBlockOffset(0.5),eBlockWidth(1.2),
   ePlateOffset(2.1),ePlateThick(0.2),
   ePlateHeight(5.2),ePipeRadius(0.2),
   ePipeThick(0.15),
+
+  mainPipeRadius(0.4),mainPipeThick(0.2),
+  mainPipeOuter(0.1),
+  mainConnectRadius(1.25),mainConnectLength(0.9),
+  mainCubeWidth(2.80),mainCubeHeight(2.20),
+  mainCubeDepth(2.80),mainOutRadius(0.9),
+  mainOutLength(1.7),mainFlangeRadius(1.7),
+  mainFlangeLength(1.0),mainExitLen(1.0),
+  mainAngle(-5.0),mainExitRadius(1.25),
+  mainExitFull(30.0),
+  
   
   fBladeInRad(0.0),fBladeOutRad(2.0),
   fBladeThick(1.0),fBladeTopAngle(40.0),
@@ -191,14 +202,6 @@ M1DetailGenerator::makeFrontPlate(FuncDataBase& Control,
 
   return;
 }
-
-void
-M1DetailGenerator::makePipe(FuncDataBase& Control,
-			    const std::string& keyName) const
-{
-}
-
-  
   
 void
 M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
@@ -219,9 +222,10 @@ M1DetailGenerator::makeBackPlate(FuncDataBase& Control,
   Control.addVariable(keyName+"TopExtent",bTopExtent);
   Control.addVariable(keyName+"ExtentThick",bExtentThick);
   Control.addVariable(keyName+"BaseExtent",bBaseExtent);
-  Control.addVariable(keyName+"VoidExtra",bVoidExtra);
-  Control.addVariable(keyName+"VoidBaseExtra",bVoidBaseExtra);
-  Control.addVariable(keyName+"VoidXExtra",bVoidXExtra);
+  Control.addVariable(keyName+"MidExtent",bMidExtent);
+  //  Control.addVariable(keyName+"VoidExtra",bVoidExtra);
+  //  Control.addVariable(keyName+"VoidBaseExtra",bVoidBaseExtra);
+  //  Control.addVariable(keyName+"VoidXExtra",bVoidXExtra);
 
   Control.addVariable(keyName+"FrontPlateGap",fBaseGap);
   Control.addVariable(keyName+"FrontPlateWidth",fBaseWidth);
@@ -264,6 +268,42 @@ M1DetailGenerator::makeConnectors(FuncDataBase& Control,
 }
 
 void
+M1DetailGenerator::makeMainPipe(FuncDataBase& Control,
+				const std::string& keyName) const
+  /*!
+    Set the main pipe connecting to the crystal via the
+    \param Control :: Func data base
+   */
+{
+  ELog::RegMethod RegA("M1DetailGenerator","makeMainPipe");  
+
+  Control.addVariable(keyName+"PipeRadius",mainPipeRadius);
+  Control.addVariable(keyName+"PipeThick",mainPipeThick);
+  Control.addVariable(keyName+"PipeOuter",mainPipeOuter);
+  Control.addVariable(keyName+"ConnectRadius",mainConnectRadius);
+  Control.addVariable(keyName+"ConnectLength",mainConnectLength);
+  Control.addVariable(keyName+"CubeWidth",mainCubeWidth);
+  Control.addVariable(keyName+"CubeHeight",mainCubeHeight);
+  Control.addVariable(keyName+"CubeDepth",mainCubeDepth);
+  Control.addVariable(keyName+"OutRadius",mainOutRadius);
+  Control.addVariable(keyName+"OutLength",mainOutLength);
+  Control.addVariable(keyName+"FlangeRadius",mainFlangeRadius);
+  Control.addVariable(keyName+"FlangeLength",mainFlangeLength);
+
+  Control.addVariable(keyName+"ExitLen",mainExitLen);
+  Control.addVariable(keyName+"ExitAngle",mainAngle);
+  Control.addVariable(keyName+"ExitRadius",mainExitRadius);
+  Control.addVariable(keyName+"ExitFullLength",mainExitFull);
+
+  Control.addVariable(keyName+"InnerMat",waterMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
+
+  return;
+}
+
+
+void
 M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
 				   const std::string& keyName) const
   /*!
@@ -287,33 +327,6 @@ M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
     }
   Control.addVariable(keyName+"BPreXAngle",180.0);
   
-  return;
-}
-
-
-void
-M1DetailGenerator::makeOuterSupport(FuncDataBase& Control,
-				    const std::string& keyName) const
-  /*!
-    Build the outer supports on the back plate
-  */
-{
-  ELog::RegMethod RegA("M1DetailGenerator","makeOuterSupport");
-
-  /*
-  Control.addVariable(keyName+"FrontSupportThick",bFrontSupportThick);
-  Control.addVariable(keyName+"FrontSupportCut",bFrontSupportCut);
-  Control.addVariable(keyName+"FrontSupportZCut",bFrontSupportZCut);
-  */
-
- /*
-  Control.addVariable(keyName+"RingYPos",bRingYPos);
-  Control.addVariable(keyName+"RingThick",bRingThick);
-  Control.addVariable(keyName+"RingGap",bRingGap);
-  Control.addVariable(keyName+"RingClampThick",bRingClampThick);
-  Control.addVariable(keyName+"RingBackPt",bRingBackPt);
-  Control.addVariable(keyName+"RingTopPt",bRingTopPt);
-  */
   return;
 }
 
@@ -350,9 +363,10 @@ M1DetailGenerator::makeElectronShield(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeElectronShield");
 
-  Control.addVariable(keyName+"ElecXOut",eXOut);
+  Control.addVariable(keyName+"ElecXOut",eXOut+eThick);
   Control.addVariable(keyName+"ElecLength",eLength);
-  Control.addVariable(keyName+"ElecHeight",eHeight);
+  Control.addVariable(keyName+"ElecFrontLength",eFrontLength);
+  Control.addVariable(keyName+"ElecHeight",eHeight+eThick);
   Control.addVariable(keyName+"ElecEdge",eEdge);
   Control.addVariable(keyName+"ElecHoleRadius",eHoleRadius);
   Control.addVariable(keyName+"ElecThick",eThick);
@@ -453,13 +467,13 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param xStep :: y-offset 
     
   */
 {
   ELog::RegMethod RegA("M1DetailGenerator","generateMirror");
 
-
+  ELog::EM<<"XStep == "<<xStep<<ELog::endDiag;
   Control.addVariable(keyName+"XStep",xStep);
   // guess of separation
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
@@ -469,8 +483,8 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
   makeSupport(Control,keyName+"CClamp");
   makeConnectors(Control,keyName+"Connect");
   makeFrame(Control,keyName+"Frame");
+  makeMainPipe(Control,keyName+"MainPipe");
   makeRingSupport(Control,keyName+"Ring");
-  makeOuterSupport(Control,keyName+"CClamp");
   
   return;
 

@@ -3,7 +3,7 @@
  
  * File:   sourceInc/BeamSource.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ namespace SDef
 */
 
 class BeamSource : 
-  public attachSystem::FixedRotateUnit,
+  public attachSystem::FixedRotate,
   public SourceBase
 {
  private:
@@ -59,8 +59,6 @@ class BeamSource :
 
   /// Set radius
   void setRadius(const double R) { radius=R; }
-
-
 
   using FixedComp::createAll;
   void createAll(const ITYPE&,const attachSystem::FixedComp&,

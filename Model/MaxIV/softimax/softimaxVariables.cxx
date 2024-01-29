@@ -312,7 +312,8 @@ m1DetailVariables(FuncDataBase& Control,
   const std::string boxName(mirrorKey+"M1Box");
   const double monoBoxLen(62.0);
 
-  const double theta(1.0);
+  const double theta(0.0);
+  ELog::EM<<"NOTE THETA set to zero"<<ELog::endDiag;
   const double xPortStep=
     0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angle
   
@@ -335,7 +336,7 @@ m1DetailVariables(FuncDataBase& Control,
   // Parts for tube connection:
   const double tubeLength(40.5);
   const double portXStep(2.0);
-  const double mExtra=30.0*sin(M_PI*theta/180.0);
+  const double mExtra=0.62; // 30.0*sin(M_PI*theta/180.0);
 
   DCGen.setSphere(7.0,2.5);
   DCGen.setFlangeCF<CF150>(0.8);
@@ -366,7 +367,8 @@ m1DetailVariables(FuncDataBase& Control,
   // -------------------------------------
 
   // Mirror has no angle (?)
-  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,(mExtra+portXStep/2.0),0.0);
+  M1DGen.generateMirror(Control,mirrorKey+"M1",0.0,
+			(mExtra+portXStep/2.0),0.0);
   ELog::EM<<"Xstep == "<<mExtra+portXStep/2.0<<ELog::endDiag;
   // ONLY for tube version:
   //  Control.addVariable(mirrorKey+"M1XStep",);

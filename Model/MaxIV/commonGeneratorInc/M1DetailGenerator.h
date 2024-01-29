@@ -3,7 +3,7 @@
  
  * File:   commonGeneratorInc/M1DetailGenerator.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,9 +109,7 @@ class M1DetailGenerator
   double bCupHeight;           ///< Height of C-cups (1.8)
   double bTopExtent;           ///< Length of top step (4.2)
   double bBaseExtent;          ///< Length of top step (2.1)
-  double bVoidExtra;           ///< Extra thickness for support
-  double bVoidBaseExtra;       ///< Extra thickness for support at base
-  double bVoidXExtra;          ///< Extra thickness for support at side
+  double bMidExtent;           ///< Length of mid step (1.3)
 
   double clipYStep;            ///< Step from end
   double clipLen;              ///< Length of clip
@@ -134,11 +132,13 @@ class M1DetailGenerator
   double bRingInnerThick;        ///< Radial thickness of inner (fat) ring
   double bRingInnerLength;       ///< Length along mirror of inner ring
 
+  // ---------------
   // Electron shield
   // ---------------
   
   double eXOut;                 ///< Step from the back plane (79.8)
   double eLength;               ///< Length of electorn shield (38.0)
+  double eFrontLength;          ///< extra part at front (with curve)
   double eThick;                ///< Length of electorn shield (0.1)
   double eHeight;               ///< Height (internal) of electorn shield (6.8)
   double eEdge;                 ///< Internal step (10.3)
@@ -161,6 +161,30 @@ class M1DetailGenerator
 
   double ePipeRadius;          ///< Radius of long pipe
   double ePipeThick;           ///< Thickenss of pipe
+
+  // -------------
+  // Main Connector Pipe
+  // -------------
+  double mainPipeRadius;   ///< radius (outer)
+  double mainPipeThick;   ///< radius (outer)
+  double mainPipeOuter;   ///< radius (outer)
+  double mainConnectRadius;   ///< radius (oute)r
+  double mainConnectLength;   ///< distance down
+
+  double mainCubeWidth;      ///<
+  double mainCubeHeight;      ///<
+  double mainCubeDepth;      ///<  Y direction down beam
+
+  double mainOutRadius;   ///< radius (outer)
+  double mainOutLength;   ///< distance down
+
+  double mainFlangeRadius;   ///< radius (outer)
+  double mainFlangeLength;   ///< radius (outer)
+
+  double mainExitLen;         ///< straight section after flangle
+  double mainAngle;           ///< angle to rotate (about Z)
+  double mainExitRadius;      ///< new radius at bend
+  double mainExitFull;        ///< length after bend
 
   // -------------
   // SUBSTRUCTURE for Box system
@@ -195,6 +219,7 @@ class M1DetailGenerator
   void makeFrontPlate(FuncDataBase&,const std::string&) const;
   void makeBackPlate(FuncDataBase&,const std::string&) const;
   void makeConnectors(FuncDataBase&,const std::string&) const;
+  void makeMainPipe(FuncDataBase&,const std::string&) const;
   void makeOuterSupport(FuncDataBase&,const std::string&) const;
   void makePipe(FuncDataBase&,const std::string&) const;
   void makeRingSupport(FuncDataBase&,const std::string&) const;

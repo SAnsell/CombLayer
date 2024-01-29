@@ -31,7 +31,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "BaseVisit.h"

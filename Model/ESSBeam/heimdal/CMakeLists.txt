@@ -1,5 +1,5 @@
 set (heimdalSources
-    HEIMDAL.cxx HEIMDALvariables.cxx LegoBrick.cxx 
+    HEIMDAL.cxx  HeimdalCave.cxx HEIMDALvariables.cxx LegoBrick.cxx 
 )
 
 add_library (heimdal SHARED
@@ -21,9 +21,11 @@ file(RELATIVE_PATH tarINC
 
 set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/HEIMDAL.cxx
+  ${tarDIR}/HeimdalCave.cxx
   ${tarDIR}/HEIMDALvariables.cxx
   ${tarDIR}/LegoBrick.cxx
   ${tarINC}/HEIMDAL.h
+  ${tarINC}/HeimdalCave.h
   ${tarINC}/LegoBrick.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
 

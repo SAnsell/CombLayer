@@ -3,7 +3,7 @@
  
  * File:   physics/PhysicsCards.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <functional>
 #include <memory>
 #include <array>
-#include <boost/algorithm/string.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -376,10 +375,8 @@ PhysicsCards::processCard(const std::string& Line)
       std::string Item;
       if (StrFunc::section(Comd,Item))
         {
-	  std::vector<std::string> part;
-	  boost::split(part,Item,boost::is_any_of(","));
-	  for(std::string& PStr : part)
-	    boost::trim(PStr,std::locale());
+	  std::vector<std::string> part=
+	    StrFunc::splitParts(Item,',');
 	  // ensure no empty particles
 	  part.erase(
 		     remove_if(part.begin(),part.end(),
@@ -871,9 +868,9 @@ PhysicsCards::write(std::ostream& OX,
   if (!printNum.empty())
     {
       std::ostringstream cx;
-      cx<<"print ";
-      copy(printNum.begin(),printNum.end(),
-	   std::ostream_iterator<int>(cx," "));
+      cx<<"print";
+      for(const int pNum : printNum)
+	cx<<" "<<pNum;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
 

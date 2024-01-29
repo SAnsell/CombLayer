@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testRecTriangle.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +30,14 @@
 #include <queue>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
 
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "dataSlice.h"
+#include "multiData.h"
 #include "Triangle.h"
 #include "Quadrilateral.h"
 #include "RecTriangle.h"
@@ -126,27 +127,28 @@ testRecTriangle::testTriPoints()
   // Centre point +/- Axis
   RecTriangle<Triangle> A(O+Y+Z,Y,Z);
 
-  boost::multi_array<double,2> Out(boost::extents[200][200]);
+  multiData<double> Out(200,200);
   for(int i=0;i<300;i++)
     {
       const Geometry::Vec3D Pt=A.getNext();
-      const int yP=static_cast<int>(100*Pt.Y());
-      const int zP=static_cast<int>(100*Pt.Z());
-      if (yP<0 || yP>199 || zP<0 || zP>199)
+      //negative will collapse to >199
+      const size_t yP=static_cast<size_t>(100.0*Pt.Y());
+      const size_t zP=static_cast<size_t>(100.0*Pt.Z());
+      if (yP>199 || zP>199)
 	{
 	  ELog::EM<<"Failed on point "<<i<<" "<<Pt<<ELog::endWarn;
 	  ELog::EM<<"Pt = "<<yP<<" "<<zP<<ELog::endWarn;	  
 	  return -1;
 	}
-      Out[yP][zP]++;
+      Out.get()[yP][zP]++;
     }
   
   std::ofstream OX("testPoint.img");
-  for(int i=0;i<200;i++)
-    for(int j=0;j<200;j++)
+  for(size_t i=0;i<200;i++)
+    for(size_t j=0;j<200;j++)
       {
-	OX<<i<<" "<<j<<" "<<Out[i][j]<<std::endl;
-	if (Out[i][j]>1)
+	OX<<i<<" "<<j<<" "<<Out.get()[i][j]<<std::endl;
+	if (Out.get()[i][j]>1)
 	  {
 	    ELog::EM<<"Failed on point "<<i<<" "<<j<<ELog::endTrace;
 	    return -2;
@@ -160,40 +162,41 @@ testRecTriangle::testTriPoints()
 int
 testRecTriangle::testQuadPoints()
   /*!
-    Test the distance of a point from the plane
+    Test the dispersion of the points at each level
+    (2^L) is the number of points
     \retval -1 :: failed build a plane
     \retval 0 :: All passed
   */
 {
   ELog::RegMethod RegA("testRecTriangle","testPoints");
 
-  const int gridSize(500);
+  const size_t gridSize(500);
 
   Geometry::Vec3D O(0,0.5,0.5);
   Geometry::Vec3D Y(0,0.5,0);
   Geometry::Vec3D Z(0,0,0.5);
   RecTriangle<Quadrilateral> A(O,Y,Z);
 
-  boost::multi_array<double,2> Out(boost::extents[gridSize][gridSize]);
+  multiData<double> Out(gridSize,gridSize);
   for(int i=0;i<20000;i++)
     {
       const int L=A.getLevel();
       const Geometry::Vec3D Pt=A.getNext();
-      const int yP=static_cast<int>(gridSize*Pt.Y());
-      const int zP=static_cast<int>(gridSize*Pt.Z());
-      if (yP<0 || yP>=gridSize || zP<0 || zP>=gridSize)
+      const size_t yP=static_cast<size_t>(gridSize*Pt.Y());
+      const size_t zP=static_cast<size_t>(gridSize*Pt.Z());
+      if (yP>=gridSize || zP>=gridSize)
 	{
 	  ELog::EM<<"Failed on point "<<Pt<<ELog::endWarn;
 	  return -1;
 	}
       if (L<=5)
-	Out[yP][zP]++;
+	Out.get()[yP][zP]++;
     }
   
   std::ofstream OX("testPoint.img");
-  for(int i=0;i<gridSize;i++)
-    for(int j=0;j<gridSize;j++)
-      OX<<i<<" "<<j<<" "<<Out[i][j]<<std::endl;
+  for(size_t i=0;i<gridSize;i++)
+    for(size_t j=0;j<gridSize;j++)
+      OX<<i<<" "<<j<<" "<<Out.get()[i][j]<<std::endl;
 
   OX.close();
   return 0;
@@ -218,25 +221,25 @@ testRecTriangle::testMeshGridPoints()
   Geometry::Vec3D Z(0,0,1.0);
   MeshGrid A(O,Y,Z);
 
-  boost::multi_array<double,2> Out(boost::extents[gridSize][gridSize]);
-  for(int i=0;i<1089;i++)
+  multiData<double> Out(gridSize,gridSize);
+  for(size_t i=0;i<1089;i++)
     {
       const int L=A.getLevel();
       const Geometry::Vec3D Pt=A.getNext();
-      const int yP=static_cast<int>(gridSize*Pt.Y()*0.999);
-      const int zP=static_cast<int>(gridSize*Pt.Z()*0.999);
-      if (yP<0 || yP>=gridSize || zP<0 || zP>=gridSize)
+      const size_t yP=static_cast<size_t>(gridSize*Pt.Y()*0.999);
+      const size_t zP=static_cast<size_t>(gridSize*Pt.Z()*0.999);
+      if (yP>=gridSize || zP>=gridSize)
 	{
 	  ELog::EM<<"Failed on point "<<Pt<<" at level "<<L<<ELog::endWarn;
 	  return -1;
 	}
-      Out[yP][zP]++;
+      Out.get()[yP][zP]++;
     }
   
   std::ofstream OX("testPoint.img");
-  for(int i=0;i<gridSize;i++)
-    for(int j=0;j<gridSize;j++)
-      OX<<i<<" "<<j<<" "<<Out[i][j]<<std::endl;
+  for(size_t i=0;i<gridSize;i++)
+    for(size_t j=0;j<gridSize;j++)
+      OX<<i<<" "<<j<<" "<<Out.get()[i][j]<<std::endl;
 
   OX.close();
   return 0;

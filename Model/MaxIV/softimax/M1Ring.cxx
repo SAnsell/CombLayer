@@ -147,7 +147,6 @@ M1Ring::createObjects(Simulation& System)
   ELog::RegMethod RegA("M1Ring","createObjects");
 
   const HeadRule cylHR=getRule("TubeRadius");
-  ELog::EM<<"Cyl == "<<cylHR<<ELog::endDiag;
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7");

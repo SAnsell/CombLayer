@@ -3,7 +3,7 @@
  
  * File:   geometry/Cone.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,28 @@ Cone::Cone(const int N,const int T) : Quadratic(N,T),
 {
   Cone::setBaseEqn();
 }
+  
+Cone::Cone(const int N,Geometry::Vec3D Org,
+	   const Geometry::Vec3D& A,const double theta) : 
+  Quadratic(N,0),
+  Centre(std::move(Org)),
+  Normal(A.unit()),
+  alpha(theta),
+  cangle(std::cos(alpha*M_PI/180.0)),
+  cutFlag(0)
+  /*!
+    Standard Constructor creates a cone
+    \param N :: Name
+    \param Org :: origin 
+    \param A :: axis 
+    \param theta :: angle [degrees]
+  */
+{
+  // Called after it has been sized by Quadratic
+  Cone::setBaseEqn();
+}
 
+  
 Cone::Cone(const Cone& A) :Quadratic(A),
   Centre(A.Centre), Normal(A.Normal), 
   alpha(A.alpha), cangle(A.cangle),

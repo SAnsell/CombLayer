@@ -115,6 +115,8 @@ createInputs(inputParam& IParam)
                                  std::string("shielding"));  
   IParam.regItem("matFile","matFile");
   IParam.regItem("maxEnergy","maxEnergy");   // default max energy
+  IParam.regMulti("materialCheck","materialCheck",1000);
+  IParam.regMulti("materialHeat","materialHeat",1000);
   IParam.regFlag("M","mesh");
   IParam.regItem("MA","meshA");
   IParam.regItem("MB","meshB");
@@ -122,6 +124,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("md5","md5");
   IParam.regItem("md5Mesh","md5Mesh");
   IParam.regItem("memStack","memStack");
+    
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regItem("noVariables","noVariables");
   IParam.regFlag("phits","PHITS");
@@ -279,6 +282,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("MA","Lower Point in mesh tally");
   IParam.setDesc("MB","Upper Point in mesh tally");
   IParam.setDesc("MN","Number of points [3]");
+  IParam.setDesc("materialCheck","{fileName} read file and check if points"
+		 "are in or not in a material");
   IParam.setDesc("md5","MD5 track of cells");
   IParam.setDesc("md5Mesh","Define mesh for MD5/VTK");
   IParam.setDesc("memStack","Memstack verbrosity value");

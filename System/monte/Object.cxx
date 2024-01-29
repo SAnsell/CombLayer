@@ -20,7 +20,6 @@
  *
  ****************************************************************************/
 #include <algorithm>
-#include <boost/format.hpp>
 #include <cmath>
 #include <complex>
 #include <deque>

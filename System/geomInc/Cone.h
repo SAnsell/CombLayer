@@ -3,7 +3,7 @@
  
  * File:   geomInc/Cone.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,8 @@ class Cone : public Quadratic
 
   Cone();
   Cone(const int,const int);
+  Cone(const int,Geometry::Vec3D,
+       const Geometry::Vec3D&,const double);
   Cone(const Cone&);
   Cone* clone() const override;
   Cone& operator=(const Cone&);

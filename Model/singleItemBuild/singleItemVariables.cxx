@@ -87,6 +87,8 @@
 #include "FlatPipeGenerator.h"
 #include "SixPortGenerator.h"
 #include "CrossWayGenerator.h"
+#include "VacBoxGenerator.h"
+#include "DCMTankGenerator.h"
 #include "GaugeGenerator.h"
 #include "BremBlockGenerator.h"
 #include "PrismaChamberGenerator.h"
@@ -134,6 +136,7 @@
 #include "FocusGenerator.h"
 #include "MLMDetailGenerator.h"
 #include "M1DetailGenerator.h"
+#include "HeimdalCaveGenerator.h"
 
 #include "RoundShutterGenerator.h"
 #include "TubeDetBoxGenerator.h"
@@ -399,6 +402,14 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::TriggerGenerator TrigGen;
   TrigGen.generateTube(Control,"TriggerTube");
 
+  setVariable::DCMTankGenerator DCMGen;
+  DCMGen.setCF<CF40>();   // set ports
+  DCMGen.setPortLength(7.5,7.5); // La/Lb
+  DCMGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
+  // radius : Height / depth  [need heigh = 0]
+  Control.addVariable("DMCPortBXStep",-0.6);      // from primary
+  DCMGen.generateBox(Control,"DCMTank",30.0,0.0,16.0);
+
   // multipipe
   setVariable::MultiPipeGenerator MPGen;
   MPGen.setPipe<CF40>(Geometry::Vec3D(0,0,5.0),45.0, 0.0, 3.7);
@@ -514,7 +525,10 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::BeamScrapperGenerator BeamSGen;
   BeamSGen.generateScreen(Control,"BeamScrapper");
-
+  //  Control.addVariable("BeamScrapperXStep",2668.0016244323656);
+  //  Control.addVariable("BeamScrapperYStep",0.0);
+  //  Control.addVariable("BeamScrapperZAngle",-180.0);
+  
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
   Control.addVariable("YAGYAngle",-90.0);
@@ -533,6 +547,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::CeramicGapGenerator CSGen;
   CSGen.generateCeramicGap(Control,"CerSep");
+
+  setVariable::HeimdalCaveGenerator HCaveGen;
+  HCaveGen.generateCave(Control,"HeimdalCave");
 
   setVariable::CF40 CF40unit;
   setVariable::BeamDividerGenerator BDGen(CF40unit);

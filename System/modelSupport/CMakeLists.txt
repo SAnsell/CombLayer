@@ -56,7 +56,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/SimImportance.cxx
   ${tarDIR}/SimInput.cxx
   ${tarDIR}/SpecialSurf.cxx
-  ${tarDIR}/surfCompare.cxx
   ${tarDIR}/surfDBase.cxx
   ${tarDIR}/surfDIter.cxx
   ${tarDIR}/surfEqual.cxx
@@ -93,7 +92,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/ReportSelector.h
   ${tarINC}/SimInput.h
   ${tarINC}/SpecialSurf.h
-  ${tarINC}/surfCompare.h
   ${tarINC}/surfDBase.h
   ${tarINC}/surfDIter.h
   ${tarINC}/surfEqual.h

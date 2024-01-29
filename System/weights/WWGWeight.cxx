@@ -31,7 +31,8 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/format.hpp>
+#include <array>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -753,8 +754,6 @@ WWGWeight::writeVTK(std::ostream& OX,
   if (EIndex>=WE)
     throw ColErr::IndexError<size_t>(EIndex,WE,"index in WMesh.ESize");
 
-  boost::format fFMT("%1$11.6g%|14t|");
-  
   OX<<"POINT_DATA "<<WX*WY*WZ<<std::endl;
   OX<<"SCALARS cellID float 1.0"<<std::endl;
   OX<<"LOOKUP_TABLE default"<<std::endl;
@@ -766,9 +765,12 @@ WWGWeight::writeVTK(std::ostream& OX,
 	for(size_t I=0;I<WX;I++)
 	  {
 	    if (!logFlag)
-	      OX<<(fFMT % std::exp(WGrid.get()[EIndex][I][J][K]));	
+	      OX<<fmt::format(":<11.6g    ",
+			      std::exp(WGrid.get()[EIndex][I][J][K]));	
 	    else
-	      OX<<(fFMT % -WGrid.get()[EIndex][I][J][K]);
+	      OX<<fmt::format(":<11.6g    ",
+			      -WGrid.get()[EIndex][I][J][K]);	
+
 	    if (WGrid.get()[EIndex][I][J][K]<wMin)
 	      wMin=WGrid.get()[EIndex][I][J][K];
 	    if (WGrid.get()[EIndex][I][J][K]>wMax)
@@ -943,20 +945,16 @@ WWGWeight::writeWWINP(std::ostream& OX) const
     Write out for INP file
    */
 {
-  
-  boost::format TopFMT("%10i%10i%10i%10i%28s\n");
-  boost::format neFMT("%10i");
   const std::string date("10/07/15 15:37:51");
-
   const size_t nParticle(particles.size());
   
   // IF[1] : timeIndependent : No. particleType : 10(rectangular) : date
-  OX<<(TopFMT % 1 % 1  % nParticle % 10 % date);
+  OX<<fmt::format("{:10d}{:10d}{:10d}{:10d}{:28}\n",1,1,nParticle,10,date);
 
   // particles:
   for(size_t i=0;i<nParticle;i++)
     {
-      OX<<(neFMT % EBin.size());
+      OX<<fmt::format("{:10d}",EBin.size());
       if ( ((i+1) % 7) == 0) OX<<std::endl;
     }
   if (nParticle % 7) OX<<std::endl;

@@ -44,21 +44,30 @@ class M1Pipe :
 {
  private:
 
+  double pipeRadius;     ///< Pipe radius (inner)
+  double pipeThick;     ///< Pipe radius (outer)
+  double pipeOuter;     ///< Pipe radius (outer)
+
   double connectRadius;   ///< radius (outer)
   double connectLength;   ///< distance down
 
   double cubeWidth;      ///<
-  double cubeHeight;      ///<
+  double cubeHeight;     ///<
   double cubeDepth;      ///<  Y direction down beam
 
   double outRadius;   ///< radius (outer)
   double outLength;   ///< distance down
 
   double flangeRadius;   ///< radius (outer)
-  double flangeLenght;   ///< radius (outer)
+  double flangeLength;   ///< radius (outer)
   
-  int pipeMat;            ///< Electron shield material
+  double exitLen;         ///< straight section after flangle
+  double exitAngle;       ///< angle to rotate (about Z)
+  double exitRadius;      ///< new radius at bend
+  double exitFullLength;  ///< length after bend
+
   int innerMat;           ///< void material  
+  int pipeMat;            ///< Electron shield material
   int voidMat;            ///< void material  
 
   // Functions:

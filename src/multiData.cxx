@@ -188,6 +188,79 @@ multiData<T>::multiData(const size_t A,const size_t B,
     }
 }
 
+template<typename T>
+template<typename U>
+multiData<T>::multiData(const size_t A,
+			const std::vector<U>& D) :
+  index({A}),strides({1,0}),
+  flatData(A)
+  /*!
+    Constructor with full size allowing translation from
+    type U to type T.
+    \param A :: size of first (only) item
+  */
+{
+  if (D.size()<A)
+    throw ColErr::SizeError<size_t>
+      (A,D.size(),"MulitData type-conv constructor (1D)");
+
+  for(size_t i=0;i<A;i++)
+    flatData[i]=static_cast<T>(D[i]);
+}
+
+template<typename T>
+multiData<T>::multiData(const std::vector<std::vector<T>>& D) 
+  /*!
+    Constructor with full size
+    \param A :: size of first item
+    \param B :: size of second item
+    \param D :: data
+  */
+{
+  if (!D.empty() && !D.front().empty())
+    {
+      index={D.size(),D.front().size()};
+      strides={index[1],1,0};
+
+      const size_t FData(index[0]*strides[0]);
+      flatData.resize(FData);
+      size_t I=0;
+      for(const std::vector<T>& item : D)
+	for(const T& v : item)
+	  {
+	    flatData[I]=v;
+	    I++;
+	  }
+    }
+}
+
+template<typename T>
+multiData<T>::multiData
+(const std::vector<std::vector<std::vector<T>>>& D) 
+  /*!
+    Constructor with full size [3D]
+    \param D :: data
+  */
+{  
+  if (!D.empty() && !D.front().empty() && !D.front().front().empty())
+    {
+      index={D.size(),
+	     D.front().size(),
+	     D.front().front().size()};
+      strides={index[1]*index[2],index[2],1,0};
+
+      const size_t FData(index[0]*strides[0]);
+      flatData.resize(FData);
+      size_t I=0;
+      for(const std::vector<std::vector<T>>& itemA : D)
+	for(const std::vector<T>& itemB : itemA)
+	  for(const T& v : itemB)
+	    {
+	      flatData[I]=v;
+	      I++;
+	    }
+    }
+}
 
 template<typename T>
 multiData<T>::multiData(const multiData& A) :
@@ -209,6 +282,22 @@ multiData<T>::multiData(multiData<T>&& A) :
     \param A :: multiData object to copy
   */
 {}
+
+template<typename T>
+template<typename U>
+multiData<T>::multiData(const multiData<U>& A) :
+  index(A.shape()),
+  strides(A.sVec()),
+  flatData(A.getVector().size())
+  /*!
+    Copy constructor
+    \param A :: multiData object to copy
+  */
+{
+  const std::vector<U>& fData=A.getVector();
+  std::transform(fData.begin(),fData.end(),flatData.begin(),
+		 [](const U& item) { return static_cast<T>(item); });
+}
 
 template<typename T>
 multiData<T>&
@@ -280,8 +369,7 @@ multiData<T>::throwMatchCheck(const multiData<T>& A,
 		
 template<typename T>
 multiData<T>&
-multiData<T>::operator+=(const multiData<T>& A) 
-  
+multiData<T>::operator+=(const multiData<T>& A)
   /*!
     Addition of other multiData
   */
@@ -861,6 +949,27 @@ multiData<T>::setData(std::vector<T> D)
 }
 
 template<typename T>
+void
+multiData<T>::setData(const size_t A,const size_t B,
+		      const size_t C,
+		      std::vector<T> Data)
+  /*!
+    Raw setting :
+     Only sets if the stride number is correct
+    \param Data :: Vector to set
+
+   */
+{
+  if (A*B*C==Data.size())
+    {
+      index={A,B,C};
+      strides={B*C,C,1,0};
+      flatData=std::move(Data);
+    }
+  return;
+}
+
+template<typename T>
 std::vector<size_t>
 multiData<T>::reduceAxis(const size_t axisIndex) const
   /*!
@@ -886,6 +995,50 @@ multiData<T>::reduceMap(const size_t axisIndex) const
 {
   std::vector<T> intData=getAxisIntegral(axisIndex);
   return multiData<T>(reduceAxis(axisIndex),intData);
+}
+
+template<typename T>
+void
+multiData<T>::combine(const size_t axisA,
+		      const size_t axisB) 
+  /*!
+    Combine two rows into the first. Preserves the size
+    of the vector. Index B is interleaved between index A
+    and index B
+  */
+{
+  if (!flatData.empty())
+    {
+      if (axisA>=index.size() ||
+	  axisB>=index.size()  ||
+	  axisA==axisB)
+	throw ColErr::IndexError<size_t>
+	  (axisA,axisB,"combine not in range range");
+
+      std::vector<size_t> newIndex;
+
+      size_t primeA;
+      size_t primeB;
+      for(size_t i=0;i<index.size();i++)
+	{
+	  if (i==axisA)
+	    {
+	      primeA=newIndex.size();
+	      newIndex.push_back(index[i]*index[axisB]);
+	    }
+	  else if (i!=axisB)
+	    {
+	      primeB=newIndex.size();
+	      newIndex.push_back(index[i]);
+	    }
+	}
+      if (axisB>axisA && axisB-axisA==1)
+	{
+	  this->resize(newIndex);
+	  return;
+	}
+    }
+  return;
 }
 
 template<typename T>
@@ -923,8 +1076,8 @@ multiData<T>
 multiData<T>::integrateMap(const size_t axisIndex,
 			   std::vector<sRange> sR) const
   /*!
-    Return a vector with shape nDim-N ( intIndex=set )
-    with integral of the vector
+    Return a multiData with shape nDim-N ( intIndex=set )
+    with integral of the vector give by SR
     \param axisIndex :: axis to remove
   */
 {
@@ -1103,6 +1256,11 @@ template class multiData<float>;
 template class multiData<std::string>;
 template class multiData<int>;
 template class multiData<std::shared_ptr<delftSystem::RElement>>;
+
+template multiData<double>::multiData(const multiData<float>&);
+template multiData<float>::multiData(const multiData<double>&);
+template multiData<float>::multiData(const size_t,const std::vector<double>&);
+template multiData<double>::multiData(const size_t,const std::vector<float>&);
 
 template std::ostream& operator<<(std::ostream&,const multiData<int>&);
 template std::ostream& operator<<(std::ostream&,const multiData<float>&);

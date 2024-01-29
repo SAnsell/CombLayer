@@ -32,8 +32,6 @@
 #include <map>
 #include <iterator>
 #include <tuple>
-#include <boost/multi_array.hpp>
-
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -56,8 +54,6 @@
 #include "testFunc.h"
 #include "testUnitSupport.h"
 #include "testXML.h"
-
-
 
 using namespace XML;
 

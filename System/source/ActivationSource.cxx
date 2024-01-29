@@ -3,7 +3,7 @@
  
  * File:   source/ActivationSource.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,6 @@
 #include <algorithm>
 #include <memory>
 #include <random>
-#ifndef NO_REGEX
-#include <boost/filesystem.hpp>
-#endif
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -304,7 +301,7 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
    */
 {
   ELog::RegMethod RegA("ActivationSource","readFluxes");
-
+  /*
 #ifndef NO_REGEX
   
   boost::filesystem::directory_iterator curDIR
@@ -340,6 +337,7 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
   
   processFluxFiles(fileNames,cellNumList);
 #endif
+  */
   return;
 }
 

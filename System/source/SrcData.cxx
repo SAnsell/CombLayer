@@ -30,7 +30,7 @@
 #include <map>
 #include <iterator>
 #include <numeric>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -416,13 +416,12 @@ SrcInfo::write(const size_t Index,std::ostream& OX) const
 {
   ELog::RegMethod RegItem("SrcInfo","write");
 
-  boost::format FMTStr("%1$.5g ");
   std::ostringstream cx;
   cx<<"si"<<Index<<" "<<option<<" ";
   if (!Values.empty())
     {
-      for(const double V : Values)
-	cx<<FMTStr % V;
+      for(const double& V : Values)
+	cx<<fmt::format("{:.5g} ",V);
     }
   else
     {
@@ -583,7 +582,6 @@ SrcProb::write(const size_t Index,std::ostream& OX) const
 {
   ELog::RegMethod RegItem("SrcProb","write");
 
-  boost::format FMTStr("%1$.5g ");
   std::ostringstream cx;
   cx<<"sp"<<Index<<" ";
 
@@ -593,7 +591,7 @@ SrcProb::write(const size_t Index,std::ostream& OX) const
     cx<<option<<" ";
 
   for(const double& V: Values)
-    cx<<FMTStr % V;
+    cx<<fmt::format("{:.5g} ",V);
 
 
   StrFunc::writeMCNPX(cx.str(),OX);
@@ -699,14 +697,12 @@ SrcBias::write(const size_t Index,std::ostream& OX) const
     \param OX :: Output stream
   */   
 {
-  boost::format FMTStr("%1$11.5g ");
   std::ostringstream cx;
   if (!minusF)
     {
       cx<<"sb"<<Index<<" "<<option<<" ";
-      std::vector<double>::const_iterator vc;
-      for(vc=Values.begin();vc!=Values.end();vc++)
-	cx<<FMTStr % *vc;
+      for(const double& V : Values)
+	cx<<fmt::format("{:11.5g} ",V); 
     }
   else
     {

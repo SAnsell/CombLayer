@@ -97,6 +97,8 @@ DCMTankGenerator::generateBox(FuncDataBase& Control,
 
   Control.addVariable(keyName+"TopRadius",topRadius);
   Control.addVariable(keyName+"TopLift",topLift);
+
+  Control.addVariable(keyName+"NPorts",0);
   
   return;
 

@@ -107,7 +107,8 @@ getLinePoint(const Geometry::Vec3D& Origin,
   ModelSupport::surfIndex& SurI=
     ModelSupport::surfIndex::Instance();
   // must be a plane to get one point
-  const Geometry::Plane* PPtr=SurI.realSurf<Geometry::Plane>(SNum);
+  const Geometry::Plane* PPtr=
+    SurI.realSurf<Geometry::Plane>(std::abs(SNum));
   if (!PPtr)
     throw ColErr::InContainerError<int>(SNum,"Plane Surface");
   return getLinePoint(Origin,LAxis,PPtr);

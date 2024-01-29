@@ -35,7 +35,7 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -296,7 +296,6 @@ SimPHITS::writeCells(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  boost::format FmtStr("  %1$d%|20t|%2$d\n");
   OX<<"[cell]"<<std::endl;
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
@@ -310,7 +309,8 @@ SimPHITS::writeCells(std::ostream& OX) const
       const double T=mp->second->getTemp();
       if (std::abs(T-300.0)>1.0 && std::abs<double>(T)>1e-6)
 	{
-	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e-5);
+	  OX<<fmt::format("  {:<20d} {}\n",
+			  mp->second->getName(),T*8.6173422e-5);
 	}
     }
   OX<<std::endl;

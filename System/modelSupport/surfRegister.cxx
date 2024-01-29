@@ -226,6 +226,8 @@ surfRegister::registerSurf(const int origN,Geometry::Surface* SPtr)
     ELog::EM<<"Missing "<<SPtr->getName()<<ELog::endErr;
 
   const int N=ModelSupport::equalSurfNum(SPtr);
+  if (origN==1920118)
+    ELog::EM<<"Number == "<<N<<ELog::endDiag;
   // Check
   const int negSurf((origN<0) ? -1 : 1);
 
