@@ -68,16 +68,26 @@ class multiData
   multiData(std::vector<size_t>,std::vector<T>);
   explicit multiData(std::vector<size_t>);
   explicit multiData(const size_t);
+
   multiData(const size_t,const size_t);
   multiData(const size_t,const size_t,const size_t);
   multiData(const size_t,const size_t,const size_t,const size_t);
+
   multiData(const size_t,std::vector<T>);
   multiData(const size_t,const size_t,std::vector<T>);
   multiData(const size_t,const size_t,const size_t,std::vector<T>);
+
+  multiData(const std::vector<std::vector<T>>&);
+  multiData(const std::vector<std::vector<std::vector<T>>>&);
+
+  template<typename U>
+  multiData(const size_t,const std::vector<U>&);
+
   multiData(const multiData&);
   multiData(multiData&&);
   multiData& operator=(const multiData&);
   multiData& operator=(multiData&&);
+  template<typename U> multiData(const multiData<U>&);
   ~multiData();
 
   
@@ -104,6 +114,8 @@ class multiData
   // special resize for 2D
   void resize(const size_t,const size_t);
 
+  void combine(const size_t,const size_t);
+  
   void setData(std::vector<T>);
   void setData(const size_t,const size_t,std::vector<T>);
   void setData(const size_t,const size_t,const size_t,std::vector<T>);

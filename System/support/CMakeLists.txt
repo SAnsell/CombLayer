@@ -49,8 +49,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/stringCombine.cxx
   ${tarDIR}/support.cxx
   ${tarDIR}/SVD.cxx
-  ${tarDIR}/Tensor.cxx
-  ${tarDIR}/vectorSupport.cxx
   ${tarDIR}/writeSupport.cxx
   ${tarINC}/Binary.h
   ${tarINC}/ClebschGordan.h
@@ -81,7 +79,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/stringWrite.h
   ${tarINC}/support.h
   ${tarINC}/SVD.h
-  ${tarINC}/Tensor.h
   ${tarINC}/TypeString.h
   ${tarINC}/vectorSupport.h
   ${tarINC}/writeSupport.h

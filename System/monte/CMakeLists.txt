@@ -57,7 +57,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/objectSupport.cxx
   ${tarDIR}/particle.cxx
   ${tarDIR}/photon.cxx
-  ${tarDIR}/RotCounter.cxx
   ${tarDIR}/RuleBinary.cxx
   ${tarDIR}/RuleCheck.cxx
   ${tarDIR}/RuleItems.cxx
@@ -93,7 +92,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/particle.h
   ${tarINC}/photon.h
   ${tarINC}/RefCon.h
-  ${tarINC}/RotCounter.h
   ${tarINC}/RuleBinary.h
   ${tarINC}/RuleCheck.h
   ${tarINC}/Rules.h

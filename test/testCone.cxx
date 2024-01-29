@@ -3,7 +3,7 @@
  
  * File:   test/testCone.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,17 +30,20 @@
 #include <string>
 #include <algorithm>
 #include <tuple>
+#include <random>
 
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Random.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Cone.h"
+
 
 #include "testFunc.h"
 #include "testCone.h"
@@ -75,6 +78,7 @@ testCone::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testCone::testDistance,
+      &testCone::testGeneral,
       &testCone::testSide,
       &testCone::testSideDirection,
       &testCone::testSurfaceNormal,
@@ -82,6 +86,7 @@ testCone::applyTest(const int extra)
   const std::string TestName[]=
     {
       "Distance",
+      "General",
       "Side",
       "SideDirection",
       "SurfaceNormal"
@@ -275,5 +280,41 @@ testCone::testDistance()
   return 0;
 }
   
-  
+int
+testCone::testGeneral()
+  /*!
+    Test the general cone
+   */
+{
+  ELog::RegMethod RegA("testCone","testGeneral");
+
+  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,double> TTYPE;
+  const std::vector<TTYPE> Tests({
+      TTYPE(Geometry::Vec3D(0,0,0.0),Geometry::Vec3D(0,0,1.0),30.0)
+    });
+
+  for(const TTYPE& tc : Tests)
+    {
+      const Geometry::Vec3D& Org=std::get<0>(tc);
+      const Geometry::Vec3D& Axis=std::get<1>(tc);
+      const double angle=std::get<2>(tc);
+      Cone testCone(1,Org,Axis,angle);
+      for(size_t i=0;i<10;i++)
+	{
+	  const double length=10.0*Random::rand();
+	  const double angle=2.0*M_PI*Random::rand();
+	  const Geometry::Vec3D A=Axis.crossNormal();
+	  const Geometry::Vec3D B=Axis*A;
+	  // random point on cone
+	  const Geometry::Vec3D Pt=Org+
+	    A*(length*cos(angle))+B*(length*sin(angle));
+	  if (testCone.onSurface(Pt))
+	    {
+	      ELog::EM<<"Failed on Pt["<<i<<"] "<<Pt<<ELog::endDiag;
+	      return -1;
+	    }
+	}
+    }
+  return 0;
+}
 
