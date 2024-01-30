@@ -161,6 +161,10 @@ add_executable(essLinacModel
   Main/essLinacModel.cxx
 )
 
+add_executable(example
+  Main/example.cxx
+)
+
 add_executable(reactor
   Main/reactor.cxx
 )
@@ -210,6 +214,15 @@ target_link_libraries(ess
   "-Wl,--start-group"
   ${SYSTEM_LIB}
   ${ESS_LIB}
+  GSL::gsl
+  fmt::fmt
+  "-Wl,--end-group"
+)
+
+target_link_libraries(example
+  "-Wl,--start-group"
+  ${SYSTEM_LIB}
+  exampleBuild
   GSL::gsl
   fmt::fmt
   "-Wl,--end-group"

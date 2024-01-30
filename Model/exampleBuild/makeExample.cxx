@@ -34,9 +34,6 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/format.hpp>
-
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -47,8 +44,6 @@
 #include "objectRegister.h"
 #include "World.h"
 
-#include "dipoleModel.h"
-#include "makeLinacTube.h"
 #include "makeExample.h"
 
 namespace exampleSystem
@@ -71,30 +66,15 @@ makeExample::build(Simulation& System,
 		   const mainSystem::inputParam& IParam)
 /*!
   Carry out the full build
-  \param SimPtr :: Simulation system
+  \param System :: Simulation system
   \param :: Input parameters
 */
 {
   // For output stream
   ELog::RegMethod RControl("makeExample","build");
 
-  const std::string model=IParam.getValue<std::string>("Model");
-  if (model=="DIPOLE")
-    {
-      dipoleModel A;
-      A.build(System);
-    }
-  else if (model=="VACTUBE")
-    {
-      makeLinacTube A;
-      A.build(System,World::masterOrigin(),0);
-    }
-  else
-    {
-      throw ColErr::InContainerError<std::string>
-	(model,"Model unknown");
-    }
-
+  
+  
   return;
 }
 
