@@ -201,6 +201,8 @@ namespace setVariable
 
     Control.addVariable(name+"ConcreteDoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
     Control.addVariable(name+"ConcreteDoorOuterTopGap",4.5);
+
+    Control.addVariable(name+"ConcreteDoorFlipX",1);
   }
 
   void BeamLineVariables(FuncDataBase& Control)

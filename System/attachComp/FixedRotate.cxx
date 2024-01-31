@@ -488,6 +488,7 @@ FixedRotate::applyOffset()
   FixedComp::reOrientate();      // this might still be active
 
   if (flipX) FixedComp::reverseX();
+
   return;
 }
 

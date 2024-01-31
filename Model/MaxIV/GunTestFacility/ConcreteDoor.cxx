@@ -224,10 +224,11 @@ ConcreteDoor::createSurfaces()
 
   // origin in on outer wall:
 
+  const double rotSign(FixedRotate::flipX ? -1.0 : 1.0);
 
-  const Geometry::Quaternion qInnerSide = Geometry::Quaternion::calcQRotDeg(180-innerSideAngle, Z);
+  const Geometry::Quaternion qInnerSide = Geometry::Quaternion::calcQRotDeg(rotSign*(180-innerSideAngle), Z);
   const Geometry::Vec3D vInnerSide(qInnerSide.makeRotate(-Y));
-  const Geometry::Quaternion qOuterSide = Geometry::Quaternion::calcQRotDeg(180-outerSideAngle, Z);
+  const Geometry::Quaternion qOuterSide = Geometry::Quaternion::calcQRotDeg(rotSign*(180-outerSideAngle), Z);
   const Geometry::Vec3D vOuterSide(qOuterSide.makeRotate(-Y));
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin+X*(outerWidth/2.0-innerXStep-innerWidth),vInnerSide);
@@ -263,15 +264,15 @@ ConcreteDoor::createSurfaces()
   const double legDoor = cornerCut*c;
   const double legDoorJamb = jambCornerCut*c;
 
-  const Geometry::Quaternion qVCorner = Geometry::Quaternion::calcQRotDeg(cornerCutAngle, Z);
-  const Geometry::Quaternion qHCorner = Geometry::Quaternion::calcQRotDeg(cornerCutAngle, X);
+  const Geometry::Quaternion qVCorner = Geometry::Quaternion::calcQRotDeg(rotSign*cornerCutAngle, Z);
+  const Geometry::Quaternion qHCorner = Geometry::Quaternion::calcQRotDeg(rotSign*cornerCutAngle, X);
   const Geometry::Vec3D v1(qVCorner.makeRotate(Y));
   const Geometry::Vec3D v2(qVCorner.makeRotate(X));
   const Geometry::Vec3D h1(qHCorner.makeRotate(Y));
   const Geometry::Vec3D h2(qHCorner.makeRotate(Z));
 
   const Geometry::Quaternion qVCorner1 =
-    Geometry::Quaternion::calcQRotDeg(outerSideAngle-cornerCutAngle/2.0, Z);
+    Geometry::Quaternion::calcQRotDeg(rotSign*(outerSideAngle-cornerCutAngle/2.0), Z);
   const Geometry::Vec3D v3(qVCorner1.makeRotate(Y));
 
   const HeadRule innerHR=ExternalCut::getRule("innerWall");
