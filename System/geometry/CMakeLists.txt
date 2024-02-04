@@ -5,7 +5,7 @@ set (geometrySources
     Edge.cxx Ellipse.cxx Ellipsoid.cxx 
     EllipticCyl.cxx Face.cxx General.cxx 
     geomSupport.cxx Intersect.cxx Line.cxx 
-    localRotate.cxx MBrect.cxx Mesh3D.cxx 
+    localRotate.cxx M2.cxx MBrect.cxx Mesh3D.cxx 
     MeshGrid.cxx NullSurface.cxx Plane.cxx 
     Pnt.cxx Quadratic.cxx Quadrilateral.cxx 
     Quaternion.cxx RecTriangle.cxx SglLine.cxx 

@@ -51,6 +51,17 @@ Matrix<T>::Matrix(const size_t nrow,const size_t ncol) :
     \param ncol :: number of columns
   */
 {}
+
+template<typename T>
+Matrix<T>::Matrix(const size_t nrow,const size_t ncol,
+		  const bool flag) :
+  MatrixBase<T>(nrow,ncol,flag)
+  /*!
+    Constructor with pre-set sizes. Matrix is zeroed
+    \param nrow :: number of rows
+    \param ncol :: number of columns
+  */
+{}
  
 
 template<typename T>

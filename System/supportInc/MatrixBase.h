@@ -70,6 +70,7 @@ class MatrixBase
  public:
 
   MatrixBase(const size_t =0,const size_t =0);
+  MatrixBase(const size_t,const size_t,const bool);
   MatrixBase(std::vector<std::vector<T>>);
   MatrixBase(const std::vector<T>&,const std::vector<T>&); 
   MatrixBase(const MatrixBase<T>&);
@@ -104,7 +105,7 @@ class MatrixBase
   std::string str(const int =6) const;
 
   void zeroMatrix();    
-  void identityMatrix();    
+  void identityMatrix();
   T Trace() const;         
 
   std::vector<T> Diagonal() const;               

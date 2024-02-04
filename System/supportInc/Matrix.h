@@ -3,7 +3,7 @@
  
  * File:   supportInc/Matrix.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@ class Matrix : public MatrixBase<T>
  public:
 
   Matrix(const size_t =0,const size_t =0);
+  Matrix(const size_t,const size_t,const bool);
   Matrix(std::vector<std::vector<T>>);
   Matrix(const std::vector<T>&,const std::vector<T>&); 
   Matrix(const Matrix<T>&);

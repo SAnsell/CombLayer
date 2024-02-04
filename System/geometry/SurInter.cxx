@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,12 +43,17 @@
 #include "PolyFunction.h"
 #include "PolyVar.h"
 #include "Vec3D.h"
+#include "Vec2D.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "M2.h"
 #include "solveValues.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Sphere.h"
 #include "Cylinder.h"
+#include "Cone.h"
 #include "Line.h"
 #include "Intersect.h"
 #include "Pnt.h"
@@ -391,6 +396,65 @@ calcIntersect(const Geometry::Cylinder& Cyl,const Geometry::Plane& Pln)
   minor*= r;                 //  r : since all out of plane
       
   return new Geometry::Ellipse(C-D*(sDist/cosTheta),minor,major,N);
+}
+
+template<>
+Geometry::Intersect*
+calcIntersect(const Geometry::Cone& Cne,
+	      const Geometry::Plane& Pln)
+  /*!
+    Calculate the intersection object between two objects
+    This follows the geometricTools tutorial
+    \param Cne :: Cone object
+    \param Pln :: Plane object 
+    \return Intersect object
+  */
+{
+  ELog::RegMethod RegA("SurInter","calcIntersect<Cone,Plane>");
+
+  // First find out if we intersect at all:
+
+  const Geometry::Vec3D& cD=Cne.getNormal();
+  const Geometry::Vec3D& cK=Cne.getCentre();
+  const double cAlpha=Cne.getCosAngle();
+
+  const Geometry::Vec3D& pN=Pln.getNormal(); 
+  const Geometry::Vec3D pU=pN.crossNormal();
+  const Geometry::Vec3D pV=pN*pU;
+
+  // need a point on the plane :
+  const Geometry::Vec3D pC=
+    SurInter::getLinePoint(cK,cD,&Pln);
+
+  const Geometry::Matrix<double> I(3,3,1);
+  const Geometry::Matrix<double> M=
+      cD.outerProd(cD)-I*(cAlpha*cAlpha);
+
+  const Geometry::Vec3D delta=pC-cK;
+  // element of the conic matrix:
+  const double c1 = pU.dotProd(M * pU);
+  const double c2 = pU.dotProd(M * pV);
+  const double c3 = cD.dotProd(M * pU);
+  const double c4 = cD.dotProd(M * pU);
+  const double c5 = cD.dotProd(M * pV);
+  const double c6 = cD.dotProd(M * cD);
+
+  Geometry::Matrix<double> CM
+    ({{c1,c2,c3},{c2,c3,c5},{c4,c5,c6}});
+
+  const double cDelta=c6;
+  // rotation matrix
+  Geometry::M2<double> MR(c1,c2,c2,c3);
+  Geometry::M2<double> lambda=getEig
+
+  
+
+  const double cosTheta=pN.dotProd(cD);
+
+  // NO INTERSECTION:
+  //  const double sDist=Pln.distance(C);
+      
+  return nullptr;
 }
 
 std::vector<Geometry::Vec3D> 
@@ -866,7 +930,6 @@ interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
   return interceptRuleConst(HR,Origin,N);
 }
 
- 
   
 }  // NAMESPACE SurInter
 

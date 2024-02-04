@@ -36,6 +36,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 
 #include "testFunc.h"
 #include "testVec3D.h"
@@ -70,11 +72,13 @@ testVec3D::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testVec3D::testDotProd,
+      &testVec3D::testOuterProduct,
       &testVec3D::testRead
     };
   const std::vector<std::string> TestName=
     {
       "DotProd",
+      "OuterProduct",
       "Read"
     };
   
@@ -148,6 +152,31 @@ testVec3D::testDotProd()
 	}
       cnt++;
     }
+  return 0;
+}
+
+int
+testVec3D::testOuterProduct()
+  /*!
+    Tests the Vec3D outer  product
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testVec3D","testDotProd");
+
+  Geometry::Vec3D U(0,1,2.3);
+  Geometry::Vec3D D(3.1,5,6.0);
+  D.makeUnit();
+
+  // U' M U ==> (UD)^2 
+  Matrix<double> M=D.outerProd(D);
+
+  Geometry::Vec3D R=M*U;
+  const double dp=R.dotProd(U);
+  const double rExpect=U.dotProd(D);
+
+  ELog::EM<<"R == "<<dp<<" : "<<rExpect*rExpect<<ELog::endDiag;
   return 0;
 }
 

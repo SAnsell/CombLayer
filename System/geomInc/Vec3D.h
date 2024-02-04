@@ -113,6 +113,7 @@ class Vec3D
   /// Calculate the volmue of a cube X*Y*Z
   double volume() const { return std::abs(x*y*z); }      
 
+  Matrix<double> outerProd(const Vec3D&) const;
   double dotProd(const Vec3D&) const;
   double abs() const;    
   template<typename T> void rotate(const Matrix<T>&); 

@@ -571,6 +571,22 @@ Vec3D::cutComponent(const Geometry::Vec3D& A) const
   return Out;
 }
 
+Matrix<double>
+Vec3D::outerProd(const Vec3D& A) const
+  /*!
+    Calculate the outer produce and return matrix form
+    \param A :: Vector for product
+    \return Matrix(this*A)
+  */
+{
+  return
+    Matrix<double>({
+	{x*A.x,x*A.y,x*A.z},
+	{y*A.x,y*A.y,y*A.z},
+	{z*A.x,z*A.y,z*A.z}
+      });
+}
+
 double
 Vec3D::dotProd(const Vec3D& A) const
   /*!

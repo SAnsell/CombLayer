@@ -85,6 +85,9 @@ namespace ColErr
     const std::string typeIDName<double>()
     { return "double"; } 
   template<>
+    const std::string typeIDName<long double>()
+    { return "long double"; } 
+  template<>
     const std::string typeIDName<void>()
     { return "void*"; } 
   template<>

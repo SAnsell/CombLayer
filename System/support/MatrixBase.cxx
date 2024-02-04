@@ -81,6 +81,28 @@ MatrixBase<T>::MatrixBase(const size_t nrow,const size_t ncol)
   zeroMatrix();
 }
 
+template<typename T>
+MatrixBase<T>::MatrixBase(const size_t nrow,const size_t ncol,
+			  const bool flag)
+  : nx(0),ny(0),V(0)
+  /*!
+    Constructor with pre-set sizes. MatrixBase is zeroed
+    \param nrow :: number of rows
+    \param ncol :: number of columns
+    \param flag :: Identity flag
+  */
+{
+  // Note:: nx,ny zeroed so setMem always works
+  setMem(nrow,ncol);
+  if (flag && nx*ny!=0)
+    for(size_t i=0;i<nx;i++)
+      for(size_t j=0;j<ny;j++)
+	V[i][j]=(j==i) ? static_cast<T>(1) :
+	  static_cast<T>(0);
+  else
+    zeroMatrix();
+}
+
 
 template<typename T>
 MatrixBase<T>::MatrixBase(std::vector<std::vector<T>> A)
@@ -611,7 +633,8 @@ MatrixBase<T>::identityMatrix()
   if (nx*ny!=0)
     for(size_t i=0;i<nx;i++)
       for(size_t j=0;j<ny;j++)
-	V[i][j]=(j==i) ? 1 : 0;
+	V[i][j]=(j==i) ? static_cast<T>(1) :
+	  static_cast<T>(0);
 
   return;
 }
