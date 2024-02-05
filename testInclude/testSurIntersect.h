@@ -3,7 +3,7 @@
  
  * File:   testInclude/testSurIntersect.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef testSurIntersect_h
@@ -36,6 +36,7 @@ class testSurIntersect
 {
 private:
 
+  int testConePlaneIntersect();
   int testCylPlaneIntersect();
   int testMakePoint_Quad();
   int testNearPoint();

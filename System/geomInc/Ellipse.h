@@ -61,7 +61,9 @@ class Ellipse : public Intersect
   /// Calc centre
   bool hasCentre() const override { return true; }
   /// calculate the centre
-  Vec3D centre() const override { return Cent; }  
+  Vec3D centre() const override { return Cent; }
+  const Vec3D& getMajorAxis() const { return majorAxis; }
+  const Vec3D& getMinorAxis() const { return minorAxis; }
 
   Vec3D ParamPt(const double) const override;
 

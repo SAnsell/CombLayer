@@ -59,6 +59,8 @@ class M2
   T R[2][2];         ///< R eigen rotation
   T lambda[2][2];     ///< Eigen values [diagonal]
 
+  void copyAll(const M2<T>&);
+  
  public:
 
   M2();
@@ -75,36 +77,47 @@ class M2
   M2<T> operator+(const M2<T>&) const;    
 
   M2<T>& operator-=(const M2<T>&);  
-  M2<T> operator-(const M2<T>&) const;    
+  M2<T> operator-(const M2<T>&) const;
+  M2<T> operator-() const;    
 
   M2<T> operator*(const M2<T>&) const; 
   M2<T> operator*(const T&) const;
-  M2<T> operator*(const Geometry::Vec2D&) const;
+  Geometry::Vec2D operator*(const Geometry::Vec2D&) const; 
   
 
   M2<T>& operator*=(const M2<T>&);
-  Geometry::Vec2D operator*=(const Geometry::Vec2D&) const; 
   M2<T>& operator*=(const T&);             
 
-  virtual bool operator==(const M2<T>&) const; 
-  virtual bool operator!=(const M2<T>&) const;
+  bool operator==(const M2<T>&) const; 
+  bool operator!=(const M2<T>&) const;
 
+  T& get(const size_t,const size_t);
+  const T& get(const size_t,const size_t) const;
+  
   void constructSVD();
   void constructEigen();
   void reCalcSVD();
+
+  M2<T>& invert();
+  M2<T>& transpose();
+  M2<T>& adjoint();
+  M2<T> prime() const;
   
   const T& getU(const size_t,const size_t) const;
   std::pair<T,T> getS() const;
 
   void setMinimumSigma(const T&);
   void invertSigma();
+
   T maxSigma() const;
   T minSigma() const;
   T determinate() const;
   T magVector(const T*) const;
-  std::pair<T,T> getEigValues() const;
+  std::pair<T,T> getEigPair() const;
   Geometry::Vec2D getEigVec(const size_t) const;
-  M2<T> getEigValueMatrix() const;
+
+  M2<T> getEigValues() const;
+  M2<T> getEigVectors() const;
   bool check() const;
   void write(std::ostream&) const;
   

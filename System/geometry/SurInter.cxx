@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "M2.h"
+#include "M3.h"
 #include "solveValues.h"
 #include "Surface.h"
 #include "Quadratic.h"
@@ -418,44 +419,73 @@ calcIntersect(const Geometry::Cone& Cne,
   const Geometry::Vec3D& cK=Cne.getCentre();
   const double cAlpha=Cne.getCosAngle();
 
-  const Geometry::Vec3D& pN=Pln.getNormal(); 
-  const Geometry::Vec3D pU=pN.crossNormal();
-  const Geometry::Vec3D pV=pN*pU;
-
+  const double rAngle(35.0*M_PI/180.0);
+  const Geometry::Vec3D& pNorm=Pln.getNormal(); 
+  const Geometry::Vec3D pU=pNorm.crossNormal();
+  const Geometry::Vec3D pV=pNorm*pU;
+  ELog::EM<<"PM == "<<pNorm<<ELog::endDiag;
+  ELog::EM<<"PU == "<<pU<<" :: "<<pV<<ELog::endDiag;
   // need a point on the plane :
   const Geometry::Vec3D pC=
     SurInter::getLinePoint(cK,cD,&Pln);
-
+  ELog::EM<<"PC == "<<pC<<ELog::endDiag;
+  const Geometry::Vec3D delta=pC-cK;
   const Geometry::Matrix<double> I(3,3,1);
   const Geometry::Matrix<double> M=
       cD.outerProd(cD)-I*(cAlpha*cAlpha);
 
-  const Geometry::Vec3D delta=pC-cK;
   // element of the conic matrix:
   const double c1 = pU.dotProd(M * pU);
   const double c2 = pU.dotProd(M * pV);
-  const double c3 = cD.dotProd(M * pU);
-  const double c4 = cD.dotProd(M * pU);
-  const double c5 = cD.dotProd(M * pV);
-  const double c6 = cD.dotProd(M * cD);
+  const double c3 = pV.dotProd(M * pV);
+  const double c4 = delta.dotProd(M * pU);
+  const double c5 = delta.dotProd(M * pV);
+  const double c6 = delta.dotProd(M * delta);
 
-  Geometry::Matrix<double> CM
-    ({{c1,c2,c3},{c2,c3,c5},{c4,c5,c6}});
-
-  const double cDelta=c6;
+  Geometry::M3<double> CM
+    ({{c1,c2,c4},
+      {c2,c3,c5},
+      {c4,c5,c6}});
+  //  ELog::EM<<"CM == "<<CM<<ELog::endDiag;
   // rotation matrix
   Geometry::M2<double> MR(c1,c2,c2,c3);
+  Geometry::Vec2D cTrans(c4,c5);
+  const double cDelta=c6;
+  ELog::EM<<"CR == "<<MR<<ELog::endDiag;
   MR.constructEigen();
-  Geometry::M2<double> lambda=MR.getEigValueMatrix();
-
+  Geometry::M2<double> R=MR.getEigVectors();
   
+  Geometry::M2<double> Rprime=R.prime();
+  Geometry::M2<double> lambda=MR.getEigValues();
+  ELog::EM<<"lambda == "<<lambda<<ELog::endDiag;
+  lambda.invert();
+  Geometry::Vec2D t=R*(lambda*(Rprime*cTrans));
+  t*=-1.0;
+  ELog::EM<<"lambda.inv == "<<lambda<<ELog::endDiag;
+  ELog::EM<<"R == "<<R<<ELog::endDiag;
+  ELog::EM<<"T == "<<t<<ELog::endDiag;
+  // hermician matrix
+  const Geometry::M3<double> H
+    ({{R.get(0,0),R.get(0,1),t[0]},
+      {R.get(1,0),R.get(1,1),t[1]},
+      {0.0,0.0,1.0}});
 
-  const double cosTheta=pN.dotProd(cD);
+  const Geometry::M3<double> Hprime(H.prime());
+  Geometry::M3<double> conicalM=H*(CM*Hprime);
+  const double aRadius=
+    std::sqrt(-conicalM.get(2,2)/conicalM.get(0,0));
+  const double bRadius=
+    std::sqrt(-conicalM.get(2,2)/conicalM.get(1,1));
 
-  // NO INTERSECTION:
-  //  const double sDist=Pln.distance(C);
-      
-  return nullptr;
+  const Geometry::Vec3D eCentre(pU*t.X()+pV*t.Y()+pC);
+  
+  Geometry::Vec2D pX=R*Geometry::Vec2D(1,0);
+  Geometry::Vec2D pY=R*Geometry::Vec2D(0,1);
+
+  const Geometry::Vec3D pUU=pU*(-pX.X()-pY.X());
+  const Geometry::Vec3D pVV=pV*(-pX.Y()-pY.Y());
+  
+  return new Geometry::Ellipse(eCentre,pUU*aRadius,pVV*bRadius,pNorm);
 }
 
 std::vector<Geometry::Vec3D> 

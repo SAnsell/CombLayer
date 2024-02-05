@@ -66,12 +66,7 @@ M2<T>::M2()
 {
   for(size_t i=0;i<2;i++)
     for(size_t j=0;j<2;j++)
-      {
-	AData[i][j]=0.0;
-	lambda[i][j]=0.0;
-	R[i][j]=0.0;
-	V[i][j]=0.0;
-      }
+      AData[i][j]=0.0;
 }
 
 template<typename T>
@@ -85,7 +80,7 @@ M2<T>::M2(const T A[2][2])
 {
   for(size_t i=0;i<2;i++)
     for(size_t j=0;j<2;j++)
-      AData[0][0]=A[i][j];
+      AData[i][j]=A[i][j];
 }
 
 template<typename T>
@@ -110,12 +105,9 @@ M2<T>::M2(const M2<T>& A)
     \param A :: Object to copy
   */
 {
-  for(size_t i=0;i<2;i++)
-    for(size_t j=0;j<2;j++)
-      AData[i][j]=A.AData[i][j];
+  copyAll(A);
 }
-
-
+  
 template<typename T>
 M2<T>&
 M2<T>::operator=(const M2<T>& A)
@@ -127,12 +119,28 @@ M2<T>::operator=(const M2<T>& A)
 {
   if (&A!=this)
     {
-      for(size_t i=0;i<2;i++)
-	for(size_t j=0;j<2;j++)
-	  AData[i][j]=A.AData[i][j];
-
+      copyAll(A);
     }
   return *this;
+}
+
+template<typename T>  
+void
+M2<T>::copyAll(const M2<T>& A)
+{
+  for(size_t i=0;i<2;i++)
+    {
+      for(size_t j=0;j<2;j++)
+	{
+	  AData[i][j]=A.AData[i][j];
+	  U[i][j]=A.U[i][j];
+	  V[i][j]=A.V[i][j];
+	  R[i][j]=A.R[i][j];
+	  lambda[i][j]=A.lambda[i][j];
+	}
+      Sigma[i]=A.Sigma[i];
+    }
+  return;
 }
 
 template<typename T>
@@ -169,6 +177,15 @@ M2<T>::operator+(const M2<T>& M) const
   return A;
 }
 
+template<typename T>
+M2<T>
+M2<T>::operator-(const M2<T>& M) const
+{
+  M2<T> A(*this);
+  A-=M;
+  return A;
+}
+
 
 template<typename T>
 M2<T>&
@@ -184,6 +201,32 @@ M2<T>::operator+=(const M2<T>& M)
   return *this;
 }
 
+template<typename T>
+M2<T>&
+M2<T>::operator-=(const M2<T>& M)
+  /*!
+    Subtract M2 together
+   */
+{
+  for(size_t i=0;i<2;i++)
+    for(size_t j=0;j<2;j++)
+      AData[i][j] -= M.AData[i][j];
+  
+  return *this;
+}
+
+template<typename T>
+M2<T>
+M2<T>::operator-() const
+  /*!
+    SCale by -1 e.g -M
+  */
+{
+  M2<T> M(*this);
+  M*=-1.0;
+  return M;
+}
+  
 template<typename T>
 M2<T>&
 M2<T>::operator*=(const M2<T>& M)
@@ -240,7 +283,10 @@ M2<T>::operator*(const M2<T>& M) const
   
 template<typename T>
 Geometry::Vec2D
-M2<T>::operator*=(const Geometry::Vec2D& V) const
+M2<T>::operator*(const Geometry::Vec2D& V) const
+  /*!
+    Multiply out M*V to give a Vec2D
+  */
 {
   Geometry::Vec2D out;
   out[0]=static_cast<double>(AData[0][0])*V[0]+
@@ -249,6 +295,30 @@ M2<T>::operator*=(const Geometry::Vec2D& V) const
     static_cast<double>(AData[1][1])*V[1];
 
   return out;
+}
+
+template<typename T>
+const T&
+M2<T>::get(const size_t i,const size_t j) const
+/*!
+  Get an indexed variable [not check]
+ */
+{
+  if (i>1 || j>1)
+    throw ColErr::IndexError<size_t>(i,j,"i/j out of range (2)");
+  return AData[i][j];
+}
+
+template<typename T>
+T&
+M2<T>::get(const size_t i,const size_t j) 
+/*!
+  Get an indexed variable [not check]
+ */
+{
+  if (i>1 || j>1)
+    throw ColErr::IndexError<size_t>(i,j,"i/j out of range (2)");
+  return AData[i][j];
 }
 
 template<typename T>
@@ -323,6 +393,65 @@ M2<T>::determinate() const
   return AData[0][0]*AData[1][1] - AData[1][0]*AData[0][1];
 }
 
+template<typename T>
+M2<T>&
+M2<T>::invert() 
+/*!
+  Calcuate the inverted of the original matrix
+ */
+{
+  const T det=determinate();
+  if (det<1e-30)
+    throw ColErr::NumericalAbort("Matrix not invertable Det=0"); 
+
+  adjoint();
+  for(size_t i=0;i<2;i++)
+    for(size_t j=0;j<2;j++)
+      AData[i][j]/=det;
+
+  return *this;
+}
+  
+template<typename T>
+M2<T>&
+M2<T>::transpose() 
+/*!
+  Calcuate the transpose
+ */
+{
+  std::swap(AData[1][0],AData[0][1]);
+  return *this;
+}
+
+template<typename T>
+M2<T>
+M2<T>::prime() const
+/*!
+  Calcuate the transpose
+ */
+{
+  M2<T> Out(*this);
+  Out.transpose();
+  return Out;
+}
+
+template<typename T>
+M2<T>&
+M2<T>::adjoint() 
+/*!
+  Convert the matrix to the  the adjoint form
+*/
+{
+  
+  std::swap(AData[0][0],AData[1][1]);  
+  std::swap(AData[1][0],AData[0][1]);
+  AData[1][0]*=-1.0;
+  AData[0][1]*=-1.0;
+  return *this;
+}
+
+
+  
 template<typename T> 
 void
 M2<T>::reCalcSVD()
@@ -368,6 +497,8 @@ M2<T>::constructEigen()
   const T sQ=std::sqrt(diff);
   lambda[0][0]=trace+sQ;
   lambda[1][1]=trace-sQ;
+  lambda[0][1]=0.0;
+  lambda[1][0]=0.0;
 
   
   const T b=std::abs<T>(AData[1][0]);
@@ -407,20 +538,12 @@ M2<T>::constructEigen()
 
 template<typename T>
 std::pair<T,T>
-M2<T>::getEigValues() const
+M2<T>::getEigPair() const
   /*!
     Get the eigen values
    */
 {
-  const T tr=(AData[0][0]+AData[1][1])/2.0;  // mean of trac
-  const T det=(AData[0][0]*AData[1][1]-AData[1][0]*AData[0][1]);
-  const T diff=tr*tr-det;
-  // this could be complex but so need to check
-  if (diff<0.0)
-    throw ColErr::SizeError<T>(diff,0.0,"Determinate negative");
-
-  const T sQ=std::sqrt(diff);
-  return std::pair<T,T>(tr+sQ,tr-sQ);
+  return std::pair<T,T>(lambda[0][0],lambda[1][1]);
 }
 
 template<typename T>
@@ -481,13 +604,22 @@ M2<T>::write(std::ostream& OX) const
 
 template<typename T>
 M2<T>
-M2<T>::getEigValueMatrix() const
+M2<T>::getEigValues() const
   /*!
     Accessor to Eigen Value matrix
    */
 {
   return M2<T>(lambda);
-  
+}
+
+template<typename T>
+M2<T>
+M2<T>::getEigVectors() const
+  /*!
+    Accessor to Eigen Value matrix
+   */
+{
+  return M2<T>(R);
 }
 
 
