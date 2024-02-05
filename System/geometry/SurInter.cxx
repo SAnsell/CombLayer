@@ -445,7 +445,8 @@ calcIntersect(const Geometry::Cone& Cne,
   const double cDelta=c6;
   // rotation matrix
   Geometry::M2<double> MR(c1,c2,c2,c3);
-  Geometry::M2<double> lambda=getEig
+  MR.constructEigen();
+  Geometry::M2<double> lambda=MR.getEigValueMatrix();
 
   
 

@@ -57,14 +57,13 @@ class M2
 
   T V[2][2];         ///< V data
   T R[2][2];         ///< R eigen rotation
-  T lamba[2][2];     ///< Eigen values [diagonal]
+  T lambda[2][2];     ///< Eigen values [diagonal]
 
-  void constructSVD();
-  
  public:
 
   M2();
   M2(const T&,const T&,const T&,const T&);
+  M2(const T[2][2]);
   M2(const std::vector<T>&,const std::vector<T>&);
   M2(const std::vector<T>&); 
   M2(const M2<T>&);
@@ -105,6 +104,7 @@ class M2
   T magVector(const T*) const;
   std::pair<T,T> getEigValues() const;
   Geometry::Vec2D getEigVec(const size_t) const;
+  M2<T> getEigValueMatrix() const;
   bool check() const;
   void write(std::ostream&) const;
   

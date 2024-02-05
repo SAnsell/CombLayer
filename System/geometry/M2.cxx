@@ -66,7 +66,26 @@ M2<T>::M2()
 {
   for(size_t i=0;i<2;i++)
     for(size_t j=0;j<2;j++)
-      AData[i][j]=0.0;
+      {
+	AData[i][j]=0.0;
+	lambda[i][j]=0.0;
+	R[i][j]=0.0;
+	V[i][j]=0.0;
+      }
+}
+
+template<typename T>
+M2<T>::M2(const T A[2][2])
+
+  /*!
+    Constructor with pre-set sizes. M2 is zeroed
+    \param nrow :: number of rows
+    \param ncol :: number of columns
+  */
+{
+  for(size_t i=0;i<2;i++)
+    for(size_t j=0;j<2;j++)
+      AData[0][0]=A[i][j];
 }
 
 template<typename T>
@@ -212,7 +231,7 @@ M2<T>::operator*(const M2<T>& M) const
   for(size_t i=0;i<2;i++)
     for(size_t j=0;j<2;j++)
       for(size_t k=0;k<2;k++)
-	Out.AData[i][j]+AData[i][k]*M.AData[k][j];
+	Out.AData[i][j]+=AData[i][k]*M.AData[k][j];
   
 
   return Out;
@@ -262,10 +281,6 @@ M2<T>::constructSVD()
 
   const T beta=(a2-a1)/2.0;
   const T gamma=(a2+a1)/2.0;
-
-  T Sigma[2];
-  T U[2][2];
-  T V[2][2];
   
   Sigma[0]=Q+R;
   Sigma[1]=std::abs(Q-R);
@@ -331,7 +346,7 @@ M2<T>::reCalcSVD()
       }
 
   std::swap(AData[0][1],AData[1][0]);
-  */
+
   return;    
 }
 
@@ -345,31 +360,35 @@ M2<T>::constructEigen()
 {
   const T trace=(AData[0][0]+AData[1][1])/2.0;  // mean of trace
   const T det=(AData[0][0]*AData[1][1]-AData[1][0]*AData[0][1]);
-  const T diff=tr*tr-det;
+  const T diff=trace*trace-det;
   // this could be complex but so need to check
   if (diff<0.0)
     throw ColErr::SizeError<T>(diff,0.0,"Determinate negative");
 
   const T sQ=std::sqrt(diff);
-  lambda[0][0]=tr+sQ;
-  lambda[1][1]=tr-sQ;
+  lambda[0][0]=trace+sQ;
+  lambda[1][1]=trace-sQ;
 
   
   const T b=std::abs<T>(AData[1][0]);
   const T c=std::abs<T>(AData[0][1]);
-      
-  Geometry:::Vec2D AEig,BEig;
+
+  Geometry::Vec2D AEig,BEig;
   if (b>0.0 && c>0.0)
     {
-      if (b>a)
+      if (b>c)
 	{
-	  AEig=Geometry::Vec2D(lambda[0][0]-AData[1][1],AData[1][0]);
-	  BEig=Geometry::Vec2D(lambda[1][1]-AData[1][1],AData[1][0]);
+	  AEig=Geometry::Vec2D(static_cast<double>(lambda[0][0]-AData[1][1]),
+			       static_cast<double>(AData[1][0]));
+	  BEig=Geometry::Vec2D(static_cast<double>(lambda[1][1]-AData[1][1]),
+			       static_cast<double>(AData[1][0]));
 	}
       else
 	{
-	  AEig=Geometry::Vec2D(AData[0][1],lambda[0][0]-AData[0][0]);
-	  BEig=Geometry::Vec2D(AData[0][1],lambda[1][1]-AData[0][0]);
+	  AEig=Geometry::Vec2D(static_cast<double>(AData[0][1]),
+			       static_cast<double>(lambda[0][0]-AData[0][0]));
+	  BEig=Geometry::Vec2D(static_cast<double>(AData[0][1]),
+			       static_cast<double>(lambda[1][1]-AData[0][0]));
 	}
       AEig.makeUnit();
       BEig.makeUnit();
@@ -408,24 +427,11 @@ template<typename T>
 Geometry::Vec2D
 M2<T>::getEigVec(const size_t index) const
 {
-  const T b=std::abs<T>(AData[1][0]);
-  const T c=std::abs<T>(AData[0][1]);
-  if (b>0.0 && c>0.0)
-    {
-      const T eValue=(!index) ? getEigValues().first :
-	getEigValues().second;
-      
-      
-      return (AData[1][0]>AData[0][1]) ?
-
-	Geometry::Vec2D(static_cast<double>(eValue-AData[1][1]),
-			static_cast<double>(AData[1][0])) :
-	
-    }
-
-  return (index) ?
-    Geometry::Vec2D(1.0,0.0) :
-    Geometry::Vec2D(0.0,1.0);
+  return (!index) ?
+    Geometry::Vec2D(static_cast<double>(R[0][0]),
+		    static_cast<double>(R[0][1])) :
+    Geometry::Vec2D(static_cast<double>(R[1][0]),
+		    static_cast<double>(R[1][1]));
 }
 
 template<typename T>
@@ -472,6 +478,17 @@ M2<T>::write(std::ostream& OX) const
   return;
 }
 
+
+template<typename T>
+M2<T>
+M2<T>::getEigValueMatrix() const
+  /*!
+    Accessor to Eigen Value matrix
+   */
+{
+  return M2<T>(lambda);
+  
+}
 
 
 
