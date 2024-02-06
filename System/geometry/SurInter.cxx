@@ -451,19 +451,18 @@ calcIntersect(const Geometry::Cone& Cne,
   Geometry::M2<double> MR(c1,c2,c2,c3);
   Geometry::Vec2D cTrans(c4,c5);
   const double cDelta=c6;
-  ELog::EM<<"CR == "<<MR<<ELog::endDiag;
   MR.constructEigen();
   Geometry::M2<double> R=MR.getEigVectors();
-  
+
   Geometry::M2<double> Rprime=R.prime();
   Geometry::M2<double> lambda=MR.getEigValues();
-  ELog::EM<<"lambda == "<<lambda<<ELog::endDiag;
+
+  Geometry::M2<double> CRcheck=R*lambda*Rprime;
   lambda.invert();
   Geometry::Vec2D t=R*(lambda*(Rprime*cTrans));
+  
   t*=-1.0;
-  ELog::EM<<"lambda.inv == "<<lambda<<ELog::endDiag;
-  ELog::EM<<"R == "<<R<<ELog::endDiag;
-  ELog::EM<<"T == "<<t<<ELog::endDiag;
+
   // hermician matrix
   const Geometry::M3<double> H
     ({{R.get(0,0),R.get(0,1),t[0]},
@@ -471,20 +470,18 @@ calcIntersect(const Geometry::Cone& Cne,
       {0.0,0.0,1.0}});
 
   const Geometry::M3<double> Hprime(H.prime());
-  Geometry::M3<double> conicalM=H*(CM*Hprime);
+  Geometry::M3<double> conicalM=Hprime*(CM*H);
   const double aRadius=
     std::sqrt(-conicalM.get(2,2)/conicalM.get(0,0));
   const double bRadius=
     std::sqrt(-conicalM.get(2,2)/conicalM.get(1,1));
 
   const Geometry::Vec3D eCentre(pU*t.X()+pV*t.Y()+pC);
-  
-  Geometry::Vec2D pX=R*Geometry::Vec2D(1,0);
-  Geometry::Vec2D pY=R*Geometry::Vec2D(0,1);
 
-  const Geometry::Vec3D pUU=pU*(-pX.X()-pY.X());
-  const Geometry::Vec3D pVV=pV*(-pX.Y()-pY.Y());
-  
+  const Geometry::Vec3D aM(R.get(0,0),R.get(1,0),0.0);
+  const Geometry::Vec3D bM(R.get(1,0),R.get(1,1),0.0);
+  Geometry::Vec3D pUU=aM.getInBasis(pU,pV,pNorm);
+  Geometry::Vec3D pVV=bM.getInBasis(pU,pV,pNorm);
   return new Geometry::Ellipse(eCentre,pUU*aRadius,pVV*bRadius,pNorm);
 }
 

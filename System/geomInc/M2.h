@@ -102,6 +102,7 @@ class M2
   M2<T>& transpose();
   M2<T>& adjoint();
   M2<T> prime() const;
+  void sortEigen();
   
   const T& getU(const size_t,const size_t) const;
   std::pair<T,T> getS() const;

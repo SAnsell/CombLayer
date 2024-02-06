@@ -450,6 +450,19 @@ M2<T>::adjoint()
   return *this;
 }
 
+template<typename T> 
+void
+M2<T>::sortEigen()
+{
+
+  if (lambda[0][0]>lambda[1][1])
+    {
+      std::swap(R[0][0],R[0][1]);
+      std::swap(R[1][0],R[1][1]);
+      std::swap(lambda[0][0],lambda[1][1]);
+    }
+  return;
+}
 
   
 template<typename T> 
@@ -499,7 +512,6 @@ M2<T>::constructEigen()
   lambda[1][1]=trace-sQ;
   lambda[0][1]=0.0;
   lambda[1][0]=0.0;
-
   
   const T b=std::abs<T>(AData[1][0]);
   const T c=std::abs<T>(AData[0][1]);
@@ -530,9 +542,10 @@ M2<T>::constructEigen()
       BEig=Geometry::Vec2D(0,1);
     }
   R[0][0]=AEig.X();
-  R[0][1]=AEig.Y();
-  R[1][0]=BEig.X();
+  R[1][0]=AEig.Y();
+  R[0][1]=BEig.X();
   R[1][1]=BEig.Y();
+  sortEigen();
   return;
 }
 
@@ -552,8 +565,8 @@ M2<T>::getEigVec(const size_t index) const
 {
   return (!index) ?
     Geometry::Vec2D(static_cast<double>(R[0][0]),
-		    static_cast<double>(R[0][1])) :
-    Geometry::Vec2D(static_cast<double>(R[1][0]),
+		    static_cast<double>(R[1][0])) :
+    Geometry::Vec2D(static_cast<double>(R[0][1]),
 		    static_cast<double>(R[1][1]));
 }
 

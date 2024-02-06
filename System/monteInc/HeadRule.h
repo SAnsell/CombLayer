@@ -3,7 +3,7 @@
  
  * File:   monteInc/HeadRule.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,15 @@ class SurfPoint;
 namespace Geometry
 {
   class Surface;
+
+  struct interPoint
+  {
+    Geometry::Vec3D Pt;   ///< Crosssing point;
+    double D;            ///< Distance
+    int SNum;            ///< signed surf number [true as particle moves fwd]
+    const Surface* SPtr;       ///< SurfPointer
+    bool outFlag;        ///< true if particle leaves
+  };
 }
 
 namespace ModelSupport
@@ -139,6 +148,9 @@ class HeadRule
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      std::vector<Geometry::Vec3D>&,std::vector<int>&) const;
+  size_t calcSurfIntersection
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,
+     std::vector<Geometry::interPoint>&) const;
 
   size_t calcSurfSurfIntersection(std::vector<Geometry::Vec3D>&) const;
 

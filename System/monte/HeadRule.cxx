@@ -2913,7 +2913,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
- 
+
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   LI.getPoints(*this);
   const Geometry::Vec3D Unit=VUnit.unit();
@@ -2933,6 +2933,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   for(size_t i=0;i<dPts.size();i++)
     {
       const Geometry::Surface* surfPtr=surfIndex[i];
+      
       // Is point possible closer
       const int NS=surfPtr->getName();	    // NOT SIGNED
       const int pAB=isValid(IPts[i],NS);
@@ -2950,6 +2951,67 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 	}
     }    
   return SNum.size();
+}
+
+size_t
+HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
+			       const Geometry::Vec3D& VUnit,
+			       std::vector<Geometry::interPoint>& Pts) const
+  /*!
+    Calculate a track of a line that intersects the rule.
+    The surface number is the outgoing surface number.
+    \param Org :: Origin of line
+    \param VUnit :: Direction of line
+    \param Pts :: intersection pointsx
+    \return Number of points found
+
+  */
+{
+  ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
+
+  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+  LI.getPoints(*this);
+  const Geometry::Vec3D Unit=VUnit.unit();
+  
+  // IPTS contains both non-exit and invalid points
+  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
+  const std::vector<double>& dPts(LI.getDistance());
+  const std::vector<const Geometry::Surface*>& surfIndex
+    (LI.getSurfPointers());
+ 
+  // Clear data
+  Pts.clear();
+
+  // NOTE: we only check for and exiting surface by going
+  // along the line.
+  for(size_t i=0;i<dPts.size();i++)
+    {
+      const Geometry::Surface* surfPtr=surfIndex[i];
+      // Is point possible closer
+      const int NS=surfPtr->getName();	    // NOT SIGNED
+      const int pAB=isValid(IPts[i],NS);
+      const int mAB=isValid(IPts[i],-NS);
+      const int normD=surfPtr->sideDirection(IPts[i],Unit);
+      const double lambda=dPts[i];
+      if (pAB!=mAB)  // out going positive surface
+	{
+	  // previously used signValue but now gone to
+	  // distValue BUT not 100% sure if that is correct.
+	  //	  const int signValue((pAB>0) ? 1 : -1);
+	  const int distValue((lambda>0) ? 1 : -1);
+	  Pts.push_back(Geometry::interPoint
+			({
+			  Org+Unit*lambda,
+			    dPts[i],
+			    distValue*normD*NS,
+			    surfPtr,
+			    (pAB>0)}));
+	}
+    }
+  std::sort(Pts.begin(),Pts.end(),
+	    [](const Geometry::interPoint& A,const Geometry::interPoint& B)
+	    { return A.D<B.D; } );
+  return Pts.size();
 }
 
 int

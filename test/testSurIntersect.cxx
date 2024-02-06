@@ -415,7 +415,17 @@ testSurIntersect::testConePlaneIntersect()
   ELog::EM<<"Centre == "<<IPtr->centre()<<ELog::endDiag;
   ELog::EM<<"Minor axis == "<<IPtr->getMinorAxis()<<ELog::endDiag;
   ELog::EM<<"Major axis == "<<IPtr->getMajorAxis()<<ELog::endDiag;
-  
+
+  Geometry::Vec3D Org=IPtr->centre();
+  Geometry::Vec3D aAxis=IPtr->getMinorAxis();
+  Geometry::Vec3D bAxis=IPtr->getMajorAxis();
+
+  const double theta(25.0*M_PI/180.0);
+  Geometry::Vec3D Point = Org+aAxis*std::sin(theta)+bAxis*std::cos(theta);
+  ELog::EM<<"Side["<<Point<<"] == "<<CA.side(Point)
+	  <<"   "<<CA.distance(Point)<<ELog::endDiag;
+  ELog::EM<<"Plane["<<Point<<"] == "<<PA.side(Point)<<ELog::endDiag;
+    
   return 0;
 }
 
