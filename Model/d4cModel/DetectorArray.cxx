@@ -3,7 +3,7 @@
  
  * File:   d4cModel/DetectorArray.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@
 #include "TallyCreate.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "DetectorArray.h"
 
@@ -66,7 +66,7 @@ namespace d4cSystem
 {
 
 DetectorArray::DetectorArray(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
+  attachSystem::FixedRotate(Key,3),attachSystem::ContainedComp(),
   nDet(0)
   /*!
     Constructor
@@ -76,7 +76,7 @@ DetectorArray::DetectorArray(const std::string& Key) :
 
 
 DetectorArray::DetectorArray(const DetectorArray& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   centRadius(A.centRadius),tubeRadius(A.tubeRadius),
   wallThick(A.wallThick),height(A.height),wallMat(A.wallMat),
   detMat(A.detMat),nDet(A.nDet),initAngle(A.initAngle),
@@ -97,8 +97,8 @@ DetectorArray::operator=(const DetectorArray& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
       centRadius=A.centRadius;
       tubeRadius=A.tubeRadius;
       wallThick=A.wallThick;
@@ -128,7 +128,7 @@ DetectorArray::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DetectorArray","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   centRadius=Control.EvalVar<double>(keyName+"CentRadius");
   tubeRadius=Control.EvalVar<double>(keyName+"TubeRadius");
@@ -142,22 +142,6 @@ DetectorArray::populate(const FuncDataBase& Control)
   initAngle=M_PI*Control.EvalVar<double>(keyName+"InitAngle")/180.0;
   finalAngle=M_PI*Control.EvalVar<double>(keyName+"FinalAngle")/180.0;
   
-
-  return;
-}
-
-void
-DetectorArray::createUnitVector(const attachSystem::FixedComp& FC,
-				const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp for origin
-  */
-{
-  ELog::RegMethod RegA("DetectorArray","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyOffset();
 
   return;
 }
@@ -223,29 +207,30 @@ DetectorArray::createSurfaces()
 void
 DetectorArray::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
+    Create the objects for the array
     \param System :: Simulation to add results
    */
 {
   ELog::RegMethod RegA("DetectorArray","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // First make inner/outer void/wall and top/base
 
-  std::string Bound=
-    ModelSupport::getComposite(SMap,buildIndex,"3 -4 15 -16 7 -17 ");
-  addOuterSurf(Bound);  
+  HeadRule boundHR=
+    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 15 -16 7 -17");
+  addOuterSurf(boundHR);  
+
   int SI(buildIndex+20);
   for(size_t i=0;i<nDet;i++)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,SI,"-7M 5 -6");
-      System.addCell(MonteCarlo::Object(cellIndex++,detMat,0.0,Out));
-      Out=ModelSupport::getComposite(SMap,buildIndex,SI,"-17M 15 -16 (7M:-5:6)");
-      Bound+=ModelSupport::getComposite(SMap,SI," 17 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"-7M 5 -6");
+      System.addCell(cellIndex++,detMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"-17M 15 -16 (7M:-5:6)");
+      boundHR*=HeadRule(SMap,SI,17);
+      System.addCell(cellIndex++,wallMat,0.0,HR);
       SI+=20;
     }
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Bound));
+  System.addCell(cellIndex++,0,0.0,boundHR);
 
   return; 
 }

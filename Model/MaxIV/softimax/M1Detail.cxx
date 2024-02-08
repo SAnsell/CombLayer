@@ -3,7 +3,7 @@
  
  * File:   softimax/M1Detail.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -273,7 +273,8 @@ M1Detail::createObjects(Simulation& System)
 
   elecShield->addInsertCell("Main",getCells("MainVoid"));
   elecShield->addInsertCell("Extra",getCells("MainVoid"));
-  elecShield->addInsertCell("Extra",getCells("FrontVoid"));  
+  if (CellMap::hasCell("FrontVoid"))
+    elecShield->addInsertCell("Extra",getCells("FrontVoid"));  
   for(const int CN : getCells("MainVoid"))
     ELog::EM<<"Cells == "<<CN<<ELog::endDiag;
   elecShield->createAll(System,*mirror,0);
