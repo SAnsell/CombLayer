@@ -3,7 +3,7 @@
  
  * File:   instrumentInc/CylSample.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,9 @@ namespace instrumentSystem
   \brief Specialized for a cylinder object
 */
 
-class CylSample : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class CylSample : 
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
 {
  private:
   
@@ -49,9 +50,6 @@ class CylSample : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&) override;
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int) override;
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -63,6 +61,7 @@ class CylSample : public attachSystem::ContainedComp,
   CylSample& operator=(const CylSample&);
   ~CylSample() override;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;
 

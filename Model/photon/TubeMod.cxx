@@ -3,7 +3,7 @@
  
  * File:   photon/TubeMod.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,22 +148,6 @@ TubeMod::populate(const FuncDataBase& Control)
 }
 
 void
-TubeMod::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Link point surface to use as origin/basis.
-  */
-{
-  ELog::RegMethod RegA("TubeMod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-    
-  return;
-}
-
-void
 TubeMod::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
@@ -199,23 +183,23 @@ TubeMod::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TubeMod","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   HeadRule TubeCollection;
   int tIndex(buildIndex+100);
 
   for(const TUnit& TI : Tubes)
     {
-      Out=ModelSupport::getComposite(SMap,tIndex," 1 -2 -7 ");
-      TubeCollection.addUnion(Out);
-      System.addCell(MonteCarlo::Object(cellIndex++,TI.mat,0.0,Out));
+      HR=ModelSupport::getHeadRule(SMap,tIndex,"1 -2 -7");
+      TubeCollection.addUnion(HR);
+      System.addCell(cellIndex++,TI.mat,0.0,HR);
       tIndex+=100;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex,buildIndex," 1 -2 -7 ");
-  addOuterSurf(Out);
   // Now exclude tubes
-  TubeCollection.makeComplement();
-  Out+=TubeCollection.display();
-  System.addCell(MonteCarlo::Object(cellIndex++,outerMat,0.0,Out));
+  System.addCell(cellIndex++,outerMat,0.0,HR*TubeCollection.complement());
+  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,buildIndex,"1 -2 -7");
+  addOuterSurf(HR);
+
   return; 
 }
 

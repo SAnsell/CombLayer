@@ -3,7 +3,7 @@
  
   * File:   essBuild/BilbaoWheelInnerStructure.cxx
   *
-  * Copyright (c) 2004-2023 by Stuart Ansell/Konstain Batkov
+  * Copyright (c) 2004-2024 by Stuart Ansell/Konstain Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -410,9 +410,10 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 }
   
 double
-BilbaoWheelInnerStructure::sideIntersect(HeadRule&& HR,
-					 const Geometry::Plane *plSide)
- /*!
+BilbaoWheelInnerStructure::sideIntersect
+(HeadRule HR,
+ const Geometry::Plane *plSide)
+/*!
    Calculates intersect of a brick (void between bricks) 
    and one of the sector side surfaces.
    \param surf :: usrface string to calcuatex
@@ -422,7 +423,6 @@ BilbaoWheelInnerStructure::sideIntersect(HeadRule&& HR,
   ELog::RegMethod RegA("BilbaoWhieelInnerStructure","sideIntersect");
   
   std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> SNum;
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(buildIndex+5);
   
   HR.populateSurf();
@@ -433,7 +433,7 @@ BilbaoWheelInnerStructure::sideIntersect(HeadRule&& HR,
   if (!plSide->onSurface(Org))
     ELog::EM << "Origin of line is not on the surface" << ELog::endErr;
   
-  const size_t n = HR.calcSurfIntersection(Org, Unit, Pts, SNum);
+  const size_t n = HR.calcSurfIntersection(Org, Unit, Pts);
   double dist = -1.0;
   if (n>1)
     dist = Pts[0].Distance(Pts[1])+0.01; // 0.01 is a "safety" summand to get rid of the bricks where we cross in the corner. For some reason, 1st layer is not built without this number.

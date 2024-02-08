@@ -3,7 +3,7 @@
  
  * File:   photonInc/TubeMod.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,9 +66,6 @@ class TubeMod :
   std::vector<TUnit> Tubes;  ///< Extra tubes
   
   void populate(const FuncDataBase&) override;
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int) override;
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -80,7 +77,8 @@ class TubeMod :
   TubeMod& operator=(const TubeMod&);
   ~TubeMod() override;
   virtual TubeMod* clone() const;
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;
 };

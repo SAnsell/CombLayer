@@ -3,7 +3,7 @@
  
  * File:   d4cModelInc/DetectorBank.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,9 @@ namespace d4cSystem
   \brief Grid of detector objects 
 */
 
-class DetectorBank : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class DetectorBank : 
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
 {
  private:
   

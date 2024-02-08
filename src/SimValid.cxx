@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -214,8 +214,7 @@ SimValid::findTouch(const MonteCarlo::Object* OPtr,
 	  Geometry::Vec3D tPoint=COrg-PAxis*dist;
 	  // Line of intersection
 	  const HeadRule mainHR=OPtr->getHeadRule();
-	  std::vector<int> SNum;
-	  mainHR.calcSurfIntersection(tPoint,CAxis,TPts,SNum);
+	  mainHR.calcSurfIntersection(tPoint,CAxis,TPts);
 	  if (TPts.size()>1) return 1;
 	}
     }

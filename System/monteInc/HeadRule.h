@@ -33,7 +33,7 @@ namespace Geometry
 
   struct interPoint
   {
-    Geometry::Vec3D Pt;   ///< Crosssing point;
+    Geometry::Vec3D Pt;  ///< Crosssing point;
     double D;            ///< Distance
     int SNum;            ///< signed surf number [true as particle moves fwd]
     const Surface* SPtr;       ///< SurfPointer
@@ -71,7 +71,7 @@ class HeadRule
 
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
-
+  
  public:
 
   HeadRule();
@@ -147,10 +147,12 @@ class HeadRule
 
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
-     std::vector<Geometry::Vec3D>&,std::vector<int>&) const;
+     std::vector<Geometry::interPoint>&) const;
+
+  // accessor to points only:
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
-     std::vector<Geometry::interPoint>&) const;
+     std::vector<Geometry::Vec3D>&) const;
 
   size_t calcSurfSurfIntersection(std::vector<Geometry::Vec3D>&) const;
 

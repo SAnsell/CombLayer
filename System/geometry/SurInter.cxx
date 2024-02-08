@@ -136,8 +136,7 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
   ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,closePt)");
   
   std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> SNum;
-  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
+  mainHR.calcSurfIntersection(Origin,N,Pts);
 
   if (Pts.empty())
     throw ColErr::InContainerError<std::string>
@@ -163,7 +162,7 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;
 
-  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
+  mainHR.calcSurfIntersection(Origin,N,Pts);
   std::vector<Geometry::Vec3D> out;
   
   if (sndHR.hasRule())
@@ -419,12 +418,11 @@ calcIntersect(const Geometry::Cone& Cne,
   const Geometry::Vec3D& cK=Cne.getCentre();
   const double cAlpha=Cne.getCosAngle();
 
-  const double rAngle(35.0*M_PI/180.0);
+
   const Geometry::Vec3D& pNorm=Pln.getNormal(); 
   const Geometry::Vec3D pU=pNorm.crossNormal();
   const Geometry::Vec3D pV=pNorm*pU;
-  ELog::EM<<"PM == "<<pNorm<<ELog::endDiag;
-  ELog::EM<<"PU == "<<pU<<" :: "<<pV<<ELog::endDiag;
+
   // need a point on the plane :
   const Geometry::Vec3D pC=
     SurInter::getLinePoint(cK,cD,&Pln);
@@ -450,7 +448,7 @@ calcIntersect(const Geometry::Cone& Cne,
   // rotation matrix
   Geometry::M2<double> MR(c1,c2,c2,c3);
   Geometry::Vec2D cTrans(c4,c5);
-  const double cDelta=c6;
+
   MR.constructEigen();
   Geometry::M2<double> R=MR.getEigVectors();
 

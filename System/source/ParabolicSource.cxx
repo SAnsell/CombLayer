@@ -345,7 +345,7 @@ ParabolicSource::write(std::ostream& OX) const
 }
 
 void
-ParabolicSource::writePHITS(std::ostream& OX) const
+ParabolicSource::writePHITS(std::ostream&) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream
@@ -354,13 +354,12 @@ ParabolicSource::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("ParabolicSource","writePHITS");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
-  const long int nStep(20);
   
   return;
 }
 
 void
-ParabolicSource::writeFLUKA(std::ostream& OX) const
+ParabolicSource::writeFLUKA(std::ostream&) const
   /*!
     Write out as a FLUKA source system
     \param OX :: Output stream
@@ -369,7 +368,6 @@ ParabolicSource::writeFLUKA(std::ostream& OX) const
   ELog::RegMethod RegA("ParabolicSource","writeFLUKA");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
-    const long int nStep(20);
   
   return;
 }
