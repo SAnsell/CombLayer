@@ -691,7 +691,7 @@ testHeadRule::testCalcSurfIntersection()
   const std::vector<TTYPE> Tests=
     {
       TTYPE("21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)",
-	    Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,1),
+	    Geometry::Vec3D(0,0,-20),Geometry::Vec3D(0,0,1),
 	    0,Geometry::Vec3D(0,0,0)),
       TTYPE("1 -2 3 -4 5 -6",Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,1),
 	    0,Geometry::Vec3D(0,0,0))
@@ -709,6 +709,7 @@ testHeadRule::testCalcSurfIntersection()
 
       
       ELog::EM<<"-----------------------------------"<<ELog::endDiag;
+      ELog::EM<<"Origin = "<<O<<" == "<<A<<ELog::endDiag;
       const size_t index(std::get<3>(tc));
       const Geometry::Vec3D expectPoint(std::get<4>(tc));
 

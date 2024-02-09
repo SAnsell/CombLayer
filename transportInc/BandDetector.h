@@ -3,7 +3,7 @@
  
  * File:   transportInc/BandDetector.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,9 @@ class BandDetector : public Detector
 
   long int nps;                ///< Number of detector units
 
-  int nH;                      ///< Number of bins horrizonal
-  int nV;                      ///< Number of bins vertical
-  int nE;                      ///< Number of bins [energy]
+  size_t nH;                      ///< Number of bins horrizonal
+  size_t nV;                      ///< Number of bins vertical
+  size_t nE;                      ///< Number of bins [energy]
   Geometry::Vec3D Cent;        ///< Cent Pos
   Geometry::Vec3D H;           ///< Horrizontal unitVector
   Geometry::Vec3D V;           ///< Vert extent

@@ -69,6 +69,7 @@ class pipeTube :
   pipeTube& operator=(const pipeTube&);
   ~pipeTube() override;
 
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;
     

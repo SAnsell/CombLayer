@@ -3,7 +3,7 @@
  
  * File:   geometry/Line.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "ArbPoly.h"

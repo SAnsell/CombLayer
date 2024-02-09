@@ -3,7 +3,7 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -632,7 +632,7 @@ derivQuadratic(const typename std::vector<T>::const_iterator& Xpts,
   const T B= (x3*x3*y2-x2*x2*y3)/FracD;
   const T A= -(x3*y2-x2*y3)/FracD;
 
-  return 2.0*A*x2+B;
+  return static_cast<T>(2.0)*A*x2+B;
 }
 
 template<typename T>

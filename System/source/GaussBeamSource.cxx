@@ -3,7 +3,7 @@
  
  * File:   source/GaussBeamSource.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,8 +50,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
 #include "Transform.h"
 #include "particleConv.h"
 #include "flukaGenParticle.h"
@@ -63,7 +62,7 @@ namespace SDef
 {
 
 GaussBeamSource::GaussBeamSource(const std::string& keyName) : 
-  FixedOffsetUnit(keyName,0),SourceBase(),
+  FixedRotate(keyName,0),SourceBase(),
   xWidth(1.0),zWidth(1.0),angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -72,7 +71,7 @@ GaussBeamSource::GaussBeamSource(const std::string& keyName) :
 {}
 
 GaussBeamSource::GaussBeamSource(const GaussBeamSource& A) : 
-  attachSystem::FixedOffsetUnit(A),SourceBase(A),
+  attachSystem::FixedRotate(A),SourceBase(A),
   xWidth(A.xWidth),zWidth(A.zWidth),
   angleSpread(A.angleSpread)
   /*!
@@ -91,7 +90,7 @@ GaussBeamSource::operator=(const GaussBeamSource& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       SourceBase::operator=(A);
       xWidth=A.xWidth;
       zWidth=A.zWidth;
@@ -138,7 +137,7 @@ GaussBeamSource::populate(const mainSystem::MITYPE& inputMap)
 {
   ELog::RegMethod RegA("GaussBeamSource","populate");
 
-  attachSystem::FixedOffset::populate(inputMap);
+  attachSystem::FixedRotate::populate(inputMap);
   SourceBase::populate(inputMap);
   
   mainSystem::findInput<double>(inputMap,"xWidth",0,xWidth);
@@ -146,24 +145,6 @@ GaussBeamSource::populate(const mainSystem::MITYPE& inputMap)
   mainSystem::findInput<double>(inputMap,"aSpread",0,angleSpread); 
   return;
 }
-
-void
-GaussBeamSource::createUnitVector(const attachSystem::FixedComp& FC,
-				  const long int linkIndex)
-  /*!
-    Create the unit vector
-    \param FC :: Fixed Componenet
-    \param linkIndex :: Link index [signed for opposite side]
-   */
-{
-  ELog::RegMethod RegA("GaussBeamSource","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyOffset();
-
-  return;
-}
-
   
 void
 GaussBeamSource::rotate(const localRotate& LR)

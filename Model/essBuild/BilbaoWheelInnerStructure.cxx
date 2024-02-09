@@ -416,7 +416,7 @@ BilbaoWheelInnerStructure::sideIntersect
 /*!
    Calculates intersect of a brick (void between bricks) 
    and one of the sector side surfaces.
-   \param surf :: usrface string to calcuatex
+   \param plSide :: plane for edge of system
    \return number of intersection points
  */
 {
@@ -436,7 +436,7 @@ BilbaoWheelInnerStructure::sideIntersect
   const size_t n = HR.calcSurfIntersection(Org, Unit, Pts);
   double dist = -1.0;
   if (n>1)
-    dist = Pts[0].Distance(Pts[1])+0.01; // 0.01 is a "safety" summand to get rid of the bricks where we cross in the corner. For some reason, 1st layer is not built without this number.
+    dist = Pts[0].Distance(Pts[1])+0.01; // 0.01 is a "safety" sum  and to get rid of the bricks where we cross in the corner. For some reason, 1st layer is not built without this number.
   return dist;
 }
   

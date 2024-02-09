@@ -2852,7 +2852,6 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   return SN;
 }
 
-
 size_t
 HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
   /*!
@@ -2960,21 +2959,25 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
       const int NS=surfPtr->getName();	    // NOT SIGNED
       const int pAB=isValid(IPts[i],NS);
       const int mAB=isValid(IPts[i],-NS);
-      const int normD=surfPtr->sideDirection(IPts[i],Unit);
+      //      const int normD=surfPtr->sideDirection(IPts[i],Unit);
       const double lambda=dPts[i];
-      if (pAB!=mAB)  // out going positive surface
+      if (pAB!=mAB)  // exiting/entering surface
 	{
 	  // previously used signValue but now gone to
 	  // distValue BUT not 100% sure if that is correct.
-	  //	  const int signValue((pAB>0) ? 1 : -1);
-	  const int distValue((lambda>0) ? 1 : -1);
+	  // const int distValue((lambda>0) ? 1 : -1);
+	  // Note that we want the surface to be correct
+	  // for OUTGOING
+	  const int signValue((pAB>0) ? -1 : 1);
+	  const bool outGoingFlag(pAB>0);
 	  Pts.push_back(Geometry::interPoint
 			({
 			  Org+Unit*lambda,
-			    dPts[i],
-			    distValue*normD*NS,
-			    surfPtr,
-			    (pAB>0)}));
+			  dPts[i],
+			  signValue*NS,
+			  surfPtr,
+			  outGoingFlag
+			}));
 	}
     }
   std::sort(Pts.begin(),Pts.end(),

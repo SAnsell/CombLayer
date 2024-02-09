@@ -328,9 +328,9 @@ T
 M3<T>::determinate() const
 /*!
   Calcuate the determinate of the original matrix
+  \return determinate
  */
 {
-  T det(0.0); 
   const T detA=
     AData[1][1]*AData[2][2] - AData[1][2]*AData[2][1];
   const T detB=

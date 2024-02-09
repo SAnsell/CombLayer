@@ -3,7 +3,7 @@
  
  * File:   transport/BandDetector.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,12 +82,11 @@ BandDetector::BandDetector(const int Hpts,const int Vpts,const int Epts,
    \param Hvec :: Horrizontal vector
    \param ES :: Energy start [-ve for wavelength ]
    \param EE :: Energy end [-ve for wavelength 
-   
   */
 {
-  for(int i=0;i<nV;i++)
-    for(int j=0;j<nH;j++)
-      for(int k=0;k<nE;k++)
+  for(size_t i=0;i<nV;i++)
+    for(size_t j=0;j<nH;j++)
+      for(size_t k=0;k<nE;k++)
 	EData.get()[i][j][k]=0.0;
   if (Epts>0)
     setEnergy(ES,EE);
@@ -144,9 +143,9 @@ BandDetector::clear()
   */
 {
   nps=0;
-  for(int i=0;i<nV;i++)
-    for(int j=0;j<nH;j++)
-      for(int k=0;k<nE;k++)
+  for(size_t i=0;i<nV;i++)
+    for(size_t j=0;j<nH;j++)
+      for(size_t k=0;k<nE;k++)
 	EData.get()[i][j][k]=0.0;
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   geometry/MBrect.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <stack>
 #include <string>
 #include <algorithm>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -45,7 +46,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Line.h" 
-#include "Triple.h"
 #include "MBrect.h"
 
 namespace Geometry
@@ -499,7 +499,7 @@ MBrect::onSurface(const Geometry::Vec3D& A) const
   return (side(A)!=0) ? 0 : 1;
 }
 
-Triple<Vec3D>
+std::tuple<Vec3D,Vec3D,Vec3D>
 MBrect::calcMainPlane() const
   /*!
     Calculate the main plane (ie avoiding the short direction)
@@ -540,7 +540,7 @@ MBrect::calcMainPlane() const
   // (a) Take the corner (Low point) and 
   //     add half the small vector 
   // (b) Add the other two vectors to point (a)
-  return Triple<Vec3D>(Corner+sumVec,LVec[AI],LVec[BI]);
+  return std::tuple<Vec3D,Vec3D,Vec3D>(Corner+sumVec,LVec[AI],LVec[BI]);
 }
 
 void 
