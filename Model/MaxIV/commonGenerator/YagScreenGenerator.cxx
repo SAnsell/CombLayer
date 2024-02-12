@@ -61,14 +61,14 @@ YagScreenGenerator::YagScreenGenerator() :
   mirrorThick(0.5),
 
   screenAngle(5.0), screenVOffset(0.3),
-  screenRadius(1.0),screenThick(0.1),
- 
+  screenRadius(1.0),screenThick(0.01),
+
   screenHolderRadius(1.3), screenHolderThick(0.3), // measured,
-  
+
   holderMat("Stainless304L"),
-  screenMat("SiO2"),
+  screenMat("YAG"),
   screenHolderMat("Aluminium"),
-  mirrorMat("SiO2")
+  mirrorMat("QuartzGlass")
   /*!
     Constructor and defaults
   */
@@ -95,28 +95,28 @@ YagScreenGenerator::generateScreen(FuncDataBase& Control,
   ELog::RegMethod RegA("YagScreenGenerator","generate");
 
   ScreenGenerator::generateScreen(Control,keyName,inBeam);
-  
+
   Control.addVariable(keyName+"HolderWidth",holderWidth);
   Control.addVariable(keyName+"HolderDepth",holderDepth);
   Control.addVariable(keyName+"HolderShortLen",holderShortLen);
   Control.addVariable(keyName+"HolderLongLen",holderLongLen);
-  
+
   Control.addVariable(keyName+"MirrorAngle",mirrorAngle);
   Control.addVariable(keyName+"MirrorRadius",mirrorRadius);
   Control.addVariable(keyName+"MirrorThick",mirrorThick);
-  
+
   Control.addVariable(keyName+"ScreenAngle",screenAngle);
   Control.addVariable(keyName+"ScreenVOffset",screenVOffset);
   Control.addVariable(keyName+"ScreenRadius",screenRadius);
   Control.addVariable(keyName+"ScreenThick",screenThick);
   Control.addVariable(keyName+"ScreenHolderRadius",screenHolderRadius);
   Control.addVariable(keyName+"ScreenHolderThick",screenHolderThick);
-  
+
   Control.addVariable(keyName+"HolderMat",holderMat);
   Control.addVariable(keyName+"MirrorMat",mirrorMat);
   Control.addVariable(keyName+"ScreenMat",screenMat);
   Control.addVariable(keyName+"ScreenHolderMat",screenHolderMat);
-     
+
  return;
 
 }
