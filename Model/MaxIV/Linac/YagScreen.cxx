@@ -90,11 +90,11 @@ YagScreen::~YagScreen()
 void
 YagScreen::calcImpactVector()
   /*!
-    Calculate the impact points of the main beam 
+    Calculate the impact points of the main beam
     on the mirror surfaces:
-    We have the beamAxis this must intersect the screen and mirror closest to 
+    We have the beamAxis this must intersect the screen and mirror closest to
     their centre points. It DOES NOT need to hit the centre points as the mirror
-    system is confined to moving down the Y axis of the object. [-ve Y from flange 
+    system is confined to moving down the Y axis of the object. [-ve Y from flange
     to beam centre]
   */
 {
@@ -110,19 +110,19 @@ YagScreen::calcImpactVector()
   // Beam Centre point projected along -X hits the mirror at half way
   // between the short and long length [holderShortLen/holderLongLen]
   // mirror start above mirrorCentre (+Y)
-  
-  const double LHalf=(holderLongLen-holderShortLen)/2.0; 
+
+  const double LHalf=(holderLongLen-holderShortLen)/2.0;
   mirrorStart=mirrorCentre+Y*LHalf-X*(holderDepth/2.0);
 
-  // projection from mirrorStart along axis 
-  mirrorImpact=mirrorStart-X*(LHalf*tan(mirrorAngle*M_PI/180.0))-Y*LHalf;  
+  // projection from mirrorStart along axis
+  mirrorImpact=mirrorStart-X*(LHalf*tan(mirrorAngle*M_PI/180.0))-Y*LHalf;
 
   // screen from screen start [SDist = full distance to centre]
-  const double SDist=screenVOffset+(holderLongLen-holderShortLen)/2.0; 
+  const double SDist=screenVOffset+(holderLongLen-holderShortLen)/2.0;
   const Geometry::Vec3D screenStart=mirrorStart+Y*screenVOffset;
 
   // angle points outwards:
-  screenImpact=screenStart-X*(SDist*tan(screenAngle*M_PI/180.0))-Y*SDist;  
+  screenImpact=screenStart-X*(SDist*tan(screenAngle*M_PI/180.0))-Y*SDist;
 
   // Thread point
   threadEnd=mirrorCentre+Y*(holderLongLen-LHalf);
@@ -147,32 +147,32 @@ YagScreen::populate(const FuncDataBase& Control)
   juncBoxHeight=Control.EvalVar<double>(keyName+"JuncBoxHeight");
   juncBoxWallThick=Control.EvalVar<double>(keyName+"JuncBoxWallThick");
   feedLength=Control.EvalVar<double>(keyName+"FeedLength");
-  
+
   feedInnerRadius=Control.EvalVar<double>(keyName+"FeedInnerRadius");
   feedWallThick=Control.EvalVar<double>(keyName+"FeedWallThick");
   feedFlangeLen=Control.EvalVar<double>(keyName+"FeedFlangeLen");
   feedFlangeRadius=Control.EvalVar<double>(keyName+"FeedFlangeRadius");
-  
+
   threadLift=Control.EvalVar<double>(keyName+"ThreadLift");
   threadRadius=Control.EvalVar<double>(keyName+"ThreadRadius");
   holderWidth=Control.EvalVar<double>(keyName+"HolderWidth");
   holderDepth=Control.EvalVar<double>(keyName+"HolderDepth");
   holderShortLen=Control.EvalVar<double>(keyName+"HolderShortLen");
   holderLongLen=Control.EvalVar<double>(keyName+"HolderLongLen");
-  
+
   mirrorAngle=Control.EvalVar<double>(keyName+"MirrorAngle");
   mirrorRadius=Control.EvalVar<double>(keyName+"MirrorRadius");
   mirrorThick=Control.EvalVar<double>(keyName+"MirrorThick");
-  
+
   screenAngle=Control.EvalVar<double>(keyName+"ScreenAngle");
   screenVOffset=Control.EvalVar<double>(keyName+"ScreenVOffset");
   screenRadius=Control.EvalVar<double>(keyName+"ScreenRadius");
   screenThick=Control.EvalVar<double>(keyName+"ScreenThick");
-  
+
   screenHolderRadius=Control.EvalVar<double>(keyName+"ScreenHolderRadius");
   screenHolderThick=Control.EvalVar<double>(keyName+"ScreenHolderThick");
 
-  
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   juncBoxMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxMat");
   juncBoxWallMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxWallMat");
@@ -251,7 +251,7 @@ YagScreen::createSurfaces()
 
   // holder cut plane normal
   const Geometry::Vec3D MX=QV.makeRotate(X);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1003,threadEnd-X*(holderDepth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1004,threadEnd+X*(holderDepth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1005,threadEnd-Z*(holderWidth/2.0),Z);
@@ -281,6 +281,9 @@ YagScreen::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2000,screenImpact,SY);
   ModelSupport::buildPlane(SMap,buildIndex+2001,screenImpact-SX*(screenThick/2.0),SX);
   ModelSupport::buildPlane(SMap,buildIndex+2002,screenImpact+SX*(screenThick/2.0),SX);
+
+  ModelSupport::buildPlane(SMap,buildIndex+2011,screenImpact-SX*(screenHolderThick/2.0),SX);
+  ModelSupport::buildPlane(SMap,buildIndex+2012,screenImpact+SX*(screenHolderThick/2.0),SX);
 
   ModelSupport::buildCylinder(SMap,buildIndex+2007,screenImpact,SX,screenRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+2017,screenImpact,SX,screenHolderRadius);
@@ -375,28 +378,32 @@ YagScreen::createObjects(Simulation& System)
 
       // yag screen
 
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"2011 -2001 -2007");
+      makeCell("YagScreenFrontVoid",System,cellIndex++,voidMat,0.0,HR);
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"2001 -2002 -2007");
       makeCell("YagScreen",System,cellIndex++,screenMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"2002 -2012 -2007");
+      makeCell("YagScreenBackVoid",System,cellIndex++,voidMat,0.0,HR);
 
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"1005 -1006 2001 -2002 2007 (-2000:-2017) (-1003:-1009)");
+	(SMap,buildIndex,"1005 -1006 2011 -2012 2007 -201 (-2000:-2017) (-1003:-1009)");
       makeCell("YagHolder",System,cellIndex++,screenHolderMat,0.0,HR);
 
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"1005 -1006 -1009 2002 (1003:2002) -1004 1002");
+	(SMap,buildIndex,"1005 -1006 -1009 2012 (1003:2012) -1004 1002");
       makeCell("YagVoid",System,cellIndex++,voidMat,0.0,HR);
 
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"1005 -1006 1002 2001 -2002 2017 2000");
+	(SMap,buildIndex,"1005 -1006 1002 2011 -2012 2017 2000");
        makeCell("YagVoid",System,cellIndex++,voidMat,0.0,HR);
 
-      
+
       HR=ModelSupport::getHeadRule
-	(SMap,buildIndex,"1002 (2001:1003) -1004 1005 -1006 -201");
-      addOuterSurf("Payload",HR);      
-      
+	(SMap,buildIndex,"1002 (2011:1003) -1004 1005 -1006 -201");
+      addOuterSurf("Payload",HR);
+
     }
-      
+
   return;
 }
 
