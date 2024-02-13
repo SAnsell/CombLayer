@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/flukaTally.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -75,7 +75,7 @@ flukaTally::idForm(const std::string& baseName,const int A)
 
 }
 
-  
+
 flukaTally::flukaTally(const std::string& MK,
 		       const int indexID,
 		       const int outID)  :
@@ -83,7 +83,7 @@ flukaTally::flukaTally(const std::string& MK,
   ID(std::abs(indexID)),
   outputUnit(outID)
   /*!
-    Constructor 
+    Constructor
     \param MK :: Keyname
     \param indexID :: flukaTally ID number
     \param outID :: flukaTally fortran tape number
@@ -112,9 +112,9 @@ flukaTally::clone() const
 }
 
 flukaTally&
-flukaTally::operator=(const flukaTally& A) 
+flukaTally::operator=(const flukaTally& A)
   /*!
-    Assignment operator 
+    Assignment operator
     \param A :: flukaTally object to copy
     \return *this
   */
@@ -174,7 +174,7 @@ void
 flukaTally::setAuxParticles(const std::string& P)
   /*!
     Set the auxParticle [can be a range?]
-    \param P :: auxParticle (or key name) 
+    \param P :: auxParticle (or key name)
   */
 {
   auxParticle=P;
@@ -220,7 +220,7 @@ flukaTally::setAngle(const bool,const double,
    Null op call for non-angle detectors
  */
 {}
-  
+
 void
 flukaTally::setDoseType(const std::string& P,
 			const std::string& D)
@@ -236,10 +236,10 @@ flukaTally::setDoseType(const std::string& P,
     ({
       "EAP74","ERT74","EWT74",
       "EAPMP","ERTMP","EWTMP",
-      "AMB74","AMBGS"
+      "AMB74","AMBDS"
       });
   const flukaGenParticle& FG=flukaGenParticle::Instance();
-  
+
   auxParticle=StrFunc::toUpperString(FG.nameToFLUKA(P));
    const std::string Dupper=StrFunc::toUpperString(D);
   if (validDose.find(Dupper)==validDose.end())
@@ -248,11 +248,11 @@ flukaTally::setDoseType(const std::string& P,
   doseType=Dupper;
   return;
 }
-  
+
 void
 flukaTally::writeAuxScore(std::ostream&) const
   /*!
-    Writes out the flukaTally depending on the 
+    Writes out the flukaTally depending on the
     fields that have been set.
     \param OX :: Output Stream
   */
@@ -263,7 +263,7 @@ flukaTally::writeAuxScore(std::ostream&) const
 void
 flukaTally::write(std::ostream& OX) const
   /*!
-    Writes out the flukaTally depending on the 
+    Writes out the flukaTally depending on the
     fields that have been set.
     \param OX :: Output Stream
   */
