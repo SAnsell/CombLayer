@@ -54,6 +54,7 @@
 #include "MBrect.h"
 #include "Plane.h"
 #include "Sphere.h"
+#include "HeadRule.h"
 #include "Line.h"
 
 namespace Geometry
@@ -737,6 +738,21 @@ Line::intersect(std::vector<Geometry::Vec3D>&,const Torus&) const
   */
 }
 
+size_t
+Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
+		const HeadRule& HR) const
+  /*! 
+    For the line that intersects the sphere generate 
+    add the point to the PntOut, return number of points
+    added. It does not check the points for validity. 
+    
+    \param PntOut :: Vector of points found by the line/sphere intersection
+    \param HR :: HeadRule to intersect [must be populated]
+    \returns Number of points found by intersection
+  */
+{
+  return HR.calcSurfIntersection(Origin,Direct,PntOut);
+}
 
 //SETING
 

@@ -39,7 +39,7 @@
 
 masterWrite::masterWrite() :
   zeroTol(1e-20),sigFig(6),
-  FMTdouble("{:.6g"),
+  FMTdouble("{:.6g}"),
   FMTinteger("{:d}")
   /*!
     Constructor
