@@ -167,7 +167,7 @@ LowMat::getID(const size_t Z,const size_t iso)
 	 {   36, {36, -2, 296.0,"KRYPTON"} },
 	 {   37, {37, -2, 296.0,"RUBIDIUM"} },
 	 {   38, {38, -2, 296.0,"STRONTIU"} },
-	 {   39, {39, -2, 296.0,"YTTRIUM"} },
+	 {   39, {39, 89, 296.0,"YTTRIUM"} },
 	 {   40, {40, -2, 296.0,"ZIRCONIU"} },
 	 {41093, {41, 93, 296.0,"NIOBIUM"} },
 	 {   42, {42, -2, 296.0,"MOLYBDEN"} },
