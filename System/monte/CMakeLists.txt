@@ -9,7 +9,7 @@ set (monteSources
     neutron.cxx Object.cxx objectSupport.cxx 
     particle.cxx photon.cxx 
     RuleBinary.cxx RuleCheck.cxx RuleItems.cxx 
-    Rules.cxx RuleSupport.cxx SurfPoint.cxx 
+    Rules.cxx SurfPoint.cxx 
     SurfVertex.cxx Token.cxx Track.cxx 
     Union.cxx Zaid.cxx 
 )

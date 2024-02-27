@@ -3,7 +3,7 @@
  
  * File:   instrument/CylSample.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -56,7 +54,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "CylSample.h"
 
@@ -64,7 +62,8 @@ namespace instrumentSystem
 {
 
 CylSample::CylSample(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
+  attachSystem::FixedRotate(Key,3),
+  attachSystem::ContainedComp()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -72,7 +71,8 @@ CylSample::CylSample(const std::string& Key) :
 {}
 
 CylSample::CylSample(const CylSample& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   nLayers(A.nLayers),radius(A.radius),
   height(A.height),mat(A.mat)
   /*!
@@ -91,8 +91,8 @@ CylSample::operator=(const CylSample& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       nLayers=A.nLayers;
       radius=A.radius;
       height=A.height;
@@ -116,7 +116,7 @@ CylSample::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CylSample","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
     // Master values
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
@@ -129,22 +129,6 @@ CylSample::populate(const FuncDataBase& Control)
       mat.push_back(ModelSupport::EvalMat<int>
 		    (Control,StrFunc::makeString(keyName+"Material",i+1)));   
     }
-
-  return;
-}
-
-void
-CylSample::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: signed direction to link
-  */
-{
-  ELog::RegMethod RegA("CylSample","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -179,16 +163,16 @@ CylSample::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CylSample","createObjects");
 
-  std::string Out,OutInner;
+  HeadRule HR,innerHR;
   int SI(buildIndex);
   for(size_t i=0;i<nLayers;i++)
     {
-      Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat[i],0.0,Out+OutInner));
-      OutInner=ModelSupport::getComposite(SMap,SI," (7:-5:6) ");
+      HR=ModelSupport::getHeadRule(SMap,SI,"-7 5 -6");
+      System.addCell(cellIndex++,mat[i],0.0,HR*innerHR);
+      innerHR=HR.complement();
       SI+=10;
     }
-  addOuterSurf(Out);
+  addOuterSurf(HR);
   return; 
 }
 

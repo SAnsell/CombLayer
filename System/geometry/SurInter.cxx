@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,12 +43,18 @@
 #include "PolyFunction.h"
 #include "PolyVar.h"
 #include "Vec3D.h"
+#include "Vec2D.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "M2.h"
+#include "M3.h"
 #include "solveValues.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Sphere.h"
 #include "Cylinder.h"
+#include "Cone.h"
 #include "Line.h"
 #include "Intersect.h"
 #include "Pnt.h"
@@ -130,8 +136,7 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
   ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,closePt)");
   
   std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> SNum;
-  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
+  mainHR.calcSurfIntersection(Origin,N,Pts);
 
   if (Pts.empty())
     throw ColErr::InContainerError<std::string>
@@ -157,7 +162,7 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;
 
-  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
+  mainHR.calcSurfIntersection(Origin,N,Pts);
   std::vector<Geometry::Vec3D> out;
   
   if (sndHR.hasRule())
@@ -391,6 +396,91 @@ calcIntersect(const Geometry::Cylinder& Cyl,const Geometry::Plane& Pln)
   minor*= r;                 //  r : since all out of plane
       
   return new Geometry::Ellipse(C-D*(sDist/cosTheta),minor,major,N);
+}
+
+template<>
+Geometry::Intersect*
+calcIntersect(const Geometry::Cone& Cne,
+	      const Geometry::Plane& Pln)
+  /*!
+    Calculate the intersection object between two objects
+    This follows the geometricTools tutorial
+    \param Cne :: Cone object
+    \param Pln :: Plane object 
+    \return Intersect object
+  */
+{
+  ELog::RegMethod RegA("SurInter","calcIntersect<Cone,Plane>");
+
+  // First find out if we intersect at all:
+
+  const Geometry::Vec3D& cD=Cne.getNormal();
+  const Geometry::Vec3D& cK=Cne.getCentre();
+  const double cAlpha=Cne.getCosAngle();
+
+
+  const Geometry::Vec3D& pNorm=Pln.getNormal(); 
+  const Geometry::Vec3D pU=pNorm.crossNormal();
+  const Geometry::Vec3D pV=pNorm*pU;
+
+  // need a point on the plane :
+  const Geometry::Vec3D pC=
+    SurInter::getLinePoint(cK,cD,&Pln);
+  ELog::EM<<"PC == "<<pC<<ELog::endDiag;
+  const Geometry::Vec3D delta=pC-cK;
+  const Geometry::Matrix<double> I(3,3,1);
+  const Geometry::Matrix<double> M=
+      cD.outerProd(cD)-I*(cAlpha*cAlpha);
+
+  // element of the conic matrix:
+  const double c1 = pU.dotProd(M * pU);
+  const double c2 = pU.dotProd(M * pV);
+  const double c3 = pV.dotProd(M * pV);
+  const double c4 = delta.dotProd(M * pU);
+  const double c5 = delta.dotProd(M * pV);
+  const double c6 = delta.dotProd(M * delta);
+
+  Geometry::M3<double> CM
+    ({{c1,c2,c4},
+      {c2,c3,c5},
+      {c4,c5,c6}});
+  //  ELog::EM<<"CM == "<<CM<<ELog::endDiag;
+  // rotation matrix
+  Geometry::M2<double> MR(c1,c2,c2,c3);
+  Geometry::Vec2D cTrans(c4,c5);
+
+  MR.constructEigen();
+  Geometry::M2<double> R=MR.getEigVectors();
+
+  Geometry::M2<double> Rprime=R.prime();
+  Geometry::M2<double> lambda=MR.getEigValues();
+
+  Geometry::M2<double> CRcheck=R*lambda*Rprime;
+  lambda.invert();
+  Geometry::Vec2D t=R*(lambda*(Rprime*cTrans));
+  
+  t*=-1.0;
+
+  // hermician matrix
+  const Geometry::M3<double> H
+    ({{R.get(0,0),R.get(0,1),t[0]},
+      {R.get(1,0),R.get(1,1),t[1]},
+      {0.0,0.0,1.0}});
+
+  const Geometry::M3<double> Hprime(H.prime());
+  Geometry::M3<double> conicalM=Hprime*(CM*H);
+  const double aRadius=
+    std::sqrt(-conicalM.get(2,2)/conicalM.get(0,0));
+  const double bRadius=
+    std::sqrt(-conicalM.get(2,2)/conicalM.get(1,1));
+
+  const Geometry::Vec3D eCentre(pU*t.X()+pV*t.Y()+pC);
+
+  const Geometry::Vec3D aM(R.get(0,0),R.get(1,0),0.0);
+  const Geometry::Vec3D bM(R.get(1,0),R.get(1,1),0.0);
+  Geometry::Vec3D pUU=aM.getInBasis(pU,pV,pNorm);
+  Geometry::Vec3D pVV=bM.getInBasis(pU,pV,pNorm);
+  return new Geometry::Ellipse(eCentre,pUU*aRadius,pVV*bRadius,pNorm);
 }
 
 std::vector<Geometry::Vec3D> 
@@ -866,7 +956,6 @@ interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
   return interceptRuleConst(HR,Origin,N);
 }
 
- 
   
 }  // NAMESPACE SurInter
 

@@ -3,7 +3,7 @@
  
  * File:   supportInc/cycIterator.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,7 @@
 */
 
 template<typename T,typename Iterator> 
-class cycIterator : 
-  public std::iterator
-    <std::bidirectional_iterator_tag, T,std::ptrdiff_t>
+class cycIterator
 {
  private:
 

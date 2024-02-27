@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   d4cModelInc/BellJar.h
+ * File:   instrumentInc/BellJar.h
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,10 @@ namespace d4cSystem
   \brief Specialized for a cylinder object
 */
 
-class BellJar : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+class BellJar : 
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp,
+    public attachSystem::CellMap
 {
  private:
   
@@ -58,15 +60,9 @@ class BellJar : public attachSystem::ContainedComp,
 
   std::vector<double> colAngle;  ///< angles 
 
-  int innerVoid;                ///< Inner void 
-  int midVoid;                  ///< Mid void [with coll units]
-
   // Functions:
 
   void populate(const FuncDataBase&) override;
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int) override;
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,10 +74,6 @@ class BellJar : public attachSystem::ContainedComp,
   BellJar& operator=(const BellJar&);
   ~BellJar() override;
 
-  /// Access inner void
-  int innerCell() const { return innerVoid; }
-  /// Access outer void
-  int outerCell() const { return midVoid; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;

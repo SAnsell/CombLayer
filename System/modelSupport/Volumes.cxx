@@ -183,6 +183,12 @@ readPts(const std::string& pointName,
 	std::vector<Geometry::Vec3D>& Pts)
   /*!
     Given a mesh file convert to main system
+    \param pointName :: File o read mesh
+    \param centre :: Origin of mesh in Simulation model
+    \param X :: X axis to for mesh x values
+    \param Y :: Y axis to for mesh x values
+    \param Z :: Z axis to for mesh x values
+
    */
 {
   ELog::RegMethod RegA("Volumes[F]","readPts");
@@ -212,9 +218,6 @@ readPts(const std::string& pointName,
 	}
     }
   IX.close();
-  ELog::EM<<"XYZ Axis == "<<X<<ELog::endDiag;
-  ELog::EM<<"XYZ Axis == "<<Y<<ELog::endDiag;
-  ELog::EM<<"XYZ Axis == "<<Z<<ELog::endDiag;
 
   if (Pts.empty())
     throw ColErr::FileError(0,pointName,"Point file empty");
@@ -247,10 +250,8 @@ materialHeat(const Simulation& System,
 
  /*!
     Generate heat from heat file and for plot file
-    \param centPoint :: Origin 
-    \param xAxis :: full extent from left to right
-    \param yAxis :: full extent from base to top
-    \param zAxis :: volume acceptable
+    \param System :: Model to used
+    \param IParam :: inptu to determine principle origins / files
   */
 {
   ELog::RegMethod RegA("Volumes[F]","generateHeat");
@@ -407,7 +408,7 @@ if (IParam.flag("materialHeat"))
 		      const size_t ii=std::get<0>(tUnit);
 		      const size_t jj=std::get<1>(tUnit);
 		      const size_t kk=std::get<2>(tUnit);
-		      const size_t index=std::get<3>(tUnit);
+		      //   const size_t index=std::get<3>(tUnit);
 		      
 		      ELog::EM<<"CLOSE "
 			      <<ii<<" "<<jj<<" "<<kk<<" : "
@@ -478,8 +479,11 @@ generatePlot(const std::string& fName,
 	  LY>=-yLen/2.0 && LY<=yLen/2.0 &&
 	  LZ>=-zLen/2.0 && LZ<=zLen/2.0)
 	{
-	  const size_t iX=static_cast<size_t>(nX*(LX/xLen+0.5));
-	  const size_t iY=static_cast<size_t>(nY*(LY/yLen+0.5));
+	  const size_t iX=static_cast<size_t>
+	    (static_cast<double>(nX)*(LX/xLen+0.5));
+	  const size_t iY=static_cast<size_t>
+	    (static_cast<double>(nY)*(LY/yLen+0.5));
+
 	  AreaMap.get()[iX][iY]=10.0;
 	  cnt++;
 	  if (!(cnt % 5000))
@@ -496,8 +500,10 @@ generatePlot(const std::string& fName,
 	  LY>=-yLen/2.0 && LY<=yLen/2.0 &&
 	  LZ>=-zLen/2.0 && LZ<=zLen/2.0)
 	{
-	  const size_t iX=static_cast<size_t>(nX*(LX/xLen+0.5));
-	  const size_t iY=static_cast<size_t>(nY*(LY/yLen+0.5));
+	  const size_t iX=static_cast<size_t>
+	    (static_cast<double>(nX)*(LX/xLen+0.5));
+	  const size_t iY=static_cast<size_t>
+	    (static_cast<double>(nY)*(LY/yLen+0.5));
 	  AreaMap.get()[iX][iY]=5.0;
 	  cnt++;
 	  if (!(cnt % 5000))

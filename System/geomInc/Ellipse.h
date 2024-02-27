@@ -3,7 +3,7 @@
  
  * File:   geomInc/Ellipse.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,9 @@ class Ellipse : public Intersect
   /// Calc centre
   bool hasCentre() const override { return true; }
   /// calculate the centre
-  Vec3D centre() const override { return Cent; }  
+  Vec3D centre() const override { return Cent; }
+  const Vec3D& getMajorAxis() const { return majorAxis; }
+  const Vec3D& getMinorAxis() const { return minorAxis; }
 
   Vec3D ParamPt(const double) const override;
 

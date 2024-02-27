@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monte/RuleSupport.cxx
+ * File:   exampleInc/exampleVariables.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,43 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <complex>
-#include <cmath>
-#include <vector>
-#include <set>
-#include <map>
-#include <stack>
-#include <algorithm>
-#include <iterator>
+#ifndef exampleVariables_h
+#define exampleVariables_h
 
-#include "FileReport.h"
-#include "OutputLog.h"
-#include "NameStack.h"
-#include "RegMethod.h"
-#include "MatrixBase.h"
-#include "HeadRule.h"
 
-namespace MonteCarlo
+namespace mainSystem
 {
-
-std::string
-getComplementShape(const std::string& innerUnit)
-  /*!
-    Process inner string to give complement  
-    \param extraUnion :: inner part
-    \return string of outer part
-   */
-{
-  ELog::RegMethod RegA("RuleSupport[F]","getExcludeShape");
-  HeadRule A;
-  A.procString(innerUnit);
-  A.makeComplement();
-  return A.display();
+  class inputParam;
 }
 
-}  // NAMESPACE MonteCarlo
+namespace setVariable
+{
+  void exampleVariables(FuncDataBase&);
+}
+
+#endif

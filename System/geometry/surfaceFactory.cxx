@@ -3,7 +3,7 @@
  
  * File:   geometry/surfaceFactory.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Quaternion.h"
 #include "support.h"
 #include "BaseVisit.h"
@@ -112,7 +111,7 @@ surfaceFactory::Instance()
   return SFact;
 }
 
-surfaceFactory::surfaceFactory() :
+surfaceFactory::surfaceFactory() : 
   wordGrid({
       {"ArbPoly",Geometry::SurfKey::ArbPoly},
       {"Cone",Geometry::SurfKey::Cone},

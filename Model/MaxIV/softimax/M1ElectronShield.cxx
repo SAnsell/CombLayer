@@ -140,7 +140,7 @@ M1ElectronShield::createSurfaces()
   */
 {
   ELog::RegMethod RegA("M1ElectronShield","createSurfaces");
-  
+  constexpr double deltaShift(0.01);   // extra to avoid touching cylinders
   // ELECTRON shield
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(elecLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(elecLength/2.0),Y);
@@ -160,6 +160,11 @@ M1ElectronShield::createSurfaces()
     (SMap,buildIndex+16,Origin+Z*(elecHeight/2.0-elecThick),Z);
 
 
+  Geometry::Vec3D endStop=
+    Origin-Y*(plateHeight/2.0+elecFrontLength+elecLength/2.0+deltaShift);
+  ModelSupport::buildPlane(SMap,buildIndex+10,endStop,Y);
+  
+			  
   ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(elecFrontLength+elecLength/2.0),Y);
   ModelSupport::buildCylinder(SMap,buildIndex+17,
@@ -283,8 +288,14 @@ M1ElectronShield::createObjects(Simulation& System)
       BI+=10;
     }
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"(-17:11) -2 403 -404 405 -406");
+    (SMap,buildIndex,"11 -2 403 -404 405 -406");
   makeCell("Plate",System,cellIndex++,electronMat,0.0,HR*cutHR);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-17 -11 403 -404");
+  makeCell("Plate",System,cellIndex++,electronMat,0.0,HR);  
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"17 -11 10 403 -404 405 -406");
+  makeCell("PlateVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   
   HR=ModelSupport::getHeadRule
@@ -336,9 +347,9 @@ M1ElectronShield::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 5 -6");
   addOuterSurf("Main",HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 403 -404 405 -406 (-17:11)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 403 -404 405 -406 10");
   addOuterSurf("Extra",HR);
-
+  
   return;
 }
 
@@ -428,7 +439,7 @@ M1ElectronShield::createVoidObjects(Simulation& System)
     }
 
   // Special for electron shield:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-403:404:-405:406");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-10:-403:404:-405:406");
   HR*=mirrorHR*tubeHR*mainFrontHR.complement()*tubeF;
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,HR);  
   HR=mirrorHR*tubeHR*mainBackHR.complement()*tubeB;

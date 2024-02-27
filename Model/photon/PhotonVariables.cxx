@@ -3,7 +3,7 @@
  
  * File:   photon/PhotonVariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ PhotonVariables(FuncDataBase& Control)
 		      "1.3202298449e+05 1.9013627678e+04 ");
 
   // PHOTONMOD3:
-  Control.addVariable("LeftTubesPreXYAngle",0.0);
+  Control.addVariable("LeftTubesPreZAngle",0.0);
   Control.addVariable("LeftTubesYStep",470.0);
   Control.addVariable("LeftTubesNTubes",8);
   Control.addVariable("LeftTubesGap",0.2);
@@ -118,7 +118,7 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("LeftCollWallMat","Copper");
 
   
-  Control.addVariable("RightTubesPreXYAngle",10.0);
+  Control.addVariable("RightTubesPreZAngle",10.0);
   Control.addVariable("RightTubesYStep",600.0);
   Control.addVariable("RightTubesNTubes",8);
   Control.addVariable("RightTubesGap",0.2);

@@ -2852,7 +2852,6 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   return SN;
 }
 
-
 size_t
 HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
   /*!
@@ -2900,20 +2899,44 @@ HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
 size_t
 HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 			       const Geometry::Vec3D& VUnit,
-			       std::vector<Geometry::Vec3D>& Pts,
-			       std::vector<int>& SNum) const
+			       std::vector<Geometry::Vec3D>& Pts)
+  const
   /*!
     Calculate a track of a line that intersects the rule.
     The surface number is the outgoing surface number.
     \param Org :: Origin of line
     \param VUnit :: Direction of line
-    \param Pts :: Points
-    \param SNum :: Surface number 
+    \param Pts :: Points [only]
     \return Number of points found
   */
 {
+  ELog::RegMethod RegA("HeadRule","calcSurfIntersection(PtS)");
+  std::vector<Geometry::interPoint> SPoints;
+
+  Pts.clear();
+  calcSurfIntersection(Org,VUnit,SPoints);
+  for(const Geometry::interPoint& SItem : SPoints)
+    Pts.push_back(SItem.Pt);
+
+  return Pts.size();
+}
+
+size_t
+HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
+			       const Geometry::Vec3D& VUnit,
+			       std::vector<Geometry::interPoint>& Pts) const
+  /*!
+    Calculate a track of a line that intersects the rule.
+    The surface number is the outgoing surface number.
+    \param Org :: Origin of line
+    \param VUnit :: Direction of line
+    \param Pts :: intersection pointsx
+    \return Number of points found
+
+  */
+{
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
- 
+
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   LI.getPoints(*this);
   const Geometry::Vec3D Unit=VUnit.unit();
@@ -2926,7 +2949,6 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
  
   // Clear data
   Pts.clear();
-  SNum.clear();
 
   // NOTE: we only check for and exiting surface by going
   // along the line.
@@ -2937,19 +2959,31 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
       const int NS=surfPtr->getName();	    // NOT SIGNED
       const int pAB=isValid(IPts[i],NS);
       const int mAB=isValid(IPts[i],-NS);
-      const int normD=surfPtr->sideDirection(IPts[i],Unit);
+      //      const int normD=surfPtr->sideDirection(IPts[i],Unit);
       const double lambda=dPts[i];
-      if (pAB!=mAB)  // out going positive surface
+      if (pAB!=mAB)  // exiting/entering surface
 	{
 	  // previously used signValue but now gone to
 	  // distValue BUT not 100% sure if that is correct.
-	  //	  const int signValue((pAB>0) ? 1 : -1);
-	  const int distValue((lambda>0) ? 1 : -1);
-	  SNum.push_back(distValue*normD*NS);
-	  Pts.push_back(Org+Unit*lambda);
+	  // const int distValue((lambda>0) ? 1 : -1);
+	  // Note that we want the surface to be correct
+	  // for OUTGOING
+	  const int signValue((pAB>0) ? -1 : 1);
+	  const bool outGoingFlag(pAB>0);
+	  Pts.push_back(Geometry::interPoint
+			({
+			  Org+Unit*lambda,
+			  dPts[i],
+			  signValue*NS,
+			  surfPtr,
+			  outGoingFlag
+			}));
 	}
-    }    
-  return SNum.size();
+    }
+  std::sort(Pts.begin(),Pts.end(),
+	    [](const Geometry::interPoint& A,const Geometry::interPoint& B)
+	    { return A.D<B.D; } );
+  return Pts.size();
 }
 
 int

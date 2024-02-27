@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testHeadRule.h
+ * File:   testInclude/testM2.h
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
  *
@@ -19,50 +19,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testHeadRule_h
-#define testHeadRule_h 
+#ifndef testM2_h
+#define testM2_h 
 
 /*!
-  \class testHeadRule
-  \brief Tests Rule holder for surface objects.
-  \author S. Ansell
-  \date July 2014
-  \version 1.0  
+  \class testM2 
+  \brief Test class for the multiData layout
+  \version 1.0
+  \date October 2023
+  \author S.Ansell
+  
+
 */
 
-
-class testHeadRule
+class testM2 
 {
 private:
 
-  void createSurfaces();
-
   //Tests 
-  int testAddInterUnion();
-  int testCalcSurfIntersection();
-  int testCountLevel();
-  int testEqual();
-  int testFindNodes();
-  int testFindTopNodes();
-  int testGetComponent();
-  int testGetLevel();
-  int testGetOppositeSurfaces();
-  int testInterceptRule();
-  int testIntersectHeadRule();
-  int testIsLineValid();
-  int testLevel();
-  int testPartEqual();
-  int testRemoveSurf();
-  int testReplacePart();
-  int testSurfValid();
-  int testSurfSet();
- 
-public:
+  int testInit();
+  int testEigenValues();
 
-  testHeadRule();
-  ~testHeadRule();
+ public:
 
-  int applyTest(const int);     
+  testM2();
+  ~testM2();
+
+  int applyTest(const int extra);
+  
 };
 
 #endif

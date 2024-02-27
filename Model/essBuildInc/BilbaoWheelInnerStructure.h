@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BilbaoWheelInnerStructure.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ class BilbaoWheelInnerStructure :
   double getSectorAngle(const size_t index) const
   { return 180.0*static_cast<double>(2*(index+1)-1)/static_cast<double>(nSectors); }
 
-  double sideIntersect(HeadRule&&,const Geometry::Plane*);
+  double sideIntersect(HeadRule,const Geometry::Plane*);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override {}
   

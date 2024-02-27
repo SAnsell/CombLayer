@@ -133,7 +133,7 @@ createBilbaoSource(const mainSystem::MITYPE& inputMap,
   bilSource.setEnergy(50.0);
   bilSource.setParticle(9);
   bilSource.setOffset(0,-10.0,0);
-  bilSource.setPreRotation(-45,0);
+  bilSource.setPreRotation(0,0,-45);
   bilSource.setSize(5.887,8.326);
 
   bilSource.createAll(inputMap,FC,sideIndex);

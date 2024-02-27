@@ -3,7 +3,7 @@
  
  * File:   sourceInc/RectangleSource.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ namespace SDef
 */
 
 class RectangleSource : 
-  public attachSystem::FixedOffsetUnit,
+  public attachSystem::FixedRotate,
   public SourceBase
 {
  private:
@@ -50,8 +50,6 @@ class RectangleSource :
   double angleSpread;           ///< Angle distribution
   
   void populate(const mainSystem::MITYPE&) override;
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int) override;
 
  public:
 
@@ -63,13 +61,15 @@ class RectangleSource :
 
   /// accessor to power
   void setRectangle(const double,const double);
-  
+
+  using FixedComp::createAll;
   void createAll(const mainSystem::MITYPE&,
 		 const attachSystem::FixedComp&,
 		 const long int);
 
   void rotate(const localRotate&) override;
   void createSource(SDef::Source&) const override;
+
   void write(std::ostream&) const override;
   void writePHITS(std::ostream&) const override;
   void writeFLUKA(std::ostream&) const override;

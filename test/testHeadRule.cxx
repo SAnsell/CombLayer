@@ -3,7 +3,7 @@
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,6 +126,7 @@ testHeadRule::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testHeadRule::testAddInterUnion,
+      &testHeadRule::testCalcSurfIntersection,
       &testHeadRule::testCountLevel,
       &testHeadRule::testEqual,
       &testHeadRule::testFindNodes,      
@@ -146,6 +147,7 @@ testHeadRule::applyTest(const int extra)
   const std::string TestName[]=
     {
       "AddInterUnion",
+      "CalcSurfIntersection",
       "CountLevel",
       "Equal",
       "FindNodes",
@@ -663,6 +665,59 @@ testHeadRule::testIntersectHeadRule()
 	    ELog::EM<<"Actual   :"<<Pts[index]<<ELog::endDiag;
 	  
 	  return -1;
+	}
+    }
+
+  return 0;
+}
+
+
+int
+testHeadRule::testCalcSurfIntersection()
+  /*!
+    Tests the intersection between line and headrule
+    \return 0 sucess / -ve on failure
+  */
+{
+  ELog::RegMethod RegItem("testHeadRule","testCalcIntersection");
+
+  createSurfaces();
+  
+  // HeadRule : Origin : Axis ::: Index : Point
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
+		     size_t,Geometry::Vec3D> TTYPE;
+    
+  // Target / result
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)",
+	    Geometry::Vec3D(0,0,-20),Geometry::Vec3D(0,0,1),
+	    0,Geometry::Vec3D(0,0,0)),
+      TTYPE("1 -2 3 -4 5 -6",Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,1),
+	    0,Geometry::Vec3D(0,0,0))
+    };
+ 
+  for(const TTYPE& tc : Tests)
+    {
+      HeadRule HM(std::get<0>(tc));
+      const Geometry::Vec3D& O(std::get<1>(tc));
+      const Geometry::Vec3D& A(std::get<2>(tc));
+      HM.populateSurf();
+      std::vector<Geometry::interPoint> Pts;
+      const size_t nPts=
+	HM.calcSurfIntersection(O,A,Pts);
+
+      
+      ELog::EM<<"-----------------------------------"<<ELog::endDiag;
+      ELog::EM<<"Origin = "<<O<<" == "<<A<<ELog::endDiag;
+      const size_t index(std::get<3>(tc));
+      const Geometry::Vec3D expectPoint(std::get<4>(tc));
+
+      for(const Geometry::interPoint& PItem : Pts)
+	{
+	  ELog::EM<<"Pt == "<<PItem.Pt<<" : "<<PItem.SNum
+		  <<" D="<<PItem.D<<" F="<<PItem.outFlag<<ELog::endDiag;
+
 	}
     }
 
