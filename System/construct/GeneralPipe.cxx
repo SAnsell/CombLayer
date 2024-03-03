@@ -3,7 +3,7 @@
 
  * File:   construct/GeneralPipe.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -476,7 +476,8 @@ GeneralPipe::createRectangleSurfaces(const double width,
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*W,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*H,Z);
-  
+
+  ELog::EM<<"Pip thick == "<<pipeThick<<ELog::endDiag;
   H+=pipeThick;
   W+=pipeThick;
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*W,X);
@@ -559,9 +560,9 @@ GeneralPipe::createOuterVoid(Simulation& System,
   const HeadRule& frontHR=getRule("front");
   const HeadRule& backHR=getRule("back");
   HeadRule HR;
-  
   if (outerVoid)
     {
+	
       if (flangeA.type==1 && flangeB.type==1) // both cylinders
 	{
 	  if (std::abs(flangeA.radius-flangeB.radius)<Geometry::zeroTol)

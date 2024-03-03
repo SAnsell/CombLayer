@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/heimdal/HEIMDAL.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,7 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::PlateUnit> FocusCB;
 
   /// 6.0 - 6.5m Vac piper
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  std::shared_ptr<constructSystem::RectanglePipe> VPipeC;
   /// Cold guide from 6.0 to 6.5metre
   std::shared_ptr<beamlineSystem::PlateUnit> FocusTC;
   /// Thermal guide from 6.0 to 6metre
@@ -152,7 +152,18 @@ class HEIMDAL : public attachSystem::CopiedComp
   /// Themal guide from 20m to bunker wall
   std::shared_ptr<beamlineSystem::PlateUnit> FocusTF;
 
+  // BUNKER AND OUTWARD:
+  //---------------------
+  
+  /// Bunker insert [specialized]
+  std::shared_ptr<essSystem::CompBInsert> BInsert;
+  /// Vac pipe in wall (if used)
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
+  /// Gamma 
+  std::shared_ptr<beamlineSystem::BenderUnit> FocusWall;
 
+
+  
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const attachSystem::FixedComp&,
 			const long int,const int);

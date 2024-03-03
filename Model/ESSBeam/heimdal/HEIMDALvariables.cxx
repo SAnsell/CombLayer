@@ -88,7 +88,7 @@ HEIMDALvariables(FuncDataBase& Control)
 
   RPipeGen.setCF<CF200>();
   RPipeGen.setRectPipe(16.0,22.0);
-  RPipeGen.setRectWindow(16.0,16.0,0.5); 
+  RPipeGen.setRectWindow(16.5,22.5,0.3); 
   RPipeGen.setRectFlange(20.0,26.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
@@ -123,7 +123,7 @@ HEIMDALvariables(FuncDataBase& Control)
 
   RPipeGen.generatePipe(Control,"heimdalPipeB",46.0);
   Control.addVariable("heimdalPipeBYStep",6.5);
-  Control.addVariable("heimdalPipeBZStep",-8.0);
+  Control.addVariable("heimdalPipeBZStep",-6.0);
 
   
   FGen.setLayer(1,0.5,"Aluminium");
@@ -133,7 +133,7 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"heimdalFTB",44.0,4.0,4.0,4.0,4.0);
   FGen.generateTaper(Control,"heimdalFCB",44.0,2.0,2.0,2.0,2.0);
 
-  RPipeGen.setPipe(7.0,24.0);
+  //  RPipeGen.setPipe(7.0,24.0);
   RPipeGen.generatePipe(Control,"heimdalPipeC",46.0);
   Control.addVariable("heimdalPipeCYStep",3.5);
   

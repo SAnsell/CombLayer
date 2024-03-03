@@ -65,6 +65,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "World.h"
+#include "AttachSupport.h"
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "GuideUnit.h"
@@ -76,6 +77,7 @@
 #include "RectanglePipe.h"
 #include "Bunker.h"
 #include "SingleChopper.h"
+#include "CompBInsert.h"
 
 #include "HEIMDAL.h"
 
@@ -95,7 +97,7 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusTB(new beamlineSystem::PlateUnit(newName+"FTB")),
   FocusCB(new beamlineSystem::PlateUnit(newName+"FCB")),
 
-  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  VPipeC(new constructSystem::RectanglePipe(newName+"PipeC")),
   FocusTC(new beamlineSystem::PlateUnit(newName+"FTC")),
   FocusCC(new beamlineSystem::PlateUnit(newName+"FCC")),
 
@@ -120,7 +122,15 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   T0Disk(new essConstruct::DiskChopper(newName+"T0Disk")),
 
   VPipeTF(new constructSystem::VacuumPipe(newName+"PipeTF")),
-  FocusTF(new beamlineSystem::PlateUnit(newName+"FTF"))
+  FocusTF(new beamlineSystem::PlateUnit(newName+"FTF")),
+
+  // BUNKER AND OUTWARD
+  // -------------------
+  
+  BInsert(new CompBInsert(newName+"CInsert")),
+  VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
+  FocusWall(new beamlineSystem::BenderUnit(newName+"FWall"))
+
   
  /*!
     Constructor
@@ -192,7 +202,6 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
 
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
 
-
   VPipeB->addAllInsertCell(bunkerVoid);
   VPipeB->createAll(System,FTA,thermalIndex);
 
@@ -208,8 +217,6 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   ELog::EM<<"Thermal = "<<FocusTB->getLinkAxis(2)
 	  <<ELog::endDiag;
 
-  ELog::EM<<"EARLY RETURN"<<ELog::endDiag;
-  return;
   
   VPipeC->addAllInsertCell(bunkerVoid);
   VPipeC->createAll(System,*VPipeB,2);
@@ -291,6 +298,7 @@ HEIMDAL::buildIsolated(Simulation& System,const int voidCell)
 {
   ELog::RegMethod RegA("HEIMDAL","buildIsolated");
 
+  ELog::EM<<"Build isolated"<<ELog::endDiag;
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
@@ -308,8 +316,6 @@ HEIMDAL::buildIsolated(Simulation& System,const int voidCell)
   if (startPoint<1)
     {
       buildBunkerUnits(System,*FTA,FTindex,*FCA,FCindex,voidCell);
-
-
       //      FTA= &(FocusF->getKey("Guide0"));
       //      FTA= &(FocusF->getKey("Guide0"));
       FCindex= 2;
@@ -380,12 +386,16 @@ HEIMDAL::build(Simulation& System,
 
   // // IN WALL
   // // Make bunker insert
-  // BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
-  // attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+  BInsert->setCutSurf("front",bunkerObj,-1);
+  BInsert->setCutSurf("back",bunkerObj,-2);
+  BInsert->createAll(System,*FocusTA,2);
+
+
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   // // using 7 : mid point
-  // FocusWall->addInsertCell(BInsert->getCell("Void"));
-  // FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
   
   if (stopPoint==3) return;                      // STOP At bunker exit
   //  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);

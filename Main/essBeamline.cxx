@@ -3,7 +3,7 @@
  
  * File:   Main/essBeamline.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ main(int argc,char* argv[])
       
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
-      
+
       // The big variable setting
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       const std::set<std::string> beamlines=
@@ -98,7 +98,6 @@ main(int argc,char* argv[])
       mainSystem::setMaterialsDataBase(IParam);
 
       essSystem::makeSingleLine ESSObj;
-      World::createOuterObjects(*SimPtr);
       ESSObj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
