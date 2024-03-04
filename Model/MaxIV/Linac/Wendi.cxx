@@ -79,8 +79,28 @@ Wendi::Wendi(const Wendi& A) :
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  radius(A.radius),height(A.height),
-  mainMat(A.mainMat)
+  radius(A.radius),
+  cRadius(A.cRadius),
+  height(A.height),
+  wRadius(A.wRadius),
+  wThick(A.wThick),
+  wHeight(A.wHeight),
+  wOffset(A.wOffset),
+  cOffset(A.cOffset),
+  heRadius(A.heRadius),
+  heWallThick(A.heWallThick),
+  heHeight(A.heHeight),
+  rubberThick(A.rubberThick),
+  bottomInsulatorRadius(A.bottomInsulatorRadius),
+  bottomInsulatorHeight(A.bottomInsulatorHeight),
+  topInsulatorRadius(A.topInsulatorRadius),
+  topInsulatorHeight(A.topInsulatorHeight),
+  modMat(A.modMat),
+  wMat(A.wMat),
+  heWallMat(A.heWallMat),
+  heMat(A.heMat),
+  airMat(A.airMat),
+  rubberMat(A.rubberMat)
   /*!
     Copy constructor
     \param A :: Wendi to copy
@@ -101,8 +121,27 @@ Wendi::operator=(const Wendi& A)
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       radius=A.radius;
+      cRadius=A.cRadius;
       height=A.height;
-      mainMat=A.mainMat;
+      wRadius=A.wRadius;
+      wThick=A.wThick;
+      wHeight=A.wHeight;
+      wOffset=A.wOffset;
+      cOffset=A.cOffset;
+      heRadius=A.heRadius;
+      heWallThick=A.heWallThick;
+      heHeight=A.heHeight;
+      rubberThick=A.rubberThick;
+      bottomInsulatorRadius=A.bottomInsulatorRadius;
+      bottomInsulatorHeight=A.bottomInsulatorHeight;
+      topInsulatorRadius=A.topInsulatorRadius;
+      topInsulatorHeight=A.topInsulatorHeight;
+      modMat=A.modMat;
+      wMat=A.wMat;
+      heWallMat=A.heWallMat;
+      heMat=A.heMat;
+      airMat=A.airMat;
+      rubberMat=A.rubberMat;
     }
   return *this;
 }
@@ -135,9 +174,28 @@ Wendi::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
+  cRadius=Control.EvalVar<double>(keyName+"CounterTubeRadius");
   height=Control.EvalVar<double>(keyName+"Height");
+  wRadius=Control.EvalVar<double>(keyName+"TungstenRadius");
+  wThick=Control.EvalVar<double>(keyName+"TungstenThick");
+  wHeight=Control.EvalVar<double>(keyName+"TungstenHeight");
+  wOffset=Control.EvalVar<double>(keyName+"TungstenOffset");
+  cOffset=Control.EvalVar<double>(keyName+"CounterOffset");
+  heRadius=Control.EvalVar<double>(keyName+"HeRadius");
+  heWallThick=Control.EvalVar<double>(keyName+"HeWallThick");
+  heHeight=Control.EvalVar<double>(keyName+"HeHeight");
+  rubberThick=Control.EvalVar<double>(keyName+"RubberThick");
+  bottomInsulatorRadius=Control.EvalVar<double>(keyName+"BottomInsulatorRadius");
+  bottomInsulatorHeight=Control.EvalVar<double>(keyName+"BottomInsulatorHeight");
+  topInsulatorRadius=Control.EvalVar<double>(keyName+"TopInsulatorRadius");
+  topInsulatorHeight=Control.EvalVar<double>(keyName+"TopInsulatorHeight");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModeratorMat");
+  wMat=ModelSupport::EvalMat<int>(Control,keyName+"TungstenMat");
+  heWallMat=ModelSupport::EvalMat<int>(Control,keyName+"HeWallMat");
+  heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");
+  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
+  rubberMat=ModelSupport::EvalMat<int>(Control,keyName+"RubberMat");
 
   return;
 }
@@ -150,10 +208,34 @@ Wendi::createSurfaces()
 {
   ELog::RegMethod RegA("Wendi","createSurfaces");
 
-  SurfMap::makeCylinder("ModeratorRadius",SMap,buildIndex+7,Origin,Z,radius);
-
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  SurfMap::makeCylinder("CounterCyl",SMap,buildIndex+7,Origin,Z,cRadius);
+
+  SurfMap::makePlane("TungstenFloorUpper",SMap,buildIndex+15,Origin-Z*(height/2.0-wOffset-wThick),Z);
+  SurfMap::makeShiftedPlane("ChamberFloor",SMap,buildIndex+16,buildIndex+15,Z,cOffset);
+  SurfMap::makePlane("TungstenFloorLower",SMap,buildIndex+25,Origin-Z*(height/2.0-wOffset),Z);
+  SurfMap::makeShiftedPlane("TungstenUpper",SMap,buildIndex+26,buildIndex+25,Z,wHeight);
+  SurfMap::makeCylinder("TungstenInnerCyl",SMap,buildIndex+17,Origin,Z,wRadius);
+  SurfMap::makeCylinder("TungstenOuterCyl",SMap,buildIndex+27,Origin,Z,wRadius+wThick);
+
+  SurfMap::makeShiftedPlane("HeFloor",SMap,buildIndex+36,buildIndex+16,Z,heWallThick);
+  SurfMap::makeShiftedPlane("HeRoofLower",SMap,buildIndex+45,buildIndex+36,Z,heHeight);
+  SurfMap::makeShiftedPlane("HeRoofUpper",SMap,buildIndex+46,buildIndex+45,Z,heWallThick);
+
+  SurfMap::makeCylinder("ModeratorCyl",SMap,buildIndex+37,Origin,Z,radius);
+
+  SurfMap::makeCylinder("HeCylInner",SMap,buildIndex+47,Origin,Z,heRadius);
+  SurfMap::makeCylinder("HeCylOuter",SMap,buildIndex+57,Origin,Z,heRadius+heWallThick);
+
+  SurfMap::makeShiftedPlane("BottomInsulatorRoof",SMap,buildIndex+66,buildIndex+16,Z,
+			    bottomInsulatorHeight);
+  SurfMap::makeCylinder("BottomInsulatorCyl",SMap,buildIndex+67,Origin,Z,bottomInsulatorRadius);
+  SurfMap::makeShiftedPlane("TopInsulatorFloor",SMap,buildIndex+75,buildIndex+46,Z,
+			    -topInsulatorHeight);
+  SurfMap::makeCylinder("TopInsulatorCyl",SMap,buildIndex+77,Origin,Z,topInsulatorRadius);
+
+  SurfMap::makeShiftedPlane("RubberFloor",SMap,buildIndex+85,buildIndex+6,Z,-rubberThick);
 
   return;
 }
@@ -168,9 +250,56 @@ Wendi::createObjects(Simulation& System)
   ELog::RegMethod RegA("Wendi","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -47 (66 -75 : 67 36 -66 : 77 75 -45) ");
+  makeCell("He3",System,cellIndex++,heMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 47 -57 36 -45 ");
+  makeCell("HeSideWall",System,cellIndex++,heWallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 57 -7 16 -46 ");
+  makeCell("HeSideWallAir",System,cellIndex++,airMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 77 -57 45 -46 ");
+  makeCell("HeRoof",System,cellIndex++,heWallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 46 -85 ");
+  makeCell("Chamber",System,cellIndex++,airMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 85 -6 ");
+  makeCell("Rubber",System,cellIndex++,rubberMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 67 -57 16 -36 ");
+  makeCell("HeFloor",System,cellIndex++,heWallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -67 16 -66 ");
+  makeCell("BottomInsulator",System,cellIndex++,modMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -77 75 -46 ");
+  makeCell("TopInsulator",System,cellIndex++,modMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 15 -16 ");
+  makeCell("ModeratorBelowChamber",System,cellIndex++,modMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -17 16 -26 ");
+  makeCell("ModeratorInner",System,cellIndex++,modMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 17 -27 25 -26 ");
+  makeCell("TungstenSide",System,cellIndex++,wMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 25 -15 ");
+  makeCell("TungstenBottom",System,cellIndex++,wMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 27 -37 25 -26 ");
+  makeCell("ModeratorSide",System,cellIndex++,modMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 7 -37 26 -6 ");
+  makeCell("ModeratorTop",System,cellIndex++,modMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -37 5 -25 ");
+  makeCell("ModeratorBottom",System,cellIndex++,modMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -37 5 -6 ");
   addOuterSurf(HR);
 
   return;

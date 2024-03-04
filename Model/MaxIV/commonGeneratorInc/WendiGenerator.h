@@ -40,11 +40,28 @@ class WendiGenerator
  private:
 
   double radius;                ///< Moderator radius
+  double cRadius;               ///< Counter tube outer radius
   double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double wRadius;               ///< Tungsten layer inner radius
+  double wThick;                ///< Tungsten layer thickness
+  double wHeight;               ///< Tungsten layer full height (with support)
+  double wOffset;               ///< Tungsten layer vertical offset from the bottom surface
+  double cOffset;               ///< Counter tube vertical offset from Tungsten
+  double heRadius;              ///< Active volume inner radius
+  double heWallThick;           ///< Counter hull wall thickness
+  double heHeight;              ///< Active volume height
+  double rubberThick;           ///< Borated rubber patch thickness
+  double bottomInsulatorRadius; ///< Bottom insulator radius
+  double bottomInsulatorHeight; ///< Bottom insulator height
+  double topInsulatorRadius;    ///< Top insulator radius
+  double topInsulatorHeight;    ///< Top insulator height
 
-  std::string mainMat;          ///< Main material
-  std::string wallMat;          ///< Wall material
+  std::string modMat;           ///< Moderator material
+  std::string wMat;             ///< Tungsten powder material
+  std::string heWallMat;        ///< Active volume wall material
+  std::string heMat;            ///< Active volume material
+  std::string airMat;           ///< Air material
+  std::string rubberMat;        ///< Borated rubber material
 
  public:
 

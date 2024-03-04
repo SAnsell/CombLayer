@@ -28,7 +28,7 @@ namespace xraySystem
 {
 
 /*!
-  \class Wendi
+  \class Wendi-II
   \version 1.0
   \author Konstantin Batkov
   \date February 2024
@@ -43,9 +43,29 @@ class Wendi : public attachSystem::ContainedComp,
  private:
 
   double radius;                ///< Radius
+  double cRadius;               ///< Counter tube outer radius
   double height;                ///< Height
+  double wRadius;               ///< Tungsten layer inner radius
+  double wThick;                ///< Tungsten layer thickness
+  double wHeight;               ///< Tungsten layer full height (with support)
+  double wOffset;               ///< Tungsten layer vertical offset from the bottom surface
+  double cOffset;               ///< Counter tube vertical offset from Tungsten
+  double heRadius;              ///< Active volume inner radius
+  double heWallThick;           ///< Counter hull wall thickness
+  double heHeight;              ///< Active volume height
+  double rubberThick;           ///< Borated rubber patch thickness
 
-  int mainMat;                   ///< Main material
+  double bottomInsulatorRadius; ///< Bottom insulator radius
+  double bottomInsulatorHeight; ///< Bottom insulator height
+  double topInsulatorRadius;    ///< Top insulator radius
+  double topInsulatorHeight;    ///< Top insulator height
+
+  int modMat;                   ///< Moderator material
+  int wMat;                     ///< Tungsten powder material
+  int heWallMat;                ///< Active volume wall material
+  int heMat;                    ///< Active volume material
+  int airMat;                   ///< Air material
+  int rubberMat;                ///< Borated rubber material
 
   void populate(const FuncDataBase&);
   void createSurfaces();
