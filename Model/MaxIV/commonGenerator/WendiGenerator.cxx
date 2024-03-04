@@ -50,7 +50,9 @@ namespace setVariable
 {
 
 WendiGenerator::WendiGenerator() :
-  length(10.0),width(5.0),height(15.0),wallThick(1.0),
+  radius(5.0),
+  height(21.0),
+  wallThick(1.0),
   mainMat("Void"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
@@ -74,8 +76,7 @@ WendiGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("WendiGenerator","generate");
 
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"MainMat",mainMat);

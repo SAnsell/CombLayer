@@ -42,8 +42,7 @@ class Wendi : public attachSystem::ContainedComp,
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
+  double radius;                ///< Radius
   double height;                ///< Height
 
   int mainMat;                   ///< Main material

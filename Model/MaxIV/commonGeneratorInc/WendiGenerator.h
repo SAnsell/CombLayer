@@ -39,8 +39,7 @@ class WendiGenerator
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
+  double radius;                ///< Moderator radius
   double height;                ///< Height
   double wallThick;             ///< Wall thickness
 
