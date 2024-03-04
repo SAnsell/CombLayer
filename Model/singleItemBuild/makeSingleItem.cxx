@@ -182,6 +182,7 @@
 #include "LegoBrick.h"
 #include "HeimdalCave.h"
 #include "M1Detail.h"
+#include "Wendi.h"
 
 #include "makeSingleItem.h"
 
@@ -241,7 +242,7 @@ makeSingleItem::build(Simulation& System,
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid",
-	"M1detail","M1Full",
+	"M1detail","M1Full","Wendi",
 	"Help","help"
     });
 
@@ -391,10 +392,10 @@ makeSingleItem::build(Simulation& System,
 	BS(new xraySystem::BeamScrapper("BeamScrapper"));
       OR.addObject(BS);
 
-      
+
       BS->addAllInsertCell(voidCell);
 
-	
+
       BS->setBeamAxis(Geometry::Vec3D(-10.0,0.0,0.0),
 		      Geometry::Vec3D(1,0,0));
       BS->createAll(System,World::masterOrigin(),0);
@@ -980,7 +981,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  
+
   if (item=="HalfElectronPipe")
     {
       std::shared_ptr<xraySystem::HalfElectronPipe>
@@ -1749,6 +1750,17 @@ makeSingleItem::build(Simulation& System,
       solenoid->setCutSurf("Inner",*pipe,"outerPipe");
       solenoid->addInsertCell(voidCell);
       solenoid->createAll(System,*pipe,0);
+
+      return;
+    }
+
+  if (item == "Wendi")
+    {
+      const auto wendi = std::make_shared<xraySystem::Wendi>("Wendi");
+      OR.addObject(wendi);
+
+      wendi->addInsertCell(voidCell);
+      wendi->createAll(System,World::masterOrigin(),0);
 
       return;
     }

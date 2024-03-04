@@ -142,6 +142,7 @@
 #include "TubeDetBoxGenerator.h"
 #include "RFGunGenerator.h"
 #include "SolenoidGenerator.h"
+#include "WendiGenerator.h"
 
 namespace setVariable
 {
@@ -528,7 +529,7 @@ SingleItemVariables(FuncDataBase& Control)
   //  Control.addVariable("BeamScrapperXStep",2668.0016244323656);
   //  Control.addVariable("BeamScrapperYStep",0.0);
   //  Control.addVariable("BeamScrapperZAngle",-180.0);
-  
+
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
   Control.addVariable("YAGYAngle",-90.0);
@@ -881,6 +882,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SolenoidGenerator SolGen;
   SolGen.generate(Control,"Solenoid");
+
+  WendiGenerator wGen;
+  wGen.generate(Control,"Wendi");
 
   return;
 }
