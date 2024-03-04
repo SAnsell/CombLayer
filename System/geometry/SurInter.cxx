@@ -922,7 +922,7 @@ interceptRuleConst(const HeadRule& HR,
   ELog::RegMethod RegA("SurInter[F]","interceptRuleConst");
 
   MonteCarlo::LineIntersectVisit LI(Origin,N);
-  const std::vector<Geometry::Vec3D> Pts=
+  const std::vector<Geometry::interPoint> Pts=
     LI.getPoints(HR);
 
   // EMPTY return

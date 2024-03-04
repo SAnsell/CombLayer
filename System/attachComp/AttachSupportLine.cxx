@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupportLine.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,14 +110,14 @@ checkLineIntersect(const FixedComp& InsertFC,
               MonteCarlo::LineIntersectVisit LI(IP,UV);
 	      for(const Geometry::Surface* SPtr : surfSet)
                 SPtr->acceptVisitor(LI);
-              
-              const std::vector<double>& distVec(LI.getDistance());
-              const std::vector<Geometry::Vec3D>& dPts(LI.getPoints());
-              
-              for(size_t dI=0;dI<dPts.size();dI++)
+
+	      
+              const std::vector<Geometry::interPoint>&
+		IPts(LI.getIntercept());
+              for(const Geometry::interPoint& iPt : IPts)
                 {
-                  if ((distVec[dI]>0.0 && distVec[dI]<LLen) &&
-                      CellObj.isValid(dPts[dI]))
+                  if ((iPt.D>0.0 && iPt.D<LLen) &&
+                      CellObj.isValid(iPt.Pt))
 		    return 1;
                 }
 	    }

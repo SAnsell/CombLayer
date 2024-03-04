@@ -52,7 +52,7 @@ private:
   // std::vector<const Geometry::Surface*> surfVec;     ///< Surfaces
   long int neutIndex;                                ///< Particle number
   
-  void procTrack(const Geomtery::Vec3D&,
+  void procTrack(const Geometry::Vec3D&,
 		 const Geometry::Surface*);
   ///\cond PRIVATE
   LineIntersectVisit(const LineIntersectVisit&);
@@ -84,13 +84,15 @@ public:
   void Accept(const HeadRule&) override;
   
   /// Clear track
-  void clearTrack() 
-  { PtVec.clear(); distVec.clear(); surfVec.clear(); } 
+  void clearTrack() { IPts.clear(); }
+  const std::vector<Geometry::interPoint>& getIntercept() const 
+  { return IPts; }
   
   /// Distance Accessor
-  const std::vector<double>& getDistance() const 
-  { return distVec; }
-  
+  // const std::vector<double>& getDistance() const 
+  // { return distVec; }
+
+  /*
   /// Point Accessor
   const std::vector<Geometry::Vec3D>& getPoints() const { return PtVec; }
   /// Pointer Accessor
@@ -99,7 +101,13 @@ public:
   /// Index Accessor
   const std::vector<const Geometry::Surface*>& getSurfPointers() const 
   { return surfVec; }
+  */
   
+  const std::vector<Geometry::interPoint>& getInter(const Geometry::Surface*);
+  const std::vector<Geometry::interPoint>& getInter(const HeadRule&);
+  const std::vector<Geometry::interPoint>& getInter(const Geometry::Surface*,
+					       const Geometry::Surface*,
+					       const int);
   const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*);
   const std::vector<Geometry::Vec3D>& getPoints(const HeadRule&);
   const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*,
@@ -115,7 +123,7 @@ public:
   Geometry::Vec3D getPoint(HeadRule&,
 			   const Geometry::Vec3D&);
   /// Get number in intersection
-  size_t getNPoints() const { return PtVec.size(); }
+  size_t getNPoints() const { return IPts.size(); }
   
   // Re-set the line
   void setLine(const Geometry::Vec3D&,const Geometry::Vec3D&);
