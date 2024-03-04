@@ -90,6 +90,7 @@
 #include "GaugeGenerator.h"
 #include "LocalShieldingGenerator.h"
 #include "SPFCameraShieldGenerator.h"
+#include "WendiGenerator.h"
 
 namespace setVariable
 {
@@ -3673,6 +3674,11 @@ LINACvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("linacVariables[F]","LINACvariables");
 
   linacVar::wallVariables(Control,"InjectionHall");
+
+  WendiGenerator wGen;
+  wGen.generate(Control,"Wendi1");
+  Control.addVariable("Wendi1XStep", -200);
+  Control.addVariable("Wendi1YStep", 4500);
 
   // Segment 1-14
   Control.addVariable("l2spfXStep",linacVar::zeroX);

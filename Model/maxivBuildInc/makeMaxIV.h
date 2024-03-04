@@ -58,7 +58,6 @@ class makeMaxIV
   /// Gun test facility
   std::shared_ptr<MAXIV::GunTestFacility::GunTestFacility> gtf;
 
-
   void populateStopPoint(const mainSystem::inputParam&,
 			 const std::set<std::string>&,
 			 std::map<std::string,std::string>&) const;

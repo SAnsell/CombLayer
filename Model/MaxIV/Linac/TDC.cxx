@@ -118,6 +118,7 @@
 #include "Segment47.h"
 #include "Segment48.h"
 #include "Segment49.h"
+#include "Wendi.h"
 
 #include "TDC.h"
 
@@ -129,6 +130,7 @@ TDC::TDC(const std::string& KN) :
   attachSystem::CellMap(),
   noCheck(0),pointCheck(0),
   injectionHall(new InjectionHall("InjectionHall")),
+  wendi(std::make_shared<xraySystem::Wendi>("Wendi1")),
   SegMap
   ({
     { "Segment1",std::make_shared<Segment1>("L2SPF1") },
@@ -193,6 +195,7 @@ TDC::TDC(const std::string& KN) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(injectionHall);
+  OR.addObject(wendi);
   for(const auto& [ key, tdcItem ] : SegMap)
     OR.addObject(tdcItem);
 }
@@ -535,6 +538,8 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
+  wendi->addInsertCell(injectionHall->getCell("SPFVoid"));
+  wendi->createAll(System,*injectionHall,"#front");
 
   // special case of Segment10 : Segment26/27/28/29
   std::shared_ptr<attachSystem::BlockZone> seg10Zone;

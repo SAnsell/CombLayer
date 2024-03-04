@@ -47,6 +47,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedRotate.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "CopiedComp.h"
@@ -74,6 +75,7 @@
 
 #include "TDC.h"
 #include "GunTestFacility.h"
+#include "Wendi.h"
 
 #include "makeMaxIV.h"
 

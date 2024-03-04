@@ -22,6 +22,10 @@
 #ifndef tdcSystem_TDC_h
 #define tdcSystem_TDC_h
 
+namespace xraySystem
+{
+  class Wendi;
+}
 
 namespace tdcSystem
 {
@@ -49,27 +53,28 @@ class TDC :
   typedef std::map<std::string,std::shared_ptr<TDCsegment>> SegTYPE;
   typedef std::map<std::string,std::shared_ptr<attachSystem::BlockZone>> IZTYPE;
 
-  /// to stop end-build check (length etc) 
+  /// to stop end-build check (length etc)
   bool noCheck;
   /// stop producing a full list of objects/datum points
   bool pointCheck;
-  
+
   std::set<std::string> activeINJ;   ///< active components
 
   std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
+  std::shared_ptr<xraySystem::Wendi> wendi;
 
   /// Map of segmentName : TDCsegment
-  SegTYPE SegMap; 
+  SegTYPE SegMap;
 
   /// Map of segmentName : BlockZone
   IZTYPE bZone;
 
   /// HeadRules of original spaces:
   std::map<int,HeadRule> originalSpaces;
-  
+
   HeadRule buildSurround(const FuncDataBase&,const std::string&,
 			 const std::string&);
-  
+
   std::shared_ptr<attachSystem::BlockZone>
   buildInnerZone(Simulation&,
 		 const std::string&,
@@ -78,10 +83,10 @@ class TDC :
   void setVoidSpace(const Simulation&,
 		    const std::shared_ptr<attachSystem::BlockZone>&,
 		    const std::string&);
-  
+
   void reconstructInjectionHall(Simulation&);
-  
-  
+
+
  public:
 
   TDC(const std::string&);
