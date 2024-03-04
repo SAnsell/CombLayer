@@ -116,6 +116,8 @@ HeimdalCave::populate(const FuncDataBase& Control)
   mainThick=Control.EvalVar<double>(keyName+"MainThick");
   subThick=Control.EvalVar<double>(keyName+"SubThick");
 
+  extGap=Control.EvalVar<double>(keyName+"ExtGap");
+  
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
@@ -145,6 +147,7 @@ HeimdalCave::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+11,
 			   Origin-Y*(length/2.0+mainThick),Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(length/2.0+mainThick),Y);
 
@@ -155,7 +158,14 @@ HeimdalCave::createSurfaces()
   
   ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(height/2.0+mainThick),Z);
+  // extension gap for covering
 
+  ModelSupport::buildPlane(SMap,buildIndex+21,
+			   Origin-Y*(length/2.0+mainThick+extGap),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+23,
+			   Origin-X*(width/2.0+mainThick+extGap),X);
+  
   // corridor gap
   ModelSupport::buildPlane(SMap,buildIndex+112,
 			   Origin+Y*(length/2.0-doorLength),Y);
@@ -233,6 +243,7 @@ HeimdalCave::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -3 13 -6");
   makeCell("leftWall",System,cellIndex++,wallMat,0.0,HR*floorHR);  
 
+     
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -112 4 -14 -6");
   makeCell("rightWall",System,cellIndex++,wallMat,0.0,HR*floorHR);  
 
@@ -250,6 +261,15 @@ HeimdalCave::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"2 -12 13 -14 -6");
   makeCell("backWall",System,cellIndex++,wallMat,0.0,HR*floorHR);  
 
+
+ // Wall extension:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -13 23 -6");
+  makeCell("leftExtGap",System,cellIndex++,voidMat,0.0,HR*floorHR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"21 -11 13 -134 -6 (-303:304:-305:306)");
+  makeCell("frontExtGap",System,cellIndex++,voidMat,0.0,HR*floorHR); 
+  
   // corridor
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -151 14 -124 -6");
   makeCell("corridor",System,cellIndex++,voidMat,0.0,HR*floorHR);  
@@ -309,7 +329,7 @@ HeimdalCave::createObjects(Simulation& System)
   makeCell("backVoid",System,cellIndex++,voidMat,0.0,HR*floorHR);  
 
   // here is where we difine the outer box/boundary:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -121 13 -134 -16");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -121 23 -134 -16");
   addOuterSurf("Main",HR*floorHR);
   return;
 }

@@ -1266,6 +1266,7 @@ makeSingleItem::build(Simulation& System,
 
   if (item == "HeimdalCave")
     {
+
       std::shared_ptr<essSystem::HeimdalCave>
 	cave(new essSystem::HeimdalCave("HeimdalCave"));
       OR.addObject(cave);

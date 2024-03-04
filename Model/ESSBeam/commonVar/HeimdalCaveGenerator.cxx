@@ -55,7 +55,7 @@ HeimdalCaveGenerator::HeimdalCaveGenerator() :
   beamWidth(160.0),beamHeight(178.5),
   midZStep(-10.0),midThick(25.0),
   midHoleRadius(180.0),
-  mainThick(70.0),subThick(35.0),
+  mainThick(70.0),subThick(35.0),extGap(30.0),
   wallMat("Concrete"),voidMat("Void")
   /*!
     Constructor and defaults
@@ -101,6 +101,8 @@ HeimdalCaveGenerator::generateCave(FuncDataBase& Control,
 
   Control.addVariable(keyName+"MainThick",mainThick);
   Control.addVariable(keyName+"SubThick",subThick);
+
+  Control.addVariable(keyName+"ExtGap",extGap);
 
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"VoidMat",voidMat);

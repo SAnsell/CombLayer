@@ -44,7 +44,7 @@ class HeimdalCave :
 {
  private:
 
-  double length;                  ///< main length in beam
+  double length;                 ///< main length in beam
   double height;                 ///< full width (no sub floor)
   double width;                  ///< inner width (void)
   double corridorWidth;          ///< width of corridor (void)
@@ -61,8 +61,14 @@ class HeimdalCave :
   double midThick;               ///< mid thickness
   double midHoleRadius;          ///< mid level Hole
   
-  double mainThick;              ///< full height
-  double subThick;               ///< full height
+  double mainThick;              ///< Main wall thickness 
+  double subThick;               ///< thin wall on walkway thickness
+
+  /*!
+    This is a long long comment on the variable
+    this is the second line....
+   */
+  double extGap;                 ///< extension gap thickness for gap covering
 
   int wallMat;
   int voidMat;

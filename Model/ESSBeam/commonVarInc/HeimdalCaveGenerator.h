@@ -57,6 +57,7 @@ class HeimdalCaveGenerator
   
   double mainThick;             ///< main thickness (inc roof)
   double subThick;              ///< thickness of thin walls
+  double extGap;                ///< extension gap thickness for gap covering
 
   std::string wallMat;
   std::string voidMat;
