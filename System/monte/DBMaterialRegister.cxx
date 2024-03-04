@@ -1009,6 +1009,9 @@ DBMaterial::initMaterial()
   // He3 for detectors [1bar]
   createMaterial("He3_1Bar","2003.70c 2.45e-5","",MLib);
 
+  // He3 for detectors [2 atm=2.0265 bar] TODO check density
+  createMaterial("He3_2Atm","2003.70c 4.964925e-05","",MLib);
+
   // He3 for detectors [10bar]
   createMaterial("He3_10Bar","2003.70c 2.45e-4","",MLib);
 
