@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monte/HeadRule.cxx
+ * File:   monte/HeadRule.cxx &
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
  *
@@ -2892,32 +2892,6 @@ HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
 		}
 	    }
 	}
-  return Pts.size();
-}
-
-
-size_t
-HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
-			       const Geometry::Vec3D& VUnit,
-			       std::vector<Geometry::Vec3D>& Pts)
-  const
-  /*!
-    Calculate a track of a line that intersects the rule.
-    The surface number is the outgoing surface number.
-    \param Org :: Origin of line
-    \param VUnit :: Direction of line
-    \param Pts :: Points [only]
-    \return Number of points found
-  */
-{
-  ELog::RegMethod RegA("HeadRule","calcSurfIntersection(PtS)");
-  std::vector<Geometry::interPoint> SPoints;
-
-  Pts.clear();
-  calcSurfIntersection(Org,VUnit,SPoints);
-  for(const Geometry::interPoint& SItem : SPoints)
-    Pts.push_back(SItem.Pt);
-
   return Pts.size();
 }
 

@@ -149,11 +149,6 @@ class HeadRule
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      std::vector<Geometry::interPoint>&) const;
 
-  // accessor to points only:
-  size_t calcSurfIntersection
-    (const Geometry::Vec3D&,const Geometry::Vec3D&,
-     std::vector<Geometry::Vec3D>&) const;
-
   size_t calcSurfSurfIntersection(std::vector<Geometry::Vec3D>&) const;
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;

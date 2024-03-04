@@ -212,7 +212,9 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateTaper(Control,"heimdalFTF",440.0,4.0,4.0,4.0,4.0);
 
+  
   CaveGen.generateCave(Control,"heimdalCave");
+  Control.addVariable("heimdalCaveZAngle",4.7);
   
   return;
 }
