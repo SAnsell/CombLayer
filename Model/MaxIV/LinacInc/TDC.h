@@ -61,7 +61,8 @@ class TDC :
   std::set<std::string> activeINJ;   ///< active components
 
   std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
-  std::shared_ptr<xraySystem::Wendi> wendi;
+  size_t nWendi;
+  std::vector<std::shared_ptr<xraySystem::Wendi>> wendi;
 
   /// Map of segmentName : TDCsegment
   SegTYPE SegMap;

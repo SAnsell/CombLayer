@@ -128,9 +128,8 @@ namespace tdcSystem
 TDC::TDC(const std::string& KN) :
   attachSystem::FixedOffset(KN,6),
   attachSystem::CellMap(),
-  noCheck(0),pointCheck(0),
+  noCheck(0),pointCheck(0),nWendi(4),
   injectionHall(new InjectionHall("InjectionHall")),
-  wendi(std::make_shared<xraySystem::Wendi>("Wendi1")),
   SegMap
   ({
     { "Segment1",std::make_shared<Segment1>("L2SPF1") },
@@ -195,7 +194,12 @@ TDC::TDC(const std::string& KN) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(injectionHall);
-  OR.addObject(wendi);
+
+  for (size_t i=0; i<nWendi; ++i) {
+    wendi.emplace_back(std::make_shared<xraySystem::Wendi>("Wendi" + std::to_string(i+1)));
+    OR.addObject(wendi.back());
+  }
+
   for(const auto& [ key, tdcItem ] : SegMap)
     OR.addObject(tdcItem);
 }
@@ -538,8 +542,10 @@ TDC::createAll(Simulation& System,
   injectionHall->addInsertCell(voidCell);
   injectionHall->createAll(System,FCOrigin,sideIndex);
 
-  wendi->addInsertCell(injectionHall->getCell("SPFVoid"));
-  wendi->createAll(System,*injectionHall,"#front");
+  for (size_t i=0; i<nWendi; ++i) {
+    wendi[i]->addInsertCell(injectionHall->getCell(i==2 ? "TVoidA" : "SPFVoid"));
+    wendi[i]->createAll(System,*injectionHall,"#front");
+  }
 
   // special case of Segment10 : Segment26/27/28/29
   std::shared_ptr<attachSystem::BlockZone> seg10Zone;

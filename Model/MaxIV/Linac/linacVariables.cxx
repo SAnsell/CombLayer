@@ -103,6 +103,7 @@ namespace linacVar
   void setGauge34(FuncDataBase&,const std::string&);
   void setGauge37(FuncDataBase&,const std::string&);
 
+  void detectors(FuncDataBase&);
 
   //  void setIonPump3Port(FuncDataBase&,const std::string&);
   void setIonPump3OffsetPort(FuncDataBase&,const std::string&);
@@ -517,6 +518,36 @@ setGauge37(FuncDataBase& Control,
 
   GGen.generateGauge(Control,name,0.0,0.0);
   return;
+}
+
+void detectors(FuncDataBase& Control)
+/*!
+  Define the radiation detectors variables
+ */
+{
+  WendiGenerator wGen;
+  wGen.generate(Control,"Wendi1");
+  Control.addVariable("Wendi1XStep", -631);
+  Control.addVariable("Wendi1YStep", 5366);
+
+  constexpr double y1 = 5814.015; // first pillar
+  constexpr double y2 = 6364.015; // second pillar
+  constexpr double ymid = (y1+y2)/2.0; // mid point b/w pillars
+  constexpr double xline = -362.608; // beam line x coordinate
+  wGen.generate(Control,"Wendi2");
+  Control.addVariable("Wendi2XStep", xline+100.0);
+  Control.addVariable("Wendi2YStep", ymid+15.0);
+
+  constexpr double xdoor = -292.3; // surf 1041503
+  constexpr double ywall = 3465.635; // surf 1041521
+
+  wGen.generate(Control,"Wendi3");
+  Control.addVariable("Wendi3XStep", xdoor+50.0);
+  Control.addVariable("Wendi3YStep", ywall-70.0); // dummy [not known]
+
+  wGen.generate(Control,"Wendi4");
+  Control.addVariable("Wendi4XStep", xline+200.0);
+  Control.addVariable("Wendi4YStep", y2+15.0);
 }
 
 void
@@ -3675,11 +3706,6 @@ LINACvariables(FuncDataBase& Control)
 
   linacVar::wallVariables(Control,"InjectionHall");
 
-  WendiGenerator wGen;
-  wGen.generate(Control,"Wendi1");
-  Control.addVariable("Wendi1XStep", -200);
-  Control.addVariable("Wendi1YStep", 4500);
-
   // Segment 1-14
   Control.addVariable("l2spfXStep",linacVar::zeroX);
   Control.addVariable("l2spfYStep",linacVar::zeroY);
@@ -3816,6 +3842,8 @@ LINACvariables(FuncDataBase& Control)
   linacVar::Segment47(Control,"SPF47");
   linacVar::Segment48(Control,"SPF48");
   linacVar::Segment49(Control,"SPF49");
+
+  linacVar::detectors(Control);
 
   return;
 }
