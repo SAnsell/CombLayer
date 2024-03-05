@@ -30,15 +30,7 @@ class SurfPoint;
 namespace Geometry
 {
   class Surface;
-
-  struct interPoint
-  {
-    Geometry::Vec3D Pt;  ///< Crosssing point;
-    double D;            ///< Distance
-    int SNum;            ///< signed surf number [true as particle moves fwd]
-    const Surface* SPtr;       ///< SurfPointer
-    bool outFlag;        ///< true if particle leaves
-  };
+  struct interPoint;
 }
 
 namespace ModelSupport

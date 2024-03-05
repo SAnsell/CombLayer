@@ -906,6 +906,35 @@ closestPt(const std::vector<Geometry::Vec3D>& PtVec,
   return index;
 }
 
+size_t
+closestPt(const std::vector<Geometry::interPoint>& IPVec,
+	  const Geometry::Vec3D& AimPt)
+  /*!
+    Detemine the point that is closest 
+    \param AimPt :: Aiming point
+    \param IPvec :: Vector of intesections
+    \return index in array [0 in empty]
+  */
+{
+  ELog::RegMethod RegA("SurInter","closestPt");
+  
+  size_t index(0);
+  if (!IPVec.empty())
+    {
+      double D=AimPt.Distance(IPVec[index].Pt);
+      for(size_t i=1;i<PtVec.size();i++)
+	{
+	  const double ND=AimPt.Distance(IPVec[i].Pt);
+	  if (ND<D)
+	    {
+	      D=ND;
+	      index=i;
+	    }
+	}
+    }
+  return index;
+}
+
 std::pair<Geometry::Vec3D,int>
 interceptRuleConst(const HeadRule& HR,
 		   const Geometry::Vec3D& Origin,
@@ -923,24 +952,20 @@ interceptRuleConst(const HeadRule& HR,
 
   MonteCarlo::LineIntersectVisit LI(Origin,N);
   const std::vector<Geometry::interPoint> Pts=
-    LI.getPoints(HR);
+    LI.getIntercept(HR);
 
   // EMPTY return
   if (Pts.empty())
     return std::pair<Geometry::Vec3D,int>(Origin,0);
 
   const size_t indexA=SurInter::closestPt(Pts,Origin);
-  const std::vector<const Geometry::Surface*>& SVec=
-    LI.getSurfPointers();
 
-  return(SVec[indexA]->side(Origin)>=0) ?
-    std::pair<Geometry::Vec3D,int>(Pts[indexA],-SVec[indexA]->getName()) :
-      std::pair<Geometry::Vec3D,int>(Pts[indexA],SVec[indexA]->getName());
-      
+  return Pts[indexA].SNum;      
 }
 
 std::pair<Geometry::Vec3D,int>
-interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
+interceptRule(HeadRule& HR,const
+	      Geometry::Vec3D& Origin,
 	      const Geometry::Vec3D& N)
   /*!
     Determine the closes point to the headRule intercept
