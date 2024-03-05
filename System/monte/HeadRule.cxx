@@ -2701,7 +2701,7 @@ HeadRule::trackClosestSurface(const Geometry::Vec3D& Org,
 }
 
 
-std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+Geometry::interPoint
 HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
 			     const Geometry::Vec3D& Unit) const
   /*!
@@ -2712,59 +2712,16 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
   */
 {
   ELog::RegMethod RegA("HeadRule","trackSurfIntersect");
-    
+
+  std::vector<Geometry::interPoint> IPTvec;
+  calcSurfIntersection(Org,Unit,IPTvec)
   MonteCarlo::LineIntersectVisit LI(Org,Unit);
+  for(const Geometry::interPoint& inter : IPTvec)
+    if (inter.D>Geometry::zeroTol)
+      return inter;
 
-  const std::set<const Geometry::Surface*> SurfList=
-    this->getSurfaces();
-  for(const Geometry::Surface* SPtr : SurfList)
-    SPtr->acceptVisitor(LI);
-
-  
-
-  
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex
-    (LI.getSurfPointers());
-
-  double D= std::numeric_limits<double>::max();
-  const Geometry::Surface* surfPtr=0;
-  // NOTE: we only check for and exiting surface by going
-  // along the line in the positive direction.
-  int bestPairValid(0);
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      //   const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-
-      // Is point possible closer
-      if ( dPts[i]>10.0*Geometry::zeroTol &&
-	   dPts[i]<D )
-	{
-	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-	  const int pAB=isValid(IPts[i],NS);
-	  const int mAB=isValid(IPts[i],-NS);
-	  const int normD=surfIndex[i]->sideDirection(IPts[i],Unit);
-	  if (pAB!=mAB)  // out going positive surface
-	    {
-	      bestPairValid=normD;
-	      if (dPts[i]>Geometry::zeroTol)
-		D=dPts[i];
-	      surfPtr=surfIndex[i];
-	    }
-	}
-    }
-  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
-    result(0,0,Org,0.0);
-
-  if (surfPtr)
-    {
-      std::get<0>(result)=bestPairValid*surfPtr->getName();
-      std::get<1>(result)=surfPtr;
-      std::get<2>(result)=Org+Unit*D;
-      std::get<3>(result)=D;
-    }
-  return result;
+  // ok all failed:
+  return Geometry::interPoint();
   
 }
 
@@ -2915,30 +2872,25 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
 
+  // get all intersection points:
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
-  LI.getPoints(*this);
-  const Geometry::Vec3D Unit=VUnit.unit();
-  
-  // IPTS contains both non-exit and invalid points
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex
-    (LI.getSurfPointers());
- 
-  // Clear data
-  Pts.clear();
+  const std::vector<Geometry::interPoint>& IPTvec=
+    LI.getIntercept(*this);
 
   // NOTE: we only check for and exiting surface by going
   // along the line.
-  for(size_t i=0;i<dPts.size();i++)
+  for(const Geometry::interPoint& inter : IPTvec)
     {
+      // note SNum is unsigned:
+      const int pAB=isValid(inter.Pt,inter.SNum);
+      const int mAB=isValid(inter.Pt,-inter.SNum);
+      
       const Geometry::Surface* surfPtr=surfIndex[i];
       // Is point possible closer
       const int NS=surfPtr->getName();	    // NOT SIGNED
       const int pAB=isValid(IPts[i],NS);
       const int mAB=isValid(IPts[i],-NS);
-      //      const int normD=surfPtr->sideDirection(IPts[i],Unit);
-      const double lambda=dPts[i];
+
       if (pAB!=mAB)  // exiting/entering surface
 	{
 	  // previously used signValue but now gone to
@@ -2950,10 +2902,10 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 	  const bool outGoingFlag(pAB>0);
 	  Pts.push_back(Geometry::interPoint
 			({
-			  Org+Unit*lambda,
-			  dPts[i],
-			  signValue*NS,
-			  surfPtr,
+			  inter.Pt,
+			  inter.D,
+			  signValue*inter.SNum,
+			  inter.SPtr,
 			  outGoingFlag
 			}));
 	}

@@ -47,14 +47,17 @@ namespace Geometry
     const Surface* SPtr;       ///< SurfPointer
     bool outFlag;        ///< true if particle leaves
 
-  explicit interPoint(Geometry::Vec3D P) :
-    Pt(std::move(P)),D(0.0),SNum(0),SPtr(nullptr),outFlag(0) {}
-  interPoint(const Geometry::Vec3D& P,const int SN) :
-    Pt(std::move(P)),D(0.0),SNum(SN),SPtr(nullptr),outFlag(0) {}
-  interPoint(Geometry::Vec3D P,const double dist,const int SN) :
-    Pt(std::move(P)),D(dist),SNum(SN),SPtr(nullptr),outFlag(0) {}
-  interPoint(Geometry::Vec3D P,const double dist,
-	     const int SN,const Surface* ptr,const bool flag) :
+    
+    explicit interPoint() :
+      D(0,0),SNum(0),SPtr(nullptr),outFlag(0) {}
+    explicit interPoint(Geometry::Vec3D P) :
+      Pt(std::move(P)),D(0.0),SNum(0),SPtr(nullptr),outFlag(0) {}
+    interPoint(const Geometry::Vec3D& P,const int SN) :
+      Pt(std::move(P)),D(0.0),SNum(SN),SPtr(nullptr),outFlag(0) {}
+    interPoint(Geometry::Vec3D P,const double dist,const int SN) :
+      Pt(std::move(P)),D(dist),SNum(SN),SPtr(nullptr),outFlag(0) {}
+    interPoint(Geometry::Vec3D P,const double dist,
+	       const int SN,const Surface* ptr,const bool flag) :
     Pt(std::move(P)),D(dist),SNum(SN),SPtr(ptr),outFlag(flag) {}
 
   };

@@ -115,7 +115,7 @@ class HeadRule
   std::set<int> getPairedSurf() const;
   
   std::set<int> surfValid(const Geometry::Vec3D&) const;
-  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+  Geometry::interPoint
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&)
     const;
   

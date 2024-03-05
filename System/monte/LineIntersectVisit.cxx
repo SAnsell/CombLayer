@@ -514,8 +514,8 @@ LineIntersectVisit::getPoint(const Geometry::Surface* SPtr,
 }
 
 
-const std::vector<Geometry::Vec3D>&
-LineIntersectVisit::getPoints(const Geometry::Surface* SPtr) 
+const std::vector<Geometry::interPoint>&
+LineIntersectVisit::getIntercept(const Geometry::Surface* SPtr) 
   /*!
     Calculate the Points  along the trace
     to the surface SPtr
@@ -523,8 +523,9 @@ LineIntersectVisit::getPoints(const Geometry::Surface* SPtr)
     \return vector of points
   */
 {
+  IPts.clear();
   SPtr->acceptVisitor(*this);
-  return PtVec;
+  return IPts;
 }
 
 const std::vector<Geometry::Vec3D>&
@@ -552,8 +553,8 @@ LineIntersectVisit::getPoints(const Geometry::Surface* SPtr,
   return PtVec;
 }
 
-const std::vector<Geometry::Vec3D>&
-LineIntersectVisit::getPoints(const HeadRule& HR)
+const std::vector<Geometry::interPoint>&
+LineIntersectVisit::getIntercept(const HeadRule& HR)
   /*!
     Calculate the Points along the trace
     to the surface SPtr
@@ -561,8 +562,9 @@ LineIntersectVisit::getPoints(const HeadRule& HR)
     \return vector of points
   */
 {
+  IPts.clear();
   this->Accept(HR);
-  return PtVec;
+  return IPts;
 }
 
 void
