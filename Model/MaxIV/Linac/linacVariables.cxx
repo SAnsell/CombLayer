@@ -525,10 +525,20 @@ void detectors(FuncDataBase& Control)
   Define the radiation detectors variables
  */
 {
+  const double floorDepth = Control.EvalVar<double>("InjectionHallFloorDepth");
+  // Heights
+  struct {
+    double ion;
+    double wendi;
+  } brm2, brm7;
+  brm2.wendi = 98.0;
+  brm7.wendi = 100.0;
+
   WendiGenerator wGen;
   wGen.generate(Control,"Wendi1");
   Control.addVariable("Wendi1XStep", -631);
   Control.addVariable("Wendi1YStep", 5366);
+  Control.addVariable("Wendi1ZStep", brm2.wendi-floorDepth);
 
   constexpr double y1 = 5814.015; // first pillar
   constexpr double y2 = 6364.015; // second pillar
@@ -537,6 +547,7 @@ void detectors(FuncDataBase& Control)
   wGen.generate(Control,"Wendi2");
   Control.addVariable("Wendi2XStep", xline+100.0);
   Control.addVariable("Wendi2YStep", ymid+15.0);
+  Control.addVariable("Wendi2ZStep", brm7.wendi-floorDepth);
 
   constexpr double xdoor = -292.3; // surf 1041503
   constexpr double ywall = 3465.635; // surf 1041521
@@ -544,10 +555,12 @@ void detectors(FuncDataBase& Control)
   wGen.generate(Control,"Wendi3");
   Control.addVariable("Wendi3XStep", xdoor+50.0);
   Control.addVariable("Wendi3YStep", ywall-70.0); // dummy [not known]
+  Control.addParse<double>("Wendi3ZStep", "Wendi1ZStep");
 
   wGen.generate(Control,"Wendi4");
   Control.addVariable("Wendi4XStep", xline+200.0);
   Control.addVariable("Wendi4YStep", y2+15.0);
+  Control.addParse<double>("Wendi4ZStep", "Wendi2ZStep");
 }
 
 void
