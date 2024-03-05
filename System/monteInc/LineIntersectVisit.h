@@ -24,6 +24,11 @@
 
 class HeadRule;
 
+namespace Geometry
+{
+  class interPoint;
+}
+
 namespace MonteCarlo
 {
   class particle;
@@ -83,9 +88,9 @@ public:
   
   void Accept(const HeadRule&) override;
   
-  /// Clear track
-  void clearTrack() { IPts.clear(); }
-  const std::vector<Geometry::interPoint>& getIntercept() const 
+
+  void clearTrack();
+  const std::vector<Geometry::interPoint>& getInterVec() const 
   { return IPts; }
   
   /// Distance Accessor
@@ -103,15 +108,17 @@ public:
   { return surfVec; }
   */
   
-  const std::vector<Geometry::interPoint>& getInter(const Geometry::Surface*);
-  const std::vector<Geometry::interPoint>& getInter(const HeadRule&);
-  const std::vector<Geometry::interPoint>& getInter(const Geometry::Surface*,
-					       const Geometry::Surface*,
-					       const int);
-  const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*);
-  const std::vector<Geometry::Vec3D>& getPoints(const HeadRule&);
-  const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*,
-						const Geometry::Surface*,const int);
+  const std::vector<Geometry::interPoint>& getIntercept(const Geometry::Surface*);
+  const std::vector<Geometry::interPoint>& getIntercept(const HeadRule&);
+  const std::vector<Geometry::interPoint>& getIntercept
+  (const Geometry::Surface*,const Geometry::Surface*,
+   const int);
+  
+  // const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*);
+  // const std::vector<Geometry::Vec3D>& getPoints(const HeadRule&);
+  // const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*,
+  // 						const Geometry::Surface*,
+  // 						const int);
   
   Geometry::Vec3D getPoint(const Geometry::Surface*);
   Geometry::Vec3D getPoint(const Geometry::Surface*,
@@ -123,7 +130,7 @@ public:
   Geometry::Vec3D getPoint(HeadRule&,
 			   const Geometry::Vec3D&);
   /// Get number in intersection
-  size_t getNPoints() const { return IPts.size(); }
+  size_t getNPoints() const;
   
   // Re-set the line
   void setLine(const Geometry::Vec3D&,const Geometry::Vec3D&);

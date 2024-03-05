@@ -972,15 +972,15 @@ HeadRule::isLineValid(const Geometry::Vec3D& APt,
   for(const Geometry::Surface* SPtr : SSet)
     {
       LI.clearTrack();
-      const std::vector<Geometry::Vec3D>& pointVec=
-	LI.getPoints(SPtr);
+      const std::vector<Geometry::interPoint>& pointVec=
+	LI.getIntercept(SPtr);
 
-      for(const Geometry::Vec3D& Pt : pointVec)
+      for(const Geometry::interPoint& IP : pointVec)
 	{
-	  const double ADist=APt.Distance(Pt);
-	  const double BDist=BPt.Distance(Pt);
+	  const double ADist=APt.Distance(IP.Pt);
+	  const double BDist=BPt.Distance(IP.Pt);
 	  if (std::abs(ADist+BDist-ABDist)<Geometry::zeroTol &&
-	      isSideValid(Pt,SPtr->getName()))
+	      isSideValid(IP.Pt,SPtr->getName()))
 	    return 1;
 	}
     }
@@ -2640,14 +2640,14 @@ HeadRule::trackPoint(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","trackPoint");
 
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
-  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
-
+  const std::vector<Geometry::interPoint>& Pts=
+    LI.getIntercept(*this);
 
   if (Pts.size()!=1)
     throw ColErr::MisMatch<size_t>
       (Pts.size(),1,"Non-signular point intersect");
   
-  return Pts.front();
+  return Pts.front().Pt;
 }
 
 Geometry::Vec3D
@@ -2667,12 +2667,11 @@ HeadRule::trackClosestPoint(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","trackClosestPoint");
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
 
-  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
-  if (Pts.empty())
-    throw ColErr::EmptyContainer("No points found");
-
-  const size_t index=SurInter::closestPt(Pts,targetPt);
-  return Pts[index];
+  const std::vector<Geometry::interPoint>& Pts=LI.getIntercept(*this);
+  // throw check is here [if Pts.empty]:
+  const Geometry::interPoint& IP=
+    SurInter::closestPt(Pts,targetPt);
+  return IP.Pt;
 }
 
 int
@@ -2691,13 +2690,14 @@ HeadRule::trackClosestSurface(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","trackClosestSurface");
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
 
-  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
-  if (Pts.empty())
-    throw ColErr::EmptyContainer("No points found");
+  const std::vector<Geometry::interPoint>& Pts=
+    LI.getIntercept(*this);
 
-  const size_t index=SurInter::closestPt(Pts,targetPt);
+  // this guards for empty with excpetion
+  const Geometry::interPoint IP=
+    SurInter::closestPt(Pts,targetPt);
   
-  return LI.getSurfIndexX()[index];
+  return IP.SNum;
 }
 
 
@@ -2720,6 +2720,9 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
   for(const Geometry::Surface* SPtr : SurfList)
     SPtr->acceptVisitor(LI);
 
+  
+
+  
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex

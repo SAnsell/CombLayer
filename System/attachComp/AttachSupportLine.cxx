@@ -59,6 +59,8 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "Vec3D.h"
+#include "interPoint.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "LineTrack.h"
@@ -113,7 +115,7 @@ checkLineIntersect(const FixedComp& InsertFC,
 
 	      
               const std::vector<Geometry::interPoint>&
-		IPts(LI.getIntercept());
+		IPts(LI.getInterVec());
               for(const Geometry::interPoint& iPt : IPts)
                 {
                   if ((iPt.D>0.0 && iPt.D<LLen) &&

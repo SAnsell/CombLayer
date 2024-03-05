@@ -63,6 +63,7 @@
 #include "Circle.h"
 #include "Ellipse.h"
 #include "HeadRule.h"
+#include "interPoint.h"
 #include "surfIndex.h"
 #include "LineIntersectVisit.h"
 #include "SurInter.h"
@@ -877,62 +878,34 @@ nearPoint(const std::vector<Geometry::Vec3D>& Pts,
   return Out;
 }
 
-size_t
-closestPt(const std::vector<Geometry::Vec3D>& PtVec,
-	  const Geometry::Vec3D& AimPt)
-  /*!
-    Detemine the point that is closest 
-    \param AimPt :: Aiming point
-    \param PtVec :: Vector of points
-    \return index in array [0 in empty]
-  */
-{
-  ELog::RegMethod RegA("SurInter","closestPt");
-  
-  size_t index(0);
-  if (!PtVec.empty())
-    {
-      double D=AimPt.Distance(PtVec[index]);
-      for(size_t i=1;i<PtVec.size();i++)
-	{
-	  const double ND=AimPt.Distance(PtVec[i]);
-	  if (ND<D)
-	    {
-	      D=ND;
-	      index=i;
-	    }
-	}
-    }
-  return index;
-}
 
-size_t
+const Geometry::interPoint&
 closestPt(const std::vector<Geometry::interPoint>& IPVec,
 	  const Geometry::Vec3D& AimPt)
   /*!
     Detemine the point that is closest 
     \param AimPt :: Aiming point
     \param IPvec :: Vector of intesections
-    \return index in array [0 in empty]
+    \return interPoint 
   */
 {
   ELog::RegMethod RegA("SurInter","closestPt");
-  
-  size_t index(0);
-  if (!IPVec.empty())
+
+  if (IPVec.empty())
+    throw ColErr::EmptyContainer("No points found");
+
+  double DMax(std::numeric_limits<double>::max());
+  const Geometry::interPoint* iPtr(nullptr);
+  for(const Geometry::interPoint& IP : IPVec)
     {
-      double D=AimPt.Distance(IPVec[index].Pt);
-      for(size_t i=1;i<PtVec.size();i++)
+      const double testD=AimPt.Distance(IP.Pt);
+      if (testD<DMax)
 	{
-	  const double ND=AimPt.Distance(IPVec[i].Pt);
-	  if (ND<D)
-	    {
-	      D=ND;
-	      index=i;
-	    }
+	  iPtr= &IP;
+	  DMax=testD;
 	}
     }
-  return index;
+  return *iPtr;
 }
 
 std::pair<Geometry::Vec3D,int>
@@ -951,16 +924,18 @@ interceptRuleConst(const HeadRule& HR,
   ELog::RegMethod RegA("SurInter[F]","interceptRuleConst");
 
   MonteCarlo::LineIntersectVisit LI(Origin,N);
-  const std::vector<Geometry::interPoint> Pts=
+  const std::vector<Geometry::interPoint>& Pts=
     LI.getIntercept(HR);
 
   // EMPTY return
   if (Pts.empty())
     return std::pair<Geometry::Vec3D,int>(Origin,0);
 
-  const size_t indexA=SurInter::closestPt(Pts,Origin);
+  const Geometry::interPoint& IP=
+    SurInter::closestPt(Pts,Origin);
 
-  return Pts[indexA].SNum;      
+  return std::pair<Geometry::Vec3D,int>
+    (IP.Pt,IP.SNum);
 }
 
 std::pair<Geometry::Vec3D,int>

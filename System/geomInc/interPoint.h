@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monteInc/interPoint.h
+ * File:   geomInc/interPoint.h
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
  *
@@ -63,7 +63,7 @@ namespace Geometry
 std::ostream&
 operator<<(std::ostream& OX,const interPoint& A)
 {
-  OX<<Pt<<" : "<<D<" SN["<<outFlag<<"]="<<SNum;
+  OX<<A.Pt<<" : "<<A.D<<" SN["<<A.outFlag<<"]="<<A.SNum;
   return OX;
 }
  

@@ -324,6 +324,27 @@ LineIntersectVisit::Accept(const Geometry::Torus&)
   return;
 }
 
+size_t
+LineIntersectVisit::getNPoints() const
+  /*!
+    Get the number of points found
+   */
+{
+  return IPts.size();
+}
+
+void
+LineIntersectVisit::clearTrack() 
+  /*!
+    Clear all the track
+   */
+{
+  IPts.clear();
+  return;
+}
+
+
+
 void
 LineIntersectVisit::procTrack(const std::vector<Geometry::Vec3D>& PtVec,
 			      const Geometry::Surface* surfID) 
