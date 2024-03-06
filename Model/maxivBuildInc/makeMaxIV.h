@@ -67,7 +67,7 @@ class makeMaxIV
   bool buildR1Ring(Simulation&,const mainSystem::inputParam&);
   bool buildR3Ring(Simulation&,const mainSystem::inputParam&);
   bool buildInjection(Simulation&,const mainSystem::inputParam&);
-  bool buildGunTest(Simulation&,const mainSystem::inputParam&);
+  bool buildGunTest(Simulation&);
 
  public:
 

@@ -492,12 +492,10 @@ makeMaxIV::buildR3Ring(Simulation& System,
 
 
 bool
-makeMaxIV::buildGunTest(Simulation& System,
-			const mainSystem::inputParam& IParam)
+makeMaxIV::buildGunTest(Simulation& System)
 /*!
   Build the Gun Test Facility
   \param System :: Simulation
-  \param IParam :: Input paramters
  */
 {
   ELog::RegMethod RegA("makeMaxIV","buildGunTest");
@@ -540,7 +538,7 @@ makeMaxIV::build(Simulation& System,
   else if (buildInjection(System,IParam))  // Injection Hall
     ELog::EM<<"=Finished Linac/SPF System="<<ELog::endDiag;
 
-  else if (buildGunTest(System,IParam)) // Gun test facility
+  else if (buildGunTest(System)) // Gun test facility
     ELog::EM<<"=Finished Gun TestFacility="<<ELog::endDiag;
 
   else
