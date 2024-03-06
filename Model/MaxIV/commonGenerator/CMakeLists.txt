@@ -37,6 +37,7 @@ set (commonGeneratorSources
     TWCavityGenerator.cxx TwinPipeGenerator.cxx UndVacGenerator.cxx
     ViewScreenGenerator.cxx WallLeadGenerator.cxx YagScreenGenerator.cxx
     YagUnitBigGenerator.cxx YagUnitGenerator.cxx WendiGenerator.cxx
+     IonChamberGenerator.cxx
 )
 
 add_library (commonGenerator SHARED
@@ -167,6 +168,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/YagUnitBigGenerator.cxx
   ${tarDIR}/YagUnitGenerator.cxx
   $(tarDIR)/WendiGenerator.cxx
+  $(tarDIR)/IonChamberGenerator.cxx
   ${tarINC}/AreaDetectorGenerator.h
   ${tarINC}/BeamBoxGenerator.h
   ${tarINC}/BeamDividerGenerator.h
@@ -276,4 +278,5 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/YagUnitBigGenerator.h
   ${tarINC}/YagUnitGenerator.h
   $(tarINC)/WendiGenerator.h
+  $(tarINC)/IonChamberGenerator.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)

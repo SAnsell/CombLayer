@@ -1,5 +1,5 @@
 set (LinacSources
-    Wendi.cxx
+    Wendi.cxx IonChamber.cxx
     BeamBox.cxx BeamDivider.cxx BeamWing.cxx
     ButtonBPM.cxx CeramicGap.cxx CleaningMagnet.cxx
     CrossWayBlank.cxx CurveMagnet.cxx DipoleDIBMag.cxx
@@ -52,6 +52,7 @@ file(RELATIVE_PATH tarINC
 
 set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/Wendi.cxx
+  ${tarDIR}/IonChamber.cxx
   ${tarDIR}/BeamBox.cxx
   ${tarDIR}/BeamDivider.cxx
   ${tarDIR}/BeamWing.cxx
@@ -145,6 +146,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/YagUnitBig.cxx
   ${tarDIR}/YagUnit.cxx
   ${tarINC}/Wendi.h
+  ${tarINC}/IonChamber.h
   ${tarINC}/BeamBox.h
   ${tarINC}/BeamDivider.h
   ${tarINC}/BeamWing.h

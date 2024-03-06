@@ -25,6 +25,7 @@
 namespace xraySystem
 {
   class Wendi;
+  class IonChamber;
 }
 
 namespace tdcSystem
@@ -61,8 +62,10 @@ class TDC :
   std::set<std::string> activeINJ;   ///< active components
 
   std::shared_ptr<InjectionHall> injectionHall;    ///< in ring front end
-  size_t nWendi;
+  size_t nWendi; ///< number of WENDI detectors
   std::vector<std::shared_ptr<xraySystem::Wendi>> wendi;
+  size_t nIon; ///< number of ionisation chamber detectors
+  std::vector<std::shared_ptr<xraySystem::IonChamber>> ionchamb;
 
   /// Map of segmentName : TDCsegment
   SegTYPE SegMap;

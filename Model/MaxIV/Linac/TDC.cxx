@@ -118,7 +118,9 @@
 #include "Segment47.h"
 #include "Segment48.h"
 #include "Segment49.h"
+
 #include "Wendi.h"
+#include "IonChamber.h"
 
 #include "TDC.h"
 
@@ -128,7 +130,7 @@ namespace tdcSystem
 TDC::TDC(const std::string& KN) :
   attachSystem::FixedOffset(KN,6),
   attachSystem::CellMap(),
-  noCheck(0),pointCheck(0),nWendi(4),
+  noCheck(0),pointCheck(0),nWendi(4),nIon(1),
   injectionHall(new InjectionHall("InjectionHall")),
   SegMap
   ({
@@ -198,6 +200,11 @@ TDC::TDC(const std::string& KN) :
   for (size_t i=0; i<nWendi; ++i) {
     wendi.emplace_back(std::make_shared<xraySystem::Wendi>("Wendi" + std::to_string(i+1)));
     OR.addObject(wendi.back());
+  }
+
+  for (size_t i=0; i<nIon; ++i) {
+    ionchamb.emplace_back(std::make_shared<xraySystem::IonChamber>("IonChamber" + std::to_string(i+1)));
+    OR.addObject(ionchamb.back());
   }
 
   for(const auto& [ key, tdcItem ] : SegMap)
@@ -545,6 +552,10 @@ TDC::createAll(Simulation& System,
   for (size_t i=0; i<nWendi; ++i) {
     wendi[i]->addInsertCell(injectionHall->getCell(i==2 ? "TVoidA" : "SPFVoid"));
     wendi[i]->createAll(System,*injectionHall,"#front");
+  }
+  for (size_t i=0; i<nIon; ++i) {
+    ionchamb[i]->addInsertCell(injectionHall->getCell(i==2 ? "TVoidA" : "SPFVoid"));
+    ionchamb[i]->createAll(System,*injectionHall,"#front");
   }
 
   // special case of Segment10 : Segment26/27/28/29
