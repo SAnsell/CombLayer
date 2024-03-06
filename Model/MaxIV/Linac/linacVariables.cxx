@@ -91,6 +91,7 @@
 #include "LocalShieldingGenerator.h"
 #include "SPFCameraShieldGenerator.h"
 #include "WendiGenerator.h"
+#include "IonChamberGenerator.h"
 
 namespace setVariable
 {
@@ -526,12 +527,13 @@ void detectors(FuncDataBase& Control)
  */
 {
   const double floorDepth = Control.EvalVar<double>("InjectionHallFloorDepth");
-  // Heights
+  // Heights from floor
   struct {
     double ion;
     double wendi;
   } brm2, brm7;
   brm2.wendi = 98.0;
+  brm2.ion   = 98; //125.0;
   brm7.wendi = 100.0;
 
   WendiGenerator wGen;
@@ -561,6 +563,12 @@ void detectors(FuncDataBase& Control)
   Control.addVariable("Wendi4XStep", xline+200.0);
   Control.addVariable("Wendi4YStep", y2+15.0);
   Control.addParse<double>("Wendi4ZStep", "Wendi2ZStep");
+
+  IonChamberGenerator ionGen;
+  ionGen.generate(Control,"IonChamber1");
+  Control.addParse<double>("IonChamber1XStep", "Wendi1XStep");
+  Control.addParse<double>("IonChamber1YStep", "Wendi1YStep+23+43");
+  Control.addVariable("IonChamber1ZStep", brm2.ion-floorDepth);
 }
 
 void

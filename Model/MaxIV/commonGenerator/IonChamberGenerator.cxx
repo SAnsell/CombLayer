@@ -55,9 +55,9 @@ namespace setVariable
 {
 
 IonChamberGenerator::IonChamberGenerator() :
-  radius(11.43), // [1], fig. 1
+  radius(8.25),
+  height(20.0),
   cRadius(1.32), // [1, section 3]
-  height(21.0),  // [1], fig. 1
   wRadius(4.0),  // [3], fig. 3
   wThick(1.5),   // [3], fig. 3, [1, section 3]
   wHeight(11.5), // [1], fig. 1
