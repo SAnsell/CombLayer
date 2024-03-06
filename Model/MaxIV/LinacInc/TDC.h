@@ -105,6 +105,8 @@ class TDC :
   /// set active range
   void setActive(const std::set<std::string>& SC) { activeINJ=SC; }
 
+  void buildDetectors(Simulation&);
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		     const long int) override;
 
