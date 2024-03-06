@@ -251,7 +251,7 @@ Wendi::createObjects(Simulation& System)
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -47 (66 -75 : 67 36 -66 : 77 75 -45) ");
-  makeCell("He3",System,cellIndex++,heMat,0.0,HR);
+  makeCell("MainCell",System,cellIndex++,heMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 47 -57 36 -45 ");
   makeCell("HeSideWall",System,cellIndex++,heWallMat,0.0,HR);
