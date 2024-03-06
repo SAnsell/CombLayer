@@ -57,26 +57,7 @@ namespace setVariable
 IonChamberGenerator::IonChamberGenerator() :
   radius(8.25),
   height(20.0),
-  cRadius(1.32), // [1, section 3]
-  wRadius(4.0),  // [3], fig. 3
-  wThick(1.5),   // [3], fig. 3, [1, section 3]
-  wHeight(11.5), // [1], fig. 1
-  wOffset(4.0),  // [1], fig. 1
-  cOffset(1.5),  // guess
-  heRadius(1.22), // [1, section 3]
-  heWallThick(0.05), // [1, section 3]
-  heHeight(7.36),  // [1, section 3]
-  rubberThick(0.75), // guess based on [2, fig. 1]
-  bottomInsulatorRadius(0.38), // [1, section 3],
-  bottomInsulatorHeight(0.5), // [1, section 3],
-  topInsulatorRadius(0.67), // [1, section 3],
-  topInsulatorHeight(1.08), // [1, section 3],
-  modMat("Poly"),// [1], fig. 1
-  wMat("Tungsten%Void%55.169"), // to adjust density to 10.71 g/cmq as of [1, section 3],
-  heWallMat("Stainless304"), // guess, [1, section 3]: "stainless steel",
-  heMat("He3_2Atm"), // [3, fig. 3],
-  airMat("Air"),
-  rubberMat("BoratedPolyTDC") // TODO, rough assumption, [2]: 25% boron
+  airMat("Void")
   /*!
     Constructor and defaults
   */
@@ -100,27 +81,8 @@ IonChamberGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("IonChamberGenerator","generate");
 
   Control.addVariable(keyName+"Radius",radius);
-  Control.addVariable(keyName+"CounterTubeRadius",cRadius);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"TungstenRadius",wRadius);
-  Control.addVariable(keyName+"TungstenThick",wThick);
-  Control.addVariable(keyName+"TungstenHeight",wHeight);
-  Control.addVariable(keyName+"TungstenOffset",wOffset);
-  Control.addVariable(keyName+"CounterOffset",cOffset);
-  Control.addVariable(keyName+"HeRadius",heRadius);
-  Control.addVariable(keyName+"HeWallThick",heWallThick);
-  Control.addVariable(keyName+"HeHeight",heHeight);
-  Control.addVariable(keyName+"RubberThick",rubberThick);
-  Control.addVariable(keyName+"BottomInsulatorRadius",bottomInsulatorRadius);
-  Control.addVariable(keyName+"BottomInsulatorHeight",bottomInsulatorHeight);
-  Control.addVariable(keyName+"TopInsulatorRadius",topInsulatorRadius);
-  Control.addVariable(keyName+"TopInsulatorHeight",topInsulatorHeight);
-  Control.addVariable(keyName+"ModeratorMat",modMat);
-  Control.addVariable(keyName+"TungstenMat",wMat);
-  Control.addVariable(keyName+"HeWallMat",heWallMat);
-  Control.addVariable(keyName+"HeMat",heMat);
   Control.addVariable(keyName+"AirMat",airMat);
-  Control.addVariable(keyName+"RubberMat",rubberMat);
 
   return;
 
