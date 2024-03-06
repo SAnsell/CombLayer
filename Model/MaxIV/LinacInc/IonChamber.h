@@ -28,11 +28,11 @@ namespace xraySystem
 {
 
 /*!
-  \class IonChamber-II
+  \class IonChamber
   \version 1.0
   \author Konstantin Batkov
   \date March 2024
-  \brief WENDI
+  \brief FHT 192 Wide Range Ionization Chamber
 */
 
 class IonChamber : public attachSystem::ContainedComp,

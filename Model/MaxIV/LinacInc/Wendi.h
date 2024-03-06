@@ -28,11 +28,11 @@ namespace xraySystem
 {
 
 /*!
-  \class Wendi-II
+  \class Wendi
   \version 1.0
   \author Konstantin Batkov
   \date February 2024
-  \brief WENDI
+  \brief WENDI-II - Wide Energy Neutron Detection Instrument
 */
 
 class Wendi : public attachSystem::ContainedComp,
