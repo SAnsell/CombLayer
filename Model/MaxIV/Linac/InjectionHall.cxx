@@ -80,7 +80,7 @@ namespace tdcSystem
 {
 
 InjectionHall::InjectionHall(const std::string& Key) :
-  attachSystem::FixedOffset(Key,13),
+  attachSystem::FixedOffset(Key,14),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -1587,7 +1587,10 @@ InjectionHall::createLinks()
   FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+7522));
   FixedComp::nameSideIndex(12,"BackWallMainBeamDump");
 
-
+  // FKG
+  // the y offset is calculated to be approx in the beginning of FKG
+  FixedComp::setConnect(13,MidPt11+X*(midTThickX/2.0)+Y*(linearRCutLength+wallThick*2-midTYStep),X);
+  FixedComp::setNamedLinkSurf(13,"MidT2FKGStart",SurfMap::getSignedSurf("FKGLeft"));
 
   return;
 }
