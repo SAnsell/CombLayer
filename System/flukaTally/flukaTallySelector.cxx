@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/flukaTallySelector.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,7 +66,7 @@ tallyModification(SimFLUKA& System,
 {
   ELog::RegMethod RegA("flukaTallySelector[F]","tallyModification");
   const size_t nP=IParam.setCnt("TMod");
-	  	
+
   for(size_t i=0;i<nP;i++)
     {
       std::vector<std::string> StrItem;
@@ -82,7 +82,7 @@ tallyModification(SimFLUKA& System,
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "
-	    "  -- userName :: tallyName/Number ExternalaName \n"
+	    "  -- userName :: tallyName/Number USRICALL_SDUM \n"
 	    "  -- ascii :: tallyName/Number \n"
 	    "  -- binary :: tallyName/Number \n"
 	    "  -- particle ::tallyName/Number particle \n"
@@ -94,7 +94,7 @@ tallyModification(SimFLUKA& System,
 		  <<ELog::endErr;
           return;
 	}
-      
+
       if(key=="ascii")
         {
 	  const std::string tName=IParam.getValueError<std::string>
@@ -167,5 +167,3 @@ tallyModification(SimFLUKA& System,
     }
   return;
 }
-
-
