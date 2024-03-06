@@ -75,7 +75,6 @@ WendiGenerator::WendiGenerator() :
   wMat("Tungsten%Void%55.169"), // to adjust density to 10.71 g/cmq as of [1, section 3],
   heWallMat("Stainless304"), // guess, [1, section 3]: "stainless steel",
   heMat("He3_2Atm"), // [3, fig. 3],
-  airMat("Air"),
   rubberMat("BoratedPolyTDC") // TODO, rough assumption, [2]: 25% boron
   /*!
     Constructor and defaults
@@ -119,7 +118,6 @@ WendiGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"TungstenMat",wMat);
   Control.addVariable(keyName+"HeWallMat",heWallMat);
   Control.addVariable(keyName+"HeMat",heMat);
-  Control.addVariable(keyName+"AirMat",airMat);
   Control.addVariable(keyName+"RubberMat",rubberMat);
 
   return;

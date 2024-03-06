@@ -56,8 +56,7 @@ namespace setVariable
 
 IonChamberGenerator::IonChamberGenerator() :
   radius(8.25),
-  height(20.0),
-  airMat("Void")
+  height(20.0)
   /*!
     Constructor and defaults
   */
@@ -82,7 +81,6 @@ IonChamberGenerator::generate(FuncDataBase& Control,
 
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"AirMat",airMat);
 
   return;
 

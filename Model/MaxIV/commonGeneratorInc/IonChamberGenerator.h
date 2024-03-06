@@ -41,7 +41,6 @@ class IonChamberGenerator
 
   double radius;                ///< Moderator radius
   double height;                ///< Height
-  std::string airMat;           ///< Air material
 
  public:
 

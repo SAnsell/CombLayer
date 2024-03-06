@@ -137,7 +137,7 @@ IonChamber::populate(const FuncDataBase& Control)
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   height=Control.EvalVar<double>(keyName+"Height");
-  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
+  airMat=ModelSupport::EvalDefMat(Control,keyName+"AirMat", "AirMat", 0);
 
   return;
 }

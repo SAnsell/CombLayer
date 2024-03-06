@@ -194,7 +194,7 @@ Wendi::populate(const FuncDataBase& Control)
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"TungstenMat");
   heWallMat=ModelSupport::EvalMat<int>(Control,keyName+"HeWallMat");
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");
-  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
+  airMat=ModelSupport::EvalDefMat(Control,keyName+"AirMat", "AirMat", 0);
   rubberMat=ModelSupport::EvalMat<int>(Control,keyName+"RubberMat");
 
   return;

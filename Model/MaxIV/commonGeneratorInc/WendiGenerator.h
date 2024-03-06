@@ -60,7 +60,6 @@ class WendiGenerator
   std::string wMat;             ///< Tungsten powder material
   std::string heWallMat;        ///< Active volume wall material
   std::string heMat;            ///< Active volume material
-  std::string airMat;           ///< Air material
   std::string rubberMat;        ///< Borated rubber material
 
  public:
