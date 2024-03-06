@@ -539,8 +539,8 @@ void detectors(FuncDataBase& Control)
 
   WendiGenerator wGen;
   wGen.generate(Control,"Wendi1");
-  Control.addVariable("Wendi1XStep", -631);
-  Control.addVariable("Wendi1YStep", 5366);
+  Control.addVariable("Wendi1XStep", -726);
+  Control.addVariable("Wendi1YStep", 5784);
   Control.addVariable("Wendi1ZStep", brm2.wendi-floorDepth);
 
   constexpr double y1 = 5814.015; // first pillar
@@ -568,8 +568,8 @@ void detectors(FuncDataBase& Control)
 
   IonChamberGenerator ionGen;
   ionGen.generate(Control,"IonChamber1");
-  Control.addParse<double>("IonChamber1XStep", "Wendi1XStep");
-  Control.addParse<double>("IonChamber1YStep", "Wendi1YStep+23+43");
+  Control.addParse<double>("IonChamber1XStep", "Wendi1XStep+7");
+  Control.addParse<double>("IonChamber1YStep", "Wendi1YStep-25");
   Control.addVariable("IonChamber1ZStep", brm2.ion-floorDepth);
 
   ionGen.generate(Control,"IonChamber2");
@@ -579,12 +579,12 @@ void detectors(FuncDataBase& Control)
 
   ionGen.generate(Control,"IonChamber3");
   Control.addParse<double>("IonChamber3XStep", "Wendi3XStep");
-  Control.addParse<double>("IonChamber3YStep", "Wendi3YStep+20");
+  Control.addParse<double>("IonChamber3YStep", "Wendi3YStep+25");
   Control.addVariable("IonChamber3ZStep", brm2.ion-floorDepth);
 
   ionGen.generate(Control,"IonChamber4");
   Control.addParse<double>("IonChamber4XStep", "Wendi4XStep");
-  Control.addParse<double>("IonChamber4YStep", "Wendi4YStep-50-15");
+  Control.addParse<double>("IonChamber4YStep", "Wendi4YStep-15-15");
   Control.addVariable("IonChamber4ZStep", brm7.ion-floorDepth);
 }
 
