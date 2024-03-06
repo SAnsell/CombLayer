@@ -317,22 +317,24 @@ Wendi::createLinks()
   FixedComp::setConnect(0,Origin-Z*(height/2.0),-Z);
   FixedComp::setNamedLinkSurf(0,"bottom",SurfMap::getSignedSurf("#bottom"));
 
- // TODO: Check and use names for the links below:
+  FixedComp::setConnect(1,Origin+Z*(height/2.0),Z);
+  FixedComp::setNamedLinkSurf(1,"top",SurfMap::getSignedSurf("top"));
 
- //  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
- //  FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect(2,Origin-X*(radius),-X);
+  FixedComp::setNamedLinkSurf(2,"left",SurfMap::getSignedSurf("ModeratorCyl"));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(40000));
 
- //  FixedComp::setConnect(2,Origin-X*(radius/2.0),-X);
- //  FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect(3,Origin+X*(radius),X);
+  FixedComp::setNamedLinkSurf(3,"right",SurfMap::getSignedSurf("ModeratorCyl"));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(40000));
 
- //  FixedComp::setConnect(3,Origin+X*(radius/2.0),X);
- //  FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect(4,Origin-Y*(radius),-Y);
+  FixedComp::setNamedLinkSurf(4,"front",SurfMap::getSignedSurf("ModeratorCyl"));
+  FixedComp::setBridgeSurf(4,-SMap.realSurf(50000));
 
- //  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
- //  FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
-
- //  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
- //  FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect(5,Origin+Y*(radius),Y);
+  FixedComp::setNamedLinkSurf(5,"back",SurfMap::getSignedSurf("ModeratorCyl"));
+  FixedComp::setBridgeSurf(5,SMap.realSurf(50000));
 
   return;
 }
