@@ -533,8 +533,9 @@ void detectors(FuncDataBase& Control)
     double wendi;
   } brm2, brm7;
   brm2.wendi = 98.0;
-  brm2.ion   = 98; //125.0;
+  brm2.ion   = 125.0;
   brm7.wendi = 100.0;
+  brm7.ion   = 127.0;
 
   WendiGenerator wGen;
   wGen.generate(Control,"Wendi1");
@@ -557,6 +558,7 @@ void detectors(FuncDataBase& Control)
   wGen.generate(Control,"Wendi3");
   Control.addVariable("Wendi3XStep", xdoor+50.0);
   Control.addVariable("Wendi3YStep", ywall-70.0); // dummy [not known]
+  ELog::EM << "Wendi3YStep?" << ELog::endWarn;
   Control.addParse<double>("Wendi3ZStep", "Wendi1ZStep");
 
   wGen.generate(Control,"Wendi4");
@@ -569,6 +571,21 @@ void detectors(FuncDataBase& Control)
   Control.addParse<double>("IonChamber1XStep", "Wendi1XStep");
   Control.addParse<double>("IonChamber1YStep", "Wendi1YStep+23+43");
   Control.addVariable("IonChamber1ZStep", brm2.ion-floorDepth);
+
+  ionGen.generate(Control,"IonChamber2");
+  Control.addParse<double>("IonChamber2XStep", "Wendi2XStep");
+  Control.addParse<double>("IonChamber2YStep", "Wendi2YStep-15-15");
+  Control.addVariable("IonChamber2ZStep", brm7.ion-floorDepth);
+
+  ionGen.generate(Control,"IonChamber3");
+  Control.addParse<double>("IonChamber3XStep", "Wendi3XStep");
+  Control.addParse<double>("IonChamber3YStep", "Wendi3YStep+20");
+  Control.addVariable("IonChamber3ZStep", brm2.ion-floorDepth);
+
+  ionGen.generate(Control,"IonChamber4");
+  Control.addParse<double>("IonChamber4XStep", "Wendi4XStep");
+  Control.addParse<double>("IonChamber4YStep", "Wendi4YStep-50-15");
+  Control.addVariable("IonChamber4ZStep", brm7.ion-floorDepth);
 }
 
 void

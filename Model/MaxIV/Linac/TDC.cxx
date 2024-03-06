@@ -132,7 +132,7 @@ namespace tdcSystem
     attachSystem::CellMap(),
     noCheck(0),pointCheck(0),
     injectionHall(new InjectionHall("InjectionHall")),
-    nWendi(4),nIon(1),
+    nWendi(4),nIon(4),
     SegMap
     ({
       { "Segment1",std::make_shared<Segment1>("L2SPF1") },
