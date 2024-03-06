@@ -3,7 +3,7 @@
  
  * File:   attachComp/SpaceCut.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -453,13 +454,16 @@ SpaceCut::calcBoundary(const HeadRule& objHR,
       for(size_t i=0;i<NDivide;i++)
 	{
 	  const Geometry::Vec3D Axis=XX*cos(angle)+ZZ*sin(angle);
-	  const auto [SN,D] =objHR.trackSurfDistance(Org,Axis,linkSN);
+	  const Geometry::interPoint inter=
+	    objHR.trackSurfIntersect(Org,Axis,linkSN);
+	  const int SN(inter.SNum);
+
 	  if (SN && surfN.find(-SN)==surfN.end())
 	    {
 	      surfN.insert(-SN);
 	      // test if cylinder/sphere and extra plane exist
 	      const int divideSN=
-		testPlaneDivider(objSurfMap,SN,Org+Axis*(D*1.1),Axis);
+		testPlaneDivider(objSurfMap,SN,Org+Axis*(inter.D*1.1),Axis);
 	      if (divideSN)
 		surfN.insert(-divideSN);
 	    }
@@ -469,9 +473,11 @@ SpaceCut::calcBoundary(const HeadRule& objHR,
   // forward going trajectory
   if (!ALink.isComplete() || !BLink.isComplete())
     {
-      const int SN=objHR.trackSurf(CPoint,-YA);
-      if (SN)
-	surfN.insert(-SN);
+      const Geometry::interPoint inter=
+	objHR.trackSurfIntersect(CPoint,-YA);
+
+      if (inter.SNum)
+	surfN.insert(-inter.SNum);
     } 	
 
   

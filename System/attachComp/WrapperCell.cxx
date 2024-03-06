@@ -3,7 +3,7 @@
 
  * File:   attachComp/WrapperCell.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -253,17 +254,20 @@ WrapperCell::createLinks()
   
   const HeadRule& HR=ContainedComp::outerSurf;
 
-  const auto [SA,DA]=HR.trackSurfDistance(Origin,-Y);
-  const auto [SB,DB]=HR.trackSurfDistance(Origin,Y);
-  if (SA)
+  const Geometry::interPoint interAA=
+    HR.trackSurfIntersect(Origin,-Y);
+  const Geometry::interPoint interBB=
+    HR.trackSurfIntersect(Origin,Y);
+
+  if (interAA.SNum)
     {
-      FixedComp::setConnect(0,Origin-Y*DA,-Y);
-      FixedComp::setLinkSurf(0,SA);
+      FixedComp::setConnect(0,Origin-Y*interAA.D,-Y);
+      FixedComp::setLinkSurf(0,interAA.SNum);
     }
-  if (SB)
+  if (interBB.SNum)
     {
-      FixedComp::setConnect(0,Origin-Y*DA,-Y);
-      FixedComp::setLinkSurf(0,SA);
+      FixedComp::setConnect(1,Origin-Y*interBB.D,Y);
+      FixedComp::setLinkSurf(1,interBB.SNum);
     }
   return;
 }

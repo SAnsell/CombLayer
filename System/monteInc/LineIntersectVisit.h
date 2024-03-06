@@ -49,7 +49,7 @@ class LineIntersectVisit :
 private:
   
   Geometry::Line ATrack;                             ///< Line 
-  std::vector<Geometry::interPoint>& IPts;           /// 
+  std::vector<Geometry::interPoint> IPts;           /// 
 
   // std::vector<Geometry::Vec3D> PtVec;                ///< Output point 
   // std::vector<double> distVec;                       ///< Output distances
@@ -57,8 +57,12 @@ private:
   // std::vector<const Geometry::Surface*> surfVec;     ///< Surfaces
   long int neutIndex;                                ///< Particle number
   
-  void procTrack(const Geometry::Vec3D&,
+  void procTrack(const std::vector<Geometry::Vec3D>&,
 		 const Geometry::Surface*);
+
+  Geometry::interPoint& getClosest();
+  const Geometry::interPoint& getClosest() const;
+  
   ///\cond PRIVATE
   LineIntersectVisit(const LineIntersectVisit&);
   LineIntersectVisit& operator=(const LineIntersectVisit&);

@@ -63,6 +63,11 @@ class HeadRule
 
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
+
+  // TO BE REMOVED
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		const std::set<int>&) const;
   
  public:
 
@@ -115,19 +120,21 @@ class HeadRule
   std::set<int> getPairedSurf() const;
   
   std::set<int> surfValid(const Geometry::Vec3D&) const;
-  Geometry::interPoint
-  trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&)
-    const;
-  
+  Geometry::interPoint trackSurfIntersect
+     (const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  Geometry::interPoint trackSurfIntersect
+     (const Geometry::Vec3D&,const Geometry::Vec3D&,
+      const std::set<int>&) const;
+  Geometry::interPoint trackSurfIntersect
+     (const Geometry::Vec3D&,const Geometry::Vec3D&,
+      const int) const;
+  /*
   std::pair<int,double> trackSurfDistance
     (const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   std::pair<int,double> trackSurfDistance
     (const Geometry::Vec3D&,const Geometry::Vec3D&,const std::set<int>&) const;
 
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		const std::set<int>&) const;
-
+  */
   Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
 			     const Geometry::Vec3D&) const;
   Geometry::Vec3D trackClosestPoint

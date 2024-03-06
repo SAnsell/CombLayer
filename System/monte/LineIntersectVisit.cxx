@@ -58,6 +58,7 @@
 #include "Line.h"
 #include "SurInter.h"
 #include "particle.h"
+#include "interPoint.h"
 #include "HeadRule.h"
 #include "LineIntersectVisit.h"
 
@@ -151,9 +152,9 @@ LineIntersectVisit::Accept(const Geometry::Quadratic& Surf)
     \param Surf :: Surface to use int line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
-  procTrack(PVec,&Surf);
+  procTrack(PtVec,&Surf);
   return;
 }
 
@@ -164,7 +165,7 @@ LineIntersectVisit::Accept(const Geometry::Plane& Surf)
     \param Surf :: Surface to use int line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -177,7 +178,7 @@ LineIntersectVisit::Accept(const Geometry::ArbPoly& Surf)
     \param Surf :: Surface to use in the line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -190,7 +191,7 @@ LineIntersectVisit::Accept(const Geometry::Cone& Surf)
     \param Surf :: Surface to use in the line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -203,7 +204,7 @@ LineIntersectVisit::Accept(const Geometry::CylCan& Surf)
     \param Surf :: Surface to use in the line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -216,7 +217,7 @@ LineIntersectVisit::Accept(const Geometry::Cylinder& Surf)
     \param Surf :: Surface to use int line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -229,7 +230,7 @@ LineIntersectVisit::Accept(const Geometry::EllipticCyl& Surf)
     \param Surf :: Surface to use int line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -242,7 +243,7 @@ LineIntersectVisit::Accept(const Geometry::Sphere& Surf)
     \param Surf :: Surface to use int line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -255,7 +256,7 @@ LineIntersectVisit::Accept(const Geometry::General& Surf)
     \param Surf :: Surface to use int line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -268,7 +269,7 @@ LineIntersectVisit::Accept(const Geometry::MBrect& Surf)
     \param Surf :: Surface to use int line Interesect
   */
 {
-  std::vector<Geomtery::Vec3D> PtVec;
+  std::vector<Geometry::Vec3D> PtVec;
   ATrack.intersect(PtVec,Surf);
   procTrack(PtVec,&Surf);
   return;
@@ -283,33 +284,9 @@ LineIntersectVisit::Accept(const HeadRule& HR)
     \param HR :: HeadRules to Interesect
   */
 {
-  const std::set<const Geometry::Surface*> SurfSet=HR.getSurfaces();
-  for(const Geometry::Surface* SPtr : SurfSet)
-    {
-      SPtr->acceptVisitor(*this);      
-      // construct local LineIntersect
-      //      LineIntersectVisit LI(ATrack);
-
-      LI.getPoints(SPtr);
-
-      const int NS=SPtr->getName();	    
-      for(size_t index=0;index<LI.PtVec.size();index++)
-	{
-	  const Geometry::Vec3D& Pt(LI.PtVec[index]);
-	  
-	  const int pAB=HR.isValid(Pt,NS);
-	  const int mAB=HR.isValid(Pt,-NS);
-
-	  if (pAB!=mAB)  // out going positive surface
-	    {
-	      PtVec.push_back(Pt);
-	      distVec.push_back(LI.distVec[index]);
-	      surfVec.push_back(LI.surfVec[index]);
-	    }
-	}
-    }
-  // remove non-unique ?? / sort
-  
+  HR.calcSurfIntersection(ATrack.getOrigin(),
+			  ATrack.getDirect(),
+			  IPts);
   return;
 }
 
@@ -356,7 +333,7 @@ LineIntersectVisit::procTrack(const std::vector<Geometry::Vec3D>& PtVec,
 {
   // Calculate the distances to the points
   // add uncalculated distVec points
-  for(const Geometry::Vec3d& Pt : PtVec)
+  for(const Geometry::Vec3D& Pt : PtVec)
     {
       const Geometry::Vec3D LP=Pt-ATrack.getOrigin();
       const double D=LP.dotProd(ATrack.getDirect());
@@ -366,24 +343,67 @@ LineIntersectVisit::procTrack(const std::vector<Geometry::Vec3D>& PtVec,
   return;
 }
 
+const Geomtery::interPoint&
+LineIntersectVisit::getClosest() const
+  /*!
+    Calculate the distance to the closest point along the line
+    Note this has been pre-checked not to throw -- but is
+    there just incase.
+    \return point closest to line origin
+  */
+{  
+  if (IPts.size()==1) 
+    return IPts.front();
+
+  std::vector<Geomtery::interPoint>::const_iterator maxIter=
+    std::min_element(IPts.cbegin(),IPts.cend(),
+		     [](const Geometry::interPoint& A,
+			const Geometry::interPoint& B)
+		     {
+		       return std::abs<double>(A.D) <
+			 std::abs<double>(B.D);
+		     });
+
+  if (minIter==IPts.cend())
+    throw ColErr::EmptyValue
+      ("Calling uncheck LineIntersectVisit::getClosest code for empty IPts");
+
+  return *minIter;
+  
+}
+
 
 // ACCESSORS:
 double
 LineIntersectVisit::getDist(const Geometry::Surface* SPtr) 
   /*!
     Calculate the distance to the closest point along the line
-    to the surface SPtr
+    to the surface SPtr [+ve or -ve]
     \param SPtr :: surface to intersect
     \return distance
   */
 {
   SPtr->acceptVisitor(*this);
   
-  if (distVec.empty())
+  if (IPts.empty())
     throw ColErr::EmptyValue<void>("LineIntersecVisit::getDist<"+
 				   SPtr->className()+">");
 
-  return distVec[0];
+  if (IPts.size()==1)
+    return IPts.front().D;
+  
+  double dOut(0.0);
+  double absD=std::numeric_limits<double>::max();
+  for(const Geometry::interPoint& ipt : IPts)
+    {
+      if (std::abs(ipt.D)<absD)
+	{
+	  absD=std::abs<double>(ipt.D);
+	  dOut=ipt.D;
+	}
+    }
+  // signed distance to closest point
+  return dOut;
 }
 
 double
@@ -396,14 +416,26 @@ LineIntersectVisit::getForwardDist(const Geometry::Surface* SPtr)
   */
 {
   SPtr->acceptVisitor(*this);
+
+  bool posFlag(0);
+  double dOut;
+
   
-  for(const double& D : distVec)
-    if (D>Geometry::zeroTol)
-      return D;
+  for(const Geometry::interPoint& ipt : IPts)
+    {
+      if (ipt.D>Geometry::zeroTol &&
+	  (!posFlag || ipt.D<dOut))
+	{
+	  dOut=ipt.D;
+	  posFlag=1;
+	}
+    }
   
-  throw ColErr::EmptyValue<void>("LineIntersecVisit::getDist<"+
+  if (!posFlag) 
+    throw ColErr::EmptyValue<void>("LineIntersecVisit::getForwardDist<"+
 				 SPtr->className()+">");
-  
+      
+  return dOut;
 }
 
 Geometry::Vec3D

@@ -41,15 +41,15 @@ namespace Geometry
   
   struct interPoint
   {
-    Geometry::Vec3D Pt;  ///< Crosssing point;
-    double D;            ///< Distance
-    int SNum;            ///< signed surf number [true as particle moves fwd]
-    const Surface* SPtr;       ///< SurfPointer
-    bool outFlag;        ///< true if particle leaves
+    Geometry::Vec3D Pt;     ///< Crosssing point;
+    double D;               ///< Distance
+    int SNum;               ///< signed surf number [true as particle moves fwd]
+    const Surface* SPtr;    ///< SurfPointer
+    bool outFlag;           ///< true if particle leaves
 
     
     explicit interPoint() :
-      D(0,0),SNum(0),SPtr(nullptr),outFlag(0) {}
+      D(0.0),SNum(0),SPtr(nullptr),outFlag(0) {}
     explicit interPoint(Geometry::Vec3D P) :
       Pt(std::move(P)),D(0.0),SNum(0),SPtr(nullptr),outFlag(0) {}
     interPoint(const Geometry::Vec3D& P,const int SN) :
@@ -64,11 +64,7 @@ namespace Geometry
 
 
 std::ostream&
-operator<<(std::ostream& OX,const interPoint& A)
-{
-  OX<<A.Pt<<" : "<<A.D<<" SN["<<A.outFlag<<"]="<<A.SNum;
-  return OX;
-}
+operator<<(std::ostream& OX,const interPoint& A);
  
 }
 

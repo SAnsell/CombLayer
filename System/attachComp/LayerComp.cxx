@@ -40,6 +40,7 @@
 #include "OutputLog.h"
 #include "MatrixBase.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "HeadRule.h"
 #include "LayerComp.h"
 
@@ -102,9 +103,10 @@ LayerComp::intersectDist(const size_t layerIndex,
     return -std::numeric_limits<double>::max();
 
   HR.populateSurf();
-  const auto [SN,D] =HR.trackSurfDistance(Origin,Unit);
+  const Geometry::interPoint inter=
+    HR.trackSurfIntersect(Origin,Unit);
   
-  return (SN) ? D : -std::numeric_limits<double>::max();
+  return (inter.SNum) ? inter.D : -std::numeric_limits<double>::max();
 }
 
 }  // NAMESPACE attachSystem 
