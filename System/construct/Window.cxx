@@ -3,7 +3,7 @@
  
  * File:   construct/Window.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -142,10 +143,10 @@ Window::createCentre(Simulation& System)
   MonteCarlo::Object* QHptr=System.findObjectThrow(baseCell,"Window Base Cell");
   QHptr->createSurfaceList();
   
-  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+  Geometry::interPoint
     result=QHptr->trackSurfIntersect(Centre,WAxis);
-  const int fName=std::abs(std::get<0>(result));
-  
+
+  const int fName=std::abs(result.SNum);
   if (!fName)
     {
       ELog::EM<<"Unable to find first intercept track with line:"
@@ -156,17 +157,17 @@ Window::createCentre(Simulation& System)
       return;
     }
 
-  FSurf=std::get<1>(result);
+  FSurf=result.SPtr;
   fSign=-FSurf->side(Centre);  // could use result(??)
 
   
-  Origin=std::get<2>(result);
+  Origin=result.Pt;
   Y=WAxis;
   X=Y*Z;
 
   result=QHptr->trackSurfIntersect(Origin,WAxis);
   
-  if (!std::get<0>(result))
+  if (!result.SNum)
     {
       ELog::EM<<"Unable to find second intercept track with line:"
 	      <<baseCell<<ELog::endDiag;
@@ -175,9 +176,9 @@ Window::createCentre(Simulation& System)
       ELog::EM<<ELog::endErr;
       return;
     }
-  BSurf=std::get<1>(result);
+  BSurf=result.SPtr;
   bSign=-FSurf->side(Centre);  // could use result(??)
-  const int bName=std::abs(std::get<0>(result));
+  const int bName=std::abs(result.SNum);
   
   setFront(fSign*fName);
   setBack(-bSign*bName);

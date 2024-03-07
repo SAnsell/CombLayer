@@ -2694,7 +2694,7 @@ HeadRule::trackClosestSurface(const Geometry::Vec3D& Org,
     LI.getIntercept(*this);
 
   // this guards for empty with excpetion
-  const Geometry::interPoint IP=
+  const Geometry::interPoint& IP=
     SurInter::closestPt(Pts,targetPt);
   
   return IP.SNum;

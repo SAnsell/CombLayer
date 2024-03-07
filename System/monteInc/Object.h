@@ -25,6 +25,7 @@
 class Token;
 namespace Geometry
 {
+  class interPoint;
   class Plane;
 }
  
@@ -220,7 +221,7 @@ class Object
   // INTERSECTION
   int hasIntercept(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
-  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+  Geometry::interPoint
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
   Geometry::Vec3D trackPoint(const Geometry::Vec3D&,

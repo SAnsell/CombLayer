@@ -48,6 +48,7 @@
 #include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Line.h"
+#include "interPoint.h"
 #include "LineIntersectVisit.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -1139,21 +1140,19 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
 
   MonteCarlo::LineIntersectVisit LI(IP,UV);
 
-  for(const Geometry::Surface* SPtr : surfSet)
-    SPtr->acceptVisitor(LI);
+  const std::vector<Geometry::interPoint>& IPts=
+    LI.getIntercept(HRule);
+  // sorted -ve to +ve ... only need one
+  // +ve point to have intercept
+  if (!IPts.empty() &&
+      IPts.back().D>0.0)
+    return 1;
 
-  const std::vector<double>& dPts(LI.getDistance());
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      if (dPts[i]>0.0)  // only interested in forward going points
-	return 1;
-    }
-  // Definately missed
   return 0;
 }
 
 
-std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+Geomtry::interPoint 
 Object::trackSurfIntersect(const Geometry::Vec3D& Org,
 			   const Geometry::Vec3D& unitAxis) const
   /*!

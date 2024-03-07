@@ -284,9 +284,11 @@ LineIntersectVisit::Accept(const HeadRule& HR)
     \param HR :: HeadRules to Interesect
   */
 {
+  // This sorts IPts
   HR.calcSurfIntersection(ATrack.getOrigin(),
 			  ATrack.getDirect(),
 			  IPts);
+
   return;
 }
 
@@ -339,11 +341,20 @@ LineIntersectVisit::procTrack(const std::vector<Geometry::Vec3D>& PtVec,
       const double D=LP.dotProd(ATrack.getDirect());
       const int SN=(surfID) ? surfID->getName() : 0;
       IPts.push_back(Geometry::interPoint(LP,D,SN,surfID,0));
-    }  
+    }
+
+  std::sort(IPts.begin(),IPts.end(),
+	    [](const Geometry::interPoint& A,
+	       const Geometry::interPoint& B)
+	    {
+	      return (A.D > B.D);
+	    });
+	    
+	    
   return;
 }
 
-const Geomtery::interPoint&
+const Geometry::interPoint&
 LineIntersectVisit::getClosest() const
   /*!
     Calculate the distance to the closest point along the line
@@ -355,7 +366,7 @@ LineIntersectVisit::getClosest() const
   if (IPts.size()==1) 
     return IPts.front();
 
-  std::vector<Geomtery::interPoint>::const_iterator maxIter=
+  std::vector<Geometry::interPoint>::const_iterator minIter=
     std::min_element(IPts.cbegin(),IPts.cend(),
 		     [](const Geometry::interPoint& A,
 			const Geometry::interPoint& B)
@@ -365,8 +376,9 @@ LineIntersectVisit::getClosest() const
 		     });
 
   if (minIter==IPts.cend())
-    throw ColErr::EmptyValue
-      ("Calling uncheck LineIntersectVisit::getClosest code for empty IPts");
+    throw ColErr::EmptyContainer
+      ("Calling uncheck LineIntersectVisit::getClosest"
+       "code for empty IPts");
 
   return *minIter;
   
@@ -449,11 +461,11 @@ LineIntersectVisit::getPoint(const Geometry::Surface* SPtr)
 {
   clearTrack();
   SPtr->acceptVisitor(*this);
-  if (PtVec.empty())
-    throw ColErr::EmptyValue<void>("LineIntersecVisit::getPoint<"+
-				   SPtr->className()+">");
+  if (IPts.empty())
+    throw ColErr::EmptyContainer("LineIntersecVisit::getPoint<"+
+				   SPtr->className()+"> : no points found");
 
-  return PtVec.front();
+  return getClosest().Pt;
 }
 
 Geometry::Vec3D
@@ -468,57 +480,37 @@ LineIntersectVisit::getPoint(const Geometry::Surface* SPtr,
 {
   clearTrack();
   SPtr->acceptVisitor(*this);
-  if (PtVec.empty())
-    throw ColErr::EmptyValue<void>("LineIntersecVisit::getPoint<"+
-				   SPtr->className()+">(near)");
-  return SurInter::nearPoint(PtVec,nearPt);
+  if (IPts.empty())
+    throw ColErr::EmptyContainer("LineIntersecVisit::getPoint<"+
+				 SPtr->className()+">(near) no points");
+
+  return SurInter::closestPt(IPts,nearPt).Pt;
 }
 
 Geometry::Vec3D
-LineIntersectVisit::getPoint(const std::string& RuleStr,
+LineIntersectVisit::getPoint(HeadRule& HR,
 			     const Geometry::Vec3D& nearPt) 
   /*!
     Calculate the point at the closest point along the line
     to the surface SPtr
-    \param RuleStr :: Rule descriptor to intersect
-    \param nearPt :: Point ot use to intersect
-    \return Points
-  */
-{
-  ELog::RegMethod RegA("LineIntersect","getPoint(String,Near)");
-
-  HeadRule HRule;
-  if (!HRule.procString(RuleStr))
-    throw ColErr::InvalidLine("RuleStr:",RuleStr,0);
-
-  return getPoint(HRule,nearPt);
-}
-
-Geometry::Vec3D
-LineIntersectVisit::getPoint(HeadRule& HRule,
-			     const Geometry::Vec3D& nearPt) 
-  /*!
-    Calculate the point at the closest point along the line
-    to the surface SPtr
-    \param RuleStr :: Rule descriptor to intersect
+    \param HR :: Rule descriptor to intersect
     \param nearPt :: Point ot use to intersect
     \return Points
   */
 {
   ELog::RegMethod RegA("LineIntersect","getPoint(HR,Near)");
+
+  IPts.clear();
+  HR.populateSurf();
+  HR.calcSurfIntersection(ATrack.getOrigin(),
+			  ATrack.getDirect(),
+			  IPts);
   
-  clearTrack();
-  HRule.populateSurf();
-  const std::set<const Geometry::Surface*> SSet=
-    HRule.getSurfaces();
 
-  // Check all surfaces
-  for(const Geometry::Surface* SPtr : SSet)
-    SPtr->acceptVisitor(*this);
-
-  if (PtVec.empty())
-    throw ColErr::EmptyValue<void>("Intersect with "+HRule.display());
-  return SurInter::nearPoint(PtVec,nearPt);
+  if (IPts.empty())
+    throw ColErr::EmptyContainer("Intersect with "+HR.display());
+  
+  return SurInter::closestPt(IPts,nearPt).Pt;
 }
 
 Geometry::Vec3D
@@ -526,7 +518,7 @@ LineIntersectVisit::getPoint(const Geometry::Surface* SPtr,
 			     const Geometry::Surface* CntlPtr,
 			     const int signV) 
   /*!
-    Calculate the pont at the closest point along the line
+    Calculate the point at the closest point along the line
     to the surface SPtr
     \param SPtr :: surface to intersect
     \param CntlPtr :: control/guard surface to check intersects
@@ -535,14 +527,28 @@ LineIntersectVisit::getPoint(const Geometry::Surface* SPtr,
     \return Point of intersection
   */
 {
-  clearTrack();
+  ELog::RegMethod RegA("LineIntersect","getPoint(SPtr,Cntl)");
+
+  IPts.clear();
   SPtr->acceptVisitor(*this);
 
-  for(const Geometry::Vec3D& Pt : PtVec)
-    if (CntlPtr->side(Pt)*signV>0) return Pt;
+  // pre-sorted:
+  const Geometry::interPoint* iPtr;
+  double absD=std::numeric_limits<double>::max();
+  for(const Geometry::interPoint& ipt : IPts)
+    {
+      if ( std::abs(ipt.D)<absD &&
+	   (CntlPtr->side(ipt.Pt)*signV<0) )
+	{
+	  absD=std::abs<double>(ipt.D);
+	  iPtr= &ipt;
+	}
+    }
+  if (!iPtr)
+    throw ColErr::EmptyValue<void>("LineIntersecVisit::getPoint<"+
+				   SPtr->className()+">");
 
-  throw ColErr::EmptyValue<void>("LineIntersecVisit::getPoint<"+
-				 SPtr->className()+">");
+  return iPtr->Pt;
 }
 
 
@@ -560,31 +566,6 @@ LineIntersectVisit::getIntercept(const Geometry::Surface* SPtr)
   return IPts;
 }
 
-const std::vector<Geometry::Vec3D>&
-LineIntersectVisit::getPoints(const Geometry::Surface* SPtr,
-			      const Geometry::Surface* CntlPtr,
-			      const int signV)
-  /*!
-    Calculate the Points along the trace
-    to the surface SPtr
-    \param SPtr :: surface to intersect
-    \param CntlPtr :: surface to test against 
-    \param signV :: sign on surface CntlPtr
-    \return vector of points
-  */
-{
-  SPtr->acceptVisitor(*this);
-
-  std::vector<Geometry::Vec3D>::iterator vc=
-    remove_if(PtVec.begin(),PtVec.end(),
-	      [&](const Geometry::Vec3D& Pt) -> bool
-	      {
-		return CntlPtr->side(Pt)*signV<0;
-	      });
-  PtVec.erase(vc,PtVec.end());
-  return PtVec;
-}
-
 const std::vector<Geometry::interPoint>&
 LineIntersectVisit::getIntercept(const HeadRule& HR)
   /*!
@@ -595,7 +576,10 @@ LineIntersectVisit::getIntercept(const HeadRule& HR)
   */
 {
   IPts.clear();
-  this->Accept(HR);
+  // This sorts IPts
+  HR.calcSurfIntersection(ATrack.getOrigin(),
+			  ATrack.getDirect(),
+			  IPts);
   return IPts;
 }
 
@@ -606,12 +590,10 @@ LineIntersectVisit::write(std::ostream& OX) const
     \param OX :: output stream
   */
 {
-  OX<<"Track "<<ATrack<<std::endl;
-  for(size_t i=0;i<PtVec.size();i++)
-    { 
-      OX<<"Pts/Surf["<<i<<"]="<<PtVec[i]
-	<<" :: "<<surfVec[i]->getName()<<std::endl;
-    }
+  OX<<"Track "<<ATrack<<"\n";
+  for(const Geometry::interPoint& ipt : IPts)
+    OX<<ipt<<"\n";
+
   return;
 }
 
