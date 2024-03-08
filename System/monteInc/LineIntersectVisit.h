@@ -60,7 +60,7 @@ private:
   void procTrack(const std::vector<Geometry::Vec3D>&,
 		 const Geometry::Surface*);
 
-  Geometry::interPoint& getClosest();
+  //  Geometry::interPoint& getClosest();
   const Geometry::interPoint& getClosest() const;
   
   ///\cond PRIVATE

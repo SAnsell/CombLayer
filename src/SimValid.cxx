@@ -51,6 +51,7 @@
 #include "Importance.h"
 #include "Object.h"
 #include "ObjSurfMap.h"
+#include "interPoint.h"
 #include "particle.h"
 #include "eTrack.h"
 #include "surfRegister.h"
@@ -104,7 +105,7 @@ SimValid::operator=(const SimValid& A)
 
 
 bool
-SimValid::nextPoint(const std::vector<Geometry::Vec3D>& TPts,
+SimValid::nextPoint(const std::vector<Geometry::interPoint>& TPts,
 		    size_t& indexA,size_t& indexB,size_t& indexC,
 		    Geometry::Vec3D& outPt)
 /*!
@@ -133,9 +134,9 @@ SimValid::nextPoint(const std::vector<Geometry::Vec3D>& TPts,
       if (indexB>=TPts.size())
 	return 0;
     }
-  const Geometry::Vec3D diffV=(TPts[indexB]-TPts[indexA])
+  const Geometry::Vec3D diffV=(TPts[indexB].Pt-TPts[indexA].Pt)
     /static_cast<double>(midSlice);
-  outPt=TPts[indexA]+diffV*static_cast<double>(indexC);
+  outPt=TPts[indexA].Pt+diffV*static_cast<double>(indexC);
 
   return 1;
 }
@@ -186,7 +187,7 @@ bool
 SimValid::findTouch(const MonteCarlo::Object* OPtr,
 		    const Geometry::Cylinder* CPtr,
 		    const Geometry::Plane* PPtr,		    
-		    std::vector<Geometry::Vec3D>& TPts)
+		    std::vector<Geometry::interPoint>& TPts)
   /*! 
     Check if an object has a touch
     \param OPtr :: Object Ptr
@@ -253,7 +254,7 @@ SimValid::calcTouch(const Simulation& System) const
       for(const Geometry::Cylinder* CPtr : CylSet)
 	for(const Geometry::Plane* PPtr : PlaneSet)
 	  {
-	    std::vector<Geometry::Vec3D> TPts;
+	    std::vector<Geometry::interPoint> TPts;
 	    if (findTouch(OPtr,CPtr,PPtr,TPts))
 	      {
 		const int CylN=CPtr->getName();

@@ -77,6 +77,8 @@ class Object
   /// Calc in/out 
   int calcInOut(const int,const int) const;
   void clearValid();
+
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
  protected:
   
@@ -231,7 +233,6 @@ class Object
 				    const Geometry::Vec3D&,
 				    const Geometry::Vec3D&) const;
 
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
   int trackCell(const MonteCarlo::particle&,double&,
 		const Geometry::Surface*&,

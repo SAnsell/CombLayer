@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1152,7 +1152,7 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
 }
 
 
-Geomtry::interPoint 
+Geometry::interPoint 
 Object::trackSurfIntersect(const Geometry::Vec3D& Org,
 			   const Geometry::Vec3D& unitAxis) const
   /*!
@@ -1176,7 +1176,8 @@ Object::trackSurf(const Geometry::Vec3D& Org,
     \return Signed surf number
   */
 {
-  return HRule.trackSurf(Org,unitAxis);
+  return 0; //HRule.trackSurf(Org,unitAxis);
+
 }
 
 Geometry::Vec3D
@@ -1250,60 +1251,22 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
 {
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
 
+  std::vector<Geometry::interPoint> IPts;
+  HRule.calcSurfIntersection(N.Pos,N.uVec,IPts);
 
-  MonteCarlo::LineIntersectVisit LI(N);
-  for(const Geometry::Surface* isptr : surfSet)
-    isptr->acceptVisitor(LI);
-
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex=
-    LI.getSurfPointers();
-
+  // Remove the stuf about surNameSet etc... 
   const int absSN(std::abs(startSurf));
   const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0 
-  D=1e38;
-  surfPtr=0;
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  int bestPairValid(0);
-
-  for(size_t i=0;i<dPts.size();i++)
+  for(const Geometry::interPoint& ipt : IPts)
     {
-      // Is point possible closer
-
-      if ( dPts[i]>Geometry::zeroTol && dPts[i]<D+Geometry::zeroTol*10.0)
+      if (ipt.D>Geometry::zeroTol &&
+	  ipt.SNum!=startSurf)
 	{
-	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-	  const int pAB=HRule.isValid(IPts[i],NS);
-	  const int mAB=HRule.isValid(IPts[i],-NS);
-	  if (pAB!=mAB)           // out going positive surface
-	    {
-	      const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
-	      if (NS!=absSN || (normD!=signSN))  // discard current surface
-		{
-		  bestPairValid=normD;
-		  D=dPts[i];
-		  surfPtr=surfIndex[i];
-		}
-	    }
+	  surfPtr=ipt.SPtr;
+	  return ipt.SNum;
 	}
     }
-  if (!surfPtr) return 0;
-  if (D<Geometry::zeroTol)
-    D=Geometry::zeroTol;
-
-  const int NSsurf=surfPtr->getName();
-  const bool pSurfFound(surNameSet.find(NSsurf)!=surNameSet.end());
-  const bool mSurfFound(surNameSet.find(-NSsurf)!=surNameSet.end());
-  
-  int retNum;
-  if (pSurfFound && mSurfFound)
-    retNum=bestPairValid*NSsurf;
-  else
-    retNum=(pSurfFound) ? -NSsurf : NSsurf;
-
-  return retNum;
+  return 0;
 }
 
 		  

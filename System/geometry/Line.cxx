@@ -44,6 +44,7 @@
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "ArbPoly.h"
@@ -751,7 +752,11 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
     \returns Number of points found by intersection
   */
 {
-  return HR.calcSurfIntersection(Origin,Direct,PntOut);
+  std::vector<Geometry::interPoint> IPts;
+  const size_t nItems=HR.calcSurfIntersection(Origin,Direct,IPts);
+  for(const Geometry::interPoint& ipt : IPts)
+    PntOut.push_back(ipt.Pt);
+  return nItems;
 }
 
 //SETING

@@ -1,11 +1,9 @@
-#include <utility>
-
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   include/SimValid.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +95,7 @@ class SimValid
   void diagnostics(const Simulation&,
 		   const std::vector<simPoint>&) const;
 
-  static bool nextPoint(const std::vector<Geometry::Vec3D>&,
+  static bool nextPoint(const std::vector<Geometry::interPoint>&,
 			size_t&,size_t&,size_t&,
 			Geometry::Vec3D&);
 
@@ -108,7 +106,7 @@ class SimValid
   static bool findTouch(const MonteCarlo::Object*,
 			const Geometry::Cylinder*,
 			const Geometry::Plane*,
-			std::vector<Geometry::Vec3D>&);
+			std::vector<Geometry::interPoint>&);
  public:
   
   SimValid();

@@ -1,5 +1,5 @@
 set (t2BuildSources
-    Bucket.cxx BulkShield.cxx chipDataStore.cxx 
+    Bucket.cxx BulkShield.cxx 
     CoolPad.cxx CouplePipe.cxx DecFileMod.cxx 
     DecLayer.cxx Decoupled.cxx DecouplePipe.cxx 
     DPreMod.cxx GPreMod.cxx Groove.cxx 
@@ -32,7 +32,6 @@ file(RELATIVE_PATH tarINC
 set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/Bucket.cxx
   ${tarDIR}/BulkShield.cxx
-  ${tarDIR}/chipDataStore.cxx
   ${tarDIR}/CoolPad.cxx
   ${tarDIR}/CouplePipe.cxx
   ${tarDIR}/DecFileMod.cxx
@@ -61,7 +60,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/VoidVessel.cxx
   ${tarINC}/Bucket.h
   ${tarINC}/BulkShield.h
-  ${tarINC}/chipDataStore.h
   ${tarINC}/CoolPad.h
   ${tarINC}/CouplePipe.h
   ${tarINC}/DecFileMod.h
