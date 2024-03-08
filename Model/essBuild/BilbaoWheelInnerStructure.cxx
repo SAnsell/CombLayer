@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "varList.h"
@@ -422,7 +423,7 @@ BilbaoWheelInnerStructure::sideIntersect
 {
   ELog::RegMethod RegA("BilbaoWhieelInnerStructure","sideIntersect");
   
-  std::vector<Geometry::Vec3D> Pts;
+  std::vector<Geometry::interPoint> IPts;
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(buildIndex+5);
   
   HR.populateSurf();
@@ -433,10 +434,10 @@ BilbaoWheelInnerStructure::sideIntersect
   if (!plSide->onSurface(Org))
     ELog::EM << "Origin of line is not on the surface" << ELog::endErr;
   
-  const size_t n = HR.calcSurfIntersection(Org, Unit, Pts);
+  const size_t n = HR.calcSurfIntersection(Org, Unit, IPts);
   double dist = -1.0;
   if (n>1)
-    dist = Pts[0].Distance(Pts[1])+0.01; // 0.01 is a "safety" sum  and to get rid of the bricks where we cross in the corner. For some reason, 1st layer is not built without this number.
+    dist = IPts[0].Pt.Distance(IPts[1].Pt)+0.01; // 0.01 is a "safety" sum  and to get rid of the bricks where we cross in the corner. For some reason, 1st layer is not built without this number.
   return dist;
 }
   

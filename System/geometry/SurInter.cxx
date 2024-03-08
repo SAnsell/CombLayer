@@ -136,19 +136,21 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
 {
   ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,closePt)");
   
-  std::vector<Geometry::Vec3D> Pts;
-  mainHR.calcSurfIntersection(Origin,N,Pts);
+  std::vector<Geometry::interPoint> IPts;
+  mainHR.calcSurfIntersection(Origin,N,IPts);
 
-  if (Pts.empty())
+  if (IPts.empty())
     throw ColErr::InContainerError<std::string>
 	(mainHR.display(),"HeadRule / Line does not intersect");
 
-  return nearPoint(Pts,closePt);
+  return nearPoint(IPts,closePt);
 }
 
 Geometry::Vec3D
-getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
-	     const HeadRule& mainHR,const HeadRule& sndHR)
+getLinePoint(const Geometry::Vec3D& Origin,
+	     const Geometry::Vec3D& N,
+	     const HeadRule& mainHR,
+	     const HeadRule& sndHR)
 /*!
     Given a line (origin:N) find the intersects wiht MainHR that
     satisfy sndHR
@@ -160,27 +162,29 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
 {
   ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,HR)");
   
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> SNum;
+  std::vector<Geometry::interPoint> IPts;
 
-  mainHR.calcSurfIntersection(Origin,N,Pts);
-  std::vector<Geometry::Vec3D> out;
-  
+  mainHR.calcSurfIntersection(Origin,N,IPts);
+  Geometry::Vec3D out;
+  bool flag(0);
   if (sndHR.hasRule())
     {
-      for(const Geometry::Vec3D& Pt : Pts)
+      for(const Geometry::interPoint& ipt : IPts)
         {
-          if (sndHR.isValid(Pt))
-            out.push_back(Pt);
+          if (flag && sndHR.isValid(ipt.Pt))
+	    throw ColErr::MisMatch<size_t>
+	      (IPts.size(),1,"Too points in intersect (sndHR)");
+	  flag=1;
+	  out=ipt.Pt;
         }
+      if (flag) return out;
+      throw ColErr::EmptyContainer("No points in intersect system");
     }
-  else
-    out=Pts;
-  
-  if (out.size()!=1)
-    throw ColErr::MisMatch<size_t>(out.size(),1,"Out points not singular");
 
-  return out.front();
+  if (IPts.size()!=1)
+    throw ColErr::MisMatch<size_t>
+      (IPts.size(),1,"Incorrect points in intersect");
+  return IPts.front().Pt;
 }
 
 Geometry::Vec3D
@@ -876,6 +880,22 @@ nearPoint(const std::vector<Geometry::Vec3D>& Pts,
 	}
     }
   return Out;
+}
+
+Geometry::Vec3D
+nearPoint(const std::vector<Geometry::interPoint>& IPts,
+	  const Geometry::Vec3D& Target)
+  /*!
+    Calculate the nearest point (from a find set)
+    \param IPts :: List of points
+    \param Target :: Target point
+    \return Point
+   */
+{
+  ELog::RegMethod RegA("SurInter","nearPoint");
+
+  // throw is no intercept / IPts empty
+  return closestPt(IPts,Target).Pt;
 }
 
 

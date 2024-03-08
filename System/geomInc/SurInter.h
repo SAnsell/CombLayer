@@ -85,6 +85,10 @@ Geometry::Vec3D
 nearPoint(const std::vector<Geometry::Vec3D>&,
 	  const Geometry::Vec3D&);
 
+Geometry::Vec3D
+nearPoint(const std::vector<Geometry::interPoint>&,
+	  const Geometry::Vec3D&);
+
 // size_t
 // closestPt(const std::vector<Geometry::Vec3D>&,
 // 	  const Geometry::Vec3D&);

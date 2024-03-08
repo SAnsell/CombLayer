@@ -3,7 +3,7 @@
  
  * File:   t2Build/Torpedo.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@
 #include "ExternalCut.h"
 #include "vertexCalc.h"
 #include "Torpedo.h"
-
+5
 
 namespace shutterSystem
 {
@@ -255,7 +255,8 @@ Torpedo::createLinks()
 {
   ELog::RegMethod RegA("Torpedo","createLinks");
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+7));
+  ExternalCut::setCutSurf("back",SMap.realSurf(buildIndex+7));
+
   /*
   std::set<int>::const_iterator vc;
   for(vc=innerSurf.begin();vc!=innerSurf.end();vc++)
@@ -273,7 +274,7 @@ Torpedo::createLinks()
   // set Links
   // First point is center line intersect
   const Geometry::Vec3D OP=Origin+Y*innerRadius;
-
+  ExternalCut::createLink("back",*this,1,OP,Y);
   MonteCarlo::LineIntersectVisit LI(OP,Y);
 
   
