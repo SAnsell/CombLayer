@@ -1167,8 +1167,6 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
 	  for(oc=vc+1;oc!=Work.end();oc++)
 	    {
 	      const size_t OCnt=oc->TrueCount();
-			
-
 	      if (OCnt>GrpIndex)
 		break;
 	      if (OCnt==GrpIndex)
@@ -1184,7 +1182,7 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
 		}
 	    }
 	}
-
+      ELog::EM<<"ASDFAF"<<ELog::endDiag;
       for(const BnId& BI : Work)
 	if (BI.PIstatus()==1)
 	  PIComp.push_back(BI);
@@ -1192,7 +1190,10 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
       Work=Tmod;
     } while (!Tmod.empty());
   // Copy over the unit.
-
+  ELog::EM<<"EPI"<<DNFobj.size()<<ELog::endDiag;
+  for(const auto& item : PIComp)
+    ELog::EM<<"PICOMP == "<<item<<ELog::endDiag;
+  
   return makeEPI(DNFobj,PIComp);
 }
 
@@ -1216,7 +1217,10 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   const int debug(0);
   if (PIform.empty())
     return 0;
-  
+
+  const size_t PIsize(PIform.size());
+  const size_t DNFsize(DNFobj.size());
+  ELog::EM<<"Size == "<<PIsize<<" "<<DNFsize<<ELog::endDiag;
   std::vector<BnId> EPI;  // Created Here.
 
   std::vector<int> EPIvalue;
@@ -1260,7 +1264,7 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   std::vector<size_t>::iterator dx;
   std::vector<size_t>::iterator ddx;    // DNF active iterator
   std::vector<size_t>::iterator px;     // PIactive iterator
-
+  ELog::EM<<"EPI HERE "<<ELog::endDiag;
   // 
   // First remove singlets:
   // 
@@ -1269,7 +1273,8 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
       if (*dx!=ULONG_MAX && DNFscore[*dx]==1)        // EPI (definately)
 	{
 	  for(px=PIactive.begin();
-	      px!=PIactive.end() && !Grid[*px][*dx];px++) ;
+	      px!=PIactive.end() && !Grid[*px][*dx];px++) 
+
 	  if (px!=PIactive.end())
 	    {
 	      EPI.push_back(PIform[*px]);
@@ -1282,6 +1287,7 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
 	    }
 	}
     }
+  ELog::EM<<"REMOVE DEAT"<<ELog::endDiag;
   // Remove dead items from active list
   DNFactive.erase(
     remove_if(DNFactive.begin(),DNFactive.end(),
@@ -1302,13 +1308,15 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
 	}
       ELog::EM<<"END OF TABLE "<<ELog::endDebug;
     }
-
+  ELog::EM<<"REMOVE DEAT"<<ELog::endDiag;
   // Ok -- now the hard work...
   // need to find shortest "combination" that spans
   // the remaining table.
   
   // First Make a new matrix for speed.  Useful ???
-  Geometry::MatrixBase<int> Cmat(PIactive.size(),DNFactive.size());  // corrolation matrix
+  Geometry::MatrixBase<int>
+    Cmat(PIactive.size(),DNFactive.size());  // corrolation matrix
+
   size_t cm(0);
   for(px=PIactive.begin();px!=PIactive.end();px++)
     {
@@ -1321,18 +1329,21 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
 	} 
       cm++;
     }
-
+  ELog::EM<<"REMOVE DEAT 3"<<ELog::endDiag;
   const size_t Dsize(DNFactive.size());
   const size_t Psize(PIactive.size());
   //icount == depth of search ie 
-
+      ELog::EM<<"Size == "<<Dsize<<" "<<Psize<<ELog::endDiag;
+  
   for(size_t Icount=1;Icount<Psize;Icount++)
     {
       // This counter is a ripple counter, ie 1,2,3 where no numbers 
       // are the same. BUT it is acutally 0->N 0->N 0->N
       // index by A, A+1 ,A+2  etc
+      ELog::EM<<"Icount == "<<Icount<<" "<<Psize<<ELog::endDiag;
       IndexCounter<size_t> Index(Icount,Psize);
       do {
+	ELog::EM<<"In loop"<<ELog::endDiag;
 	size_t di;
 	for(di=0;di<Dsize;di++)   //check each orignal position
 	  {
@@ -1352,6 +1363,8 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
       } while(!(++Index));
     }
 
+  ELog::EM<<"REMOVE DEAT"<<ELog::endDiag;
+  
   //OH well that means every PIactive is a EPI :-(
   for(px=PIactive.begin();px!=PIactive.end();px++)
     EPI.push_back(PIform[*px]);
@@ -1426,10 +1439,14 @@ Acomp::makeDNFobject()
   std::vector<BnId> DNFobj;
   std::vector<int> keyNumbers;
   if (!getDNFobject(keyNumbers,DNFobj))
-    {      
-      if (makePI(DNFobj))
+    {
+      for(const auto& item : DNFobj)
+	ELog::EM<<"ITEM == "<<item<<ELog::endDiag;
+      const int out=makePI(DNFobj);
+      ELog::EM<<"Unit == "<<out<<ELog::endDiag;
+      if (out)
 	assignDNF(keyNumbers,DNFobj);
-
+      ELog::EM<<"THIS == "<<*this<<ELog::endDiag;
       return static_cast<int>(DNFobj.size());
     }
   return 0;

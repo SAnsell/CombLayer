@@ -40,6 +40,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"

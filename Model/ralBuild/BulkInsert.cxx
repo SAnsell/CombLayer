@@ -3,7 +3,7 @@
  
  * File:   ralBuild/BulkInsert.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
+#include "interPoint.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "varList.h"
@@ -306,8 +307,6 @@ BulkInsert::createLinks()
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   // Inner link
 
-  
-
   MonteCarlo::LineIntersectVisit BeamLine(beamFC.getCentre(),beamFC.getY());
   // not constant because of populate surfaces:
   HeadRule HR=ExternalCut::getRule("ROuter");
@@ -319,7 +318,7 @@ BulkInsert::createLinks()
 
   mainFC.setLinkSurf(1,ExternalCut::getRule("ROuter").complement());
   mainFC.addLinkSurf(1,ExternalCut::getRule("Divider"));
-
+  
   mainFC.setConnect(0,Origin,-Y);
   mainFC.setConnect(1,bExit,Y);
 

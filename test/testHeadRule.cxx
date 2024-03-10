@@ -43,14 +43,16 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "support.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "surfIndex.h"
 #include "SurInter.h"
 #include "Surface.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
+
+//#include "Line.h"
+//#include "LineIntersectVisit.h"
 
 #include "testFunc.h"
 #include "testHeadRule.h"
@@ -646,23 +648,22 @@ testHeadRule::testIntersectHeadRule()
       const Geometry::Vec3D& A(std::get<2>(tc));
       HM.populateSurf();
 
-      MonteCarlo::LineIntersectVisit LI(O,A);
-      const std::vector<Geometry::Vec3D>& Pts=
-	LI.getPoints(HM);
+      std::vector<Geometry::interPoint> IPts;
+      HM.calcSurfIntersection(O,A,IPts);
 
       const size_t index(std::get<3>(tc));
       const Geometry::Vec3D expectPoint(std::get<4>(tc));
-      if (Pts.size()>index &&
-	  expectPoint.Distance(Pts[index-1])>1e-5)
+      if (IPts.size()>index &&
+	  expectPoint.Distance(IPts[index-1].Pt)>1e-5)
 	{
 	  ELog::EM<<"Line :"<<std::get<1>(tc)<<" :: "
 		  <<std::get<2>(tc)<<ELog::endDiag;	      
 	  ELog::EM<<"HR :"<<HM<<ELog::endDiag;
 	  ELog::EM<<"Index   :"<<index<<ELog::endDiag;
 	  ELog::EM<<"Expected :"<<expectPoint<<ELog::endDiag;
-	  ELog::EM<<"Pts size == "<<Pts.size()<<ELog::endDiag;
-	  if (Pts.size()>index)
-	    ELog::EM<<"Actual   :"<<Pts[index]<<ELog::endDiag;
+	  ELog::EM<<"Pts size == "<<IPts.size()<<ELog::endDiag;
+	  if (IPts.size()>index)
+	    ELog::EM<<"Actual   :"<<IPts[index]<<ELog::endDiag;
 	  
 	  return -1;
 	}

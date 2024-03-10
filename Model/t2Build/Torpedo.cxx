@@ -40,12 +40,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Vertex.h"
 #include "Face.h"
 #include "Convex.h"
@@ -69,7 +68,6 @@
 #include "ExternalCut.h"
 #include "vertexCalc.h"
 #include "Torpedo.h"
-5
 
 namespace shutterSystem
 {
@@ -171,10 +169,9 @@ Torpedo::calcVoidIntercept()
       const double xScale( (i / 2) ? -Width/2.0 : Width/2.0);
       // Advance origin from voidVessel middle to end point
       // and then look back
-      const Geometry::Vec3D OP=Origin+Y*1000.0+Z*zScale+
-	X*xScale;
-      const int surfN=InnerHR.trackSurf(OP,-Y);
-      
+      const Geometry::Vec3D OP=
+	Origin+Y*1000.0+Z*zScale+X*xScale;
+      const int surfN=InnerHR.trackClosestSurface(OP,-Y,OP);
       if (surfN)
 	surf.insert(-surfN);
     }
@@ -275,14 +272,8 @@ Torpedo::createLinks()
   // First point is center line intersect
   const Geometry::Vec3D OP=Origin+Y*innerRadius;
   ExternalCut::createLink("back",*this,1,OP,Y);
-  MonteCarlo::LineIntersectVisit LI(OP,Y);
 
-  
-  //  ELog::EM<<"Inner Surf "<<getInnerSurf()<<ELog::endDiag;
-  //  ELog::EM<<"INNER POINT == "<<to<<LI.getPoint(getInnerSurf(),OP)<<ELog::endDiag;
-  //  FixedComp::setConnect(0,LI.getPoint(getInnerSurf(),OP),-Y);
-  FixedComp::setConnect(1,LI.getPoint(SMap.realSurfPtr(buildIndex+7),OP),Y);
-  FixedComp::setConnect(2,Origin-X*(Width/2.0),-X);
+	     FixedComp::setConnect(2,Origin-X*(Width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(Width/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(Height/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(Height/2.0),Z);

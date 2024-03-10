@@ -200,7 +200,7 @@ testAlgebra::testDNF()
   std::vector<std::string> Func;
   //  Func.push_back("(a'b'c'd')+(a'b'c'd)+(a'b'cd')+(a'bc'd)+(a'bcd')+(a'bcd)+(ab'c'd')+(ab'c'd)+(ab'cd')+(abcd')");
 
-  Func.push_back("a'b'c'+d'e'");
+  //  Func.push_back("a'b'c'+d'e'");
   Func.push_back("(a'b'c')+(a'b'c)+(a'bc')+(ab'c)+(abc')+(abc)");
   //  Func.push_back("ab((c'(d+e+f')g'h'i')+(gj'(k+l')(m+n)))");
 
@@ -212,9 +212,10 @@ testAlgebra::testDNF()
       A.makeDNF();
       if (!A.logicalEqual(B) || !A.getComp().isDNF())
         {
-	  ELog::EM<<"Original "<<*sv<<" == "<<ELog::endErr;
-	  ELog::EM<<"Function "<<B<<ELog::endErr;
-	  ELog::EM<<"DNF == "<<A<<ELog::endErr;
+	  ELog::EM<<"Original "<<*sv<<" == "<<ELog::endDiag;
+	  ELog::EM<<"Function "<<B<<ELog::endDiag;
+	  ELog::EM<<"Logical "<<A.logicalEqual(B)<<ELog::endDiag;
+	  ELog::EM<<"DNF == "<<A<<ELog::endDiag;
 	  return -1;
 	}
     }

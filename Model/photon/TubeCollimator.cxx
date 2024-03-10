@@ -41,6 +41,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfRegister.h"
