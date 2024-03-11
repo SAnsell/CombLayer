@@ -223,7 +223,7 @@ userBdx::write(std::ostream& OX) const
 
   cx<<"USRBDX "<<getLogType()<<" "<<
     StrFunc::toUpperString(particle)<<" ";
-  cx<<getOutUnit()<<" R"<<cellA<<" R"<<cellB<<" "<<1.0<<" ";
+  cx<<getOutUnit()<<" R"<<cellA<<" R"<<cellB<<" 1 ";
   cx<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 

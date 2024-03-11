@@ -887,7 +887,7 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx<<"MATERIAL 0.0  - "<<getMacroDensity()<<" -  -  - "<<matName<<std::endl;
+  cx<<"MATERIAL 0  - "<<getMacroDensity()<<" -  -  - "<<matName<<std::endl;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
