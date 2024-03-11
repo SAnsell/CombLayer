@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/userBinConstruct.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -55,32 +55,35 @@
 #include "meshConstruct.h"
 #include "flukaTally.h"
 #include "userBin.h"
-#include "userBinConstruct.h" 
+#include "userBinConstruct.h"
 
 namespace flukaSystem
 {
 
-void 
+void
 userBinConstruct::createTally(SimFLUKA& System,
+			      const std::string& name,
 			      const std::string& PType,
 			      const int fortranTape,
 			      const Geometry::Vec3D& APt,
 			      const Geometry::Vec3D& BPt,
-			      const std::array<size_t,3>& MPts) 
+			      const std::array<size_t,3>& MPts)
   /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
+    \param name :: tally name
     \param PType :: processed particle type
     \param fortranTape :: output stream
-    \param APt :: Lower point 
-    \param BPt :: Upper point 
+    \param APt :: Lower point
+    \param BPt :: Upper point
     \param MPts :: Points ot use
   */
 {
   ELog::RegMethod RegA("userBinConstruct","createTally");
 
   userBin UB(fortranTape,fortranTape);
+  UB.setKeyName(name);
   UB.setParticle(PType);
   UB.setCoordinates(APt,BPt);
   UB.setIndex(MPts);
@@ -99,11 +102,11 @@ userBinConstruct::convertTallyType(const std::string& TType)
 {
   ELog::RegMethod RegA("userBinConstruct","convertTallyType");
   const flukaGenParticle& pConv=flukaGenParticle::Instance();
-  
+
   if (TType=="help" || TType=="help") return "help";
-        
+
   std::ostringstream cx;
-  
+
   if (pConv.hasName(TType))
     return StrFunc::toUpperString(pConv.nameToFLUKA(TType));
 
@@ -113,7 +116,7 @@ userBinConstruct::convertTallyType(const std::string& TType)
 void
 userBinConstruct::processMesh(SimFLUKA& System,
 			      const mainSystem::inputParam& IParam,
-			      const size_t Index) 
+			      const size_t Index)
   /*!
     Add mesh tally (s) as needed
     \param System :: SimFLUKA to add tallies
@@ -122,9 +125,13 @@ userBinConstruct::processMesh(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("userBinConstruct","processMesh");
-  
+
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
+
   const std::string tallyType=
-    IParam.getValueError<std::string>("tally",Index,1,"tallyType");
+    IParam.getValueError<std::string>("tally",Index,2,"tallyType");
+
   const std::string tallyParticle=
     userBinConstruct::convertTallyType(tallyType);
   if (tallyParticle=="help")
@@ -134,23 +141,23 @@ userBinConstruct::processMesh(SimFLUKA& System,
     }
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
-  
+
   const std::string PType=
-    IParam.getValueError<std::string>("tally",Index,2,"object/free"); 
+    IParam.getValueError<std::string>("tally",Index,3,"object/free");
   Geometry::Vec3D APt,BPt;
   std::array<size_t,3> Nxyz;
-  
+
   if (PType=="object")
     mainSystem::meshConstruct::getObjectMesh
-      (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
+      (System,IParam,"tally",Index,4,APt,BPt,Nxyz);
   else if (PType=="free")
-    mainSystem::meshConstruct::getFreeMesh(IParam,"tally",Index,3,APt,BPt,Nxyz);
+    mainSystem::meshConstruct::getFreeMesh(IParam,"tally",Index,4,APt,BPt,Nxyz);
 
-  userBinConstruct::createTally(System,tallyParticle,-nextId,APt,BPt,Nxyz);
-  
-  return;      
+  userBinConstruct::createTally(System,tallyName,tallyParticle,-nextId,APt,BPt,Nxyz);
+
+  return;
 }
-  
+
 std::string
 userBinConstruct::writeHelp()
   /*!

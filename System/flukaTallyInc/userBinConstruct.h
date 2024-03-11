@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   tallyInc/userBinConstruct.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tallySystem_userBinConstruct_h
@@ -45,31 +45,31 @@ namespace flukaSystem
   \brief Constructs a mesh tally from inputParam
 */
 
-class userBinConstruct 
+class userBinConstruct
 {
   private:
-  
+
   /// Private constructor
   userBinConstruct() {}
 
   static void createTally(SimFLUKA&,
 			  const std::string&,
+			  const std::string&,
 			  const int,
 			  const Geometry::Vec3D&,const Geometry::Vec3D&,
 			  const std::array<size_t,3>&);
-  
+
 
   static std::string convertTallyType(const std::string&);
-  
+
  public:
 
   static void processMesh(SimFLUKA&,const mainSystem::inputParam&,
 			  const size_t);
-  
+
   static std::string writeHelp();
 };
 
 }
 
 #endif
- 

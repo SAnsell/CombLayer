@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/flukaTallyBuilder.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -71,22 +71,22 @@ tallySelection(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("flukaTallyBuilder[F]","tallySelection(basic)");
-  
+
   System.populateCells();
   System.createObjSurfMap();
-  
+
   for(size_t i=0;i<IParam.setCnt("tally");i++)
     {
       const std::string TType=
-	IParam.getValue<std::string>("tally",i,0);
-      
+	IParam.getValue<std::string>("tally",i,1);
+
       const size_t NItems=IParam.itemCnt("tally",i);
-      const std::string HType=(NItems>1) ?
-	IParam.getValue<std::string>("tally",i,1) : "help";
+      const std::string HType=(NItems>2) ?
+	IParam.getValue<std::string>("tally",i,2) : "help";
 
       if (TType=="help" || TType=="?")
 	helpTallyType(HType);
-      
+
       else if (TType=="mesh")
 	userBinConstruct::processMesh(System,IParam,i);
       else if (TType=="dump")
@@ -107,12 +107,12 @@ tallySelection(SimFLUKA& System,
     }
   //if (IParam.flag("Txml"))
     //   tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
-      
+
   return;
 }
 
-void  
-helpTallyType(const std::string& HType) 
+void
+helpTallyType(const std::string& HType)
   /*!
     Simple help for types
     \param HType :: specialization if present that help is required for
@@ -134,7 +134,7 @@ helpTallyType(const std::string& HType)
 	      <<"-- track :  particle FC index eMin eMax NE \n";
 
     }
-  
+
   ELog::EM<<ELog::endBasic;
   return;
 }
