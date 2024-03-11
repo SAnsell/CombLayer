@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTallyInc/userTrackConstruct.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tallySystem_userTrackConstruct_h
@@ -45,28 +45,27 @@ namespace flukaSystem
   \brief Constructs a surface tally for fluka
 */
 
-class userTrackConstruct 
+class userTrackConstruct
 {
   private:
-  
+
   /// Private constructor
   userTrackConstruct() = default;
 
   static bool checkLinkCells(const Simulation&,const int,const int);
-  
-  static void createTally(SimFLUKA&,const std::string&,const int,
+
+  static void createTally(SimFLUKA&,const std::string&,const std::string&,const int,
 			  const int,
 			  const bool,const double,const double,const size_t);
-  
+
  public:
 
   static void processTrack(SimFLUKA&,const mainSystem::inputParam&,
 			   const size_t);
-  
+
   static void writeHelp(std::ostream&);
 };
 
 }
 
 #endif
- 
