@@ -340,7 +340,7 @@ LineIntersectVisit::procTrack(const std::vector<Geometry::Vec3D>& PtVec,
       const Geometry::Vec3D LP=Pt-ATrack.getOrigin();
       const double D=LP.dotProd(ATrack.getDirect());
       const int SN=(surfID) ? surfID->getName() : 0;
-      IPts.push_back(Geometry::interPoint(LP,D,SN,surfID,0));
+      IPts.push_back(Geometry::interPoint(Pt,D,SN,surfID,0));
     }
 
   std::sort(IPts.begin(),IPts.end(),

@@ -402,6 +402,7 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
     return 0;
   const double u=(Pln.getDistance()-OdotN)/DdotN;
   PntOut.push_back(getPoint(u));
+
   return 1;
 }
 

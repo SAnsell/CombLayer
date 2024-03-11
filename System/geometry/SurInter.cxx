@@ -136,15 +136,12 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
 {
   ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,closePt)");
 
-
   std::vector<Geometry::interPoint> IPts;
   mainHR.calcSurfIntersection(Origin,N,IPts);
   if (IPts.empty())
     throw ColErr::InContainerError<std::string>
 	(mainHR.display(),"HeadRule / Line does not intersect");
-
-  ELog::EM<<"CALC == "<<IPts[0].Pt<<" "<<IPts[0].SNum<<ELog::endDiag;
-
+  
   return nearPoint(IPts,closePt);
 }
 

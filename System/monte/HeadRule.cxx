@@ -2888,7 +2888,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
     {
       const std::vector<Geometry::interPoint>& IPTvec=
 	LI.getIntercept(SPtr);
-      
+
       for(const Geometry::interPoint& inter : IPTvec)
 	{
 	  // note SNum is unsigned:
