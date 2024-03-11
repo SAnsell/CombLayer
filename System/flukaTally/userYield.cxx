@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/userYield.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -68,7 +68,7 @@ userYield::userYield(const std::string& KN,const int ID,const int outID) :
   */
 {}
 
-userYield::userYield(const userYield& A) : 
+userYield::userYield(const userYield& A) :
   flukaTally(A),scoreLog(A.scoreLog),
   scoreTypeA(A.scoreTypeA),scoreTypeB(A.scoreTypeB),
   particle(A.particle),eLogFlag(A.eLogFlag),aLogFlag(A.aLogFlag),
@@ -111,7 +111,7 @@ userYield::operator=(const userYield& A)
     }
   return *this;
 }
-  
+
 userYield*
 userYield::clone() const
   /*!
@@ -138,7 +138,7 @@ userYield::getLogType() const
   const int signV((eLogFlag) ? -1 : 1);
   return (aLogFlag) ?  2*signV : signV;
 }
-  
+
 void
 userYield::setParticle(const std::string& P)
   /*!
@@ -157,7 +157,7 @@ userYield::setScoreType(const bool logFlag,
   /*!
     Set the scoring type
     \param logFlag :: log type to use for A [only]
-    \param A :: ScoreTypeA 
+    \param A :: ScoreTypeA
     \param B :: ScoreTypeB
   */
 {
@@ -171,7 +171,7 @@ void
 userYield::setAngle(const bool aFlag,const double aMin,
 		    const double aMax,const size_t NA)
   /*!
-    Set the angles 
+    Set the angles
     \param aFlag :: log flag [if true]
     \param aMin :: Min angle [min 0.001 if log]
     \param aMax :: Max angle [4pi]
@@ -196,12 +196,12 @@ userYield::setAngle(const bool aFlag,const double aMin,
   nA=NA;
   return;
 }
-  
+
 void
 userYield::setEnergy(const bool eFlag,const double eMin,
 		   const double eMax,const size_t NE)
   /*!
-    Set the energys 
+    Set the energys
     \perem eFleg :: log fleg [if true]
     \perem eMin :: Min energy [min 0.001MeV if log]
     \perem eMax :: Max energy [MeV]
@@ -223,7 +223,7 @@ userYield::setEnergy(const bool eFlag,const double eMin,
   eLogFlag=eFlag;
   energyA=eMin*1e-3;
   energyB=eMax*1e-3;
-    
+
   nE=NE;
   return;
 }
@@ -252,17 +252,17 @@ userYield::getScore(const std::string& A)
   const std::map<std::string,int> nameMap({
       {"KE",1},
 	{"Monmentum",2}});
-  
+
   int out;
   if (StrFunc::convert(A,out))
     return out;
   std::map<std::string,int>::const_iterator mc=nameMap.find(A);
   if (mc!=nameMap.end())
     return mc->second;
-  
+
   return 1;
 }
-  
+
 int
 userYield::getScoreIndex() const
   /*!
@@ -274,11 +274,11 @@ userYield::getScoreIndex() const
 
   const int iE=getScore(scoreTypeA);
   const int iA=getScore(scoreTypeA);
-  
+
 
   return iE+iA*100;
 }
-  
+
 void
 userYield::write(std::ostream& OX) const
   /*!
@@ -290,16 +290,15 @@ userYield::write(std::ostream& OX) const
 
   cx<<"USRYIELD "<<getLogType()<<" "<<
     StrFunc::toUpperString(particle)<<" ";
-  cx<<outputUnit<<" R"<<cellA<<" R"<<cellB<<" 1.0 ";
+  cx<<outputUnit<<" R"<<cellA<<" R"<<cellB<<" 1 ";
   cx<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
   cx<<"USRYIELD "<<energyB<<" "<<energyA<<" "<<nE<<" ";
   cx<<angleB<<" "<<angleA<<" "<<nA<<" &";
-  StrFunc::writeFLUKA(cx.str(),OX);  
+  StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }
 
 }  // NAMESPACE flukaSystem
-
