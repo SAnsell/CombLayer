@@ -2868,7 +2868,7 @@ HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
 size_t
 HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 			       const Geometry::Vec3D& VUnit,
-			       std::vector<Geometry::interPoint>& Pts) const
+			       std::vector<Geometry::interPoint>& OutPts) const
   /*!
     Calculate a track of a line that intersects the rule.
     The surface number is the outgoing surface number.
@@ -2880,49 +2880,45 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
-
+  
   // get all intersection points:
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
-  const std::vector<Geometry::interPoint>& IPTvec=
-    LI.getIntercept(*this);
-
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  for(const Geometry::interPoint& inter : IPTvec)
+  const std::set<const Geometry::Surface*> SurfSet=getSurfaces();
+  for(const Geometry::Surface* SPtr : SurfSet)
     {
-      // note SNum is unsigned:
-      const int pAB=isValid(inter.Pt,inter.SNum);
-      const int mAB=isValid(inter.Pt,-inter.SNum);
+      const std::vector<Geometry::interPoint>& IPTvec=
+	LI.getIntercept(SPtr);
       
-      // const Geometry::Surface* surfPtr=surfIndex[i];
-      // // Is point possible closer
-      // const int NS=surfPtr->getName();	    // NOT SIGNED
-      // const int pAB=isValid(IPts[i],NS);
-      // const int mAB=isValid(IPts[i],-NS);
-
-      if (pAB!=mAB)  // exiting/entering surface
+      for(const Geometry::interPoint& inter : IPTvec)
 	{
-	  // previously used signValue but now gone to
-	  // distValue BUT not 100% sure if that is correct.
-	  // const int distValue((lambda>0) ? 1 : -1);
-	  // Note that we want the surface to be correct
-	  // for OUTGOING
-	  const int signValue((pAB>0) ? -1 : 1);
-	  const bool outGoingFlag(pAB>0);
-	  Pts.push_back(Geometry::interPoint
-			({
-			  inter.Pt,
-			  inter.D,
-			  signValue*inter.SNum,
-			  inter.SPtr,
-			  outGoingFlag
-			}));
+	  // note SNum is unsigned:
+	  const int pAB=isValid(inter.Pt,inter.SNum);
+	  const int mAB=isValid(inter.Pt,-inter.SNum);
+	  if (pAB!=mAB)  // exiting/entering surface
+	    {
+	      // previously used signValue but now gone to
+	      // distValue BUT not 100% sure if that is correct.
+	      // const int distValue((lambda>0) ? 1 : -1);
+	      // Note that we want the surface to be correct
+	      // for OUTGOING
+	      const int signValue((pAB>0) ? -1 : 1);
+	      const bool outGoingFlag(pAB>0);
+	      OutPts.push_back(Geometry::interPoint
+			    ({
+			      inter.Pt,
+			      inter.D,
+			      signValue*inter.SNum,
+			      inter.SPtr,
+			      outGoingFlag
+			    }));
+	    }
 	}
     }
-  std::sort(Pts.begin(),Pts.end(),
+
+  std::sort(OutPts.begin(),OutPts.end(),
 	    [](const Geometry::interPoint& A,const Geometry::interPoint& B)
 	    { return A.D<B.D; } );
-  return Pts.size();
+  return OutPts.size();
 }
 
 int

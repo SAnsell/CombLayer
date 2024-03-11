@@ -375,7 +375,9 @@ R3Ring::createDoor(Simulation& System)
 
       doorPtr->addAllInsertCell
 	(getCell("OuterFlatEnd",doorActive % NInnerSurf));
+
       doorPtr->createAll(System,*this,static_cast<long int>(doorActive+1));
+
     }
   return;
 }
@@ -444,11 +446,13 @@ R3Ring::createAll(Simulation& System,
   createUnitVector(FC,FIndex);
   createSurfaces();    
   createObjects(System);
-  
+
+
   createLinks();
   insertObjects(System);
 
   createDoor(System);
+
   return;
 }
   

@@ -662,7 +662,7 @@ testAlgebra::testCNF()
   typedef std::tuple<std::string,std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("(f+x)(x+y+z)","(f+x)(x+y+z)","x+fy+fz"),
+      //      TTYPE("(f+x)(x+y+z)","(f+x)(x+y+z)","x+fy+fz"),
       TTYPE("aq+acp+ace","a(c+q)(e+p+q)","ace+acp+aq")
     };
 

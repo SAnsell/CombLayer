@@ -484,7 +484,8 @@ ExternalCut::createLink(const std::string& extName,
   if (CU->main.isEmpty())
     throw ColErr::InContainerError<std::string>
       (extName,"FC:"+FC.getKeyName()+" has no surface rule");
-  
+
+  ELog::EM<<"CU["<<extName<<"] "<<Org<<" == "<<CU->main<<ELog::endDiag;
   const std::string keyN=FC.getKeyName();
   FC.setLinkSurf(linkIndex,CU->main.complement());
   FC.setBridgeSurf(linkIndex,CU->divider);

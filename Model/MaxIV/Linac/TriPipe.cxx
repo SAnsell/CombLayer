@@ -3,7 +3,7 @@
  
  * File:   commonBeam/TriPipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,6 +141,7 @@ TriPipe::createSurfaces()
   // Inner void
   if (!frontActive())
     {
+      ELog::EM<<"Building front at "<<Origin<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,buildIndex+1,
 			       Origin-Y*(length/2.0),Y); 
       FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
@@ -287,6 +288,9 @@ TriPipe::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
 
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"Link Pt "<<getLinkPt(0)<<ELog::endDiag;
+  ELog::EM<<"Link Pt "<<getLinkPt(1)<<ELog::endDiag;
 
   // top lift point : Out is an complemnt of the volume
   HeadRule HR;
@@ -295,7 +299,7 @@ TriPipe::createLinks()
   FixedComp::setLinkSurf(7,HR);
 
   FixedComp::nameSideIndex(7,"outerPipe");
-  
+
   return;
 }
   

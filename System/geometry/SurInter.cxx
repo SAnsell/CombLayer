@@ -135,13 +135,15 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
    */
 {
   ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,closePt)");
-  
+
+
   std::vector<Geometry::interPoint> IPts;
   mainHR.calcSurfIntersection(Origin,N,IPts);
-
   if (IPts.empty())
     throw ColErr::InContainerError<std::string>
 	(mainHR.display(),"HeadRule / Line does not intersect");
+
+  ELog::EM<<"CALC == "<<IPts[0].Pt<<" "<<IPts[0].SNum<<ELog::endDiag;
 
   return nearPoint(IPts,closePt);
 }
@@ -224,6 +226,32 @@ getLinePoint(const Geometry::Vec3D& Origin,
   return trackLine.getPoint(SPtr,NPoint);
 }
 
+Geometry::Vec3D
+getForwardPoint(const Geometry::Vec3D& Origin,
+		const Geometry::Vec3D& LAxis,
+		const int SNum)
+  /*!
+    Calculate the intesection of a line with a surface
+    (found by index number) which is in the forward
+    (LAxis direction)
+    \param Origin :: Start of line
+    \param LAxis :: Axis of line
+    \param SNum :: Surface number
+    \return Line/Surf intersection
+  */
+{
+  ELog::RegMethod RegA("SurInter[F]","lineSurfPoint(int)");
+
+  ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+  // must be a plane to get one point
+  const Geometry::Plane* PPtr=
+    SurI.realSurf<Geometry::Plane>(std::abs(SNum));
+  if (!PPtr)
+    throw ColErr::InContainerError<int>(SNum,"Plane Surface");
+  return getLinePoint(Origin,LAxis,PPtr);
+}
+  
 double
 getLineDistance(const Geometry::Vec3D& Origin,
              const Geometry::Vec3D& Axis,
