@@ -39,7 +39,7 @@ namespace flukaSystem
 
 /*!
   \class userBinConstruct
-  \version 1.0
+  \version 1.1
   \author S. Ansell
   \date July 2012
   \brief Constructs a mesh tally from inputParam
