@@ -50,10 +50,7 @@
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
-
 #include "flukaTallyModification.h"
-
-
 
 void
 tallyModification(SimFLUKA& System,
