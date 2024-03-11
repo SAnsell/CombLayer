@@ -147,7 +147,7 @@ flukaTally::setKeyName(const std::string& K)
 {
   const size_t length = K.length();
   if (length>8)
-    throw ColErr::RangeError<size_t>(length, 1, 8, "Estimator name can't exceed 8 symbols: " + K);
+    throw ColErr::RangeError<size_t>(length, 1, 8, "FLUKA estimator name '" + K + "' is too long.");
 
   keyName=K;
   return;
