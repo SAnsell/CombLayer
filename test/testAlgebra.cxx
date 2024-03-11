@@ -200,7 +200,7 @@ testAlgebra::testDNF()
   std::vector<std::string> Func;
   //  Func.push_back("(a'b'c'd')+(a'b'c'd)+(a'b'cd')+(a'bc'd)+(a'bcd')+(a'bcd)+(ab'c'd')+(ab'c'd)+(ab'cd')+(abcd')");
 
-  //  Func.push_back("a'b'c'+d'e'");
+  Func.push_back("a'b'c'+d'e'");
   Func.push_back("(a'b'c')+(a'b'c)+(a'bc')+(ab'c)+(abc')+(abc)");
   //  Func.push_back("ab((c'(d+e+f')g'h'i')+(gj'(k+l')(m+n)))");
 

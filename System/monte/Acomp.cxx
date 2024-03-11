@@ -3,7 +3,7 @@
  
  * File:   monte/Acomp.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1182,18 +1182,13 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
 		}
 	    }
 	}
-      ELog::EM<<"ASDFAF"<<ELog::endDiag;
       for(const BnId& BI : Work)
 	if (BI.PIstatus()==1)
 	  PIComp.push_back(BI);
       
       Work=Tmod;
     } while (!Tmod.empty());
-  // Copy over the unit.
-  ELog::EM<<"EPI"<<DNFobj.size()<<ELog::endDiag;
-  for(const auto& item : PIComp)
-    ELog::EM<<"PICOMP == "<<item<<ELog::endDiag;
-  
+  // Copy over the unit.  
   return makeEPI(DNFobj,PIComp);
 }
 
@@ -1220,22 +1215,21 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
 
   const size_t PIsize(PIform.size());
   const size_t DNFsize(DNFobj.size());
-  ELog::EM<<"Size == "<<PIsize<<" "<<DNFsize<<ELog::endDiag;
   std::vector<BnId> EPI;  // Created Here.
 
   std::vector<int> EPIvalue;
   // Make zeroed matrix.
   Geometry::MatrixBase<int> Grid(PIform.size(),DNFobj.size()); 
-  std::vector<size_t> DNFactive(DNFobj.size());       // DNF that active
-  std::vector<size_t> PIactive(PIform.size());        // PI that are active
-  std::vector<int> DNFscore(DNFobj.size());        // Number in each channel
-  std::vector<int> PIscore(DNFobj.size());        // Number in each channel
+  std::vector<size_t> DNFactive(DNFsize);       // DNF that active
+  std::vector<size_t> PIactive(PIsize);         // PI that are active
+  std::vector<int> DNFscore(DNFsize);           // Number in each channel
+  std::vector<int> PIscore(DNFsize);            // Number in each channel
   
   //Populate
-  for(size_t pc=0;pc!=PIform.size();pc++)
+  for(size_t pc=0;pc!=PIsize;pc++)
     PIactive[pc]=pc;
   
-  for(size_t ic=0;ic!=DNFobj.size();ic++)
+  for(size_t ic=0;ic!=DNFsize;ic++)
     {
       DNFactive[ic]=ic;                            //populate (avoid a loop)
       for(size_t pc=0;pc!=PIform.size();pc++)
@@ -1264,7 +1258,6 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   std::vector<size_t>::iterator dx;
   std::vector<size_t>::iterator ddx;    // DNF active iterator
   std::vector<size_t>::iterator px;     // PIactive iterator
-  ELog::EM<<"EPI HERE "<<ELog::endDiag;
   // 
   // First remove singlets:
   // 
@@ -1287,7 +1280,6 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
 	    }
 	}
     }
-  ELog::EM<<"REMOVE DEAT"<<ELog::endDiag;
   // Remove dead items from active list
   DNFactive.erase(
     remove_if(DNFactive.begin(),DNFactive.end(),
@@ -1301,14 +1293,10 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
     {
       for(px=PIactive.begin();px!=PIactive.end();px++)
 	{
-	  ELog::EM<<PIform[*px]<<":";
 	  for(ddx=DNFactive.begin();ddx!=DNFactive.end();ddx++)
 	    ELog::EM<<((Grid[*px][*ddx]) ? " 1" : " 0");
-	  ELog::EM<<ELog::endDebug;
 	}
-      ELog::EM<<"END OF TABLE "<<ELog::endDebug;
     }
-  ELog::EM<<"REMOVE DEAT"<<ELog::endDiag;
   // Ok -- now the hard work...
   // need to find shortest "combination" that spans
   // the remaining table.
@@ -1329,21 +1317,17 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
 	} 
       cm++;
     }
-  ELog::EM<<"REMOVE DEAT 3"<<ELog::endDiag;
   const size_t Dsize(DNFactive.size());
   const size_t Psize(PIactive.size());
   //icount == depth of search ie 
-      ELog::EM<<"Size == "<<Dsize<<" "<<Psize<<ELog::endDiag;
   
   for(size_t Icount=1;Icount<Psize;Icount++)
     {
       // This counter is a ripple counter, ie 1,2,3 where no numbers 
       // are the same. BUT it is acutally 0->N 0->N 0->N
       // index by A, A+1 ,A+2  etc
-      ELog::EM<<"Icount == "<<Icount<<" "<<Psize<<ELog::endDiag;
-      IndexCounter<size_t> Index(Icount,Psize);
+      IndexCounter<size_t,true> Index(Icount,Psize);
       do {
-	ELog::EM<<"In loop"<<ELog::endDiag;
 	size_t di;
 	for(di=0;di<Dsize;di++)   //check each orignal position
 	  {
@@ -1363,8 +1347,6 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
       } while(!(++Index));
     }
 
-  ELog::EM<<"REMOVE DEAT"<<ELog::endDiag;
-  
   //OH well that means every PIactive is a EPI :-(
   for(px=PIactive.begin();px!=PIactive.end();px++)
     EPI.push_back(PIform[*px]);
@@ -1440,13 +1422,8 @@ Acomp::makeDNFobject()
   std::vector<int> keyNumbers;
   if (!getDNFobject(keyNumbers,DNFobj))
     {
-      for(const auto& item : DNFobj)
-	ELog::EM<<"ITEM == "<<item<<ELog::endDiag;
-      const int out=makePI(DNFobj);
-      ELog::EM<<"Unit == "<<out<<ELog::endDiag;
-      if (out)
+      if (makePI(DNFobj))
 	assignDNF(keyNumbers,DNFobj);
-      ELog::EM<<"THIS == "<<*this<<ELog::endDiag;
       return static_cast<int>(DNFobj.size());
     }
   return 0;

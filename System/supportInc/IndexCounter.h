@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monteInc/IndexCounter.h
+ * File:   supportInc/IndexCounter.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,12 +31,16 @@
 
   Objective is a rolling integer stream ie 1,2,3
   going to 1,2,N-1 and then 1,3,4 etc...
+
+  \tparam UCascade :: descide ot only use upper points e.g.
+  for (4) :  1,2,3,2,3,3
 */
 
-template<typename T>
+template<typename T,bool UC = false>
 class IndexCounter
 {
  private:
+
 
   std::vector<T> Rmax;         ///< Numbers to over cycle
   std::vector<T> RC;           ///< rotation list
@@ -54,9 +58,9 @@ class IndexCounter
   IndexCounter& operator=(IndexCounter&&);
   ~IndexCounter() =default;
 
-  bool operator==(const IndexCounter<T>&) const;
-  bool operator<(const IndexCounter<T>&) const;
-  bool operator>(const IndexCounter<T>&) const;
+  bool operator==(const IndexCounter<T,UC>&) const;
+  bool operator<(const IndexCounter<T,UC>&) const;
+  bool operator>(const IndexCounter<T,UC>&) const;
   /// Accessor operator
   T operator[](const size_t I) const { return RC[I]; }
 
@@ -71,8 +75,8 @@ class IndexCounter
   void write(std::ostream&) const;
 };
 
-template<typename T>
-std::ostream& operator<<(std::ostream&,const IndexCounter<T>&);
+template<typename T,bool UC>
+std::ostream& operator<<(std::ostream&,const IndexCounter<T,UC>&);
 
 
 #endif

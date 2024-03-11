@@ -64,12 +64,14 @@ testIndexCounter::applyTest(const int extra)
   typedef int (testIndexCounter::*testPtr)();
   testPtr TPtr[]=
     {
-      &testIndexCounter::testAddition
+      &testIndexCounter::testAddition,
+      &testIndexCounter::testSimple
     };
 
   std::string TestName[]=
     {
-      "Addition"
+      "Addition",
+      "Simple"
     };
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
@@ -112,7 +114,7 @@ testIndexCounter::testAddition()
   std::vector<TTYPE> Tests({
       {3,4,5,40,2,0,0},
       {3,4,5,80,1,0,0},
-	{3,4,5,-40,1,0,0}
+      {3,4,5,-40,1,0,0}
     });
   //  Tests.push_back(TTYPE(3,4,5,80,1,0,0));
   //  Tests.push_back(TTYPE
@@ -144,8 +146,22 @@ testIndexCounter::testAddition()
 	}
       cnt++;
     }
+  return 0;
+}
 
-      
+int
+testIndexCounter::testSimple()
+  /*!
+    Simple output check
+   */
+{
+  ELog::RegMethod RegA("testRotCounter","testSimple");
 
+  IndexCounter<int,1> RX(3UL,6);
+  for(size_t i=0;i<80;i++)
+    {
+      //      ELog::EM<<"RX["<<i<<"] == "<<RX<<ELog::endDiag;
+      RX++;
+    }
   return 0;
 }
