@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/userBin.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -68,7 +68,7 @@ userBin::userBin(const std::string& tallyName,
   */
 {}
 
-userBin::userBin(const userBin& A) : 
+userBin::userBin(const userBin& A) :
   flukaTally(A),
   meshType(A.meshType),particle(A.particle),
   Pts(A.Pts),minCoord(A.minCoord),
@@ -99,7 +99,7 @@ userBin::operator=(const userBin& A)
   return *this;
 }
 
-  
+
 userBin*
 userBin::clone() const
   /*!
@@ -115,7 +115,7 @@ userBin::~userBin()
     Destructor
   */
 {}
-  
+
 void
 userBin::setParticle(const std::string& P)
   /*!
@@ -142,7 +142,7 @@ userBin::setDoseType(const std::string& P,
   return;
 }
 
-  
+
 void
 userBin::setIndex(const std::array<size_t,3>& IDX)
   /*!
@@ -157,7 +157,7 @@ userBin::setIndex(const std::array<size_t,3>& IDX)
 	throw ColErr::IndexError<size_t>(IDX[i],i,"IDX[index] zero");
       Pts[i]=IDX[i];
     }
-  
+
   return;
 }
 
@@ -172,7 +172,7 @@ userBin::setCoordinates(const Geometry::Vec3D& A,
   */
 {
   ELog::RegMethod RegA("userBin","setCoordinates");
-  
+
   minCoord=A;
   maxCoord=B;
   // Add some checking here
@@ -202,12 +202,12 @@ userBin::writeAuxScore(std::ostream& OX) const
       std::ostringstream cx;
       cx<<"AUXSCORE USRBIN "<<auxParticle<<" - "<<keyName
 	<<" "<<keyName<<" - "<<doseType;
-      StrFunc::writeFLUKA(cx.str(),OX);  
+      StrFunc::writeFLUKA(cx.str(),OX);
     }
   return;
 }
 
-  
+
 void
 userBin::write(std::ostream& OX) const
   /*!
@@ -219,17 +219,17 @@ userBin::write(std::ostream& OX) const
 
   const int outputUnit(getOutUnit());
   cx<<"USRBIN "<<meshType<<" "<<particle<<" "
-    <<outputUnit<<" "<<maxCoord;  
-  cx<<" mesh"<<std::to_string(std::abs(outputUnit));
+    <<outputUnit<<" "<<maxCoord;
+  cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
   cx<<"USRBIN "<<minCoord<<" ";
-  
+
   for(size_t i=0;i<3;i++)
     cx<<Pts[i]<<" ";
   cx<<"  & ";
-  StrFunc::writeFLUKA(cx.str(),OX);  
+  StrFunc::writeFLUKA(cx.str(),OX);
   writeAuxScore(OX);
 
   flukaTally::write(OX);
@@ -237,4 +237,3 @@ userBin::write(std::ostream& OX) const
 }
 
 }  // NAMESPACE flukaSystem
-
