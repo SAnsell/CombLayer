@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTallyInc/userTrack.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef flukaSystem_userTrack_h
@@ -37,7 +37,7 @@ class userTrack : public flukaTally
  private:
 
   std::string particle;             ///< particle/type
-    
+
   bool eLogFlag;                    ///< energy log flag
   bool fluenceFlag;                 ///< fluence score
   bool oneDirFlag;                  ///< one direction flag
@@ -45,29 +45,30 @@ class userTrack : public flukaTally
   size_t nE;                        ///< number of energy
   double energyA;                   ///< Energy start
   double energyB;                   ///< Energy end
-  
+
   int cellA;                        ///< start cell
 
   int getLogType() const;
-  
+
  public:
 
   userTrack(const int,const int);
   userTrack(const std::string&,const int,const int);
   userTrack(const userTrack&);
-  userTrack* clone() const override; 
+  userTrack* clone() const override;
   userTrack& operator=(const userTrack&);
   ~userTrack() override;
 
     /// return fluke name
   std::string getType() const override { return "USRTRACK"; };
-  
+
   void setParticle(const std::string&);
   void setCell(const int);
   void setEnergy(const bool,const double,
 			 const double,const size_t) override;
-  
-  void write(std::ostream&) const override;  
+
+  void writeAuxScore(std::ostream&) const override;
+  void write(std::ostream&) const override;
 };
 
 }
