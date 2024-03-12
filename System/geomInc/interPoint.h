@@ -46,7 +46,6 @@ namespace Geometry
     int SNum;               ///< signed surf number [true as particle moves fwd]
     const Surface* SPtr;    ///< SurfPointer
     bool outFlag;           ///< true if particle leaves
-
     
     explicit interPoint() :
       D(0.0),SNum(0),SPtr(nullptr),outFlag(0) {}

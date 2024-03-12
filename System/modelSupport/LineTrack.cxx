@@ -144,27 +144,26 @@ LineTrack::clearAll()
 
 
 void
-LineTrack::calculate(const Simulation& ASim)
+LineTrack::calculate(const Simulation& System)
   /*!
     Calculate the track
-    \param ASim :: Simulation to use						
+    \param System :: Simulation to use						
   */
 {
   ELog::RegMethod RegA("LineTrack","calculate");
 
   double aDist(0);                         // Length of track
   const Geometry::Surface* SPtr(0);           // Surface
-  const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
+  const ModelSupport::ObjSurfMap* OSMPtr=System.getOSM();
   
   MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
   // Find Initial cell [no default]
-  MonteCarlo::Object* OPtr=ASim.findCell(InitPt,0);
+  MonteCarlo::Object* OPtr=System.findCell(InitPt,0);
   if (!OPtr)
     throw ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
 
   int SN(0);
-  
   const std::set<int> SSet=OPtr->isOnSide(InitPt);
   if (!SSet.empty())
     {
@@ -197,10 +196,10 @@ LineTrack::calculate(const Simulation& ASim)
 	  if (!OPtr)
 	    {
 	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endCrit;
-	      calculateError(ASim);
+	      calculateError(System);
 	    }
 	  if (!OPtr || aDist<Geometry::zeroTol)
-	    OPtr=ASim.findCell(nOut.Pos,0);
+	    OPtr=System.findCell(nOut.Pos,0);
 	}
       else
 	OPtr=0;	

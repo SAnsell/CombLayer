@@ -3,7 +3,7 @@
  
  * File:   test/testLineTrack.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -230,21 +230,20 @@ testLineTrack::testLine()
   // Point A : Point B : Sum of cellIDs 
   typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,int,double> TTYPE;
 
-  std::vector<TTYPE> Tests;
-  // First test:
-  // 5 outer / 17 void / 5 cylinder / 2 box / 1 inner box
-  Tests.push_back(TTYPE(Geometry::Vec3D(0,0,30),Geometry::Vec3D(0,0,0),
-			15,118.0));
-  // Can't track passed an unbound cell
-  Tests.push_back(TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,30),14,113.0));
-  // 7 void / 2 box / 2 inner / 2 box / 5 cyl / 2 void
-  Tests.push_back(TTYPE(Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,10),22,81.0));
-  // Accross cyl (rad 4)   6 void / 8 cyl / 6 void
-  Tests.push_back(TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0));
+  const std::vector<TTYPE> Tests({
+      TTYPE(Geometry::Vec3D(0,0,30),Geometry::Vec3D(0,0,0),15,118.0),
+      // 5 outer / 17 void / 5 cylinder / 2 box / 1 inner box
+      TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,30),14,113.0),
 
-  // Accross angle cylinder
-  Tests.push_back(TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0));
+      // 7 void / 2 box / 2 inner / 2 box / 5 cyl / 2 void
+      TTYPE(Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,10),22,81.0),
 
+      // Accross cyl (rad 4)   6 void / 8 cyl / 6 void
+      TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0),
+
+      // Accross angle cylinder
+      TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0)
+    });
 
   int cnt(1);
   for(const TTYPE& tc : Tests)

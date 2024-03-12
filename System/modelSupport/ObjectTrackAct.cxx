@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ObjectTrackAct.cxx
+ * File:   modelSupport/ObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,7 +156,6 @@ ObjectTrackAct::getAttnSum(const long int objN,
   std::map<long int,LineTrack>::const_iterator mc=Items.find(objN);
   if (mc==Items.end())
     throw ColErr::InContainerError<long int>(objN,"objN in Items");
-
 
   // Get Two Paired Vectors
   const std::vector<MonteCarlo::Object*>& ObjVec= mc->second.getObjVec();
