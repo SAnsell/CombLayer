@@ -66,6 +66,7 @@ class Wendi : public attachSystem::ContainedComp,
   int heMat;                    ///< Active volume material
   int airMat;                   ///< Air material
   int rubberMat;                ///< Borated rubber material
+  int dummy;                    ///< Only void voiume if true
 
   void populate(const FuncDataBase&);
   void createSurfaces();

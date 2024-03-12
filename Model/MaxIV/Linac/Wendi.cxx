@@ -100,7 +100,8 @@ Wendi::Wendi(const Wendi& A) :
   heWallMat(A.heWallMat),
   heMat(A.heMat),
   airMat(A.airMat),
-  rubberMat(A.rubberMat)
+  rubberMat(A.rubberMat),
+  dummy(A.dummy)
   /*!
     Copy constructor
     \param A :: Wendi to copy
@@ -142,6 +143,7 @@ Wendi::operator=(const Wendi& A)
       heMat=A.heMat;
       airMat=A.airMat;
       rubberMat=A.rubberMat;
+      dummy=A.dummy;
     }
   return *this;
 }
@@ -174,8 +176,13 @@ Wendi::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
-  cRadius=Control.EvalVar<double>(keyName+"CounterTubeRadius");
   height=Control.EvalVar<double>(keyName+"Height");
+  dummy=Control.EvalVar<int>(keyName+"Dummy");
+
+  if (dummy)
+    return;
+
+  cRadius=Control.EvalVar<double>(keyName+"CounterTubeRadius");
   wRadius=Control.EvalVar<double>(keyName+"TungstenRadius");
   wThick=Control.EvalVar<double>(keyName+"TungstenThick");
   wHeight=Control.EvalVar<double>(keyName+"TungstenHeight");
@@ -210,6 +217,11 @@ Wendi::createSurfaces()
 
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  SurfMap::makeCylinder("ModeratorCyl",SMap,buildIndex+37,Origin,Z,radius);
+
+  if (dummy)
+    return;
+
   SurfMap::makeCylinder("CounterCyl",SMap,buildIndex+7,Origin,Z,cRadius);
 
   SurfMap::makePlane("TungstenFloorUpper",SMap,buildIndex+15,Origin-Z*(height/2.0-wOffset-wThick),Z);
@@ -222,8 +234,6 @@ Wendi::createSurfaces()
   SurfMap::makeShiftedPlane("HeFloor",SMap,buildIndex+36,buildIndex+16,Z,heWallThick);
   SurfMap::makeShiftedPlane("HeRoofLower",SMap,buildIndex+45,buildIndex+36,Z,heHeight);
   SurfMap::makeShiftedPlane("HeRoofUpper",SMap,buildIndex+46,buildIndex+45,Z,heWallThick);
-
-  SurfMap::makeCylinder("ModeratorCyl",SMap,buildIndex+37,Origin,Z,radius);
 
   SurfMap::makeCylinder("HeCylInner",SMap,buildIndex+47,Origin,Z,heRadius);
   SurfMap::makeCylinder("HeCylOuter",SMap,buildIndex+57,Origin,Z,heRadius+heWallThick);
@@ -250,6 +260,14 @@ Wendi::createObjects(Simulation& System)
   ELog::RegMethod RegA("Wendi","createObjects");
 
   HeadRule HR;
+
+  if (dummy) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," -37 5 -6 ");
+    makeCell("MainCell",System,cellIndex++,0,0.0,HR);
+    addOuterSurf(HR);
+    return;
+  }
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -47 (66 -75 : 67 36 -66 : 77 75 -45) ");
   makeCell("MainCell",System,cellIndex++,heMat,0.0,HR);
 
@@ -276,7 +294,6 @@ Wendi::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -77 75 -46 ");
   makeCell("TopInsulator",System,cellIndex++,modMat,0.0,HR);
-
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 15 -16 ");
   makeCell("ModeratorBelowChamber",System,cellIndex++,modMat,0.0,HR);

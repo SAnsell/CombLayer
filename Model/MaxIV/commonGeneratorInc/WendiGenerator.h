@@ -61,6 +61,7 @@ class WendiGenerator
   std::string heWallMat;        ///< Active volume wall material
   std::string heMat;            ///< Active volume material
   std::string rubberMat;        ///< Borated rubber material
+  int dummy;                    ///< Only void outer voiume if true
 
  public:
 
