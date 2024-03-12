@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/radDecay.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -56,7 +56,7 @@ radDecay::radDecay() :
   */
 {}
 
-radDecay::radDecay(const radDecay& A) : 
+radDecay::radDecay(const radDecay& A) :
   nReplica(A.nReplica),biasCard(A.biasCard),
   gammaTransCut(A.gammaTransCut),
   eCutEnergy(A.eCutEnergy),pCutEnergy(A.pCutEnergy),
@@ -113,7 +113,7 @@ radDecay::setIradTime(const std::vector<double>& timeVec)
     Sets the decay time based on a given flux of primary particle
     for alternating Value : 0 : Value : 0 etc..
     \param Flux :: Particle flux
-    \param timeVec :: vector of times 
+    \param timeVec :: vector of times
   */
 {
   ELog::RegMethod RegA("radDecay","setIradTime");
@@ -124,7 +124,7 @@ radDecay::setIradTime(const std::vector<double>& timeVec)
       iradTime.push_back(std::pair<double,double>(DT,iradFlux * current));
       current= 1-current;
     }
-  
+
   return;
 }
 
@@ -135,7 +135,7 @@ radDecay::setDecayTime(const std::vector<double>& timeVec)
     Sets the decay time based on a given flux of primary particle
     for alternating Value : 0 : Value : 0 etc..
     \param Flux :: Particle flux
-    \param timeVec :: vector of times 
+    \param timeVec :: vector of times
   */
 {
   ELog::RegMethod RegA("radDecay","setDecayTime");
@@ -155,7 +155,7 @@ void
 radDecay::addDetectors(const std::string& TName,
 		       const size_t Index)
   /*!
-    Emplace a detector to use 
+    Emplace a detector to use
     \param TName :: Tally name [can use wildcard]
     \param Index :: Index of decay time
    */
@@ -163,12 +163,12 @@ radDecay::addDetectors(const std::string& TName,
   detectors.emplace(TName,Index);
   return;
 }
-  
+
 void
 radDecay::write(const SimFLUKA& System,
 		std::ostream& OX) const
   /*!
-    Write out decay information			
+    Write out decay information
     \param System :: Simulation for additional tallies
     \param OX :: Output stream
    */
@@ -178,21 +178,21 @@ radDecay::write(const SimFLUKA& System,
       std::ostringstream cx;
 
       if (pCutEnergy<0.0 && eCutEnergy<0.0)
-	cx<<"RADDECAY 1.0 1.0 "<<nReplica<<" - - 1.0 ";
-      else 
+	cx<<"RADDECAY 1 1 "<<nReplica<<" - - 1 ";
+      else
 	{
 	  int pPart=static_cast<int>(pCutEnergy*10.0);
 	  int ePart=static_cast<int>(eCutEnergy*10.0);
 	  if (pPart>=100000)  pPart=99999;
 	  if (ePart>=100000)  ePart=99999;
-	  cx<<"RADDECAY 1.0 1.0 "<<nReplica<<" - "
+	  cx<<"RADDECAY 1 1 "<<nReplica<<" - "
 	    <<"%"<<std::setfill('0')
 	    <<std::setw(5)<<pPart
 	    <<std::setw(5)<<ePart
-	    <<" 1.0 ";
+	    <<" 1 ";
 	}
       StrFunc::writeFLUKA(cx.str(),OX);
-      
+
       size_t index(0);
       cx.str("");
       cx<<"IRRPROFI ";
@@ -211,8 +211,8 @@ radDecay::write(const SimFLUKA& System,
 	}
       if (index % 3)
 	StrFunc::writeFLUKA(cx.str(),OX);
-      
-      
+
+
       index=0;
       cx.str("");
       cx<<"DCYTIMES ";
@@ -241,7 +241,7 @@ radDecay::write(const SimFLUKA& System,
 		<<FPtr->getKeyName()<<" "
 		<<FPtr->getKeyName()<<" 1.0 "
 		<<FPtr->getType();
-	      StrFunc::writeFLUKA(cx.str(),OX);	      
+	      StrFunc::writeFLUKA(cx.str(),OX);
 	    }
 	}
     }
@@ -249,4 +249,3 @@ radDecay::write(const SimFLUKA& System,
 }
 
 }  // NAMESPACE flukaSystem
-

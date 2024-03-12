@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/userTrackConstruct.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -50,13 +50,14 @@
 #include "SimFLUKA.h"
 #include "flukaTally.h"
 #include "userTrack.h"
-#include "userTrackConstruct.h" 
+#include "userTrackConstruct.h"
 
 namespace flukaSystem
 {
 
-void 
+void
 userTrackConstruct::createTally(SimFLUKA& System,
+				const std::string& name,
 				const std::string& PType,
 				const int fortranTape,
 				const int cellA,
@@ -66,24 +67,25 @@ userTrackConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
+    \param PType :: estimator name
     \param PType :: Particle type
     \param fortranTape :: output stream
     \param cellA :: initial region
     \param eLog :: energy in log bins
     \param aLog :: angle in log bins
-    \param Emin :: Min energy 
-    \param Emax :: Max energy 
+    \param Emin :: Min energy
+    \param Emax :: Max energy
   */
 {
   ELog::RegMethod RegA("userTrackConstruct","createTally");
 
-    
+
   userTrack UD(fortranTape,fortranTape);
   UD.setParticle(PType);
-
+  UD.setKeyName(name);
   UD.setCell(cellA);
   UD.setEnergy(eLog,Emin,Emax,nE);
-  
+
   System.addTally(UD);
 
   return;
@@ -93,12 +95,12 @@ userTrackConstruct::createTally(SimFLUKA& System,
 void
 userTrackConstruct::processTrack(SimFLUKA& System,
 			     const mainSystem::inputParam& IParam,
- 			     const size_t Index) 
+ 			     const size_t Index)
   /*!
     Add TRACK tally (s) as needed
     - Input:
     -- particle FixedComp index
-    -- particle cellA  
+    -- particle cellA
     -- particle SurfMap name
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
@@ -106,33 +108,36 @@ userTrackConstruct::processTrack(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("userTrackConstruct","processTrack");
-  
+
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
+
   const std::string particleType=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
+    IParam.getValueError<std::string>("tally",Index,2,"tally:ParticleType");
 
   const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
+    IParam.getValueError<std::string>("tally",Index,3,"tally:Object/Cell");
 
   // throws on error
   const std::set<int> cellList=System.getObjectRange(FCname);
-  
-  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,3);
-  const double EB=IParam.getDefValue<double>(1000,"tally",Index,4);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,5); 
+
+  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,4);
+  const double EB=IParam.getDefValue<double>(1000,"tally",Index,5);
+  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,6);
 
   // This needs to be more sophisticated
 
   for(const int cellA : cellList)
     {
       const int nextId=System.getNextFTape();
-      userTrackConstruct::createTally(System,particleType,-nextId,
+      userTrackConstruct::createTally(System,tallyName,particleType,-nextId,
 				      cellA,1,EA,EB,NE);
-    }  
-  return;      
-}  
-  
+    }
+  return;
+}
+
 void
-userTrackConstruct::writeHelp(std::ostream& OX) 
+userTrackConstruct::writeHelp(std::ostream& OX)
   /*!
     Write out help
     \param OX :: Output stream

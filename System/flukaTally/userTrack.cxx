@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/userTrack.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -69,7 +69,7 @@ userTrack::userTrack(const std::string& tallyName,
   */
 {}
 
-userTrack::userTrack(const userTrack& A) : 
+userTrack::userTrack(const userTrack& A) :
   flukaTally(A),
   particle(A.particle),eLogFlag(A.eLogFlag),fluenceFlag(A.fluenceFlag),
   oneDirFlag(A.oneDirFlag),nE(A.nE),energyA(A.energyA),
@@ -102,7 +102,7 @@ userTrack::operator=(const userTrack& A)
     }
   return *this;
 }
-  
+
 userTrack*
 userTrack::clone() const
   /*!
@@ -129,7 +129,7 @@ userTrack::getLogType() const
 {
   return (eLogFlag) ? -1 : 1;
 }
-  
+
 void
 userTrack::setParticle(const std::string& P)
   /*!
@@ -138,16 +138,16 @@ userTrack::setParticle(const std::string& P)
   */
 {
   const flukaGenParticle& FG=flukaGenParticle::Instance();
-  
+
   particle=FG.nameToFLUKA(P);
   return;
 }
-  
+
 void
 userTrack::setEnergy(const bool eFlag,const double eMin,
 		     const double eMax,const size_t NE)
   /*!
-    Set the energys 
+    Set the energys
     \parem eFleg :: log fleg [if true]
     \parem eMin :: Min energy [min 0.001MeV if log]
     \parem eMax :: Max energy [MeV]
@@ -169,7 +169,7 @@ userTrack::setEnergy(const bool eFlag,const double eMin,
   eLogFlag=eFlag;
   energyA=eMin*1e-3;
   energyB=eMax*1e-3;
-    
+
   nE=NE;
   return;
 }
@@ -184,7 +184,25 @@ userTrack::setCell(const int RA)
   cellA=RA;
   return;
 }
-  
+
+void
+userTrack::writeAuxScore(std::ostream& OX) const
+  /*!
+    Write an auxScore card
+    \param OX :: Ouput stream
+  */
+{
+  ELog::EM << "TODO: fix the userTrack particle: why is it not uppercase here? " << particle << ELog::endWarn;
+  if (!auxParticle.empty() && (particle=="DOSE-EQ" || particle=="dose-eq")) // todo: fix (see userBin::writeAuxScore)
+    {
+      std::ostringstream cx;
+      cx<<"AUXSCORE USRTRACK "<<auxParticle<<" - "<<keyName
+        <<" - - "<<doseType;
+      StrFunc::writeFLUKA(cx.str(),OX);
+    }
+  return;
+}
+
 void
 userTrack::write(std::ostream& OX) const
   /*!
@@ -193,18 +211,19 @@ userTrack::write(std::ostream& OX) const
    */
 {
   std::ostringstream cx;
-  
+
   cx<<"USRTRACK "<<getLogType()<<" "<<
     StrFunc::toUpperString(particle)<<" ";
-  cx<<outputUnit<<" R"<<cellA<<" 1.0 "<<nE<<" ";
+  cx<<outputUnit<<" R"<<cellA<<" 1 "<<nE<<" ";
   cx<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
   cx<<"USRTRACK "<<energyB<<" "<<energyA<<" - - - - &";
-  StrFunc::writeFLUKA(cx.str(),OX);  
+  StrFunc::writeFLUKA(cx.str(),OX);
+  writeAuxScore(OX);
+
   return;
 }
 
 }  // NAMESPACE flukaSystem
-
