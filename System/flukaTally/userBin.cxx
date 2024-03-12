@@ -201,7 +201,7 @@ userBin::writeAuxScore(std::ostream& OX) const
     {
       std::ostringstream cx;
       cx<<"AUXSCORE USRBIN "<<auxParticle<<" - "<<keyName
-	<<" "<<keyName<<" - "<<doseType;
+	<<" - - "<<doseType;
       StrFunc::writeFLUKA(cx.str(),OX);
     }
   return;

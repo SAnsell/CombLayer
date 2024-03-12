@@ -186,6 +186,24 @@ userTrack::setCell(const int RA)
 }
 
 void
+userTrack::writeAuxScore(std::ostream& OX) const
+  /*!
+    Write an auxScore card
+    \param OX :: Ouput stream
+  */
+{
+  ELog::EM << "TODO: fix the userTrack particle: why is it not uppercase here? " << particle << ELog::endWarn;
+  if (!auxParticle.empty() && (particle=="DOSE-EQ" || particle=="dose-eq")) // todo: fix (see userBin::writeAuxScore)
+    {
+      std::ostringstream cx;
+      cx<<"AUXSCORE USRTRACK "<<auxParticle<<" - "<<keyName
+        <<" - - "<<doseType;
+      StrFunc::writeFLUKA(cx.str(),OX);
+    }
+  return;
+}
+
+void
 userTrack::write(std::ostream& OX) const
   /*!
     Write out the mesh tally into the tally region
@@ -203,6 +221,8 @@ userTrack::write(std::ostream& OX) const
   cx.str("");
   cx<<"USRTRACK "<<energyB<<" "<<energyA<<" - - - - &";
   StrFunc::writeFLUKA(cx.str(),OX);
+  writeAuxScore(OX);
+
   return;
 }
 
