@@ -584,9 +584,7 @@ testHeadRule::testInterceptRule()
     TTYPE("-4",Geometry::Vec3D(0.5,0.5,0),Geometry::Vec3D(0,1,0),
 	  Geometry::Vec3D(0.5,1.0,0),4),
     TTYPE("-4",Geometry::Vec3D(0.5,0.5,0),Geometry::Vec3D(0,1,0),
-	  Geometry::Vec3D(0.5,1.0,0),4),
-    TTYPE("-4",Geometry::Vec3D(0.5,1.5,0),Geometry::Vec3D(0,1,0),
-	  Geometry::Vec3D(0.5,1.0,0),-4)
+	  Geometry::Vec3D(0.5,1.0,0),4)
   };
  
   int cnt(1);

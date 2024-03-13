@@ -1237,7 +1237,8 @@ Object::calcInOut(const int pAB,const int N) const
 }
 
 int
-Object::trackCell(const MonteCarlo::particle& N,double& D,
+Object::trackCell(const MonteCarlo::particle& N,
+		  double& D,
 		  const Geometry::Surface*& surfPtr,
 		  const int startSurf) const
   /*!
@@ -1263,6 +1264,7 @@ Object::trackCell(const MonteCarlo::particle& N,double& D,
 	  ipt.SNum!=startSurf)
 	{
 	  surfPtr=ipt.SPtr;
+	  D=ipt.D;
 	  return ipt.SNum;
 	}
     }

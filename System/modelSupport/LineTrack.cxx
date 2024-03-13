@@ -3,7 +3,7 @@
  
  * File:   modelSupport/LineTrack.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,6 +163,7 @@ LineTrack::calculate(const Simulation& System)
     throw ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
 
+  // processing being on a side
   int SN(0);
   const std::set<int> SSet=OPtr->isOnSide(InitPt);
   if (!SSet.empty())
@@ -498,7 +499,7 @@ LineTrack::write(std::ostream& OX) const
       const double density=MPtr->getAtomDensity();
       const double A=MPtr->getMeanA();
       const double sigma=segmentLen[i]*density*std::pow(A,0.66);
-      OX<<"  "<<Cells[i]<<" == "<<getPoint(i)
+      OX<<"  cell:"<<Cells[i]<<" == "<<getPoint(i)
 	<<" : "<<segmentLen[i]<<"\n";
       //	MPtr->getID()<<" "<<sigma<<" ("<<density*std::pow(A,0.66)<<")"<<std::endl;
       sumSigma+=sigma;
