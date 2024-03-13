@@ -871,6 +871,7 @@ Object::getImplicatePairs(const int SN) const
 
   for(const Geometry::Surface* BPtr : surfSet)
     {
+      ELog::EM<<"BPR == "<<BPtr->getName()<<ELog::endDiag;
       if (APtr!=BPtr)
 	{
 	  std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
@@ -1274,7 +1275,6 @@ Object::trackCell(const MonteCarlo::particle& N,
 
   std::vector<Geometry::interPoint> IPts;
   HRule.calcSurfIntersection(N.Pos,N.uVec,IPts);
-
   // Remove the stuf about surNameSet etc... 
   const int absSN(std::abs(startSurf));
   const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0 
@@ -1283,6 +1283,9 @@ Object::trackCell(const MonteCarlo::particle& N,
       if (ipt.D>Geometry::zeroTol &&
 	  ipt.SNum!=startSurf)
 	{
+	  if (ObjName==3720008)
+	    ELog::EM<<"I == "<<ipt<<ELog::endDebug;
+
 	  surfPtr=ipt.SPtr;
 	  D=ipt.D;
 	  return ipt.SNum;

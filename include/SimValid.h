@@ -47,7 +47,6 @@ struct simPoint
   int objN;                        ///< Object number
   int surfN;                       ///< Surface crossing 
   MonteCarlo::Object* OPtr;        ///< Object pointer
-
   
   simPoint(Geometry::Vec3D  P,Geometry::Vec3D  D,
 	   const int ON,const int SN,MonteCarlo::Object* OP) :
@@ -69,7 +68,21 @@ struct simPoint
 	}
       return *this;
     }
+
+  void write(std::ostream& OX) const
+  {
+    OX<<"Cell:"<<objN<<" == "<<Pt<<" : "<<surfN;
+    return;
+  }  
 };
+
+std::ostream&
+operator<<(std::ostream& OX,const simPoint& A)
+{
+  A.write(OX);
+  return OX;
+}
+
 
 struct touchUnit
 {

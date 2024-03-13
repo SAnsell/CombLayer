@@ -3,7 +3,7 @@
  
  * File:   monteInc/DBMaterial.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ class DBMaterial
   static void setMatType(const MatType M) { matType=M; }
   static DBMaterial& Instance();
   
-  ~DBMaterial() {}  ///< Destructor
+  ~DBMaterial();        ///< Destructor
   
   /// get data store
   const MTYPE& getStore() const { return MStore; }

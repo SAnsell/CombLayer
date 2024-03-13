@@ -77,6 +77,17 @@ DBMaterial::Instance()
   return DObj;
 }
 
+DBMaterial::~DBMaterial()
+  /*!
+    Removal of memory
+  */
+{
+  for(const auto& [name,ptr] : MStore)
+    delete ptr;
+  for(const auto& [name,ptr] : NStore)
+    delete ptr;
+}
+  
 void
 DBMaterial::checkNameIndex(const int MIndex,const std::string& MName) const
   /*!

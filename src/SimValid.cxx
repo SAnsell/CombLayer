@@ -298,7 +298,8 @@ SimValid::diagnostics(const Simulation& System,
 		     const std::vector<simPoint>& Pts) const
   /*!
     Write out some diagnostic information
-    \param System :: simuation to sued
+    \param System :: simuation to use
+    \param Pts :: Points in track
    */
 {
   ELog::RegMethod RegA("SimValid","diagnostics");
@@ -373,8 +374,8 @@ SimValid::runPoint(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("SimValid","runPoint");
-  ELog::debugMethod DebA;
-
+  ELog::debugMethod debA;
+  
   std::set<Geometry::Vec3D> MultiPoint;
   const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
   MonteCarlo::Object* InitObj(0);
@@ -389,6 +390,7 @@ SimValid::runPoint(const Simulation& System,
   //  Centre+=Geometry::Vec3D(0.001,0.001,0.001);
   int initSurfNum(0);
   Geometry::Vec3D Pt(CP);
+  //  Pt=Geometry::Vec3D(1443.65575933,1317.51292257,20.8777340012);
   do
     {
       if (initSurfNum)
@@ -415,7 +417,10 @@ SimValid::runPoint(const Simulation& System,
       Geometry::Vec3D uVec(cos(theta)*sin(phi),
 			     sin(theta)*sin(phi),
 			     cos(phi));
+
+      //      uVec=Geometry::Vec3D(0.736770066045,-0.31150358292,0.600112812401);
       MonteCarlo::eTrack TNeut(Pt,uVec);
+      MonteCarlo::eTrack THold(Pt,uVec);
       MonteCarlo::Object* OPtr=InitObj;
       int SN(-initSurfNum);
 
@@ -423,7 +428,15 @@ SimValid::runPoint(const Simulation& System,
       while(OPtr && !OPtr->isZeroImp())
 	{
 	  // Note: Need OPPOSITE Sign on exiting surface
-	  SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
+	  if (OPtr->getName()==3720008)
+	    {
+	      debA.activate();
+	      ELog::EM<<"HERE "<<Pts.back()<<" "<<SN<<ELog::endDebug;
+	      SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
+	      ELog::EM<<"ADist == "<<aDist<<ELog::endDebug;
+	    }
+	  else
+	    SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
 
 	  // This is needed because sometimes we are on a multiway surf
 	  // boundary e.g. circles in contact
@@ -437,7 +450,11 @@ SimValid::runPoint(const Simulation& System,
 	      if (OPtr)
 		SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);		
 	    }
+	  ELog::EM<<"BDist == "<<TNeut<<" "<<aDist<<ELog::endDebug;
 	  TNeut.moveForward(aDist);
+	  ELog::EM<<"CDist == "<<TNeut<<ELog::endDebug;
+	  debA.deactivate();
+		  
 	  Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
 
 	  OPtr=(SN) ?
@@ -447,7 +464,10 @@ SimValid::runPoint(const Simulation& System,
       if (!OPtr)
 	{
 	  ELog::EM<<"OPtr not found["<<i<<"] at : "<<Pt<<ELog::endCrit;
+	  ELog::EM<<"EHOLD:"<<THold<<ELog::endCrit;
 	  ELog::EM<<"Line SEARCH == "<<i<<ELog::endCrit;
+	  for(const simPoint& SP : Pts)
+	    ELog::EM<<"Pt == "<<SP<<ELog::endDiag;
 	  ModelSupport::LineTrack LT(Pt,uVec,10000.0);
 	  LT.calculate(System);
 	  ELog::EM<<"LT == "<<LT<<ELog::endDiag;

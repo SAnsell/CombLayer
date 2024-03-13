@@ -149,7 +149,7 @@ Plane::operator==(const Plane& A) const
 {
   if (&A==this) return 1;
 
-  if (fabs(A.Dist-Dist)<=Geometry::zeroTol)
+  if (std::abs(A.Dist-Dist)<=Geometry::zeroTol)
     return (A.NormV!=NormV) ? 0 : 1;
 
   return 0;
