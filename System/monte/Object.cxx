@@ -65,7 +65,6 @@
 #include "Importance.h"
 #include "Object.h"
 
-
 namespace MonteCarlo
 {
 
@@ -1125,8 +1124,8 @@ Object::substituteSurf(const int SurfN,
 }
 
 int
-Object::hasIntercept(const Geometry::Vec3D& IP,
-		     const Geometry::Vec3D& UV) const
+Object::hasForwardIntercept(const Geometry::Vec3D& IP,
+			    const Geometry::Vec3D& UV) const
   /*!
     Given a line IP + lambda(UV) does it intercept
     this object: (used for virtual objects)
@@ -1136,7 +1135,7 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
     \return True(1) / Fail(0)
   */
 {
-  ELog::RegMethod RegA("Object","hadIntercept");
+  ELog::RegMethod RegA("Object","hadForwardIntercept");
 
   MonteCarlo::LineIntersectVisit LI(IP,UV);
 
@@ -1149,6 +1148,27 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
     return 1;
 
   return 0;
+}
+
+int
+Object::hasIntercept(const Geometry::Vec3D& IP,
+		     const Geometry::Vec3D& UV) const
+  /*!
+    Given a line IP + lambda(UV) does it intercept
+    this object: (used for virtual objects)
+
+    \param IP :: Initial point
+    \param UV :: direction vector
+    \return True(1) / Fail(0)
+  */
+{
+  ELog::RegMethod RegA("Object","hasIntercept");
+  MonteCarlo::LineIntersectVisit LI(IP,UV);
+
+  const std::vector<Geometry::interPoint>& IPts=
+    LI.getIntercept(HRule);
+
+  return (IPts.empty()) ? 0 : 1;
 }
 
 

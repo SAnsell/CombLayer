@@ -233,7 +233,7 @@ M1Mirror::createSurfaces()
     }
 
   // Point for pipework connection
-  ELog::EM<<"Point == "<<SMap.realSurf(buildIndex+5)<<ELog::endDiag;
+
   const Geometry::Vec3D pipePtA=
     SurInter::getLinePoint(pBaseA,-Z,SMap.realSurf(buildIndex+5));
   const Geometry::Vec3D pipePtB=

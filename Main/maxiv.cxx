@@ -102,10 +102,9 @@ main(int argc,char* argv[])
 
       InputModifications(SimPtr,IParam,Names);
 
-      ELog::EM<<"ADSFDS "<<ELog::endDiag;
       xraySystem::makeMaxIV BObj;
       BObj.build(*SimPtr,IParam);
-      ELog::EM<<"ADSFDS "<<ELog::endDiag;
+
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
 

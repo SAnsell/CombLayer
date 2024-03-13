@@ -3,7 +3,7 @@
  
  * File:   delft/PressureVessel.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,7 +143,6 @@ PressureVessel::populate(const FuncDataBase& Control)
   
   sideRadius=Control.EvalVar<double>(keyName+"SideRadius");
   sideWall=Control.EvalVar<double>(keyName+"SideWall");
-  
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
@@ -162,13 +161,15 @@ PressureVessel::createSurfaces()
   //[arbitary divider plane]
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*frontLength,Y);  
   ModelSupport::buildSphere(SMap,buildIndex+8,Origin-Y*frontLength,frontRadius);
-  ModelSupport::buildSphere(SMap,buildIndex+18,Origin-Y*frontLength,frontRadius+frontWall);
+  ModelSupport::buildSphere(SMap,buildIndex+18,
+			    Origin-Y*frontLength,frontRadius+frontWall);
   
   // back:
   // [arbitary divider plane]
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*backLength,Y);
   ModelSupport::buildSphere(SMap,buildIndex+108,Origin+Y*backLength,backRadius);
-  ModelSupport::buildSphere(SMap,buildIndex+118,Origin+Y*backLength,backRadius+backWall);
+  ModelSupport::buildSphere(SMap,buildIndex+118,
+			    Origin+Y*backLength,backRadius+backWall);
   
   // Main
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,sideRadius);

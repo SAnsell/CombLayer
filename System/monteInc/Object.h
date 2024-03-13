@@ -222,6 +222,7 @@ class Object
 
   // INTERSECTION
   int hasIntercept(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  int hasForwardIntercept(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
   Geometry::interPoint
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&) const;

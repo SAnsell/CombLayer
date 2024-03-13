@@ -1180,6 +1180,7 @@ FixedComp::setLineConnect(const size_t Index,
 
   LinkUnit& LObj=LU[Index];
   LObj.populateSurf();
+  ELog::EM<<"LObj == "<<LObj.getCommon()<<ELog::endDiag;
   const Geometry::Vec3D Pt=
     SurInter::getLinePoint(C,A,LObj.getMain(),LObj.getCommon()); 
   LObj.setConnectPt(Pt);

@@ -3,7 +3,7 @@
 
  * File:   maxivBuild/makeMaxIV.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -450,9 +450,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
 
   const int voidCell(74123);
   r3Ring->addInsertCell(voidCell);
-  ELog::EM<<"xASDFASDF"<<ELog::endDiag;
   r3Ring->createAll(System,World::masterOrigin(),0);
-  ELog::EM<<"xASDFASDF"<<ELog::endDiag;
+
   std::map<std::string,std::string> beamStop;
   populateStopPoint(IParam,activeBL,beamStop);
 

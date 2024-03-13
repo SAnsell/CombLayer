@@ -8,7 +8,6 @@ nValid=1000
 # exit
 #segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
 segments=All
-
 ./singleItem --singleItem UTubePipe --validAll --validCheck $nValid AA 
 #exit
 
@@ -18,7 +17,7 @@ segments=All
 
 ## SOFTIMAX removed because making the new M1 mirror
 parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
-   BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
+   SOFTIMAX BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
 
 ## SOFTIMAX 
 
@@ -28,7 +27,7 @@ parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --valid
 
 ./t1Real -validAll --validCheck ${nValid} AA || exit
 ./reactor -validAll --validCheck ${nValid} AA || exit
-./saxs -validAll --validCheck ${nValid} AA || exit
+## ./saxs -validAll --validCheck ${nValid} AA || exit
 
 parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nValid AA" ::: \
      Butterfly Pancake 

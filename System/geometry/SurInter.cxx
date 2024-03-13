@@ -170,11 +170,14 @@ getLinePoint(const Geometry::Vec3D& Origin,
     {
       for(const Geometry::interPoint& ipt : IPts)
         {
-          if (flag && sndHR.isValid(ipt.Pt))
-	    throw ColErr::MisMatch<size_t>
-	      (IPts.size(),1,"Too points in intersect (sndHR)");
-	  flag=1;
-	  out=ipt.Pt;
+          if (sndHR.isValid(ipt.Pt))
+	    {
+	      if (flag)
+		throw ColErr::MisMatch<size_t>
+		  (IPts.size(),1,"Too points in intersect (sndHR)");
+	      flag=1;
+	      out=ipt.Pt;
+	    }
         }
       if (flag) return out;
       throw ColErr::EmptyContainer("No points in intersect system");

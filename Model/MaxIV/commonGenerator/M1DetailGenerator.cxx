@@ -473,7 +473,6 @@ M1DetailGenerator::generateMirror(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","generateMirror");
 
-  ELog::EM<<"XStep == "<<xStep<<ELog::endDiag;
   Control.addVariable(keyName+"XStep",xStep);
   // guess of separation
   makeCrystal(Control,keyName+"Mirror",theta,zStep);
