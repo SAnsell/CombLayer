@@ -120,6 +120,14 @@ class SimValid
 			const Geometry::Cylinder*,
 			const Geometry::Plane*,
 			std::vector<Geometry::interPoint>&);
+
+
+  static bool runUnit(const Simulation&,
+		      const Geometry::Vec3D&,
+		      const Geometry::Vec3D&, 
+		      MonteCarlo::Object*);
+		 
+  
  public:
   
   SimValid();

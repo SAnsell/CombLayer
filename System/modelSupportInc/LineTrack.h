@@ -3,7 +3,7 @@
  
  * File:   modelSupportInc/LineTrack.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@ class LineTrack
 {
  private:
   
-  const Geometry::Vec3D InitPt;     ///< Initial point
-  const Geometry::Vec3D EndPt;      ///< Target point
+  Geometry::Vec3D InitPt;     ///< Initial point
+  Geometry::Vec3D EndPt;      ///< Target point
   const double aimDist;             ///< Aim distance
 
   double TDist;                     ///< Total distance
@@ -79,8 +79,13 @@ class LineTrack
   /// Determine if track is complete 
   bool isCompelete() const { return (aimDist-TDist) < -Geometry::zeroTol; }
 
-  void calculate(const Simulation&);
+  int calculate(const Simulation&,MonteCarlo::Object* = nullptr);
+  int checkTrack(const Simulation&,MonteCarlo::Object* = nullptr);
   void calculateError(const Simulation&);
+
+  void setPts(Geometry::Vec3D AP,Geometry::Vec3D BP)
+  { InitPt=std::move(AP);EndPt=std::move(BP); }
+  
   /// Access Cells
   const std::vector<long int>& getCells() const
     { return Cells; }

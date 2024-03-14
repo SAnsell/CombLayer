@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   geometry/Triangle.cxx
+ * File:   geometry/interPoint.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,21 @@
 
 namespace Geometry
 {
+void
+sortVector(std::vector<interPoint>& IPts)
+  /*!
+    Sort a standard vector (convinience funtion)
+    \parma IPts :: Sort of vector
+   */
+{
+    std::sort(IPts.begin(),IPts.end(),
+	    [](const Geometry::interPoint& A,
+	       const Geometry::interPoint& B)
+	    {
+	      return (A.D > B.D);
+	    });
+    return;
+}
 
 std::ostream&
 operator<<(std::ostream& OX,const interPoint& A)

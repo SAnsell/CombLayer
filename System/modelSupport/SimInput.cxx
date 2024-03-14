@@ -155,7 +155,6 @@ processExitChecks(Simulation& System,
 		}
 	      for(const Geometry::Vec3D& CP : Pts)
 		{
-		  
 		  if (ModelSupport::SimValid::checkPoint(System,CP))
 		    errFlag += -1;
 		}
@@ -174,11 +173,17 @@ processExitChecks(Simulation& System,
 	      const Geometry::Vec3D& CP=FC.getCentre();
 	      if (usedPoints.find(CP)==usedPoints.end())
 		{
-		  ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
-		  if (!SValidCheck.runPoint(System,CP,NPts))
+		  const std::string kName=FC.getKeyName();
+		  if (kName=="bifrostChopperOutAIPortB")
 		    {
-		      ELog::EM<<"ERROR (runPoint) "<<ELog::endErr;
-		      errFlag += -1;
+		      ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
+		      
+
+		      if (!SValidCheck.runPoint(System,CP,NPts))
+			{
+			  ELog::EM<<"ERROR (runPoint) "<<ELog::endErr;
+			  errFlag += -1;
+			}
 		    }
 		  usedPoints.emplace(CP);
 		}

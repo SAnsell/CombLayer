@@ -235,8 +235,8 @@ class Object
 				    const Geometry::Vec3D&) const;
 
   
-  int trackCell(const MonteCarlo::particle&,double&,
-		const Geometry::Surface*&,
+  int trackCell(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		double&,const Geometry::Surface*&,
 		const int) const;
 
   int trackDirection(const int,

@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <iterator>
 #include <random>
+#include <chrono>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -292,7 +293,26 @@ SimValid::calcTouch(const Simulation& System) const
     }
   return;
 }
-  
+
+
+bool
+SimValid::runUnit(const Simulation& System,
+		  const Geometry::Vec3D& initPos,
+		  const Geometry::Vec3D& axis,
+		  MonteCarlo::Object* initObj) 
+  /*!
+    Runs a single unit:
+    \param System :: Simulation
+   */
+{
+  static ModelSupport::LineTrack LT(initPos,axis,1e38);
+
+  //LT.setPts(initPos,axis);
+  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
+
+  return (LT.checkTrack(System,initObj)) ? 0 : 1;
+} 
+
 void
 SimValid::diagnostics(const Simulation& System,
 		     const std::vector<simPoint>& Pts) const
@@ -355,7 +375,7 @@ SimValid::diagnostics(const Simulation& System,
       ELog::EM<<"TRACK to NEXT"<<ELog::endDiag;
       ELog::EM<<"--------------"<<ELog::endDiag;
       
-      OPtr->trackCell(TNeut,aDist,SPtr,abs(SN));
+      OPtr->trackCell(TNeut.Pos,TNeut.uVec,aDist,SPtr,abs(SN));
     }
 
   return;
@@ -374,7 +394,6 @@ SimValid::runPoint(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("SimValid","runPoint");
-  ELog::debugMethod debA;
   
   std::set<Geometry::Vec3D> MultiPoint;
   const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
@@ -405,7 +424,9 @@ SimValid::runPoint(const Simulation& System,
   while(initSurfNum);
       
   // check surfaces
+  auto start = std::chrono::high_resolution_clock::now();
   ELog::EM<<"NAngle == "<<nAngle<<" :: "<<CP<<ELog::endDiag;
+  double fullTime(0.0);
   for(size_t i=0;i<nAngle;i++)
     {
       if (nAngle>10000 && i*10==nAngle)
@@ -418,53 +439,20 @@ SimValid::runPoint(const Simulation& System,
 			     sin(theta)*sin(phi),
 			     cos(phi));
 
-      //      uVec=Geometry::Vec3D(0.736770066045,-0.31150358292,0.600112812401);
-      MonteCarlo::eTrack TNeut(Pt,uVec);
       MonteCarlo::eTrack THold(Pt,uVec);
       MonteCarlo::Object* OPtr=InitObj;
       int SN(-initSurfNum);
 
-      Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
-      while(OPtr && !OPtr->isZeroImp())
+      Pts.push_back(simPoint(Pt,uVec,OPtr->getName(),SN,OPtr));
+
+      bool outFlag=runUnit(System,Pt,uVec,InitObj);
+      if (!outFlag)
 	{
-	  // Note: Need OPPOSITE Sign on exiting surface
-	  if (OPtr->getName()==3720008)
-	    {
-	      debA.activate();
-	      ELog::EM<<"HERE "<<Pts.back()<<" "<<SN<<ELog::endDebug;
-	      SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
-	      ELog::EM<<"ADist == "<<aDist<<ELog::endDebug;
-	    }
-	  else
-	    SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
-
-	  // This is needed because sometimes we are on a multiway surf
-	  // boundary e.g. circles in contact
-	  if (!SN)
-	    {
-	      if (MultiPoint.find(TNeut.Pos)==MultiPoint.end())
-		MultiPoint.emplace(TNeut.Pos);
-
-	      TNeut.moveForward(Geometry::zeroTol*5.0);
-	      OPtr=System.findCell(TNeut.Pos,0);
-	      if (OPtr)
-		SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);		
-	    }
-	  ELog::EM<<"BDist == "<<TNeut<<" "<<aDist<<ELog::endDebug;
-	  TNeut.moveForward(aDist);
-	  ELog::EM<<"CDist == "<<TNeut<<ELog::endDebug;
-	  debA.deactivate();
-		  
-	  Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
-
-	  OPtr=(SN) ?
-	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;
-	}
-
-      if (!OPtr)
-	{
+	  bool newFlag=runUnit(System,Pt,uVec,InitObj);
+	  ELog::EM<<"NEW FLAG == "<<newFlag<<ELog::endDiag;
 	  ELog::EM<<"OPtr not found["<<i<<"] at : "<<Pt<<ELog::endCrit;
 	  ELog::EM<<"EHOLD:"<<THold<<ELog::endCrit;
+	  ELog::EM<<"EHOLD:"<<CP<<ELog::endCrit;
 	  ELog::EM<<"Line SEARCH == "<<i<<ELog::endCrit;
 	  for(const simPoint& SP : Pts)
 	    ELog::EM<<"Pt == "<<SP<<ELog::endDiag;
@@ -477,10 +465,24 @@ SimValid::runPoint(const Simulation& System,
 	    ELog::EM<<"Failed to calculate INITIAL cell correctly: "<<ELog::endCrit;
 	  else
 	    ELog::EM<<"Initial Cell ="<<*InitObj<<ELog::endDiag;
-	  diagnostics(System,Pts);
+	  //	  diagnostics(System,Pts);
 	  return 0;
 	}
+
     }
+
+  auto end = std::chrono::high_resolution_clock::now();
+  
+  // Calculating total time taken by the program.
+  fullTime=
+    std::chrono::duration_cast<std::chrono::nanoseconds>
+    (end - start).count();
+  fullTime *= 1e-9;
+  
+  ELog::EM<< "SimValid TIME : " << std::fixed 
+	    << fullTime << std::setprecision(9)
+	  << " sec" << ELog::endDiag;
+
   return 1;
 }
 

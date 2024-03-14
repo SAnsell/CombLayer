@@ -1258,13 +1258,15 @@ Object::calcInOut(const int pAB,const int N) const
 }
 
 int
-Object::trackCell(const MonteCarlo::particle& N,
+Object::trackCell(const Geometry::Vec3D& Org,
+		  const Geometry::Vec3D& uVec,
 		  double& D,
 		  const Geometry::Surface*& surfPtr,
 		  const int startSurf) const
   /*!
     Track to a particle into/out of a cell. 
-    \param N :: Particle 
+    \param Org :: particle start
+    \param uVec :: particle axis
     \param D :: Distance traveled to the cell [get added too]
     \param surfPtr :: Surface at exit [output]
     \param startSurf :: Start surface [to be ignored]
@@ -1273,19 +1275,26 @@ Object::trackCell(const MonteCarlo::particle& N,
 {
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
 
+  //  HRule.calcSurfIntersection(Org,uVec,IPts);
+  Geometry::interPoint ipt=
+    HRule.calcFirstIntersection(Org,uVec);
+  if (ipt.SNum!=startSurf)
+    {
+      D=ipt.D;
+      return ipt.SNum;
+    }
+  if (!ipt.SNum)
+    return 0;
+  
   std::vector<Geometry::interPoint> IPts;
-  HRule.calcSurfIntersection(N.Pos,N.uVec,IPts);
+  HRule.calcSurfIntersection(Org,uVec,IPts);
+  
   // Remove the stuf about surNameSet etc... 
-  const int absSN(std::abs(startSurf));
-  const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0 
   for(const Geometry::interPoint& ipt : IPts)
     {
       if (ipt.D>Geometry::zeroTol &&
 	  ipt.SNum!=startSurf)
 	{
-	  if (ObjName==3720008)
-	    ELog::EM<<"I == "<<ipt<<ELog::endDebug;
-
 	  surfPtr=ipt.SPtr;
 	  D=ipt.D;
 	  return ipt.SNum;

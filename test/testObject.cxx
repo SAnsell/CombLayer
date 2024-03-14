@@ -603,21 +603,23 @@ testObject::testTrackCell()
       A.setObject(std::get<0>(tc));
       A.createSurfaceList();
 
-      eTrack TNeut(std::get<2>(tc),std::get<3>(tc));
-
       const int outFaceSurf(std::get<1>(tc));
-      const int SN= -A.trackCell(TNeut,aDist,SPtr,0);
-      TNeut.moveForward(aDist);
-      if (TNeut.Pos!=std::get<4>(tc) || SN!=outFaceSurf)
+      Geometry::Vec3D Org(std::get<2>(tc));
+      Geometry::Vec3D uVec((std::get<3>(tc)-Org).unit());
+
+
+      const int SN= -A.trackCell(Org,uVec,aDist,SPtr,0);
+      Org+=uVec*aDist;
+      if (Org!=std::get<4>(tc) || SN!=outFaceSurf)
 	{
 	  ELog::EM<<ELog::endDiag;
 	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
-	  ELog::EM<<"Result= "<<TNeut.Pos<<" ["<<std::get<4>(tc)<<"]"
+	  ELog::EM<<"Result= "<<Org<<" ["<<std::get<4>(tc)<<"]"
 		  <<ELog::endDiag;
 	  ELog::EM<<"SN= "<<SN<<" "<<outFaceSurf<<ELog::endDiag;
 
 	  const Rule* TR=A.topRule();
-	  ELog::EM<<"Display= "<<TR->display(TNeut.Pos)<<ELog::endDiag;
+	  ELog::EM<<"Display= "<<TR->display(Org)<<ELog::endDiag;
 	  return -1;
 	}
       cnt++;

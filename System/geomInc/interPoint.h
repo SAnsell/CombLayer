@@ -61,6 +61,7 @@ namespace Geometry
 
   };
 
+void sortVector(std::vector<interPoint>&);
 
 std::ostream&
 operator<<(std::ostream& OX,const interPoint& A);

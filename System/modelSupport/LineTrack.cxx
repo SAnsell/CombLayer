@@ -143,11 +143,13 @@ LineTrack::clearAll()
 }
 
 
-void
-LineTrack::calculate(const Simulation& System)
+int
+LineTrack::calculate(const Simulation& System,
+		     MonteCarlo::Object* initCell)
   /*!
     Calculate the track
-    \param System :: Simulation to use						
+    \param System :: Simulation to use
+    \return error state
   */
 {
   ELog::RegMethod RegA("LineTrack","calculate");
@@ -158,7 +160,9 @@ LineTrack::calculate(const Simulation& System)
   
   MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
   // Find Initial cell [no default]
-  MonteCarlo::Object* OPtr=System.findCell(InitPt,0);
+  
+  MonteCarlo::Object* OPtr=System.findCell(InitPt,initCell);
+
   if (!OPtr)
     throw ColErr::InContainerError<Geometry::Vec3D>
       (InitPt,"Initial point not in model");
@@ -185,10 +189,11 @@ LineTrack::calculate(const Simulation& System)
 
   // problem is that SN will be on TWO objects
   // so which one is it? [it doesn't matter much]
-  while(OPtr)
+  while(OPtr && !OPtr->isZeroImp())
     {
+
       // Note: Need OPPOSITE Sign on exiting surface
-      SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
+      SN= OPtr->trackCell(nOut.Pos,nOut.uVec,aDist,SPtr,SN);
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,SPtr,SN,aDist))
 	{
@@ -197,10 +202,11 @@ LineTrack::calculate(const Simulation& System)
 	  if (!OPtr)
 	    {
 	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endCrit;
-	      calculateError(System);
+	      //	      calculateError(System);
+	      return -1;
 	    }
-	  if (!OPtr || aDist<Geometry::zeroTol)
-	    OPtr=System.findCell(nOut.Pos,0);
+	  // if (!OPtr || aDist<Geometry::zeroTol)
+	  //   OPtr=System.findCell(nOut.Pos,0);
 	}
       else
 	OPtr=0;	
@@ -216,7 +222,83 @@ LineTrack::calculate(const Simulation& System)
 	  Cells.pop_back();
 	}
     }
-  return;
+  return 0;
+}
+
+int
+LineTrack::checkTrack(const Simulation& System,
+		      MonteCarlo::Object* initCell)
+  /*!
+    Check the track (faster than calculate)
+    \param System :: Simulation to use
+    \return error state
+  */
+{
+  ELog::RegMethod RegA("LineTrack","checkTrack");
+
+  double aDist(0);                         // Length of track
+  const Geometry::Surface* SPtr(0);           // Surface
+  const ModelSupport::ObjSurfMap* OSMPtr=System.getOSM();
+
+  Geometry::Vec3D Org(InitPt);
+  Geometry::Vec3D uVec((EndPt-InitPt).unit());
+  // Find Initial cell [no default]
+  
+  MonteCarlo::Object* OPtr=System.findCell(InitPt,initCell);
+
+  if (!OPtr)
+    throw ColErr::InContainerError<Geometry::Vec3D>
+      (InitPt,"Initial point not in model");
+
+  // processing being on a side
+  int SN(0);
+  const std::set<int> SSet=OPtr->isOnSide(InitPt);
+  if (!SSet.empty())
+    {
+      int TD(0);
+      std::set<int>::const_iterator sc;
+      for(sc=SSet.begin();!TD && sc!=SSet.end();sc++)
+	{
+	  SN=*sc;
+	  TD=OPtr->trackDirection(SN,Org,uVec);
+	  SN*=TD;
+	  if (TD<0)
+	    {
+	      OPtr=OSMPtr->findNextObject(-SN,Org,OPtr->getName());
+	      SN=0;
+	    }
+	}
+    }
+
+  // problem is that SN will be on TWO objects
+  // so which one is it? [it doesn't matter much]
+    
+  while(OPtr && !OPtr->isZeroImp())
+    {
+      // Note: Need OPPOSITE Sign on exiting surface
+      SN= OPtr->trackCell(Org,uVec,aDist,SPtr,SN);
+      // Update Track : returns 1 on excess of distance
+      if (SN)
+	{
+	  TDist+=aDist;
+	  Org+=uVec*aDist;
+	  OPtr=OSMPtr->findNextObject(SN,Org,OPtr->getName());
+	  if (!OPtr)
+	    {
+	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endCrit;
+	      //	      calculateError(System);
+	      return -1;
+	    }
+	  // if (!OPtr || aDist<Geometry::zeroTol)
+	  //   OPtr=System.findCell(nOut.Pos,0);
+	}
+      else
+	OPtr=0;	
+    }
+  //
+  // remove last object if point does not reach it:
+  //
+  return 0;
 }
 
 void
@@ -270,7 +352,7 @@ LineTrack::calculateError(const Simulation& ASim)
       ELog::EM<<"SN at start== "<<SN<<ELog::endDiag;
       
       // Note: Need OPPOSITE Sign on exiting surface
-      SN= OPtr->trackCell(nOut,aDist,SPtr,SN);
+      SN= OPtr->trackCell(nOut.Pos,nOut.uVec,aDist,SPtr,SN);
       ELog::EM<<"Found exit Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
 
       // Update Track : returns 1 on excess of distance

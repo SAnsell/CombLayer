@@ -55,6 +55,7 @@ class HeadRule
   Rule* HeadNode;                    ///< Parent object (for tree)
   ///< set of surfaces with opposite signs
   std::set<const Geometry::Surface*> signPairedSurf;   
+  std::set<const Geometry::Surface*> surfSet;
   
   Rule* findKey(const int); 
   void removeItem(const Rule*);
@@ -64,10 +65,13 @@ class HeadRule
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
 
+  void calcSurfaces();
+  
   // TO BE REMOVED
   int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		const std::set<int>&) const;
+
   
  public:
 
@@ -147,6 +151,8 @@ class HeadRule
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      std::vector<Geometry::interPoint>&) const;
+  Geometry::interPoint calcFirstIntersection
+    (const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
 
   size_t calcSurfSurfIntersection(std::vector<Geometry::Vec3D>&) const;
@@ -154,7 +160,8 @@ class HeadRule
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
   const Geometry::Surface* getSurface(const int) const;
   const Geometry::Surface* primarySurface() const;
-  std::set<const Geometry::Surface*> getSurfaces() const;
+  std::set<const Geometry::Surface*> getSurfaces() const
+    { return surfSet; }
   std::set<int> getSignedSurfaceNumbers() const;
   std::set<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;
