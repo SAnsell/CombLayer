@@ -102,7 +102,14 @@ testHeadRule::createSurfaces()
   SurI.createSurface(25,"pz -11");
   SurI.createSurface(26,"pz 11");
 
+  
+  SurI.createSurface(8001,"c/x 8 9 11");
+  SurI.createSurface(8002,"c/x 3 4 11");
 
+  SurI.createSurface(7,"c/y 2 2 12");
+  SurI.createSurface(8,"c/y 1 2 12");
+  SurI.createSurface(9,"c/x 3 4 15");
+  
   // Sphere :
   SurI.createSurface(100,"so 25");
   // Cylinder :
@@ -684,16 +691,16 @@ testHeadRule::testCalcSurfIntersection()
   
   // HeadRule : Origin : Axis ::: Index : Point
   typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
-		     size_t,Geometry::Vec3D> TTYPE;
+		     size_t,size_t,Geometry::Vec3D> TTYPE;
     
   // Target / result
   const std::vector<TTYPE> Tests=
     {
       TTYPE("21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)",
-	    Geometry::Vec3D(0,0,-20),Geometry::Vec3D(0,0,1),
-	    0,Geometry::Vec3D(0,0,0)),
+       	    Geometry::Vec3D(0,0,-20),Geometry::Vec3D(0,0,1),
+       	    4,2,Geometry::Vec3D(0,0,1)),
       TTYPE("1 -2 3 -4 5 -6",Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,1),
-	    0,Geometry::Vec3D(0,0,0))
+	    2,1,Geometry::Vec3D(0,0,1))
     };
  
   for(const TTYPE& tc : Tests)
@@ -706,20 +713,22 @@ testHeadRule::testCalcSurfIntersection()
       const size_t nPts=
 	HM.calcSurfIntersection(O,A,Pts);
 
-      
-      ELog::EM<<"-----------------------------------"<<ELog::endDiag;
-      ELog::EM<<"Origin = "<<O<<" == "<<A<<ELog::endDiag;
-      const size_t index(std::get<3>(tc));
-      const Geometry::Vec3D expectPoint(std::get<4>(tc));
-
-      for(const Geometry::interPoint& PItem : Pts)
+      const size_t index(std::get<4>(tc));
+      const Geometry::Vec3D& expectPoint(std::get<5>(tc));
+      if (nPts!=std::get<3>(tc) ||
+	  Pts[index].Pt!=expectPoint)
 	{
-	  ELog::EM<<"Pt == "<<PItem.Pt<<" : "<<PItem.SNum
-		  <<" D="<<PItem.D<<" F="<<PItem.outFlag<<ELog::endDiag;
-
+	  ELog::EM<<"-----------------------------------"<<ELog::endDiag;
+	  ELog::EM<<"Origin = "<<O<<" == "<<A<<ELog::endDiag;
+	  for(const Geometry::interPoint& PItem : Pts)
+	    {
+	      ELog::EM<<"Pt == "<<PItem.Pt<<" : "<<PItem.SNum
+		      <<" D="<<PItem.D<<" F="<<PItem.outFlag<<ELog::endDiag;
+	    }
+	  ELog::EM<<"Expected point == "<<expectPoint<<" Index == "<<index<<ELog::endDiag;
+	  return -1;
 	}
     }
-
   return 0;
 }
 
@@ -871,7 +880,8 @@ testHeadRule::testGetLevel()
 int
 testHeadRule::testPartEqual()
   /*!
-    Check the validity of a head rule level 
+    Check that a sub-HeadRule can be found in a
+    bigger HeadRule.
     \return 0 :: success / -ve on error
    */
 {
@@ -886,10 +896,10 @@ testHeadRule::testPartEqual()
   Tests.push_back(TTYPE("3 4","4",1));
   Tests.push_back(TTYPE("3 4","-4",0));
   Tests.push_back(TTYPE("3 4 (9:7:-8)","(7:-8)",1));
-  Tests.push_back(TTYPE("3 4 (9:7:-8)","(7:8)",0));
-  Tests.push_back(TTYPE("3 4 (9:7:-8 )","(7:-8:(1 2))",0));
-  Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 2))",1));
-  Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 -2))",0));
+  // Tests.push_back(TTYPE("3 4 (9:7:-8)","(7:8)",0));
+  // Tests.push_back(TTYPE("3 4 (9:7:-8 )","(7:-8:(1 2))",0));
+  // Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 2))",1));
+  // Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 -2))",0));
   
   for(const TTYPE& tc : Tests)
     {

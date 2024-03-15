@@ -570,28 +570,29 @@ testObject::testTrackCell()
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("4 0 -101",-101,
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1),
+   			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1),
 			Geometry::Vec3D(0,0,5)));
     
-  // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-2,
-  //  			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),
-  //  			Geometry::Vec3D(1,0,0)));
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-2,
+    			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),
+    			Geometry::Vec3D(1,0,0)));
   
-  // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",1,
-  // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0),
-  // 			Geometry::Vec3D(-1,0,0)));
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",1,
+   			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0),
+   			Geometry::Vec3D(-1,0,0)));
 
   Tests.push_back(TTYPE("4 10 0.05 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)",-16,
 			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(0,0,1),
 			Geometry::Vec3D(-2,0,3)));
 
-  // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-1,
-  // 			Geometry::Vec3D(-1.01,0,0),Geometry::Vec3D(1,0,0),
-  // 			Geometry::Vec3D(1,0,0)));
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",1,
+   			Geometry::Vec3D(-1.01,0,0),Geometry::Vec3D(1,0,0),
+   			Geometry::Vec3D(-1,0,0)));
 
-  // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",2,
-  // 			Geometry::Vec3D(3.01,0,0),Geometry::Vec3D(-1,0,0),
-  // 			Geometry::Vec3D(-1,0,0)));
+
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-2,
+			Geometry::Vec3D(3.01,0,0),Geometry::Vec3D(-1,0,0),
+   			Geometry::Vec3D(1,0,0)));
   
   double aDist;
   const Geometry::Surface* SPtr;          // Output surface
@@ -605,8 +606,7 @@ testObject::testTrackCell()
 
       const int outFaceSurf(std::get<1>(tc));
       Geometry::Vec3D Org(std::get<2>(tc));
-      Geometry::Vec3D uVec((std::get<3>(tc)-Org).unit());
-
+      const Geometry::Vec3D uVec(std::get<3>(tc).unit());
 
       const int SN= -A.trackCell(Org,uVec,aDist,SPtr,0);
       Org+=uVec*aDist;

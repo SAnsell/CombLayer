@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <iterator>
 #include <random>
-#include <chrono>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -174,9 +173,11 @@ SimValid::checkPoint(const Geometry::Vec3D& TP,
       
       if (foundSet.size()!=1)
 	{
-	  ELog::EM<<"Flag["<<CylN<<" "<<PlnN<<"] -- :"<<surfState[CylN]<<" "<<surfState[PlnN]<<ELog::endDiag;
+	  ELog::EM<<"Flag["<<CylN<<" "<<PlnN<<"] -- :"
+		  <<surfState[CylN]<<" "<<surfState[PlnN]<<ELog::endDiag;
 	  for(const MonteCarlo::Object* fObj : foundSet)
-	    ELog::EM<<"Valid["<<fObj->getName()<<"] "<<fObj->getHeadRule().display(TP)<<"\n";
+	    ELog::EM<<"Valid["<<fObj->getName()<<"] "
+		    <<fObj->getHeadRule().display(TP)<<"\n";
 	  return 0;
 	}
     } while (!MapSupport::iterateBinMap<int>(surfState,-1,1));
@@ -303,6 +304,7 @@ SimValid::runUnit(const Simulation& System,
   /*!
     Runs a single unit:
     \param System :: Simulation
+    \param initPos :: Inital position
    */
 {
   static ModelSupport::LineTrack LT(initPos,axis,1e38);
@@ -310,7 +312,7 @@ SimValid::runUnit(const Simulation& System,
   //LT.setPts(initPos,axis);
   const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
 
-  return (LT.checkTrack(System,initObj)) ? 0 : 1;
+  return (LT.calculate(System,initObj)) ? 0 : 1;
 } 
 
 void
@@ -424,7 +426,6 @@ SimValid::runPoint(const Simulation& System,
   while(initSurfNum);
       
   // check surfaces
-  auto start = std::chrono::high_resolution_clock::now();
   ELog::EM<<"NAngle == "<<nAngle<<" :: "<<CP<<ELog::endDiag;
   double fullTime(0.0);
   for(size_t i=0;i<nAngle;i++)
@@ -470,19 +471,6 @@ SimValid::runPoint(const Simulation& System,
 	}
 
     }
-
-  auto end = std::chrono::high_resolution_clock::now();
-  
-  // Calculating total time taken by the program.
-  fullTime=
-    std::chrono::duration_cast<std::chrono::nanoseconds>
-    (end - start).count();
-  fullTime *= 1e-9;
-  
-  ELog::EM<< "SimValid TIME : " << std::fixed 
-	    << fullTime << std::setprecision(9)
-	  << " sec" << ELog::endDiag;
-
   return 1;
 }
 

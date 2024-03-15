@@ -1254,7 +1254,6 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   /// DEBUG PRINT 
   //  printImplicates(PIform,Grid);
   /// END DEBUG
-  ELog::EM<<"MAKE CNF 2"<<ELog::endDiag;
   std::vector<size_t>::iterator dx;
   std::vector<size_t>::iterator ddx;    // DNF active iterator
   std::vector<size_t>::iterator px;     // PIactive iterator
@@ -1263,14 +1262,11 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   // 
   for(dx=DNFactive.begin();dx!=DNFactive.end();dx++)
     {
-      ELog::EM<<"MAKE CNF DX"<<*dx<<" "<<DNFscore.size()<<ELog::endDiag;
       if (*dx!=ULONG_MAX && DNFscore[*dx]==1)        // EPI (definately)
 	{
 	  for(px=PIactive.begin();
-	      px!=PIactive.end() && !Grid[*px][*dx];px++)
-	    {
-	      ELog::EM<<"MAKE CNF PI"<<*px<<" "<<PIactive.size()<<ELog::endDiag;
-	    }
+	      px!=PIactive.end() && !Grid[*px][*dx];px++) ;
+
 	  if (px!=PIactive.end())
 	    {
 	      EPI.push_back(PIform[*px]);
@@ -1300,7 +1296,7 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
 	    ELog::EM<<((Grid[*px][*ddx]) ? " 1" : " 0");
 	}
     }
-  ELog::EM<<"MAKE CNF 2"<<ELog::endDiag;
+
   // Ok -- now the hard work...
   // need to find shortest "combination" that spans
   // the remaining table.

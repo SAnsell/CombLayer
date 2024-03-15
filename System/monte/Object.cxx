@@ -462,8 +462,6 @@ Object::setObject(std::string Ln)
 
   // note that this invalidates the read density:
 
-    
-
   setMaterial(matN);
   Tmp=lineTemp;
   imp.setImp(static_cast<double>(lineIMP));
@@ -871,7 +869,6 @@ Object::getImplicatePairs(const int SN) const
 
   for(const Geometry::Surface* BPtr : surfSet)
     {
-      ELog::EM<<"BPR == "<<BPtr->getName()<<ELog::endDiag;
       if (APtr!=BPtr)
 	{
 	  std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
@@ -1270,7 +1267,7 @@ Object::trackCell(const Geometry::Vec3D& Org,
     \param D :: Distance traveled to the cell [get added too]
     \param surfPtr :: Surface at exit [output]
     \param startSurf :: Start surface [to be ignored]
-    \return surface number of intercept
+    \return surface number of intercept (as seen by object if leaving)
    */
 {
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
@@ -1278,6 +1275,7 @@ Object::trackCell(const Geometry::Vec3D& Org,
   //  HRule.calcSurfIntersection(Org,uVec,IPts);
   Geometry::interPoint ipt=
     HRule.calcFirstIntersection(Org,uVec);
+
   if (ipt.SNum!=startSurf)
     {
       D=ipt.D;

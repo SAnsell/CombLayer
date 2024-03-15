@@ -63,9 +63,9 @@ class LineTrack
   std::vector<int> SurfIndex;                
   std::vector<double> segmentLen;          ///< length of each segment
 
-  bool updateDistance(MonteCarlo::Object*,
-		      const Geometry::Surface*,
-		      const int,const double);
+  bool updateTrack(MonteCarlo::Object*,
+		   const Geometry::Surface*,
+		   const int,const double);
 
  public:
 
@@ -80,7 +80,6 @@ class LineTrack
   bool isCompelete() const { return (aimDist-TDist) < -Geometry::zeroTol; }
 
   int calculate(const Simulation&,MonteCarlo::Object* = nullptr);
-  int checkTrack(const Simulation&,MonteCarlo::Object* = nullptr);
   void calculateError(const Simulation&);
 
   void setPts(Geometry::Vec3D AP,Geometry::Vec3D BP)

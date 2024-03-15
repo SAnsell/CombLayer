@@ -147,94 +147,12 @@ int
 LineTrack::calculate(const Simulation& System,
 		     MonteCarlo::Object* initCell)
   /*!
-    Calculate the track
-    \param System :: Simulation to use
-    \return error state
-  */
-{
-  ELog::RegMethod RegA("LineTrack","calculate");
-
-  double aDist(0);                         // Length of track
-  const Geometry::Surface* SPtr(0);           // Surface
-  const ModelSupport::ObjSurfMap* OSMPtr=System.getOSM();
-  
-  MonteCarlo::eTrack nOut(InitPt,EndPt-InitPt);
-  // Find Initial cell [no default]
-  
-  MonteCarlo::Object* OPtr=System.findCell(InitPt,initCell);
-
-  if (!OPtr)
-    throw ColErr::InContainerError<Geometry::Vec3D>
-      (InitPt,"Initial point not in model");
-
-  // processing being on a side
-  int SN(0);
-  const std::set<int> SSet=OPtr->isOnSide(InitPt);
-  if (!SSet.empty())
-    {
-      int TD(0);
-      std::set<int>::const_iterator sc;
-      for(sc=SSet.begin();!TD && sc!=SSet.end();sc++)
-	{
-	  SN=*sc;
-	  TD=OPtr->trackDirection(SN,nOut.Pos,nOut.uVec);
-	  SN*=TD;
-	  if (TD<0)
-	    {
-	      OPtr=OSMPtr->findNextObject(-SN,nOut.Pos,OPtr->getName());
-	      SN=0;
-	    }
-	}
-    }
-
-  // problem is that SN will be on TWO objects
-  // so which one is it? [it doesn't matter much]
-  while(OPtr && !OPtr->isZeroImp())
-    {
-
-      // Note: Need OPPOSITE Sign on exiting surface
-      SN= OPtr->trackCell(nOut.Pos,nOut.uVec,aDist,SPtr,SN);
-      // Update Track : returns 1 on excess of distance
-      if (SN && updateDistance(OPtr,SPtr,SN,aDist))
-	{
-	  nOut.moveForward(aDist);
-	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
-	  if (!OPtr)
-	    {
-	      ELog::EM<<"INIT POINT[error] == "<<InitPt<<ELog::endCrit;
-	      //	      calculateError(System);
-	      return -1;
-	    }
-	  // if (!OPtr || aDist<Geometry::zeroTol)
-	  //   OPtr=System.findCell(nOut.Pos,0);
-	}
-      else
-	OPtr=0;	
-    }
-  //
-  // remove last object if point does not reach it:
-  //
-  if (ObjVec.size()>1 && OPtr) 
-    {
-      if (OPtr->trackDirection(EndPt,nOut.uVec)==-1)
-	{
-	  ObjVec.pop_back();
-	  Cells.pop_back();
-	}
-    }
-  return 0;
-}
-
-int
-LineTrack::checkTrack(const Simulation& System,
-		      MonteCarlo::Object* initCell)
-  /*!
     Check the track (faster than calculate)
     \param System :: Simulation to use
     \return error state
   */
 {
-  ELog::RegMethod RegA("LineTrack","checkTrack");
+  ELog::RegMethod RegA("LineTrack","calculate");
 
   double aDist(0);                         // Length of track
   const Geometry::Surface* SPtr(0);           // Surface
@@ -278,9 +196,8 @@ LineTrack::checkTrack(const Simulation& System,
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackCell(Org,uVec,aDist,SPtr,SN);
       // Update Track : returns 1 on excess of distance
-      if (SN)
+      if (SN && updateTrack(OPtr,SPtr,SN,aDist))
 	{
-	  TDist+=aDist;
 	  Org+=uVec*aDist;
 	  OPtr=OSMPtr->findNextObject(SN,Org,OPtr->getName());
 	  if (!OPtr)
@@ -298,6 +215,15 @@ LineTrack::checkTrack(const Simulation& System,
   //
   // remove last object if point does not reach it:
   //
+  if (ObjVec.size()>1 && OPtr) 
+    {
+      if (OPtr->trackDirection(EndPt,uVec)==-1)
+	{
+	  ObjVec.pop_back();
+	  Cells.pop_back();
+	}
+    }
+
   return 0;
 }
 
@@ -356,7 +282,7 @@ LineTrack::calculateError(const Simulation& ASim)
       ELog::EM<<"Found exit Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
 
       // Update Track : returns 1 on excess of distance
-      if (SN && updateDistance(OPtr,SPtr,SN,aDist))
+      if (SN && updateTrack(OPtr,SPtr,SN,aDist))
 	{
 	  ELog::EM<<"AA Dist == "<<aDist<<ELog::endDiag;
 		  
@@ -415,10 +341,10 @@ LineTrack::calculateError(const Simulation& ASim)
 }
 
 bool
-LineTrack::updateDistance(MonteCarlo::Object* OPtr,
-			  const Geometry::Surface* SPtr,
-			  const int SN,
-			  const double D) 
+LineTrack::updateTrack(MonteCarlo::Object* OPtr,
+		       const Geometry::Surface* SPtr,
+		       const int SN,
+		       const double D) 
   /*!
     Add the distance, register cell etc
     \param OPtr :: Object points
@@ -428,7 +354,7 @@ LineTrack::updateDistance(MonteCarlo::Object* OPtr,
     \return 1 if distance insufficient / 0 if at end of line
    */
 {
-  ELog::RegMethod RegA("LineTrack","updateDistance");
+  ELog::RegMethod RegA("LineTrack","updateTrack");
 
   Cells.push_back(OPtr->getName());
   ObjVec.push_back(OPtr);
