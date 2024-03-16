@@ -26,7 +26,7 @@ class HeadRule;
 
 namespace Geometry
 {
-  class interPoint;
+  struct interPoint;
 }
 
 namespace MonteCarlo

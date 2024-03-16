@@ -25,7 +25,7 @@
 class Token;
 namespace Geometry
 {
-  class interPoint;
+  struct interPoint;
   class Plane;
 }
  
