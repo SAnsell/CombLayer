@@ -75,16 +75,16 @@ class BandDetector : public Detector
   Geometry::Vec3D getRandPos() const;
   double project(const MonteCarlo::particle&,
 	        MonteCarlo::particle&) const override;
-  int calcCell(const MonteCarlo::particle&,int&,int&) const;
+  int calcCell(const MonteCarlo::particle&,size_t&,size_t&) const;
   void addEvent(const MonteCarlo::particle&) override;
 
   void clear() override;
-  void setDataSize(const int,const int,const int);
+  void setDataSize(const size_t,const size_t,const size_t);
   void setCentre(const Geometry::Vec3D&);
   void setEnergy(const double,const double);
 
-  long int calcWavePoint(const double) const;
-  long int calcEnergyPoint(const double) const;
+  size_t calcWavePoint(const double) const;
+  size_t calcEnergyPoint(const double) const;
 
   // Output stuff
   void write(std::ostream&) const override;

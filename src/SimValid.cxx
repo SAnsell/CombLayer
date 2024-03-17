@@ -399,10 +399,7 @@ SimValid::runPoint(const Simulation& System,
   ELog::RegMethod RegA("SimValid","runPoint");
   
   std::set<Geometry::Vec3D> MultiPoint;
-  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
   MonteCarlo::Object* InitObj(0);
-  const Geometry::Surface* SPtr;          // Output surface
-  double aDist;       
 
   // Note for sphere that you can use X,Y,Z in any orthogonal 
   // directiron
@@ -428,7 +425,6 @@ SimValid::runPoint(const Simulation& System,
       
   // check surfaces
   ELog::EM<<"NAngle == "<<nAngle<<" :: "<<CP<<ELog::endDiag;
-  double fullTime(0.0);
   for(size_t i=0;i<nAngle;i++)
     {
       if (nAngle>10000 && i*10==nAngle)
