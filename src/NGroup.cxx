@@ -3,7 +3,7 @@
  
  * File:   src/NGroup.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -631,7 +631,8 @@ NGroup<T>::processString(const std::string& N)
   std::string MS(N);
 
   transform(MS.begin(),MS.end(),MS.begin(),
-	    [](unsigned int c) -> int { return std::tolower(c);}
+	    [](int c) -> int
+	    { return static_cast<int>(std::tolower(c));}
 	    );
 
   // From now on in we have a string type (definately)

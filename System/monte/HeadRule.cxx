@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <limits>
-#include <chrono>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -55,11 +54,11 @@
 #include "Algebra.h"
 #include "Rules.h"
 #include "RuleCheck.h"
+#include "interPoint.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "surfRegister.h"
 #include "MapSupport.h"
-#include "interPoint.h"
 #include "HeadRule.h"
 
 #include "SurInter.h"
@@ -2894,7 +2893,6 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
   //  const std::set<const Geometry::Surface*> SurfSet=getSurfaces();
 
-  auto start = std::chrono::high_resolution_clock::now();
   for(const Geometry::Surface* SPtr : surfSet)
     {
       const std::vector<Geometry::interPoint>& IPTvec=

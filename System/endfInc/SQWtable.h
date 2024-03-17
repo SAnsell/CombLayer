@@ -3,7 +3,7 @@
  
  * File:   endfInc/SQWtable.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ struct SQWtable
 
   int alphaType(const long int) const;
   int betaType(const long int) const;
-  int isValidRangePt(const double&,const double&,long int&,long int&) const;
+  int isValidRangePt(const double&,const double&,size_t&,size_t&) const;
   
  public:
   

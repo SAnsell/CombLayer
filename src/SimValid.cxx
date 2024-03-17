@@ -309,8 +309,9 @@ SimValid::runUnit(const Simulation& System,
 {
   static ModelSupport::LineTrack LT(initPos,axis,1e38);
 
-  //LT.setPts(initPos,axis);
-  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
+  LT.setPts(initPos,axis);
+  LT.clearAll();
+  //  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
 
   return (LT.calculate(System,initObj)) ? 0 : 1;
 } 

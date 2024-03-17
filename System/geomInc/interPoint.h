@@ -59,6 +59,12 @@ namespace Geometry
 	       const int SN,const Surface* ptr,const bool flag) :
     Pt(std::move(P)),D(dist),SNum(SN),SPtr(ptr),outFlag(flag) {}
 
+    interPoint(const interPoint&) = default;
+    interPoint& operator=(const interPoint&) = default;
+    interPoint& operator=(interPoint&&) = default;
+    interPoint(interPoint&& A) :
+      Pt(std::move(A.Pt)),D(A.D),SNum(A.SNum),SPtr(A.SPtr),outFlag(A.outFlag)
+	 {}
   };
 
 void sortVector(std::vector<interPoint>&);
