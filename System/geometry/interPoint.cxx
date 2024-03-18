@@ -47,7 +47,7 @@ sortVector(std::vector<interPoint>& IPts)
 	    [](const Geometry::interPoint& A,
 	       const Geometry::interPoint& B)
 	    {
-	      return (A.D > B.D);
+	      return (A.D < B.D);
 	    });
     return;
 }

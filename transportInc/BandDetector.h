@@ -37,11 +37,11 @@ class BandDetector : public Detector
 {
  private: 
 
-  long int nps;                ///< Number of detector units
+  size_t nps;                ///< Number of detector units
 
-  size_t nH;                      ///< Number of bins horrizonal
-  size_t nV;                      ///< Number of bins vertical
-  size_t nE;                      ///< Number of bins [energy]
+  size_t nH;                   ///< Number of bins horrizonal
+  size_t nV;                   ///< Number of bins vertical
+  size_t nE;                   ///< Number of bins [energy]
   Geometry::Vec3D Cent;        ///< Cent Pos
   Geometry::Vec3D H;           ///< Horrizontal unitVector
   Geometry::Vec3D V;           ///< Vert extent
@@ -57,7 +57,7 @@ class BandDetector : public Detector
  public:
   
   BandDetector();
-  BandDetector(const int,const int,const int,
+  BandDetector(const size_t,const size_t,const size_t,
 	   Geometry::Vec3D ,const Geometry::Vec3D&,
 	   const Geometry::Vec3D&,const double,const double);
   BandDetector(const BandDetector&);

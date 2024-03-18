@@ -2965,6 +2965,7 @@ HeadRule::calcFirstIntersection(const Geometry::Vec3D& Org,
       // note SNum is unsigned:
       const int pAB=isValid(inter.Pt,inter.SNum);
       const int mAB=isValid(inter.Pt,-inter.SNum);
+
       if (pAB!=mAB)  // exiting/entering surface
 	{
 	  // previously used signValue but now gone to
@@ -2979,6 +2980,7 @@ HeadRule::calcFirstIntersection(const Geometry::Vec3D& Org,
 	  outIP.SNum=signValue*inter.SNum;
 	  outIP.SPtr=inter.SPtr;
 	  outIP.outFlag=outGoingFlag;
+	  return outIP;
 	}
     }
   return outIP;

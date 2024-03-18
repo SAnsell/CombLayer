@@ -190,11 +190,11 @@ processExitChecks(Simulation& System,
       if (IParam.flag("validRandom"))
 	{
 	  // set of used points within the bounding box of the
-	  // object.
+	  // object. NOT COMPLETE
 	  SValidCheck.calcTouch(System);
 	  return errFlag;
 
-	  const size_t NPts=IParam.getValue<size_t>("validCheck");
+	  //	  const size_t NPts=IParam.getValue<size_t>("validCheck");
 	  const std::string FCObject=
 	    IParam.getValueError<std::string>("validRandom",0,0,"No FC-object");
 	  const attachSystem::FixedComp* FC=

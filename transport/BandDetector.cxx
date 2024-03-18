@@ -51,10 +51,11 @@ namespace Transport
 
 
 BandDetector::BandDetector() : 
-  Detector(0),nH(0),nV(0),nE(0),Cent(Geometry::Vec3D(0,0,0)),
+  Detector(0),nH(1),nV(1),nE(1),Cent(Geometry::Vec3D(0,0,0)),
   H(Geometry::Vec3D(1,0,0)),V(Geometry::Vec3D(0,0,1)),
   hSize(1.0),vSize(1.0),
-  PlnNorm(Geometry::Vec3D(0,1,0)),PlnDist(0.0)
+  PlnNorm(Geometry::Vec3D(0,1,0)),PlnDist(0.0),
+  EData(1,1,1)
   /*!
     Default constructor
     Note that Detector index is unused
@@ -62,11 +63,13 @@ BandDetector::BandDetector() :
 {
 }
 
-BandDetector::BandDetector(const int Hpts,const int Vpts,const int Epts,
-			     Geometry::Vec3D  CV,
-			     const Geometry::Vec3D& Hvec,
-			     const Geometry::Vec3D& Vvec,
-			     const double ES,const double EE) : 
+BandDetector::BandDetector(const size_t Hpts,
+			   const size_t Vpts,
+			   const size_t Epts,
+			   Geometry::Vec3D  CV,
+			   const Geometry::Vec3D& Hvec,
+			   const Geometry::Vec3D& Vvec,
+			   const double ES,const double EE) : 
   Detector(0),nH(Hpts),nV(Vpts),nE((Epts>0) ? Epts : 1),
   Cent(std::move(CV)),H(Hvec.unit()),V(Vvec.unit()),
   hSize(Hvec.abs()),vSize(Vvec.abs()),
@@ -181,21 +184,22 @@ BandDetector::setEnergy(const double ES,const double EE)
   if (engA>engB)
     std::swap(engA,engB);
   
-  if (fabs(engB-engA)<1e-7)
+  if (std::abs(engB-engA)<1e-7)
     {
       ELog::EM<<"Setting energy gap--too small"<<ELog::endWarn;
       return;
     }
-  const double step((engB-engA)/nE);
+  const double step((engB-engA)/static_cast<double>(nE));
   EGrid.clear();
-  for(int i=0;i<=nE;i++)
-    EGrid.push_back(engA+i*step);
+  for(size_t i=0;i<=nE;i++)
+    EGrid.push_back(engA+static_cast<double>(i)*step);
   return;
 }
 
 void
-BandDetector::setDataSize(const size_t Hpts,const size_t Vpts,
-		      const size_t Epts)
+BandDetector::setDataSize(const size_t Hpts,
+			  const size_t Vpts,
+			  const size_t Epts)
   /*!
     Set the data Size
     \param Hpts :: Horizontal size
@@ -228,7 +232,7 @@ BandDetector::getAxis() const
 
 int
 BandDetector::calcCell(const MonteCarlo::particle& N,
-		   size_t& NH,size_t& NV) const
+		       size_t& NH,size_t& NV) const
   /*!
     Calc a cell
     Tracks from the point to the detector.
