@@ -52,6 +52,7 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "SimValid.h"
 #include "LinkUnit.h"

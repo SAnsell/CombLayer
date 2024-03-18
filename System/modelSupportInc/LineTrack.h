@@ -36,7 +36,8 @@ namespace MonteCarlo
 
 namespace ModelSupport
 {
-
+  struct LineUnit;
+  
 /*!
   \class LineTrack
   \version 1.0
@@ -49,11 +50,16 @@ class LineTrack
 {
  private:
   
-  Geometry::Vec3D InitPt;     ///< Initial point
-  Geometry::Vec3D EndPt;      ///< Target point
-  const double aimDist;             ///< Aim distance
+  Geometry::Vec3D InitPt;           ///< Initial point
+  Geometry::Vec3D EndPt;            ///< Target point
+  Geometry::Vec3D uVec;             ///< direction of line +ve dir.
+  double aimDist;                   ///< Aim distance
 
   double TDist;                     ///< Total distance
+
+  std::vector<LineUnit> trackPts;   ///< track points 
+  /*
+
   
   std::vector<long int> Cells;                    ///< Cells in order
   std::vector<MonteCarlo::Object*> ObjVec;        ///< Object pointers
@@ -62,7 +68,7 @@ class LineTrack
   /// Signed index [particle origin side true]
   std::vector<int> SurfIndex;                
   std::vector<double> segmentLen;          ///< length of each segment
-
+  */
   bool updateTrack(MonteCarlo::Object*,
 		   const Geometry::Surface*,
 		   const int,const double);
@@ -86,9 +92,13 @@ class LineTrack
   { InitPt=std::move(AP);EndPt=std::move(BP); }
   
   /// Access Cells
-  const std::vector<long int>& getCells() const
-    { return Cells; }
-  /// Access Track lengths
+  const std::vector<LineUnit>& getTrackPts() const
+    { return trackPts; }
+  void populateObjMap(std::map<int,MonteCarlo::Object*>&) const;
+  
+  
+  /*
+ /// Access Track lengths
   const std::vector<double>& getSegmentLen() const
     { return segmentLen; }
   /// Access Object Pointers
@@ -100,17 +110,19 @@ class LineTrack
   /// Access Surface Pointers
   const std::vector<int>& getSurfIndex() const
     { return SurfIndex; }
-
-  Geometry::Vec3D getPoint(const size_t) const;
   int getSurfIndex(const size_t) const;
   const Geometry::Surface* getSurfPtr(const size_t) const;
+  */
+
+  const Geometry::Vec3D& getPoint(const size_t) const;
+  
   
   /// access total distance
   double getTotalDist() const { return aimDist; }
 
-  void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
-  void createCellPath(std::vector<MonteCarlo::Object*>&,
-		      std::vector<double>&) const;
+  //  void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
+  // void createCellPath(std::vector<MonteCarlo::Object*>&,
+  // 		      std::vector<double>&) const;
   void createMatPath(std::vector<int>&,std::vector<double>&) const;
   
   void write(std::ostream&) const;

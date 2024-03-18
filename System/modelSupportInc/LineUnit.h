@@ -41,8 +41,8 @@ namespace ModelSupport
   \class LineUnit
   \version 1.0
   \author S. Ansell
-  \date July 2011
-  \brief Track from A to B 
+  \date March 2024
+  \brief Sub-unit of a LineTrack
 */
 
 struct LineUnit
@@ -50,11 +50,18 @@ struct LineUnit
 
   int cellNumber;                         ///< Cell number
   Geometry::Vec3D exitPoint;              ///< exit point [or end point]
-  MonteCarlo::Object* objVec;             ///< Object for segment
+  MonteCarlo::Object* objPtr;             ///< Object for segment
   const Geometry::Surface* sPtr;          ///< Exiting surf point
   int surfNumber;                         ///< Exiting surf number [0 for end]
   double segmentLength;                   ///< Length of segment -1 for infity
 
+  LineUnit(MonteCarlo::Object*,const Geometry::Surface*,const double);
+  LineUnit(MonteCarlo::Object*,const int,const Geometry::Surface*,const double);
+  LineUnit(MonteCarlo::Object*,const int,const Geometry::Surface*,
+	   Geometry::Vec3D,const double);
+  LineUnit(MonteCarlo::Object*,const Geometry::Surface*,
+	   Geometry::Vec3D,const double);
+    
   LineUnit(const LineUnit&) =default;
   LineUnit(LineUnit&&) =default;
   LineUnit& operator=(const LineUnit&) =default;

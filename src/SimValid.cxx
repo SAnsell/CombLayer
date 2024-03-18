@@ -59,6 +59,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

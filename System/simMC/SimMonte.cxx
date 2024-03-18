@@ -3,7 +3,7 @@
  
  * File:   simMC/SimMonte.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "SimMonte.h"
 
@@ -160,7 +161,8 @@ SimMonte::setDetector(const Transport::Detector& DObj)
 
 void
 SimMonte::attenPath(const MonteCarlo::Object* startObj,
-		    const double Dist,MonteCarlo::neutron& N) const
+		    const double Dist,
+		    MonteCarlo::neutron& N) const
   /*!
     Calculate and update the particle path staring
     from N through a distance 
@@ -174,14 +176,14 @@ SimMonte::attenPath(const MonteCarlo::Object* startObj,
   ModelSupport::LineTrack LT(N.Pos,N.Pos+N.uVec*Dist);
   LT.calculate(*this);
 
-  const std::vector<double>& tLen=LT.getSegmentLen();
-  const std::vector<MonteCarlo::Object*>& objVec=LT.getObjVec();
-  
-  for(size_t i=0;i<objVec.size();i++)
+  for(const ModelSupport::LineUnit& lu : LT.getTrackPts())
     {
-      const MonteCarlo::Object* OPtr=objVec[i];
-      const MonteCarlo::Material* matPtr=OPtr->getMatPtr();
-      N.weight*=matPtr->calcAtten(N,tLen[i]);
+      const MonteCarlo::Object* OPtr=lu.objPtr;
+      if (OPtr)
+	{
+	  const MonteCarlo::Material* matPtr=OPtr->getMatPtr();
+	  N.weight*=matPtr->calcAtten(N,lu.segmentLength);
+	}
     }
   N.setObject(startObj);
   N.moveForward(Dist);

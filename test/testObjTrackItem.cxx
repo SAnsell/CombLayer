@@ -3,7 +3,7 @@
  
  * File:   test/testObjTrackItem.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
 #include "SimMCNP.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "ObjTrackItem.h"
 
@@ -253,19 +254,19 @@ testObjTrackItem::testTrackNeutron()
       LineTrack A(nOut.Pos,nOut.uVec,8.0);
       A.calculate(ASim);
 
-      const std::vector<MonteCarlo::Object*>& OVec=A.getObjVec();
-      const std::vector<double>& TVec=A.getSegmentLen();
-      for(size_t i=0;i<OVec.size();i++)
+      size_t trackIndex(0);
+      for(const LineUnit& lu : A.getTrackPts())
 	{
-	  const MonteCarlo::Object* OPtr=OVec[i];
+	  const MonteCarlo::Object* OPtr=lu.objPtr;
 	  if (!OPtr)
 	    {
-	      ELog::EM<<"No object for point "<<i<<ELog::endDiag;
+	      ELog::EM<<"No object for point "<<trackIndex<<ELog::endDiag;
 	      return -1;
 	    }
-	  OA.addDistance(OPtr->getMatID(),TVec[i]);
+	  OA.addDistance(OPtr->getMatID(),lu.segmentLength);
+	  trackIndex++;
 	}
-
+      
       const int errFlag=
 	checkResult(OA,Results[index]);
 

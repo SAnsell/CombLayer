@@ -63,6 +63,7 @@
 #include "interPoint.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "AttachSupport.h"
 
@@ -311,12 +312,13 @@ lineIntersect(Simulation& System,
   ModelSupport::LineTrack LT(APt,BPt);
   LT.calculate(System);
 
-  const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-  for(MonteCarlo::Object* oc : OVec)
+  const std::vector<ModelSupport::LineUnit>&
+    LUnits=LT.getTrackPts();
+  for(const ModelSupport::LineUnit& lu : LUnits)
     {	  
-      const int ONum=oc->getName();
-      if (OMap.find(ONum)==OMap.end())
-	OMap.emplace(ONum,oc);
+      const int ONum=lu.cellNumber;
+      if (ONum && OMap.find(ONum)==OMap.end())
+	OMap.emplace(ONum,lu.objPtr);
     }
   return;
 }

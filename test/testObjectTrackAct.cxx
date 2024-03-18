@@ -57,6 +57,7 @@
 #include "SimMCNP.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"

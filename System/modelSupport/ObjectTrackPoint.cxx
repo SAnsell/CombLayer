@@ -43,6 +43,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"

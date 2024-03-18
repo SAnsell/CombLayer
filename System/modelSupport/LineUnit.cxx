@@ -75,6 +75,54 @@ operator<<(std::ostream& OX,const LineUnit& A)
   return OX;
 }
 
+LineUnit::LineUnit(MonteCarlo::Object* OPtr,
+		   const Geometry::Surface* surfacePtr,
+		   const double Dist) :
+  cellNumber((OPtr) ? OPtr->getName() : 0),
+  objPtr(OPtr),
+  sPtr(surfacePtr),
+  surfNumber((surfacePtr) ? surfacePtr->getName() : 0),
+  segmentLength(Dist)
+{}
+
+LineUnit::LineUnit(MonteCarlo::Object* OPtr,
+		   const int SN,
+		   const Geometry::Surface* surfacePtr,
+		   const double Dist) :
+  cellNumber((OPtr) ? OPtr->getName() : 0),
+  objPtr(OPtr),
+  sPtr(surfacePtr),
+  surfNumber(SN),
+  segmentLength(Dist)
+{}
+
+LineUnit::LineUnit(MonteCarlo::Object* OPtr,
+		   const int SN,
+		   const Geometry::Surface* surfacePtr,
+		   Geometry::Vec3D endPt,
+		   const double Dist) :
+  cellNumber((OPtr) ? OPtr->getName() : 0),
+  exitPoint(std::move(endPt)),
+  objPtr(OPtr),
+  sPtr(surfacePtr),
+  surfNumber(SN),
+  segmentLength(Dist)
+{}
+
+LineUnit::LineUnit(MonteCarlo::Object* OPtr,
+		   const Geometry::Surface* surfacePtr,
+		   Geometry::Vec3D endPt,
+		   const double Dist) :
+  cellNumber((OPtr) ? OPtr->getName() : 0),
+  exitPoint(std::move(endPt)),
+  objPtr(OPtr),
+  sPtr(surfacePtr),
+  surfNumber((surfacePtr) ? surfacePtr->getName() : 0),
+  segmentLength(Dist)
+{}
+  
+  
+  
 void
 LineUnit::write(std::ostream& OX) const
   /*!

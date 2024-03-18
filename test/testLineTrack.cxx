@@ -58,6 +58,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "Cone.h"
 
@@ -276,18 +277,15 @@ testLineTrack::checkResult(const LineTrack& LT,
    */
 {
   ELog::RegMethod RegA("testLineTrack","checkResults");
-
-  const std::vector<long int>& cells=LT.getCells();
-  const std::vector<double>& tLen=LT.getSegmentLen();
-  const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
+  
   long int cValue(0);
   double tValue(0.0);
-  for(size_t i=0;i<cells.size();i++)
+  for(const LineUnit& lu : LT.getTrackPts())
     {
-      if (!oVec[i] || oVec[i]->getName()!=cells[i])
+      if (!lu.objPtr || lu.objPtr->getName()!=lu.cellNumber)
 	return 0;
-      cValue+=cells[i]-1;
-      tValue+=tLen[i]*static_cast<double>(cells[i]-1);
+      cValue+=lu.cellNumber-1;
+      tValue+=lu.segmentLength*static_cast<double>(lu.cellNumber-1);
     }  
   return (cValue!=CSum || std::abs(TSum-tValue)>1e-3) ? 0 : 1;
 }
