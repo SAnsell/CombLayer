@@ -45,6 +45,7 @@
 #include "mathSupport.h"
 #include "stringCombine.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -54,7 +55,6 @@
 #include "Algebra.h"
 #include "Rules.h"
 #include "RuleCheck.h"
-#include "interPoint.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "surfRegister.h"
@@ -2781,53 +2781,6 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
   return Geometry::interPoint();  
 }
 
-
-int
-HeadRule::trackSurf(const Geometry::Vec3D& Org,
-		    const Geometry::Vec3D& Unit) const
-  /*!
-    Calculate the track of a line to the boundary surface of the
-    HeadRule. activeNull designates the current surface(s) (with sign)
-    which is to be ignored.
-
-    \param Org :: Origin of line
-    \param Unit :: Direction of line
-    \return exit surface [signed - ingoing sense: Origin is true to surface]
-  */
-{
-  ELog::RegMethod RegA("HeadRule","trackSurf(O,U)");
-
-  // surface/surfPtr/point/distance
-  const Geometry::interPoint 
-    result=trackSurfIntersect(Org,Unit);
-
-  return result.SNum;
-}
-
-int
-HeadRule::trackSurf(const Geometry::Vec3D& Org,
-		    const Geometry::Vec3D& Unit,
-		    const std::set<int>& activeSurf) const
-  /*!
-    Calculate the track of a line to the boundary surface of the
-    HeadRule. activeNull designates the current surface(s) (with sign)
-    which is to be ignored.
-
-    \param Org :: Origin of line
-    \param Unit :: Direction of line
-    \param activeSurf :: signed avoid surfaces
-    \return exit surface [signed - ingoing sense: Origin is true to surface]
-  */
-{
-  ELog::RegMethod RegA("HeadRule","trackSurf(O,u,{set}");
-  
-  Geometry::Vec3D Pt(Org);
-
-  const Geometry::interPoint 
-    result=trackSurfIntersect(Org,Unit,activeSurf);
-
-  return result.SNum;
-}
 
 size_t
 HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const

@@ -67,12 +67,6 @@ class HeadRule
 
   void calcSurfaces();
   
-  // TO BE REMOVED
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		const std::set<int>&) const;
-
-  
  public:
 
   HeadRule();
