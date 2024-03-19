@@ -80,7 +80,7 @@ operator<<(std::ostream& OX,const LineIntersectVisit& A)
 
 LineIntersectVisit::LineIntersectVisit
   (const Geometry::Vec3D& Pt,const Geometry::Vec3D& uVec) :
-    BaseVisit(),ATrack(Pt,uVec),neutIndex(0)
+    BaseVisit(),ATrack(Pt,uVec)
   /*!
     Constructor
     \param Pt :: Point to start track
@@ -90,7 +90,7 @@ LineIntersectVisit::LineIntersectVisit
 
 LineIntersectVisit::LineIntersectVisit
   (const Geometry::Line& L) :
-    BaseVisit(),ATrack(L),neutIndex(0)
+    BaseVisit(),ATrack(L)
   /*!
     Constructor
     \param L :: Line
@@ -99,8 +99,7 @@ LineIntersectVisit::LineIntersectVisit
 
 LineIntersectVisit::LineIntersectVisit
   (const MonteCarlo::particle& N) :
-    BaseVisit(),ATrack(N.Pos,N.uVec),
-    neutIndex(N.ID)
+    BaseVisit(),ATrack(N.Pos,N.uVec)
   /*!
     Constructor
     \param N :: Particle to track
@@ -117,7 +116,6 @@ LineIntersectVisit::setLine(const Geometry::Vec3D& Pt,
   */
 {
   ATrack.setLine(Pt,Axis);
-  neutIndex=0;
   return;
 }
 
@@ -129,7 +127,6 @@ LineIntersectVisit::setLine(const particle& N)
   */
 {
   ATrack.setLine(N.Pos,N.uVec);
-  neutIndex=N.ID;
   return;
 }
 
@@ -321,8 +318,6 @@ LineIntersectVisit::clearTrack()
   IPts.clear();
   return;
 }
-
-
 
 void
 LineIntersectVisit::procTrack(const std::vector<Geometry::Vec3D>& PtVec,

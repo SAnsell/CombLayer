@@ -51,12 +51,6 @@ private:
   Geometry::Line ATrack;                             ///< Line 
   std::vector<Geometry::interPoint> IPts;           /// 
 
-  // std::vector<Geometry::Vec3D> PtVec;                ///< Output point 
-  // std::vector<double> distVec;                       ///< Output distances
-  // std::vector<int> surfNumber;                       ///< SurfIndexes [signed]
-  // std::vector<const Geometry::Surface*> surfVec;     ///< Surfaces
-  long int neutIndex;                                ///< Particle number
-  
   void procTrack(const std::vector<Geometry::Vec3D>&,
 		 const Geometry::Surface*);
 
@@ -96,33 +90,16 @@ public:
   void clearTrack();
   const std::vector<Geometry::interPoint>& getInterVec() const 
   { return IPts; }
+    
+  const std::vector<Geometry::interPoint>&
+  getIntercept(const Geometry::Surface*);
   
-  /// Distance Accessor
-  // const std::vector<double>& getDistance() const 
-  // { return distVec; }
-
-  /*
-  /// Point Accessor
-  const std::vector<Geometry::Vec3D>& getPoints() const { return PtVec; }
-  /// Pointer Accessor
-  const std::vector<int>& getSurfIndexX() const 
-  { return surfNumber; }
-  /// Index Accessor
-  const std::vector<const Geometry::Surface*>& getSurfPointers() const 
-  { return surfVec; }
-  */
-  
-  const std::vector<Geometry::interPoint>& getIntercept(const Geometry::Surface*);
-  const std::vector<Geometry::interPoint>& getIntercept(const HeadRule&);
-  const std::vector<Geometry::interPoint>& getIntercept
-  (const Geometry::Surface*,const Geometry::Surface*,
-   const int);
-  
-  // const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*);
-  // const std::vector<Geometry::Vec3D>& getPoints(const HeadRule&);
-  // const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*,
-  // 						const Geometry::Surface*,
-  // 						const int);
+  const std::vector<Geometry::interPoint>&
+  getIntercept(const HeadRule&);
+  const std::vector<Geometry::interPoint>&
+  getIntercept(const Geometry::Surface*,
+	       const Geometry::Surface*,
+	       const int);
   
   Geometry::Vec3D getPoint(const Geometry::Surface*);
   Geometry::Vec3D getPoint(const Geometry::Surface*,

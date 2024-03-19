@@ -88,7 +88,7 @@ class Matrix : public MatrixBase<T>
   Matrix<T>& operator/=(const T&);            
   bool operator==(const Matrix<T>&) const;
   bool operator!=(const Matrix<T>&) const;
-
+  
   Matrix<T> Tprime() const;     
   T Invert();                        ///< LU inversion routine
   T factor();                   

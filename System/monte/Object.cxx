@@ -1301,8 +1301,6 @@ Object::trackCell(const Geometry::Vec3D& Org,
   return 0;
 }
 
-		  
-
 void
 Object::makeComplement()
   /*!

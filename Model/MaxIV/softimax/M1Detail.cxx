@@ -159,7 +159,7 @@ M1Detail::splitMainCell(Simulation& System)
   MonteCarlo::Object* OPtr=
     getCellObject(System,"MainVoid");
 
-  const int voidMat=mirror->getVoidMat();
+  //  const int voidMat=mirror->getVoidMat();
   
   const HeadRule refHR=mirror->SurfMap::getSurfRule("RefSurf");
   ELog::EM<<"SN -== "<<refHR<<ELog::endDiag;

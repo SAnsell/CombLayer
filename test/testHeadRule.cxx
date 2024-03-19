@@ -459,7 +459,7 @@ testHeadRule::testGetComponent()
     \return 0 :: success / -ve on error
    */
 {
-  ELog::RegMethod RegA("testHeadRule","testLevel");
+  ELog::RegMethod RegA("testHeadRule","testGetComponent");
 
   createSurfaces();
 
@@ -741,7 +741,7 @@ testHeadRule::testIsLineValid()
     \retval 0 :: success / -ve on failure
   */
 {
-  ELog::RegMethod RegA("testHeadRule","testIsOuterLine");
+  ELog::RegMethod RegA("testHeadRule","testIsLineValid");
 
   createSurfaces();
   
@@ -1043,6 +1043,7 @@ testHeadRule::testSurfValid()
    */
 {
   ELog::RegMethod RegA("testHeadRule","testSurfValid");
+  
   typedef std::tuple<std::string,const Geometry::Vec3D,std::set<int>> TTYPE;
 
   const std::vector<TTYPE> Tests(

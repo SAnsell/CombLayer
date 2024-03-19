@@ -3,7 +3,7 @@
  
  * File:   supportInc/MatrixBase.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,8 +94,8 @@ class MatrixBase
   MatrixBase<T>& operator*=(const MatrixBase<T>&); 
   MatrixBase<T>& operator*=(const T&);             
 
-  virtual bool operator==(const MatrixBase<T>&) const; 
-  virtual bool operator!=(const MatrixBase<T>&) const;
+  bool operator==(const MatrixBase<T>&) const; 
+  bool operator!=(const MatrixBase<T>&) const;
   /// Item access
   T item(const size_t a,const size_t b) const { return V[a][b]; }   
 
