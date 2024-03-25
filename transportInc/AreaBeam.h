@@ -3,7 +3,7 @@
  
  * File:   transportInc/AreaBeam.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ class AreaBeam : public Beam
 
   void setCent(const Geometry::Vec3D& C) { Cent=C; }  ///< Set Centre
   void setWidth(const double W) { Width=W; }      ///< Set width
-  void setHeight(const double H) { Width=H; }     ///< Set height
+  void setHeight(const double H) { Height=H; }     ///< Set height
   void setStart(const double Y) { startY=Y; }     ///< Set initial position 
   void setBias(const double) override {};
 

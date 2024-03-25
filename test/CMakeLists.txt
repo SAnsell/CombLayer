@@ -106,7 +106,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/testQuadratic.cxx
   ${tarDIR}/testQuaternion.cxx
   ${tarDIR}/testRecTriangle.cxx
-  ${tarDIR}/testRotCounter.cxx
   ${tarDIR}/testRules.cxx
   ${tarDIR}/testSimpleObj.cxx
   ${tarDIR}/testSimpson.cxx
@@ -193,7 +192,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/testQuaternion.h
   ${tarINC}/testRecTriangle.h
   ${tarINC}/testRefPlate.h
-  ${tarINC}/testRotCounter.h
   ${tarINC}/testRules.h
   ${tarINC}/testSimpleObj.h
   ${tarINC}/testSimpson.h
