@@ -61,8 +61,7 @@ class Matrix : public MatrixBase<T>
 
  public:
 
-  Matrix(const size_t =0,const size_t =0);
-  Matrix(const size_t,const size_t,const bool);
+  Matrix(const size_t =0,const size_t =0,const bool= 0);
   Matrix(std::vector<std::vector<T>>);
   Matrix(const std::vector<T>&,const std::vector<T>&); 
   Matrix(const Matrix<T>&);

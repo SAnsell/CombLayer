@@ -69,8 +69,8 @@ class MatrixBase
 
  public:
 
-  MatrixBase(const size_t =0,const size_t =0);
-  MatrixBase(const size_t,const size_t,const bool);
+  MatrixBase(const size_t =0,const size_t =0,const bool =0);
+  MatrixBase(const size_t,const size_t,const std::vector<T>&);
   MatrixBase(std::vector<std::vector<T>>);
   MatrixBase(const std::vector<T>&,const std::vector<T>&); 
   MatrixBase(const MatrixBase<T>&);
@@ -133,6 +133,7 @@ class MatrixBase
   MatrixBase<T> Tprime() const;                 ///< Transpose the matrix
 
   T laplaceDeterminate() const;
+  T sum() const;
   T compSum() const;
 
 }; 

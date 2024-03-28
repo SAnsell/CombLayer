@@ -3,7 +3,7 @@
  
  * File:   support/MatrixBase.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,25 +66,10 @@ Geometry::operator<<(std::ostream& OX,
 
 namespace Geometry
 {
-
-template<typename T>
-MatrixBase<T>::MatrixBase(const size_t nrow,const size_t ncol)
-  : nx(0),ny(0),V(0)
-  /*!
-    Constructor with pre-set sizes. MatrixBase is zeroed
-    \param nrow :: number of rows
-    \param ncol :: number of columns
-  */
-{
-  // Note:: nx,ny zeroed so setMem always works
-  setMem(nrow,ncol);
-  zeroMatrix();
-}
-
 template<typename T>
 MatrixBase<T>::MatrixBase(const size_t nrow,const size_t ncol,
 			  const bool flag)
-  : nx(0),ny(0),V(0)
+  : nx(0),ny(0),V(nullptr)
   /*!
     Constructor with pre-set sizes. MatrixBase is zeroed
     \param nrow :: number of rows
@@ -103,6 +88,28 @@ MatrixBase<T>::MatrixBase(const size_t nrow,const size_t ncol,
     zeroMatrix();
 }
 
+template<typename T>
+MatrixBase<T>::MatrixBase(const size_t nrow,const size_t ncol,
+			  const std::vector<T>& flatData)
+  : nx(0),ny(0),V(nullptr)
+  /*!
+    Constructor with pre-set sizes. MatrixBase is zeroed
+    \param nrow :: number of rows
+    \param ncol :: number of columns
+  */
+{
+  if (nrow*ncol !=flatData.size())
+    throw ColErr::MisMatch<size_t>
+      (nrow*ncol,flatData.size(),"Vector/matrix size");
+  
+  // Note:: nx,ny zeroed so setMem always works
+  setMem(nrow,ncol);
+  typename std::vector<T>::const_iterator vc=flatData.begin();
+  for(size_t i=0;i<nx;i++)
+    for(size_t j=0;j<ny;j++)
+      V[i][j] = *vc++;
+}
+  
 
 template<typename T>
 MatrixBase<T>::MatrixBase(std::vector<std::vector<T>> A)
@@ -771,6 +778,20 @@ MatrixBase<T>::compSum() const
   return sum;
 }
 
+template<typename T>
+T
+MatrixBase<T>::sum() const
+  /*!
+    Add up each component sums for the matrix
+    \return \f$ \sum_i \sum_j V_{ij} \f$
+  */
+{
+  T sum(0);
+  for(size_t i=0;i<nx;i++)
+    for(size_t j=0;j<ny;j++)
+      sum+=V[i][j];
+  return sum;
+}
 
 template<typename T> 
 std::vector<T>

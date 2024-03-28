@@ -43,16 +43,6 @@ namespace Geometry
 {
 
 template<typename T>
-Matrix<T>::Matrix(const size_t nrow,const size_t ncol) :
-  MatrixBase<T>(nrow,ncol)
-  /*!
-    Constructor with pre-set sizes. Matrix is zeroed
-    \param nrow :: number of rows
-    \param ncol :: number of columns
-  */
-{}
-
-template<typename T>
 Matrix<T>::Matrix(const size_t nrow,const size_t ncol,
 		  const bool flag) :
   MatrixBase<T>(nrow,ncol,flag)
