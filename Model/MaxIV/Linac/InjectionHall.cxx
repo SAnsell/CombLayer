@@ -747,13 +747,13 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("SPFVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -7611 1004 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("KlystronVoid1",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7611 -7612 7614 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("KlystronVoid2",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7612 -7401 1004 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("KlystronVoid3",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7401 -7402 1004 -7403 5 -7406");
   makeCell("BTG",System,cellIndex++,btgMat,0.0,HR);
@@ -762,7 +762,7 @@ InjectionHall::createObjects(Simulation& System)
   makeCell("BTGAbove",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7402 -12 1004 -104 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("KlystronVoid4",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"7401 -7402 7403 -104 5 -6");
   makeCell("KlystronVoidBTG",System,cellIndex++,voidMat,0.0,HR);
@@ -1248,7 +1248,7 @@ InjectionHall::createObjects(Simulation& System)
 
   // KLYSTRONG WALLS
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -3001 -3014 3 5 -6");
-  makeCell("KlystronVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("KlystronVoid5",System,cellIndex++,voidMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -3001 3014 -3004 5 -6");
   makeCell("KlystronWall",System,cellIndex++,wallMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"3001 -3002 3 -3004 5 -6");
