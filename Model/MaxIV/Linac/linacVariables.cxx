@@ -586,6 +586,12 @@ void detectors(FuncDataBase& Control)
   Control.addParse<double>("IonChamber4XStep", "Wendi4XStep");
   Control.addParse<double>("IonChamber4YStep", "Wendi4YStep-15-15");
   Control.addVariable("IonChamber4ZStep", brm7.ion-floorDepth);
+
+  // FKG at max flux
+  ionGen.generate(Control,"IonChamber5");
+  Control.addVariable("IonChamber5XStep", 170.0);
+  Control.addVariable("IonChamber5YStep", 6500.0);
+  Control.addParse<double>("IonChamber5ZStep", "IonChamber4ZStep");
 }
 
 void

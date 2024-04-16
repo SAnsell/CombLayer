@@ -132,7 +132,7 @@ namespace tdcSystem
     attachSystem::CellMap(),
     noCheck(0),pointCheck(0),
     injectionHall(new InjectionHall("InjectionHall")),
-    nWendi(0),nIon(4),
+    nWendi(0),nIon(5),
     SegMap
     ({
       { "Segment1",std::make_shared<Segment1>("L2SPF1") },
@@ -461,8 +461,16 @@ namespace tdcSystem
       wendi[i]->addInsertCell(injectionHall->getCell(i==2 ? "TVoidA" : "SPFVoid"));
       wendi[i]->createAll(System,*injectionHall,"#front");
     }
+    std::string cell("");
     for (size_t i=0; i<nIon; ++i) {
-      ionchamb[i]->addInsertCell(injectionHall->getCell(i==2 ? "TVoidA" : "SPFVoid"));
+      if (i==2)
+	cell="TVoidA";
+      else if (i==4)
+	cell="KlystronVoid1";
+      else
+	cell="SPFVoid";
+
+      ionchamb[i]->addInsertCell(injectionHall->getCell(cell));
       ionchamb[i]->createAll(System,*injectionHall,"#front");
     }
   }
