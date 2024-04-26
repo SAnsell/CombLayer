@@ -801,6 +801,7 @@ SimFLUKA::write(const std::string& Fname) const
 
 
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
+  StrFunc::writeFLUKA("LOW-PWXS 1 - - HYDROGEN @LASTMAT - -",OX);
   std::ostringstream cx;
   cx<<"GEOBEGIN";
   cx<<((basicGeom) ? " - " : " 1 ");
