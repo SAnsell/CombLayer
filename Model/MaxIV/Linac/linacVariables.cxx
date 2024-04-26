@@ -1316,7 +1316,7 @@ Segment12(FuncDataBase& Control,
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",17.0); // IMG_5423.JPG
   Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
-  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
+  Control.addVariable(lKey+"ShieldAMainMat","Lead");
 
   return;
 }
@@ -1382,7 +1382,7 @@ Segment13(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAYStep",25.0); // IMG_5421.JPG
   Control.addVariable(lKey+"ShieldAXStep",7.5); // to avoid cutting SPF30
   Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
-  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
+  Control.addVariable(lKey+"ShieldAMainMat","Lead");
 
   return;
 }
@@ -1493,7 +1493,7 @@ Segment15(FuncDataBase& Control,
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",11.0); // img_5427.jpg
   Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
-  Control.addVariable(lKey+"ShieldAMainMat","Void"); // placeholder
+  Control.addVariable(lKey+"ShieldAMainMat","Lead");
 
 
   return;

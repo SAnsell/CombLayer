@@ -181,7 +181,7 @@ userBdx::setEnergy(const bool eFlag,const double eMin,
 {
   ELog::RegMethod RegE("userBdx","setEnergy");
 
-  const double minV((eFlag) ? 1e-9 : 0.0);
+  const double minV((eFlag) ? 1e-11 : 0.0);
   const size_t minN((eFlag) ? 3 : 1);
 
   if (eMax>1e6)
