@@ -1316,12 +1316,12 @@ Segment12(FuncDataBase& Control,
   setVariable::LocalShieldingGenerator ShieldGen;
   // max length is 22 cm [img_5422]
   // max width is 86 cm [img_5428]
-  ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
+  ShieldGen.setSize(10,80,25); // length is 10, height/width arbitrary since it's a placeholder
   ShieldGen.setMidHole(10.0,4.0);
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",17.0); // IMG_5423.JPG
   Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
-  Control.addVariable(lKey+"ShieldAMainMat","Lead");
+  Control.addVariable(lKey+"ShieldAMainMat","S235JR"); // grade is not known
 
   return;
 }
@@ -1387,7 +1387,7 @@ Segment13(FuncDataBase& Control,
   Control.addVariable(lKey+"ShieldAYStep",25.0); // IMG_5421.JPG
   Control.addVariable(lKey+"ShieldAXStep",7.5); // to avoid cutting SPF30
   Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
-  Control.addVariable(lKey+"ShieldAMainMat","Lead");
+  Control.addVariable(lKey+"ShieldAMainMat","S235JR"); // grade is not known
 
   return;
 }
@@ -1493,12 +1493,12 @@ Segment15(FuncDataBase& Control,
   setVariable::LocalShieldingGenerator ShieldGen;
   // max length is 14 cm [img_5426.jpg]
   // max width is 91 cm [img_5430.jpg]
-  ShieldGen.setSize(10,60,25); // length is 10, height/width arbitrary since it's a placeholder
+  ShieldGen.setSize(10,80,25); // length is 10, height/width arbitrary since it's a placeholder
   ShieldGen.setMidHole(10.0,4.0); // dummy
   ShieldGen.generate(Control,lKey+"ShieldA");
   Control.addVariable(lKey+"ShieldAYStep",11.0); // img_5427.jpg
   Control.addVariable(lKey+"ShieldAZStep",0.0); // dummy
-  Control.addVariable(lKey+"ShieldAMainMat","Lead");
+  Control.addVariable(lKey+"ShieldAMainMat","S235JR"); // grade is not known
 
 
   return;
