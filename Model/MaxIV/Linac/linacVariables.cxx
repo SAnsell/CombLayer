@@ -592,6 +592,11 @@ void detectors(FuncDataBase& Control)
   Control.addVariable("IonChamber5XStep", 170.0);
   Control.addVariable("IonChamber5YStep", 6500.0);
   Control.addParse<double>("IonChamber5ZStep", "IonChamber4ZStep");
+  // SPF hallway entrance
+  ionGen.generate(Control,"IonChamber6");
+  Control.addVariable("IonChamber6XStep", -1400.0);
+  Control.addVariable("IonChamber6YStep", 10320.0);
+  Control.addParse<double>("IonChamber6ZStep", "IonChamber4ZStep");
 }
 
 void

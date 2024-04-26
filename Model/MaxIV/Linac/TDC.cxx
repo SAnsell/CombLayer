@@ -132,7 +132,7 @@ namespace tdcSystem
     attachSystem::CellMap(),
     noCheck(0),pointCheck(0),
     injectionHall(new InjectionHall("InjectionHall")),
-    nWendi(0),nIon(5),
+    nWendi(0),nIon(6),
     SegMap
     ({
       { "Segment1",std::make_shared<Segment1>("L2SPF1") },
@@ -467,6 +467,8 @@ namespace tdcSystem
 	cell="TVoidA";
       else if (i==4)
 	cell="KlystronVoid1";
+      else if (i==5)
+	cell= "C080012"; // near the SPF hallway entrance door
       else
 	cell="SPFVoid";
 
