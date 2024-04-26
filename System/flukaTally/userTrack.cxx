@@ -127,7 +127,7 @@ userTrack::getLogType() const
     \return fluka card value
   */
 {
-  return (eLogFlag) ? -1 : 1;
+  return (eLogFlag) ? -10001 : 10001;
 }
 
 void
