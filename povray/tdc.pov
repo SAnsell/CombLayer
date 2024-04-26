@@ -9,8 +9,10 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#fopen STDIN "/dev/stdin" read
-#read (STDIN, ITEM)
+// #fopen STDIN "/dev/stdin" read
+// #read (STDIN, ITEM)
+
+#declare ITEM = "TDC15YagUnit"
 
 // PROJECTION:
 // 0=perspective
@@ -79,6 +81,12 @@ global_settings {
   //   #declare cameraLookAt   = <130, 80, 0>;
   //   #declare cameraAngle = 90;
   // #break
+  #case(strcmp(ITEM,"TDC15YagUnit"))
+    #declare cameraLocation = <-340, 5057, 30>;
+    #declare cameraLookAt   = <-359, 5031, 0>;
+    #declare projection = 0;
+    #declare cameraAngle = 70;
+  #break
   #case(strcmp(ITEM,"Segment1")) // L2SPF segment 1
     #declare cameraLocation = <500, 630, 100>;
     #declare cameraLookAt   = <152, 670, 0>;
