@@ -603,6 +603,24 @@ void detectors(FuncDataBase& Control)
   Control.addVariable("IonChamber7XStep", -235.0); // email AR 23 apr 2024
   Control.addVariable("IonChamber7YStep", 10262.200); // email AR 26 apr 2024
   Control.addParse<double>("IonChamber7ZStep", "IonChamber4ZStep");
+
+  // FKG maze wall
+  ionGen.generate(Control,"IonChamber8");
+  Control.addVariable("IonChamber8XStep", 170.0);// same ase 5
+  Control.addVariable("IonChamber8YStep", 3923.0);
+  Control.addParse<double>("IonChamber8ZStep", "IonChamber4ZStep");
+
+  // 34m FKG
+  ionGen.generate(Control,"IonChamber9");
+  Control.addVariable("IonChamber9XStep", 170.0);
+  Control.addVariable("IonChamber9YStep", 7308.0358);
+  Control.addParse<double>("IonChamber9ZStep", "IonChamber4ZStep");
+
+  // 1m left of BTK
+  ionGen.generate(Control,"IonChamber10");
+  Control.addVariable("IonChamber10XStep", 170.0);// same ase 5
+  Control.addVariable("IonChamber10YStep", 9208.0358);
+  Control.addParse<double>("IonChamber10ZStep", "IonChamber4ZStep");
 }
 
 void
