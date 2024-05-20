@@ -258,9 +258,10 @@ namespace setVariable
     name = "Gate";
     GTFGateValveGenerator GateGen;
 
+    // Gate blade: http://localhost:8080/maxiv/work-log/100hz/gtf/2d-drawings/vat-xhv-gate-valve-48_2-dn63.png/view
     GateGen.setOuter(4.5-0.5, 15.5-1.0, 18.0-0.5+1, 8.2-0.5); // measured (-0.5 to account for wall thick, +1 for the square hutch)
     GateGen.setBladeMat("EN14435"); // email from AMG 240702
-    GateGen.setBladeThick(0.55); // email from AB 240116
+    GateGen.setBladeThick(1.09); // email from AMG 240702
     GateGen.setAPortCF<CF63>(); // TODO
     GateGen.setBPortCF<CF63>(); // TODO
     //    GateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO
@@ -270,6 +271,7 @@ namespace setVariable
     Control.addVariable(name+"PortAThick", 5.8); // measured
     Control.addVariable(name+"PortBThick", 5.8); // measured
     Control.addVariable(name+"ClampMat", "Iron");  // guess TODO
+    Control.addVariable(name+"BladeRadius", 3.5); // email from AMG 240702 (calculated based on other measurements)
 
     name = "PipeB";
     PipeGen.setCF<setVariable::CF63>();

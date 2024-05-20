@@ -60,8 +60,8 @@ class GTFGateValve :
 
   bool closed;                  ///< Shutter closed
   double bladeLift;             ///< Height of blade up
-  double bladeThick;            ///< moving blade thickness
-  double bladeRadius;           ///< moving blade radius
+  double bladeThick;            ///< moving blade total thickness
+  double bladeRadius;           ///< moving blade outer radius
 
   double clampWidth;            ///< Clamp width
   double clampDepth;            ///< Clamp depth
