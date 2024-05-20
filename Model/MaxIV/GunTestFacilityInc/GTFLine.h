@@ -22,6 +22,13 @@
 #ifndef maxiv_GTFLine_h
 #define maxiv_GTFLine_h
 
+namespace tdcSystem
+{
+  class YagUnit;
+  class YagScreen;
+}
+
+
 namespace xraySystem
 {
   class Solenoid;
@@ -78,6 +85,8 @@ class GTFLine :
   std::shared_ptr<constructSystem::FlangePlate> laserChamberBackPlate; // laser chamber back plate
   std::shared_ptr<IonPumpGammaVacuum> ionPumpB;
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  std::shared_ptr<tdcSystem::YagUnit> yagUnitA;
+  std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

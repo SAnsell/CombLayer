@@ -69,6 +69,8 @@
 #include "GeneralPipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
+#include "YagUnit.h"
+#include "YagScreen.h"
 #include "GTFGateValve.h"
 #include "Solenoid.h"
 #include "CurrentTransformer.h"
@@ -103,7 +105,9 @@ GTFLine::GTFLine(const std::string& Key) :
   laserChamber(std::make_shared<constructSystem::PipeTube>("LaserChamber")),
   laserChamberBackPlate(std::make_shared<constructSystem::FlangePlate>("LaserChamberBackPlate")),
   ionPumpB(std::make_shared<IonPumpGammaVacuum>("IonPumpB")),
-  pipeC(std::make_shared<constructSystem::VacuumPipe>("PipeC"))
+  pipeC(std::make_shared<constructSystem::VacuumPipe>("PipeC")),
+  yagUnitA(new tdcSystem::YagUnit("YagUnitA")),
+  yagScreenA(new tdcSystem::YagScreen("YagScreenA"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -123,6 +127,8 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(laserChamber);
   OR.addObject(laserChamberBackPlate);
   OR.addObject(pipeC);
+  OR.addObject(yagUnitA);
+  OR.addObject(yagScreenA);
 }
 
 GTFLine::~GTFLine()
@@ -236,6 +242,22 @@ GTFLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*laserChamberBackPlate,"back",*pipeC);
   ionPumpB->insertInCell(System,outerCell+1);
+
+
+  outerCell = constructSystem::constructUnit(System,buildZone,*pipeC,"back",*yagUnitA);
+  yagScreenA->setBeamAxis(*yagUnitA,1);
+  yagScreenA->createAll(System,*yagUnitA,-3);
+  yagScreenA->insertInCell("Outer",System,outerCell);
+  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("PlateA"));
+  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("Void"));
+  yagScreenA->insertInCell("Payload",System,yagUnitA->getCell("Void"));
+
+
+
+  // Emittance meter (movable)
+
+  // TODO: skipping two objects: ~screen chamber and coils - must be added
+
 
 
   buildZone.createUnit(System);

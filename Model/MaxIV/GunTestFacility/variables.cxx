@@ -54,6 +54,9 @@
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "FlangePlateGenerator.h"
+#include "ScreenGenerator.h"
+#include "YagUnitGenerator.h"
+#include "YagScreenGenerator.h"
 
 namespace setVariable
 {
@@ -358,6 +361,16 @@ namespace setVariable
     PipeGen.setFlange(lcRadius+lcWall, 1.3); // dummy
     PipeGen.generatePipe(Control,"PipeC",7.9+CF63::flangeLength); // TODO: dummy
 
+    ELog::EM << "Use correct PipeC variables" << ELog::endWarn;
+
+    setVariable::YagUnitGenerator YagUnitGen;
+    setVariable::YagScreenGenerator YagScreenGen;
+    YagUnitGen.generateYagUnit(Control,"YagUnitA");
+    Control.addVariable("YagUnitAYAngle",180.0);
+    YagScreenGen.generateScreen(Control,"YagScreenA",1);
+    Control.addVariable("YagScreenAYAngle",-90.0);
+
+    ELog::EM << "Use correct YagUnitA and YagScreenA variables" << ELog::endWarn;
 
   }
 
