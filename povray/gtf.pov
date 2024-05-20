@@ -25,6 +25,7 @@
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
+#declare C_Sun= rgb <1,0.98,0.96>;
 
 #if (quick=1)
   #declare RadOK=0;
@@ -87,6 +88,9 @@ global_settings {
     #declare cameraLookAt   = <0, 216, 3>;
     #declare cameraAngle = 35;
     #declare projection = 0;
+    light_source { // LaserChamber centre (coordinate based on ObjectRegister.txt)
+      <0,210.9,0> Violet
+    }
   #break
   #else // default view
     #declare cameraLocation = <175, -275, 0>;
@@ -95,7 +99,6 @@ global_settings {
 #break
 #end
 
-#declare C_Sun= rgb <1,0.98,0.96>;
 
 #if (quick=1)
   light_source { // front

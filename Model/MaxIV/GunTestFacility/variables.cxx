@@ -244,7 +244,7 @@ namespace setVariable
     Control.addVariable(name+"PipeThick", 0.2);
 
     name = "PipeA";
-    PipeGen.setCF<setVariable::CF63>(); // dummy TODO - it's a conic pipe
+    PipeGen.setCF<setVariable::CF63>(); // dummy TODO - is it a conic pipe?
     PipeGen.generatePipe(Control,name,40.0);
     Control.addVariable(name+"PipeThick", 0.2);
 
