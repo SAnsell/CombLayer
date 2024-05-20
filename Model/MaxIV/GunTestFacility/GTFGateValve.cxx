@@ -89,6 +89,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   portBRadius(A.portBRadius),portBThick(A.portBThick),
   portBLen(A.portBLen),closed(A.closed),bladeLift(A.bladeLift),
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
+  bladeCutThick(A.bladeCutThick),
   clampWidth(A.clampWidth),
   clampDepth(A.clampDepth),
   clampHeight(A.clampHeight),
@@ -144,6 +145,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeLift=A.bladeLift;
       bladeThick=A.bladeThick;
       bladeRadius=A.bladeRadius;
+      bladeCutThick=A.bladeCutThick;
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
       clampHeight=A.clampHeight;
@@ -213,6 +215,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeLift=Control.EvalVar<double>(keyName+"BladeLift");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
+  bladeCutThick=Control.EvalVar<double>(keyName+"BladeCutThick");
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
   clampHeight=Control.EvalVar<double>(keyName+"ClampHeight");
@@ -317,6 +320,7 @@ GTFGateValve::createSurfaces()
   // Blade
   ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*(bladeThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(bladeThick/2.0),Y);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+311,buildIndex+301,Y,bladeCutThick);
 
   if (closed)
     ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,bladeRadius);
@@ -393,7 +397,9 @@ GTFGateValve::createObjects(Simulation& System)
   makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
 
   // blade
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 301 -302");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 301 -311");
+  makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 311 -302");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 
   // front plate

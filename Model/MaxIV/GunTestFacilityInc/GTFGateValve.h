@@ -62,6 +62,7 @@ class GTFGateValve :
   double bladeLift;             ///< Height of blade up
   double bladeThick;            ///< moving blade total thickness
   double bladeRadius;           ///< moving blade outer radius
+  double bladeCutThick;         ///< Thickness of the central part cut
 
   double clampWidth;            ///< Clamp width
   double clampDepth;            ///< Clamp depth
