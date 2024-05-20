@@ -102,7 +102,8 @@ GTFLine::GTFLine(const std::string& Key) :
   mon(std::make_shared<xraySystem::CurrentTransformer>("CurrentTransformer")),
   laserChamber(std::make_shared<constructSystem::PipeTube>("LaserChamber")),
   laserChamberBackPlate(std::make_shared<constructSystem::FlangePlate>("LaserChamberBackPlate")),
-  ionPumpB(std::make_shared<IonPumpGammaVacuum>("IonPumpB"))
+  ionPumpB(std::make_shared<IonPumpGammaVacuum>("IonPumpB")),
+  pipeC(std::make_shared<constructSystem::VacuumPipe>("PipeC"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -121,6 +122,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(mon);
   OR.addObject(laserChamber);
   OR.addObject(laserChamberBackPlate);
+  OR.addObject(pipeC);
 }
 
 GTFLine::~GTFLine()
@@ -231,6 +233,10 @@ GTFLine::buildObjects(Simulation& System)
   ionPumpB->insertInCell(System,outerCell);
   ionPumpB->insertInCell(System,outerCell-1);
   ionPumpB->insertInCell(System,outerCell-2);
+
+  constructSystem::constructUnit(System,buildZone,*laserChamberBackPlate,"back",*pipeC);
+  ionPumpB->insertInCell(System,outerCell+1);
+
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

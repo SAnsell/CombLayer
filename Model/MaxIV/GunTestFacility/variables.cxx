@@ -354,6 +354,11 @@ namespace setVariable
     FPGen.setFlange(lcRadius+lcWall, 1.3); // 1.3 is measured
     FPGen.generateFlangePlate(Control,name);
 
+    PipeGen.setCF<setVariable::CF63>();
+    PipeGen.setFlange(lcRadius+lcWall, 1.3); // dummy
+    PipeGen.generatePipe(Control,"PipeC",7.9+CF63::flangeLength); // TODO: dummy
+
+
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
