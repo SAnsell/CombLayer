@@ -236,6 +236,9 @@ namespace setVariable
     Control.addVariable(name+"FlangeTubeThick", 0.2);
     Control.addVariable(name+"FlangeTubeLength", 6.9);
 
+    Control.copyVarSet("IonPump", "IonPumpB");
+    Control.addVariable("IonPumpBYStep",0.0);
+
     name = "Extension";
     setVariable::PipeGenerator PipeGen;
 
@@ -341,6 +344,7 @@ namespace setVariable
     Control.addVariable(name+"Port3Radius",3.3);
     Control.addVariable(name+"Port3OuterVoid",0);
     Control.addVariable(name+"Port3Length",9.5); // measured approx
+    Control.addVariable(name+"Port3CapThick",0.0);
 
 
     name += "BackPlate";

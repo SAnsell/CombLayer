@@ -76,6 +76,7 @@ class GTFLine :
   std::shared_ptr<xraySystem::CurrentTransformer> mon;
   std::shared_ptr<constructSystem::PipeTube> laserChamber; // laser and viewing chamber
   std::shared_ptr<constructSystem::FlangePlate> laserChamberBackPlate; // laser chamber back plate
+  std::shared_ptr<IonPumpGammaVacuum> ionPumpB;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

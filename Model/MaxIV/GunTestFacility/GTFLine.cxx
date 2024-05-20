@@ -72,6 +72,7 @@
 #include "GTFGateValve.h"
 #include "Solenoid.h"
 #include "CurrentTransformer.h"
+#include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "FlangePlate.h"
@@ -100,7 +101,8 @@ GTFLine::GTFLine(const std::string& Key) :
   bellowA(std::make_shared<constructSystem::Bellows>("BellowA")),
   mon(std::make_shared<xraySystem::CurrentTransformer>("CurrentTransformer")),
   laserChamber(std::make_shared<constructSystem::PipeTube>("LaserChamber")),
-  laserChamberBackPlate(std::make_shared<constructSystem::FlangePlate>("LaserChamberBackPlate"))
+  laserChamberBackPlate(std::make_shared<constructSystem::FlangePlate>("LaserChamberBackPlate")),
+  ionPumpB(std::make_shared<IonPumpGammaVacuum>("IonPumpB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -224,7 +226,11 @@ GTFLine::buildObjects(Simulation& System)
 
   laserChamber->insertPortInCell(System,3,outerCell);
 
-
+  const constructSystem::portItem& PI=laserChamber->getPort(3);
+  ionPumpB->createAll(System,PI,PI.getSideIndex("#OuterPlate"));
+  ionPumpB->insertInCell(System,outerCell);
+  ionPumpB->insertInCell(System,outerCell-1);
+  ionPumpB->insertInCell(System,outerCell-2);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
