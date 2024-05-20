@@ -91,6 +91,8 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
   bladeCutThick(A.bladeCutThick),
   bladeScrewHousingRadius(A.bladeScrewHousingRadius),
+  bladeScrewRadius(A.bladeScrewRadius),
+  bladeScrewLength(A.bladeScrewLength),
   bladeNotchRadius(A.bladeNotchRadius),
   clampWidth(A.clampWidth),
   clampDepth(A.clampDepth),
@@ -149,6 +151,8 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeRadius=A.bladeRadius;
       bladeCutThick=A.bladeCutThick;
       bladeScrewHousingRadius=A.bladeScrewHousingRadius;
+      bladeScrewRadius=A.bladeScrewRadius;
+      bladeScrewLength=A.bladeScrewLength;
       bladeNotchRadius=A.bladeNotchRadius;
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
@@ -221,6 +225,8 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
   bladeCutThick=Control.EvalVar<double>(keyName+"BladeCutThick");
   bladeScrewHousingRadius=Control.EvalVar<double>(keyName+"BladeScrewHousingRadius");
+  bladeScrewRadius=Control.EvalVar<double>(keyName+"BladeScrewRadius");
+  bladeScrewLength=Control.EvalVar<double>(keyName+"BladeScrewLength");
   bladeNotchRadius=Control.EvalVar<double>(keyName+"BladeNotchRadius");
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
@@ -327,12 +333,14 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*(bladeThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(bladeThick/2.0),Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+311,buildIndex+301,Y,bladeCutThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+312,buildIndex+302,Y,-bladeScrewLength);
 
   const double bladeOffset = closed ? 0.0 : bladeLift;
 
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Z*bladeOffset,Y,bladeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin+Z*bladeOffset,Y,bladeScrewHousingRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+327,Origin+Z*bladeOffset,Y,bladeNotchRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+337,Origin+Z*bladeOffset,Y,bladeScrewRadius);
 
 
 
@@ -405,8 +413,15 @@ GTFGateValve::createObjects(Simulation& System)
   makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
 
   // blade
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -317");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 337 -317");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -312 -337");
+  makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"312 -302 -337");
+  makeCell("BladeScrew",System,cellIndex++,0,0.0,HR);
+  ELog::EM << "Improve BladeScrew geometry" << ELog::endWarn;
+
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 317 -327");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 327 -307");
