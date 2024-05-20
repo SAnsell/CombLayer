@@ -217,6 +217,7 @@ namespace setVariable
     std::string name = "IonPump";
 
     // Ion Pump produced by Gamma Vacuum
+    Control.addVariable(name+"YStep",24.1);
     Control.addVariable(name+"Length",17.2);
     Control.addVariable(name+"Height",13.0);
     Control.addVariable(name+"WallThick",1.3);

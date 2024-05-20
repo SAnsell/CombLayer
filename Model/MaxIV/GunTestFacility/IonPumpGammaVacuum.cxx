@@ -196,12 +196,14 @@ IonPumpGammaVacuum::createSurfaces()
 {
   ELog::RegMethod RegA("IonPumpGammaVacuum","createSurfaces");
 
+  const double totalLength = length+flangeTubeLength; // total length
+
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*totalLength,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick-totalLength),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
@@ -211,10 +213,10 @@ IonPumpGammaVacuum::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+flangeTubeLength),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin,Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
 
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+flangeTubeLength-flangeThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin-Y*flangeThick,Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
