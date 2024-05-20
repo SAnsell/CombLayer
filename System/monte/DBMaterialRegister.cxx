@@ -88,7 +88,7 @@ DBMaterial::initMaterial()
   createMaterial("CH4inFoam",
 		 "6000.70c 0.0167364 1001.70c 0.066945 13027.70c 0.0060185",
 		 "smeth.26t al.20t",MLib);
-  
+
 
   // Material #5: Aluminum 5083
   createMaterial("Aluminium",
@@ -136,7 +136,7 @@ DBMaterial::initMaterial()
   // Material #15 ZrH2 number density == 0.1087 on a density of 5.61g/cc
   createMaterial("ZrH2","1001.70c 2.3316e-3 "
 		 "40000.60c 0.10636","h/zr.01t zr/h.01t",MLib);
-  
+
   // Material #16: Liquid para-hydrogen (original)
   //Total atom density 0.041957 -  20 K; 0.07021 grams per cc
   createMaterial("paraH2-org","1001.70c 0.041957","parah.20t",MLib);
@@ -145,7 +145,7 @@ DBMaterial::initMaterial()
   // Total atom density 0.04424 - 1.74 gm/cc
   createMaterial("Magnox","12000.60c 0.03915 13027.70c "
 		   "3.32e-3 4009.70c 1.77e-3","",MLib);
-  
+
   //Material #22  Cooled Be9 [nat 100%]
   createMaterial("Be77K","4009.80c 0.0988968","be.77t",MLib);
 
@@ -228,7 +228,7 @@ DBMaterial::initMaterial()
   // Material #40  Sapphire :
   createMaterial("Al2O3","13027.70c 0.03333333 "
 		 "8016.70c 0.0666666", "",MLib);
-  
+
   // Material #41 Silicon
   createMaterial("SiPowder",
 		 "14028.70c 0.0460848 14029.70c 0.00234 "
@@ -274,7 +274,7 @@ DBMaterial::initMaterial()
   Mptr= &createMaterial("Poly","6000.70c 0.0333333 "
 			"1001.70c 0.0666666666","poly.01t",MLib);
   Mptr->setDensity(-0.91);
-  
+
   // Material #49 Regular concrete
   // Regular concrete at 2.339 g/cc [supposedly]
   createMaterial("Concrete",
@@ -299,7 +299,7 @@ DBMaterial::initMaterial()
 		 "26054.70c 1.44497E-03 26056.70c 2.27918E-02 "
 		 "26057.70c 5.21380E-04 26058.70c 6.95173E-05",
 		 "lwtr.01t",MLib);
-  
+
   // Material #51: Lithium Nitride
   // Total atom density 0.0219560 - 1.270 g/cc
   createMaterial("Li3N",
@@ -344,7 +344,7 @@ DBMaterial::initMaterial()
   // Material #58 : Methane + 10% Al [type 2 at 20K]
   createMaterial("CH4TypeII","6000.70c 0.01841004 "
 		 "1001.70c 0.0736395","smeth.02t",MLib);
-  
+
 
   //Material #59 Nimonic 8.19g/cc
   // Total atom density 0.091321 - 8.9 grams per cc
@@ -468,7 +468,7 @@ DBMaterial::initMaterial()
   // Density : 8.91g/cc rho=0.084438
   createMaterial("Copper","29063.70c 0.058389212 "
 		 "29065.70c 0.02604927","",MLib);
-  
+
    //Material #74: ChipIR Guide Steel (K Jones spec)
    //Density : 7.800 g/cc
   createMaterial("ChipIRSteel",
@@ -628,7 +628,7 @@ DBMaterial::initMaterial()
   createMaterial("Be/10H2O","4009.80c 1.112186e-01 "
 		 "1001.70c 6.677949e-03 1002.70c 7.680525e-07 "
 		 "8016.70c 3.366946e-03","lwtr.01t be.60t",MLib);
-  
+
   // Material #94 Stainless 316L
   // Total atom density 0.086927
   createMaterial("Stainless316L",
@@ -672,7 +672,7 @@ DBMaterial::initMaterial()
   createMaterial("TS1Boral","5010.70c 8.436522e-03 "
 		 "5011.70c 1.546409e-04 13027.70c 5.706872e-02",
 		 "al.20t",MLib);
-  
+
   // Material #99: 90% Be + 10% D2O + H2O mixture (50% D2O & 50% H2O)
   //  (by VOLUME)
   // Total atom density 0.1212533
@@ -681,7 +681,7 @@ DBMaterial::initMaterial()
 		 "1001.70c 3.347044e-03 1002.70c 3.337337e-03 "
 		 "8016.70c 0.0033681","be.60t lwtr.01t hwtr.01t",
 		 MLib);
-  
+
   // Material #100 U3SI2 in Al for reactor New Fuel [delft]
   // U density at 4.8g/cc
   createMaterial("U3Si2",
@@ -689,7 +689,7 @@ DBMaterial::initMaterial()
 		 "92234.70c 1.729600e-05 92235.70c 2.429500e-03 "
 		 "92236.70c 1.714800e-05 92238.70c 9.712900e-03 ",
 		 "",MLib);
-  
+
   // Material #101 Highly burnt U3Si2 - projected to 100% burn
   // which is impossible but allows linear fitting with U3SI2
   // Constructed at 4.8g/cc
@@ -710,7 +710,7 @@ DBMaterial::initMaterial()
 		 "95243.70c 8.851011e-08 96242.70c 1.124027e-07 "
 		 "96243.70c 8.827472e-10 96244.70c 6.823268e-09 "
 		 "96245.70c 7.870824e-11 ","",MLib);
-  
+
   // Material #102 B4C with 97% B-10
   createMaterial("10B4C","5010.70c 0.10925 "
 		   "5011.70c 0.0032776 6000.70c 0.027313","",MLib);
@@ -720,7 +720,7 @@ DBMaterial::initMaterial()
 		      "4009.70c 0.0988968 8016.70c 0.0988968",
 		      "beo.60t",MLib);
   Mptr->setDensity(0.072276);
-  
+
 
   // Material #104 U3SI2 in Al for reactor Original Fuel [delft]
   // U density at 4.3//cc
@@ -1137,7 +1137,7 @@ DBMaterial::initMaterial()
   // density 3.51g/cc 0.176
   Mptr = &createMaterial("Diamond", "6012.70c 0.17615 ","",MLib);
   Mptr->setDensity(-3.51);
-  
+
 
   // ESS Iron
   Mptr = &createMaterial("Iron",
@@ -1164,7 +1164,7 @@ DBMaterial::initMaterial()
 		      "26057.70c 3.728e-05 26058.70c 4.96128e-06  ",
 		      "lwtr.01t",MLib);
   Mptr->setDensity(-1.6104);
-  
+
 
   // SS304L composition from ESS Design Update WP3
   // Reference: Material Data Compilation 29 Mar 2017
@@ -1272,7 +1272,7 @@ DBMaterial::initMaterial()
 
 
   //Optical Materials Express, Vol. 3 No1 P.69, 1 January 2013
-  Mptr = &createMaterial("BorkronNBK7", 
+  Mptr = &createMaterial("BorkronNBK7",
 		       " 08000.70c 0.608978 " //O
 		       " 14000.70c 0.2307199 " //Si
 		       " 05000.70c 0.0653517 " //B
@@ -1287,7 +1287,7 @@ DBMaterial::initMaterial()
 
 
   //JLab composition from Tsito
-  Mptr = &createMaterial("B4CConcrete", 
+  Mptr = &createMaterial("B4CConcrete",
 		      " 1000.70c       0.008327" //H
 		      " 5010.70c       0.0070413"//B10
 		      " 5011.70c       0.028165"//B11
@@ -1303,7 +1303,7 @@ DBMaterial::initMaterial()
 		      " 26057.70c      4.4565e-06"//Fe57
 		      " 26058.70c      5.886e-07"//Fe58
 		      , "lwtr.10t", MLib);
-  
+
   Mptr->setDensity(-2.19783); //From Tsito
 
 
@@ -1316,14 +1316,14 @@ DBMaterial::initMaterial()
 
 
   //B4C rubber from Mirrotron
-  Mptr = &createMaterial("Mirrobor", 
+  Mptr = &createMaterial("Mirrobor",
 		      " 1000.70c       0.01" //H
 		      " 5000.70c       0.05797"//B
 		      " 6000.70c       0.07246"//C
 		      " 8000.70c       0.003125"//O
 		      , "lwtr.10t", MLib);
   Mptr->setDensity(-1.36); //From Tsito
-  
+
 
   //S355 steeel from Valentina
   Mptr = &createMaterial("SteelS355",
@@ -1375,7 +1375,7 @@ DBMaterial::initMaterial()
   Mptr->setDensity(-7.8); //From Valentina & bunker project
 
 
-  Mptr = &createMaterial("Lead51121", 
+  Mptr = &createMaterial("Lead51121",
 		      " 82000.70c 0.48198359" //Pb
 		      " 51000.70c 8.21288E-06 "//Sb
 		      " 33000.70c 1.33476E-05 "//As
@@ -1392,7 +1392,7 @@ DBMaterial::initMaterial()
 
 
 
-  Mptr = &createMaterial("Nimonic75", 
+  Mptr = &createMaterial("Nimonic75",
 		      "  6000.70c 0.0125  "       //C
 		      "  24000.70c 0.384615385 "  //Cr
 		      "  29000.70c 0.007874016 "  //Cu
@@ -1492,7 +1492,7 @@ DBMaterial::initMaterial()
 			 " 28064.70c 0.000762 ","fe56.12t",MLib);
   Mptr->setMXitem(6000, 70, 'c', "h", "06012");
   Mptr->setDensity(-7.87);
-  
+
   // Steel S235JR
   // Reference: Email from AB 2021-12-08, 0936_001_High-Ni-value.pdf (measured)
   //            The steel sample with the hightest Nickel value used
@@ -1604,13 +1604,53 @@ DBMaterial::initMaterial()
   Mptr->setMXitem(6000, 70, 'c', "h", "06012");
   Mptr->setDensity(-0.97);
 
-  
+  // EN 1.4435 (X2CrNiMo18-14-3) Stainless Steel
+  // Reference: https://www.makeitfrom.com/material-properties/EN-1.4435-X2CrNiMo18-14-3-Stainless-Steel
+  // MatMCNP:EN14435.inp
+  // (average weight fractions are used)
+  Mptr = &createMaterial("EN14435",
+			 " 16032.80c   0.000124 "
+			 " 16033.80c   0.000001 "
+			 " 16034.80c   0.000006 "
+			 " 06000.80c   0.000696 "
+			 " 15031.80c   0.000405 "
+			 " 07014.80c   0.001981 "
+			 " 07015.80c   0.000007 "
+			 " 14028.80c   0.009146 "
+			 " 14029.80c   0.000465 "
+			 " 14030.80c   0.000307 "
+			 " 25055.80c   0.010140 "
+			 " 42092.80c   0.002320 "
+			 " 42094.80c   0.001461 "
+			 " 42095.80c   0.002529 "
+			 " 42096.80c   0.002661 "
+			 " 42097.80c   0.001533 "
+			 " 42098.80c   0.003894 "
+			 " 42100.80c   0.001568 "
+			 " 28058.80c   0.088842 "
+			 " 28060.80c   0.034222 "
+			 " 28061.80c   0.001488 "
+			 " 28062.80c   0.004743 "
+			 " 28064.80c   0.001208 "
+			 " 24050.80c   0.008379 "
+			 " 24052.80c   0.161582 "
+			 " 24053.80c   0.018322 "
+			 " 24054.80c   0.004561 "
+			 " 26054.80c   0.037257 "
+			 " 26056.80c   0.584852 "
+			 " 26057.80c   0.013507 "
+			 " 26058.80c   0.001798 ",
+			 "si.83t",MLib);
+  Mptr->setMXitem(6000, 70, 'c', "h", "06012");
+  Mptr->setDensity(-8.0);
+
+
 
   // Gold Metal
   Mptr = &createMaterial("Gold","79197.70c 1.0",
 			 "",MLib);
   Mptr->setDensity(-17.58);
-  
+
   return;
 }
 
