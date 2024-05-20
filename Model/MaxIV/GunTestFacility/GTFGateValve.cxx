@@ -90,6 +90,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   portBLen(A.portBLen),closed(A.closed),bladeLift(A.bladeLift),
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
   bladeCutThick(A.bladeCutThick),
+  bladeScrewHousingRadius(A.bladeScrewHousingRadius),
   clampWidth(A.clampWidth),
   clampDepth(A.clampDepth),
   clampHeight(A.clampHeight),
@@ -146,6 +147,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeThick=A.bladeThick;
       bladeRadius=A.bladeRadius;
       bladeCutThick=A.bladeCutThick;
+      bladeScrewHousingRadius=A.bladeScrewHousingRadius;
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
       clampHeight=A.clampHeight;
@@ -216,6 +218,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
   bladeCutThick=Control.EvalVar<double>(keyName+"BladeCutThick");
+  bladeScrewHousingRadius=Control.EvalVar<double>(keyName+"BladeScrewHousingRadius");
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
   clampHeight=Control.EvalVar<double>(keyName+"ClampHeight");
@@ -322,11 +325,12 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(bladeThick/2.0),Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+311,buildIndex+301,Y,bladeCutThick);
 
-  if (closed)
-    ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,bladeRadius);
-  else
-    ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Z*bladeLift,
-				Y,bladeRadius);
+  const double bladeOffset = closed ? 0.0 : bladeLift;
+
+  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Z*bladeOffset,Y,bladeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+317,Origin+Z*bladeOffset,Y,bladeScrewHousingRadius);
+
+
 
   // Clamp
   ModelSupport::buildPlane(SMap,buildIndex+403,Origin-X*(clampWidth/2.0),X);
@@ -397,9 +401,12 @@ GTFGateValve::createObjects(Simulation& System)
   makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
 
   // blade
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 301 -311");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -317");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 311 -302");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 317 -307");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"311 -302 317 -307");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 
   // front plate
