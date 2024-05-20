@@ -64,6 +64,7 @@ class GTFGateValve :
   double bladeRadius;           ///< moving blade outer radius
   double bladeCutThick;         ///< Thickness of the central part cut
   double bladeScrewHousingRadius; ///< Radius of the central steel cylinder for the screw
+  double bladeNotchRadius;      ///< Central void radius
 
   double clampWidth;            ///< Clamp width
   double clampDepth;            ///< Clamp depth

@@ -91,6 +91,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
   bladeCutThick(A.bladeCutThick),
   bladeScrewHousingRadius(A.bladeScrewHousingRadius),
+  bladeNotchRadius(A.bladeNotchRadius),
   clampWidth(A.clampWidth),
   clampDepth(A.clampDepth),
   clampHeight(A.clampHeight),
@@ -148,6 +149,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeRadius=A.bladeRadius;
       bladeCutThick=A.bladeCutThick;
       bladeScrewHousingRadius=A.bladeScrewHousingRadius;
+      bladeNotchRadius=A.bladeNotchRadius;
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
       clampHeight=A.clampHeight;
@@ -219,6 +221,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
   bladeCutThick=Control.EvalVar<double>(keyName+"BladeCutThick");
   bladeScrewHousingRadius=Control.EvalVar<double>(keyName+"BladeScrewHousingRadius");
+  bladeNotchRadius=Control.EvalVar<double>(keyName+"BladeNotchRadius");
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
   clampHeight=Control.EvalVar<double>(keyName+"ClampHeight");
@@ -329,6 +332,7 @@ GTFGateValve::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Z*bladeOffset,Y,bladeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin+Z*bladeOffset,Y,bladeScrewHousingRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin+Z*bladeOffset,Y,bladeNotchRadius);
 
 
 
@@ -403,8 +407,10 @@ GTFGateValve::createObjects(Simulation& System)
   // blade
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -317");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 317 -307");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 317 -327");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 327 -307");
+  makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"311 -302 317 -307");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
