@@ -214,7 +214,7 @@ namespace setVariable
   {
     Control.addVariable("GTFLineOuterLeft", 100.0);
 
-    std::string name = "IonPump";
+    std::string name = "IonPumpA";
 
     // Ion Pump produced by Gamma Vacuum
     Control.addVariable(name+"YStep",24.1);
@@ -236,7 +236,7 @@ namespace setVariable
     Control.addVariable(name+"FlangeTubeThick", 0.2);
     Control.addVariable(name+"FlangeTubeLength", 6.9);
 
-    Control.copyVarSet("IonPump", "IonPumpB");
+    Control.copyVarSet("IonPumpA", "IonPumpB");
     Control.addVariable("IonPumpBYStep",0.0);
 
     name = "Extension";

@@ -92,7 +92,7 @@ GTFLine::GTFLine(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   buildZone(Key+"BuildZone"),
-  ionPump(std::make_shared<IonPumpGammaVacuum>("IonPump")),
+  ionPumpA(std::make_shared<IonPumpGammaVacuum>("IonPumpA")),
   extension(std::make_shared<constructSystem::VacuumPipe>("Extension")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
@@ -111,7 +111,7 @@ GTFLine::GTFLine(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(ionPump);
+  OR.addObject(ionPumpA);
   OR.addObject(extension);
   OR.addObject(pipeA);
   OR.addObject(solenoid);
@@ -189,11 +189,11 @@ GTFLine::buildObjects(Simulation& System)
 
   buildZone.addInsertCells(this->getInsertCells());
 
-  ionPump->createAll(System,*this,0);
-  outerCell=buildZone.createUnit(System,*ionPump,2);
-  ionPump->insertInCell(System,outerCell);
+  ionPumpA->createAll(System,*this,0);
+  outerCell=buildZone.createUnit(System,*ionPumpA,2);
+  ionPumpA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit(System,buildZone,*ionPump,"back",*extension);
+  constructSystem::constructUnit(System,buildZone,*ionPumpA,"back",*extension);
 
   pipeA->setFront(*extension,"back");
   pipeA->createAll(System, *extension, "back");
@@ -250,7 +250,7 @@ GTFLine::createLinks()
 {
   ELog::RegMethod RControl("GTFLine","createLinks");
 
-  setLinkCopy(0,*ionPump,1);
+  setLinkCopy(0,*ionPumpA,1);
   setLinkCopy(1,*lastComp,2);
   return;
 }

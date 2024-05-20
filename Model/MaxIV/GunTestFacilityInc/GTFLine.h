@@ -66,7 +66,7 @@ class GTFLine :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
-  std::shared_ptr<IonPumpGammaVacuum> ionPump;
+  std::shared_ptr<IonPumpGammaVacuum> ionPumpA;
   std::shared_ptr<constructSystem::VacuumPipe> extension; // drawing 202964
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<xraySystem::Solenoid> solenoid; // emittance-compensating solenoid by Radiabeam, drawing 204282
