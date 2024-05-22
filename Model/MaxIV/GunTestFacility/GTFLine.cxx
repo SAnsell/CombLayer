@@ -113,7 +113,8 @@ GTFLine::GTFLine(const std::string& Key) :
   yagScreenB(new tdcSystem::YagScreen("YagScreenB")),
   bellowC(std::make_shared<constructSystem::Bellows>("BellowC")),
   yagUnitC(new tdcSystem::YagUnit("YagUnitC")),
-  yagScreenC(new tdcSystem::YagScreen("YagScreenC"))
+  yagScreenC(new tdcSystem::YagScreen("YagScreenC")),
+  bellowD(std::make_shared<constructSystem::Bellows>("BellowD"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -141,6 +142,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(yagUnitC);
   OR.addObject(yagScreenC);
+  OR.addObject(bellowD);
 }
 
 GTFLine::~GTFLine()
@@ -291,6 +293,8 @@ GTFLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*yagUnitB,"back",*bellowC);
   constructYAG(System,buildZone,*bellowC,"back",*yagUnitC,*yagScreenC);
+
+  constructSystem::constructUnit(System,buildZone,*yagUnitC,"back",*bellowD);
 
 
   buildZone.createUnit(System);

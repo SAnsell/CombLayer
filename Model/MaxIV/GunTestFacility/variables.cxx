@@ -388,6 +388,11 @@ namespace setVariable
     YagUnitGen.generateYagUnit(Control,"YagUnitC");
     YagScreenGen.generateScreen(Control,"YagScreenC",1);
     Control.addVariable("YagScreenCYAngle",-90.0);
+
+    BellowGen.generateBellow(Control,"BellowD",120.0); // dummy
+    YagUnitGen.generateYagUnit(Control,"YagUnitD");
+    YagScreenGen.generateScreen(Control,"YagScreenD",1);
+    Control.addVariable("YagScreenDYAngle",-90.0);
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
