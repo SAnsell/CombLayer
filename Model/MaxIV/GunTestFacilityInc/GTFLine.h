@@ -87,11 +87,19 @@ class GTFLine :
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
   std::shared_ptr<tdcSystem::YagUnit> yagUnitA;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
+  std::shared_ptr<constructSystem::Bellows> bellowB;
+  std::shared_ptr<tdcSystem::YagUnit> yagUnitB;
+  std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
+  void constructYAG(Simulation& System, attachSystem::BlockZone& buildZone,
+		    const attachSystem::FixedComp& linkUnit,
+		    const std::string& sideName,
+		    tdcSystem::YagUnit& yag,
+		    tdcSystem::YagScreen& screen);
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);

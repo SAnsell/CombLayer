@@ -107,7 +107,10 @@ GTFLine::GTFLine(const std::string& Key) :
   ionPumpB(std::make_shared<IonPumpGammaVacuum>("IonPumpB")),
   pipeC(std::make_shared<constructSystem::VacuumPipe>("PipeC")),
   yagUnitA(new tdcSystem::YagUnit("YagUnitA")),
-  yagScreenA(new tdcSystem::YagScreen("YagScreenA"))
+  yagScreenA(new tdcSystem::YagScreen("YagScreenA")),
+  bellowB(std::make_shared<constructSystem::Bellows>("BellowB")),
+  yagUnitB(new tdcSystem::YagUnit("YagUnitB")),
+  yagScreenB(new tdcSystem::YagScreen("YagScreenB"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -129,6 +132,9 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(pipeC);
   OR.addObject(yagUnitA);
   OR.addObject(yagScreenA);
+  OR.addObject(bellowB);
+  OR.addObject(yagUnitB);
+  OR.addObject(yagScreenB);
 }
 
 GTFLine::~GTFLine()
@@ -182,6 +188,25 @@ GTFLine::createSurfaces()
     }
   return;
 }
+
+void GTFLine::constructYAG(Simulation& System, attachSystem::BlockZone& buildZone,
+			   const attachSystem::FixedComp& linkUnit,
+			   const std::string& sideName,
+			   tdcSystem::YagUnit& yag,
+			   tdcSystem::YagScreen& screen)
+/*!
+  Construct YAG unit and its screen
+ */
+{
+  int outerCell = constructSystem::constructUnit(System, buildZone, linkUnit, sideName, yag);
+  screen.setBeamAxis(yag, 1);
+  screen.createAll(System, yag, -3);
+  screen.insertInCell("Outer",   System, outerCell);
+  screen.insertInCell("Connect", System, yag.getCell("PlateA"));
+  screen.insertInCell("Connect", System, yag.getCell("Void"));
+  screen.insertInCell("Payload", System, yag.getCell("Void"));
+}
+
 
 void
 GTFLine::buildObjects(Simulation& System)
@@ -243,20 +268,20 @@ GTFLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*laserChamberBackPlate,"back",*pipeC);
   ionPumpB->insertInCell(System,outerCell+1);
 
-
-  outerCell = constructSystem::constructUnit(System,buildZone,*pipeC,"back",*yagUnitA);
-  yagScreenA->setBeamAxis(*yagUnitA,1);
-  yagScreenA->createAll(System,*yagUnitA,-3);
-  yagScreenA->insertInCell("Outer",System,outerCell);
-  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("PlateA"));
-  yagScreenA->insertInCell("Connect",System,yagUnitA->getCell("Void"));
-  yagScreenA->insertInCell("Payload",System,yagUnitA->getCell("Void"));
-
-
-
   // Emittance meter (movable)
 
-  // TODO: skipping two objects: ~screen chamber and coils - must be added
+  ELog::EM << "TODO: skipping two objects: ~screen chamber and coils - must be added" << ELog::endWarn;
+
+  constructYAG(System,buildZone,*pipeC,"back",*yagUnitA,*yagScreenA);
+
+  ELog::EM << "add Solenoid after yagScreenA" << ELog::endWarn;
+
+  constructSystem::constructUnit(System,buildZone,*yagUnitA,"back",*bellowB);
+
+  ELog::EM << "Make below densities to be a function of their length" << ELog::endWarn;
+  ELog::EM << "Total emittance meter length should be constant with different bellow lengths" << ELog::endWarn;
+
+  constructYAG(System,buildZone,*bellowB,"back",*yagUnitB,*yagScreenB);
 
 
 
