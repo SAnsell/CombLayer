@@ -373,7 +373,6 @@ namespace setVariable
     ELog::EM << "Use correct variables/materials for the Emittance meter objects (currently all are dummy)" << ELog::endWarn;
 
     name = "BellowB";
-    BellowGen.setCF<setVariable::CF63>();
     BellowGen.generateBellow(Control,name,40.0); // dummy
     // Control.addVariable(name+"PipeThick", 0.2);
     // Control.addVariable(name+"FlangeALength", 0.0);
@@ -385,6 +384,10 @@ namespace setVariable
     YagScreenGen.generateScreen(Control,"YagScreenB",1);
     Control.addVariable("YagScreenBYAngle",-90.0);
 
+    BellowGen.generateBellow(Control,"BellowC",80.0); // dummy
+    YagUnitGen.generateYagUnit(Control,"YagUnitC");
+    YagScreenGen.generateScreen(Control,"YagScreenC",1);
+    Control.addVariable("YagScreenCYAngle",-90.0);
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

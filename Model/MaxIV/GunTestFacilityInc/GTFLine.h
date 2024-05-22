@@ -90,6 +90,9 @@ class GTFLine :
   std::shared_ptr<constructSystem::Bellows> bellowB;
   std::shared_ptr<tdcSystem::YagUnit> yagUnitB;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
+  std::shared_ptr<constructSystem::Bellows> bellowC;
+  std::shared_ptr<tdcSystem::YagUnit> yagUnitC;
+  std::shared_ptr<tdcSystem::YagScreen> yagScreenC;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
