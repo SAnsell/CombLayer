@@ -116,7 +116,8 @@ class Line
 
   //  int intersect(std::vector<Geometry::Vec3D>&,const Line*) const;
   //  int intersect(std::vector<Geometry::Vec3D>&,const Circle*) const;
-
+  Geometry::Vec3D planeIntersect(const Plane&) const;
+  
   void print() const;
   void write(std::ostream&) const;
 

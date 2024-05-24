@@ -3,7 +3,7 @@
  
  * File:   geomInc/Quaternion.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,8 @@
 
 namespace Geometry
 {
-
+  template<typename T> class M3;
+  
 /*!
   \class Quaternion
   \version 1.0
@@ -48,16 +49,14 @@ class Quaternion
   Quaternion();
   Quaternion(const double,const double,const double,const double);
   Quaternion(const double,Geometry::Vec3D);
-  
+
   Quaternion(const Quaternion&);
   Quaternion& operator=(const Quaternion&);
-  bool operator==(const Quaternion&) const;
-  bool operator!=(const Quaternion&) const;
   ~Quaternion();
-  
-  double operator[](const size_t) const; 
-  double& operator[](const size_t); 
-  
+
+  // ----------------------------------------
+  // static
+  // ----------------------------------------
   static double calcQ0(const double);
   static double calcQ0deg(const double);
   static Quaternion calcQRot(const double,const double,const double,const double);
@@ -66,17 +65,20 @@ class Quaternion
   static Quaternion calcQRotDeg(const double,Geometry::Vec3D);
   static Quaternion calcQVRot(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			      const Geometry::Vec3D&);
-  static Quaternion calcQRotMatrix(const Geometry::Matrix<double>&);
+  static Quaternion calcQRotMatrix(const Geometry::M3<double>&);
   
   static Quaternion basisRotate
     (const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&,
      const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  // ----------------------------------------
+
   
-  Quaternion& complement();
-  Quaternion& inverse();
   
-  double modulus() const;
-  double makeUnit();
+  bool operator==(const Quaternion&) const;
+  bool operator!=(const Quaternion&) const;
+
+  double operator[](const size_t) const; 
+  double& operator[](const size_t); 
   
   Quaternion& operator+=(const Quaternion&);
   Quaternion operator+(const Quaternion&) const ;
@@ -86,6 +88,18 @@ class Quaternion
   Quaternion operator*(const Vec3D&) const;
   Quaternion& operator*=(const Quaternion&);
   Quaternion operator*(const Quaternion&) const;
+  Quaternion& operator*=(const double&);
+  Quaternion operator*(const double&) const;
+  Quaternion& operator/=(const double&);
+  Quaternion operator/(const double&) const;
+
+  
+  Quaternion& complement();
+  Quaternion& inverse();
+  
+  double modulus() const;
+  double makeUnit();
+  
 
   /// Access Q0 value
   double getQ0() const { return q0; }
@@ -95,7 +109,7 @@ class Quaternion
   double getTheta() const; 
   
   Matrix<double> qMatrix() const;
-  Matrix<double> rMatrix() const;
+  M3<double> rMatrix() const;
   Vec3D& rotate(Vec3D&) const;
   Vec3D& invRotate(Vec3D&) const;
 

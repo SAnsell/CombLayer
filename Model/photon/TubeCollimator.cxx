@@ -495,9 +495,9 @@ TubeCollimator::calcGapInside(constructSystem::gridUnit* APtr)
 	  const Geometry::Plane* PlanePtrB=
             SMap.realPtr<Geometry::Plane>(APtr->getSurf(gapB));
           const Geometry::Vec3D MidPtA=
-            SurInter::getLinePoint(CentPt,PlanePtrA->getNormal(),PlanePtrA);
+            SurInter::getLinePoint(CentPt,PlanePtrA->getNormal(),*PlanePtrA);
           const Geometry::Vec3D MidPtB=
-            SurInter::getLinePoint(CentPt,PlanePtrB->getNormal(),PlanePtrB);
+            SurInter::getLinePoint(CentPt,PlanePtrB->getNormal(),*PlanePtrB);
           const Geometry::Vec3D LineNormalA=(MidPtA-CentPt).unit()*Y;
           const Geometry::Vec3D LineNormalB=(MidPtB-CentPt).unit()*Y;
           const double lnDP(LineNormalA.dotProd(LineNormalB));
@@ -599,7 +599,7 @@ TubeCollimator::calcBoundary(constructSystem::gridUnit* APtr) const
 	  // could just calc distance and project along normal but
 	  // this is easier.
 	  const Geometry::Vec3D MidPt=
-	    SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
+	    SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),*PlanePtr);
 	  //          Geometry::Vec3D LineNormal=((MidPt-CentPt)*Y).unit();
 	  const Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
 	  

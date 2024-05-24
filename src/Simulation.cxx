@@ -818,17 +818,18 @@ Simulation::applyTransforms()
 {
 
   ELog::RegMethod RegA("Simulation","applyTransforms");
-  const ModelSupport::surfIndex::STYPE& SurMap =
-    ModelSupport::surfIndex::Instance().surMap();
-  std::map<int,Geometry::Surface*>::const_iterator sm;
-  for(sm=SurMap.begin();sm!=SurMap.end();sm++)
-    {
-      if (sm->second->applyTransform(TList)<0)
-        {
-	  ELog::EM<<"Failed on "<<sm->first<<ELog::endErr;
-	  return 1;
-	}
-    }
+  
+  // const ModelSupport::surfIndex::STYPE& SurMap =
+  //   ModelSupport::surfIndex::Instance().surMap();
+  // std::map<int,Geometry::Surface*>::const_iterator sm;
+  // for(sm=SurMap.begin();sm!=SurMap.end();sm++)
+  //   {
+  //     if (sm->second->applyTransform(TList)<0)
+  //       {
+  // 	  ELog::EM<<"Failed on "<<sm->first<<ELog::endErr;
+  // 	  return 1;
+  // 	}
+  //   }
   return 0;
 }
 
@@ -992,7 +993,7 @@ Simulation::updateSurface(const int SN,const std::string& SLine)
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   if (SurI.getSurf(SN))
     SurI.deleteSurface(SN);
-  SurI.createSurface(SN,0,SLine);
+  SurI.createSurface(SN,SLine);
   //
   OTYPE::iterator oc;
   for(oc=OList.begin();oc!=OList.end();oc++)

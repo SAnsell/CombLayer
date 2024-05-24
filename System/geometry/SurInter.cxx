@@ -118,7 +118,7 @@ getLinePoint(const Geometry::Vec3D& Origin,
     SurI.realSurf<Geometry::Plane>(std::abs(SNum));
   if (!PPtr)
     throw ColErr::InContainerError<int>(SNum,"Plane Surface");
-  return getLinePoint(Origin,LAxis,PPtr);
+  return getLinePoint(Origin,LAxis,*PPtr);
 }
 
   
@@ -192,7 +192,7 @@ getLinePoint(const Geometry::Vec3D& Origin,
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D& Origin,
              const Geometry::Vec3D& Axis,
-	     const Geometry::Plane* PPtr)
+	     const Geometry::Plane& planeObj)
   /*!
     Calculate the line though a plane
     This is a specialization of getLinePoint because
@@ -200,12 +200,12 @@ getLinePoint(const Geometry::Vec3D& Origin,
 
     \param Origin :: Origin of the line
     \param Axis :: axis direction
-    \param PPtr :: plane object
+    \param planeObj :: plane object
     \return Point on intersect
   */
 {
-  MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
-  return trackLine.getPoint(PPtr);
+  const Geometry::Line lineObj(Origin,Axis);
+  return lineObj.planeIntersect(planeObj);
 }
 
 Geometry::Vec3D
@@ -249,7 +249,7 @@ getForwardPoint(const Geometry::Vec3D& Origin,
     SurI.realSurf<Geometry::Plane>(std::abs(SNum));
   if (!PPtr)
     throw ColErr::InContainerError<int>(SNum,"Plane Surface");
-  return getLinePoint(Origin,LAxis,PPtr);
+  return getLinePoint(Origin,LAxis,*PPtr);
 }
   
 double
@@ -451,19 +451,19 @@ calcIntersect(const Geometry::Cone& Cne,
   const Geometry::Vec3D& cK=Cne.getCentre();
   const double cAlpha=Cne.getCosAngle();
 
-
   const Geometry::Vec3D& pNorm=Pln.getNormal(); 
   const Geometry::Vec3D pU=pNorm.crossNormal();
   const Geometry::Vec3D pV=pNorm*pU;
 
   // need a point on the plane :
   const Geometry::Vec3D pC=
-    SurInter::getLinePoint(cK,cD,&Pln);
+    SurInter::getLinePoint(cK,cD,Pln);
+
   ELog::EM<<"PC == "<<pC<<ELog::endDiag;
   const Geometry::Vec3D delta=pC-cK;
-  const Geometry::Matrix<double> I(3,3,1);
-  const Geometry::Matrix<double> M=
-      cD.outerProd(cD)-I*(cAlpha*cAlpha);
+  const Geometry::M3<double> I(1);
+  const Geometry::M3<double> M=
+    cD.outerProd(cD)-I*(cAlpha*cAlpha);
 
   // element of the conic matrix:
   const double c1 = pU.dotProd(M * pU);
@@ -500,7 +500,7 @@ calcIntersect(const Geometry::Cone& Cne,
       {R.get(1,0),R.get(1,1),t[1]},
       {0.0,0.0,1.0}});
 
-  const Geometry::M3<double> Hprime(H.prime());
+  const Geometry::M3<double> Hprime(H.Tprime());
   Geometry::M3<double> conicalM=Hprime*(CM*H);
   const double aRadius=
     std::sqrt(-conicalM.get(2,2)/conicalM.get(0,0));

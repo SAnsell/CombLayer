@@ -3,7 +3,7 @@
  
  * File:   geometry/General.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "M3.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
@@ -66,8 +67,8 @@ General::General() : Quadratic()
   General::setBaseEqn();
 }
 
-General::General(const int N,const int T) : 
-  Quadratic(N,T)
+General::General(const int N) : 
+  Quadratic(N)
   /*!
     Standard Constructor creates a object
     \param N :: Name

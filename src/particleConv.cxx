@@ -3,7 +3,7 @@
  
  * File:   src/particleConv.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -571,10 +571,11 @@ particleConv::wavelengthKE(const std::string& particleName,
 {
   const pName& PN = getNamePItem(particleName);
 
-  std::pair<double,double> AB;
+  double A,B;
   const size_t ansN=solveRealQuadratic
-    (wave*wave,2*wave*PN.mass,-RefCon::hc_e*RefCon::hc_e,AB);
-  return (!ansN) ? 0.0 : AB.second;
+    (wave*wave,2*wave*PN.mass,-RefCon::hc_e*RefCon::hc_e,
+     A,B);
+  return (!ansN) ? 0.0 : B;
 }
 
 double
@@ -589,11 +590,11 @@ particleConv::mcplWavelengthKE(const int mcplNum,const double wave) const
 {
   const pName& PN = getMCPLPItem(mcplNum);
 
-  std::pair<double,double> AB;
+  double A,B;
   const size_t ansN=solveRealQuadratic
-    (wave*wave,2*wave*PN.mass,-RefCon::hc_e*RefCon::hc_e,AB);
+    (wave*wave,2*wave*PN.mass,-RefCon::hc_e*RefCon::hc_e,A,B);
 
-  return (!ansN) ? 0.0 : AB.second;
+  return (!ansN) ? 0.0 : B;
 }
 
 double

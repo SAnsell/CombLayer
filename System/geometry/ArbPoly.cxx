@@ -260,7 +260,7 @@ ArbPoly::setSurface(const std::string& Pstr)
 }
 
 void
-ArbPoly::rotate(const Geometry::Matrix<double>& MA) 
+ArbPoly::rotate(const Geometry::M3<double>& MA) 
   /*!
     Rotate the plane about the origin by MA 
     \param MA direct rotation matrix (3x3)

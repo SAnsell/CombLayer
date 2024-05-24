@@ -40,6 +40,7 @@
 #include "support.h"
 #include "writeSupport.h"
 #include "Vec3D.h"
+#include "M3.h"
 #include "Surface.h"
 #include "masterWrite.h"
 #include "Quadratic.h"
@@ -59,8 +60,8 @@ Sphere::Sphere() : Quadratic(),
   Sphere::setBaseEqn();
 }
  
-Sphere::Sphere(const int N,const int T) : 
-  Quadratic(N,T),Centre(0,0,0),Radius(0.0)
+Sphere::Sphere(const int N) : 
+  Quadratic(N),Centre(0,0,0),Radius(0.0)
   /*!
     Constructor: make sphere at origin radius zero
     \param N :: Name
@@ -70,7 +71,7 @@ Sphere::Sphere(const int N,const int T) :
   Sphere::setBaseEqn();
 }
  
-Sphere::Sphere(const Sphere &A) : 
+Sphere::Sphere(const Sphere& A) : 
   Quadratic(A),Centre(A.Centre),Radius(A.Radius)
   /*!
     Default Copy constructor 
@@ -260,7 +261,7 @@ Sphere::displace(const Geometry::Vec3D& Pt)
 }
 
 void
-Sphere::rotate(const Geometry::Matrix<double>& MA) 
+Sphere::rotate(const Geometry::M3<double>& MA) 
   /*!
     Apply a Rotation matrix
     \param MA :: matrix to rotate by

@@ -406,8 +406,31 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   return 1;
 }
 
+Geometry::Vec3D
+Line::planeIntersect(const Plane& Pln) const
+  /*! 
+    For the line that intersects the plane generate 
+    add the point to the VecOut, return number of points
+    added. It does not check the points for validity. 
+    
+    \param PntOut :: Vector of points found by the line/plane intersection
+    \param Pln :: Plane for intersect
+    \return Point [throw on parallel]
+  */
+{
+  const double OdotN=Origin.dotProd(Pln.getNormal());
+  const double DdotN=Direct.dotProd(Pln.getNormal());
+  if (std::abs(DdotN)<Geometry::parallelTol)        // Plane and line parallel
+    throw ColErr::NumericalAbort
+      ("Line::PlaneIntersect:: Line parallel to plane");
+
+  const double u=(Pln.getDistance()-OdotN)/DdotN;
+  return getPoint(u);
+}
+
 size_t 
-Line::intersect(std::vector<Geometry::Vec3D>& PntOut,const ArbPoly& APoly) const
+Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
+		const ArbPoly& APoly) const
  /*!
    Calculate all the intersections in the surfaces of the 
    general polyhedron

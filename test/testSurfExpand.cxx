@@ -3,7 +3,7 @@
  
  * File:   test/testSurfExpand.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,8 +152,8 @@ testSurfExpand::testPlane()
 
   for(const TTYPE& tc : Tests)
     {
-      Geometry::Plane* PX=new Geometry::Plane(1,0);
-      Geometry::Plane* AimX=new Geometry::Plane(2,0);
+      Geometry::Plane* PX=new Geometry::Plane(1);
+      Geometry::Plane* AimX=new Geometry::Plane(2);
       PX->setSurface(std::get<0>(tc));
       AimX->setSurface(std::get<1>(tc));
       Geometry::Plane* OutX=dynamic_cast<Geometry::Plane*>
@@ -195,8 +195,8 @@ testSurfExpand::procSurface(const std::vector<TTYPE>& Tests) const
   int flag(0);
   for(const TTYPE& tc : Tests)  
     {
-      SurfTYPE* InitPtr=new SurfTYPE(1,0);
-      SurfTYPE* AimPtr=new SurfTYPE(2,0);
+      SurfTYPE* InitPtr=new SurfTYPE(1);
+      SurfTYPE* AimPtr=new SurfTYPE(2);
       InitPtr->setSurface(std::get<0>(tc));
       AimPtr->setSurface(std::get<1>(tc));
       Geometry::Surface* expSPtr=

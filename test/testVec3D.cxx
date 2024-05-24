@@ -36,8 +36,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
+#include "M3.h"
 
 #include "testFunc.h"
 #include "testVec3D.h"
@@ -170,7 +169,7 @@ testVec3D::testOuterProduct()
   D.makeUnit();
 
   // U' M U ==> (UD)^2 
-  Matrix<double> M=D.outerProd(D);
+  M3<double> M=D.outerProd(D);
 
   Geometry::Vec3D R=M*U;
   const double dp=R.dotProd(U);

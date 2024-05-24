@@ -3,7 +3,7 @@
  
  * File:   supportInc/polySupport.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,48 +22,65 @@
 #ifndef polySupport_h
 #define polySupport_h
 
-
+template<typename T>
+T 
+polyEval(const std::vector<T>&,const T);
+  
 /// Calculate the value of a quadratic at x
-double quad(const double,const double,const double,const double);
+template<typename T>
+T quad(const T,const T,const T,const T);
 
+template<typename T>
 size_t 
-solveRealQuadratic(const double&,const double&,const double&,
-		   std::pair<double,double>&);
-size_t 
-solveRealQuadratic(const std::vector<double>&,std::pair<double,double>&);
+solveRealQuadratic(const T&,const T&,const T&,T&,T&);
 
+template<typename T>
 size_t 
-solveQuadratic(const double*,std::pair<std::complex<double>,
-	       std::complex<double> >&);
+solveRealQuadratic(const std::vector<T>&,T&,T&);
 
+template<typename T>
 size_t 
-solveQuadratic(const double&,const double&,const double&,
-	       std::pair<std::complex<double>,
-	       std::complex<double> >&);
+solveQuadratic(const T*,std::pair<std::complex<T>,
+	       std::complex<T> >&);
 
+template<typename T>
 size_t 
-solveQuadratic(const double&,const double&,const double&,
-	       std::complex<double>&,std::complex<double>&);
+solveQuadratic(const T&,const T&,const T&,
+	       std::pair<std::complex<T>,
+	       std::complex<T> >&);
 
+template<typename T>
 size_t 
-solveQuadratic(const std::vector<double>&,std::pair<std::complex<double>,
-	       std::complex<double> >&);
+solveQuadratic(const T&,const T&,const T&,
+	       std::complex<T>&,std::complex<T>&);
+
+template<typename T>
+size_t 
+solveQuadratic(const std::vector<T>&,std::pair<std::complex<T>,
+	       std::complex<T> >&);
 
 /// Solve a Cubic equation
 
+template<typename T>
 size_t 
-solveCubic(const std::vector<double>&,std::complex<double>&,
-	   std::complex<double>&,std::complex<double>&);
+solveCubic(const std::vector<T>&,std::complex<T>&,
+	   std::complex<T>&,std::complex<T>&);
 
+template<typename T>
 size_t 
-solveCubic(const double*,std::complex<double>&,
-	   std::complex<double>&,std::complex<double>&);
+solveCubic(const T*,std::complex<T>&,
+	   std::complex<T>&,std::complex<T>&);
 
+template<typename T>
 size_t 
-solveCubic(const double,const double,const double,
-	   const double,std::complex<double>&,
-	   std::complex<double>&,std::complex<double>&);
+solveCubic(const T,const T,const T,
+	   const T,std::complex<T>&,
+	   std::complex<T>&,std::complex<T>&);
 
+template<typename T>
+size_t 
+solveRealCubic(const T,const T,const T,
+	       const T,T&,T&,T&);
 
 
 #endif

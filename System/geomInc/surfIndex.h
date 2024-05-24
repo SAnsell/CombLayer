@@ -77,7 +77,6 @@ class surfIndex
 
   void reset();
   void createSurface(const int,const std::string&);  
-  void createSurface(const int,const int,const std::string&);
   int checkSurface(const int,const Geometry::Vec3D&) const; 
   void deleteSurface(const int);
   void renumber(const int,const int);

@@ -3,7 +3,7 @@
  
  * File:   tally/itemConstruct.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -177,7 +177,7 @@ itemConstruct::addBeamLineItem(SimMCNP& System,
   // CALC intesect between shutter axis / shutter point and moderator plane
   std::vector<Geometry::Vec3D> OutPts;
   Geometry::Line LN(shutterPoint,-BAxis);
-  Geometry::Plane SX(0,0);
+  Geometry::Plane SX(0);
   SX.setPlane(Window[0],Window[1],Window[2]);
   if (!LN.intersect(OutPts,SX))
     ELog::EM<<"Failed to intersect moderator window"<<ELog::endErr;

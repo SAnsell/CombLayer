@@ -3,7 +3,7 @@
  
  * File:   geometry/Quadratic.cxx
 *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "M3.h"
 #include "Vec3D.h"
 #include "masterWrite.h"
 #include "Quaternion.h"
@@ -54,19 +55,19 @@
 namespace Geometry
 {
 
-Quadratic::Quadratic() : Surface(),
+Quadratic::Quadratic() :
+  Surface(),
   BaseEqn(10)
   /*!
     Constructor
   */
 {}
 
-Quadratic::Quadratic(const int N,const int T) : 
-  Surface(N,T),BaseEqn(10)
+Quadratic::Quadratic(const int N) : 
+  Surface(N),BaseEqn(10)
   /*!
     Constructor
     \param N :: Name
-    \param T :: Transform number
   */
 {}
 
@@ -252,7 +253,7 @@ Quadratic::surfaceNormal(const Geometry::Vec3D& Pt) const
 }
 
 void
-Quadratic::matrixForm(Geometry::Matrix<double>& A,
+Quadratic::matrixForm(Geometry::M3<double>& A,
 		      Geometry::Vec3D& B,double& C) const
   /*!
     Converts the baseEqn into the matrix form such that
@@ -262,7 +263,6 @@ Quadratic::matrixForm(Geometry::Matrix<double>& A,
     \param C :: Constant value
   */
 {
-  A.setMem(3,3);    // set incase memory out
   for(size_t i=0;i<3;i++)
     A[i][i]=BaseEqn[i];
 
@@ -285,15 +285,16 @@ Quadratic::distance(const Geometry::Vec3D& Pt) const
   */
 {
   // Job 1 :: Create matrix and vector representation
-  Geometry::Matrix<double> A(3,3);
+  Geometry::M3<double> A;
   Geometry::Vec3D B;
   double cc;
   matrixForm(A,B,cc);
   
   //Job 2 :: calculate the diagonal matrix
-  Geometry::Matrix<double> D(3,3);
-  Geometry::Matrix<double> R(3,3);
-  if (!A.Diagonalise(R,D))
+  Geometry::M3<double> D;
+  Geometry::M3<double> Rinvert;
+  Geometry::M3<double> R;
+  if (!A.diagonalize(Rinvert,D,R))
     {
       std::cerr<<"Problem with matrix :: distance now guessed at"<<std::endl;
       return distance(Pt);
@@ -428,14 +429,14 @@ Quadratic::displace(const Geometry::Vec3D& Pt)
 }
 
 void 
-Quadratic::rotate(const Geometry::Matrix<double>& MX) 
+Quadratic::rotate(const Geometry::M3<double>& MX) 
   /*!
     Rotate the surface by matrix MX
     \param MX :: Matrix for rotation (not inverted like MCNPX)
    */
 {
-  Geometry::Matrix<double> MA=MX;
-  MA.Invert();
+  M3<double> MA=MX;
+  MA.invert();
   const double a(MA[0][0]),b(MA[0][1]),c(MA[0][2]);
   const double d(MA[1][0]),e(MA[1][1]),f(MA[1][2]);
   const double g(MA[2][0]),h(MA[2][1]),j(MA[2][2]);
@@ -477,7 +478,7 @@ Quadratic::rotate(const Geometry::Quaternion& QA)
     \param QA :: Quaternion to rotate by 
   */
 {
-  const Geometry::Matrix<double> MA=QA.rMatrix();
+  const Geometry::M3<double> MA=QA.rMatrix();
   Quadratic::rotate(MA);
   return;
 }

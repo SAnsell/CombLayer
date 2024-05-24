@@ -32,6 +32,7 @@
 #include "Exception.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "M3.h"
 #include "Vec3D.h"
 
 std::ostream& 
@@ -284,6 +285,20 @@ Vec3D::operator*(const Matrix<T>& A) const
   return X;
 }
 
+template<typename T>
+Vec3D
+Vec3D::operator*(const M3<T>& A) const
+  /*!
+    Impliments a rotation 
+    \param A :: Matrix to rotate by
+    \returns Vec3D rotated by Matrix
+  */
+{
+  Vec3D X(*this);
+  X.rotate(A);
+  return X;
+}
+
 Vec3D
 Vec3D::operator*(const double V) const
   /*!
@@ -374,6 +389,19 @@ Vec3D::operator*=(const Matrix<T>& A)
   return *this;
 }
 
+template<typename T> 
+Vec3D&
+Vec3D::operator*=(const M3<T>& A)
+  /*!
+    Rotate this by matrix A
+    \param A :: Rotation Matrix (3x3)
+    \return this after Rot
+  */
+{
+  rotate(A);
+  return *this;
+}
+  
 Vec3D&
 Vec3D::operator*=(const double V)
   /*!
@@ -571,7 +599,7 @@ Vec3D::cutComponent(const Geometry::Vec3D& A) const
   return Out;
 }
 
-Matrix<double>
+M3<double>
 Vec3D::outerProd(const Vec3D& A) const
   /*!
     Calculate the outer produce and return matrix form
@@ -630,17 +658,24 @@ Vec3D::rotate(const Matrix<T>& A)
     \param A :: Rotation matrix (needs to be 3x3)
   */
 {
-  Matrix<T> Pv(3,1);
-  Pv[0][0]=x;
-  Pv[1][0]=y;
-  Pv[2][0]=z;
-  Matrix<T> Po=A*Pv;
-  x=Po[0][0];
-  y=Po[1][0];
-  z=Po[2][0];
+  M3<T> M(A);
+  rotate(M);
   return;
 }
 
+template<typename T>
+void
+Vec3D::rotate(const M3<T>& A)
+  /*!
+    Rotate a point by a matrix 
+    \param A :: Rotation matrix (needs to be 3x3)
+  */
+{
+  *this= A*(*this);
+  return;
+}
+
+  
 void
 Vec3D::rotate(const Vec3D& Origin,const Vec3D& Axis,const double theta)
   /*!
@@ -891,6 +926,15 @@ template Vec3D&
 Vec3D::operator*=(const Geometry::Matrix<double>&);
 template Vec3D 
 Vec3D::operator*(const Geometry::Matrix<double>&) const;
+template Vec3D& 
+Vec3D::operator*=(const Geometry::M3<double>&);
+template Vec3D 
+Vec3D::operator*(const Geometry::M3<double>&) const;
+
+template void
+Vec3D::rotate(const Geometry::M3<double>&);
+template void
+Vec3D::rotate(const Geometry::Matrix<double>&);
 
 template double& Vec3D::operator[](const int);
 template double Vec3D::operator[](const int) const;
