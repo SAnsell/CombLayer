@@ -67,7 +67,10 @@ class Cylinder : public Quadratic
   /// Effective TYPENAME 
   static std::string classType() { return "Cylinder"; }
   /// Public identifer
-  std::string className() const override { return "Cylinder"; }  
+  std::string className() const override { return "Cylinder"; }
+  /// fast index accessor
+  SurfKey classIndex() const override { return SurfKey::Cylinder; }
+
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }

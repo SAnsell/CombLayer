@@ -197,10 +197,15 @@ testSurfExpand::procSurface(const std::vector<TTYPE>& Tests) const
     {
       SurfTYPE* InitPtr=new SurfTYPE(1);
       SurfTYPE* AimPtr=new SurfTYPE(2);
+
       InitPtr->setSurface(std::get<0>(tc));
+      ELog::EM<<"ASDFSAFDS"<<ELog::endDiag;
       AimPtr->setSurface(std::get<1>(tc));
+      ELog::EM<<"S"<<*InitPtr<<ELog::endDiag;
+      ELog::EM<<"S"<<*AimPtr<<ELog::endDiag;
       Geometry::Surface* expSPtr=
 	surfaceCreateExpand(InitPtr,std::get<2>(tc));
+      ELog::EM<<"S"<<*expSPtr<<ELog::endDiag;
       SurfTYPE* OutPtr=dynamic_cast<SurfTYPE*>(expSPtr);
 
       if (!OutPtr || (*OutPtr != *AimPtr))
