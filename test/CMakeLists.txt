@@ -9,6 +9,7 @@ set (testSources
     testFunction.cxx testGenerateSurf.cxx testGeomSupport.cxx 
     testGroupRange.cxx testHeadRule.cxx testIndexCounter.cxx
     testInputParam.cxx testInsertComp.cxx testLine.cxx
+    testLineIntersect.cxx
     testLineTrack.cxx testLog.cxx testM2.cxx testMapRange.cxx
     testMapSupport.cxx testMasterRotate.cxx testMaterial.cxx
     testMathSupport.cxx testMatrix.cxx testMD5.cxx testMesh3D.cxx 

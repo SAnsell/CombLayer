@@ -106,6 +106,7 @@
 #include "testInputParam.h"
 #include "testInsertComp.h"
 #include "testLine.h"
+#include "testLineIntersect.h"
 #include "testLineTrack.h"
 #include "testLog.h"
 #include "testM2.h"
@@ -546,6 +547,7 @@ geometryTest(const int type,const int extra)
       "testFace",
       "testGeomSupport",
       "testLine",
+      "testLineIntersect",
       "testM2",
       "testMasterRotate",
       "testMesh3D",
@@ -614,7 +616,11 @@ geometryTest(const int type,const int extra)
 	  testLine A;
 	  X=A.applyTest(extra);
 	}
-      
+      if(index==testNum++)
+	{
+	  testLineIntersect A;
+	  X=A.applyTest(extra);
+	}
       if(index==testNum++)
 	{
 	  testM2 A;
