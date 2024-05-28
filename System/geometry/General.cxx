@@ -34,8 +34,6 @@
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "M3.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"

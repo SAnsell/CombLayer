@@ -58,6 +58,7 @@ class M3
   M3(const T&,const T&,const T&,
      const T&,const T&,const T&,
      const T&,const T&,const T&);
+  M3(const T&,const T&,const T&);
   M3(const T[3][3]);
   M3(const Matrix<T>&);
   //  M3(const std::vector<T>&,const std::vector<T>&,const std::vector<T>&);
@@ -107,6 +108,8 @@ class M3
   M3<T> Tprime() const;
   M3<T> inverse() const;
 
+  void rowEchelon();
+		  
   size_t getEigenValues(T&,T&,T&) const;
   bool QR(M3<T>&,M3<T>&) const;
   T determinate() const;

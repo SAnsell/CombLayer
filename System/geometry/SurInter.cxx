@@ -44,8 +44,6 @@
 #include "PolyVar.h"
 #include "Vec3D.h"
 #include "Vec2D.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "M2.h"
 #include "M3.h"
 #include "solveValues.h"

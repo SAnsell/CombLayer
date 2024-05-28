@@ -41,9 +41,9 @@ class ArbPoly : public Surface
 {
  private:
   
-  size_t nSurface;                    ///< Number of surfaces
+  size_t nSurface;                          ///< Number of surfaces
   std::vector<Vec3D> CVec;                  ///< Corner Vector
-  std::vector<std::vector<size_t> > CIndex;    ///< Corner Index
+  std::vector<std::vector<size_t> > CIndex; ///< Corner Index
   std::vector<Plane> Sides;                 ///< Sides (only created if needed)
 
   void makeSides();

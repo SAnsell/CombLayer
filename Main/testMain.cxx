@@ -110,6 +110,7 @@
 #include "testLineTrack.h"
 #include "testLog.h"
 #include "testM2.h"
+#include "testM3.h"
 #include "testMapRange.h"
 #include "testMapSupport.h"
 #include "testMasterRotate.h"
@@ -549,6 +550,7 @@ geometryTest(const int type,const int extra)
       "testLine",
       "testLineIntersect",
       "testM2",
+      "testM3",
       "testMasterRotate",
       "testMesh3D",
       "testQuaternion",
@@ -624,6 +626,11 @@ geometryTest(const int type,const int extra)
       if(index==testNum++)
 	{
 	  testM2 A;
+	  X=A.applyTest(extra);
+	}
+      if(index==testNum++)
+	{
+	  testM3 A;
 	  X=A.applyTest(extra);
 	}
       

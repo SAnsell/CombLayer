@@ -32,6 +32,7 @@
 #include "Exception.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "M2.h"
 #include "Vec3D.h"
 #include "Vec2D.h"
 
@@ -89,7 +90,7 @@ Vec2D::Vec2D(const double* xy) :
   */
 {}
 
-Vec2D::Vec2D(const Matrix<double>& A)  :
+Vec2D::Vec2D(const M2<double>& A)  :
   x(0.0),y(0.0)
   /*!
     Construct a Vec2D from a mateix
@@ -97,6 +98,7 @@ Vec2D::Vec2D(const Matrix<double>& A)  :
     \param A :: Matrix Item to be cast
   */
 {
+  /*
   std::pair<size_t,size_t> Asize=A.size();
   if (Asize.first>Asize.second) 
     {
@@ -108,6 +110,7 @@ Vec2D::Vec2D(const Matrix<double>& A)  :
       for(size_t i=0;i<2;i++)
         this->operator[](i)=(i<Asize.second) ? A[i][0] : 0.0;
     }
+  */
 }
 
 Vec2D::Vec2D(const Vec2D& A) :
@@ -504,18 +507,13 @@ Vec2D::abs() const
 }
 
 void
-Vec2D::rotate(const Matrix<double>& A)
+Vec2D::rotate(const M2<double>& A)
   /*!
     Rotate a point by a matrix 
     \param A :: Rotation matrix (needs to be 3x3)
   */
 {
-  Matrix<double> Pv(2,1);
-  Pv[0][0]=x;
-  Pv[1][0]=y;
-  Matrix<double> Po=A*Pv;
-  x=Po[0][0];
-  y=Po[1][0];
+  *this=A*(*this);
   return;
 }
 
@@ -544,12 +542,12 @@ Vec2D::rotate(const double theta)
     \param theta :: Angle in radians
   */
 {
-   const double costheta = cos(theta);
-   const double sintheta = sin(theta);
-   Vec2D Q(*this);       // output point
-   x = Q.x*costheta - Q.y*sintheta;
-   y = Q.x*sintheta + Q.y*costheta;
-   return;
+  const double costheta = std::cos(theta);
+  const double sintheta = std::sin(theta);
+  Vec2D Q(*this);       // output point
+  x = Q.x*costheta - Q.y*sintheta;
+  y = Q.x*sintheta + Q.y*costheta;
+  return;
 }
 
 Vec2D&
@@ -590,20 +588,20 @@ Vec2D::reBase(const Vec2D& A,const Vec2D& B)
      \retval 0  :: Vec2D has successfully been re-expressed.
   */
 {
-  Matrix<double> T(2,2);
+  M2<double> T;
   for(size_t i=0;i<2;i++)
     {
       T[i][0]=A[i];
       T[i][1]=B[i];
     }
-  const double det=T.Invert();
-  if (fabs(det)<1e-13)       // failed
-    return -1;
-  rotate(T);
-  return 0;
+  if (T.determinate()<1e-12)
+    {
+      T.invert(); 
+      rotate(T);
+      return 0;
+    }
+  return -1;
 }
-
-
 
 int
 Vec2D::coLinear(const Vec2D& Bv,const Vec2D& Cv) const

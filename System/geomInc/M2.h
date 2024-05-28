@@ -34,6 +34,9 @@
 namespace Geometry
 {
 
+  class Vec2D;
+  class Vec3D;
+  
 /*!
   \class M2
   \brief Numerical M2 class
@@ -52,11 +55,11 @@ class M2
 
   T AData[2][2];     ///< original data 
 
-  T U[2][2];         ///< U data
-  T Sigma[2];        ///< sigma (diagonal matrix)
+  T U[2][2];          ///< U data
+  T Sigma[2];         ///< sigma (diagonal matrix)
 
-  T V[2][2];         ///< V data
-  T R[2][2];         ///< R eigen rotation
+  T V[2][2];          ///< V data
+  T R[2][2];          ///< R eigen rotation
   T lambda[2][2];     ///< Eigen values [diagonal]
 
   void copyAll(const M2<T>&);
@@ -72,6 +75,11 @@ class M2
   M2<T>& operator=(const M2<T>&); 
   ~M2() =default;
 
+  //< Ptr accessor
+  const T* operator[](const size_t I) const { return AData[I]; }
+  //< Ptr accessor
+  T* operator[](const size_t I) { return AData[I]; }             
+  void nameAssign(T&,T&,T&,T&) const;
   
   M2<T>& operator+=(const M2<T>&);  
   M2<T> operator+(const M2<T>&) const;    

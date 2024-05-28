@@ -40,8 +40,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "M3.h"
 #include "Vec3D.h"
 #include "masterWrite.h"
@@ -383,11 +381,11 @@ Quadratic::distance(const Geometry::Vec3D& Pt) const
       if ((daI*daI)>Geometry::zeroTol && (dbI*dbI)>Geometry::zeroTol &&
 	  (dcI*dcI)>Geometry::zeroTol)
         {
-	  Geometry::Matrix<double> DI(3,3);
+	  Geometry::M3<double> DI;
 	  DI[0][0]=1.0/daI;
 	  DI[1][1]=1.0/dbI;
 	  DI[2][2]=1.0/dcI;
-	  xvec = R*(DI*(alpha-beta* val));  // care here: to avoid 9*9 +9*3 in favour of 9*3+9*3 ops.
+	  xvec = R*(DI*(alpha-beta*val));  // care here: to avoid 9*9 +9*3 in favour of 9*3+9*3 ops.
 	  const double Dist=xvec.Distance(Pt);
 	  if (Out<0 || Out>Dist)
 	    Out=Dist;

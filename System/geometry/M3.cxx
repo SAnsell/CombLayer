@@ -109,6 +109,24 @@ M3<T>::M3(const std::vector<std::vector<T>>& V)
 }
 
 template<typename T>
+M3<T>::M3(const T& a,const T& b,const T& c)
+
+  /*!
+    Constructor a diagnoal matrix
+  */
+{
+  for(size_t i=0;i<3;i++)
+    for(size_t j=i+1;j<3;j++)
+      {
+	AA[i][j]=0.0;
+	AA[j][i]=0.0;
+      }
+  AA[0][0]=a;
+  AA[1][1]=b;
+  AA[2][2]=c;
+}
+  
+template<typename T>
 M3<T>::M3(const Matrix<T>& M) 
   /*!
     Constructor with matrix [MUST be >= (3,3)]
@@ -661,6 +679,56 @@ M3<T>::getEigenValues(T& eA,T& eB,T& eC) const
 
   return solveRealCubic(c3,c2,c1,c0,eA,eB,eC);
 }
+
+template<typename T>
+void
+M3<T>::rowEchelon()
+  /*!
+    Convert the matrix to row escheon form
+   */
+{
+  const T aA=std::abs(AA[0][0]);
+  const T aB=std::abs(AA[1][0]);
+  const T aC=std::abs(AA[2][0]);
+  const size_t iMax=(aA>=aB) ?
+    ((aA>=aC) ? 0 : 2) : ((aB>=aC) ? 1 : 2);
+  if (std::abs(AA[iMax][0])<1e-30) return;
+  
+  if (iMax)
+    {
+      for(size_t i=0;i<3;i++)
+	std::swap(AA[0][i],AA[iMax][i]);
+    }
+  // row one:
+  const T& dV(AA[0][0]);
+  for(size_t i=1;i<3;i++)
+    AA[0][i]/=dV;
+  AA[0][0]=1.0;
+
+  AA[1][1]-= AA[1][0]*AA[0][1];
+  AA[1][2]-= AA[1][0]*AA[0][2];
+  AA[2][1]-= AA[2][0]*AA[0][1];
+  AA[2][2]-= AA[2][0]*AA[0][2];
+  AA[1][0]=0.0;
+  AA[2][0]=0.0;
+
+  //row 2:
+  const T bA=std::abs(AA[1][1]);
+  const T bB=std::abs(AA[2][1]);
+  if (bA<bB)
+    {
+      std::swap(AA[1][1],AA[2][1]);
+      std::swap(AA[1][2],AA[2][2]);
+    }
+  const T& dW(AA[1][1]);
+  if (std::abs(dW)<1e-30) return;
+  AA[1][2]/=dW;
+  AA[1][1]=1.0;
+  AA[2][2]-=AA[2][1]*AA[1][2];
+  AA[2][1]=0.0;
+  
+  return;
+}
   
 
 template<typename T>
@@ -695,6 +763,7 @@ M3<T>::diagonalize(M3<T>& Pinvert,
   if (N!=3)
     return 0;
 
+  DiagMatrix=M3<T>(value[0],value[1],value[2]);
   P=calcEigenVectors({value[0],value[1],value[2]});
   Pinvert=P.inverse();
   
@@ -702,7 +771,7 @@ M3<T>::diagonalize(M3<T>& Pinvert,
 }
 
 template<typename T>
-M3vec<T>
+Geometry::M3vec<T>
 M3<T>::eigenVector(const T& eValue) const
   /*!
     Assume that the matrix is of the form
@@ -711,23 +780,15 @@ M3<T>::eigenVector(const T& eValue) const
   */
 {
   // construct M-lamba(I):
-  M3<T> M(1);
+  M3<T> M(1);  // identiy matrix
   M *= eValue;
   M -= *this;
+  //  M.rowEchelon();
 
-  // find unique cross pair
-  for(size_t i=0;i<2;i++)
-    {
-      const M3vec<T> aVec(*this,i);
-      for(size_t j=i+1;j<3;j++)
-	{
-	  M3vec<T> bVec(*this,j);
-	  bVec*=aVec;
-	  const T checkNorm=bVec.makeUnit();
-	  if (checkNorm > 1e-30) return bVec;
-	}
-    }
-  return M3vec<T>(0,0,0);
+  M.rowEchelon();
+  Geometry::M3vec<T> Out(-M[0][2],-M[1][2],1.0);
+  Out.makeUnit();
+  return Out;
 }
 
 template<typename T>
