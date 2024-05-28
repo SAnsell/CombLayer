@@ -141,10 +141,16 @@ testM3::testDiagonalize()
   //	  -2,-3,-3,
   //	  -1, 1, 2 }
   //    });
- const std::vector<Geometry::M3<double>> testM3({
-     {   2, 0, 0,
+  /*  const std::vector<Geometry::M3<double>> testM3({
+      {   2, 0, 0,
 	  1, 2, -1,
 	  1, 3, -2 }
+    });
+  */
+  const std::vector<Geometry::M3<double>> testM3({
+      {   0, 0, -2,
+	  1, 2, 1,
+	  1, 0, 3 }
     });
   
   
@@ -159,14 +165,14 @@ testM3::testDiagonalize()
 	  return -1;
 	}
       Geometry::M3<double> Out=Pinvert*Diag*P;
-
-
+      //      ELog::EM<<"P == "<<P*Diag*Pinvert<<ELog::endDiag;
+      
       ELog::EM<<"M == "<<M<<ELog::endDiag;
       ELog::EM<<"PI == "<<Pinvert<<ELog::endDiag;
       ELog::EM<<"Diag == "<<Diag<<ELog::endDiag;
       ELog::EM<<"P == "<<P<<ELog::endDiag;
       ELog::EM<<"Out == "<<Out<<ELog::endDiag;
-		  
+
     }
 
   return 0;

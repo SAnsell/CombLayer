@@ -49,7 +49,7 @@ class M3
 
   void copyAll(const M3<T>&);
   M3<T> calcEigenVectors(const std::vector<T>&) const;
-  M3vec<T> eigenVector(const T&) const;
+  M3vec<T> eigenVector(const size_t,const T&) const;
 
  public:
 

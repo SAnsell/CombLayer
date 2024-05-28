@@ -112,7 +112,7 @@ template<typename T>
 M3<T>::M3(const T& a,const T& b,const T& c)
 
   /*!
-    Constructor a diagnoal matrix
+    Constructor a diagonal matrix
   */
 {
   for(size_t i=0;i<3;i++)
@@ -772,7 +772,7 @@ M3<T>::diagonalize(M3<T>& Pinvert,
 
 template<typename T>
 Geometry::M3vec<T>
-M3<T>::eigenVector(const T& eValue) const
+M3<T>::eigenVector(const size_t degen,const T& eValue) const
   /*!
     Assume that the matrix is of the form
     M | 000 (resolve with minimal form after
@@ -783,12 +783,14 @@ M3<T>::eigenVector(const T& eValue) const
   M3<T> M(1);  // identiy matrix
   M *= eValue;
   M -= *this;
-  //  M.rowEchelon();
+  //  M.rowEchelon();d
 
   M.rowEchelon();
-  Geometry::M3vec<T> Out(-M[0][2],-M[1][2],1.0);
-  Out.makeUnit();
-  return Out;
+  if (!degen)
+    return Geometry::M3vec<T>(-M[0][2],-M[1][2],1.0);
+  // if (degen==1)
+  return Geometry::M3vec<T>(-M[0][2],1.0,0.0);
+
 }
 
 template<typename T>
@@ -805,7 +807,10 @@ M3<T>::calcEigenVectors(const std::vector<T>& eigenValues) const
   M3<T> out;
   for(size_t i=0;i<3;i++)
     {
-      M3vec<T> eV=eigenVector(eigenValues[i]);
+      const size_t degen=
+	(i && std::abs(eigenValues[i]-eigenValues[i-1])<1e-5) ? 1 : 0;
+      M3vec<T> eV=eigenVector(degen,eigenValues[i]);
+      
       out.setColumn(i,eV);
     }
   return out;
