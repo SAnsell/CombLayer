@@ -49,6 +49,7 @@ class M3vec
 
  public:
   
+  M3vec();
   M3vec(const T&,const T&,const T&);
   M3vec(const M3<T>&,const size_t);
   M3vec(const size_t,const M3<T>&);
@@ -71,7 +72,8 @@ class M3vec
   M3vec<T> operator*(const M3vec<T>&) const;
 
   M3vec<T> operator/(const T&) const;     // Scale factor
- 
+
+  M3vec<T> crossNormal() const;
   T dotProd(const M3vec<T>&) const;
   T abs() const;
   T makeUnit();

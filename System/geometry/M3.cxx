@@ -452,9 +452,8 @@ M3<T>::determinate() const
     AA[1][0]*AA[2][2] - AA[1][2]*AA[2][0];
   const T detC=
     AA[1][0]*AA[2][1] - AA[1][1]*AA[2][0];
-
   // + - +
-  return AA[0][0]*detA-AA[1][1]*detB+AA[2][2]*detC;
+  return AA[0][0]*detA-AA[0][1]*detB+AA[0][2]*detC;
 }
   
 template<typename T>
@@ -501,21 +500,25 @@ M3<T>::invert()
     d=bxc/|bxc| * (1/|a| cos(theta) :: cos(theta) = a.(bxc) / |bxc||a|
  */
 {
-  M3vec<T> a(*this,0);
-  M3vec<T> b(*this,1);
-  M3vec<T> c(*this,2);
+  T a,b,c,d,e,f,g,h,j;
+  T A,B,C,D,E,F,G,H,J;
+  nameAssign(a,b,c,d,e,f,g,h,j);
 
-
-  M3vec<T> bc=b*c;
-  const T det=a.dotProd(bc); 
-  M3vec<T> ca=c*a;
-  M3vec<T> ab=a*b;
-  
-  bc.setM3(0,*this);
-  ca.setM3(1,*this);
-  ab.setM3(2,*this);
-  this->operator/(det);
-
+  // calc det
+  T det=a*(e*j-f*h)-b*(d*j-f*g)+c*(d*h-e*g);
+  if (det>1e-20)
+    {
+      A=  (e*j - f*h)/det;
+      B = (c*h - b*j)/det;
+      C = (b*f - c*e)/det;
+      D = (f*g - d*j)/det;
+      E = (a*j - c*g)/det;
+      F = (d*c - a*f)/det;
+      G = (d*h - g*e)/det;
+      H = (g*b - a*h)/det;
+      J = (a*e - d*b)/det;
+      *this=M3<T>(A,B,C,D,E,F,G,H,J);
+    }
   return *this;
 }
 
@@ -538,9 +541,9 @@ M3<T>::inverse() const
 template<typename T>
 M3<T>&
 M3<T>::transpose() 
-/*!
-  Calcuate the transpose
- */
+  /*!
+    Calcuate the transpose
+  */
 {
   std::swap(AA[0][1],AA[1][0]);
   std::swap(AA[0][2],AA[2][0]);
@@ -783,14 +786,23 @@ M3<T>::eigenVector(const size_t degen,const T& eValue) const
   M3<T> M(1);  // identiy matrix
   M *= eValue;
   M -= *this;
-  //  M.rowEchelon();d
+  M3vec<T> A(M,0);
+  M3vec<T> B(M,1);
+  M3vec<T> C(M,2);
+
+  M3vec<T> abCross=A*B;
+  if (abCross.abs()>1e-12)
+    return abCross;
+  abCross=A*C;
+  if (abCross.abs()>1e-12)
+    return abCross;
 
   M.rowEchelon();
+  M3vec AA(M,0);
   if (!degen)
-    return Geometry::M3vec<T>(-M[0][2],-M[1][2],1.0);
-  // if (degen==1)
-  return Geometry::M3vec<T>(-M[0][2],1.0,0.0);
+    return AA.crossNormal();
 
+  return AA*AA.crossNormal();
 }
 
 template<typename T>
@@ -810,7 +822,6 @@ M3<T>::calcEigenVectors(const std::vector<T>& eigenValues) const
       const size_t degen=
 	(i && std::abs(eigenValues[i]-eigenValues[i-1])<1e-5) ? 1 : 0;
       M3vec<T> eV=eigenVector(degen,eigenValues[i]);
-      
       out.setColumn(i,eV);
     }
   return out;

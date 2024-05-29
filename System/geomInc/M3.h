@@ -64,7 +64,9 @@ class M3
   //  M3(const std::vector<T>&,const std::vector<T>&,const std::vector<T>&);
   M3(const std::vector<std::vector<T>>&); 
   M3(const M3<T>&);
-  M3<T>& operator=(const M3<T>&); 
+  M3(M3<T>&&) =default;
+  M3<T>& operator=(const M3<T>&);
+  M3<T>& operator=(M3<T>&&) =default; 
   ~M3() =default;
 
   //< Ptr accessor
@@ -73,6 +75,9 @@ class M3
   T* operator[](const size_t I) { return AA[I]; }             
 
   void nameAssign(T&,T&,T&,T&,T&,T&,T&,T&,T&) const;
+  void copyAssign(const T&,const T&,const T&,
+		  const T&,const T&,const T&,
+		  const T&,const T&,const T&);
 
   T& get(const size_t,const size_t);
   const T& get(const size_t,const size_t) const;

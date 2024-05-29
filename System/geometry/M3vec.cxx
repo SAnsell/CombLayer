@@ -46,6 +46,17 @@ operator<<(std::ostream& OX,const M3vec<T>& A)
 }
   
 template<typename T>
+M3vec<T>::M3vec() :
+  x(0),y(0),z(0)
+  /*!
+    Constructor from base on row index
+    \param M :: M3 matrix
+    \param rowIndex :: row lind
+  */
+{}
+
+
+template<typename T>
 M3vec<T>::M3vec(const M3<T>& M,const size_t rowIndex) :
   x(M[rowIndex][0]),
   y(M[rowIndex][1]),
@@ -207,6 +218,19 @@ M3vec<T>::dotProd(const M3vec<T>& A) const
   */
 {
   return A.x*x+A.y*y+A.z*z;
+}
+
+template<typename T>
+M3vec<T>
+M3vec<T>::crossNormal() const
+  /*!
+    Calculate the normal to the vector without reference to another
+    \return Normal vector
+   */
+{
+  M3vec<T> N(y,z,x);
+
+  return (*this * N);
 }
 
 template<typename T>

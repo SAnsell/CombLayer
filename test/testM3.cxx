@@ -112,9 +112,9 @@ testM3::testEchelon()
   ELog::RegMethod RegA("testM3","testRowEchelon");
   // test matrix:
   const std::vector<Geometry::M3<double>> testM3({
-      {   4,-3,-3,
-	  -2,-3,-3,
-	  -1, 1, 2 }
+      {   2,0,0,
+	  1,2,1,
+	  -1, 0, 1 }
     });
   for(Geometry::M3<double> M : testM3)
     {
@@ -148,9 +148,9 @@ testM3::testDiagonalize()
     });
   */
   const std::vector<Geometry::M3<double>> testM3({
-      {   0, 0, -2,
+      {   2, 0, 0,
 	  1, 2, 1,
-	  1, 0, 3 }
+	  -1, 0, 1 }
     });
   
   
