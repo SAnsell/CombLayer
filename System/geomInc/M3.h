@@ -75,12 +75,11 @@ class M3
   T* operator[](const size_t I) { return AA[I]; }             
 
   void nameAssign(T&,T&,T&,T&,T&,T&,T&,T&,T&) const;
-  void copyAssign(const T&,const T&,const T&,
-		  const T&,const T&,const T&,
-		  const T&,const T&,const T&);
 
   T& get(const size_t,const size_t);
   const T& get(const size_t,const size_t) const;
+  M3vec<T> getRow(const size_t) const;
+  M3vec<T> getColumn(const size_t) const;
   void setRow(const size_t,const Geometry::M3vec<T>&);
   void setColumn(const size_t,const Geometry::M3vec<T>&);
   

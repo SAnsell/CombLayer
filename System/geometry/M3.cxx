@@ -439,6 +439,34 @@ M3<T>::setRow(const size_t i,const M3vec<T>& V)
 }
 
 template<typename T>
+M3vec<T>
+M3<T>::getRow(const size_t index) const
+/*!
+  Get the row vector
+ */
+{
+  if (index>2)
+    throw ColErr::IndexError<size_t>
+      (index,2,"M3::getRow index out of range (2)");
+
+  return M3vec<T>(*this,index);
+}
+
+template<typename T>
+M3vec<T>
+M3<T>::getColumn(const size_t index) const
+/*!
+  Get the column vector
+ */
+{
+  if (index>2)
+    throw ColErr::IndexError<size_t>
+      (index,2,"M3::getColumn index out of range (2)");
+
+  return M3vec<T>(index,*this);
+}
+
+template<typename T>
 T
 M3<T>::determinate() const
 /*!

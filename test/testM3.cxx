@@ -40,6 +40,7 @@
 #include "Vec3D.h"
 #include "dataSlice.h"
 #include "multiData.h"
+#include "M3vec.h"
 #include "M3.h"
 
 #include "testFunc.h"
@@ -141,18 +142,18 @@ testM3::testDiagonalize()
   //	  -2,-3,-3,
   //	  -1, 1, 2 }
   //    });
-  /*  const std::vector<Geometry::M3<double>> testM3({
-      {   2, 0, 0,
-	  1, 2, -1,
-	  1, 3, -2 }
+    const std::vector<Geometry::M3<double>> testM3({
+	{   0,0,-2,
+	  1, 2, 1,
+	  1, 0, 3 }
     });
-  */
+    /*
   const std::vector<Geometry::M3<double>> testM3({
       {   2, 0, 0,
 	  1, 2, 1,
 	  -1, 0, 1 }
     });
-  
+    */
   
   for(const Geometry::M3<double>& M : testM3)
     {
@@ -164,15 +165,26 @@ testM3::testDiagonalize()
 	  ELog::EM<<"Failed to diagonalize"<<ELog::endDiag;
 	  return -1;
 	}
-      Geometry::M3<double> Out=Pinvert*Diag*P;
-      //      ELog::EM<<"P == "<<P*Diag*Pinvert<<ELog::endDiag;
+      Geometry::M3<double> Out=P*Diag*Pinvert;
+      ELog::EM<<"Eigen == "<<Out.getColumn(0)<<ELog::endDiag;
+      ELog::EM<<"Eigen == "<<Out.getColumn(1)<<ELog::endDiag;
+      ELog::EM<<"Eigen == "<<Out.getColumn(2)<<ELog::endDiag;
       
-      ELog::EM<<"M == "<<M<<ELog::endDiag;
-      ELog::EM<<"PI == "<<Pinvert<<ELog::endDiag;
-      ELog::EM<<"Diag == "<<Diag<<ELog::endDiag;
-      ELog::EM<<"P == "<<P<<ELog::endDiag;
-      ELog::EM<<"Out == "<<Out<<ELog::endDiag;
-
+      if (Out!=M)
+	{
+	  //      ELog::EM<<"P == "<<P*Diag*Pinvert<<ELog::endDiag;
+      
+	  ELog::EM<<"M == "<<M<<ELog::endDiag;
+	  ELog::EM<<"PI == "<<Pinvert<<ELog::endDiag;
+	  ELog::EM<<"Diag == "<<Diag<<ELog::endDiag;
+	  ELog::EM<<"P == "<<P<<ELog::endDiag;
+	  ELog::EM<<"PP' == "<<P*Pinvert<<ELog::endDiag;
+	  ELog::EM<<"PP' == "<<Pinvert*P<<ELog::endDiag;
+	  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
+	  ELog::EM<<"Out == "<<P*Diag*Pinvert<<ELog::endDiag;
+	  ELog::EM<<"D == "<<Pinvert*M*P<<ELog::endDiag;
+	  return -1;
+	}
     }
 
   return 0;
