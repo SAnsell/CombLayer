@@ -50,7 +50,12 @@ namespace setVariable
 {
 
 RFGunGenerator::RFGunGenerator() :
-  length(13.3), // measured
+  length(13.3), // measured,
+  backTubeLength(5.0), // measured,
+  backTubeRadius(5.1), // same as Extension,
+  backTubeFlangeLength(2.0),
+  backTubeFlangeRadius(7.7),
+  backTubePipeThick(0.2), // same as Extension
   cavityRadius(4.25), // measured
   cavityLength(3.1), // measured
   cavityOffset(2.0), // measured (TODO: why not cavityLength*0.6?)
@@ -70,7 +75,8 @@ RFGunGenerator::RFGunGenerator() :
   insertWallThick(0.5),
   insertCut(1.8),
   mainMat("Void"),
-  wallMat("Copper") // TODO
+  wallMat("Copper"), // TODO,
+  backTubePipeMat("Aluminium") // TODO
   /*!
     Constructor and defaults
   */
@@ -94,6 +100,11 @@ RFGunGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("RFGunGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"BackTubeLength",backTubeLength);
+  Control.addVariable(keyName+"BackTubeRadius",backTubeRadius);
+  Control.addVariable(keyName+"BackTubeFlangeLength",backTubeFlangeLength);
+  Control.addVariable(keyName+"BackTubeFlangeRadius",backTubeFlangeRadius);
+  Control.addVariable(keyName+"BackTubePipeThick",backTubePipeThick);
   Control.addVariable(keyName+"CavityRadius",cavityRadius);
   Control.addVariable(keyName+"CavityLength",cavityLength);
   Control.addVariable(keyName+"CavityOffset",cavityOffset);
@@ -114,6 +125,7 @@ RFGunGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"InsertCut",insertCut);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"BackTubePipeMat",backTubePipeMat);
 
   return;
 

@@ -90,7 +90,13 @@ RFGun::RFGun(const RFGun& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),cavityRadius(A.cavityRadius),cavityLength(A.cavityLength),
+  length(A.length),
+  backTubeLength(A.backTubeLength),
+  backTubeRadius(A.backTubeRadius),
+  backTubeFlangeLength(A.backTubeFlangeLength),
+  backTubeFlangeRadius(A.backTubeFlangeRadius),
+  backTubePipeThick(A.backTubePipeThick),
+  cavityRadius(A.cavityRadius),cavityLength(A.cavityLength),
   cavityOffset(A.cavityOffset),
   irisThick(A.irisThick),
   irisRadius(A.irisRadius),
@@ -107,7 +113,8 @@ RFGun::RFGun(const RFGun& A) :
   insertDepth(A.insertDepth),
   insertWallThick(A.insertWallThick),
   insertCut(A.insertCut),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  mainMat(A.mainMat),wallMat(A.wallMat),
+  backTubePipeMat(A.backTubePipeMat)
   /*!
     Copy constructor
     \param A :: RFGun to copy
@@ -130,6 +137,11 @@ RFGun::operator=(const RFGun& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
+      backTubeLength=A.backTubeLength;
+      backTubeRadius=A.backTubeRadius;
+      backTubeFlangeLength=A.backTubeFlangeLength;
+      backTubeFlangeRadius=A.backTubeFlangeRadius;
+      backTubePipeThick=A.backTubePipeThick;
       cavityRadius=A.cavityRadius;
       cavityLength=A.cavityLength;
       irisThick=A.irisThick;
@@ -150,6 +162,7 @@ RFGun::operator=(const RFGun& A)
       insertCut=A.insertCut;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
+      backTubePipeMat=A.backTubePipeMat;
     }
   return *this;
 }
@@ -214,6 +227,11 @@ RFGun::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
+  backTubeLength=Control.EvalVar<double>(keyName+"BackTubeLength");
+  backTubeRadius=Control.EvalVar<double>(keyName+"BackTubeRadius");
+  backTubeFlangeLength=Control.EvalVar<double>(keyName+"BackTubeFlangeLength");
+  backTubeFlangeRadius=Control.EvalVar<double>(keyName+"BackTubeFlangeRadius");
+  backTubePipeThick=Control.EvalVar<double>(keyName+"BackTubePipeThick");
   cavityRadius=Control.EvalVar<double>(keyName+"CavityRadius");
   cavityLength=Control.EvalVar<double>(keyName+"CavityLength");
   cavityOffset=Control.EvalVar<double>(keyName+"CavityOffset");
@@ -235,6 +253,7 @@ RFGun::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  backTubePipeMat=ModelSupport::EvalMat<int>(Control,keyName+"BackTubePipeMat");
 
   return;
 }
@@ -252,7 +271,8 @@ RFGun::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(frontPreFlangeThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,
+			       Origin+Y*(backTubeLength-frontPreFlangeThick-frontFlangeThick),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
@@ -334,6 +354,14 @@ RFGun::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+123,Origin-X*(insertCut/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+124,Origin+X*(insertCut/2.0),X);
 
+  // back tube
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+201,buildIndex+1,Y,-frontPreFlangeThick);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*backTubeFlangeLength,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,backTubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,backTubeRadius+backTubePipeThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+227,Origin,Y,backTubeFlangeRadius);
+
+
   // ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
 
   // const auto p21 = ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(cavityOffset+frontPreFlangeThick+frontFlangeThick),Y);
@@ -367,15 +395,29 @@ RFGun::createObjects(Simulation& System)
   // HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 7 -17 ");
   // makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 -7 ");
-  makeCell("FrontFlangePre",System,cellIndex++,wallMat,0.0,HR*frontStr);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 7 -1007");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -201 -7 ");
+  makeCell("preVoid",System,cellIndex++,0,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -1 -7 ");
+  makeCell("FrontFlangePre",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 7 -1007 -207");
   makeCell("FrontFlangePreVoid",System,cellIndex++,0,0.0,HR*frontStr);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -202 227 -1007");
+  makeCell("VoidAboveFlange",System,cellIndex++,0,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -21 217 -1007");
+  makeCell("FrontFlangePreVoid",System,cellIndex++,0,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 -17 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontStr);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 17 -1007 ");
-  makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,HR*frontStr);
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -21 207 -217 ");
+  makeCell("BackTube",System,cellIndex++,backTubePipeMat,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -202 217 -227 ");
+  makeCell("BackTubeFlange",System,cellIndex++,backTubePipeMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 17 -207 ");
+  makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,HR);
 
   // insert
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 101 -102 103 -104 105 -106 -123");
