@@ -182,7 +182,7 @@ RFGun::irisSurf(const double A, const double R, const double y)
   const double C = A;
   const double G = -C*R*R;
   std::ostringstream cx;
-  cx<<"sq " << A << " " << B << " " << C << " 0 0 0 " << G << " 0 " << y << " 0";
+  cx<<"sq " << A << " " << B << " " << C << " 0 0 0 " << G << " " << Origin + Y*y;
   return cx.str();
 }
 
@@ -300,7 +300,7 @@ RFGun::createSurfaces()
 
   // Iris1 surface
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  double y = (p22->getDistance() + p31->getDistance())/2.0;
+  double y = Origin.Y() + (p22->getDistance() + p31->getDistance())/2.0;
   Geometry::General *GA = SurI.createUniqSurf<Geometry::General>(buildIndex+517);
   GA->setSurface(irisSurf(irisStretch, irisRadius, y));
   SMap.registerSurf(GA);
@@ -317,7 +317,7 @@ RFGun::createSurfaces()
   SMap.registerSurf(GA);
 
   // insert
-  y = (p31->getDistance() + p32->getDistance())/2.0;
+  y = Origin.Y() + (p31->getDistance() + p32->getDistance())/2.0;
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(y-insertLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(y+insertLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(insertWidth/2.0),X);

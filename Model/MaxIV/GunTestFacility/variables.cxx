@@ -57,6 +57,7 @@
 #include "ScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "YagScreenGenerator.h"
+#include "RFGunGenerator.h"
 
 namespace setVariable
 {
@@ -249,6 +250,9 @@ namespace setVariable
     PipeGen.setCF<setVariable::CF100>();
     PipeGen.generatePipe(Control,name,11.0);
     Control.addVariable(name+"PipeThick", 0.2);
+
+    setVariable::RFGunGenerator RFGen;
+    RFGen.generate(Control, "Gun");
 
     name = "PipeA";
     PipeGen.setCF<setVariable::CF63>(); // dummy TODO - is it a conic pipe?

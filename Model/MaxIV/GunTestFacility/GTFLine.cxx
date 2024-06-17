@@ -66,6 +66,7 @@
 #include "generalConstruct.h"
 
 #include "IonPumpGammaVacuum.h"
+#include "RFGun.h"
 #include "GeneralPipe.h"
 #include "Bellows.h"
 #include "VacuumPipe.h"
@@ -96,6 +97,7 @@ GTFLine::GTFLine(const std::string& Key) :
   buildZone(Key+"BuildZone"),
   ionPumpA(std::make_shared<IonPumpGammaVacuum>("IonPumpA")),
   extension(std::make_shared<constructSystem::VacuumPipe>("Extension")),
+  gun(std::make_shared<xraySystem::RFGun>("Gun")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
   gate(new constructSystem::GTFGateValve("Gate")),
@@ -125,6 +127,7 @@ GTFLine::GTFLine(const std::string& Key) :
 
   OR.addObject(ionPumpA);
   OR.addObject(extension);
+  OR.addObject(gun);
   OR.addObject(pipeA);
   OR.addObject(solenoid);
   OR.addObject(gate);
@@ -235,9 +238,10 @@ GTFLine::buildObjects(Simulation& System)
   ionPumpA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit(System,buildZone,*ionPumpA,"back",*extension);
+  constructSystem::constructUnit(System,buildZone,*extension,"back",*gun);
 
-  pipeA->setFront(*extension,"back");
-  pipeA->createAll(System, *extension, "back");
+  pipeA->setFront(*gun,"back");
+  pipeA->createAll(System, *gun, "back");
 
   tdcSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
   outerCell = tdcSystem::pipeTerminate(System,buildZone,pipeA);

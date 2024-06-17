@@ -31,6 +31,7 @@ namespace tdcSystem
 
 namespace xraySystem
 {
+  class RFGun;
   class Solenoid;
   class CurrentTransformer;
 }
@@ -75,6 +76,7 @@ class GTFLine :
 
   std::shared_ptr<IonPumpGammaVacuum> ionPumpA;
   std::shared_ptr<constructSystem::VacuumPipe> extension; // drawing 202964
+  std::shared_ptr<xraySystem::RFGun> gun;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<xraySystem::Solenoid> solenoid; // emittance-compensating solenoid by Radiabeam, drawing 204282
   std::shared_ptr<constructSystem::GTFGateValve> gate; // Gate Valve 48236-CE24, drawing 200564
