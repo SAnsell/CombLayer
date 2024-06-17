@@ -102,6 +102,10 @@ RFGun::RFGun(const RFGun& A) :
   frontPreFlangeRadius(A.frontPreFlangeRadius),
   frontFlangeThick(A.frontFlangeThick),
   frontFlangeRadius(A.frontFlangeRadius),
+  insertWidth(A.insertWidth),
+  insertLength(A.insertLength),
+  insertDepth(A.insertDepth),
+  insertWallThick(A.insertWallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -138,6 +142,10 @@ RFGun::operator=(const RFGun& A)
       frontPreFlangeRadius=A.frontPreFlangeRadius;
       frontFlangeThick=A.frontFlangeThick;
       frontFlangeRadius=A.frontFlangeRadius;
+      insertWidth=A.insertWidth;
+      insertLength=A.insertLength;
+      insertDepth=A.insertDepth;
+      insertWallThick=A.insertWallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -217,6 +225,10 @@ RFGun::populate(const FuncDataBase& Control)
   frontPreFlangeRadius=Control.EvalVar<double>(keyName+"FrontPreFlangeRadius");
   frontFlangeThick=Control.EvalVar<double>(keyName+"FrontFlangeThick");
   frontFlangeRadius=Control.EvalVar<double>(keyName+"FrontFlangeRadius");
+  insertWidth=Control.EvalVar<double>(keyName+"InsertWidth");
+  insertLength=Control.EvalVar<double>(keyName+"InsertLength");
+  insertDepth=Control.EvalVar<double>(keyName+"InsertDepth");
+  insertWallThick=Control.EvalVar<double>(keyName+"InsertWallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -301,6 +313,19 @@ RFGun::createSurfaces()
   GA->setSurface(irisSurf(irisStretch, irisRadius+wallThick, y+wallThick));
   SMap.registerSurf(GA);
 
+  // insert
+  y = (p31->getDistance() + p32->getDistance())/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin+Y*(y-insertLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(y+insertLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(insertWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(insertWidth/2.0),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+105,buildIndex+1057,Z,insertDepth);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+106,buildIndex+1053,Z,-insertDepth);
+
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+111,buildIndex+101,Y,-insertWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+112,buildIndex+102,Y,insertWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+113,buildIndex+103,X,-insertWallThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+114,buildIndex+104,X,insertWallThick);
 
 
   // ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
@@ -346,15 +371,31 @@ RFGun::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 17 -1007 ");
   makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,HR*frontStr);
 
+  // insert
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 101 -102 103 -104 105 -106");
+  makeCell("InsertBase",System,cellIndex++,wallMat,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -105 -1057 ");
+  makeCell("InsertLower",System,cellIndex++,0,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 106 -1053 ");
+  makeCell("InsertUpper",System,cellIndex++,0,0.0,HR);
+
+  // Insert wall
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,
+				 "111 -112 113 -114 (-101:102:-103:104) -1057 -1053 (1054:1052:1056:1058) ");
+  makeCell("InsertWall",System,cellIndex++,wallMat,0.0,HR);
+
+  // Frame
   const std::string strFrame=
     ModelSupport::getSeqIntersection(-51, -(50+static_cast<int>(nFrameFacets)),1);
   const HeadRule HRFrame=ModelSupport::getHeadRule(SMap,buildIndex+1000,strFrame);
 
-  HR = ModelSupport::getHeadRule(SMap,buildIndex,"21 27 -43");
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"21 27 -43 (-101:102:-103:104)");
   HR *= HRFrame;
   makeCell("Frame",System,cellIndex++,wallMat,0.0,HR);
 
-  HR = ModelSupport::getHeadRule(SMap,buildIndex,"21 -1007 -43");
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"21 -1007 -43 (-111:112:-113:114:1057:1053)");
   HR *= HRFrame.complement();
   makeCell("FrameOuterVoid",System,cellIndex++,0,0.0,HR);
 

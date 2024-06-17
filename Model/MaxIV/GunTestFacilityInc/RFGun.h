@@ -58,6 +58,10 @@ class RFGun :
   double frontPreFlangeRadius;  ///< Front pre flange outer radius (smaller)
   double frontFlangeThick;      ///< Front flange thickness
   double frontFlangeRadius;     ///< Front flange outer radius (bigger)
+  double insertWidth;           ///< Insert width
+  double insertLength;          ///< Insert length
+  double insertDepth;           ///< Insert depth
+  double insertWallThick;       ///< Insert wall thick
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material

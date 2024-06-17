@@ -53,6 +53,10 @@ class RFGunGenerator
   double frontPreFlangeRadius;  ///< Front pre flange outer radius (smaller)
   double frontFlangeThick;      ///< Front flange thickness
   double frontFlangeRadius;     ///< Front flange outer radius (bigger)
+  double insertWidth;           ///< Insert width
+  double insertLength;          ///< Insert length
+  double insertDepth;           ///< Insert depth
+  double insertWallThick;       ///< Insert wall thick
 
   std::string mainMat;          ///< Main material
   std::string wallMat;          ///< Wall material

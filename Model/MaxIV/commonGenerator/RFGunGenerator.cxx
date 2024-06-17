@@ -53,8 +53,8 @@ RFGunGenerator::RFGunGenerator() :
   length(13.3), // measured
   cavityRadius(4.25), // measured
   cavityLength(3.1), // measured
-  irisThick(1.9), // measured
   cavityOffset(2.0), // measured (TODO: why not cavityLength*0.6?)
+  irisThick(1.9), // measured
   irisRadius(1.5), // measured
   irisStretch(0.1),
   wallThick(1.0),
@@ -63,8 +63,13 @@ RFGunGenerator::RFGunGenerator() :
   frontPreFlangeThick(0.5),
   frontPreFlangeRadius(4.0),
   frontFlangeThick(1.9), // measured (bigger cylinder)
-  frontFlangeRadius(4.8), // measured
-  mainMat("Void"),wallMat("Copper") // TODO
+  frontFlangeRadius(4.8), // measured,
+  insertWidth(6.7),
+  insertLength(3.2),
+  insertDepth(2.0),
+  insertWallThick(0.5),
+  mainMat("Void"),
+  wallMat("Copper") // TODO
   /*!
     Constructor and defaults
   */
@@ -101,6 +106,10 @@ RFGunGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"FrontPreFlangeRadius",frontPreFlangeRadius);
   Control.addVariable(keyName+"FrontFlangeThick",frontFlangeThick);
   Control.addVariable(keyName+"FrontFlangeRadius",frontFlangeRadius);
+  Control.addVariable(keyName+"InsertWidth",insertWidth);
+  Control.addVariable(keyName+"InsertLength",insertLength);
+  Control.addVariable(keyName+"InsertDepth",insertDepth);
+  Control.addVariable(keyName+"InsertWallThick",insertWallThick);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
