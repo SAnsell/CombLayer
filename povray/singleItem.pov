@@ -1,6 +1,6 @@
 // Usage:
 // singleItem --singleItem CorrectorMag -povray a
-// povray +A povray/singleItem.pov <<< '"CorrectorMag"'
+// povray +A povray/singleItem.pov
 #version 3.7;
 #include "colors.inc"
 #include "metals.inc"
@@ -9,7 +9,7 @@
 #include "textures.inc"
 #include "shapes3.inc"
 
-#fopen STDIN "/dev/stdin" read
+#fopen STDIN "/tmp/povray.txt" read
 #read (STDIN, ITEM)
 
 // #fopen STDOUT "/dev/stdout" write
