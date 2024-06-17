@@ -62,6 +62,7 @@ class RFGun :
   double insertLength;          ///< Insert length
   double insertDepth;           ///< Insert depth
   double insertWallThick;       ///< Insert wall thick
+  double insertCut;             ///< Insert cut width
 
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material

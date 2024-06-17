@@ -68,6 +68,7 @@ RFGunGenerator::RFGunGenerator() :
   insertLength(3.2),
   insertDepth(2.0),
   insertWallThick(0.5),
+  insertCut(1.8),
   mainMat("Void"),
   wallMat("Copper") // TODO
   /*!
@@ -110,6 +111,7 @@ RFGunGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"InsertLength",insertLength);
   Control.addVariable(keyName+"InsertDepth",insertDepth);
   Control.addVariable(keyName+"InsertWallThick",insertWallThick);
+  Control.addVariable(keyName+"InsertCut",insertCut);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 

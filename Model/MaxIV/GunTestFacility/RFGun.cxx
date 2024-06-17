@@ -106,6 +106,7 @@ RFGun::RFGun(const RFGun& A) :
   insertLength(A.insertLength),
   insertDepth(A.insertDepth),
   insertWallThick(A.insertWallThick),
+  insertCut(A.insertCut),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -146,6 +147,7 @@ RFGun::operator=(const RFGun& A)
       insertLength=A.insertLength;
       insertDepth=A.insertDepth;
       insertWallThick=A.insertWallThick;
+      insertCut=A.insertCut;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -229,6 +231,7 @@ RFGun::populate(const FuncDataBase& Control)
   insertLength=Control.EvalVar<double>(keyName+"InsertLength");
   insertDepth=Control.EvalVar<double>(keyName+"InsertDepth");
   insertWallThick=Control.EvalVar<double>(keyName+"InsertWallThick");
+  insertCut=Control.EvalVar<double>(keyName+"InsertCut");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -327,6 +330,9 @@ RFGun::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+113,buildIndex+103,X,-insertWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+114,buildIndex+104,X,insertWallThick);
 
+  // insert cut
+  ModelSupport::buildPlane(SMap,buildIndex+123,Origin-X*(insertCut/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+124,Origin+X*(insertCut/2.0),X);
 
   // ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
 
@@ -372,8 +378,13 @@ RFGun::createObjects(Simulation& System)
   makeCell("FrontFlangeVoid",System,cellIndex++,0,0.0,HR*frontStr);
 
   // insert
-  HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 101 -102 103 -104 105 -106");
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 101 -102 103 -104 105 -106 -123");
   makeCell("InsertBase",System,cellIndex++,wallMat,0.0,HR);
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 101 -102 103 -104 105 -106 124");
+  makeCell("InsertBase",System,cellIndex++,wallMat,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 101 -102 123 -124 105 -106");
+  makeCell("InsertCut",System,cellIndex++,0,0.0,HR);
 
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -105 -1057 ");
   makeCell("InsertLower",System,cellIndex++,0,0.0,HR);

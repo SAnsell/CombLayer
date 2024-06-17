@@ -57,6 +57,7 @@ class RFGunGenerator
   double insertLength;          ///< Insert length
   double insertDepth;           ///< Insert depth
   double insertWallThick;       ///< Insert wall thick
+  double insertCut;             ///< Insert cut width
 
   std::string mainMat;          ///< Main material
   std::string wallMat;          ///< Wall material
