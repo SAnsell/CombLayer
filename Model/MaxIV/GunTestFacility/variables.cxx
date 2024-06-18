@@ -59,6 +59,14 @@
 #include "YagScreenGenerator.h"
 #include "RFGunGenerator.h"
 
+constexpr double xstep = 11.5;
+constexpr double xyangle = 0.0; //5.0;
+
+constexpr double length = 650; // [1] GTF room length
+constexpr double length2 = length/2.0;
+
+constexpr double ystep = 24.1+86.5;
+
 namespace setVariable
 {
   void BuildingBVariables(FuncDataBase& Control, const std::string& name)
@@ -79,15 +87,15 @@ namespace setVariable
     // [6] K_20-6_015
     // [7] K_20-2_305
 
-    constexpr double length = 650; // [1]
-    constexpr double length2 = length/2.0;
-    constexpr double width = 460.0; // [1]
+    constexpr double width = 461.0; // [1]: 460, [4]: IonPumpA: 220+242=462, beam line end: 224+236=460 -> average: 461
     constexpr double width2 = width/2.0;
-    constexpr double depth  = 132.1; // [4]
+    constexpr double depth  = 133.0; // [4]
     constexpr double backWallThick = 100.0;  // [1]
     constexpr double outerWallThick = 40.0; // [1] [2]
     constexpr double mazeWidth = 100.0;  // [1] [2]
 
+    Control.addVariable(name+"XStep",xstep);
+    Control.addVariable(name+"XYAngle",xyangle);
     Control.addVariable(name+"GunRoomLength",length);
     Control.addVariable(name+"GunRoomWidth",width);
     Control.addVariable(name+"KlystronRoomWidth",460.0); // [1]
@@ -221,7 +229,9 @@ namespace setVariable
     std::string name = "IonPumpA";
 
     // Ion Pump produced by Gamma Vacuum
-    Control.addVariable(name+"YStep",24.1);
+    Control.addVariable(name+"XStep",xstep - (length2)*sin(xyangle*M_PI/180.0));
+    Control.addVariable(name+"YStep",ystep);
+    Control.addVariable(name+"XYAngle",-xyangle);
     Control.addVariable(name+"Length",17.2);
     Control.addVariable(name+"Height",13.0);
     Control.addVariable(name+"WallThick",1.3);
