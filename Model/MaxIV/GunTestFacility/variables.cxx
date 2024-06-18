@@ -386,9 +386,10 @@ namespace setVariable
     Control.addVariable("YagScreenAYAngle",-90.0);
 
     ELog::EM << "Use correct variables/materials for the Emittance meter objects (currently all are dummy)" << ELog::endWarn;
+    ELog::EM << "Measured: bellow diameter: 15 cm, flanges are 5 mm thick" << ELog::endWarn;
 
     name = "BellowB";
-    BellowGen.generateBellow(Control,name,40.0); // dummy
+    BellowGen.generateBellow(Control,name,30.0); // [4]: 30 cm - 2.6 m
     // Control.addVariable(name+"PipeThick", 0.2);
     // Control.addVariable(name+"FlangeALength", 0.0);
     // Control.addVariable(name+"FlangeBLength", 0.0);
@@ -404,7 +405,7 @@ namespace setVariable
     YagScreenGen.generateScreen(Control,"YagScreenC",1);
     Control.addVariable("YagScreenCYAngle",-90.0);
 
-    BellowGen.generateBellow(Control,"BellowD",120.0); // dummy
+    BellowGen.generateBellow(Control,"BellowD",120.0-27); // dummy
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
     YagScreenGen.generateScreen(Control,"YagScreenD",1);
     Control.addVariable("YagScreenDYAngle",-90.0);
