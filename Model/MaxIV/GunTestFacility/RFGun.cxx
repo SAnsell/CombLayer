@@ -277,7 +277,7 @@ RFGun::createSurfaces()
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
               SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-                                      frontPreFlangeThick);
+                                      backTubeLength-frontPreFlangeThick-frontFlangeThick);
     }
 
   if (!backActive())
