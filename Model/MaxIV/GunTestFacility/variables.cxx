@@ -258,6 +258,7 @@ namespace setVariable
     PipeGen.setCF<setVariable::CF63>(); // dummy TODO - is it a conic pipe?
     PipeGen.generatePipe(Control,name,40.0);
     Control.addVariable(name+"PipeThick", 0.2);
+    Control.addVariable(name+"FlangeALength", 1.2); // measured
 
     name = "Solenoid";
     setVariable::SolenoidGenerator SolGen;
