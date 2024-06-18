@@ -40,15 +40,15 @@ class RFGunGenerator
  private:
 
   double length;                ///< Total length including void
-  double backTubeLength;        ///< Back tube length
-  double backTubeRadius;        ///< Back tube radius
-  double backTubeFlangeLength;  ///< Back tube flange length
-  double backTubeFlangeRadius;  ///< Back tube flange radius
-  double backTubePipeThick;     ///< Back tube thickness
-  double frontTubeRadius;       ///< Front tube radius
-  double frontTubeFlangeLength; ///< Front tube flange length
-  double frontTubeFlangeRadius; ///< Front tube flange radius
-  double frontTubePipeThick;    ///< Front tube thickness
+  double frontTubeLength;        ///< Front tube length
+  double frontTubeRadius;        ///< Front tube radius
+  double frontTubeFlangeLength;  ///< Front tube flange length
+  double frontTubeFlangeRadius;  ///< Front tube flange radius
+  double frontTubePipeThick;     ///< Front tube thickness
+  double backTubeRadius;       ///< Back tube radius
+  double backTubeFlangeLength; ///< Back tube flange length
+  double backTubeFlangeRadius; ///< Back tube flange radius
+  double backTubePipeThick;    ///< Back tube thickness
   double cavityRadius;          ///< CavityRadius
   double cavityLength;          ///< Cavity length
   double cavityOffset;          ///< Main cavity offset
@@ -70,8 +70,8 @@ class RFGunGenerator
 
   std::string mainMat;          ///< Main material
   std::string wallMat;          ///< Wall material
-  std::string backTubePipeMat;       ///< Back tube material
-  std::string frontTubePipeMat;  ///< Front tube material
+  std::string frontTubePipeMat; ///< Front tube material
+  std::string backTubePipeMat;  ///< Back tube material
 
  public:
 
