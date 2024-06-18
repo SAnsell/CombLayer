@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/GunTestFacility/RFGun.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2024 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,10 @@ RFGun::RFGun(const RFGun& A) :
   backTubeFlangeLength(A.backTubeFlangeLength),
   backTubeFlangeRadius(A.backTubeFlangeRadius),
   backTubePipeThick(A.backTubePipeThick),
+  frontTubeRadius(A.frontTubeRadius),
+  frontTubeFlangeLength(A.frontTubeFlangeLength),
+  frontTubeFlangeRadius(A.frontTubeFlangeRadius),
+  frontTubePipeThick(A.frontTubePipeThick),
   cavityRadius(A.cavityRadius),cavityLength(A.cavityLength),
   cavityOffset(A.cavityOffset),
   irisThick(A.irisThick),
@@ -114,7 +118,8 @@ RFGun::RFGun(const RFGun& A) :
   insertWallThick(A.insertWallThick),
   insertCut(A.insertCut),
   mainMat(A.mainMat),wallMat(A.wallMat),
-  backTubePipeMat(A.backTubePipeMat)
+  backTubePipeMat(A.backTubePipeMat),
+  frontTubePipeMat(A.frontTubePipeMat)
   /*!
     Copy constructor
     \param A :: RFGun to copy
@@ -142,6 +147,10 @@ RFGun::operator=(const RFGun& A)
       backTubeFlangeLength=A.backTubeFlangeLength;
       backTubeFlangeRadius=A.backTubeFlangeRadius;
       backTubePipeThick=A.backTubePipeThick;
+      frontTubeRadius=A.frontTubeRadius;
+      frontTubeFlangeLength=A.frontTubeFlangeLength;
+      frontTubeFlangeRadius=A.frontTubeFlangeRadius;
+      frontTubePipeThick=A.frontTubePipeThick;
       cavityRadius=A.cavityRadius;
       cavityLength=A.cavityLength;
       irisThick=A.irisThick;
@@ -163,6 +172,7 @@ RFGun::operator=(const RFGun& A)
       mainMat=A.mainMat;
       wallMat=A.wallMat;
       backTubePipeMat=A.backTubePipeMat;
+      frontTubePipeMat=A.frontTubePipeMat;
     }
   return *this;
 }
@@ -232,6 +242,10 @@ RFGun::populate(const FuncDataBase& Control)
   backTubeFlangeLength=Control.EvalVar<double>(keyName+"BackTubeFlangeLength");
   backTubeFlangeRadius=Control.EvalVar<double>(keyName+"BackTubeFlangeRadius");
   backTubePipeThick=Control.EvalVar<double>(keyName+"BackTubePipeThick");
+  frontTubeRadius=Control.EvalVar<double>(keyName+"FrontTubeRadius");
+  frontTubeFlangeLength=Control.EvalVar<double>(keyName+"FrontTubeFlangeLength");
+  frontTubeFlangeRadius=Control.EvalVar<double>(keyName+"FrontTubeFlangeRadius");
+  frontTubePipeThick=Control.EvalVar<double>(keyName+"FrontTubePipeThick");
   cavityRadius=Control.EvalVar<double>(keyName+"CavityRadius");
   cavityLength=Control.EvalVar<double>(keyName+"CavityLength");
   cavityOffset=Control.EvalVar<double>(keyName+"CavityOffset");
@@ -254,6 +268,7 @@ RFGun::populate(const FuncDataBase& Control)
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   backTubePipeMat=ModelSupport::EvalMat<int>(Control,keyName+"BackTubePipeMat");
+  frontTubePipeMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontTubePipeMat");
 
   return;
 }
@@ -361,6 +376,15 @@ RFGun::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,backTubeRadius+backTubePipeThick);
   ModelSupport::buildCylinder(SMap,buildIndex+227,Origin,Y,backTubeFlangeRadius);
 
+  // front tube
+  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,frontTubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,Y,frontTubeRadius+frontTubePipeThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin,Y,frontTubeFlangeRadius);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+301,
+              SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				  -frontTubeFlangeLength);
+
+
 
   // ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
 
@@ -452,7 +476,9 @@ RFGun::createObjects(Simulation& System)
   HR *= HRFrame.complement();
   makeCell("FrameOuterVoid",System,cellIndex++,0,0.0,HR);
 
-  HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 -1007 43");
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"43 -301  27 -1007");
+  makeCell("FrameBackVoid",System,cellIndex++,0,0.0,HR);
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"301 327 -1007");
   makeCell("FrameBackVoid",System,cellIndex++,0,0.0,HR*backStr);
 
 
@@ -480,8 +506,17 @@ RFGun::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"53 37 -47");
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"42 -53 -27 537 : 53 47 -27");
-  makeCell("BackFlangeOuterVoid",System,cellIndex++,0,0.0,HR*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"42 -301 -27 537 317");
+  makeCell("BackFlangeOuterVoidOutsidePipe",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 317 -327");
+  makeCell("BackFlangeOuterVoidOutsidePipe",System,cellIndex++,frontTubePipeMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -53 -307 537 : 53 47 -307 ");
+  makeCell("BackFlangeOuterVoidInsidePipe",System,cellIndex++,0,0.0,HR*backStr);
+
+  // front tube
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-53 537 307 -317 : 53 307 -317");
+  makeCell("FrontTube",System,cellIndex++,backTubePipeMat,0.0,HR*backStr);
 
   // HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 27 -17");
   // makeCell("FrontFlange",System,cellIndex++,0,0.0,HR*frontStr);

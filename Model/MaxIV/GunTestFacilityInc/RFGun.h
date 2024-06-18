@@ -50,6 +50,10 @@ class RFGun :
   double backTubeFlangeLength;  ///< Back tube flange length
   double backTubeFlangeRadius;  ///< Back tube flange radius
   double backTubePipeThick;     ///< Back tube thickness
+  double frontTubeRadius;       ///< Front tube radius
+  double frontTubeFlangeLength; ///< Front tube flange length
+  double frontTubeFlangeRadius; ///< Front tube flange radius
+  double frontTubePipeThick;    ///< Front tube thickness
   double cavityRadius;          ///< Cavity inner radius
   double cavityLength;          ///< Cavity length
   double cavityOffset;          ///< Main cavity offset
@@ -72,6 +76,7 @@ class RFGun :
   int mainMat;                  ///< Main material
   int wallMat;                  ///< Wall material
   int backTubePipeMat;          ///< Back tube material
+  int frontTubePipeMat;          ///< Front tube material
 
   std::string irisSurf(const double, const double, const double);
   double getFrameRadius() const;
