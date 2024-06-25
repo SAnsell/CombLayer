@@ -74,7 +74,7 @@ namespace xraySystem
 
 RFGun::RFGun(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,7),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -433,7 +433,7 @@ RFGun::createObjects(Simulation& System)
   makeCell("FrontFlangePreVoid",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 -17 ");
-  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR);
+  makeCell("Cathode",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -21 207 -217 ");
   makeCell("BackTube",System,cellIndex++,frontTubePipeMat,0.0,HR*frontStr);
@@ -565,6 +565,9 @@ RFGun::createLinks()
 
   FixedComp::setConnect(5,Origin+Z*(cavityLength/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+
+  FixedComp::setConnect(6,Origin+Y*(frontTubeLength-frontPreFlangeThick),Y);
+  FixedComp::setNamedLinkSurf(6,"Cathode", SMap.realSurf(buildIndex+21));
 
   return;
 }
