@@ -1,44 +1,29 @@
+#!/usr/bin/env bash
 
-
+exec >/dev/null
 
 nValid=1000
+opts="--validAll --validCheck $nValid"
+# parallel options
+popts="-u --bar --halt now,fail=1"
 
-#./maxiv --defaultConfig Single SOFTIMAX AA 
-#./maxiv --defaultConfig Single SOFTIMAX --validRandom 190  --validCheck $nValid AA || exit
-# exit
-#segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
-segments=All
-./singleItem --singleItem UTubePipe --validAll --validCheck $nValid AA 
-#exit
+parallel $popts ::: \
+	 "./maxiv --noLengthCheck --defaultConfig Linac All $opts AA" \
+	 "./ess --bunkerPillars ABunker $opts AA" \
+	 "./ess --topModType Butterfly $opts AA" \
+	 "./ess --topModType Pancake   $opts AA" || exit
 
-
-# ./ess --defaultConfig Single VESPA --validAll --validCheck $nValid AA  || exit
-# ./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
-
-## SOFTIMAX removed because making the new M1 mirror
-parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
+parallel $popts "./maxiv --defaultConfig Single {} $opts AA " ::: \
    SOFTIMAX BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
 
-## SOFTIMAX 
+parallel $popts "./{} $opts AA" ::: t1Real reactor saxsSim || exit
 
-
-./maxiv --noLengthCheck --defaultConfig Linac ${segments} --validAll --validCheck $nValid AA || exit 
-
-
-./t1Real -validAll --validCheck ${nValid} AA || exit
-./reactor -validAll --validCheck ${nValid} AA || exit
-## ./saxs -validAll --validCheck ${nValid} AA || exit
-
-parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nValid AA" ::: \
-     Butterfly Pancake 
-./ess --bunkerPillars ABunker --validAll --validCheck $nValid AA  || exit
-
-parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
- ESTIA CSPEC  ODIN MAGIC BIFROST LOKI NMX  NNBAR  DREAM  BEER   \
- FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR    || exit
+parallel --bar $popts "./ess --defaultConfig Single {} $opts AA" ::: \
+ VESPA ESTIA CSPEC  ODIN MAGIC BIFROST LOKI NMX  NNBAR  DREAM  BEER   \
+ FREIA SKADI MIRACLES TESTBEAM TREX VOR    || exit
 # HEIMDAL :: Not currently correct -- update underway
 
-parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck $nValid AA" ::: \
+parallel $popts "./singleItem --singleItem {} $opts AA" ::: \
  BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
  BremBlock BremTube  ButtonBPM CRLTube  CeramicGap CleaningMagnet  \
  CollTube ConnectorTube CooledScreen CooledUnit CornerPipe \
@@ -52,10 +37,10 @@ parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck
  PortTube PrismaChamber Quadrupole  \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
  TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac  || exit
+ UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac || exit
 
 exit
 
 ## Need to fix the cooling pads on the reflector
-./fullBuild -validAll --validCheck ${nValid} AA || exit
+./fullBuild $opts AA || exit
 exit
