@@ -3,7 +3,7 @@
 
  * File:   constructVar/PipeGenerator.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,8 @@ PipeGenerator::setPipe(const double R,const double T)
 {
   pipe.type=0;
   pipe.radius=R;
-  pipe.thick=T;
+  if (T>0.0)
+    pipe.thick=T;
   return;
 }
 
@@ -90,7 +91,8 @@ PipeGenerator::setRectPipe(const double W,const double H,
   pipe.type=1;
   pipe.width=W;
   pipe.height=H;
-  pipe.thick=T;
+  if (T>0.0)
+    pipe.thick=T;
   return;
 }
 

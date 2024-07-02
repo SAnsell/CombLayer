@@ -3,7 +3,7 @@
  
  * File:   photon/makePhoton3.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,8 +72,6 @@ makePhoton3::makePhoton3() :
   leftTubes(new photonSystem::He3Tubes("LeftTubes")),
   rightTubes(new photonSystem::He3Tubes("RightTubes")),
   leftColl(new photonSystem::TubeCollimator("LeftColl"))
-  
-  
   /*!
     Constructor
   */

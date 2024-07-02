@@ -3,7 +3,7 @@
  
  * File:   R3Common/MagnetU1.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -358,6 +358,10 @@ MagnetU1::createLinks()
 void
 MagnetU1::insertDipolePipe(Simulation& System,
 			   const constructSystem::CornerPipe& dipolePipe)
+  /*!
+    Insert the dipole pipe through all the objects in the magnet block
+    \param dipolePipe :: Pipe to insert
+  */
 {
   ELog::RegMethod RegA("MagnetU1","insertDipolePipe");
 
@@ -372,7 +376,7 @@ MagnetU1::insertDipolePipe(Simulation& System,
   Pts.push_back(dipolePipe.getLinkPt("cornerB"));
   Pts.push_back(dipolePipe.getLinkPt("cornerC"));
   Pts.push_back(dipolePipe.getLinkPt("cornerD"));
-
+  
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -397,10 +401,9 @@ MagnetU1::insertDipolePipe(Simulation& System,
       int flag(0);
       do
 	{
-	  flag=OPtr->hasIntercept(Pts[index],Y);
+	  flag=OPtr->hasIntercept(Pts[index],Axis);
 	  index++;
 	} while(index<4 && !flag);
-      
       if (flag)
 	OPtr->addIntersection(pipeHR);
     }

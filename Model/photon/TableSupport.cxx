@@ -3,7 +3,7 @@
  
  * File:   photon/TableSupport.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -55,7 +53,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -66,7 +64,8 @@ namespace photonSystem
 {
       
 TableSupport::TableSupport(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor
@@ -90,28 +89,12 @@ TableSupport::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TableSupport","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  return;
-}
-
-void
-TableSupport::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Link point surface to use as origin/basis.
-  */
-{
-  ELog::RegMethod RegA("TableSupport","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -145,13 +128,12 @@ TableSupport::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TableSupport","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-  addCell("TableSupport",cellIndex-1);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("TableSupport",System,cellIndex++,mat,0.0,HR);
 
-  addOuterSurf(Out);
+  addOuterSurf(HR);
 
   return; 
 }

@@ -3,7 +3,7 @@
  
  * File:   test/testObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "SimMCNP.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
@@ -135,25 +136,32 @@ testObjectTrackAct::createObjects()
     Create Object for test
   */
 {
-  std::string Out;
+  HeadRule HR;
   int cellIndex(2);
   const int surIndex(0);
-  Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
+  HR=HeadRule(100);
+  ASim.addCell(cellIndex++,0,0.0,HR);      // Outside void Void
 
-  Out=ModelSupport::getComposite(surIndex,"21 -22 23 -24 25 -26"
-				 " (-11:12:-13:14:-15:16) ");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
+  // Inner box
+  HR=ModelSupport::getHeadRule(surIndex,"11 -12 13 -14 15 -16");
+  ASim.addCell(cellIndex++,3,0.0,HR);
+  
 
-  Out=ModelSupport::getComposite(surIndex,"31 -32 13 -14 15 -16");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,8,0.0,Out));      // Gd box 
+  // Container box:
+  HR=ModelSupport::getHeadRule(surIndex,"21 -22 23 -24 25 -26"
+                                          " (-11:12:-13:14:-15:16)");
+  ASim.addCell(cellIndex++,5,0.0,HR);      // Al container
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-21:22:-23:24:-25:26)"
+  HR=ModelSupport::getHeadRule(surIndex,"-100 (-21:22:-23:24:-25:26)");
+  ASim.addCell(cellIndex++,0,0.0,HR);      // Outside void Void
+
+  HR=ModelSupport::getHeadRule(surIndex,"31 -32 13 -14 15 -16");
+  ASim.addCell(cellIndex++,8,0.0,HR);      // Gd box 
+
+  HR=ModelSupport::getHeadRule(surIndex,"-100 (-21:22:-23:24:-25:26)"
 				 " #4");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Void
+  ASim.addCell(cellIndex++,0,0.0,HR);      // Void
   
   ASim.removeComplements();
 

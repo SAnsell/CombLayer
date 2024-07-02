@@ -3,7 +3,7 @@
 
  * File:   softimax/M1BackPlate.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -272,8 +272,6 @@ M1BackPlate::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 2006 -26 104 ");
   makeCell("HeatVoid",System,cellIndex++,voidMat,0.0,HR*nearHR*mirrorCompHR);
-  ELog::EM<<"Cells == "<<keyName<<" "<<cellIndex-1<<" "
-	  <<nearCompHR<<" "<<baseHR<<ELog::endDiag;
 
   if (isActive("TubeRadius"))
     {

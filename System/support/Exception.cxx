@@ -3,7 +3,7 @@
  
  * File:   support/Exception.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1540,6 +1540,7 @@ template class ColErr::IndexError<long int>;
 template class ColErr::IndexError<size_t>;
 template class ColErr::SizeError<size_t>;
 template class ColErr::SizeError<double>;
+template class ColErr::SizeError<long double>;
 template class ColErr::InContainerError<Geometry::Vec3D>;
 template class ColErr::InContainerError<std::string>;
 template class ColErr::InContainerError<int>;

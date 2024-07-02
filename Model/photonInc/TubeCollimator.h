@@ -3,7 +3,7 @@
  
  * File:   photonInc/TubeCollimator.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,8 @@ namespace photonSystem
 */
 
 class TubeCollimator :
-    public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+    public attachSystem::FixedRotate,
+    public attachSystem::ContainedComp
 {
  private:
 

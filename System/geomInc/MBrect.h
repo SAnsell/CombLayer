@@ -83,7 +83,8 @@ class MBrect : public Surface
   int side(const Geometry::Vec3D&) const override;
   int onSurface(const Geometry::Vec3D&) const override;
 
-  Triple<Geometry::Vec3D> calcMainPlane() const;
+  std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+  calcMainPlane() const;
   
   // stuff for finding intersections etc.
   double distance(const Geometry::Vec3D&) const override;     

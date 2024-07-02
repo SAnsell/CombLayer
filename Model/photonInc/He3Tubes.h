@@ -3,7 +3,7 @@
  
  * File:   photonInc/He3Tubes.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,12 +43,12 @@ namespace photonSystem
   Cylindrical with semi-spherical front/back Doors
 */
 
-class He3Tubes : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class He3Tubes : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
-
 
   size_t nTubes;               ///< Number of tubes
   double length;               ///< length of object
@@ -63,9 +63,6 @@ class He3Tubes : public attachSystem::ContainedComp,
 
   
   void populate(const FuncDataBase&) override;
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int) override;
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,7 +75,8 @@ class He3Tubes : public attachSystem::ContainedComp,
   He3Tubes& operator=(const He3Tubes&);
   ~He3Tubes() override;
   virtual He3Tubes* clone() const;
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;
 };

@@ -3,7 +3,7 @@
 
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "Line.h"
+#include "interPoint.h"
 #include "LineIntersectVisit.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -63,7 +64,6 @@
 #include "DBMaterial.h"
 #include "Importance.h"
 #include "Object.h"
-
 
 namespace MonteCarlo
 {
@@ -461,8 +461,6 @@ Object::setObject(std::string Ln)
 
 
   // note that this invalidates the read density:
-
-
 
   setMaterial(matN);
   Tmp=lineTemp;
@@ -1124,8 +1122,8 @@ Object::substituteSurf(const int SurfN,
 }
 
 int
-Object::hasIntercept(const Geometry::Vec3D& IP,
-		     const Geometry::Vec3D& UV) const
+Object::hasForwardIntercept(const Geometry::Vec3D& IP,
+			    const Geometry::Vec3D& UV) const
   /*!
     Given a line IP + lambda(UV) does it intercept
     this object: (used for virtual objects)
@@ -1135,25 +1133,44 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
     \return True(1) / Fail(0)
   */
 {
-  ELog::RegMethod RegA("Object","hadIntercept");
+  ELog::RegMethod RegA("Object","hadForwardIntercept");
 
   MonteCarlo::LineIntersectVisit LI(IP,UV);
 
-  for(const Geometry::Surface* SPtr : surfSet)
-    SPtr->acceptVisitor(LI);
+  const std::vector<Geometry::interPoint>& IPts=
+    LI.getIntercept(HRule);
+  // sorted -ve to +ve ... only need one
+  // +ve point to have intercept
+  if (!IPts.empty() &&
+      IPts.back().D>0.0)
+    return 1;
 
-  const std::vector<double>& dPts(LI.getDistance());
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      if (dPts[i]>0.0)  // only interested in forward going points
-	return 1;
-    }
-  // Definately missed
   return 0;
 }
 
+int
+Object::hasIntercept(const Geometry::Vec3D& IP,
+		     const Geometry::Vec3D& UV) const
+  /*!
+    Given a line IP + lambda(UV) does it intercept
+    this object: (used for virtual objects)
 
-std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+    \param IP :: Initial point
+    \param UV :: direction vector
+    \return True(1) / Fail(0)
+  */
+{
+  ELog::RegMethod RegA("Object","hasIntercept");
+  MonteCarlo::LineIntersectVisit LI(IP,UV);
+
+  const std::vector<Geometry::interPoint>& IPts=
+    LI.getIntercept(HRule);
+
+  return (IPts.empty()) ? 0 : 1;
+}
+
+
+Geometry::interPoint
 Object::trackSurfIntersect(const Geometry::Vec3D& Org,
 			   const Geometry::Vec3D& unitAxis) const
   /*!
@@ -1177,7 +1194,8 @@ Object::trackSurf(const Geometry::Vec3D& Org,
     \return Signed surf number
   */
 {
-  return HRule.trackSurf(Org,unitAxis);
+  return 0; //HRule.trackSurf(Org,unitAxis);
+
 }
 
 Geometry::Vec3D
@@ -1237,77 +1255,51 @@ Object::calcInOut(const int pAB,const int N) const
 }
 
 int
-Object::trackCell(const MonteCarlo::particle& N,double& D,
+Object::trackCell(const Geometry::Vec3D& Org,
+		  const Geometry::Vec3D& uVec,
+		  double& D,
 		  const Geometry::Surface*& surfPtr,
 		  const int startSurf) const
   /*!
     Track to a particle into/out of a cell.
-    \param N :: Particle
+    \param Org :: particle start
+    \param uVec :: particle axis
     \param D :: Distance traveled to the cell [get added too]
     \param surfPtr :: Surface at exit [output]
     \param startSurf :: Start surface [to be ignored]
-    \return surface number of intercept
+    \return surface number of intercept (as seen by object if leaving)
    */
 {
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
 
+  //  HRule.calcSurfIntersection(Org,uVec,IPts);
+  Geometry::interPoint ipt=
+    HRule.calcFirstIntersection(Org,uVec);
 
-  MonteCarlo::LineIntersectVisit LI(N);
-  for(const Geometry::Surface* isptr : surfSet)
-    isptr->acceptVisitor(LI);
-
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex=
-    LI.getSurfPointers();
-
-  const int absSN(std::abs(startSurf));
-  const int signSN(startSurf>0 ? 1 : -1);   // pAB/mAB is 1 / 0
-  D=1e38;
-  surfPtr=0;
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  int bestPairValid(0);
-
-  for(size_t i=0;i<dPts.size();i++)
+  if (ipt.SNum!=startSurf)
     {
-      // Is point possible closer
+      D=ipt.D;
+      return ipt.SNum;
+    }
+  if (!ipt.SNum)
+    return 0;
 
-      if ( dPts[i]>Geometry::zeroTol && dPts[i]<D+Geometry::zeroTol*10.0)
+  std::vector<Geometry::interPoint> IPts;
+  HRule.calcSurfIntersection(Org,uVec,IPts);
+
+  // Remove the stuf about surNameSet etc...
+  for(const Geometry::interPoint& ipt : IPts)
+    {
+      if (ipt.D>Geometry::zeroTol &&
+	  ipt.SNum!=startSurf)
 	{
-	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-	  const int pAB=HRule.isValid(IPts[i],NS);
-	  const int mAB=HRule.isValid(IPts[i],-NS);
-	  if (pAB!=mAB)           // out going positive surface
-	    {
-	      const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
-	      if (NS!=absSN || (normD!=signSN))  // discard current surface
-		{
-		  bestPairValid=normD;
-		  D=dPts[i];
-		  surfPtr=surfIndex[i];
-		}
-	    }
+	  surfPtr=ipt.SPtr;
+	  D=ipt.D;
+	  return ipt.SNum;
 	}
     }
-  if (!surfPtr) return 0;
-  if (D<Geometry::zeroTol)
-    D=Geometry::zeroTol;
-
-  const int NSsurf=surfPtr->getName();
-  const bool pSurfFound(surNameSet.find(NSsurf)!=surNameSet.end());
-  const bool mSurfFound(surNameSet.find(-NSsurf)!=surNameSet.end());
-
-  int retNum;
-  if (pSurfFound && mSurfFound)
-    retNum=bestPairValid*NSsurf;
-  else
-    retNum=(pSurfFound) ? -NSsurf : NSsurf;
-
-  return retNum;
+  return 0;
 }
-
-
 
 void
 Object::makeComplement()

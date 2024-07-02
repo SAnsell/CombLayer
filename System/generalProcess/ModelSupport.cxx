@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ModelSupport.cxx
+ * File:   generalProcess/ModelSupport.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@
 
 #include "support.h"
 #include "surfRegister.h"
+#include "Vec3D.h"
 #include "HeadRule.h"
 #include "ModelSupport.h"
 

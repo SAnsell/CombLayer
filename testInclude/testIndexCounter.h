@@ -39,6 +39,7 @@ private:
 
   //Tests 
   int testAddition();
+  int testSimple();
  
 public:
 

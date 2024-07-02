@@ -1017,18 +1017,18 @@ multiData<T>::combine(const size_t axisA,
 
       std::vector<size_t> newIndex;
 
-      size_t primeA;
-      size_t primeB;
+      // size_t primeA;
+      // size_t primeB;
       for(size_t i=0;i<index.size();i++)
 	{
 	  if (i==axisA)
 	    {
-	      primeA=newIndex.size();
+	      //	      primeA=newIndex.size();
 	      newIndex.push_back(index[i]*index[axisB]);
 	    }
 	  else if (i!=axisB)
 	    {
-	      primeB=newIndex.size();
+	      //	      primeB=newIndex.size();
 	      newIndex.push_back(index[i]);
 	    }
 	}

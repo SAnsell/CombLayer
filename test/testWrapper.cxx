@@ -3,7 +3,7 @@
  
  * File:   test/testWrapper.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include "stringWrite.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "Vec3D.h"
 #include "HeadRule.h"
 #include "Surface.h"
 #include "surfIndex.h"

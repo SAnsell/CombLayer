@@ -3,7 +3,7 @@
  
  * File:   visit/FEM.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "dataSlice.h"
 #include "multiData.h"
@@ -235,8 +236,8 @@ FEM::populateLine(const Simulation& System)
   const size_t IA = (IMax) ? 0: 1;
   const size_t IB = (IMax!=2) ? 2 : 1;
   
-  const long int nA = static_cast<long int>(nPts[IA]);
-  const long int nB = static_cast<long int>(nPts[IB]);
+  const size_t nA = static_cast<size_t>(nPts[IA]);
+  const size_t nB = static_cast<size_t>(nPts[IB]);
     
   Geometry::Vec3D aVec;  
 
@@ -256,8 +257,8 @@ FEM::populateLine(const Simulation& System)
     (IMax==1) ? (YStep*XStep).unit()*XYZ[IMax] :
     (XStep*YStep).unit()*XYZ[IMax];
 
-  for(long int i=0;i<nA;i++)
-    for(long int j=0;j<nB;j++)
+  for(size_t i=0;i<nA;i++)
+    for(size_t j=0;j<nB;j++)
       { 
 	std::vector<double> distVec;
 	std::vector<MonteCarlo::Object*> cellVec;
@@ -268,20 +269,22 @@ FEM::populateLine(const Simulation& System)
 
 	ModelSupport::LineTrack OTrack(aVec,aVec+longStep);
 	OTrack.calculate(System);
-	OTrack.createCellPath(cellVec,distVec);
 
 	double T=0.0;
-	long int index(0);
-	for(size_t ii=0;ii<cellVec.size();ii++)
+	size_t index(0);
+	for(const ModelSupport::LineUnit& lu : OTrack.getTrackPts())
 	  {
-	    T+=distVec[ii];
-	    const size_t mid=FEM::procPoint(T,stepXYZ[IMax]);
-	    const int mValue=cellVec[ii]->getMatID();
-
-	    for(size_t cnt=0;cnt<mid;cnt++)
-	      getMeshUnit(IMax,index++,i,j)=mValue;
+	    T+=lu.segmentLength;
+	    // number of step through fem object
+	    if (lu.objPtr)
+	      {
+		const size_t mid=FEM::procPoint(T,stepXYZ[IMax]);
+		const int mValue=lu.objPtr->getMatID();
+		for(size_t cnt=0;cnt<mid;cnt++)
+		  getMeshUnit(IMax,index++,i,j)=mValue;
+	      }
 	  }
-      }  
+      }
   return;
 }
 
@@ -414,7 +417,7 @@ FEM::writeFEM(const std::string& FName) const
 
 	  OX<<i<<" "<<j<<" "<<k<<" "
 	    <<Pt<<"     "
-	    <<matMesh.get()[i][j][k]<<" "<<Rho[i][j][k]
+	    <<MAT[i][j][k]<<" "<<Rho[i][j][k]
 	    <<" "<<KGet[i][j][k]<<std::endl;
       }
   OX.close();

@@ -3,7 +3,7 @@
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "surfRegister.h"
 #include "Quadratic.h"
@@ -459,6 +460,7 @@ Cannelloni::createCentres(const Geometry::Plane* PX)
 		// Note tube *2 because separation is diameter
 		const Geometry::Vec3D C=Origin+HexHA*(i*2.0*tubeRadius)+
 		  HexHB*(j*2.0*tubeRadius);
+		
 		MonteCarlo::LineIntersectVisit LI(C,Y);
 		const Geometry::Vec3D TPoint = LI.getPoint(PX)+
 		  Y*(Geometry::zeroTol*10.0);

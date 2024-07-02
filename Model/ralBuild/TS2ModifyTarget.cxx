@@ -3,7 +3,7 @@
  
  * File:   ralBuild/TS2ModifyTarget.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,13 +38,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Surface.h"
 #include "surfRegister.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
+#include "interPoint.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -435,22 +431,16 @@ TS2ModifyTarget::calcConeIntersect
   const Geometry::Vec3D AxisX(Item.axis.crossNormal());
   // Construct Simple line:
 
-  MonteCarlo::LineIntersectVisit LI(Pt,AxisX);
   for(size_t cIndex=0;cIndex<ConeUnits.size();cIndex++)
     {
       const HeadRule& CItem(ConeUnits[cIndex]);
-      const std::set<const Geometry::Surface*> 
-	SSet=CItem.getSurfaces();
-      for(const Geometry::Surface* SPtr : SSet)
-	{
-	  const std::vector<Geometry::Vec3D> Out=
-	    LI.getPoints(SPtr);
+      std::vector<Geometry::interPoint> IPts;
+      CItem.calcSurfIntersection(Pt,AxisX,IPts);
 
-	  for(const Geometry::Vec3D& ImpactPt : Out)
-	    {
-	      if (CItem.isSideValid(ImpactPt,SPtr->getName()))
-		return 1+cIndex;
-	    }
+      for(const Geometry::interPoint& ipt : IPts)
+	{
+	  if (CItem.isSideValid(ipt.Pt,std::abs(ipt.SNum)))
+	    return 1+cIndex;
 	}
     }
   return 0;

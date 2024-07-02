@@ -3,7 +3,7 @@
  
  * File:   attachComp/ExtractCut.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -484,7 +484,7 @@ ExternalCut::createLink(const std::string& extName,
   if (CU->main.isEmpty())
     throw ColErr::InContainerError<std::string>
       (extName,"FC:"+FC.getKeyName()+" has no surface rule");
-  
+
   const std::string keyN=FC.getKeyName();
   FC.setLinkSurf(linkIndex,CU->main.complement());
   FC.setBridgeSurf(linkIndex,CU->divider);

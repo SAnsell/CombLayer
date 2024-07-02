@@ -3,7 +3,7 @@
  
  * File:   transport/BandDetector.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,10 +51,11 @@ namespace Transport
 
 
 BandDetector::BandDetector() : 
-  Detector(0),nH(0),nV(0),nE(0),Cent(Geometry::Vec3D(0,0,0)),
+  Detector(0),nH(1),nV(1),nE(1),Cent(Geometry::Vec3D(0,0,0)),
   H(Geometry::Vec3D(1,0,0)),V(Geometry::Vec3D(0,0,1)),
   hSize(1.0),vSize(1.0),
-  PlnNorm(Geometry::Vec3D(0,1,0)),PlnDist(0.0)
+  PlnNorm(Geometry::Vec3D(0,1,0)),PlnDist(0.0),
+  EData(1,1,1)
   /*!
     Default constructor
     Note that Detector index is unused
@@ -62,11 +63,13 @@ BandDetector::BandDetector() :
 {
 }
 
-BandDetector::BandDetector(const int Hpts,const int Vpts,const int Epts,
-			     Geometry::Vec3D  CV,
-			     const Geometry::Vec3D& Hvec,
-			     const Geometry::Vec3D& Vvec,
-			     const double ES,const double EE) : 
+BandDetector::BandDetector(const size_t Hpts,
+			   const size_t Vpts,
+			   const size_t Epts,
+			   Geometry::Vec3D  CV,
+			   const Geometry::Vec3D& Hvec,
+			   const Geometry::Vec3D& Vvec,
+			   const double ES,const double EE) : 
   Detector(0),nH(Hpts),nV(Vpts),nE((Epts>0) ? Epts : 1),
   Cent(std::move(CV)),H(Hvec.unit()),V(Vvec.unit()),
   hSize(Hvec.abs()),vSize(Vvec.abs()),
@@ -82,12 +85,11 @@ BandDetector::BandDetector(const int Hpts,const int Vpts,const int Epts,
    \param Hvec :: Horrizontal vector
    \param ES :: Energy start [-ve for wavelength ]
    \param EE :: Energy end [-ve for wavelength 
-   
   */
 {
-  for(int i=0;i<nV;i++)
-    for(int j=0;j<nH;j++)
-      for(int k=0;k<nE;k++)
+  for(size_t i=0;i<nV;i++)
+    for(size_t j=0;j<nH;j++)
+      for(size_t k=0;k<nE;k++)
 	EData.get()[i][j][k]=0.0;
   if (Epts>0)
     setEnergy(ES,EE);
@@ -144,9 +146,9 @@ BandDetector::clear()
   */
 {
   nps=0;
-  for(int i=0;i<nV;i++)
-    for(int j=0;j<nH;j++)
-      for(int k=0;k<nE;k++)
+  for(size_t i=0;i<nV;i++)
+    for(size_t j=0;j<nH;j++)
+      for(size_t k=0;k<nE;k++)
 	EData.get()[i][j][k]=0.0;
   return;
 }
@@ -182,21 +184,22 @@ BandDetector::setEnergy(const double ES,const double EE)
   if (engA>engB)
     std::swap(engA,engB);
   
-  if (fabs(engB-engA)<1e-7)
+  if (std::abs(engB-engA)<1e-7)
     {
       ELog::EM<<"Setting energy gap--too small"<<ELog::endWarn;
       return;
     }
-  const double step((engB-engA)/nE);
+  const double step((engB-engA)/static_cast<double>(nE));
   EGrid.clear();
-  for(int i=0;i<=nE;i++)
-    EGrid.push_back(engA+i*step);
+  for(size_t i=0;i<=nE;i++)
+    EGrid.push_back(engA+static_cast<double>(i)*step);
   return;
 }
 
 void
-BandDetector::setDataSize(const int Hpts,const int Vpts,
-		      const int Epts)
+BandDetector::setDataSize(const size_t Hpts,
+			  const size_t Vpts,
+			  const size_t Epts)
   /*!
     Set the data Size
     \param Hpts :: Horizontal size
@@ -204,7 +207,8 @@ BandDetector::setDataSize(const int Hpts,const int Vpts,
     \param Epts :: Energy size
    */
 {
-  if (Hpts>0 && Vpts>0 && (Hpts!=nH || Vpts!=nV) )
+  if (Hpts>0 && Vpts>0 &&
+      (Hpts!=nH || Vpts!=nV || Epts!=nE) )
     {
       nH=Hpts;
       nV=Vpts;
@@ -228,7 +232,7 @@ BandDetector::getAxis() const
 
 int
 BandDetector::calcCell(const MonteCarlo::particle& N,
-		   int& NH,int& NV) const
+		       size_t& NH,size_t& NV) const
   /*!
     Calc a cell
     Tracks from the point to the detector.
@@ -243,19 +247,24 @@ BandDetector::calcCell(const MonteCarlo::particle& N,
 
   const double OdotN=N.Pos.dotProd(PlnNorm);
   const double DdotN=N.uVec.dotProd(PlnNorm);
-  if (fabs(DdotN)<Geometry::parallelTol)     // Plane and line parallel
+  if (std::abs(DdotN)<Geometry::parallelTol)     // Plane and line parallel
     return 0;
   const double u=(PlnDist-OdotN)/DdotN;
   Geometry::Vec3D Pnt=N.Pos+N.uVec*u;
   // Now determine if Pnt is within detector:
   Pnt-=(Cent-H*0.5*hSize-V*0.5*vSize);
-  NH=static_cast<int>(nH*Pnt.dotProd(H)/hSize);
-  NV=static_cast<int>(nV*Pnt.dotProd(V)/vSize);
+  const double hFrac(Pnt.dotProd(H)/hSize);
+  const double vFrac(Pnt.dotProd(V)/vSize);
+  if (hFrac<0.0 || hFrac>=1.0 || vFrac<0.0 || vFrac>1.0)
+    return 0;
+  NH=static_cast<size_t>(static_cast<double>(nH)*hFrac);
+  NV=static_cast<size_t>(static_cast<double>(nV)*vFrac);
+
   ELog::EM<<"Point == "<<Pnt<<" ("<<NH<<","<<NV<<")"<<ELog::endDebug;
   ELog::EM<<"Det == "<<Cent<<" ("<<H<<","<<V<<")::"<<PlnNorm<<ELog::endDebug;
   ELog::EM<<"U == "<<u<<" "<<PlnDist<<" "<<hSize<<" "<<vSize<<ELog::endDebug;
   ELog::EM<<ELog::endDebug;
-  return (NH<0 || NV<0 || NH>=nH || NV>=nV) ? 0 : 1;
+  return 1;
 }
 
 
@@ -279,24 +288,23 @@ BandDetector::addEvent(const MonteCarlo::particle& N)
   Geometry::Vec3D Pnt=N.Pos+N.uVec*u;
   // Now determine if Pnt is within detector:
   Pnt-=(Cent-H*(hSize/2.0)-V*(vSize/2.0));
-  const int hpt=static_cast<int>(static_cast<double>(nH)*
-				 Pnt.dotProd(H)/hSize);
-  const int vpt=static_cast<int>(nV*Pnt.dotProd(V)/vSize);
-  if (hpt<0 || vpt<0 || hpt>=nH || vpt>=nV) return;
+  const size_t hpt=static_cast<size_t>
+    (static_cast<double>(nH)*Pnt.dotProd(H)/hSize);
+  const size_t vpt=static_cast<size_t>
+    (static_cast<double>(nV)*Pnt.dotProd(V)/vSize);
+  if (hpt>=nH || vpt>=nV) return;
   // Scale for (i) distance to scattering point:
   //           (ii) solid angle
   // Distance is u + travel
-  const long int ePoint=calcWavePoint(N.wavelength);
-  if (ePoint>=0 || ePoint<static_cast<long int>(EGrid.size())-1)
-    {
-      EData.get()[vpt][hpt][ePoint]+=
-	N.weight/((N.travel+u)*(N.travel+u)*fabs(DdotN));
-      nps++;
-    }
+  const size_t ePoint=calcWavePoint(N.wavelength);
+  EData.get()[vpt][hpt][ePoint]+=
+    N.weight/((N.travel+u)*(N.travel+u)*std::abs(DdotN));
+  nps++;
+
   return;
 }
 
-long int
+size_t
 BandDetector::calcWavePoint(const double W) const
   /*!
     Given the wavelength calculate the 
@@ -309,16 +317,11 @@ BandDetector::calcWavePoint(const double W) const
 
   if (EGrid.empty()) return 0;
   const double E((0.5*RefCon::h2_mneV*1e20)/(W*W)); 
-  const long int res=indexPos(EGrid,E);
-  if (res<0 || res>=static_cast<long int>(EData.shape()[0]))
-    {
-      ELog::EM<<"Bins failed on : "<<W<<" "<<
-	E<<" == "<<EGrid.front()<<" "<<EGrid.back()<<ELog::endCrit;
-    }
+  const size_t res=rangePos(EGrid,E);
   return res;
 }
 
-long int
+size_t
 BandDetector::calcEnergyPoint(const double E) const
   /*! 
     Given the wavelength calculate the 
@@ -328,7 +331,7 @@ BandDetector::calcEnergyPoint(const double E) const
   */
 {
   if (EGrid.empty()) return 0;
-  return indexPos(EGrid,E);
+  return rangePos(EGrid,E);
 }
 
 double
@@ -393,9 +396,9 @@ BandDetector::write(std::ostream& OX) const
   OX<<"#hvn "<<nH<<" "<<nV<<" from "<<nps<<std::endl;
   OX<<"#cvh "<<Cent<<" : "<<H*hSize<<" : "<<V*vSize<<std::endl;
 
-  for(int i=0;i<nV;i++)
+  for(size_t i=0;i<nV;i++)
     {
-      for(int j=0;j<nH;j++)
+      for(size_t j=0;j<nH;j++)
 	{
 	  const double E=EData.get()[i][j][EBin];
 	  OX<<E<<" ";

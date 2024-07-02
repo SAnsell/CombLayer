@@ -3,7 +3,7 @@
  
  * File:   common/EssHut.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,12 +153,14 @@ EssHut::populate(const FuncDataBase& Control)
   feLeftWall=Control.EvalVar<double>(keyName+"FeLeftWall");
   feRightWall=Control.EvalVar<double>(keyName+"FeRightWall");
   feRoof=Control.EvalVar<double>(keyName+"FeRoof");
+  feFloor=Control.EvalVar<double>(keyName+"FeFloor");
   feBack=Control.EvalVar<double>(keyName+"FeBack");
 
   concFront=Control.EvalVar<double>(keyName+"ConcFront");
   concLeftWall=Control.EvalVar<double>(keyName+"ConcLeftWall");
   concRightWall=Control.EvalVar<double>(keyName+"ConcRightWall");
   concRoof=Control.EvalVar<double>(keyName+"ConcRoof");
+  concFloor=Control.EvalVar<double>(keyName+"ConcFloor");
   concBack=Control.EvalVar<double>(keyName+"ConcBack");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");

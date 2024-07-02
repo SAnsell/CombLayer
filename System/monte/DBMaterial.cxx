@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,8 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
-
+#include "neutMaterial.h"
+ 
 namespace ModelSupport
 {
 
@@ -77,6 +78,17 @@ DBMaterial::Instance()
   return DObj;
 }
 
+DBMaterial::~DBMaterial()
+  /*!
+    Removal of memory
+  */
+{
+  for(const auto& [name,ptr] : MStore)
+    delete ptr;
+  for(const auto& [name,ptr] : NStore)
+    delete ptr;
+}
+  
 void
 DBMaterial::checkNameIndex(const int MIndex,const std::string& MName) const
   /*!

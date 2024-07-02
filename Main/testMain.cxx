@@ -3,7 +3,7 @@
  
  * File:   Main/testMain.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,6 +108,7 @@
 #include "testLine.h"
 #include "testLineTrack.h"
 #include "testLog.h"
+#include "testM2.h"
 #include "testMapRange.h"
 #include "testMapSupport.h"
 #include "testMasterRotate.h"
@@ -545,6 +546,7 @@ geometryTest(const int type,const int extra)
       "testFace",
       "testGeomSupport",
       "testLine",
+      "testM2",
       "testMasterRotate",
       "testMesh3D",
       "testQuaternion",
@@ -610,6 +612,12 @@ geometryTest(const int type,const int extra)
       if(index==testNum++)
 	{
 	  testLine A;
+	  X=A.applyTest(extra);
+	}
+      
+      if(index==testNum++)
+	{
+	  testM2 A;
 	  X=A.applyTest(extra);
 	}
       

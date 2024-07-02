@@ -3,7 +3,7 @@
  
  * File:   d4cModel/makeD4C.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,8 +52,10 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "World.h"
 #include "CylSample.h"
 #include "BellJar.h"
@@ -121,13 +123,13 @@ makeD4C::build(Simulation* SimPtr,
 
   BellObj->setInsertCell(74123);
   BellObj->createAll(*SimPtr,World::masterOrigin(),0);
-  CellObj->setInsertCell(BellObj->innerCell());
+  CellObj->setInsertCell(BellObj->getCell("innerVoid"));
   CellObj->createAll(*SimPtr,*BellObj,0);
 
   SimMonte* SM=dynamic_cast<SimMonte*>(SimPtr);
   for(size_t i=0;i<NDet;i++)
     {
-      DetObj[i]->setInsertCell(BellObj->outerCell());
+      DetObj[i]->setInsertCell(BellObj->getCell("outerVoid"));
       DetObj[i]->createAll(*SimPtr,*BellObj,0);
       DetObj[i]->createTally(*SimPtr);
       

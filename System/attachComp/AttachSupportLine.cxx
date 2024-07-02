@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupportLine.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,11 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "Vec3D.h"
+#include "interPoint.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "AttachSupport.h"
 
@@ -110,14 +113,14 @@ checkLineIntersect(const FixedComp& InsertFC,
               MonteCarlo::LineIntersectVisit LI(IP,UV);
 	      for(const Geometry::Surface* SPtr : surfSet)
                 SPtr->acceptVisitor(LI);
-              
-              const std::vector<double>& distVec(LI.getDistance());
-              const std::vector<Geometry::Vec3D>& dPts(LI.getPoints());
-              
-              for(size_t dI=0;dI<dPts.size();dI++)
+
+	      
+              const std::vector<Geometry::interPoint>&
+		IPts(LI.getInterVec());
+              for(const Geometry::interPoint& iPt : IPts)
                 {
-                  if ((distVec[dI]>0.0 && distVec[dI]<LLen) &&
-                      CellObj.isValid(dPts[dI]))
+                  if ((iPt.D>0.0 && iPt.D<LLen) &&
+                      CellObj.isValid(iPt.Pt))
 		    return 1;
                 }
 	    }
@@ -309,12 +312,13 @@ lineIntersect(Simulation& System,
   ModelSupport::LineTrack LT(APt,BPt);
   LT.calculate(System);
 
-  const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-  for(MonteCarlo::Object* oc : OVec)
+  const std::vector<ModelSupport::LineUnit>&
+    LUnits=LT.getTrackPts();
+  for(const ModelSupport::LineUnit& lu : LUnits)
     {	  
-      const int ONum=oc->getName();
-      if (OMap.find(ONum)==OMap.end())
-	OMap.emplace(ONum,oc);
+      const int ONum=lu.cellNumber;
+      if (ONum && OMap.find(ONum)==OMap.end())
+	OMap.emplace(ONum,lu.objPtr);
     }
   return;
 }

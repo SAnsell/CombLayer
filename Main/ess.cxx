@@ -99,7 +99,6 @@ main(int argc,char* argv[])
       essSystem::makeESS ESSObj;
 
       ESSObj.build(*SimPtr,IParam);
-      
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
 

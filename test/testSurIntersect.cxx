@@ -3,7 +3,7 @@
  
  * File:   test/testSurIntersect.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "Plane.h"
 #include "Sphere.h"
 #include "Cylinder.h"
+#include "Cone.h"
 #include "General.h"
 #include "Intersect.h"
 #include "SglLine.h"
@@ -85,6 +86,7 @@ testSurIntersect::applyTest(const int extra)
   typedef int (testSurIntersect::*testPtr)();
   testPtr TPtr[]=
     {
+      &testSurIntersect::testConePlaneIntersect,
       &testSurIntersect::testCylPlaneIntersect,
       &testSurIntersect::testMakePoint_Quad,
       &testSurIntersect::testNearPoint,
@@ -93,6 +95,7 @@ testSurIntersect::applyTest(const int extra)
 
   const std::string TestName[]=
     {
+      "ConePlaneIntersect",
       "CylPlaneIntersect",
       "MakePoint(quadratic)",
       "nearPoint",
@@ -380,6 +383,49 @@ testSurIntersect::testProcessPoint()
 	}
       cnt++;
     }
+  return 0;
+}
+
+int
+testSurIntersect::testConePlaneIntersect()
+  /*!
+    Tests the Cone-plane intersect
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testSurInterSect","testConePlaneIntersect");
+
+  Geometry::Plane PA(1,0,Geometry::Vec3D(0,0,20),
+		     Geometry::Vec3D(-1.0,0,1.0));
+  //  PA.setSurface("pz 20");
+
+  // Cylinder
+  Geometry::Cone CA(11,Geometry::Vec3D(0,0,0),
+		    Geometry::Vec3D(0,0,1),30.0);
+  
+  // Void test:
+  std::unique_ptr<Geometry::Ellipse> IPtr
+    (dynamic_cast<Geometry::Ellipse*>(SurInter::calcIntersect(CA,PA)));
+  
+  if (!IPtr)
+    {
+      ELog::EM<<"Error : Intersect zero (Void) "<<ELog::endCrit;
+      return -1;
+    }
+  ELog::EM<<"Centre == "<<IPtr->centre()<<ELog::endDiag;
+  ELog::EM<<"Minor axis == "<<IPtr->getMinorAxis()<<ELog::endDiag;
+  ELog::EM<<"Major axis == "<<IPtr->getMajorAxis()<<ELog::endDiag;
+
+  Geometry::Vec3D Org=IPtr->centre();
+  Geometry::Vec3D aAxis=IPtr->getMinorAxis();
+  Geometry::Vec3D bAxis=IPtr->getMajorAxis();
+
+  const double theta(25.0*M_PI/180.0);
+  Geometry::Vec3D Point = Org+aAxis*std::sin(theta)+bAxis*std::cos(theta);
+  ELog::EM<<"Side["<<Point<<"] == "<<CA.side(Point)
+	  <<"   "<<CA.distance(Point)<<ELog::endDiag;
+  ELog::EM<<"Plane["<<Point<<"] == "<<PA.side(Point)<<ELog::endDiag;
+    
   return 0;
 }
 

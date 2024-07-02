@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ObjectTrackAct.cxx
+ * File:   modelSupport/ObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 
@@ -125,17 +126,18 @@ ObjectTrackAct::getMatSum(const long int objN) const
   if (mc==Items.end())
     throw ColErr::InContainerError<long int>(objN,"objN in Items");
   
-  // Get Two Paired Vectors
-  const std::vector<MonteCarlo::Object*>& ObjVec= mc->second.getObjVec();
-  const std::vector<double>& TVec= mc->second.getSegmentLen();
-
+  const std::vector<LineUnit>& trackVector=mc->second.getTrackPts();
+  
   double sum(0.0);
-  for(size_t i=0;i<TVec.size();i++)
+  for(const LineUnit& lu : trackVector)
     {
-      const MonteCarlo::Object* OPtr=ObjVec[i];
-      const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
-      if (!MPtr->isVoid())
-	sum+=TVec[i];
+      const MonteCarlo::Object* OPtr=lu.objPtr;
+      if (OPtr)
+	{
+	  const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
+	  if (!MPtr->isVoid())
+	    sum+=lu.segmentLength;
+	}
     }
   return sum;
 }
@@ -156,22 +158,22 @@ ObjectTrackAct::getAttnSum(const long int objN,
   std::map<long int,LineTrack>::const_iterator mc=Items.find(objN);
   if (mc==Items.end())
     throw ColErr::InContainerError<long int>(objN,"objN in Items");
-
-
-  // Get Two Paired Vectors
-  const std::vector<MonteCarlo::Object*>& ObjVec= mc->second.getObjVec();
-  const std::vector<double>& TVec=mc->second.getSegmentLen();
+  
+  const std::vector<LineUnit>& trackVector=mc->second.getTrackPts();
 
   double sum(0.0);
-  for(size_t i=0;i<ObjVec.size();i++)
+  for(const LineUnit& lu : trackVector)
     {
-      const MonteCarlo::Object* OPtr=ObjVec[i];
-      const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
-      if (!MPtr->isVoid())
+      const MonteCarlo::Object* OPtr=lu.objPtr;
+      if (OPtr)
 	{
-	  const double density=MPtr->getAtomDensity();
-	  const double AMean=MPtr->getMeanA();
-	  sum+=TVec[i]*std::pow(AMean,0.66)*density;
+	  const MonteCarlo::Material* MPtr=OPtr->getMatPtr();
+	  if (!MPtr->isVoid())
+	    {
+	      const double density=MPtr->getAtomDensity();
+	      const double AMean=MPtr->getMeanA();
+	      sum+=lu.segmentLength*std::pow(AMean,0.66)*density;
+	    }
 	}
     }
   // currently no use for epsilon
@@ -194,21 +196,6 @@ ObjectTrackAct::getDistance(const long int objN) const
   if (mc==Items.end())
     throw ColErr::InContainerError<long int>(objN,"objN in Items");
   return mc->second.getTotalDist();
-}
-
-void
-ObjectTrackAct::createAttenPath(std::vector<long int>& cellN,
-				std::vector<double>& attnD) const
-  /*!
-    Calculate the sum of the distance
-    \param cellN :: cell numbers [why long int?]
-    \param attnD :: distances in cell
-  */
-{
-  ELog::RegMethod RegA("ObjectTrackAct","createAttenPath");
-  for(const std::map<long int,LineTrack>::value_type& mc : Items)
-    mc.second.createAttenPath(cellN,attnD);
-  return;
 }
 
 void

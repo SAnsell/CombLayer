@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/userBdxConstruct.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -54,14 +54,15 @@
 #include "TallySelector.h"
 #include "flukaTally.h"
 #include "userBdx.h"
-#include "userBdxConstruct.h" 
+#include "userBdxConstruct.h"
 
 namespace flukaSystem
 {
 
 
-void 
+void
 userBdxConstruct::createTally(SimFLUKA& System,
+			      const std::string& name,
 			      const std::string& PType,
 			      const int fortranTape,
 			      const int cellA,const int cellB,
@@ -73,16 +74,17 @@ userBdxConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
+    \param PType :: estimator name
     \param PType :: particle name
     \param fortranTape :: output stream
     \param CellA :: initial region
     \param CellB :: secondary region
     \param eLog :: energy in log bins
     \param aLog :: angle in log bins
-    \param Emin :: Min energy 
-    \param Emax :: Max energy 
-    \param Amin :: Min angle 
-    \param Amax :: Max angle 
+    \param Emin :: Min energy
+    \param Emax :: Max energy
+    \param Amin :: Min angle
+    \param Amax :: Max angle
     \param nE :: Number of energy bins
     \param nA :: Number of angle bins
   */
@@ -90,14 +92,14 @@ userBdxConstruct::createTally(SimFLUKA& System,
   ELog::RegMethod RegA("userBdxConstruct","createTally");
 
   const flukaGenParticle& FG=flukaGenParticle::Instance();
-    
+
   userBdx UD("surf",fortranTape,fortranTape);
   UD.setParticle(FG.nameToFLUKA(PType));
-
+  UD.setKeyName(name);
   UD.setCell(cellA,cellB);
   UD.setEnergy(eLog,Emin,Emax,nE);
   UD.setAngle(aLog,Amin,Amax,nA);
-  
+
   System.addTally(UD);
 
   return;
@@ -107,14 +109,14 @@ userBdxConstruct::createTally(SimFLUKA& System,
 void
 userBdxConstruct::processBDX(SimFLUKA& System,
 			     const mainSystem::inputParam& IParam,
-			     const size_t Index) 
+			     const size_t Index)
   /*!
     Add BDX tally (s) as needed
     - Input:
     -- particle FixedComp index
     -- particle cellA  cellB
     -- particle SurfMap name
-    -- particle FixedComp:CellMapName FixedComp:CellMapName 
+    -- particle FixedComp:CellMapName FixedComp:CellMapName
 
     \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
@@ -124,15 +126,18 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   ELog::RegMethod RegA("userBdxConstruct","processBDX");
 
   System.createObjSurfMap();
-  
-  const std::string particleType=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
-  const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
-  const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell/SurfName");
 
-  size_t itemIndex(4);
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
+
+  const std::string particleType=
+    IParam.getValueError<std::string>("tally",Index,2,"tally:ParticleType");
+  const std::string FCname=
+    IParam.getValueError<std::string>("tally",Index,3,"tally:Object/Cell");
+  const std::string FCindex=
+    IParam.getValueError<std::string>("tally",Index,4,"tally:linkPt/Cell/SurfName");
+
+  size_t itemIndex(5);
   int cellA(0);
   int cellB(0);
   if (
@@ -149,32 +154,32 @@ userBdxConstruct::processBDX(SimFLUKA& System,
 	itemIndex--;
       else
 	throw ColErr::CommandError(FCname+" "+FCindex,"Surf Tally conversion");
-      
+
     }
-  ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;  
+  ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
   // energy
   const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
   const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
+  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++);
   // angle
   const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
   const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
-  const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++); 
+  const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
 
-  
-  userBdxConstruct::createTally(System,particleType,-nextId,
+
+  userBdxConstruct::createTally(System,tallyName,particleType,-nextId,
 				cellA,cellB,
 				1,EA,EB,NE,
 				0,AA,AB,NA);
-  
-  return;      
-}  
-  
+
+  return;
+}
+
 void
-userBdxConstruct::writeHelp(std::ostream& OX) 
+userBdxConstruct::writeHelp(std::ostream& OX)
   /*!
     Write out help
     \param OX :: Output stream

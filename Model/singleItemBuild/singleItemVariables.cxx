@@ -423,7 +423,7 @@ SingleItemVariables(FuncDataBase& Control)
   TPGen.setBFlangeCF<CF100>();
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,"TriPipe");
-
+  
   setVariable::TriGroupGenerator TGGen;
   //  TPGen.setBFlangeCF<CF100>();
   TGGen.generateTri(Control,"TriGroup");

@@ -3,7 +3,7 @@
  
  * File:   test/testBoxLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,24 +138,24 @@ testBoxLine::createObjects()
 {
   ELog::RegMethod RegA("testBoxLine","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   int cellIndex(2);
   const int surIndex(0);
 
-  Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
+  HR=ModelSupport::getHeadRule(surIndex,"100");
+  ASim.addCell(cellIndex++,0,0.0,HR);      // Outside void Void
   // Inner box
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));
+  HR=ModelSupport::getHeadRule(surIndex,"11 -12 13 -14 15 -16");
+  ASim.addCell(cellIndex++,3,0.0,HR);
   
 
   // Container box:
-  Out=ModelSupport::getComposite(surIndex,"21 -22 23 -24 25 -26"
-				 " (-11:12:-13:14:-15:16) ");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,5,0.0,Out));      // Al container
+  HR=ModelSupport::getHeadRule(surIndex,"21 -22 23 -24 25 -26"
+				 " (-11:12:-13:14:-15:16)");
+  ASim.addCell(cellIndex++,5,0.0,HR);      // Al container
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-21:22:-23:24:-25:26)");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));      // Outside void Void
+  HR=ModelSupport::getHeadRule(surIndex,"-100 (-21:22:-23:24:-25:26)");
+  ASim.addCell(cellIndex++,0,0.0,HR);      // Outside void Void
   return;
 }
 

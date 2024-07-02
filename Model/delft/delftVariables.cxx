@@ -3,7 +3,7 @@
  
  * File:   delft/delftVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -609,8 +609,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("R2Slot1XStep",0.0);
   Control.addVariable("R2Slot1ZStep",4.693);
   Control.addVariable("R2Slot1YAngle",0.0);
-  Control.addVariable("R2Slot1ZAngle",1.002);
-  Control.addVariable("R2Slot1XAngle",0.0);
+  Control.addVariable("R2Slot1XAngle",1.002);
+  Control.addVariable("R2Slot1ZAngle",0.0);
   Control.addVariable("R2Slot1XSize",10.0);
   Control.addVariable("R2Slot1ZSize",2.65);
 

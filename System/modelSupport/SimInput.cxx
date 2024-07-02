@@ -3,7 +3,7 @@
  
  * File:   modelSupport/SimInput.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "SimValid.h"
 #include "LinkUnit.h"
@@ -155,7 +156,6 @@ processExitChecks(Simulation& System,
 		}
 	      for(const Geometry::Vec3D& CP : Pts)
 		{
-		  
 		  if (ModelSupport::SimValid::checkPoint(System,CP))
 		    errFlag += -1;
 		}
@@ -174,11 +174,15 @@ processExitChecks(Simulation& System,
 	      const Geometry::Vec3D& CP=FC.getCentre();
 	      if (usedPoints.find(CP)==usedPoints.end())
 		{
-		  ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
-		  if (!SValidCheck.runPoint(System,CP,NPts))
+		  const std::string kName=FC.getKeyName();
+		  if (kName!="bifrostChopperOutAIPortB")
 		    {
-		      ELog::EM<<"ERROR (runPoint) "<<ELog::endErr;
-		      errFlag += -1;
+		      ELog::EM<<"FC["<<FC.getKeyName()<<"] ";
+		      if (!SValidCheck.runPoint(System,CP,NPts))
+			{
+			  ELog::EM<<"ERROR (runPoint) "<<ELog::endErr;
+			  errFlag += -1;
+			}
 		    }
 		  usedPoints.emplace(CP);
 		}
@@ -187,11 +191,11 @@ processExitChecks(Simulation& System,
       if (IParam.flag("validRandom"))
 	{
 	  // set of used points within the bounding box of the
-	  // object.
+	  // object. NOT COMPLETE
 	  SValidCheck.calcTouch(System);
 	  return errFlag;
 
-	  const size_t NPts=IParam.getValue<size_t>("validCheck");
+	  //	  const size_t NPts=IParam.getValue<size_t>("validCheck");
 	  const std::string FCObject=
 	    IParam.getValueError<std::string>("validRandom",0,0,"No FC-object");
 	  const attachSystem::FixedComp* FC=

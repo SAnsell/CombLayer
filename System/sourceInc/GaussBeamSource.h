@@ -3,7 +3,7 @@
  
  * File:   sourceInc/GaussBeamSource.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ namespace SDef
 */
 
 class GaussBeamSource : 
-  public attachSystem::FixedOffsetUnit,
-  public SourceBase
+    public attachSystem::FixedRotate,
+    public SourceBase
 {
  private:
   
@@ -49,8 +49,6 @@ class GaussBeamSource :
   double angleSpread;           ///< Angle spread
   
   void populate(const mainSystem::MITYPE&) override;
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int) override;
   
  public:
 
@@ -61,7 +59,8 @@ class GaussBeamSource :
   ~GaussBeamSource() override;
 
   void setSize(const double,const double);
-  
+
+  using FixedComp::createAll;
   void createAll(const mainSystem::MITYPE&,
 		 const attachSystem::FixedComp&,
 		 const long int);

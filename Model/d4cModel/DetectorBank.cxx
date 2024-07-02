@@ -3,7 +3,7 @@
  
  * File:   d4cModel/DetectorBank.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@
 #include "TallyCreate.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "DetectorBank.h"
 
@@ -69,8 +69,8 @@ namespace d4cSystem
 {
 
 DetectorBank::DetectorBank(const size_t BN,const std::string& Key) :
+  attachSystem::FixedRotate(Key+std::to_string(BN),6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+std::to_string(BN),6),
   bankNumber(BN),baseName(Key)
   /*!
     Constructor
@@ -79,8 +79,9 @@ DetectorBank::DetectorBank(const size_t BN,const std::string& Key) :
   */
 {}
 
-DetectorBank::DetectorBank(const DetectorBank& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+DetectorBank::DetectorBank(const DetectorBank& A) :
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   bankNumber(A.bankNumber),baseName(A.baseName),
   centreOffset(A.centreOffset),
   centreAngle(A.centreAngle),detDepth(A.detDepth),
@@ -103,8 +104,8 @@ DetectorBank::operator=(const DetectorBank& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       centreOffset=A.centreOffset;
       centreAngle=A.centreAngle;
       detDepth=A.detDepth;
@@ -133,11 +134,11 @@ DetectorBank::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DetectorBank","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   centreOffset=Control.EvalTail<double>(keyName,baseName,"CentreOffset");
   centreAngle=Control.EvalTail<double>(keyName,baseName,"CentreAngle");
-  xyAngle-=centreAngle;
+  zAngle-=centreAngle;
   centreAngle*=M_PI/180.0;
 
   detHeight=Control.EvalTail<double>(keyName,baseName,"DetHeight");
@@ -152,8 +153,7 @@ DetectorBank::populate(const FuncDataBase& Control)
 				    baseName+"DetMat");
 
   // trick to get def var of a pair.
-  nDet=Control.EvalDefVar<size_t>(baseName+"NDet",0);
-  nDet=Control.EvalDefVar<size_t>(keyName+"NDet",nDet);
+  nDet=Control.EvalDefTail<size_t>(keyName,baseName,"NDet",0);
   return;
 }
 
@@ -170,7 +170,7 @@ DetectorBank::createUnitVector(const attachSystem::FixedComp& FC,
   
   Origin += (X*sin(centreAngle)+Y*cos(centreAngle))*centreOffset;
   applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyAngleRotate(xAngle,yAngle,zAngle);
 
   return;
 }
@@ -222,17 +222,17 @@ DetectorBank::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DetectorBank","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   // First make inner/outer void/wall and top/base
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,"11 -12 13 -14 15 -16");	
-  addOuterSurf(Out);  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");	
+  addOuterSurf(HR);  
 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,detMat,0.0,Out));	
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");	
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  System.addCell(cellIndex++,detMat,0.0,HR);	
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				"11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");	
+  System.addCell(cellIndex++,wallMat,0.0,HR);
   return; 
 }
 

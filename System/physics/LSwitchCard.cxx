@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   physics/LSwitchCard.cxx
 *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -40,9 +40,9 @@
 #include "writeSupport.h"
 
 #include "LSwitchCard.h"
- 
+
 namespace physicsSystem
-{ 
+{
 
 std::ostream&
 operator<<(std::ostream& OX,const LSwitchCard& A)
@@ -65,7 +65,7 @@ LSwitchCard::LSwitchCard() :
   */
 {}
 
-LSwitchCard::LSwitchCard(const LSwitchCard& A) : 
+LSwitchCard::LSwitchCard(const LSwitchCard& A) :
   lcaActive(A.lcaActive),leaActive(A.leaActive),lcbActive(A.lcbActive),
   lcaVal(A.lcaVal),leaVal(A.leaVal),lcbVal(A.lcbVal)
   /*!
@@ -102,7 +102,7 @@ LSwitchCard::~LSwitchCard()
 {}
 
 std::vector<int>&
-LSwitchCard::getVec(const std::string& Key) 
+LSwitchCard::getVec(const std::string& Key)
   /*!
     Get a reference to the value vector
     \param Key :: Key Name
@@ -115,12 +115,12 @@ LSwitchCard::getVec(const std::string& Key)
     return leaVal;
   if (Key=="lcb")
     return lcbVal;
-  
+
   throw ColErr::InContainerError<std::string>(Key,ELog::RegMethod::getFull());
 }
 
 size_t&
-LSwitchCard::getActive(const std::string& Key) 
+LSwitchCard::getActive(const std::string& Key)
   /*!
     Get a reference to the active value
     \param Key :: Key Name
@@ -133,7 +133,7 @@ LSwitchCard::getActive(const std::string& Key)
     return leaActive;
   if (Key=="lcb")
     return lcbActive;
-  
+
   throw ColErr::InContainerError<std::string>(Key,"getActive");
 }
 
@@ -151,7 +151,7 @@ LSwitchCard::getVec(const std::string& Key) const
     return leaVal;
   if (Key=="lcb")
     return lcbVal;
-  
+
   throw ColErr::InContainerError<std::string>(Key,"LSwitchCar::getVec");
 }
 
@@ -170,17 +170,17 @@ LSwitchCard::getActive(const std::string& Key) const
     return leaVal.size();
   if (Key=="lcb")
     return lcbVal.size();
-  
+
   throw ColErr::InContainerError<std::string>
     (Key,"LSwitchCard::getActive");
 }
 
 void
-LSwitchCard::setValues(const std::string& Key,const std::string& Line) 
+LSwitchCard::setValues(const std::string& Key,const std::string& Line)
   /*!
     Set the values from a card
     \param Key :: Line to set
-    \param Line :: Line to process	       
+    \param Line :: Line to process
   */
 {
   ELog::RegMethod RegA("LSwitchCard","setValues(string)");
@@ -210,7 +210,7 @@ LSwitchCard::setValue(const std::string& Key,
 		      const int value)
   /*!
     Set a special interest in a cell ID
-    The existance of the cell is only 
+    The existance of the cell is only
     checked at the write out stage.
     \param Key :: Key name of object
     \param ID :: Cell number
@@ -222,7 +222,7 @@ LSwitchCard::setValue(const std::string& Key,
   std::vector<int>& KV=getVec(Key);
   size_t& active=getActive(Key);
   const size_t maxSize=KV.size();
-  if (ID>=maxSize) 
+  if (ID>=maxSize)
     throw ColErr::IndexError<size_t>(ID,maxSize,"ID");
   if (active<ID)
     active=ID;
@@ -242,7 +242,7 @@ LSwitchCard::getValue(const std::string& Key,
   */
 {
   ELog::RegMethod RegA("LSwitchCard","getValue");
-  
+
   const std::vector<int>& KV=getVec(Key);
   const size_t aSize=getActive(Key);
   if (ID>=aSize)
@@ -268,9 +268,9 @@ LSwitchCard::write(std::ostream& OX) const
 	  if (i!=3)
 	    cx<<lcaVal[i]<<" ";
 	  else
-	    cx<<fmt::format("{:04d}",lcaVal[i]);
+	    cx<<fmt::format("{:04d} ",lcaVal[i]);
 	}
-      StrFunc::writeMCNPX(cx.str(),OX);      
+      StrFunc::writeMCNPX(cx.str(),OX);
     }
   if (leaActive)
     {
@@ -278,7 +278,7 @@ LSwitchCard::write(std::ostream& OX) const
       cx<<"lea ";
       for(size_t i=0;i<leaActive;i++)
 	cx<<leaVal[i]<<" ";
-      StrFunc::writeMCNPX(cx.str(),OX);      
+      StrFunc::writeMCNPX(cx.str(),OX);
     }
   if (lcbActive)
     {
@@ -286,7 +286,7 @@ LSwitchCard::write(std::ostream& OX) const
       cx<<"lcb ";
       for(size_t i=0;i<lcbActive;i++)
 	cx<<lcbVal[i]<<" ";
-      StrFunc::writeMCNPX(cx.str(),OX);      
+      StrFunc::writeMCNPX(cx.str(),OX);
     }
 
   return;

@@ -25,6 +25,7 @@
 class Token;
 namespace Geometry
 {
+  struct interPoint;
   class Plane;
 }
  
@@ -76,6 +77,8 @@ class Object
   /// Calc in/out 
   int calcInOut(const int,const int) const;
   void clearValid();
+
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
  protected:
   
@@ -219,8 +222,9 @@ class Object
 
   // INTERSECTION
   int hasIntercept(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  int hasForwardIntercept(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
-  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+  Geometry::interPoint
   trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
   Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
@@ -230,10 +234,9 @@ class Object
 				    const Geometry::Vec3D&,
 				    const Geometry::Vec3D&) const;
 
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
-  int trackCell(const MonteCarlo::particle&,double&,
-		const Geometry::Surface*&,
+  int trackCell(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		double&,const Geometry::Surface*&,
 		const int) const;
 
   int trackDirection(const int,

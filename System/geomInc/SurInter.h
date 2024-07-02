@@ -3,7 +3,7 @@
  
  * File:   geomInc/SurInter.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ class HeadRule;
 
 namespace Geometry
 {
+  struct interPoint;
   class Intersect;
   
   class Surface;
@@ -84,8 +85,16 @@ Geometry::Vec3D
 nearPoint(const std::vector<Geometry::Vec3D>&,
 	  const Geometry::Vec3D&);
 
-size_t
-closestPt(const std::vector<Geometry::Vec3D>&,
+Geometry::Vec3D
+nearPoint(const std::vector<Geometry::interPoint>&,
+	  const Geometry::Vec3D&);
+
+// size_t
+// closestPt(const std::vector<Geometry::Vec3D>&,
+// 	  const Geometry::Vec3D&);
+
+const Geometry::interPoint&
+closestPt(const std::vector<Geometry::interPoint>&,
 	  const Geometry::Vec3D&);
 
 std::pair<Geometry::Vec3D,int>

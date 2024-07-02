@@ -467,9 +467,6 @@ Acomp::expandBracket()
     Expand all the Intersection brackets
   */
 {
-  static int cnt(0);
-
-  cnt++;
   // all lower units
   for(Acomp& AC : Comp)
     AC.expandBracket();
@@ -864,9 +861,6 @@ Acomp::expandCNFBracket()
 {
   ELog::RegMethod RegA("Acomp","expandCNFBracket");
 
-  static int cnt(0);
-  cnt++;
-
   // all lower units
   for(Acomp& AC : Comp)
     AC.expandCNFBracket();
@@ -897,7 +891,6 @@ Acomp::expandCNFBracket()
       clearNulls();
     }
   while(removeUnionPair());
-  cnt--;
   return;
 }
 

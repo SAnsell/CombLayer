@@ -3,7 +3,7 @@
  
  * File:   visit/Visit.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "Visit.h"
 
@@ -182,7 +183,7 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
 
 void
 Visit::populateLine(const Simulation& System,
-		    const std::set<std::string>& Active)
+		    const std::set<std::string>&)
   /*!
     The big population call with lines
     \param System :: Simulation system
@@ -220,27 +221,26 @@ Visit::populateLine(const Simulation& System,
   for(size_t i=0;i<nA;i++)
     for(size_t j=0;j<nB;j++)
       { 
-	std::vector<double> distVec;
-	std::vector<MonteCarlo::Object*> cellVec;
-	
 	const Geometry::Vec3D aVec=Origin+
 	  XStep*(static_cast<double>(i)+0.5)+
 	  YStep*(static_cast<double>(j)+0.5);
 
 	ModelSupport::LineTrack OTrack(aVec,aVec+longStep);
 	OTrack.calculate(System);
-	OTrack.createCellPath(cellVec,distVec);
 
 	double T=0.0;
 	size_t index(0);
-	for(size_t ii=0;ii<cellVec.size();ii++)
+	for(const ModelSupport::LineUnit& lu : OTrack.getTrackPts())
 	  {
-	    T+=distVec[ii];
-	    const long int mid=Visit::procPoint(T,stepXYZ[IMax]);
-	    const double mValue=getResult(cellVec[ii]);
-	    
-	    for(long int cnt=0;cnt<mid;cnt++)
-	      getMeshUnit(IMax,index++,i,j)=mValue;
+	    T+=lu.segmentLength;
+	    // number of step through fem object
+	    if (lu.objPtr)
+	      {
+		const size_t mid=Visit::procPoint(T,stepXYZ[IMax]);
+		const int mValue=getResult(lu.objPtr);
+		for(size_t cnt=0;cnt<mid;cnt++)
+		  getMeshUnit(IMax,index++,i,j)=mValue;
+	      }
 	  }
       }
   

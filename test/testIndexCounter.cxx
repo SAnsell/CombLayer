@@ -3,7 +3,7 @@
  
  * File:   test/testIndexCounter.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,12 +64,14 @@ testIndexCounter::applyTest(const int extra)
   typedef int (testIndexCounter::*testPtr)();
   testPtr TPtr[]=
     {
-      &testIndexCounter::testAddition
+      &testIndexCounter::testAddition,
+      &testIndexCounter::testSimple
     };
 
   std::string TestName[]=
     {
-      "Addition"
+      "Addition",
+      "Simple"
     };
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
@@ -112,7 +114,7 @@ testIndexCounter::testAddition()
   std::vector<TTYPE> Tests({
       {3,4,5,40,2,0,0},
       {3,4,5,80,1,0,0},
-	{3,4,5,-40,1,0,0}
+      {3,4,5,-40,1,0,0}
     });
   //  Tests.push_back(TTYPE(3,4,5,80,1,0,0));
   //  Tests.push_back(TTYPE
@@ -122,10 +124,11 @@ testIndexCounter::testAddition()
     {
       IndexCounter<size_t> RX(std::get<0>(tc),std::get<1>(tc),std::get<2>(tc));
       const bool plusFlag(std::get<3>(tc)>0);
-      const size_t maxPlus(std::abs(std::get<3>(tc)));
+      const size_t maxPlus=
+	static_cast<size_t>(std::abs(std::get<3>(tc)));
       for(size_t i=0;i<maxPlus;i++)
 	{
-	  if (plusFlag)
+	  if (plusFlag) 
 	    RX++;
 	  else
 	    RX--;
@@ -144,8 +147,22 @@ testIndexCounter::testAddition()
 	}
       cnt++;
     }
+  return 0;
+}
 
-      
+int
+testIndexCounter::testSimple()
+  /*!
+    Simple output check
+   */
+{
+  ELog::RegMethod RegA("testRotCounter","testSimple");
 
+  IndexCounter<int,1> RX(3UL,6);
+  for(size_t i=0;i<80;i++)
+    {
+      //      ELog::EM<<"RX["<<i<<"] == "<<RX<<ELog::endDiag;
+      RX++;
+    }
   return 0;
 }

@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,8 +57,7 @@
 #include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -70,9 +69,9 @@ namespace essSystem
 {
 
 CylPreMod::CylPreMod(const std::string& Key) :
+  attachSystem::FixedComp(Key,6),
   attachSystem::ContainedGroup("Main","BlockA","BlockB"),
   attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,6),
   ExtAObj(new BlockAddition(Key+"ABlock")),
   ExtBObj(new BlockAddition(Key+"BBlock"))
 
@@ -90,8 +89,9 @@ CylPreMod::CylPreMod(const std::string& Key) :
 
 
 CylPreMod::CylPreMod(const CylPreMod& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),  
+  attachSystem::FixedComp(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::LayerComp(A),
   ExtAObj(A.ExtAObj),
   ExtBObj(A.ExtBObj),blockActiveA(A.blockActiveA),
   blockActiveB(A.blockActiveB),aSide(A.aSide),bSide(A.bSide),
@@ -117,9 +117,10 @@ CylPreMod::operator=(const CylPreMod& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+
       ExtAObj=A.ExtAObj;
       ExtBObj=A.ExtBObj;
       blockActiveA=A.blockActiveA;

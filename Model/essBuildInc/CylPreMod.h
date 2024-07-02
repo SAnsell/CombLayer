@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CylPreMod.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,10 @@ namespace essSystem
   \brief Specialized for a cylinder moderator
 */
 
-class CylPreMod : public attachSystem::ContainedGroup,
-    public attachSystem::LayerComp,
-    public attachSystem::FixedComp
+class CylPreMod :
+    public attachSystem::FixedComp,
+    public attachSystem::ContainedGroup,
+    public attachSystem::LayerComp
 {
  private:
   
@@ -96,7 +97,8 @@ class CylPreMod : public attachSystem::ContainedGroup,
   virtual std::string getLayerString(const size_t,const long int) const;
 
   using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int) override;
     
 };
 

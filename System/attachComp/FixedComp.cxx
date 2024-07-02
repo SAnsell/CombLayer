@@ -1717,7 +1717,7 @@ FixedComp::hasLinkPt(const long int sideIndex) const
   /*!
     Accessor to the link point
     \param sideName :: named link point
-    \return True if link poni tset
+    \return True if link point set
   */
 {
   ELog::RegMethod RegA("FixedComp","hasLinkPt[LI]:"+keyName);
@@ -1738,7 +1738,7 @@ FixedComp::hasLinkSurf(const long int sideIndex) const
   /*!
     Accessor to the link point
     \param sideName :: named link point
-    \return True if link poni tset
+    \return True if link point set
   */
 {
   ELog::RegMethod RegA("FixedComp","hasLinkSurf[LI]:"+keyName);

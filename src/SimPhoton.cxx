@@ -3,7 +3,7 @@
  
  * File:   simMC/SimPhoton.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "surfRegister.h"
 #include "HeadRule.h"

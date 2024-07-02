@@ -3,7 +3,7 @@
  
  * File:   modelSupport/pipeSupport.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "HeadRule.h"
 #include "Importance.h"
 #include "Object.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 
 ///\file System/modelSupport/pipeSupport.cxx
@@ -72,14 +73,7 @@ calcLineTrack(Simulation& System,
   
   LineTrack LT(XP,YP);
   LT.calculate(System);
-  const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-  std::vector<MonteCarlo::Object*>::const_iterator oc;
-  for(oc=OVec.begin();oc!=OVec.end();oc++)
-    {
-      const int ONum=(*oc)->getName();
-      if (OMap.find(ONum)==OMap.end())
-	OMap.insert(MTYPE::value_type(ONum,(*oc)));
-    }
+  LT.populateObjMap(OMap);
   return;
 }
   

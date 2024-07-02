@@ -1,7 +1,7 @@
 set (modelSupportSources
     BoxLine.cxx boxUnit.cxx boxValues.cxx 
     createDivide.cxx defaultConfig.cxx DivideGrid.cxx 
-    generateSurf.cxx LineTrack.cxx masterWrite.cxx 
+    generateSurf.cxx LineTrack.cxx LineUnit.cxx masterWrite.cxx 
     MaterialSupport.cxx MaterialUpdate.cxx mergeDist.cxx 
     ObjectAddition.cxx objectRegister.cxx ObjectTrackAct.cxx 
     ObjectTrackPlane.cxx ObjectTrackPoint.cxx ObjSurfMap.cxx 
@@ -38,6 +38,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/DivideGrid.cxx
   ${tarDIR}/generateSurf.cxx
   ${tarDIR}/LineTrack.cxx
+  ${tarDIR}/LineUnit.cxx
   ${tarDIR}/masterWrite.cxx
   ${tarDIR}/MaterialSupport.cxx
   ${tarDIR}/MaterialUpdate.cxx
@@ -73,6 +74,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/DivideGrid.h
   ${tarINC}/generateSurf.h
   ${tarINC}/LineTrack.h
+  ${tarINC}/LineUnit.h
   ${tarINC}/masterWrite.h
   ${tarINC}/MaterialSupport.h
   ${tarINC}/MaterialUpdate.h

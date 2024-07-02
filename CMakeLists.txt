@@ -146,6 +146,10 @@ add_executable (ess
   Main/ess.cxx
 )
 
+add_executable (essBeamline
+  Main/essBeamline.cxx
+)
+
 add_executable (fullBuild
   Main/fullBuild.cxx
 )
@@ -208,6 +212,15 @@ set(MAXIV_LIB
 )
 
 target_link_libraries(ess
+  "-Wl,--start-group"
+  ${SYSTEM_LIB}
+  ${ESS_LIB}
+  GSL::gsl
+  fmt::fmt
+  "-Wl,--end-group"
+)
+
+target_link_libraries(essBeamline
   "-Wl,--start-group"
   ${SYSTEM_LIB}
   ${ESS_LIB}
@@ -325,6 +338,15 @@ target_include_directories (testMain
 )
 
 target_include_directories (ess
+  PUBLIC
+  ${SYSTEM_INCLUDE}
+  ${GENERAL_INCLUDE}
+  ${ESS_INCLUDE}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_include_directories (essBeamline
   PUBLIC
   ${SYSTEM_INCLUDE}
   ${GENERAL_INCLUDE}

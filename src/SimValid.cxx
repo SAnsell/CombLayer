@@ -3,7 +3,7 @@
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@
 #include "Importance.h"
 #include "Object.h"
 #include "ObjSurfMap.h"
+#include "interPoint.h"
 #include "particle.h"
 #include "eTrack.h"
 #include "surfRegister.h"
@@ -58,6 +59,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -104,7 +106,7 @@ SimValid::operator=(const SimValid& A)
 
 
 bool
-SimValid::nextPoint(const std::vector<Geometry::Vec3D>& TPts,
+SimValid::nextPoint(const std::vector<Geometry::interPoint>& TPts,
 		    size_t& indexA,size_t& indexB,size_t& indexC,
 		    Geometry::Vec3D& outPt)
 /*!
@@ -133,9 +135,9 @@ SimValid::nextPoint(const std::vector<Geometry::Vec3D>& TPts,
       if (indexB>=TPts.size())
 	return 0;
     }
-  const Geometry::Vec3D diffV=(TPts[indexB]-TPts[indexA])
+  const Geometry::Vec3D diffV=(TPts[indexB].Pt-TPts[indexA].Pt)
     /static_cast<double>(midSlice);
-  outPt=TPts[indexA]+diffV*static_cast<double>(indexC);
+  outPt=TPts[indexA].Pt+diffV*static_cast<double>(indexC);
 
   return 1;
 }
@@ -172,9 +174,11 @@ SimValid::checkPoint(const Geometry::Vec3D& TP,
       
       if (foundSet.size()!=1)
 	{
-	  ELog::EM<<"Flag["<<CylN<<" "<<PlnN<<"] -- :"<<surfState[CylN]<<" "<<surfState[PlnN]<<ELog::endDiag;
+	  ELog::EM<<"Flag["<<CylN<<" "<<PlnN<<"] -- :"
+		  <<surfState[CylN]<<" "<<surfState[PlnN]<<ELog::endDiag;
 	  for(const MonteCarlo::Object* fObj : foundSet)
-	    ELog::EM<<"Valid["<<fObj->getName()<<"] "<<fObj->getHeadRule().display(TP)<<"\n";
+	    ELog::EM<<"Valid["<<fObj->getName()<<"] "
+		    <<fObj->getHeadRule().display(TP)<<"\n";
 	  return 0;
 	}
     } while (!MapSupport::iterateBinMap<int>(surfState,-1,1));
@@ -186,7 +190,7 @@ bool
 SimValid::findTouch(const MonteCarlo::Object* OPtr,
 		    const Geometry::Cylinder* CPtr,
 		    const Geometry::Plane* PPtr,		    
-		    std::vector<Geometry::Vec3D>& TPts)
+		    std::vector<Geometry::interPoint>& TPts)
   /*! 
     Check if an object has a touch
     \param OPtr :: Object Ptr
@@ -214,8 +218,7 @@ SimValid::findTouch(const MonteCarlo::Object* OPtr,
 	  Geometry::Vec3D tPoint=COrg-PAxis*dist;
 	  // Line of intersection
 	  const HeadRule mainHR=OPtr->getHeadRule();
-	  std::vector<int> SNum;
-	  mainHR.calcSurfIntersection(tPoint,CAxis,TPts,SNum);
+	  mainHR.calcSurfIntersection(tPoint,CAxis,TPts);
 	  if (TPts.size()>1) return 1;
 	}
     }
@@ -254,7 +257,7 @@ SimValid::calcTouch(const Simulation& System) const
       for(const Geometry::Cylinder* CPtr : CylSet)
 	for(const Geometry::Plane* PPtr : PlaneSet)
 	  {
-	    std::vector<Geometry::Vec3D> TPts;
+	    std::vector<Geometry::interPoint> TPts;
 	    if (findTouch(OPtr,CPtr,PPtr,TPts))
 	      {
 		const int CylN=CPtr->getName();
@@ -292,13 +295,35 @@ SimValid::calcTouch(const Simulation& System) const
     }
   return;
 }
-  
+
+
+bool
+SimValid::runUnit(const Simulation& System,
+		  const Geometry::Vec3D& initPos,
+		  const Geometry::Vec3D& axis,
+		  MonteCarlo::Object* initObj) 
+  /*!
+    Runs a single unit:
+    \param System :: Simulation
+    \param initPos :: Inital position
+   */
+{
+  static ModelSupport::LineTrack LT(initPos,axis,1e38);
+
+  LT.setPts(initPos,axis);
+  LT.clearAll();
+  //  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
+
+  return (LT.calculate(System,initObj)) ? 0 : 1;
+} 
+
 void
 SimValid::diagnostics(const Simulation& System,
 		     const std::vector<simPoint>& Pts) const
   /*!
     Write out some diagnostic information
-    \param System :: simuation to sued
+    \param System :: simuation to use
+    \param Pts :: Points in track
    */
 {
   ELog::RegMethod RegA("SimValid","diagnostics");
@@ -354,7 +379,7 @@ SimValid::diagnostics(const Simulation& System,
       ELog::EM<<"TRACK to NEXT"<<ELog::endDiag;
       ELog::EM<<"--------------"<<ELog::endDiag;
       
-      OPtr->trackCell(TNeut,aDist,SPtr,abs(SN));
+      OPtr->trackCell(TNeut.Pos,TNeut.uVec,aDist,SPtr,abs(SN));
     }
 
   return;
@@ -373,13 +398,9 @@ SimValid::runPoint(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("SimValid","runPoint");
-  ELog::debugMethod DebA;
-
+  
   std::set<Geometry::Vec3D> MultiPoint;
-  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
   MonteCarlo::Object* InitObj(0);
-  const Geometry::Surface* SPtr;          // Output surface
-  double aDist;       
 
   // Note for sphere that you can use X,Y,Z in any orthogonal 
   // directiron
@@ -389,6 +410,7 @@ SimValid::runPoint(const Simulation& System,
   //  Centre+=Geometry::Vec3D(0.001,0.001,0.001);
   int initSurfNum(0);
   Geometry::Vec3D Pt(CP);
+  //  Pt=Geometry::Vec3D(1443.65575933,1317.51292257,20.8777340012);
   do
     {
       if (initSurfNum)
@@ -415,39 +437,24 @@ SimValid::runPoint(const Simulation& System,
       Geometry::Vec3D uVec(cos(theta)*sin(phi),
 			     sin(theta)*sin(phi),
 			     cos(phi));
-      MonteCarlo::eTrack TNeut(Pt,uVec);
+
+      MonteCarlo::eTrack THold(Pt,uVec);
       MonteCarlo::Object* OPtr=InitObj;
       int SN(-initSurfNum);
 
-      Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
-      while(OPtr && !OPtr->isZeroImp())
+      Pts.push_back(simPoint(Pt,uVec,OPtr->getName(),SN,OPtr));
+
+      bool outFlag=runUnit(System,Pt,uVec,InitObj);
+      if (!outFlag)
 	{
-	  // Note: Need OPPOSITE Sign on exiting surface
-	  SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);
-
-	  // This is needed because sometimes we are on a multiway surf
-	  // boundary e.g. circles in contact
-	  if (!SN)
-	    {
-	      if (MultiPoint.find(TNeut.Pos)==MultiPoint.end())
-		MultiPoint.emplace(TNeut.Pos);
-
-	      TNeut.moveForward(Geometry::zeroTol*5.0);
-	      OPtr=System.findCell(TNeut.Pos,0);
-	      if (OPtr)
-		SN= OPtr->trackCell(TNeut,aDist,SPtr,SN);		
-	    }
-	  TNeut.moveForward(aDist);
-	  Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
-
-	  OPtr=(SN) ?
-	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;
-	}
-
-      if (!OPtr)
-	{
+	  bool newFlag=runUnit(System,Pt,uVec,InitObj);
+	  ELog::EM<<"NEW FLAG == "<<newFlag<<ELog::endDiag;
 	  ELog::EM<<"OPtr not found["<<i<<"] at : "<<Pt<<ELog::endCrit;
+	  ELog::EM<<"EHOLD:"<<THold<<ELog::endCrit;
+	  ELog::EM<<"EHOLD:"<<CP<<ELog::endCrit;
 	  ELog::EM<<"Line SEARCH == "<<i<<ELog::endCrit;
+	  for(const simPoint& SP : Pts)
+	    ELog::EM<<"Pt == "<<SP<<ELog::endDiag;
 	  ModelSupport::LineTrack LT(Pt,uVec,10000.0);
 	  LT.calculate(System);
 	  ELog::EM<<"LT == "<<LT<<ELog::endDiag;
@@ -457,9 +464,10 @@ SimValid::runPoint(const Simulation& System,
 	    ELog::EM<<"Failed to calculate INITIAL cell correctly: "<<ELog::endCrit;
 	  else
 	    ELog::EM<<"Initial Cell ="<<*InitObj<<ELog::endDiag;
-	  diagnostics(System,Pts);
+	  //	  diagnostics(System,Pts);
 	  return 0;
 	}
+
     }
   return 1;
 }

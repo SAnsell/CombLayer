@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/ObjectTrackAct.h
+ * File:   modelSupportInc/ObjectTrackAct.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ class ObjectTrackAct
   typedef std::map<long int,LineTrack> itemTYPE;
   /// Main data information set [Object : ItemTrack]
   itemTYPE Items; 
-  
+
  public:
 
   ObjectTrackAct();
@@ -84,7 +84,7 @@ class ObjectTrackAct
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
 
   const LineTrack& getLine(const long int) const;
-  void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
+
   void createMatPath(std::vector<int>&,std::vector<double>&) const;
   
   virtual void write(std::ostream&) const =0;

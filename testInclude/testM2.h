@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testRotCounter.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   testInclude/testM2.h
+ *
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,36 +16,37 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testRotCounter_h
-#define testRotCounter_h 
+#ifndef testM2_h
+#define testM2_h 
 
 /*!
-  \class testRotCounter
-  \brief Tests the limited range counter
-  \author S. Ansell
-  \date Nov. 2005
+  \class testM2 
+  \brief Test class for the multiData layout
   \version 1.0
+  \date October 2023
+  \author S.Ansell
   
-  Test the ability to go 1.2.3.4.0.1 etc 
+
 */
 
-class testRotCounter 
+class testM2 
 {
 private:
 
-
   //Tests 
-  int testAddition();
- 
-public:
+  int testInit();
+  int testEigenValues();
 
-  testRotCounter();
-  ~testRotCounter();
+ public:
 
-  int applyTest(const int);     
+  testM2();
+  ~testM2();
+
+  int applyTest(const int extra);
+  
 };
 
 #endif

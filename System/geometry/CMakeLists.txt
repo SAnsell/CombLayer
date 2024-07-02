@@ -4,8 +4,9 @@ set (geometrySources
     CylCan.cxx Cylinder.cxx DblLine.cxx 
     Edge.cxx Ellipse.cxx Ellipsoid.cxx 
     EllipticCyl.cxx Face.cxx General.cxx 
-    geomSupport.cxx Intersect.cxx Line.cxx 
-    localRotate.cxx MBrect.cxx Mesh3D.cxx 
+    geomSupport.cxx interPoint.cxx Intersect.cxx
+    Line.cxx localRotate.cxx M2.cxx M3.cxx
+    MBrect.cxx Mesh3D.cxx 
     MeshGrid.cxx NullSurface.cxx Plane.cxx 
     Pnt.cxx Quadratic.cxx Quadrilateral.cxx 
     Quaternion.cxx RecTriangle.cxx SglLine.cxx 
@@ -49,9 +50,12 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/Face.cxx
   ${tarDIR}/General.cxx
   ${tarDIR}/geomSupport.cxx
+  ${tarDIR}/interPoint.cxx
   ${tarDIR}/Intersect.cxx
   ${tarDIR}/Line.cxx
   ${tarDIR}/localRotate.cxx
+  ${tarDIR}/M2.cxx
+  ${tarDIR}/M3.cxx
   ${tarDIR}/MBrect.cxx
   ${tarDIR}/Mesh3D.cxx
   ${tarDIR}/MeshGrid.cxx
@@ -93,9 +97,12 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/Face.h
   ${tarINC}/General.h
   ${tarINC}/geomSupport.h
+  ${tarINC}/interPoint.h
   ${tarINC}/Intersect.h
   ${tarINC}/Line.h
   ${tarINC}/localRotate.h
+  ${tarINC}/M2.h
+  ${tarINC}/M3.h
   ${tarINC}/MBrect.h
   ${tarINC}/Mesh3D.h
   ${tarINC}/MeshGrid.h

@@ -3,7 +3,7 @@
  
  * File:   tally/pointTally.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <fstream>
 #include <cmath>
-#include <cstdlib>
 #include <complex>
 #include <string>
 #include <sstream>
@@ -48,6 +47,7 @@
 #include "Vec3D.h"
 #include "localRotate.h"
 #include "masterRotate.h"
+#include "interPoint.h"
 #include "Triple.h"
 #include "NRange.h"
 #include "NList.h"
@@ -463,10 +463,9 @@ pointTally::setProjectionCentre(const Geometry::Vec3D& Cp,
   ELog::RegMethod RegA("pointTally","setProjectionCentre");
 
   Geometry::Plane PA=calcPlane();
+
   MonteCarlo::LineIntersectVisit BeamLine(Cp,Axis);
-  double D=BeamLine.getDist(&PA);
-  D+=Extra;
-  Centre=BeamLine.getTrack().getPoint(D);
+  Centre=BeamLine.getPoint(&PA)+Axis.unit()*Extra;
   return;
 }
 

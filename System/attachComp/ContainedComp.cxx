@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedComp.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "BaseModVisit.h"
 #include "writeSupport.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "SurInter.h"
 #include "Rules.h"
@@ -327,10 +328,10 @@ ContainedComp::surfOuterIntersect(const Geometry::Line& LA) const
 
   if (outerSurf.hasRule())
     {
-      const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+      const Geometry::interPoint
 	result=outerSurf.trackSurfIntersect(LA.getOrigin(),LA.getDirect());
 
-      return std::get<0>(result);
+      return result.SNum;
     }
   return 0;
 }

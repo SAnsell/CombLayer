@@ -3,7 +3,7 @@
  
  * File:   source/RectangleSource.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "particleConv.h"
@@ -61,7 +62,7 @@ namespace SDef
 {
 
 RectangleSource::RectangleSource(const std::string& keyName) : 
-  attachSystem::FixedOffsetUnit(keyName,0),
+  attachSystem::FixedRotate(keyName,0),
   SourceBase(),
   width(1.0),height(1.0),angleSpread(0.0)
   /*!
@@ -71,7 +72,7 @@ RectangleSource::RectangleSource(const std::string& keyName) :
 {}
 
 RectangleSource::RectangleSource(const RectangleSource& A) : 
-  attachSystem::FixedOffsetUnit(A),SourceBase(A),
+  attachSystem::FixedRotate(A),SourceBase(A),
   width(A.width),height(A.height),
   angleSpread(A.angleSpread)
   /*!
@@ -90,7 +91,7 @@ RectangleSource::operator=(const RectangleSource& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       SourceBase::operator=(A);
       width=A.width;
       height=A.height;
@@ -125,29 +126,13 @@ RectangleSource::populate(const mainSystem::MITYPE& inputMap)
 {
   ELog::RegMethod RegA("RectangleSource","populate");
 
-  FixedOffset::populate(inputMap);
+  FixedRotate::populate(inputMap);
   SourceBase::populate(inputMap);
   
   mainSystem::findInput<double>(inputMap,"height",0,height);
   mainSystem::findInput<double>(inputMap,"width",0,width);
   mainSystem::findInput<double>(inputMap,"aSpread",0,angleSpread);
   
-  return;
-}
-
-void
-RectangleSource::createUnitVector(const attachSystem::FixedComp& FC,
-				  const long int linkIndex)
-  /*!
-    Create the unit vector
-    \param FC :: Fixed Componenet
-    \param linkIndex :: Link index [signed for opposite side]
-   */
-{
-  ELog::RegMethod RegA("RectangleSource","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyOffset();
   return;
 }
   

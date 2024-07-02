@@ -3,7 +3,7 @@
  
  * File:   photon/TubeCollimator.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfRegister.h"
@@ -62,7 +63,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "gridUnit.h"
 #include "hexUnit.h"
@@ -72,8 +73,8 @@ namespace photonSystem
 {
 
 TubeCollimator::TubeCollimator(const std::string& Key)  :
-  attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -81,7 +82,7 @@ TubeCollimator::TubeCollimator(const std::string& Key)  :
 {}
 
 TubeCollimator::TubeCollimator(const TubeCollimator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   layoutType(A.layoutType),boundaryType(A.boundaryType),
   nLinks(A.nLinks),nTubeLayers(A.nTubeLayers),GGrid(A.GGrid),
   length(A.length),radius(A.radius),wallThick(A.wallThick),
@@ -106,7 +107,7 @@ TubeCollimator::operator=(const TubeCollimator& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       layoutType=A.layoutType;
       boundaryType=A.boundaryType;
       nLinks=A.nLinks;
@@ -159,7 +160,7 @@ TubeCollimator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VacuumVessel","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -602,17 +603,16 @@ TubeCollimator::calcBoundary(constructSystem::gridUnit* APtr) const
 	  //          Geometry::Vec3D LineNormal=((MidPt-CentPt)*Y).unit();
 	  const Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
 	  
-	  std::vector<Geometry::Vec3D> Pts;
-	  std::vector<int> SNum;
+	  std::vector<Geometry::interPoint> Pts;
 	  HeadRule InnerControl(APtr->getInner());
 	  InnerControl.populateSurf();
 	  
-	  if (voidBoundary.calcSurfIntersection(MidPt,LineNormal,Pts,SNum))
+	  if (voidBoundary.calcSurfIntersection(MidPt,LineNormal,Pts))
 	    {
-	      for(size_t j=0;j<SNum.size();j++)
+	      for(const Geometry::interPoint& PItem : Pts)
 		{
-		  if (InnerControl.isSideValid(Pts[j],SNum[j]))
-		    outHR*=HeadRule(-SNum[j]);
+		  if (InnerControl.isSideValid(PItem.Pt,PItem.SNum))
+		    outHR*=HeadRule(-PItem.SNum);
 		}
 	    }
 	}

@@ -3,7 +3,7 @@
  
  * File:   photonInc/TableSupport.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,12 +43,12 @@ namespace photonSystem
   Cylindrical with semi-spherical front/back Doors
 */
 
-class TableSupport : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
+class TableSupport : 
+  public attachSystem::FixedRotate,
+  public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
-
 
   double length;              ///< Outer thickenss
   double width;               ///< width of back volume
@@ -57,9 +57,6 @@ class TableSupport : public attachSystem::ContainedComp,
   int mat;                     ///< Outer material
   
   void populate(const FuncDataBase&) override;
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int) override;
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -70,7 +67,8 @@ class TableSupport : public attachSystem::ContainedComp,
   TableSupport(const TableSupport&);
   TableSupport& operator=(const TableSupport&);
   ~TableSupport() override;
-  
+
+  using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;
 };

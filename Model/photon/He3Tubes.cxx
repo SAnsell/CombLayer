@@ -3,7 +3,7 @@
  
  * File:   photon/He3Tubes.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,10 +55,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "ContainedComp.h"
 #include "He3Tubes.h"
 
 
@@ -66,17 +66,18 @@ namespace photonSystem
 {
       
 He3Tubes::He3Tubes(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
   */
-{
-}
+{}
 
 He3Tubes::He3Tubes(const He3Tubes& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),  
   nTubes(A.nTubes),
   length(A.length),radius(A.radius),wallThick(A.wallThick),
@@ -97,8 +98,8 @@ He3Tubes::operator=(const He3Tubes& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       nTubes=A.nTubes;
       length=A.length;
@@ -136,7 +137,7 @@ He3Tubes::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("He3Tubes","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   nTubes=Control.EvalVar<size_t>(keyName+"NTubes");
   if (nTubes)
@@ -154,42 +155,35 @@ He3Tubes::populate(const FuncDataBase& Control)
 }
 
 void
-He3Tubes::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Link point surface to use as origin/basis.
-  */
-{
-  ELog::RegMethod RegA("He3Tubes","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  return;
-}
-
-void
 He3Tubes::createSurfaces()
   /*!
     Create simple structures
   */
 {
   ELog::RegMethod RegA("He3Tubes","createSurfaces");
-
   
   // boundary surfaces
-  const double offset(radius+1.01*wallThick);  
+  const double offset(radius+1.01*wallThick);
+  const Geometry::Vec3D LCentPt=
+    Origin-X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0);
+  const Geometry::Vec3D RCentPt=
+    Origin+X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0);
+
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*offset,Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*offset,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+3,
-			   Origin-X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,LCentPt,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,RCentPt,X);
+
+  
+  ModelSupport::buildPlane
+    (SMap,buildIndex+4,
+     Origin+X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(length/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(length/2.0),Z);
 
-  Geometry::Vec3D CentPt(Origin-X*(separation*
-				   (static_cast<double>(nTubes)-1.0)/2.0));
+
+  Geometry::Vec3D CentPt=
+    Origin-X*(separation*(static_cast<double>(nTubes)-1.0)/2.0);
 
   int tubeIndex(buildIndex);
   for(size_t i=0;i<nTubes;i++)
@@ -211,27 +205,25 @@ He3Tubes::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("He3Tubes","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   int tubeIndex(buildIndex);
-  std::string box;
+  HeadRule boxHR;
   for(size_t i=0;i<nTubes;i++)
     {
-      Out=ModelSupport::getComposite(SMap,buildIndex,tubeIndex," 5 -6 -7M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,mat,0.0,Out));
-      addCell("He",cellIndex-1);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,tubeIndex,"5 -6 -7M");
+      makeCell("He",System,cellIndex++,mat,0.0,HR);
       
-      Out=ModelSupport::getComposite(SMap,buildIndex,tubeIndex,"5 -6 7M -17M ");
-      System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
-      addCell("Wall",cellIndex-1);
-      box += ModelSupport::getComposite(SMap,tubeIndex," 17 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,tubeIndex,"5 -6 7M -17M ");
+      makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+
+      boxHR *= HeadRule(SMap,tubeIndex,17);
       tubeIndex+=100;
     }
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out+box));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  makeCell("Outer",System,cellIndex++,0,0.0,HR*boxHR);
   
-  addOuterSurf(Out);
-
+  addOuterSurf(HR);
   return; 
 }
 
@@ -243,7 +235,6 @@ He3Tubes::createLinks()
 {  
   ELog::RegMethod RegA("He3Tubes","createLinks");
   
-
   FixedComp::setConnect(4,Origin-Z*(length/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 

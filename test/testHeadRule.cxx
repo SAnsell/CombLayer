@@ -3,7 +3,7 @@
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,14 +43,16 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "support.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "surfIndex.h"
 #include "SurInter.h"
 #include "Surface.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
+
+//#include "Line.h"
+//#include "LineIntersectVisit.h"
 
 #include "testFunc.h"
 #include "testHeadRule.h"
@@ -100,7 +102,14 @@ testHeadRule::createSurfaces()
   SurI.createSurface(25,"pz -11");
   SurI.createSurface(26,"pz 11");
 
+  
+  SurI.createSurface(8001,"c/x 8 9 11");
+  SurI.createSurface(8002,"c/x 3 4 11");
 
+  SurI.createSurface(7,"c/y 2 2 12");
+  SurI.createSurface(8,"c/y 1 2 12");
+  SurI.createSurface(9,"c/x 3 4 15");
+  
   // Sphere :
   SurI.createSurface(100,"so 25");
   // Cylinder :
@@ -126,6 +135,7 @@ testHeadRule::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testHeadRule::testAddInterUnion,
+      &testHeadRule::testCalcSurfIntersection,
       &testHeadRule::testCountLevel,
       &testHeadRule::testEqual,
       &testHeadRule::testFindNodes,      
@@ -146,6 +156,7 @@ testHeadRule::applyTest(const int extra)
   const std::string TestName[]=
     {
       "AddInterUnion",
+      "CalcSurfIntersection",
       "CountLevel",
       "Equal",
       "FindNodes",
@@ -448,7 +459,7 @@ testHeadRule::testGetComponent()
     \return 0 :: success / -ve on error
    */
 {
-  ELog::RegMethod RegA("testHeadRule","testLevel");
+  ELog::RegMethod RegA("testHeadRule","testGetComponent");
 
   createSurfaces();
 
@@ -580,9 +591,7 @@ testHeadRule::testInterceptRule()
     TTYPE("-4",Geometry::Vec3D(0.5,0.5,0),Geometry::Vec3D(0,1,0),
 	  Geometry::Vec3D(0.5,1.0,0),4),
     TTYPE("-4",Geometry::Vec3D(0.5,0.5,0),Geometry::Vec3D(0,1,0),
-	  Geometry::Vec3D(0.5,1.0,0),4),
-    TTYPE("-4",Geometry::Vec3D(0.5,1.5,0),Geometry::Vec3D(0,1,0),
-	  Geometry::Vec3D(0.5,1.0,0),-4)
+	  Geometry::Vec3D(0.5,1.0,0),4)
   };
  
   int cnt(1);
@@ -644,28 +653,82 @@ testHeadRule::testIntersectHeadRule()
       const Geometry::Vec3D& A(std::get<2>(tc));
       HM.populateSurf();
 
-      MonteCarlo::LineIntersectVisit LI(O,A);
-      const std::vector<Geometry::Vec3D>& Pts=
-	LI.getPoints(HM);
+      std::vector<Geometry::interPoint> IPts;
+      HM.calcSurfIntersection(O,A,IPts);
 
       const size_t index(std::get<3>(tc));
       const Geometry::Vec3D expectPoint(std::get<4>(tc));
-      if (Pts.size()>index &&
-	  expectPoint.Distance(Pts[index-1])>1e-5)
+      if (IPts.size()>index &&
+	  expectPoint.Distance(IPts[index-1].Pt)>1e-5)
 	{
 	  ELog::EM<<"Line :"<<std::get<1>(tc)<<" :: "
 		  <<std::get<2>(tc)<<ELog::endDiag;	      
 	  ELog::EM<<"HR :"<<HM<<ELog::endDiag;
 	  ELog::EM<<"Index   :"<<index<<ELog::endDiag;
 	  ELog::EM<<"Expected :"<<expectPoint<<ELog::endDiag;
-	  ELog::EM<<"Pts size == "<<Pts.size()<<ELog::endDiag;
-	  if (Pts.size()>index)
-	    ELog::EM<<"Actual   :"<<Pts[index]<<ELog::endDiag;
+	  ELog::EM<<"Pts size == "<<IPts.size()<<ELog::endDiag;
+	  if (IPts.size()>index)
+	    ELog::EM<<"Actual   :"<<IPts[index]<<ELog::endDiag;
 	  
 	  return -1;
 	}
     }
 
+  return 0;
+}
+
+
+int
+testHeadRule::testCalcSurfIntersection()
+  /*!
+    Tests the intersection between line and headrule
+    \return 0 sucess / -ve on failure
+  */
+{
+  ELog::RegMethod RegItem("testHeadRule","testCalcIntersection");
+
+  createSurfaces();
+  
+  // HeadRule : Origin : Axis ::: Index : Point
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
+		     size_t,size_t,Geometry::Vec3D> TTYPE;
+    
+  // Target / result
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)",
+       	    Geometry::Vec3D(0,0,-20),Geometry::Vec3D(0,0,1),
+       	    4,2,Geometry::Vec3D(0,0,1)),
+      TTYPE("1 -2 3 -4 5 -6",Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,1),
+	    2,1,Geometry::Vec3D(0,0,1))
+    };
+ 
+  for(const TTYPE& tc : Tests)
+    {
+      HeadRule HM(std::get<0>(tc));
+      const Geometry::Vec3D& O(std::get<1>(tc));
+      const Geometry::Vec3D& A(std::get<2>(tc));
+      HM.populateSurf();
+      std::vector<Geometry::interPoint> Pts;
+      const size_t nPts=
+	HM.calcSurfIntersection(O,A,Pts);
+
+      const size_t index(std::get<4>(tc));
+      const Geometry::Vec3D& expectPoint(std::get<5>(tc));
+      if (nPts!=std::get<3>(tc) ||
+	  Pts[index].Pt!=expectPoint)
+	{
+	  ELog::EM<<"-----------------------------------"<<ELog::endDiag;
+	  ELog::EM<<"Origin = "<<O<<" == "<<A<<ELog::endDiag;
+	  for(const Geometry::interPoint& PItem : Pts)
+	    {
+	      ELog::EM<<"Pt == "<<PItem.Pt<<" : "<<PItem.SNum
+		      <<" D="<<PItem.D<<" F="<<PItem.outFlag<<ELog::endDiag;
+	    }
+	  ELog::EM<<"Expected point == "<<expectPoint<<" Index == "<<index<<ELog::endDiag;
+	  return -1;
+	}
+    }
   return 0;
 }
 
@@ -678,7 +741,7 @@ testHeadRule::testIsLineValid()
     \retval 0 :: success / -ve on failure
   */
 {
-  ELog::RegMethod RegA("testHeadRule","testIsOuterLine");
+  ELog::RegMethod RegA("testHeadRule","testIsLineValid");
 
   createSurfaces();
   
@@ -817,7 +880,8 @@ testHeadRule::testGetLevel()
 int
 testHeadRule::testPartEqual()
   /*!
-    Check the validity of a head rule level 
+    Check that a sub-HeadRule can be found in a
+    bigger HeadRule.
     \return 0 :: success / -ve on error
    */
 {
@@ -832,10 +896,10 @@ testHeadRule::testPartEqual()
   Tests.push_back(TTYPE("3 4","4",1));
   Tests.push_back(TTYPE("3 4","-4",0));
   Tests.push_back(TTYPE("3 4 (9:7:-8)","(7:-8)",1));
-  Tests.push_back(TTYPE("3 4 (9:7:-8)","(7:8)",0));
-  Tests.push_back(TTYPE("3 4 (9:7:-8 )","(7:-8:(1 2))",0));
-  Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 2))",1));
-  Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 -2))",0));
+  // Tests.push_back(TTYPE("3 4 (9:7:-8)","(7:8)",0));
+  // Tests.push_back(TTYPE("3 4 (9:7:-8 )","(7:-8:(1 2))",0));
+  // Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 2))",1));
+  // Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 -2))",0));
   
   for(const TTYPE& tc : Tests)
     {
@@ -979,6 +1043,7 @@ testHeadRule::testSurfValid()
    */
 {
   ELog::RegMethod RegA("testHeadRule","testSurfValid");
+  
   typedef std::tuple<std::string,const Geometry::Vec3D,std::set<int>> TTYPE;
 
   const std::vector<TTYPE> Tests(

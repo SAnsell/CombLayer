@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monte/HeadRule.cxx
+ * File:   monte/HeadRule.cxx &
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "mathSupport.h"
 #include "stringCombine.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -138,11 +139,14 @@ HeadRule::HeadRule(const Rule* RPtr) :
     Creates a new rule
     \param RPtr :: Rule to clone as a top rule
   */
-{}
+{
+  populateSurf();
+}
 
 HeadRule::HeadRule(const HeadRule& A) :
   HeadNode((A.HeadNode) ? A.HeadNode->clone() : nullptr),
-  signPairedSurf(A.signPairedSurf)  	    
+  signPairedSurf(A.signPairedSurf),
+  surfSet(A.surfSet)
   /*!
     Copy constructor
     \param A :: Head rule to copy
@@ -150,8 +154,9 @@ HeadRule::HeadRule(const HeadRule& A) :
 {}
 
 HeadRule::HeadRule(HeadRule&& A) :
-  HeadNode(A.HeadNode),
-  signPairedSurf(A.signPairedSurf)
+  HeadNode(std::move(A.HeadNode)),
+  signPairedSurf(std::move(A.signPairedSurf)),
+  surfSet(std::move(A.surfSet))
   /*!
     Move constructor [needed because of explicit new ptr]
     \param A :: Head rule to move
@@ -173,6 +178,7 @@ HeadRule::operator=(const HeadRule& A)
       delete HeadNode;
       HeadNode=(A.HeadNode) ? A.HeadNode->clone() : 0;
       signPairedSurf=A.signPairedSurf;
+      surfSet=A.surfSet;
     }
   return *this;
 }
@@ -768,6 +774,7 @@ HeadRule::populateSurf()
     {
       HeadNode->populateSurf();
       signPairedSurf=getOppositeSurfaces();
+      calcSurfaces();
     }
   return;
 }
@@ -971,15 +978,15 @@ HeadRule::isLineValid(const Geometry::Vec3D& APt,
   for(const Geometry::Surface* SPtr : SSet)
     {
       LI.clearTrack();
-      const std::vector<Geometry::Vec3D>& pointVec=
-	LI.getPoints(SPtr);
+      const std::vector<Geometry::interPoint>& pointVec=
+	LI.getIntercept(SPtr);
 
-      for(const Geometry::Vec3D& Pt : pointVec)
+      for(const Geometry::interPoint& IP : pointVec)
 	{
-	  const double ADist=APt.Distance(Pt);
-	  const double BDist=BPt.Distance(Pt);
+	  const double ADist=APt.Distance(IP.Pt);
+	  const double BDist=BPt.Distance(IP.Pt);
 	  if (std::abs(ADist+BDist-ABDist)<Geometry::zeroTol &&
-	      isSideValid(Pt,SPtr->getName()))
+	      isSideValid(IP.Pt,SPtr->getName()))
 	    return 1;
 	}
     }
@@ -1001,9 +1008,9 @@ HeadRule::surfValid(const Geometry::Vec3D& Pt) const
   std::set<int> sideSurf;
   if (!isValid(Pt)) return sideSurf;
 
-  const std::set<const Geometry::Surface*> SVec=getSurfaces();
+  
   std::map<int,int> STest;
-  for(const Geometry::Surface* SPtr : SVec)
+  for(const Geometry::Surface* SPtr : surfSet)
     {
       if (!SPtr->side(Pt))
 	{
@@ -1134,6 +1141,7 @@ HeadRule::getSurface(const int SN) const
   const Geometry::Surface* nullOut(0);
   if (!HeadNode) return nullOut;
 
+  
   const int absSN(std::abs(SN));
   const SurfPoint* SP;
   const Rule *headPtr,*leafA,*leafB;       
@@ -1165,17 +1173,17 @@ HeadRule::getSurface(const int SN) const
   return nullOut;
 }
 
-std::set<const Geometry::Surface*>
-HeadRule::getSurfaces() const
+void
+HeadRule::calcSurfaces() 
   /*!
     Calculate the surfaces that are within the top level
-    \return Set of surface pointers 
   */
 {
-  ELog::RegMethod RegA("HeadRule","getSurfaces");
-  std::set<const Geometry::Surface*> SSetOut;
+  ELog::RegMethod RegA("HeadRule","calcSurfaces");
+
+  surfSet.clear();
   const SurfPoint* SP;
-  if (!HeadNode) return SSetOut;
+  if (!HeadNode) return;
 
   const Rule *headPtr,*leafA,*leafB;       
   // Parent : left/right : Child
@@ -1200,10 +1208,10 @@ HeadRule::getSurfaces() const
 	{
 	  SP=dynamic_cast<const SurfPoint*>(headPtr);
 	  if (SP)
-	    SSetOut.emplace(SP->getKey());
+	    surfSet.emplace(SP->getKey());
 	}
     }
-  return SSetOut;
+  return;
 }
 
 std::set<int>
@@ -2639,14 +2647,14 @@ HeadRule::trackPoint(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","trackPoint");
 
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
-  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
-
+  const std::vector<Geometry::interPoint>& Pts=
+    LI.getIntercept(*this);
 
   if (Pts.size()!=1)
     throw ColErr::MisMatch<size_t>
       (Pts.size(),1,"Non-signular point intersect");
   
-  return Pts.front();
+  return Pts.front().Pt;
 }
 
 Geometry::Vec3D
@@ -2666,12 +2674,11 @@ HeadRule::trackClosestPoint(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","trackClosestPoint");
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
 
-  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
-  if (Pts.empty())
-    throw ColErr::EmptyContainer("No points found");
-
-  const size_t index=SurInter::closestPt(Pts,targetPt);
-  return Pts[index];
+  const std::vector<Geometry::interPoint>& Pts=LI.getIntercept(*this);
+  // throw check is here [if Pts.empty]:
+  const Geometry::interPoint& IP=
+    SurInter::closestPt(Pts,targetPt);
+  return IP.Pt;
 }
 
 int
@@ -2690,17 +2697,18 @@ HeadRule::trackClosestSurface(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","trackClosestSurface");
   MonteCarlo::LineIntersectVisit LI(Org,VUnit);
 
-  const std::vector<Geometry::Vec3D>& Pts=LI.getPoints(*this);
-  if (Pts.empty())
-    throw ColErr::EmptyContainer("No points found");
+  const std::vector<Geometry::interPoint>& Pts=
+    LI.getIntercept(*this);
 
-  const size_t index=SurInter::closestPt(Pts,targetPt);
+  // this guards for empty with excpetion
+  const Geometry::interPoint& IP=
+    SurInter::closestPt(Pts,targetPt);
   
-  return LI.getSurfIndexX()[index];
+  return IP.SNum;
 }
 
 
-std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+Geometry::interPoint
 HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
 			     const Geometry::Vec3D& Unit) const
   /*!
@@ -2711,145 +2719,66 @@ HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
   */
 {
   ELog::RegMethod RegA("HeadRule","trackSurfIntersect");
-    
-  MonteCarlo::LineIntersectVisit LI(Org,Unit);
 
-  const std::set<const Geometry::Surface*> SurfList=
-    this->getSurfaces();
-  for(const Geometry::Surface* SPtr : SurfList)
-    SPtr->acceptVisitor(LI);
+  std::vector<Geometry::interPoint> IPTvec;
+  calcSurfIntersection(Org,Unit,IPTvec);
+  for(const Geometry::interPoint& inter : IPTvec)
+    if (inter.D>Geometry::zeroTol)
+      return inter;
 
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex
-    (LI.getSurfPointers());
-
-  double D= std::numeric_limits<double>::max();
-  const Geometry::Surface* surfPtr=0;
-  // NOTE: we only check for and exiting surface by going
-  // along the line in the positive direction.
-  int bestPairValid(0);
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      //   const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-
-      // Is point possible closer
-      if ( dPts[i]>10.0*Geometry::zeroTol &&
-	   dPts[i]<D )
-	{
-	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
-	  const int pAB=isValid(IPts[i],NS);
-	  const int mAB=isValid(IPts[i],-NS);
-	  const int normD=surfIndex[i]->sideDirection(IPts[i],Unit);
-	  if (pAB!=mAB)  // out going positive surface
-	    {
-	      bestPairValid=normD;
-	      if (dPts[i]>Geometry::zeroTol)
-		D=dPts[i];
-	      surfPtr=surfIndex[i];
-	    }
-	}
-    }
-  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
-    result(0,0,Org,0.0);
-
-  if (surfPtr)
-    {
-      std::get<0>(result)=bestPairValid*surfPtr->getName();
-      std::get<1>(result)=surfPtr;
-      std::get<2>(result)=Org+Unit*D;
-      std::get<3>(result)=D;
-    }
-  return result;
+  // ok all failed:
+  return Geometry::interPoint();
   
 }
 
-std::pair<int,double>
-HeadRule::trackSurfDistance(const Geometry::Vec3D& Org,
-			    const Geometry::Vec3D& Unit) const
-
+Geometry::interPoint
+HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
+			     const Geometry::Vec3D& Unit,
+			     const std::set<int>& sActive) const
   /*!
     Calculate a track of a line to a change in state surface
     \param Org :: Origin of line
     \param Unit :: Direction of line
-    \return exit surface [signed??]
+    \param sActive :: surface to ignore
+    \return Signed Surf : SurfacePtr : Point : Distance
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackSurfDistance");
-  const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
-    result=trackSurfIntersect(Org,Unit);
+  ELog::RegMethod RegA("HeadRule","trackSurfIntersect");
 
-  return std::pair<int,double>(std::get<0>(result),std::get<3>(result));
+  std::vector<Geometry::interPoint> IPTvec;
+  calcSurfIntersection(Org,Unit,IPTvec);
+  for(const Geometry::interPoint& inter : IPTvec)
+    if (inter.D>Geometry::zeroTol &&
+	sActive.find(inter.SNum)==sActive.end())
+      return inter;
+
+  // ok all failed:
+  return Geometry::interPoint();  
 }
 
-std::pair<int,double>
-HeadRule::trackSurfDistance(const Geometry::Vec3D& Org,
-			    const Geometry::Vec3D& Unit,
-			    const std::set<int>& ) const
-
+Geometry::interPoint
+HeadRule::trackSurfIntersect(const Geometry::Vec3D& Org,
+			     const Geometry::Vec3D& Unit,
+			     const int sActive) const
   /*!
     Calculate a track of a line to a change in state surface
     \param Org :: Origin of line
     \param Unit :: Direction of line
-    \return exit surface [signed??] / distance
+    \param sActive :: surface to ignore
+    \return Signed Surf : SurfacePtr : Point : Distance
   */
 {
-  ELog::RegMethod RegA("HeadRule","trackSurfDistance");
-  
-  const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
-    result=trackSurfIntersect(Org,Unit);
+  ELog::RegMethod RegA("HeadRule","trackSurfIntersect");
 
-  return std::pair<int,double>(std::get<0>(result),std::get<3>(result));
-}
+  std::vector<Geometry::interPoint> IPTvec;
+  calcSurfIntersection(Org,Unit,IPTvec);
+  for(const Geometry::interPoint& inter : IPTvec)
+    if (inter.D>Geometry::zeroTol &&
+	inter.SNum!=sActive)
+      return inter;
 
-int
-HeadRule::trackSurf(const Geometry::Vec3D& Org,
-		    const Geometry::Vec3D& Unit) const
-  /*!
-    Calculate the track of a line to the boundary surface of the
-    HeadRule. activeNull designates the current surface(s) (with sign)
-    which is to be ignored.
-
-    \param Org :: Origin of line
-    \param Unit :: Direction of line
-    \return exit surface [signed - ingoing sense: Origin is true to surface]
-  */
-{
-  ELog::RegMethod RegA("HeadRule","trackSurf(O,U)");
-
-  // surface/surfPtr/point/distance
-  const std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
-    result=trackSurfIntersect(Org,Unit);
-
-  return std::get<0>(result);
-}
-
-int
-HeadRule::trackSurf(const Geometry::Vec3D& Org,
-		    const Geometry::Vec3D& Unit,
-		    const std::set<int>& activeSurf) const
-  /*!
-    Calculate the track of a line to the boundary surface of the
-    HeadRule. activeNull designates the current surface(s) (with sign)
-    which is to be ignored.
-
-    \param Org :: Origin of line
-    \param Unit :: Direction of line
-    \param activeSurf :: signed avoid surfaces
-    \return exit surface [signed - ingoing sense: Origin is true to surface]
-  */
-{
-  ELog::RegMethod RegA("HeadRule","trackSurf(O,u,{set}");
-  
-  Geometry::Vec3D Pt(Org);
-
-  auto [SN,DD]=trackSurfDistance(Pt,Unit);
-  while (SN && activeSurf.find(SN)!=activeSurf.end())
-    {
-      Pt+=Unit*DD;
-      std::tie(SN,DD)=trackSurfDistance(Pt,Unit);
-    }
-  return SN;
+  // ok all failed:
+  return Geometry::interPoint();  
 }
 
 
@@ -2896,60 +2825,118 @@ HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
   return Pts.size();
 }
 
-
 size_t
 HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 			       const Geometry::Vec3D& VUnit,
-			       std::vector<Geometry::Vec3D>& Pts,
-			       std::vector<int>& SNum) const
+			       std::vector<Geometry::interPoint>& OutPts) const
   /*!
     Calculate a track of a line that intersects the rule.
     The surface number is the outgoing surface number.
     \param Org :: Origin of line
     \param VUnit :: Direction of line
-    \param Pts :: Points
-    \param SNum :: Surface number 
+    \param Pts :: intersection pointsx
     \return Number of points found
+
   */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
- 
-  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
-  LI.getPoints(*this);
-  const Geometry::Vec3D Unit=VUnit.unit();
-  
-  // IPTS contains both non-exit and invalid points
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex
-    (LI.getSurfPointers());
- 
-  // Clear data
-  Pts.clear();
-  SNum.clear();
 
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  for(size_t i=0;i<dPts.size();i++)
+  
+  // get all intersection points:
+  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+  //  const std::set<const Geometry::Surface*> SurfSet=getSurfaces();
+
+  for(const Geometry::Surface* SPtr : surfSet)
     {
-      const Geometry::Surface* surfPtr=surfIndex[i];
-      // Is point possible closer
-      const int NS=surfPtr->getName();	    // NOT SIGNED
-      const int pAB=isValid(IPts[i],NS);
-      const int mAB=isValid(IPts[i],-NS);
-      const int normD=surfPtr->sideDirection(IPts[i],Unit);
-      const double lambda=dPts[i];
-      if (pAB!=mAB)  // out going positive surface
+      const std::vector<Geometry::interPoint>& IPTvec=
+	LI.getIntercept(SPtr);
+
+      for(const Geometry::interPoint& inter : IPTvec)
+	{
+	  // note SNum is unsigned:
+	  const int pAB=isValid(inter.Pt,inter.SNum);
+	  const int mAB=isValid(inter.Pt,-inter.SNum);
+	  if (pAB!=mAB)  // exiting/entering surface
+	    {
+	      // previously used signValue but now gone to
+	      // distValue BUT not 100% sure if that is correct.
+	      // const int distValue((lambda>0) ? 1 : -1);
+	      // Note that we want the surface to be correct
+	      // for OUTGOING
+	      const int signValue((pAB>0) ? -1 : 1);
+	      const bool outGoingFlag(pAB>0);
+	      OutPts.push_back(Geometry::interPoint
+			    ({
+			      inter.Pt,
+			      inter.D,
+			      signValue*inter.SNum,
+			      inter.SPtr,
+			      outGoingFlag
+			    }));
+	    }
+	}
+    }
+
+  std::sort(OutPts.begin(),OutPts.end(),
+	    [](const Geometry::interPoint& A,const Geometry::interPoint& B)
+	    { return A.D<B.D; } );
+  return OutPts.size();
+}
+
+Geometry::interPoint
+HeadRule::calcFirstIntersection(const Geometry::Vec3D& Org,
+				const Geometry::Vec3D& VUnit) const
+		
+  /*!
+    Calculate a track of a line that intersects the rule (if possible)
+    that is +ve relative to Org adn closest to Org.
+    \param Org :: Origin of line
+    \param VUnit :: Direction of line
+    \return interPoint (SN => 0 if no intersection)
+  */
+{
+  ELog::RegMethod RegA("HeadRule","calcFirstIntersection");
+  
+  // get all intersection points:
+  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+  //  const std::set<const Geometry::Surface*> SurfSet=getSurfaces();
+
+  std::vector<Geometry::interPoint> IPTvec;
+  for(const Geometry::Surface* SPtr : surfSet)
+    {
+      const std::vector<Geometry::interPoint>& SurfVec=
+	LI.getIntercept(SPtr);
+      for(const Geometry::interPoint& inter : SurfVec)
+	if (inter.D>Geometry::zeroTol)
+	  IPTvec.push_back(inter);
+    }
+  Geometry::sortVector(IPTvec);
+
+  Geometry::interPoint outIP;
+  for(const Geometry::interPoint& inter : IPTvec)
+    {
+      // note SNum is unsigned:
+      const int pAB=isValid(inter.Pt,inter.SNum);
+      const int mAB=isValid(inter.Pt,-inter.SNum);
+
+      if (pAB!=mAB)  // exiting/entering surface
 	{
 	  // previously used signValue but now gone to
 	  // distValue BUT not 100% sure if that is correct.
-	  //	  const int signValue((pAB>0) ? 1 : -1);
-	  const int distValue((lambda>0) ? 1 : -1);
-	  SNum.push_back(distValue*normD*NS);
-	  Pts.push_back(Org+Unit*lambda);
+	  // const int distValue((lambda>0) ? 1 : -1);
+	  // Note that we want the surface to be correct
+	  // for OUTGOING
+	  const int signValue((pAB>0) ? -1 : 1);
+	  const bool outGoingFlag(pAB>0);
+	  outIP.Pt=inter.Pt;
+	  outIP.D=inter.D;
+	  outIP.SNum=signValue*inter.SNum;
+	  outIP.SPtr=inter.SPtr;
+	  outIP.outFlag=outGoingFlag;
+	  return outIP;
 	}
-    }    
-  return SNum.size();
+    }
+  return outIP;
 }
 
 int

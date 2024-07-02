@@ -3,7 +3,7 @@
  
  * File:   test/testObject.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -570,28 +570,29 @@ testObject::testTrackCell()
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("4 0 -101",-101,
-			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1),
+   			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1),
 			Geometry::Vec3D(0,0,5)));
     
-  // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-2,
-  //  			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),
-  //  			Geometry::Vec3D(1,0,0)));
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-2,
+    			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),
+     			Geometry::Vec3D(1,0,0)));
   
-  // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",1,
-  // 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0),
-  // 			Geometry::Vec3D(-1,0,0)));
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",1,
+    			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,0,0),
+    			Geometry::Vec3D(-1,0,0)));
 
   Tests.push_back(TTYPE("4 10 0.05 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)",-16,
-			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(0,0,1),
-			Geometry::Vec3D(-2,0,3)));
+   			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(0,0,1),
+   			Geometry::Vec3D(-2,0,3)));
 
-  // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-1,
-  // 			Geometry::Vec3D(-1.01,0,0),Geometry::Vec3D(1,0,0),
-  // 			Geometry::Vec3D(1,0,0)));
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",1,
+    			Geometry::Vec3D(-1.01,0,0),Geometry::Vec3D(1,0,0),
+    			Geometry::Vec3D(-1,0,0)));
 
-  // Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",2,
-  // 			Geometry::Vec3D(3.01,0,0),Geometry::Vec3D(-1,0,0),
-  // 			Geometry::Vec3D(-1,0,0)));
+
+  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",-2,
+			Geometry::Vec3D(3.01,0,0),Geometry::Vec3D(-1,0,0),
+    			Geometry::Vec3D(1,0,0)));
   
   double aDist;
   const Geometry::Surface* SPtr;          // Output surface
@@ -603,21 +604,22 @@ testObject::testTrackCell()
       A.setObject(std::get<0>(tc));
       A.createSurfaceList();
 
-      eTrack TNeut(std::get<2>(tc),std::get<3>(tc));
-
       const int outFaceSurf(std::get<1>(tc));
-      const int SN= -A.trackCell(TNeut,aDist,SPtr,0);
-      TNeut.moveForward(aDist);
-      if (TNeut.Pos!=std::get<4>(tc) || SN!=outFaceSurf)
+      Geometry::Vec3D Org(std::get<2>(tc));
+      const Geometry::Vec3D uVec(std::get<3>(tc).unit());
+
+      const int SN= -A.trackCell(Org,uVec,aDist,SPtr,0);
+      Org+=uVec*aDist;
+      if (Org!=std::get<4>(tc) || SN!=outFaceSurf)
 	{
 	  ELog::EM<<ELog::endDiag;
 	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
-	  ELog::EM<<"Result= "<<TNeut.Pos<<" ["<<std::get<4>(tc)<<"]"
+	  ELog::EM<<"Result= "<<Org<<" ["<<std::get<4>(tc)<<"]"
 		  <<ELog::endDiag;
 	  ELog::EM<<"SN= "<<SN<<" "<<outFaceSurf<<ELog::endDiag;
 
 	  const Rule* TR=A.topRule();
-	  ELog::EM<<"Display= "<<TR->display(TNeut.Pos)<<ELog::endDiag;
+	  ELog::EM<<"Display= "<<TR->display(Org)<<ELog::endDiag;
 	  return -1;
 	}
       cnt++;

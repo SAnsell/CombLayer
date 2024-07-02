@@ -3,7 +3,7 @@
  
  * File:   essBuild/BlockAddition.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +61,7 @@
 #include "support.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
+#include "FixedRotate.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
@@ -73,7 +72,7 @@ namespace essSystem
 {
 
 BlockAddition::BlockAddition(const std::string& Key) :
-  attachSystem::FixedOffsetUnit(Key,6),
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::ExternalCut(),
@@ -85,7 +84,7 @@ BlockAddition::BlockAddition(const std::string& Key) :
 {}
 
 BlockAddition::BlockAddition(const BlockAddition& A) : 
-  attachSystem::FixedOffsetUnit(A),
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),
   attachSystem::ExternalCut(A),
@@ -109,7 +108,7 @@ BlockAddition::operator=(const BlockAddition& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::ExternalCut::operator=(A);
@@ -139,7 +138,7 @@ BlockAddition::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BlockAddition","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
 
   // Extension
   length=Control.EvalVar<double>(keyName+"Length");   
@@ -210,13 +209,13 @@ BlockAddition::createSurfaces()
 
   // Inner planes
 
-  if (fabs(xyAngle)<Geometry::zeroTol)
+  if (std::abs(zAngle)<Geometry::zeroTol)
     SMap.addMatch(buildIndex+1,edgeSurf);
   else
     {
       ModelSupport::buildRotatedPlane(SMap,buildIndex+1,
 				      SMap.realPtr<Geometry::Plane>(edgeSurf),
-				      xyAngle,Z,rotCent);
+				      zAngle,Z,rotCent);
     }
 
   int BI(buildIndex);
@@ -249,11 +248,11 @@ BlockAddition::rotateItem(HeadRule LHR)
 {
   ELog::RegMethod RegA("BlockAddtion","rotateItem");
 
-  if (std::abs<double>(xyAngle)<Geometry::zeroTol)
+  if (std::abs<double>(zAngle)<Geometry::zeroTol)
     return LHR;
 
   const Geometry::Quaternion QrotXY=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
+    Geometry::Quaternion::calcQRotDeg(zAngle,Z);
 
   int BI(buildIndex+1000);
   std::set<const Geometry::Surface*> hSurf=
@@ -270,7 +269,7 @@ BlockAddition::rotateItem(HeadRule LHR)
 	  BI++;
 	  const Geometry::Plane* PNewPtr=
 	    ModelSupport::buildRotatedPlane
-	    (SMap,BI,PPtr,xyAngle,Z,rotCent);
+	    (SMap,BI,PPtr,zAngle,Z,rotCent);
 	  
 	  LHR.substituteSurf(PN,BI,PNewPtr);
 	}

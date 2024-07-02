@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testQuaternion.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,8 +211,8 @@ testQuaternion::testMatrixRot()
 	  const size_t iA=(2-i);
 	  const size_t iAplus=(iA+1) % 3;
 	  Rot[iA][iA]=std::cos(angle[i]);
-	  Rot[iA][iAplus]=-std::sin(angle[i]);
-	  Rot[iAplus][iA]=std::sin(angle[i]);
+	  Rot[iA][iAplus] = -std::sin(angle[i]);
+	  Rot[iAplus][iA] = std::sin(angle[i]);
 	  Rot[iAplus][iAplus]=std::cos(angle[i]);
 	  M*=Rot; // note this is non-standard way round
 	}

@@ -3,7 +3,7 @@
  
  * File:   monteInc/HeadRule.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ class SurfPoint;
 namespace Geometry
 {
   class Surface;
+  struct interPoint;
 }
 
 namespace ModelSupport
@@ -54,6 +55,7 @@ class HeadRule
   Rule* HeadNode;                    ///< Parent object (for tree)
   ///< set of surfaces with opposite signs
   std::set<const Geometry::Surface*> signPairedSurf;   
+  std::set<const Geometry::Surface*> surfSet;
   
   Rule* findKey(const int); 
   void removeItem(const Rule*);
@@ -63,6 +65,8 @@ class HeadRule
   void createAddition(const int,const Rule*);
   const SurfPoint* findSurf(const int) const;
 
+  void calcSurfaces();
+  
  public:
 
   HeadRule();
@@ -114,19 +118,21 @@ class HeadRule
   std::set<int> getPairedSurf() const;
   
   std::set<int> surfValid(const Geometry::Vec3D&) const;
-  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
-  trackSurfIntersect(const Geometry::Vec3D&,const Geometry::Vec3D&)
-    const;
-  
+  Geometry::interPoint trackSurfIntersect
+     (const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+  Geometry::interPoint trackSurfIntersect
+     (const Geometry::Vec3D&,const Geometry::Vec3D&,
+      const std::set<int>&) const;
+  Geometry::interPoint trackSurfIntersect
+     (const Geometry::Vec3D&,const Geometry::Vec3D&,
+      const int) const;
+  /*
   std::pair<int,double> trackSurfDistance
     (const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   std::pair<int,double> trackSurfDistance
     (const Geometry::Vec3D&,const Geometry::Vec3D&,const std::set<int>&) const;
 
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		const std::set<int>&) const;
-
+  */
   Geometry::Vec3D trackPoint(const Geometry::Vec3D&,
 			     const Geometry::Vec3D&) const;
   Geometry::Vec3D trackClosestPoint
@@ -138,14 +144,18 @@ class HeadRule
 
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
-     std::vector<Geometry::Vec3D>&,std::vector<int>&) const;
+     std::vector<Geometry::interPoint>&) const;
+  Geometry::interPoint calcFirstIntersection
+    (const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+
 
   size_t calcSurfSurfIntersection(std::vector<Geometry::Vec3D>&) const;
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
   const Geometry::Surface* getSurface(const int) const;
   const Geometry::Surface* primarySurface() const;
-  std::set<const Geometry::Surface*> getSurfaces() const;
+  std::set<const Geometry::Surface*> getSurfaces() const
+    { return surfSet; }
   std::set<int> getSignedSurfaceNumbers() const;
   std::set<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;

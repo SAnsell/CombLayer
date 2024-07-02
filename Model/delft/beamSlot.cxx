@@ -3,7 +3,7 @@
  
  * File:   delft/beamSlot.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -258,6 +258,7 @@ beamSlot::createAll(Simulation& System,
     Global creation of the vac-vessel
     \param System :: Simulation to add slot to
     \param FC :: BeamInsert Object
+    \pamr 
   */
 {
   ELog::RegMethod RegA("beamSlot","createAll");

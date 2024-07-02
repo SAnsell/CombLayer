@@ -102,7 +102,6 @@ main(int argc,char* argv[])
 
       InputModifications(SimPtr,IParam,Names);
 
-
       xraySystem::makeMaxIV BObj;
       BObj.build(*SimPtr,IParam);
 

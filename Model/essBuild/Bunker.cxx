@@ -303,7 +303,7 @@ Bunker::createSurfaces()
 
   int divIndex(buildIndex+1001);
 
-  const double phaseStep((rightPhase-leftPhase)/static_cast<double>(nSectors));
+  //  const double phaseStep((rightPhase-leftPhase)/static_cast<double>(nSectors));
 
   SMap.addMatch(divIndex,SMap.realSurf(buildIndex+3));
   for(size_t i=1;i<nSectors;i++)

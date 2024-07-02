@@ -3,7 +3,7 @@
  
  * File:   test/testLineTrack.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "Cone.h"
 
@@ -230,21 +231,22 @@ testLineTrack::testLine()
   // Point A : Point B : Sum of cellIDs 
   typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,int,double> TTYPE;
 
-  std::vector<TTYPE> Tests;
-  // First test:
-  // 5 outer / 17 void / 5 cylinder / 2 box / 1 inner box
-  Tests.push_back(TTYPE(Geometry::Vec3D(0,0,30),Geometry::Vec3D(0,0,0),
-			15,118.0));
-  // Can't track passed an unbound cell
-  Tests.push_back(TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,30),14,113.0));
-  // 7 void / 2 box / 2 inner / 2 box / 5 cyl / 2 void
-  Tests.push_back(TTYPE(Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,10),22,81.0));
-  // Accross cyl (rad 4)   6 void / 8 cyl / 6 void
-  Tests.push_back(TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0));
+  const std::vector<TTYPE> Tests({
+      TTYPE(Geometry::Vec3D(0,0,30),Geometry::Vec3D(0,0,0),15,118.0),
 
-  // Accross angle cylinder
-  Tests.push_back(TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0));
+      // 5 outer / 17 void / 5 cylinder / 2 box / 1 inner box
+      TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,30),14,113.0),
+	  
+      // 7 void / 2 box / 2 inner / 2 box / 5 cyl / 2 void
+      TTYPE(Geometry::Vec3D(0,0,-10),Geometry::Vec3D(0,0,10),22,81.0),
 
+      // Across cyl (rad 4)   6 void / 8 cyl / 6 void
+      TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0),
+
+      // Across angle cylinder
+      TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0)
+
+    });
 
   int cnt(1);
   for(const TTYPE& tc : Tests)
@@ -275,18 +277,15 @@ testLineTrack::checkResult(const LineTrack& LT,
    */
 {
   ELog::RegMethod RegA("testLineTrack","checkResults");
-
-  const std::vector<long int>& cells=LT.getCells();
-  const std::vector<double>& tLen=LT.getSegmentLen();
-  const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
+  
   long int cValue(0);
   double tValue(0.0);
-  for(size_t i=0;i<cells.size();i++)
+  for(const LineUnit& lu : LT.getTrackPts())
     {
-      if (!oVec[i] || oVec[i]->getName()!=cells[i])
+      if (!lu.objPtr || lu.objPtr->getName()!=lu.cellNumber)
 	return 0;
-      cValue+=cells[i]-1;
-      tValue+=tLen[i]*static_cast<double>(cells[i]-1);
+      cValue+=lu.cellNumber-1;
+      tValue+=lu.segmentLength*static_cast<double>(lu.cellNumber-1);
     }  
   return (cValue!=CSum || std::abs(TSum-tValue)>1e-3) ? 0 : 1;
 }

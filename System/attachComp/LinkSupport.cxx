@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "interPoint.h"
 #include "support.h"
 #include "HeadRule.h"
 #include "surfRegister.h"
@@ -184,13 +185,13 @@ calcBoundaryLink(attachSystem::FixedComp& FC,const size_t linkIndex,
 {
   ELog::RegMethod RegA("LinkSupport[F]","calcBoundaryLink");
 
-  std::tuple<int,const Geometry::Surface*,Geometry::Vec3D,double>
+  const Geometry::interPoint
     result=boundary.trackSurfIntersect(Origin,Axis);
-  const int SN=std::get<0>(result);
+  const int SN=result.SNum;
   if (SN)
     {
       FC.setLinkSurf(linkIndex,SN);
-      FC.setConnect(linkIndex,std::get<2>(result),Axis);
+      FC.setConnect(linkIndex,result.Pt,Axis);
     }
   return;
 }

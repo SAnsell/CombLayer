@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   d4cModel/BellJar.cxx
+ * File:   instrument/BellJar.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "surfRegister.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
@@ -56,15 +54,19 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
+#include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "BellJar.h"
 
 namespace d4cSystem
 {
 
 BellJar::BellJar(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3)
+  attachSystem::FixedRotate(Key,3),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -72,13 +74,14 @@ BellJar::BellJar(const std::string& Key) :
 {}
 
 BellJar::BellJar(const BellJar& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   radius(A.radius),
   wallThick(A.wallThick),height(A.height),wallMat(A.wallMat),
   colRadius(A.colRadius),colWidth(A.colWidth),
   colFront(A.colFront),colBack(A.colBack),colMat(A.colMat),
-  colAngle(A.colAngle),innerVoid(A.innerVoid),
-  midVoid(A.midVoid)
+  colAngle(A.colAngle)
   /*!
     Copy constructor
     \param A :: BellJar to copy
@@ -95,8 +98,9 @@ BellJar::operator=(const BellJar& A)
 {
   if (this!=&A)
     {
+      attachSystem::FixedRotate::operator=(A);
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       radius=A.radius;
       wallThick=A.wallThick;
       height=A.height;
@@ -107,8 +111,6 @@ BellJar::operator=(const BellJar& A)
       colBack=A.colBack;
       colMat=A.colMat;
       colAngle=A.colAngle;
-      innerVoid=A.innerVoid;
-      midVoid=A.midVoid;
     }
   return *this;
 }
@@ -129,7 +131,7 @@ BellJar::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BellJar","populate");
 
-  FixedOffset::populate(Control);
+  FixedRotate::populate(Control);
     // Master values
 
   radius=Control.EvalVar<double>(keyName+"Radius");
@@ -154,22 +156,6 @@ BellJar::populate(const FuncDataBase& Control)
       colAngle.push_back(Control.EvalVar<double>(KN)*M_PI/180.0);
       KN=keyName+"ColAngle"+std::to_string(++NL);
     }
-
-  return;
-}
-
-void
-BellJar::createUnitVector(const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: FixedComp for origin
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("BellJar","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
   return;
 }
@@ -243,61 +229,56 @@ BellJar::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BellJar","createObjects");
 
-  std::string Out;
+  HeadRule HR;
+  HeadRule outerHR;
   // First make inner/outer void/wall and top/base
   
   // Make general 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 15 -16 -17 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -17");
+  addOuterSurf(HR);
 
   // Outer Wall
-  Out=ModelSupport::getSetComposite(SMap,buildIndex," 15 -16 -17 (7:-5:6)");
-  System.addCell(MonteCarlo::Object(cellIndex++,wallMat,0.0,Out));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -17 (7:-5:6)");
+  makeCell("OuterWall",System,cellIndex++,wallMat,0.0,HR);
 
   // Assuming a mid void boundary:
   if (!colAngle.empty())
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -27");
-      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
-      innerVoid=cellIndex-1;
-
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -7 27");
-      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
-      midVoid=cellIndex-1;
 
       // Now add collimator blades
-      
-      MonteCarlo::Object* voidObj=System.findObject(midVoid);
-      if (!voidObj)
-	throw ColErr::InContainerError<int>(midVoid,
-					    "midVoid in System:Objects");
+
       int SI(buildIndex+100);
       for(size_t i=0;i<colAngle.size();i++)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
-					 " 3 -4 8 -9 5M -6M");
-	  System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
-	  Out=ModelSupport::getComposite(SMap,SI,buildIndex,
-					 " 13 -14 18 -19 5M -6M");
-	  System.addCell(MonteCarlo::Object(cellIndex++,colMat,0.0,Out));
+	  HR=ModelSupport::getHeadRule
+	    (SMap,SI,buildIndex,"3 -4 8 -9 5M -6M");
+	  System.addCell(cellIndex++,colMat,0.0,HR);
+	  
+	  HR=ModelSupport::getHeadRule
+	    (SMap,SI,buildIndex,"13 -14 18 -19 5M -6M");
+	  System.addCell(cellIndex++,colMat,0.0,HR);
 	  if (colMat)
 	    {
 	      ELog::EM<<"CollMat imp =0"<<ELog::endDiag;
 	      System.findObject(cellIndex-1)->setImp(0);
 	    }
 
-	  Out=ModelSupport::getComposite(SMap,SI,
-					 " (-3:4:-8:9) (-13:14:-18:19)");
-	  voidObj->addSurfString(Out);
+	  outerHR*=ModelSupport::getHeadRule
+	    (SMap,SI,"(-3:4:-8:9) (-13:14:-18:19)");
+	  //	  voidObj->addSurfString(HR);
 	  SI+=20;
 	}
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27");
+      makeCell("innerVoid",System,cellIndex++,0.0,0.0,HR);
+
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7 27");
+      makeCell("midVoid",System,cellIndex++,0.0,0.0,HR*outerHR);
     }
   else
     {
-      Out=ModelSupport::getSetComposite(SMap,buildIndex," 5 -6 -7");
-      System.addCell(MonteCarlo::Object(cellIndex++,0.0,0.0,Out));
-      innerVoid=cellIndex-1;
-      midVoid=0;
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
+      makeCell("innerVoid",System,cellIndex++,0.0,0.0,HR);
     }
 
   return; 

@@ -3,7 +3,7 @@
  
  * File:   geometry/Line.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
+#include "interPoint.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "ArbPoly.h"
@@ -55,6 +55,7 @@
 #include "MBrect.h"
 #include "Plane.h"
 #include "Sphere.h"
+#include "HeadRule.h"
 #include "Line.h"
 
 namespace Geometry
@@ -401,6 +402,7 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
     return 0;
   const double u=(Pln.getDistance()-OdotN)/DdotN;
   PntOut.push_back(getPoint(u));
+
   return 1;
 }
 
@@ -738,6 +740,25 @@ Line::intersect(std::vector<Geometry::Vec3D>&,const Torus&) const
   */
 }
 
+size_t
+Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
+		const HeadRule& HR) const
+  /*! 
+    For the line that intersects the sphere generate 
+    add the point to the PntOut, return number of points
+    added. It does not check the points for validity. 
+    
+    \param PntOut :: Vector of points found by the line/sphere intersection
+    \param HR :: HeadRule to intersect [must be populated]
+    \returns Number of points found by intersection
+  */
+{
+  std::vector<Geometry::interPoint> IPts;
+  const size_t nItems=HR.calcSurfIntersection(Origin,Direct,IPts);
+  for(const Geometry::interPoint& ipt : IPts)
+    PntOut.push_back(ipt.Pt);
+  return nItems;
+}
 
 //SETING
 

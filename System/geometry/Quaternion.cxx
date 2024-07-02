@@ -3,7 +3,7 @@
  
  * File:   geometry/Quaternion.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -212,8 +212,8 @@ Quaternion::calcQRotMatrix(const Geometry::Matrix<double>& M)
   
   const std::vector<double> extendTrace{M[0][0],M[1][1],M[2][2],trace};
   
-  const size_t maxElem=std::ranges::max_element(extendTrace)
-    -extendTrace.begin();
+  const size_t maxElem=static_cast<size_t>
+    (std::ranges::max_element(extendTrace)-extendTrace.begin());
   const double q2=1.0-trace+2.0*extendTrace[maxElem];
   if (q2<Geometry::zeroTol)
     throw ColErr::NumericalAbort

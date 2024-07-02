@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   d4cModel/d4cVariables.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,6 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("detectorYStep",0.0);         // Radius the beam
   Control.addVariable("detectorZStep",0.0);         // Radius the beam
   Control.addVariable("detectorZAngle",0.0);         // Radius the beam
-  Control.addVariable("detectorXYAngle",0.0);         // Radius the beam
   Control.addVariable("detectorNDetector",100);       //
   Control.addVariable("detectorInitAngle",2.0);       //
   Control.addVariable("detectorFinalAngle",165.0);       //
@@ -133,7 +132,6 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("DetBankYStep",0.0);         // Radius the beam
   Control.addVariable("DetBankZStep",0.0);         // Radius the beam
   Control.addVariable("DetBankZAngle",0.0);         // Radius the beam
-  Control.addVariable("DetBankXYAngle",0.0);         // Radius the beam
   Control.addVariable("DetBankNDet",8);       //
   Control.addVariable("DetBankCentreOffset",114.6);       //
   Control.addVariable("DetBankDetHeight",10.0);       //

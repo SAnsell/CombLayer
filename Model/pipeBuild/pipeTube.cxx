@@ -3,7 +3,7 @@
  
  * File:   pipeBuild/pipeTube.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,8 +66,9 @@ namespace pipeSystem
 {
 
 pipeTube::pipeTube(const std::string& Key) :
+  attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6)
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -75,8 +76,9 @@ pipeTube::pipeTube(const std::string& Key) :
 {}
 
 pipeTube::pipeTube(const pipeTube& A) : 
+  attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
-  attachSystem::FixedRotate(A),attachSystem::CellMap(A),
+  attachSystem::CellMap(A),
   length(A.length),height(A.height),width(A.width),
   innerHeight(A.innerHeight),innerWidth(A.innerWidth),
   wallMat(A.wallMat),nWallLayers(A.nWallLayers),
@@ -97,8 +99,8 @@ pipeTube::operator=(const pipeTube& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       length=A.length;
       height=A.height;
@@ -183,18 +185,18 @@ pipeTube::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("pipeTube","createObjects");
 
-  std::string Out;
+  HeadRule HR;
 
   // Inner 
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 13 -14 15 -16 ");
-  makeCell("Inner",System,cellIndex++,0,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16");
+  makeCell("Inner",System,cellIndex++,0,0.0,HR);
 
-  Out=ModelSupport::getComposite(SMap,buildIndex,
-				 " 1 -2 3 -4 5 -6 (-13:14:-15:16) ");
-  makeCell("Outer",System,cellIndex++,wallMat,0.0,Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+				 "1 -2 3 -4 5 -6 (-13:14:-15:16)");
+  makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
   
-  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
+  addOuterSurf(HR);
   return; 
 }
 
@@ -243,7 +245,7 @@ pipeTube::layerProcess(Simulation& System)
 
   if (nWallLayers>1)
     {
-      std::string OutA,OutB;
+      HeadRule HRa,HRb;
       ModelSupport::surfDivide DA;
             
       for(size_t i=1;i<nWallLayers;i++)
@@ -267,11 +269,11 @@ pipeTube::layerProcess(Simulation& System)
 			       SMap.realSurf(buildIndex+5));
       surroundRule.setSurfPair(SMap.realSurf(buildIndex+16),
 			       SMap.realSurf(buildIndex+6));
-      OutA=ModelSupport::getComposite(SMap,buildIndex," (-13:14:-15:16) ");
-      OutB=ModelSupport::getComposite(SMap,buildIndex," 3 -4 5 -6 ");
+      HRa=ModelSupport::getHeadRule(SMap,buildIndex," (-13:14:-15:16) ");
+      HRb=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
 
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
+      surroundRule.setInnerRule(HRa);
+      surroundRule.setOuterRule(HRb);
       DA.addRule(&surroundRule);
       DA.activeDivideTemplate(System);
 

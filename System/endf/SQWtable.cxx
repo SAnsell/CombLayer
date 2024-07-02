@@ -3,7 +3,7 @@
  
  * File:   endf/SQWtable.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -217,7 +217,7 @@ SQWtable::setData(const size_t index,const std::vector<double>& aVec,
 
 int 
 SQWtable::isValidRangePt(const double& alphaV,const double& betaV,
-			 long int& aInt,long int& bInt) const
+			 size_t& aInt,size_t& bInt) const
   /*!
     Determine if the point is valid
     \param alphaV :: alpha value
@@ -227,11 +227,12 @@ SQWtable::isValidRangePt(const double& alphaV,const double& betaV,
     \return 0 on failure and 1 on success
   */
 {
-  aInt=mathFunc::binSearch(Alpha.begin(),Alpha.end(),alphaV);
-  bInt=mathFunc::binSearch(Beta.begin(),Beta.end(),betaV);
+  aInt=static_cast<size_t>
+    (mathFunc::binSearch(Alpha.begin(),Alpha.end(),alphaV));
+  bInt=static_cast<size_t>
+    (mathFunc::binSearch(Beta.begin(),Beta.end(),betaV));
   // No extreme cases:
-  if ((aInt*bInt)==0 || static_cast<size_t>(aInt+1)>=nAlpha
-      || static_cast<size_t>(bInt+1)>=nBeta)
+  if ((aInt*bInt)==0 || aInt>=nAlpha || bInt>=nBeta)
     return 0;
   aInt--;
   bInt--;
@@ -249,7 +250,7 @@ SQWtable::Sab(const double alphaV,const double betaV) const
 {
   ELog::RegMethod RegA("SQWtable","Sab");
 
-  long int aInt,bInt;
+  size_t aInt,bInt;
   if (!isValidRangePt(alphaV,betaV,aInt,bInt))
     {
       // ELog::EM<<"Returning value but Material def required:"
@@ -259,16 +260,13 @@ SQWtable::Sab(const double alphaV,const double betaV) const
 
   //  const int aType=alphaType(aInt);
   //  const int bType=betaType(bInt);
-
-  const size_t saInt(static_cast<size_t>(aInt));
-  const size_t sbInt(static_cast<size_t>(bInt));
   
-  const double Alow=loglinear(Alpha[saInt],Alpha[saInt+1],
+  const double Alow=loglinear(Alpha[aInt],Alpha[aInt+1],
 			      SAB.get()[aInt][bInt],
 			      SAB.get()[aInt+1][bInt],
 			      alphaV);
 
-  const double Ahigh=loglinear(Alpha[saInt],Alpha[saInt+1],
+  const double Ahigh=loglinear(Alpha[aInt],Alpha[aInt+1],
 			       SAB.get()[aInt][bInt+1],
 			       SAB.get()[aInt+1][bInt+1],
 			       alphaV);
@@ -279,7 +277,7 @@ SQWtable::Sab(const double alphaV,const double betaV) const
   // ELog::EM<<SAB[aInt][bInt]<<" "<<SAB[aInt+1][bInt]<<" "
   //  	  <<SAB[aInt][bInt+1]<<" "<<SAB[aInt+1][bInt+1]<<ELog::endCrit;
 
-  const double SAB=loglinear(Beta[sbInt],Beta[sbInt+1],
+  const double SAB=loglinear(Beta[bInt],Beta[bInt+1],
 			     Alow,Ahigh,betaV);  
   //  ELog::EM<<ELog::endCrit;
 

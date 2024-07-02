@@ -3,7 +3,7 @@
  
  * File:   attachComp/LayerComp.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,8 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "MatrixBase.h"
-
+#include "Vec3D.h"
+#include "interPoint.h"
 #include "HeadRule.h"
 #include "LayerComp.h"
 
@@ -102,9 +103,10 @@ LayerComp::intersectDist(const size_t layerIndex,
     return -std::numeric_limits<double>::max();
 
   HR.populateSurf();
-  const auto [SN,D] =HR.trackSurfDistance(Origin,Unit);
+  const Geometry::interPoint inter=
+    HR.trackSurfIntersect(Origin,Unit);
   
-  return (SN) ? D : -std::numeric_limits<double>::max();
+  return (inter.SNum) ? inter.D : -std::numeric_limits<double>::max();
 }
 
 }  // NAMESPACE attachSystem 

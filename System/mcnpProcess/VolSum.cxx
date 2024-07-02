@@ -3,7 +3,7 @@
  
  * File:   mcnpProcess/VolSum.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "objectGroups.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
+#include "LineUnit.h"
 #include "LineTrack.h"
 #include "volUnit.h"
 #include "VolSum.h"
@@ -382,15 +383,11 @@ VolSum::trackRun(const Simulation& System,const size_t N)
 
       LineTrack A(Pt,XPt);
       A.calculate(System);
-      const std::vector<MonteCarlo::Object*>& OVec=A.getObjVec();
-      const std::vector<double>& TVec=A.getSegmentLen();
-      for(size_t i=0;i<OVec.size();i++)
+      for(const ModelSupport::LineUnit& lu : A.getTrackPts())
 	{
-	  const MonteCarlo::Object* OPtr=OVec[i];
-	  if (OPtr)
-	    addDistance(OPtr->getName(),TVec[i]);
+	  if (lu.objPtr)
+	    addDistance(lu.objPtr->getName(),lu.segmentLength);
 	}
-
       const double trackDistance=Pt.Distance(XPt);
       totalDist+=trackDistance;
     }

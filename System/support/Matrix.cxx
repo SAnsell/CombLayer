@@ -3,7 +3,7 @@
  
  * File:   support/Matrix.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,9 @@ namespace Geometry
 {
 
 template<typename T>
-Matrix<T>::Matrix(const size_t nrow,const size_t ncol) :
-  MatrixBase<T>(nrow,ncol)
+Matrix<T>::Matrix(const size_t nrow,const size_t ncol,
+		  const bool flag) :
+  MatrixBase<T>(nrow,ncol,flag)
   /*!
     Constructor with pre-set sizes. Matrix is zeroed
     \param nrow :: number of rows

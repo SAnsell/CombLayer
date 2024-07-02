@@ -3,7 +3,7 @@
  
  * File:   support/IndexCounter.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@
 
 #include "IndexCounter.h"
 
-template<typename T>
+template<typename T,bool UC>
 std::ostream&
-operator<<(std::ostream& OX,const IndexCounter<T>& A) 
+operator<<(std::ostream& OX,const IndexCounter<T,UC>& A) 
   /*!
     Output stream assesor
     \param OX :: Output stream
@@ -42,9 +42,9 @@ operator<<(std::ostream& OX,const IndexCounter<T>& A)
   return OX;
 } 
 
-template<typename T>
+template<typename T,bool UC>
 template<typename InputIter>
-IndexCounter<T>::IndexCounter(InputIter iBeg,InputIter iEnd) :
+IndexCounter<T,UC>::IndexCounter(InputIter iBeg,InputIter iEnd) :
   Rmax(iBeg,iEnd),RC(Rmax.size(),T(0))
   /*!
     Simple constructor for two interators
@@ -52,23 +52,26 @@ IndexCounter<T>::IndexCounter(InputIter iBeg,InputIter iEnd) :
     \param iEnd :: Second iterator
   */
 {
-  for(size_t& i : Rmax)
+  for(T& i : Rmax)
     i--;
 }
 
-template<typename T>
-IndexCounter<T>::IndexCounter(const size_t NP,const T& defValue) :
+template<typename T,bool UC>
+IndexCounter<T,UC>::IndexCounter(const size_t NP,const T& defValue) :
   Rmax(NP,defValue),RC(NP,0)
   /*!
     Simple constructor with fixed NP object
     \param NP :: number of objects
     \param defValue :: value (all same)
   */
-{ }
+{
+  for(T& i : Rmax)
+    i--;
+}
 
-template<typename T>
-IndexCounter<T>::IndexCounter(const T& nA,const T& nB,
-			      const T& nC) :
+template<typename T,bool UC>
+IndexCounter<T,UC>::IndexCounter(const T& nA,const T& nB,
+				 const T& nC) :
   Rmax({nA-1,nB-1,nC-1}),RC({0,0,0})
   /*!
     Simple constructor with fixed 3d system
@@ -79,8 +82,8 @@ IndexCounter<T>::IndexCounter(const T& nA,const T& nB,
 {}
 
 
-template<typename T>
-IndexCounter<T>::IndexCounter(std::vector<T> sizeArray) :
+template<typename T,bool UC>
+IndexCounter<T,UC>::IndexCounter(std::vector<T> sizeArray) :
   Rmax(std::move(sizeArray)),RC(Rmax.size(),T(0))
   /*!
     Simple constructor with size based on input vector
@@ -91,8 +94,8 @@ IndexCounter<T>::IndexCounter(std::vector<T> sizeArray) :
     I--;  
 }
 
-template<typename T>
-IndexCounter<T>::IndexCounter(const IndexCounter<T>& A) :
+template<typename T,bool UC>
+IndexCounter<T,UC>::IndexCounter(const IndexCounter<T,UC>& A) :
   Rmax(A.Rmax),RC(A.RC)
   /*!
     Standard copy constructor
@@ -100,8 +103,8 @@ IndexCounter<T>::IndexCounter(const IndexCounter<T>& A) :
   */ 
 { }
 
-template<typename T>
-IndexCounter<T>::IndexCounter(IndexCounter<T>&& A) :
+template<typename T,bool UC>
+IndexCounter<T,UC>::IndexCounter(IndexCounter<T,UC>&& A) :
   Rmax(std::move(A.Rmax)),RC(std::move(A.RC))
   /*!
     Standard move constructor
@@ -109,9 +112,9 @@ IndexCounter<T>::IndexCounter(IndexCounter<T>&& A) :
   */ 
 { }
 
-template<typename T>
-IndexCounter<T>&
-IndexCounter<T>::operator=(const IndexCounter<T>& A)
+template<typename T,bool UC>
+IndexCounter<T,UC>&
+IndexCounter<T,UC>::operator=(const IndexCounter<T,UC>& A)
   /*!
     Assignment operator
     \param A :: Object to copy
@@ -126,9 +129,9 @@ IndexCounter<T>::operator=(const IndexCounter<T>& A)
   return *this;
 }
 
-template<typename T>
-IndexCounter<T>&
-IndexCounter<T>::operator=(IndexCounter<T>&& A)
+template<typename T,bool UC>
+IndexCounter<T,UC>&
+IndexCounter<T,UC>::operator=(IndexCounter<T,UC>&& A)
   /*!
     Assignment operator with move
     \param A :: Object to move
@@ -143,9 +146,9 @@ IndexCounter<T>::operator=(IndexCounter<T>&& A)
   return *this;
 }
 
-template<typename T>
+template<typename T,bool UC>
 bool
-IndexCounter<T>::operator==(const IndexCounter<T>& A) const
+IndexCounter<T,UC>::operator==(const IndexCounter<T,UC>& A) const
   /*!
     Chec to find if Counters identical in ALL respects
     \param A :: Counter to compare
@@ -162,9 +165,9 @@ IndexCounter<T>::operator==(const IndexCounter<T>& A) const
   return 1;
 }
 
-template<typename T>
+template<typename T,bool UC>
 bool
-IndexCounter<T>::operator>(const IndexCounter<T>& A) const 
+IndexCounter<T,UC>::operator>(const IndexCounter<T,UC>& A) const 
   /*! 
     Determines the precidence of the IndexCounters
     Operator works on the 0 to high index 
@@ -181,9 +184,9 @@ IndexCounter<T>::operator>(const IndexCounter<T>& A) const
   return 0;
 }
 
-template<typename T>
+template<typename T,bool UC>
 bool
-IndexCounter<T>::operator<(const IndexCounter<T>& A) const
+IndexCounter<T,UC>::operator<(const IndexCounter<T,UC>& A) const
   /*! 
     Determines the precidence of the IndexCounters
     Operator works on the 0 to high index 
@@ -204,9 +207,9 @@ IndexCounter<T>::operator<(const IndexCounter<T>& A) const
   return 0;
 }
 
-template<typename T>
+template<typename T,bool UC>
 bool
-IndexCounter<T>::operator++(int)
+IndexCounter<T,UC>::operator++(int)
   /*!
     Convertion to ++operator (prefix) 
     from operator++ (postfix)
@@ -217,9 +220,9 @@ IndexCounter<T>::operator++(int)
   return this->operator++();
 }
 
-template<typename T>
+template<typename T,bool UC>
 bool
-IndexCounter<T>::operator++()
+IndexCounter<T,UC>::operator++()
   /*!
     Carrys out a rotational addition.
     Objective is a rolling integer stream ie 1,2,3
@@ -241,15 +244,24 @@ IndexCounter<T>::operator++()
     }
   // I > 0 here: 
   RC[I-1]++;
-  for(;I<RC.size();I++)
-    RC[I]=T(0);
+  if constexpr (!UC)
+    {
+      for(;I<RC.size();I++)
+	RC[I]=T(0);
+    }
+  else
+    {
+      T& tmp=RC[I-1];
+      for(;I<RC.size();I++)
+	RC[I]=tmp;
+    }
 
   return 0;
 }
 
-template<typename T>
+template<typename T,bool UC>
 bool
-IndexCounter<T>::operator--(int)
+IndexCounter<T,UC>::operator--(int)
   /*!
     convertion to --operator (prefix) 
     from operator-- (postfix)
@@ -260,9 +272,9 @@ IndexCounter<T>::operator--(int)
   return this->operator--();
 }
 
-template<typename T>
+template<typename T,bool UC>
 bool
-IndexCounter<T>::operator--()
+IndexCounter<T,UC>::operator--()
   /*!
     Carrys out a rotational addition.
     Objective is a rolling integer stream ie 1,2,3
@@ -288,9 +300,9 @@ IndexCounter<T>::operator--()
   return 0;
 }
 
-template<typename T>
+template<typename T,bool UC>
 void
-IndexCounter<T>::write(std::ostream& OX) const
+IndexCounter<T,UC>::write(std::ostream& OX) const
   /*!
     Write out object to a stream
     \param OX :: output stream
@@ -302,11 +314,21 @@ IndexCounter<T>::write(std::ostream& OX) const
   return;
 }
 
-template class IndexCounter<size_t>;
-template class IndexCounter<int>;
+template class IndexCounter<size_t,0>;
+template class IndexCounter<size_t,1>;
+template class IndexCounter<int,0>;
+template class IndexCounter<int,1>;
 
-template IndexCounter<size_t>::IndexCounter
+template IndexCounter<size_t,0>::IndexCounter
 (std::vector<size_t>::const_iterator,std::vector<size_t>::const_iterator);
+template IndexCounter<size_t,1>::IndexCounter
+(std::vector<size_t>::const_iterator,std::vector<size_t>::const_iterator);
+template IndexCounter<int,0>::IndexCounter
+(std::vector<int>::const_iterator,std::vector<int>::const_iterator);
+template IndexCounter<int,1>::IndexCounter
+(std::vector<int>::const_iterator,std::vector<int>::const_iterator);
 
 template std::ostream& operator<<(std::ostream&,const IndexCounter<size_t>&);
-template std::ostream& operator<<(std::ostream&,const IndexCounter<int>&);
+template std::ostream& operator<<(std::ostream&,const IndexCounter<int,0>&);
+template std::ostream& operator<<(std::ostream&,const IndexCounter<size_t,1>&);
+template std::ostream& operator<<(std::ostream&,const IndexCounter<int,1>&);
