@@ -192,7 +192,7 @@ userTrack::writeAuxScore(std::ostream& OX) const
     \param OX :: Ouput stream
   */
 {
-  ELog::EM << "TODO: fix the userTrack particle: why is it not uppercase here? " << particle << ELog::endWarn;
+  //  ELog::EM << "TODO: fix the userTrack particle: why is it not uppercase here? " << particle << ELog::endWarn;
   if (!auxParticle.empty() && (particle=="DOSE-EQ" || particle=="dose-eq")) // todo: fix (see userBin::writeAuxScore)
     {
       std::ostringstream cx;
