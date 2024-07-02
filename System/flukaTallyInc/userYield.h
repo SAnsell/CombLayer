@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTallyInc/userYield.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef flukaSystem_userYield_h
@@ -39,9 +39,9 @@ class userYield : public flukaTally
   bool scoreLog;                     ///< scoring A as log
   std::string scoreTypeA;            ///< scoring type A
   std::string scoreTypeB;            ///< scoring type B
-      
+
   std::string particle;             ///< particle/type
-  
+
   bool eLogFlag;                    ///< energy log flag
   bool aLogFlag;                    ///< angle log flag
   bool fluenceFlag;                 ///< fluence score
@@ -54,36 +54,36 @@ class userYield : public flukaTally
   size_t nA;                        ///< number of angle
   double angleA;                    ///< Angle start
   double angleB;                    ///< Angle end
-  
+
   int cellA;                        ///< start cell
   int cellB;                        ///< end cell
 
   static int getScore(const std::string&);
   int getLogType() const;
   int getScoreIndex() const;
-  
+
  public:
 
   userYield(const int,const int);
   userYield(const std::string&,const int,const int);
   userYield(const userYield&);
-  userYield* clone() const override; 
+  userYield* clone() const override;
   userYield& operator=(const userYield&);
   ~userYield() override;
 
   /// return fluke name
-  std::string getType() const override { return "USRBDX"; };
+  std::string getType() const override { return "USRYIELD"; };
 
   void setScoreType(const bool,const std::string&,const std::string&);
   void setParticle(const std::string&);
-    
+
   void setCell(const int,const int);
   void setAngle(const bool,const double,
 		const double,const size_t) override;
   void setEnergy(const bool,const double,
 			 const double,const size_t) override;
-  
-  void write(std::ostream&) const override;  
+
+  void write(std::ostream&) const override;
 };
 
 }
