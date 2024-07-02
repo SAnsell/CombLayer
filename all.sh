@@ -38,7 +38,7 @@ parallel $popts "./singleItem --singleItem {} $opts AA" ::: \
  PortTube PrismaChamber Quadrupole  \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
  TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac || exit
+ UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac RFGun || exit
 
 exit
 
