@@ -11,7 +11,8 @@ parallel $popts ::: \
 	 "./maxiv --noLengthCheck --defaultConfig Linac All $opts AA" \
 	 "./ess --bunkerPillars ABunker $opts AA" \
 	 "./ess --topModType Butterfly $opts AA" \
-	 "./ess --topModType Pancake   $opts AA" || exit
+	 "./ess --topModType Pancake   $opts AA" \
+	 "./maxiv -defaultConfig Single GunTestFacility -offset object Gun $opts AA" || exit
 
 parallel $popts "./maxiv --defaultConfig Single {} $opts AA " ::: \
    SOFTIMAX BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
