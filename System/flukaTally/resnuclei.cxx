@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/resnuclei.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -48,15 +48,6 @@ namespace flukaSystem
 int resnuclei::zOut=0;
 int resnuclei::mOut=0;
 ///\endcond STATIC
-  
-resnuclei::resnuclei(const int ID,const int outIndex) :
-  flukaTally("resn",ID,outIndex),
-  cellA(0)
-  /*!
-    Constructor
-    \param outID :: Identity number of tally [fortranOut]
-  */
-{}
 
 resnuclei::resnuclei(const std::string& KN,const int outID,
 		     const int tapeID) :
@@ -113,7 +104,7 @@ resnuclei::~resnuclei()
 
 void
 resnuclei::setZaid(const int Z,const int A)
-/*! 
+/*!
   Set the max number for range
   \param Z :: Z (charge) max
   \param A :: Atomic number
@@ -127,27 +118,26 @@ resnuclei::setZaid(const int Z,const int A)
   const int NMax=AMax-ZMax;
   if (mOut < NMax)
     mOut=NMax;               // dont thing manual correct
-  
+
   return;
 }
 
-  
+
 void
 resnuclei::write(std::ostream& OX) const
   /*!
-    Write out decay information			
+    Write out decay information
     \param System :: Simulation  tallies
     \param OX :: Output stream
    */
 {
   std::ostringstream cx;
   //  const int M=AMax-ZMax+5;
-  cx<<"RESNUCLEI  3.0 "<<outputUnit<<" "<<zOut+7<<" "<<mOut+5<<
-    " R"<<cellA<<" 1.0 ";
+  cx<<"RESNUCLEI  3 "<<outputUnit<<" "<<zOut+7<<" "<<mOut+5<<
+    " R"<<cellA<<" 1 ";
   cx<<" "<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }
 
 }  // NAMESPACE flukaSystem
-

@@ -40,14 +40,13 @@ class resnuclei : public flukaTally
 
   static int zOut;     ///< Max Z number
   static int mOut;     ///< Max of N-Z
-  
+
   int AMax;            ///< Max Z of material
   int ZMax;            ///< Max A of material
   int cellA;           ///< Cell number
 
 public:
 
-  resnuclei(const int,const int);
   resnuclei(const std::string&,const int,const int);
   resnuclei(const resnuclei&);
   resnuclei* clone() const override;
