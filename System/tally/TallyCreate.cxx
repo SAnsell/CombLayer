@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   tally/TallyCreate.cxx
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
@@ -16,17 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
 #include <vector>
-#include <list> 
-#include <map> 
+#include <list>
+#include <map>
 #include <set>
 #include <string>
 #include <algorithm>
@@ -78,11 +78,11 @@
 
 namespace tallySystem
 {
-  
+
 
 void
 addF1Tally(SimMCNP& System,const int tNum,
-	   const int surfNum)
+	   const int surfNum,const std::string& comment)
   /*!
     Addition of a tally to the mcnpx
     deck
@@ -96,6 +96,7 @@ addF1Tally(SimMCNP& System,const int tNum,
   TX.addSurface(surfNum);
   TX.setEnergy("1.0e-11 251log 1e3");
   TX.setPrintField("f d u s m e t c");
+  TX.setComment(comment);
   System.addTally(TX);
 
   return;
@@ -104,7 +105,7 @@ addF1Tally(SimMCNP& System,const int tNum,
 void
 addF1Tally(SimMCNP& System,const int tNum,
 	   const int surfNum,
-	   const std::vector<int>& SDividers)
+	   const std::vector<int>& SDividers,const std::string& comment)
   /*!
     Addition of a tally to the mcnp deck
     \param System :: SimMCNP class
@@ -119,6 +120,7 @@ addF1Tally(SimMCNP& System,const int tNum,
   TX.setEnergy("1.0e-11 251log 1e3");
   TX.setPrintField("f d u s m e t c");
   TX.setSurfDivider(SDividers);
+  TX.setComment(comment);
   System.addTally(TX);
 
   return;
@@ -128,7 +130,7 @@ void
 addFullHeatBlock(SimMCNP& System)
   /*!
     Adds a f6 for everthing
-    \param System :: Simuation object 
+    \param System :: Simuation object
   */
 {
   ELog::RegMethod RegA("tallySystem","addFullHeatBlock");
@@ -157,7 +159,7 @@ void
 addHeatBlock(SimMCNP& System,const std::vector<int>& CellList)
   /*!
     Adds a f6 for designated cells
-    \param System :: Simuation object 
+    \param System :: Simuation object
     \param CellList :: Items to add unit for
   */
 {
@@ -168,10 +170,10 @@ addHeatBlock(SimMCNP& System,const std::vector<int>& CellList)
   std::vector<int> Tvalues=Units;
   copy(CellList.begin(),CellList.end(),
        std::back_inserter(Tvalues));
-  
-  // 
+
+  //
   // Get Duplicates since only non-void cells are acceptable:
-  // 
+  //
   sort(Tvalues.begin(),Tvalues.end());
   std::vector<int>::iterator vc=Tvalues.begin();
   std::vector<int> cellsActual;
@@ -204,14 +206,14 @@ addHeatBlock(SimMCNP& System,const std::vector<int>& CellList)
     }
   return;
 }
-  
+
 void
 addF4Tally(SimMCNP& System,const int tallyNum,
 	   const std::string& pType,const std::set<int>& Units)
   /*!
     Addition of a tally to the mcnpx deck
     \param System :: SimMCNP class
-    \param tallyNum :: Cell number to tally 
+    \param tallyNum :: Cell number to tally
     \param pType :: particle to tally over
     \param Units :: List of cells to add
   */
@@ -235,7 +237,7 @@ addF7Tally(SimMCNP& System,const int tallyNum,
   /*!
     Addition of a tally to the mcnpx deck
     \param System :: SimMCNP class
-    \param tallyNum :: Cell number to tally 
+    \param tallyNum :: Cell number to tally
     \param Units :: List of cells to add
   */
 {
@@ -249,18 +251,18 @@ addF7Tally(SimMCNP& System,const int tallyNum,
   return;
 }
 
-  
+
 sswTally*
 addSSWTally(SimMCNP& System)
   /*!
     Add a SSW tally to ASim [if it doesn't already have one]
-    \param System :: SimMCNP item    
+    \param System :: SimMCNP item
     \return Tally pointer
    */
 {
   sswTally TX(0);
   System.addTally(TX);
-  
+
   return System.getSSWTally();
 }
 
@@ -271,7 +273,7 @@ addF5Tally(SimMCNP& System,const int tNumber,
 	   const std::vector<Geometry::Vec3D>& VList,
 	   const double secondDistance)
   /*!
-    Adds a point tally 
+    Adds a point tally
     \param System :: SimMCNP item
     \param tNumber :: Tally Number
     \param Point :: Centre point
@@ -303,11 +305,11 @@ addF5Tally(SimMCNP& System,const int tNumber,
 
   return;
 }
-  
+
 void
 addF5Tally(SimMCNP& System,const int tNumber)
   /*!
-    Adds a point tally 
+    Adds a point tally
     \param System :: SimMCNP item
     \param tNumber :: Tally Number
   */
@@ -330,7 +332,7 @@ setComment(SimMCNP& System,const int tNumber,const std::string& Comment)
   ELog::RegMethod RegA("TallyCreate","setComment");
 
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
     ELog::EM<<"Error finding tally number "<<tNumber<<ELog::endErr;
   else
@@ -354,7 +356,7 @@ cutTallyEnergy(SimMCNP& System,const double energyCut)
   return;
 }
 
-void 
+void
 setF5Position(SimMCNP& System,const int tNumber,
 	      const Geometry::Vec3D& CPoint,const Geometry::Vec3D& Axis,
 	      const double DBplane,const double WStep)
@@ -371,7 +373,7 @@ setF5Position(SimMCNP& System,const int tNumber,
   ELog::RegMethod RegA("TallyCreate","setF5Position");
   const masterRotate& MR=masterRotate::Instance();
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
     {
       ELog::EM<<"setF5Position:: Error finding tally number "
@@ -387,7 +389,7 @@ setF5Position(SimMCNP& System,const int tNumber,
   return;
 }
 
-void 
+void
 setF5Position(SimMCNP& System,const int tNumber,
 	      const Geometry::Vec3D& TPoint)
   /*!
@@ -400,7 +402,7 @@ setF5Position(SimMCNP& System,const int tNumber,
   ELog::RegMethod RegA("TallyCreate","setF5Position(point)");
 
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
     {
       ELog::EM<<"Error finding tally number "<<tNumber<<ELog::endErr;
@@ -410,7 +412,7 @@ setF5Position(SimMCNP& System,const int tNumber,
   return;
 }
 
-void 
+void
 moveF5Tally(SimMCNP& System,const int tNumber,
 	    const Geometry::Vec3D& moveVec)
   /*!
@@ -423,7 +425,7 @@ moveF5Tally(SimMCNP& System,const int tNumber,
   ELog::RegMethod RegA("TallyCreate","moveF5Position");
 
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
     {
       ELog::EM<<"Error finding tally number "<<tNumber<<ELog::endErr;
@@ -433,7 +435,7 @@ moveF5Tally(SimMCNP& System,const int tNumber,
   return;
 }
 
-void 
+void
 setTallyTime(SimMCNP& System,const int tNumber,
 	     const std::string& timeStr)
   /*!
@@ -445,13 +447,13 @@ setTallyTime(SimMCNP& System,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","setTallyTime");
 
-  tallySystem::Tally* TX=System.getTally(tNumber); 
+  tallySystem::Tally* TX=System.getTally(tNumber);
   if (!TX)
     throw ColErr::InContainerError<int>(tNumber,"tally number");
 
   if (TX->setTime(timeStr))
     throw ColErr::InvalidLine(timeStr,"timeStr",0);
-  
+
   return;
 }
 
@@ -471,7 +473,7 @@ setF5Angle(SimMCNP& System,const int tNumber,
   ELog::RegMethod RegA("TallyCreate","setF5Angle");
 
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
     throw ColErr::InContainerError<int>(tNumber,"point tally number");
 
@@ -483,7 +485,7 @@ void
 widenF5Tally(SimMCNP& System,const int tNumber,
 	     const int dirIndex,const double scale)
   /*!
-    Widens the tally in the window direction by scale cm in 
+    Widens the tally in the window direction by scale cm in
     each direction
     \param System :: SimMCNP to deal with
     \param tNumber :: tally number
@@ -494,7 +496,7 @@ widenF5Tally(SimMCNP& System,const int tNumber,
   ELog::RegMethod RegA("TallyCreate","widenF5Tally");
 
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
     throw ColErr::InContainerError<int>(tNumber,"Point tally number");
 
@@ -506,7 +508,7 @@ void
 slideF5Tally(SimMCNP& System,const int tNumber,
 	     const int dirIndex,const double scale)
   /*!
-    Widens the tally in the window direction by scale cm in 
+    Widens the tally in the window direction by scale cm in
     each direction
     \param System :: SimMCNP to deal with
     \param tNumber :: tally number
@@ -538,7 +540,7 @@ shiftF5Tally(SimMCNP& System,const int tNumber,
   ELog::RegMethod RegA("TallyCreate","shiftF5Tally");
 
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
     throw ColErr::InContainerError<int>(tNumber,"Point tally number");
 
@@ -563,7 +565,7 @@ divideF5Tally(SimMCNP& System,const int tNumber,
   if (tNumber)
     {
       tallySystem::pointTally* TX=
-	dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+	dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
       if (!TX)
         throw ColErr::InContainerError<int>(tNumber,"Point tally number");
       TX->divideWindow(xPts,yPts);
@@ -575,7 +577,7 @@ divideF5Tally(SimMCNP& System,const int tNumber,
       for(mc=TM.begin() ;mc!=TM.end(); mc++)
 	{
 	  tallySystem::pointTally* TX=
-	    dynamic_cast<tallySystem::pointTally*>(mc->second); 
+	    dynamic_cast<tallySystem::pointTally*>(mc->second);
 	  if (TX)
 	    TX->divideWindow(xPts,yPts);
 	}
@@ -600,7 +602,7 @@ removeF5Window(SimMCNP& System,const int tNumber)
   for( ;mc!=TM.end(); mc++)
     {
       tallySystem::pointTally* TX=
-	dynamic_cast<tallySystem::pointTally*>(mc->second); 
+	dynamic_cast<tallySystem::pointTally*>(mc->second);
       if (TX)
 	{
 	  // delete window if present
@@ -624,7 +626,7 @@ modF5TallyCells(SimMCNP& System,const int tNumber,
   ELog::RegMethod RegA("TallyCreate","modF5TallyCells");
 
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
     throw ColErr::InContainerError<int>(tNumber,"Point tally number");
 
@@ -644,7 +646,7 @@ addF6Tally(SimMCNP& System,const int tNumber,
   /*!
     Creates a +f6 type tally
     \param System :: SimMCNP to add
-    \param tNumber :: tally number 
+    \param tNumber :: tally number
     \param particleType :: particle type
     \param cellList :: Cells to tally in
    */
@@ -670,8 +672,8 @@ writePlanes(const int Index,const int MP,
   /*!
     Diagnostic to write plane info from a point tally (ugly)
     \param Index :: Index of tally
-    \param MP :: Master Plane 
-    \param Planes :: List of planes 
+    \param MP :: Master Plane
+    \param Planes :: List of planes
   */
 {
   ELog::EM<<"Beamline ==== "<<Index<<ELog::endDiag;
@@ -715,7 +717,7 @@ deleteTally(SimMCNP& Sim,const int ID)
   /*!
     Delete a tally based on the number-type
     \param Sim :: SimMCNP system to remove tallies from
-    \param ID :: Type number to delete 
+    \param ID :: Type number to delete
   */
 {
   ELog::RegMethod RegA("TallyCreate","deleteTally");
@@ -736,12 +738,12 @@ deleteTally(SimMCNP& Sim,const int ID)
 }
 
 int
-getFarPoint(const SimMCNP& Sim,Geometry::Vec3D& Pt) 
+getFarPoint(const SimMCNP& Sim,Geometry::Vec3D& Pt)
   /*!
     Get the last tally point based on the tallynumber
     Can use the mesh centre if no point tallies exist
     \param Sim :: System to access tally tables
-    \param Pt :: Point 
+    \param Pt :: Point
     \return tally number [0 on fail]
   */
 {
@@ -759,7 +761,7 @@ getFarPoint(const SimMCNP& Sim,Geometry::Vec3D& Pt)
 	  tnum=PTptr->getKey();
 	  Pt=PTptr->getCentre();
 	}
-      else 
+      else
 	{
 	  const tmeshTally* TMptr=
 	    dynamic_cast<const tmeshTally*>(mc->second);
@@ -837,7 +839,7 @@ setSingle(SimMCNP& Sim,const int tNumber)
 	    fnum++;
 	}
     }
-  return fnum;  
+  return fnum;
 }
 
 int
@@ -914,7 +916,7 @@ setFormat(SimMCNP& System,const int tNumber,
    */
 {
   ELog::RegMethod RegA("TallyCreate","setFormat");
-  
+
   SimMCNP::TallyTYPE& tmap=System.getTallyMap();
   int fnum(0);
   SimMCNP::TallyTYPE::iterator mc;
@@ -927,7 +929,7 @@ setFormat(SimMCNP& System,const int tNumber,
 	    fnum++;
 	}
     }
-  
+
   return fnum;
 }
 
@@ -937,12 +939,12 @@ mergeTally(SimMCNP& Sim,const int aNumber,
   /*!
     Merge the tallys together into one [if makes sense]
     \param Sim :: SimMCNP
-    \param aNumber :: tally nubmer 
+    \param aNumber :: tally nubmer
     \param bNumber :: tally nubmer [-ve for type / 0 for all]
     \param  :: format string [MCNP format]
   */
 {
-  ELog::RegMethod RegA("TallyCreate","mergeTally");  
+  ELog::RegMethod RegA("TallyCreate","mergeTally");
 
   SimMCNP::TallyTYPE& tmap=Sim.getTallyMap();
 
@@ -976,8 +978,8 @@ mergeTally(SimMCNP& Sim,const int aNumber,
   return;
 }
 
-  
-  
+
+
 int
 setSDField(SimMCNP& Sim,const int tNumber,
           const std::string& fPart)
@@ -1010,7 +1012,7 @@ setSDField(SimMCNP& Sim,const int tNumber,
 
 int
 setParticleType(SimMCNP& Sim,const int tNumber,
-                const std::string& nPart) 
+                const std::string& nPart)
   /*!
     Get the last tally point based on the tallynumber
     Can use the mesh centre if no point tallies exist
@@ -1035,7 +1037,7 @@ setParticleType(SimMCNP& Sim,const int tNumber,
           fnum++;
 	}
 
-        
+
     }
   return fnum;
 }
@@ -1043,7 +1045,7 @@ setParticleType(SimMCNP& Sim,const int tNumber,
 int
 changeParticleType(SimMCNP& Sim,const int tNumber,
 		   const std::string& oPart,
-		   const std::string& nPart) 
+		   const std::string& nPart)
   /*!
     Get the last tally point based on the tallynumber
     Can use the mesh centre if no point tallies exist
@@ -1086,7 +1088,7 @@ addPointPD(SimMCNP& System)
   */
 {
   ELog::RegMethod RegA("TallyCreate","addPointPD");
-  
+
   const SimMCNP::TallyTYPE& tmap=System.getTallyMap();
   SimMCNP::TallyTYPE::const_iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
@@ -1096,17 +1098,17 @@ addPointPD(SimMCNP& System)
       if (PTptr)
 	{
 	  const masterRotate& MR=masterRotate::Instance();
-	  ModelSupport::pointDetOpt 
+	  ModelSupport::pointDetOpt
 	    PD(MR.reverseRotate(PTptr->getCentre()));
 	  PD.createObjAct(System);
 	  PD.addTallyOpt(System,PTptr->getKey());
 	}
     }
-  
+
   return;
 }
 
-int 
+int
 getLastTallyNumber(const SimMCNP& ASim,const int type)
   /*!
     Get the last tally nubmer
@@ -1120,12 +1122,12 @@ getLastTallyNumber(const SimMCNP& ASim,const int type)
   SimMCNP::TallyTYPE::const_iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if (mc->first>outN && 
+      if (mc->first>outN &&
 	  (!type || (mc->first % 10)==type))
 	outN=mc->first;
     }
   return outN;
 }
-  
+
 
 }  // NAMESPACE tallySystem

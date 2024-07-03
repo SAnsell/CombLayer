@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   tallyInc/surfaceConstruct.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tallySystem_surfaceConstruct_h
@@ -35,7 +35,7 @@ namespace tallySystem
 {
 
 /*!
-  \class surfaceConstruct 
+  \class surfaceConstruct
   \version 1.0
   \author S. Ansell
   \date April 2012
@@ -44,36 +44,36 @@ namespace tallySystem
   Provides linkage to its outside on FixedComp[0]
 */
 
-class surfaceConstruct 
+class surfaceConstruct
 {
  private:
 
   static int processSurfObject(SimMCNP&,const int,
 			       const std::string&,
 			       const std::string&,
-			       const std::vector<std::string>&);
-  
+			       const std::vector<std::string>&,const std::string&);
+
   static int processSurfMap(SimMCNP&,const int,
 			    const std::string&,
 			    const std::string&,
-			    const long int);
+			    const long int,const std::string&);
 
   static void processSurface(SimMCNP&,const int,
 			    const mainSystem::inputParam&,
 			    const size_t);
 
-  /// private constructor 
+  /// private constructor
   surfaceConstruct();
-  
+
  public:
 
 
 
 
   static void processSurfaceCurrent(SimMCNP&,const mainSystem::inputParam&,
-			       const size_t);
+				    const size_t);
   static void processSurfaceFlux(SimMCNP&,const mainSystem::inputParam&,
-			    const size_t);
+				 const size_t);
 
   static void writeHelp(std::ostream&);
 };
@@ -81,4 +81,3 @@ class surfaceConstruct
 }
 
 #endif
- 
