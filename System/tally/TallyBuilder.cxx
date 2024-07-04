@@ -145,18 +145,18 @@ helpTallyType(const std::string& HType)
     sswConstruct::writeHelp(ELog::EM.Estream());
   else
     {
-      ELog::EM<<"The '-T' flag adds a tally into the model." << ELog::endBasic;
-      ELog::EM<<"Usage: -T tallyName tallyType parameters" << ELog::endBasic;
-      ELog::EM<<"       run: '-T help tallyType' to display the type-based help\n" << ELog::endBasic;
-      ELog::EM<<"Tally Types:\n\n";
-      ELog::EM<<"-- grid : \n";
-      ELog::EM<<"-- mesh (tmesh): \n";
-      ELog::EM<<"-- point (f5): \n";
-      ELog::EM<<"-- surface (f1): \n";
-      ELog::EM<<"-- flux (f4): \n";
-      ELog::EM<<"-- heat (f6): \n";
-      ELog::EM<<"-- fission : \n";
-      ELog::EM<<"-- SSW : \n";
+      ELog::EM<<"The '-T' flag adds a tally into the model.\n"
+	"Usage: -T tallyName tallyType parameters\n"
+	"       run '-T help tallyType' to display type-based help.\n\n"
+	"List of supported MCNP tallies:\n\n"
+	"* grid\n"
+	"* mesh (tmesh)\n"
+	"* point (f5)\n"
+	"* surface (f1)\n"
+	"* flux (f4)\n"
+	"* heat (f6)\n"
+	"* fission\n"
+	"* ssw\n";
     }
   ELog::EM<<ELog::endBasic;
 

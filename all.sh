@@ -10,12 +10,11 @@ inp="/tmp/AA"
 # FLUKA estimators
 # the uq is a perl replacement string to unquote the argument
 $parallel ./maxiv -fluka infn -defaultConfig Linac -T '{=1 uq(); =}' ::: \
- " myname resnuclei InjectionHall:Floor Concrete $inp" \
- " myname resnuclei InjectionHall:Floor $inp" \
- " myname surface electron InjectionHall back $inp" \
- " myname surface 'e+&e-'  InjectionHall back 1e-11 3000 100 0 6.28318 3 $inp" \
- "help resnuclei $inp" "help surface $inp"  || exit
-# " help $inp"  || exit
+ "myname resnuclei InjectionHall:Floor Concrete $inp" \
+ "myname resnuclei InjectionHall:Floor $inp" \
+ "myname surface electron InjectionHall back $inp" \
+ "myname surface 'e+&e-'  InjectionHall back 1e-11 3000 100 0 6.28318 3 $inp" \
+ "help $inp" "help resnuclei $inp" "help surface $inp"  || exit
 
 # MCNP tallies
 $parallel ./maxiv -defaultConfig Linac -T myname '{=1 uq(); =}' ::: \
