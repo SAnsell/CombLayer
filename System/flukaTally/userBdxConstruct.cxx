@@ -130,6 +130,9 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   const std::string tallyName=
     IParam.getValue<std::string>("tally",Index,0);
 
+  if (tallyName=="help")
+    return writeHelp(ELog::EM.Estream());
+
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,2,"tally:ParticleType");
   const std::string FCname=
@@ -147,28 +150,25 @@ userBdxConstruct::processBDX(SimFLUKA& System,
       !constructCellMapPair(System,FCname,FCindex,cellA,cellB) &&
       !constructLinkRegion(System,FCname,FCindex,cellA,cellB) &&
       !constructSurfRegion(System,FCname,FCindex,cellA,cellB)
-      )
-    {
-      // Important because we need to correct itemIndex
-      if (constructSurfRegion(System,FCname,cellA,cellB))
-	itemIndex--;
-      else
-	throw ColErr::CommandError(FCname+" "+FCindex,"Surf Tally conversion");
-
-    }
-  ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;
+      ) {
+    // Important because we need to correct itemIndex
+    if (constructSurfRegion(System,FCname,cellA,cellB))
+      itemIndex--;
+    else
+      throw ColErr::CommandError(tallyName+": "+FCname+" "+FCindex,"Surface tally conversion");
+  }
+  //  ELog::EM<< tallyName << ": regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
   // energy
-  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
-  const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++);
+  const double EA=IParam.getDefValue<double>(1e-11,"tally",Index,itemIndex++);
+  const double EB=IParam.getDefValue<double>(3000.0,"tally",Index,itemIndex++);
+  const size_t NE=IParam.getDefValue<size_t>(100,"tally",Index,itemIndex++);
   // angle
   const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
   const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
-
 
   userBdxConstruct::createTally(System,tallyName,particleType,-nextId,
 				cellA,cellB,
@@ -185,15 +185,14 @@ userBdxConstruct::writeHelp(std::ostream& OX)
     \param OX :: Output stream
   */
 {
-  OX<<
-    "-T surface \n"
-    "  particleType : name of particle / energy to tally\n"
-    "  Option A : \n"
-    "       FixedComp + linkPoint (using % to mean -ve)\n"
-    "  Option B : \n"
-    "       FixedComp:CellMap:Index (index optional) \n"
-    "  Emin EMax NE \n"
-    "  AMin AngleMax NA (all optional) \n"
+  OX << "USRBDX estimator options:\n"
+    "* particle objectName linkName    [Emin Emax NE Amin Amax NA]\n"
+    "* particle objectName surfaceName [Emin Emax NE Amin Amax NA]\n"
+    "  Emin, Emax - energy range [MeV]\n"
+    "   NE - number of energy bins\n"
+    "  Amin Amax - angular range [sr]\n"
+    "   NA - number of angular bins\n"
+    "\n Example: -T myname surface 'e+&e-' MyObject \\#front 0.001 3000 100\n"
     <<std::endl;
   return;
 }

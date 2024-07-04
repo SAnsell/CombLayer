@@ -136,6 +136,9 @@ resnucConstruct::processResNuc(SimFLUKA& System,
   const std::string tallyName=
     IParam.getValue<std::string>("tally",Index,0);
 
+  if (tallyName=="help")
+    return writeHelp(ELog::EM.Estream());
+
   const std::string objectName=
     IParam.getValueError<std::string>("tally",Index,2,"tally:objectName");
 
@@ -143,9 +146,6 @@ resnucConstruct::processResNuc(SimFLUKA& System,
     (IParam.itemCnt("tally",Index)>3) ?
     IParam.getValue<std::string>("tally",Index,3) :
     "All";
-
-  if (objectName=="help" ||  objectName=="Help")
-    return writeHelp(ELog::EM.Estream());
 
   const std::set<int> cellVec=
     System.getObjectRangeWithMat(objectName,matName);
@@ -183,7 +183,11 @@ resnucConstruct::writeHelp(std::ostream& OX)
     \param OX :: Output stream
   */
 {
-  OX<<"Definition of the RESNUCLEI estimator:\n -T name resnuc objectName[:cellName] [material]\n";
+  OX<<"RESNUCLEI estimator options:\n";
+  OX<<"* objectName[:regionName] [material]\n";
+  OX<<"  if regionName is not specified, all regions of objectName are tallied;\n";
+  OX<<"  if material is not specified, all materials of the specified regions are tallied.\n";
+  OX<<"\n Example: -T myname resnuclei MyObject:MyRegion Concrete\n";
   return;
 }
 

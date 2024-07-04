@@ -97,7 +97,7 @@ tallySelection(SimFLUKA& System,
 	userBdxConstruct::processBDX(System,IParam,i);
       else if (TType=="track" || TType=="cell")
 	userTrackConstruct::processTrack(System,IParam,i);
-      else if (TType=="resnuc")
+      else if (TType=="resnuclei")
 	resnucConstruct::processResNuc(System,IParam,i);
       else if (TType=="yield")
 	userYieldConstruct::processYield(System,IParam,i);
