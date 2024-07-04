@@ -136,9 +136,6 @@ resnucConstruct::processResNuc(SimFLUKA& System,
   const std::string tallyName=
     IParam.getValue<std::string>("tally",Index,0);
 
-  if (tallyName=="help")
-    return writeHelp(ELog::EM.Estream());
-
   const std::string objectName=
     IParam.getValueError<std::string>("tally",Index,2,"tally:objectName");
 
