@@ -18,10 +18,12 @@ $parallel ./maxiv -fluka infn -defaultConfig Linac -T '{=1 uq(); =}' ::: \
 
 # MCNP tallies
 $parallel ./maxiv -defaultConfig Linac -T myname '{=1 uq(); =}' ::: \
-	 " surface electron object     InjectionHall back $inp" \
-	 " surface electron surfMap    InjectionHall InnerBack  1 $inp" \
-	 " surface electron surfMap    InjectionHall InnerBack -1 $inp" \
-	 " surface electron viewObject InjectionHall front BackWallFront \#BackWallBack '#SPFMazeIn' $inp"  || exit
+	 " surface e object     InjectionHall back $inp" \
+	 " surface e surfMap    InjectionHall InnerBack  1 $inp" \
+	 " surface e surfMap    InjectionHall InnerBack -1 $inp" \
+	 " surface e viewObject InjectionHall front BackWallFront \#BackWallBack '#SPFMazeIn' $inp" \
+	 " flux e InjectionHall:Floor Concrete $inp" \
+	 " flux e InjectionHall:Floor All $inp" || exit
 
 # GEOMETRY
 $parallel ::: "./maxiv --noLengthCheck --defaultConfig Linac All $opts $inp" \
