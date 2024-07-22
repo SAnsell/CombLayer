@@ -104,6 +104,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/localRotate.h
   ${tarINC}/M2.h
   ${tarINC}/M3.h
+  ${tarINC}/M3vec.h
   ${tarINC}/MBrect.h
   ${tarINC}/Mesh3D.h
   ${tarINC}/MeshGrid.h

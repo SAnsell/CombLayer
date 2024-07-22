@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/SurfMap.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ class SurfMap : public BaseMap
     \param K :: Key name 
     \param CN :: Offset index
   */
-  
+
   bool hasSurf(const std::string& K,const size_t index =0) const
   { return BaseMap::hasItem(K,index); }
 
@@ -99,6 +99,7 @@ class SurfMap : public BaseMap
 
   std::vector<int> getSurfs() const
     { return BaseMap::getItems(); }
+
   //@}
 
   int getSignedSurf(const std::string&,const size_t =0) const;

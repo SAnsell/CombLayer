@@ -3,7 +3,7 @@
  
  * File:   formaxInc/MLMCrystal.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@ class MLMCrystal :
   double height;           ///< Depth into beam
   double length;           ///< Length along beam
   
-
   // Mirror slot on top of mirror block
   double topSlotXStep;         ///< Slot on mirror block on top surf
   double topSlotWidth;         ///< Slot width
@@ -80,8 +79,8 @@ class MLMCrystal :
  public:
 
   MLMCrystal(const std::string&);
-  MLMCrystal(const MLMCrystal&);
-  MLMCrystal& operator=(const MLMCrystal&);
+  MLMCrystal(const MLMCrystal&) =default;
+  MLMCrystal& operator=(const MLMCrystal&) =default;
   ~MLMCrystal() override;
 
   using FixedComp::createAll;

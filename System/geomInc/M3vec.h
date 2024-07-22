@@ -64,7 +64,7 @@ class M3vec
   
 
   M3vec<T>& operator*=(const T&);
-  M3vec<T>& operator*=(const M3vec&);
+  M3vec<T>& operator*=(const M3vec<T>&);
   
   M3vec<T>& operator/=(const T&);
 

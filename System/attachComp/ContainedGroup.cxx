@@ -373,7 +373,7 @@ ContainedGroup::getOuterSurf(const std::string& Key) const
     This allows the object to be inserted in a larger
     object.
     \param Key :: Key name for rule
-    \return outer surf
+    \return outer surf rule
   */
 {
   ELog::RegMethod RegA("ContainedGroup","getOuterSurf");
@@ -530,7 +530,7 @@ ContainedGroup::addInsertCell(const std::list<std::string>& KeySet,
 void 
 ContainedGroup::addInsertCell(const std::list<std::string>& KeySet,
 			      const ContainedComp& CC)
-  /*
+  /*!
     Adds a cell to the insert list
     \param KeySet :: Key names for rule to insert
     \param CC :: Contained component to copy

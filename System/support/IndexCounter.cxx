@@ -314,6 +314,8 @@ IndexCounter<T,UC>::write(std::ostream& OX) const
   return;
 }
 
+
+///\cond TEMPLATE
 template class IndexCounter<size_t,0>;
 template class IndexCounter<size_t,1>;
 template class IndexCounter<int,0>;
@@ -332,3 +334,5 @@ template std::ostream& operator<<(std::ostream&,const IndexCounter<size_t>&);
 template std::ostream& operator<<(std::ostream&,const IndexCounter<int,0>&);
 template std::ostream& operator<<(std::ostream&,const IndexCounter<size_t,1>&);
 template std::ostream& operator<<(std::ostream&,const IndexCounter<int,1>&);
+
+///\endcond TEMPLATE
