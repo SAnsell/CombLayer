@@ -71,6 +71,12 @@ global_settings {
 }
 
 #switch ( 0 )
+  #case(strcmp(ITEM,"Door"))
+    #declare cameraLocation = <169, 271, 40>;
+    #declare cameraLookAt   = <152, 525, 0>;
+    #declare cameraAngle = 90;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Gate"))
     #declare cameraLocation = <-90, 220, 40>;
     #declare cameraLookAt   = <0, 245, 3>;

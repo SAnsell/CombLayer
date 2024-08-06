@@ -12,7 +12,7 @@ make -j$(nproc) maxiv
 ITEM=${BASH_ARGV} # last argument is the view in povray/tdc.pov
 
 params=" +A +W800 +H600 "
-void=""
+void=" -v BldBConcreteDoorDoorMat Mercury"
 
 echo $ITEM
 echo $void
