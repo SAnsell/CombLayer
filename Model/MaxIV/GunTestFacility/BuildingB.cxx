@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/GunTestFacility/Hall.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2024 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,7 +156,12 @@ namespace MAXIV::GunTestFacility
     wallMat(A.wallMat),
     voidMat(A.voidMat),
     oilRoomWallMat(A.oilRoomWallMat),
-    level9VentDuctShieldMat(A.level9VentDuctShieldMat)
+    level9VentDuctShieldMat(A.level9VentDuctShieldMat),
+    doorBricksMat(A.doorBricksMat),
+    doorBricksThick(A.doorBricksThick),
+    doorBricksHeight(A.doorBricksHeight),
+    doorBricksLength(A.doorBricksLength),
+    doorBricksOffset(A.doorBricksOffset)
     /*!
       Copy constructor
       \param A :: BuildingB to copy
@@ -219,6 +224,11 @@ namespace MAXIV::GunTestFacility
 	voidMat=A.voidMat;
         oilRoomWallMat=A.oilRoomWallMat;
         level9VentDuctShieldMat=A.level9VentDuctShieldMat;
+	doorBricksMat=A.doorBricksMat;
+	doorBricksThick=A.doorBricksThick;
+	doorBricksHeight=A.doorBricksHeight;
+	doorBricksLength=A.doorBricksLength;
+	doorBricksOffset=A.doorBricksOffset;
       }
     return *this;
   }
@@ -289,11 +299,16 @@ namespace MAXIV::GunTestFacility
     level9VentDuctShieldHeight=Control.EvalVar<double>(keyName+"Level9VentillationDuctShieldHeight");
     level9VentDuctShieldThick=Control.EvalVar<double>(keyName+"Level9VentillationDuctShieldThick");
     level9VentDuctShieldOffset=Control.EvalVar<double>(keyName+"Level9VentillationDuctShieldOffset");
+    doorBricksThick=Control.EvalVar<double>(keyName+"DoorBricksThick");
+    doorBricksHeight=Control.EvalVar<double>(keyName+"DoorBricksHeight");
+    doorBricksLength=Control.EvalVar<double>(keyName+"DoorBricksLength");
+    doorBricksOffset=Control.EvalVar<double>(keyName+"DoorBricksOffset");
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
     oilRoomWallMat=ModelSupport::EvalMat<int>(Control,keyName+"OilRoomWallMat");
     level9VentDuctShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"Level9VentillationDuctShieldMat");
+    doorBricksMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorBricksMat");
 
     if (std::abs(gunRoomWidth + midWallThick+ klystronRoomWidth + trspRoomWidth + stairRoomWidth + 2.0*internalWallThick-2025.0)>1e-3)
       ELog::EM << "WARNING: gun test room widths do not sum up to 2025 as of K_20-1_08C6b4" << ELog::endWarn;
@@ -392,6 +407,10 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+215,buildIndex+16,Z,level9VentDuctShieldHeight);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+216,buildIndex+215,Z,level9VentDuctShieldThick);
 
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+301,buildIndex+31,Y,-doorBricksThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+303,buildIndex+4,X,-doorBricksOffset-doorBricksLength);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+304,buildIndex+4,X,-doorBricksOffset);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+306,buildIndex+5,Z,doorBricksHeight);
 
     return;
   }
@@ -444,8 +463,20 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 33 -23 ");
     makeCell("KlystronRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 3 -4 ");
-    makeCell("Maze",System,cellIndex++,voidMat,0.0,Out*tb);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -301 3 -4 5 -306");
+    makeCell("MazeBircks",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 3 -303 5 -306");
+    makeCell("DoorBircksVoid",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 304 -4 5 -306");
+    makeCell("DoorBircksVoid",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 303 -304 5 -306");
+    makeCell("DoorBircks",System,cellIndex++,doorBricksMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 3 -4 306 -26");
+    makeCell("Maze",System,cellIndex++,voidMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 3 -43 5 -25");
     makeCell("MazeWallJamb",System,cellIndex++,wallMat,0.0,Out);
