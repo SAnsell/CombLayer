@@ -215,6 +215,8 @@ namespace setVariable
     Control.addVariable(name+"ConcreteDoorOuterTopGap",4.5);
 
     Control.addVariable(name+"ConcreteDoorFlipX",1);
+    Control.addVariable(name+"ConcreteDoorXStep",137); // TODO check
+    ELog::EM << "Concrete door: distance to the north building B wall?" << ELog::endDiag;
   }
 
   void BeamLineVariables(FuncDataBase& Control)
