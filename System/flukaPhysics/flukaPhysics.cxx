@@ -111,45 +111,45 @@ flukaPhysics::flukaPhysics() :
     }),
 
   formatMap({
-      { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
-      { "elecnucl", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
-      { "emfray", unitTYPE(0,"4.0 R0 R1 1.0 - - ") },
+      { "lowbias", unitTYPE(0," %2 0 - R0 R1 1 ") },
+      { "elecnucl", unitTYPE(1,"1 - - M0 M1 1 ") },
+      { "emfray", unitTYPE(0,"4 R0 R1 1 - - ") },
 
-      { "bias", unitTYPE(0,"%2 %3 %4 R0 R1 1.0 ") },
-      { "bias-user", unitTYPE(0,"%2 %3 %4 R0 R1 1.0 ") },
-      { "bias-off", unitTYPE(0,"%2 1.0 1.0 R0 R1 1.0 ") },
-      { "coalescence", unitTYPE(-100,"1.0 - - - - - ") },
-      { "ionsplit", unitTYPE(1,"1.0 0.1 5.0 2 500 1.0 ") },
-      { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
-      { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },
+      { "bias", unitTYPE(0,"%2 %3 %4 R0 R1 1 ") },
+      { "bias-user", unitTYPE(0,"%2 %3 %4 R0 R1 1 ") },
+      { "bias-off", unitTYPE(0,"%2 1 1 R0 R1 1 ") },
+      { "coalescence", unitTYPE(-100,"1 - - - - - ") },
+      { "ionsplit", unitTYPE(1,"1 0.1 5 2 500 1 ") },
+      { "exptrans", unitTYPE(0," 1 %2 R0 R1 1 - ") },
+      { "exppart", unitTYPE(0," -1 %2 %2 1 - - ") },
 
-      { "emfcut", unitTYPE(0,"%2 %3 0.0 R0 R1 1.0") },
-      { "emffluo", unitTYPE(1,"%2 M0 M1 1.0 - - ") },
-      { "evaporation", unitTYPE(-100,"3.0 - - - - - ") },
-      { "evap-noheavy", unitTYPE(-100,"2.0 - - - - - ") },
+      { "emfcut", unitTYPE(0,"%2 %3 0 R0 R1 1") },
+      { "emffluo", unitTYPE(1,"%2 M0 M1 1 - - ") },
+      { "evaporation", unitTYPE(-100,"3 - - - - - ") },
+      { "evap-noheavy", unitTYPE(-100,"2 - - - - - ") },
 
-      { "prodcut", unitTYPE(1,"%2 %3 1.0 M0 M1 1.0") },
-      { "photthr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
-      { "pho2thr", unitTYPE(1,"%2 %3 -  M0 M1 1.0") },
-      { "elpothr", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
-      { "pairbrem", unitTYPE(1,"3.0 %2 %3 M0 M1 1.0") },
-      { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
-      { "mupair", unitTYPE(1,"1111.0 - - M0 M1 1.0 ") },
-      { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
-      { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
-      { "lpb", unitTYPE(0,"1022 %2 %3 R0 R1 1.0 ") },
-      { "lambbrem", unitTYPE(1,"%2 0.0 %3 M0 M1 1.0 ") },
-      { "lambemf", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
+      { "prodcut", unitTYPE(1,"%2 %3 1 M0 M1 1") },
+      { "photthr", unitTYPE(1,"%2 %3 %4 M0 M1 1") },
+      { "pho2thr", unitTYPE(1,"%2 %3 -  M0 M1 1") },
+      { "elpothr", unitTYPE(1,"%2 %3 %4 M0 M1 1") },
+      { "pairbrem", unitTYPE(1,"3 %2 %3 M0 M1 1") },
+      { "photonuc", unitTYPE(1,"1 - - M0 M1 1 ") },
+      { "mupair", unitTYPE(1,"1111 - - M0 M1 1 ") },
+      { "muphoton", unitTYPE(1,"1 - - M0 M1 1 ") },
+      { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1 ") },
+      { "lpb", unitTYPE(0,"1022 %2 %3 R0 R1 1 ") },
+      { "lambbrem", unitTYPE(1,"%2 0 %3 M0 M1 1 ") },
+      { "lambemf", unitTYPE(1,"%2 %3 %4 M0 M1 1 ") },
 
-      { "lamlength", unitTYPE(-1,"0.0 %2 M1 P0 P0 1.0 ") },
-      { "lamprimary", unitTYPE(-1,"0.0 %2 M1 P0 P0 1.0 ") },
+      { "lamlength", unitTYPE(-1,"0 %2 M1 P0 P0 1 ") },
+      { "lamprimary", unitTYPE(-1,"0 %2 M1 P0 P0 1 ") },
 
-      { "gas", unitTYPE(1," %2 0.0 0.0 M0 M1 1.0 ") },
-      { "rho", unitTYPE(1," 0.0 %2 0.0 M0 M1 1.0 ") },
+      { "gas", unitTYPE(1," %2 0 0 M0 M1 1 ") },
+      { "rho", unitTYPE(1," 0 %2 0 M0 M1 1 ") },
 
-      { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 0.0 -") },
+      { "partthr", unitTYPE(-1,"%2 P0 P1 1 0 -") },
 
-      { "stepsize", unitTYPE(0,"%2 %3 M0 M1 1.0 - ") }
+      { "stepsize", unitTYPE(0,"%2 %3 M0 M1 1 - ") }
 
     })
 
