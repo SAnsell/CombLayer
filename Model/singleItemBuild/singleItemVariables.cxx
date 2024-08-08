@@ -507,8 +507,6 @@ SingleItemVariables(FuncDataBase& Control)
   // GTFGate
   GTFGateValveGenerator GTFGateGen;
   GTFGateGen.setOuter(4.0, 14.5, 18.5, 7.7);
-  GTFGateGen.setBladeMat("EN14435");
-  GTFGateGen.setBladeThick(1.09);
   GTFGateGen.setAPortCF<CF63>();
   GTFGateGen.setBPortCF<CF63>();
   GTFGateGen.generateValve(Control,"GTFGate",0.0,1);
@@ -516,8 +514,6 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("GTFGatePortBRadius", 3.15);
   Control.addVariable("GTFGatePortAThick", 5.8);
   Control.addVariable("GTFGatePortBThick", 5.8);
-  Control.addVariable("GTFGateClampMat", "Iron");
-  Control.addVariable("GTFGateBladeRadius", 3.5);
 
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;
