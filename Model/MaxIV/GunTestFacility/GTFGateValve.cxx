@@ -448,7 +448,7 @@ GTFGateValve::createObjects(Simulation& System)
   makeCell("Body",System,cellIndex++,wallMat,0.0,HR);
 
   // blade
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -322 337 -317");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"321 -322 337 -317");
   makeCell("BladeBeforeHead",System,cellIndex++,bladeMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"322 -302 337 -317 319");
@@ -457,7 +457,7 @@ GTFGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"322 -302 337 -319");
   makeCell("BladeScewHead",System,cellIndex++,bladeScrewMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -321 -337");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -321 -317");
   makeCell("BladeBeforeTip",System,cellIndex++,bladeMat,0.0,HR);
   ELog::EM << "BladeBeforeTip: possible lost particles - touching surfaces" << ELog::endWarn;
 
