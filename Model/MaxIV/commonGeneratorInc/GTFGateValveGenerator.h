@@ -96,6 +96,7 @@ class GTFGateValveGenerator
   std::string bladeMat;         ///< Void material
   std::string wallMat;          ///< Pipe material
   std::string clampMat;        ///< Clamp material
+  std::string bladeScrewMat;    ///< Blade screw material
   std::string lsFlangeMat;              ///< Lifting structure square flange material
 
  public:

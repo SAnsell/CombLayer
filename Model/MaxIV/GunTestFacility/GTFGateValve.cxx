@@ -119,6 +119,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   lsShaftFlangeThick(A.lsShaftFlangeThick),
   voidMat(A.voidMat),bladeMat(A.bladeMat),wallMat(A.wallMat),
   clampMat(A.clampMat),
+  bladeScrewMat(A.bladeScrewMat),
   lsFlangeMat(A.lsFlangeMat)
   /*!
     Copy constructor
@@ -188,6 +189,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeMat=A.bladeMat;
       wallMat=A.wallMat;
       clampMat=A.clampMat;
+      bladeScrewMat=A.bladeScrewMat;
       lsFlangeMat=A.lsFlangeMat;
     }
   return *this;
@@ -270,6 +272,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   clampMat=ModelSupport::EvalMat<int>(Control,keyName+"ClampMat");
+  bladeScrewMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeScrewMat");
   lsFlangeMat=ModelSupport::EvalMat<int>(Control,keyName+"LSFlangeMat");
 
   return;
@@ -452,7 +455,7 @@ GTFGateValve::createObjects(Simulation& System)
   makeCell("BladeAroundHead",System,cellIndex++,bladeMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"322 -302 337 -319");
-  makeCell("BladeScewHead",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("BladeScewHead",System,cellIndex++,bladeScrewMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -321 -337");
   makeCell("BladeBeforeTip",System,cellIndex++,bladeMat,0.0,HR);
@@ -462,13 +465,14 @@ GTFGateValve::createObjects(Simulation& System)
   makeCell("BladeAroundTip",System,cellIndex++,bladeMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"312 -302 -337");
-  makeCell("BladeScrewShank",System,cellIndex++,0,0.0,HR);
+  makeCell("BladeScrewShank",System,cellIndex++,bladeScrewMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"321 -312 -309");
-  makeCell("BladeTip",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("BladeScrewTip",System,cellIndex++,bladeScrewMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 317 -327");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 327 -307");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 

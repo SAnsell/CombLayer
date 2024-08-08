@@ -97,6 +97,7 @@ class GTFGateValve :
   int bladeMat;                 ///< blade material
   int wallMat;                  ///< Pipe material
   int clampMat;                ///< Clamp material
+  int bladeScrewMat;            ///< Blade screw material
   int lsFlangeMat;              ///< Lifting structure square flange material
 
   void populate(const FuncDataBase&) override;
