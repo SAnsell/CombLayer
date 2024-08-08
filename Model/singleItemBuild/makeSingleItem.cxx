@@ -102,6 +102,7 @@
 #include "CylGateValve.h"
 #include "GateValveCube.h"
 #include "GateValveCylinder.h"
+#include "GTFGateValve.h"
 #include "StriplineBPM.h"
 #include "BeamDivider.h"
 #include "CeramicGap.h"
@@ -216,7 +217,7 @@ makeSingleItem::build(Simulation& System,
     ({
       "default",
 	"CornerPipe","ChopperPit","CylGateValve","SingleChopper",
-	"GateValveCube","GateValveCylinder","CleaningMagnet",
+	"GateValveCube","GateValveCylinder", "GTFGateValve", "CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
 	"DCMTank","MagnetBlock","Sexupole","MagnetM1","MagnetU1",
         "Octupole","CeramicGap","MainBeamDump",
@@ -320,6 +321,20 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+  if (item == "GTFGateValve" )
+    {
+      std::shared_ptr<constructSystem::GTFGateValve>
+	GV(new constructSystem::GTFGateValve("GTFGate"));
+
+      OR.addObject(GV);
+
+      GV->createAll(System,World::masterOrigin(),0);
+      GV->insertInCell("Main", System, voidCell);
+      GV->insertInCell("Flange", System, voidCell);
+      GV->insertInCell("Shaft", System, voidCell);
+
+      return;
+    }
   if (item == "MLMdetail" )
     {
       std::shared_ptr<xraySystem::MLMonoDetail>
@@ -391,10 +406,10 @@ makeSingleItem::build(Simulation& System,
 	BS(new xraySystem::BeamScrapper("BeamScrapper"));
       OR.addObject(BS);
 
-      
+
       BS->addAllInsertCell(voidCell);
 
-	
+
       BS->setBeamAxis(Geometry::Vec3D(-10.0,0.0,0.0),
 		      Geometry::Vec3D(1,0,0));
       BS->createAll(System,World::masterOrigin(),0);
@@ -980,7 +995,7 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  
+
   if (item=="HalfElectronPipe")
     {
       std::shared_ptr<xraySystem::HalfElectronPipe>

@@ -75,6 +75,7 @@
 #include "CurveMagGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "GateValveGenerator.h"
+#include "GTFGateValveGenerator.h"
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "StriplineBPMGenerator.h"
@@ -423,7 +424,7 @@ SingleItemVariables(FuncDataBase& Control)
   TPGen.setBFlangeCF<CF100>();
   TPGen.setXYWindow(startWidth,startWidth,endWidth,endWidth);
   TPGen.generateTri(Control,"TriPipe");
-  
+
   setVariable::TriGroupGenerator TGGen;
   //  TPGen.setBFlangeCF<CF100>();
   TGGen.generateTri(Control,"TriGroup");
@@ -503,6 +504,21 @@ SingleItemVariables(FuncDataBase& Control)
   CGateGen.setCylCF<CF40>();
   CGateGen.generateValve(Control,"GVCylinder",0.0,1);
 
+  // GTFGate
+  GTFGateValveGenerator GTFGateGen;
+  GTFGateGen.setOuter(4.0, 14.5, 18.5, 7.7);
+  GTFGateGen.setBladeMat("EN14435");
+  GTFGateGen.setBladeThick(1.09);
+  GTFGateGen.setAPortCF<CF63>();
+  GTFGateGen.setBPortCF<CF63>();
+  GTFGateGen.generateValve(Control,"GTFGate",0.0,1);
+  Control.addVariable("GTFGatePortARadius", 3.15);
+  Control.addVariable("GTFGatePortBRadius", 3.15);
+  Control.addVariable("GTFGatePortAThick", 5.8);
+  Control.addVariable("GTFGatePortBThick", 5.8);
+  Control.addVariable("GTFGateClampMat", "Iron");
+  Control.addVariable("GTFGateBladeRadius", 3.5);
+
   //  dipole magnet DIB
   setVariable::DipoleDIBMagGenerator DIBGen;
   DIBGen.generate(Control,"DIB");
@@ -528,7 +544,7 @@ SingleItemVariables(FuncDataBase& Control)
   //  Control.addVariable("BeamScrapperXStep",2668.0016244323656);
   //  Control.addVariable("BeamScrapperYStep",0.0);
   //  Control.addVariable("BeamScrapperZAngle",-180.0);
-  
+
   setVariable::YagScreenGenerator YagGen;
   YagGen.generateScreen(Control,"YAG",1);  // in beam
   Control.addVariable("YAGYAngle",-90.0);

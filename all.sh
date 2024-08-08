@@ -31,7 +31,7 @@ parallel $popts "./singleItem --singleItem {} $opts AA" ::: \
  CorrectorMag CrossBlank   \
  CrossWay CylGateValve DiffPumpXIADP03 DipoleDIBMag DipoleExtract       \
  DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch         \
- FMask FlangeDome FlatPipe FourPort GateValveCube GateValveCylinder GaugeTube \
+ FMask FlangeDome FlatPipe FourPort GateValveCube GateValveCylinder GaugeTube GTFGateValve \
  HPCombine HPJaws HalfElectronPipe IonGauge IonPTube Jaws LeadPipe LQuadF LQuadH   \
  LSexupole LocalShield M1detail MagTube MagnetBlock MagnetM1 \
  MagnetU1 MonoShutter MultiPipe NBeamStop Octupole OffsetFlangePipe PipeTube \
