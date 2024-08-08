@@ -91,6 +91,8 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
   bladeCutThick(A.bladeCutThick),
   bladeCutRadius(A.bladeCutRadius),
+  bladeMidCutThick(A.bladeMidCutThick),
+  bladeMidCutRadius(A.bladeMidCutRadius),
   bladeScrewHousingRadius(A.bladeScrewHousingRadius),
   bladeScrewRadius(A.bladeScrewRadius),
   bladeScrewLength(A.bladeScrewLength),
@@ -160,6 +162,8 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeScrewHeadRadius=A.bladeScrewHeadRadius;
       bladeScrewHeadAngle=A.bladeScrewHeadAngle;
       bladeCutRadius=A.bladeCutRadius;
+      bladeMidCutThick=A.bladeMidCutThick;
+      bladeMidCutRadius=A.bladeMidCutRadius;
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
       clampHeight=A.clampHeight;
@@ -237,6 +241,8 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeScrewHeadRadius=Control.EvalVar<double>(keyName+"BladeScrewHeadRadius");
   bladeScrewHeadAngle=Control.EvalVar<double>(keyName+"BladeScrewHeadAngle");
   bladeCutRadius=Control.EvalVar<double>(keyName+"BladeCutRadius");
+  bladeMidCutThick=Control.EvalVar<double>(keyName+"BladeMidCutThick");
+  bladeMidCutRadius=Control.EvalVar<double>(keyName+"BladeMidCutRadius");
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
   clampHeight=Control.EvalVar<double>(keyName+"ClampHeight");
@@ -343,6 +349,7 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(bladeThick/2.0),Y);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+311,buildIndex+301,Y,bladeCutThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+312,buildIndex+302,Y,-bladeScrewLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+331,buildIndex+302,Y,-bladeMidCutThick);
 
   const double bladeOffset = closed ? 0.0 : bladeLift;
 
@@ -350,14 +357,16 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin+Z*bladeOffset,Y,bladeScrewHousingRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+327,Origin+Z*bladeOffset,Y,bladeCutRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+337,Origin+Z*bladeOffset,Y,bladeScrewRadius);
-  // Blade tip
+  ModelSupport::buildCylinder(SMap,buildIndex+347,Origin+Z*bladeOffset,Y,bladeMidCutRadius);
+
+  // Blade screw tip
   ModelSupport::buildShiftedPlane(SMap,buildIndex+321,buildIndex+312,Y,-bladeScrewTipLength);
   const double tipAngle = atan(bladeScrewRadius/bladeScrewTipLength)*180.0/M_PI * 0.999; // 0.999 is just to avoid having the outer cylinder surface in the blade tip cell
-  ModelSupport::buildCone(SMap,buildIndex+309,Origin+Y*(bladeThick/2.0-bladeScrewLength-bladeScrewTipLength),Y,tipAngle);
-  // Blade head
+  ModelSupport::buildCone(SMap,buildIndex+309,Origin+Y*(bladeThick/2.0-bladeScrewLength-bladeScrewTipLength)+Z*bladeOffset,Y,tipAngle);
+  // Blade screw head
   const double headLength = bladeScrewHeadRadius/tan(bladeScrewHeadAngle*M_PI/360.0);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+322,buildIndex+302,Y,-headLength);
-  ModelSupport::buildCone(SMap,buildIndex+319,Origin+Y*(bladeThick/2.0 -headLength),Y,bladeScrewHeadAngle/2.0);
+  ModelSupport::buildCone(SMap,buildIndex+319,Origin+Y*(bladeThick/2.0 -headLength)+Z*bladeOffset,Y,bladeScrewHeadAngle/2.0);
 
   // Clamp
   ModelSupport::buildPlane(SMap,buildIndex+403,Origin-X*(clampWidth/2.0),X);
@@ -455,8 +464,14 @@ GTFGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 327 -307");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"311 -302 317 -307");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"311 -331 317 -307");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"331 -302 317 -347");
+  makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"331 -302 347 -307");
+  makeCell("Blade",System,cellIndex++,voidMat,0.0,HR);
 
   // front plate
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1 11 13 -14 15 -16 107");
