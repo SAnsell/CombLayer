@@ -59,9 +59,11 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   bladeRadius(3.5),
   bladeCutThick(0.4),
   bladeScrewHousingRadius(0.4),
-  bladeScrewRadius(0.2),
+  bladeScrewRadius(0.1955), // diameter: 0.4 cm, thread diamter: 0.382 cm -> (0.4+0.382)/2 = 0.1955*2 cm https://www.fastdep.in/articles/spec/fastener-dimension/socket-head-screw-m4
   bladeScrewLength(0.8),
   bladeScrewTipLength(0.04),
+  bladeScrewHeadRadius(0.335),
+  bladeScrewHeadAngle(60),
   bladeNotchRadius(1.275),
   clampWidth(25.0),
   clampDepth(10.9),
@@ -295,6 +297,8 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"BladeScrewRadius",bladeScrewRadius);
   Control.addVariable(keyName+"BladeScrewLength",bladeScrewLength);
   Control.addVariable(keyName+"BladeScrewTipLength",bladeScrewTipLength);
+  Control.addVariable(keyName+"BladeScrewHeadRadius",bladeScrewHeadRadius);
+  Control.addVariable(keyName+"BladeScrewHeadAngle",bladeScrewHeadAngle);
   Control.addVariable(keyName+"BladeNotchRadius",bladeNotchRadius);
 
   Control.addVariable(keyName+"ClampWidth",clampWidth);

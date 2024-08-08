@@ -67,6 +67,8 @@ class GTFGateValve :
   double bladeScrewRadius;      ///< Screw
   double bladeScrewLength;      ///< Screw length without its tip
   double bladeScrewTipLength;   ///< Screw tip length
+  double bladeScrewHeadRadius;  ///< Screw head radius
+  double bladeScrewHeadAngle;   ///< Screw head angle
   double bladeNotchRadius;      ///< Central void radius
 
   double clampWidth;            ///< Clamp width
