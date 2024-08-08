@@ -93,6 +93,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   bladeScrewHousingRadius(A.bladeScrewHousingRadius),
   bladeScrewRadius(A.bladeScrewRadius),
   bladeScrewLength(A.bladeScrewLength),
+  bladeScrewTipLength(A.bladeScrewTipLength),
   bladeNotchRadius(A.bladeNotchRadius),
   clampWidth(A.clampWidth),
   clampDepth(A.clampDepth),
@@ -153,6 +154,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeScrewHousingRadius=A.bladeScrewHousingRadius;
       bladeScrewRadius=A.bladeScrewRadius;
       bladeScrewLength=A.bladeScrewLength;
+      bladeScrewTipLength=A.bladeScrewTipLength;
       bladeNotchRadius=A.bladeNotchRadius;
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
@@ -227,6 +229,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeScrewHousingRadius=Control.EvalVar<double>(keyName+"BladeScrewHousingRadius");
   bladeScrewRadius=Control.EvalVar<double>(keyName+"BladeScrewRadius");
   bladeScrewLength=Control.EvalVar<double>(keyName+"BladeScrewLength");
+  bladeScrewTipLength=Control.EvalVar<double>(keyName+"BladeScrewTipLength");
   bladeNotchRadius=Control.EvalVar<double>(keyName+"BladeNotchRadius");
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
@@ -341,7 +344,10 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin+Z*bladeOffset,Y,bladeScrewHousingRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+327,Origin+Z*bladeOffset,Y,bladeNotchRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+337,Origin+Z*bladeOffset,Y,bladeScrewRadius);
-
+  // Blade tip
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+321,buildIndex+312,Y,-bladeScrewTipLength);
+  const double tipAngle = atan(bladeScrewRadius/bladeScrewTipLength)*180.0/M_PI * 0.999; // 0.999 is just to avoid having the outer cylinder surface in the blade tip cell
+  ModelSupport::buildCone(SMap,buildIndex+309,Origin+Y*(bladeThick/2.0-bladeScrewLength-bladeScrewTipLength),Y,tipAngle);
 
 
   // Clamp
@@ -415,12 +421,18 @@ GTFGateValve::createObjects(Simulation& System)
   // blade
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 337 -317");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -312 -337");
-  makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -321 -337");
+  makeCell("BladeBeforeTip",System,cellIndex++,bladeMat,0.0,HR);
+  ELog::EM << "BladeBeforeTip: possible lost particles - touching surfaces" << ELog::endWarn;
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"321 -312 -337 309");
+  makeCell("BladeAroundTip",System,cellIndex++,bladeMat,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"312 -302 -337");
   makeCell("BladeScrew",System,cellIndex++,0,0.0,HR);
-  ELog::EM << "Improve BladeScrew geometry" << ELog::endWarn;
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"321 -312 -309");
+  makeCell("BladeTip",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -311 317 -327");
   makeCell("Void",System,cellIndex++,0,0.0,HR);

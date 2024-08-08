@@ -61,6 +61,7 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   bladeScrewHousingRadius(0.4),
   bladeScrewRadius(0.2),
   bladeScrewLength(0.8),
+  bladeScrewTipLength(0.04),
   bladeNotchRadius(1.275),
   clampWidth(25.0),
   clampDepth(10.9),
@@ -293,6 +294,7 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"BladeScrewHousingRadius",bladeScrewHousingRadius);
   Control.addVariable(keyName+"BladeScrewRadius",bladeScrewRadius);
   Control.addVariable(keyName+"BladeScrewLength",bladeScrewLength);
+  Control.addVariable(keyName+"BladeScrewTipLength",bladeScrewTipLength);
   Control.addVariable(keyName+"BladeNotchRadius",bladeNotchRadius);
 
   Control.addVariable(keyName+"ClampWidth",clampWidth);
