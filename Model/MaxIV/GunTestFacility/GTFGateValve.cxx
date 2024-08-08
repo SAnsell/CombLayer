@@ -90,13 +90,13 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   portBLen(A.portBLen),closed(A.closed),bladeLift(A.bladeLift),
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
   bladeCutThick(A.bladeCutThick),
+  bladeCutRadius(A.bladeCutRadius),
   bladeScrewHousingRadius(A.bladeScrewHousingRadius),
   bladeScrewRadius(A.bladeScrewRadius),
   bladeScrewLength(A.bladeScrewLength),
   bladeScrewTipLength(A.bladeScrewTipLength),
   bladeScrewHeadRadius(A.bladeScrewHeadRadius),
   bladeScrewHeadAngle(A.bladeScrewHeadAngle),
-  bladeNotchRadius(A.bladeNotchRadius),
   clampWidth(A.clampWidth),
   clampDepth(A.clampDepth),
   clampHeight(A.clampHeight),
@@ -159,7 +159,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       bladeScrewTipLength=A.bladeScrewTipLength;
       bladeScrewHeadRadius=A.bladeScrewHeadRadius;
       bladeScrewHeadAngle=A.bladeScrewHeadAngle;
-      bladeNotchRadius=A.bladeNotchRadius;
+      bladeCutRadius=A.bladeCutRadius;
       clampWidth=A.clampWidth;
       clampDepth=A.clampDepth;
       clampHeight=A.clampHeight;
@@ -236,7 +236,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
   bladeScrewTipLength=Control.EvalVar<double>(keyName+"BladeScrewTipLength");
   bladeScrewHeadRadius=Control.EvalVar<double>(keyName+"BladeScrewHeadRadius");
   bladeScrewHeadAngle=Control.EvalVar<double>(keyName+"BladeScrewHeadAngle");
-  bladeNotchRadius=Control.EvalVar<double>(keyName+"BladeNotchRadius");
+  bladeCutRadius=Control.EvalVar<double>(keyName+"BladeCutRadius");
   clampWidth=Control.EvalVar<int>(keyName+"ClampWidth");
   clampDepth=Control.EvalVar<double>(keyName+"ClampDepth");
   clampHeight=Control.EvalVar<double>(keyName+"ClampHeight");
@@ -348,7 +348,7 @@ GTFGateValve::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Z*bladeOffset,Y,bladeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin+Z*bladeOffset,Y,bladeScrewHousingRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin+Z*bladeOffset,Y,bladeNotchRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin+Z*bladeOffset,Y,bladeCutRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+337,Origin+Z*bladeOffset,Y,bladeScrewRadius);
   // Blade tip
   ModelSupport::buildShiftedPlane(SMap,buildIndex+321,buildIndex+312,Y,-bladeScrewTipLength);

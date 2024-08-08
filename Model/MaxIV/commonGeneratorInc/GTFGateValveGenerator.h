@@ -59,13 +59,13 @@ class GTFGateValveGenerator
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
   double bladeCutThick;         ///< Thickness of the central part cut
+  double bladeCutRadius;        ///< Central cut radius
   double bladeScrewHousingRadius; ///< Radius of the central steel cylinder for the screw
   double bladeScrewRadius;      ///< Screw
   double bladeScrewLength;      ///< Screw length
   double bladeScrewTipLength;   ///< Screw tip length
   double bladeScrewHeadRadius;  ///< Screw head radius
   double bladeScrewHeadAngle;   ///< Screw head angle
-  double bladeNotchRadius;      ///< Central void radius
 
   int clampWidth;              ///< Clamp width
   double clampDepth;           ///< Clamp depth
