@@ -85,12 +85,14 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   lsShaftLength(12.4),
   lsShaftFlangeRadius(4.0),
   lsShaftFlangeThick(1.0),
+  lsShaftWindowThick(0.3), // TODO Guess
   liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
   bladeMat("EN14435"), // email from AMG 240702
   wallMat("SS316L"),
   clampMat("SS316L"),
   bladeScrewMat("Void"),
-  lsFlangeMat("Copper") // TODO
+  lsFlangeMat("Copper"), // TODO Guess
+  lsShaftWindowMat("SS316L") // TODO Guess
   /*!
     Constructor and defaults
   */
@@ -327,6 +329,7 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"LSShaftLength",lsShaftLength);
   Control.addVariable(keyName+"LSShaftFlangeRadius",lsShaftFlangeRadius);
   Control.addVariable(keyName+"LSShaftFlangeThick",lsShaftFlangeThick);
+  Control.addVariable(keyName+"LSShaftWindowThick",lsShaftWindowThick);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"BladeMat",bladeMat);
@@ -334,6 +337,7 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"ClampMat",clampMat);
   Control.addVariable(keyName+"BladeScrewMat",bladeScrewMat);
   Control.addVariable(keyName+"LSFlangeMat",lsFlangeMat);
+  Control.addVariable(keyName+"LSShaftWindowMat",lsShaftWindowMat);
 
   return;
 

@@ -88,6 +88,7 @@ class GTFGateValveGenerator
   double lsShaftLength;         ///< Lifting structure shaft tube total length
   double lsShaftFlangeRadius;   ///< Lifting structure shaft flange outer radius
   double lsShaftFlangeThick;    ///< Lifting structure shaft flange thickness
+  double lsShaftWindowThick;    ///< Lifting structure shaft window thick
 
   double liftWidth;             ///< Lifting width
   double liftHeight;            ///< Height of lifting space
@@ -98,6 +99,7 @@ class GTFGateValveGenerator
   std::string clampMat;        ///< Clamp material
   std::string bladeScrewMat;    ///< Blade screw material
   std::string lsFlangeMat;              ///< Lifting structure square flange material
+  std::string lsShaftWindowMat; ///< Lifting structure shaft window material
 
  public:
 

@@ -92,6 +92,7 @@ class GTFGateValve :
   double lsShaftLength;         ///< Lifting structure shaft tube total length
   double lsShaftFlangeRadius;   ///< Lifting structure shaft flange outer radius
   double lsShaftFlangeThick;    ///< Lifting structure shaft flange thickness
+  double lsShaftWindowThick;    ///< Lifting structure shaft window thick
 
   int voidMat;                  ///< Void material
   int bladeMat;                 ///< blade material
@@ -99,6 +100,7 @@ class GTFGateValve :
   int clampMat;                ///< Clamp material
   int bladeScrewMat;            ///< Blade screw material
   int lsFlangeMat;              ///< Lifting structure square flange material
+  int lsShaftWindowMat;         ///< Lifting structure shaft window material
 
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,const long int) override;
