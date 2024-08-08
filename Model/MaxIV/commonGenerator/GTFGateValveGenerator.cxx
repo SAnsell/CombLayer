@@ -86,7 +86,8 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   lsShaftFlangeRadius(4.0),
   lsShaftFlangeThick(1.0),
   liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
-  bladeMat("Aluminium"),wallMat("SS316L"),
+  bladeMat("EN14435"), // email from AMG 240702
+  wallMat("SS316L"),
   clampMat("SS316L"),
   bladeScrewMat("Void"),
   lsFlangeMat("Copper") // TODO
