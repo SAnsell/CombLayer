@@ -390,7 +390,7 @@ namespace setVariable
     setVariable::YagScreenGenerator YagScreenGen;
     YagUnitGen.generateYagUnit(Control,"YagUnitA");
     Control.addVariable("YagUnitAYAngle",180.0);
-    YagScreenGen.generateScreen(Control,"YagScreenA",1);
+    YagScreenGen.generateScreen(Control,"YagScreenA",0);
     Control.addVariable("YagScreenAYAngle",-90.0);
 
     ELog::EM << "Use correct variables/materials for the Emittance meter objects (currently all are dummy)" << ELog::endWarn;
@@ -405,12 +405,12 @@ namespace setVariable
 
     YagUnitGen.generateYagUnit(Control,"YagUnitB");
     // Control.addVariable("YagUnitBYAngle",180.0);
-    YagScreenGen.generateScreen(Control,"YagScreenB",1);
+    YagScreenGen.generateScreen(Control,"YagScreenB",0);
     Control.addVariable("YagScreenBYAngle",-90.0);
 
     BellowGen.generateBellow(Control,"BellowC",80.0); // dummy
     YagUnitGen.generateYagUnit(Control,"YagUnitC");
-    YagScreenGen.generateScreen(Control,"YagScreenC",1);
+    YagScreenGen.generateScreen(Control,"YagScreenC",0);
     Control.addVariable("YagScreenCYAngle",-90.0);
 
     BellowGen.generateBellow(Control,"BellowD",120.0-27); // dummy
