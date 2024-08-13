@@ -36,7 +36,7 @@ namespace xraySystem
 */
 
 class RFGun :
-    public attachSystem::ContainedComp,
+    public attachSystem::ContainedGroup,
     public attachSystem::FixedRotate,
     public attachSystem::CellMap,
     public attachSystem::SurfMap,

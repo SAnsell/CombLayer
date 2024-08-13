@@ -53,6 +53,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -73,7 +74,7 @@ namespace xraySystem
 {
 
 RFGun::RFGun(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Body", "Guide"),
   attachSystem::FixedRotate(Key,7),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -85,7 +86,7 @@ RFGun::RFGun(const std::string& Key)  :
 {}
 
 RFGun::RFGun(const RFGun& A) :
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
@@ -137,7 +138,7 @@ RFGun::operator=(const RFGun& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -556,8 +557,11 @@ RFGun::createObjects(Simulation& System)
   // makeCell("MainCavityWallBack",System,cellIndex++,wallMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1007 : (111 -112 113 -114 1053 -405)");
-  addOuterSurf(HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1007 ");
+  addOuterSurf("Body",HR*frontStr*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -112 113 -114 1053 -405");
+  addOuterSurf("Guide",HR);
 
   return;
 }
