@@ -91,7 +91,7 @@ global_settings {
   #break
   #case(strcmp(ITEM,"LaserChamber"))
     #declare cameraLocation = <-215, 250, 40>;
-    #declare cameraLookAt   = <0, 110, 0>;
+    #declare cameraLookAt   = <0, 110, -20>;
     #declare cameraAngle = 20;
     #declare projection = 0;
   #break

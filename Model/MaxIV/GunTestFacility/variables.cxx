@@ -262,13 +262,28 @@ namespace setVariable
     Control.addVariable("IonPumpBYStep",0.0);
     Control.addVariable("IonPumpBXStep",0.0);
 
-    name = "Extension";
+    name = "ExtensionA";
     setVariable::PipeGenerator PipeGen;
 
     PipeGen.setNoWindow();   // no window
     PipeGen.setCF<setVariable::CF100>();
     PipeGen.generatePipe(Control,name,11.0);
     Control.addVariable(name+"PipeThick", 0.2);
+
+    name = "ExtensionB";
+    PipeGen.setNoWindow();   // no window
+    PipeGen.setCF<setVariable::CF100>();
+    PipeGen.generatePipe(Control,name,14.3);
+    Control.addVariable(name+"Radius", 5.0);
+    Control.addVariable(name+"PipeThick", 0.2);
+    Control.addVariable(name+"PipeMat", "Aluminium"); // TODO
+    Control.addVariable(name+"FlangeAType", 1);
+    Control.addVariable(name+"FlangeBType", 1);
+    Control.addVariable(name+"OuterVoid", 1);
+    ELog::EM << "Pipes: use OuterVoid where possible" << ELog::endDiag;
+    Control.addParse<double>(name+"FlangeARadius", name+"Radius"+"+"+name+"PipeThick");
+    Control.addVariable(name+"FlangeBRadius", 7.5);
+
 
     setVariable::RFGunGenerator RFGen;
     RFGen.generate(Control, "Gun");
@@ -372,6 +387,7 @@ namespace setVariable
     Control.addVariable(name+"Port3OuterVoid",0);
     Control.addVariable(name+"Port3Length",9.5); // measured approx
     Control.addVariable(name+"Port3CapThick",0.0);
+    Control.addVariable(name+"Port3FlangeRadius",5.2);
 
 
     name += "BackPlate";

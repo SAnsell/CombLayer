@@ -96,7 +96,7 @@ GTFLine::GTFLine(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(Key+"BuildZone"),
   ionPumpA(std::make_shared<IonPumpGammaVacuum>("IonPumpA")),
-  extension(std::make_shared<constructSystem::VacuumPipe>("Extension")),
+  extensionA(std::make_shared<constructSystem::VacuumPipe>("ExtensionA")),
   gun(std::make_shared<xraySystem::RFGun>("Gun")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
@@ -106,6 +106,7 @@ GTFLine::GTFLine(const std::string& Key) :
   mon(std::make_shared<xraySystem::CurrentTransformer>("CurrentTransformer")),
   laserChamber(std::make_shared<constructSystem::PipeTube>("LaserChamber")),
   laserChamberBackPlate(std::make_shared<constructSystem::FlangePlate>("LaserChamberBackPlate")),
+  extensionB(std::make_shared<constructSystem::VacuumPipe>("ExtensionB")),
   ionPumpB(std::make_shared<IonPumpGammaVacuum>("IonPumpB")),
   pipeC(std::make_shared<constructSystem::VacuumPipe>("PipeC")),
   yagUnitA(new tdcSystem::YagUnit("YagUnitA")),
@@ -126,7 +127,7 @@ GTFLine::GTFLine(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(ionPumpA);
-  OR.addObject(extension);
+  OR.addObject(extensionA);
   OR.addObject(gun);
   OR.addObject(pipeA);
   OR.addObject(solenoid);
@@ -136,6 +137,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(mon);
   OR.addObject(laserChamber);
   OR.addObject(laserChamberBackPlate);
+  OR.addObject(extensionB);
   OR.addObject(ionPumpB);
   OR.addObject(pipeC);
   OR.addObject(yagUnitA);
@@ -238,8 +240,8 @@ GTFLine::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*ionPumpA,2);
   ionPumpA->insertInCell(System,outerCell);
 
-  constructSystem::constructUnit(System,buildZone,*ionPumpA,"back",*extension);
-  constructSystem::constructUnit(System,buildZone,*extension,"back",*gun);
+  constructSystem::constructUnit(System,buildZone,*ionPumpA,"back",*extensionA);
+  constructSystem::constructUnit(System,buildZone,*extensionA,"back",*gun);
 
   pipeA->setFront(*gun,"back");
   pipeA->createAll(System, *gun, "back");
@@ -273,13 +275,23 @@ GTFLine::buildObjects(Simulation& System)
   laserChamber->insertPortInCell(System,3,outerCell);
 
   const constructSystem::portItem& PI=laserChamber->getPort(3);
-  ionPumpB->createAll(System,PI,PI.getSideIndex("#OuterPlate"));
+
+  extensionB->createAll(System,PI,PI.getSideIndex("OuterPlate"));
+  extensionB->insertAllInCell(System,outerCell-2); // current transformer zone cell
+  extensionB->insertAllInCell(System,outerCell-1); // laser chamber zone cell
+  extensionB->insertAllInCell(System,outerCell); // laser chamber back plate zone cell
+
+  ionPumpB->createAll(System,*extensionB,"#back");
   ionPumpB->insertInCell(System,outerCell);
   ionPumpB->insertInCell(System,outerCell-1);
   ionPumpB->insertInCell(System,outerCell-2);
 
   constructSystem::constructUnit(System,buildZone,*laserChamberBackPlate,"back",*pipeC);
   ionPumpB->insertInCell(System,outerCell+1);
+  extensionB->insertAllInCell(System,outerCell+1); // pipeC zone cell
+
+
+
 
   // Emittance meter (movable)
 

@@ -75,7 +75,7 @@ class GTFLine :
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   std::shared_ptr<IonPumpGammaVacuum> ionPumpA;
-  std::shared_ptr<constructSystem::VacuumPipe> extension; // drawing 202964
+  std::shared_ptr<constructSystem::VacuumPipe> extensionA; // drawing 202964
   std::shared_ptr<xraySystem::RFGun> gun;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<xraySystem::Solenoid> solenoid; // emittance-compensating solenoid by Radiabeam, drawing 204282
@@ -85,6 +85,7 @@ class GTFLine :
   std::shared_ptr<xraySystem::CurrentTransformer> mon;
   std::shared_ptr<constructSystem::PipeTube> laserChamber; // laser and viewing chamber
   std::shared_ptr<constructSystem::FlangePlate> laserChamberBackPlate; // laser chamber back plate
+  std::shared_ptr<constructSystem::VacuumPipe> extensionB;
   std::shared_ptr<IonPumpGammaVacuum> ionPumpB;
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
   std::shared_ptr<tdcSystem::YagUnit> yagUnitA;
