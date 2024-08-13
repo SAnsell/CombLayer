@@ -78,8 +78,8 @@ global_settings {
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"Gate"))
-    #declare cameraLocation = <-90, 220, 40>;
-    #declare cameraLookAt   = <0, 245, 3>;
+    #declare cameraLocation = <-90, 245, 150>;
+    #declare cameraLookAt   = <0, 145, 0>;
     #declare cameraAngle = 35;
     #declare projection = 0;
   #break
