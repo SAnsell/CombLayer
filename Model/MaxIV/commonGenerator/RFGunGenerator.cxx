@@ -78,6 +78,7 @@ RFGunGenerator::RFGunGenerator() :
   insertDepth(2.0),
   insertWallThick(0.5),
   insertCut(1.8),
+  guideHeight(90.0), // approx, no need to be precise
   mainMat("Void"),
   wallMat("Copper"), // TODO,
   frontTubePipeMat("Aluminium"), // TODO
@@ -132,6 +133,7 @@ RFGunGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"InsertDepth",insertDepth);
   Control.addVariable(keyName+"InsertWallThick",insertWallThick);
   Control.addVariable(keyName+"InsertCut",insertCut);
+  Control.addVariable(keyName+"GuideHeight",guideHeight);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"FrontTubePipeMat",frontTubePipeMat);

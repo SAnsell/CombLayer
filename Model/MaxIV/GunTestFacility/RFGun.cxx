@@ -117,6 +117,7 @@ RFGun::RFGun(const RFGun& A) :
   insertDepth(A.insertDepth),
   insertWallThick(A.insertWallThick),
   insertCut(A.insertCut),
+  guideHeight(A.guideHeight),
   mainMat(A.mainMat),wallMat(A.wallMat),
   frontTubePipeMat(A.frontTubePipeMat),
   backTubePipeMat(A.backTubePipeMat)
@@ -169,6 +170,7 @@ RFGun::operator=(const RFGun& A)
       insertDepth=A.insertDepth;
       insertWallThick=A.insertWallThick;
       insertCut=A.insertCut;
+      guideHeight=A.guideHeight;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
       frontTubePipeMat=A.frontTubePipeMat;
@@ -264,6 +266,7 @@ RFGun::populate(const FuncDataBase& Control)
   insertDepth=Control.EvalVar<double>(keyName+"InsertDepth");
   insertWallThick=Control.EvalVar<double>(keyName+"InsertWallThick");
   insertCut=Control.EvalVar<double>(keyName+"InsertCut");
+  guideHeight=Control.EvalVar<double>(keyName+"GuideHeight");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -384,6 +387,10 @@ RFGun::createSurfaces()
               SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
 				  -backTubeFlangeLength);
 
+  // RF guide
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+405,buildIndex+1053,Z,guideHeight);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+415,buildIndex+405,Z,-wallThick);
+
 
 
   // ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,cavityRadius+wallThick);
@@ -455,8 +462,8 @@ RFGun::createObjects(Simulation& System)
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -105 -1057 ");
   makeCell("InsertLower",System,cellIndex++,0,0.0,HR);
 
-  HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 106 -1053 ");
-  makeCell("InsertUpper",System,cellIndex++,0,0.0,HR);
+  // HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 106 -1053 ");
+  // makeCell("InsertUpper",System,cellIndex++,0,0.0,HR);
 
   // Insert wall
   HR = ModelSupport::getHeadRule(SMap,buildIndex,
@@ -472,7 +479,7 @@ RFGun::createObjects(Simulation& System)
   HR *= HRFrame;
   makeCell("Frame",System,cellIndex++,wallMat,0.0,HR);
 
-  HR = ModelSupport::getHeadRule(SMap,buildIndex,"21 -1007 -43 (-111:112:-113:114:1057:1053)");
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"21 -1007 -43 (-111:112:-113:114:1057)");
   HR *= HRFrame.complement();
   makeCell("FrameOuterVoid",System,cellIndex++,0,0.0,HR);
 
@@ -518,6 +525,18 @@ RFGun::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-53 537 307 -317 : 53 307 -317");
   makeCell("FrontTube",System,cellIndex++,frontTubePipeMat,0.0,HR*backStr);
 
+  // Guide
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -104 101 -102 106 -415");
+  makeCell("GuideVoid",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -104 101 -102 415 -405");
+  makeCell("GuideTop",System,cellIndex++,wallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"113 -114 111 -112 1053 -405 (-103:104:-101:102)");
+  makeCell("GuideWall",System,cellIndex++,wallMat,0.0,HR);
+
+
+
   // HR=ModelSupport::getHeadRule(SMap,buildIndex," -1 27 -17");
   // makeCell("FrontFlange",System,cellIndex++,0,0.0,HR*frontStr);
 
@@ -537,7 +556,7 @@ RFGun::createObjects(Simulation& System)
   // makeCell("MainCavityWallBack",System,cellIndex++,wallMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1007");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -1007 : (111 -112 113 -114 1053 -405)");
   addOuterSurf(HR*frontStr*backStr);
 
   return;
