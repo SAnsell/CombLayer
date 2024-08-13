@@ -83,6 +83,12 @@ global_settings {
     #declare cameraAngle = 35;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"RFGun"))
+    #declare cameraLocation = <-215, 250, 40>;
+    #declare cameraLookAt   = <0, 195, 0>;
+    #declare cameraAngle = 35;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Line"))
     #declare cameraLocation = <-215, 271, 40>;
     #declare cameraLookAt   = <0, 270, 3>;
