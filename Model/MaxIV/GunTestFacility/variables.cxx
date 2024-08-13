@@ -260,6 +260,7 @@ namespace setVariable
 
     Control.copyVarSet("IonPumpA", "IonPumpB");
     Control.addVariable("IonPumpBYStep",0.0);
+    Control.addVariable("IonPumpBXStep",0.0);
 
     name = "Extension";
     setVariable::PipeGenerator PipeGen;

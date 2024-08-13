@@ -136,6 +136,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(mon);
   OR.addObject(laserChamber);
   OR.addObject(laserChamberBackPlate);
+  OR.addObject(ionPumpB);
   OR.addObject(pipeC);
   OR.addObject(yagUnitA);
   OR.addObject(yagScreenA);
