@@ -55,7 +55,9 @@ GTFGateValveGenerator::GTFGateValveGenerator() :
   wallThick(0.5),portARadius(CF40::flangeRadius),
   portAThick(1.0),portALen(1.0),
   portBRadius(CF40::flangeRadius),portBThick(1.0),portBLen(1.0),
-  bladeLift(12.0),bladeThick(1.09),
+  bladeLift(12.0),
+  bladeFlip(0),
+  bladeThick(1.09),
   bladeRadius(3.5),
   bladeCutThick(0.4),
   bladeCutRadius(1.275),
@@ -298,6 +300,7 @@ GTFGateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"Closed",closedFlag);
 
   Control.addVariable(keyName+"BladeLift",bladeLift);
+  Control.addVariable(keyName+"BladeFlip",bladeFlip);
   Control.addVariable(keyName+"BladeThick",bladeThick);
   Control.addVariable(keyName+"BladeRadius",bladeRadius);
   Control.addVariable(keyName+"BladeCutThick",bladeCutThick);

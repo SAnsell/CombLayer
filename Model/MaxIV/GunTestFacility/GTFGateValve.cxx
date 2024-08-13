@@ -88,6 +88,7 @@ GTFGateValve::GTFGateValve(const GTFGateValve& A) :
   portAThick(A.portAThick),portALen(A.portALen),
   portBRadius(A.portBRadius),portBThick(A.portBThick),
   portBLen(A.portBLen),closed(A.closed),bladeLift(A.bladeLift),
+  bladeFlip(A.bladeFlip),
   bladeThick(A.bladeThick),bladeRadius(A.bladeRadius),
   bladeCutThick(A.bladeCutThick),
   bladeCutRadius(A.bladeCutRadius),
@@ -157,6 +158,7 @@ GTFGateValve::operator=(const GTFGateValve& A)
       portBLen=A.portBLen;
       closed=A.closed;
       bladeLift=A.bladeLift;
+      bladeFlip=A.bladeFlip;
       bladeThick=A.bladeThick;
       bladeRadius=A.bladeRadius;
       bladeCutThick=A.bladeCutThick;
@@ -241,6 +243,7 @@ GTFGateValve::populate(const FuncDataBase& Control)
 
   closed=Control.EvalDefVar<int>(keyName+"Closed",closed);
   bladeLift=Control.EvalVar<double>(keyName+"BladeLift");
+  bladeFlip=Control.EvalVar<int>(keyName+"BladeFlip");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
   bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
   bladeCutThick=Control.EvalVar<double>(keyName+"BladeCutThick");
@@ -358,14 +361,15 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+217,Origin,Y,portBRadius+portBThick);
 
+  const double dir = bladeFlip ? 1.0 : -1.0; // blade direction wrt incident beam
 
   // Blade
-  ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*(bladeThick/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(bladeThick/2.0),Y);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+311,buildIndex+301,Y,bladeCutThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+312,buildIndex+302,Y,-bladeScrewLength);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+331,buildIndex+302,Y,-bladeMidCutThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+341,buildIndex+302,Y,-bladeOutCutThick);
+  ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*dir*(bladeThick/2.0),Y*dir);
+  ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*dir*(bladeThick/2.0),Y*dir);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+311,buildIndex+301,Y*dir,bladeCutThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+312,buildIndex+302,Y*dir,-bladeScrewLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+331,buildIndex+302,Y*dir,-bladeMidCutThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+341,buildIndex+302,Y*dir,-bladeOutCutThick);
 
   const double bladeOffset = closed ? 0.0 : bladeLift;
 
@@ -377,13 +381,13 @@ GTFGateValve::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+357,Origin+Z*bladeOffset,Y,bladeOutCutRadius);
 
   // Blade screw tip
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+321,buildIndex+312,Y,-bladeScrewTipLength);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+321,buildIndex+312,Y*dir,-bladeScrewTipLength);
   const double tipAngle = atan(bladeScrewRadius/bladeScrewTipLength)*180.0/M_PI * 0.999; // 0.999 is just to avoid having the outer cylinder surface in the blade tip cell
-  ModelSupport::buildCone(SMap,buildIndex+309,Origin+Y*(bladeThick/2.0-bladeScrewLength-bladeScrewTipLength)+Z*bladeOffset,Y,tipAngle);
+  ModelSupport::buildCone(SMap,buildIndex+309,Origin+Y*dir*(bladeThick/2.0-bladeScrewLength-bladeScrewTipLength)+Z*bladeOffset,Y*dir,tipAngle);
   // Blade screw head
   const double headLength = bladeScrewHeadRadius/tan(bladeScrewHeadAngle*M_PI/360.0);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+322,buildIndex+302,Y,-headLength);
-  ModelSupport::buildCone(SMap,buildIndex+319,Origin+Y*(bladeThick/2.0 -headLength)+Z*bladeOffset,Y,bladeScrewHeadAngle/2.0);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+322,buildIndex+302,Y*dir,-headLength);
+  ModelSupport::buildCone(SMap,buildIndex+319,Origin+Y*dir*(bladeThick/2.0 -headLength)+Z*bladeOffset,Y*dir,bladeScrewHeadAngle/2.0);
 
   // Clamp
   ModelSupport::buildPlane(SMap,buildIndex+403,Origin-X*(clampWidth/2.0),X);
@@ -439,9 +443,15 @@ GTFGateValve::createObjects(Simulation& System)
   const HeadRule frontComp=getFrontComplement();  // -101
   const HeadRule backComp=getBackComplement();    // 102
   // Inner void
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -301 3 -4 5 -16");
+  if (bladeFlip)
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -301 3 -4 5 -16");
+  else
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 302 3 -4 5 -16");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"302 -2 3 -4 5 -16");
+  if (bladeFlip)
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"302 -2 3 -4 5 -16");
+  else
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-301 -2 3 -4 5 -16");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 3 -4 5 -16 307");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);

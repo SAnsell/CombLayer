@@ -56,6 +56,7 @@ class GTFGateValveGenerator
   double portBLen;               ///< Forward step of port
 
   double bladeLift;             ///< Height of blade up
+  int bladeFlip;               ///< Flag to flip the blade around the z axis
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
   double bladeCutThick;         ///< Thickness of the central part cut

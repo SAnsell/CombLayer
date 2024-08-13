@@ -60,6 +60,7 @@ class GTFGateValve :
 
   bool closed;                  ///< Shutter closed
   double bladeLift;             ///< Height of blade up
+  bool bladeFlip;               ///< Flag to flip the blade around the z axis
   double bladeThick;            ///< moving blade total thickness
   double bladeRadius;           ///< moving blade outer radius
   double bladeCutThick;         ///< Thickness of the central part cut
