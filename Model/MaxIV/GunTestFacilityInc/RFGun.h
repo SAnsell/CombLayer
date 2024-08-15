@@ -72,6 +72,7 @@ class RFGun :
   double insertDepth;           ///< Insert depth
   double insertWallThick;       ///< Insert wall thick
   double insertCut;             ///< Insert cut width
+  double insertLowerPipeRadius; ///< Inner radius of the pipe through the lower insert
   double guideHeight;           ///< RF guide height
 
   int mainMat;                  ///< Main material

@@ -43,6 +43,7 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 
 #include "RFGunGenerator.h"
 
@@ -78,6 +79,7 @@ RFGunGenerator::RFGunGenerator() :
   insertDepth(2.0),
   insertWallThick(0.5),
   insertCut(1.8),
+  insertLowerPipeRadius(CF25::innerRadius),
   guideHeight(90.0), // approx, no need to be precise
   mainMat("Void"),
   wallMat("Copper"), // TODO,
@@ -133,6 +135,7 @@ RFGunGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"InsertDepth",insertDepth);
   Control.addVariable(keyName+"InsertWallThick",insertWallThick);
   Control.addVariable(keyName+"InsertCut",insertCut);
+  Control.addVariable(keyName+"InsertLowerPipeRadius",insertLowerPipeRadius);
   Control.addVariable(keyName+"GuideHeight",guideHeight);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"WallMat",wallMat);

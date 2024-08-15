@@ -281,13 +281,22 @@ namespace setVariable
     Control.addVariable(name+"FlangeAType", 1);
     Control.addVariable(name+"FlangeBType", 1);
     Control.addVariable(name+"OuterVoid", 1);
-    ELog::EM << "Pipes: use OuterVoid where possible" << ELog::endDiag;
     Control.addParse<double>(name+"FlangeARadius", name+"Radius"+"+"+name+"PipeThick");
     Control.addVariable(name+"FlangeBRadius", 7.5);
 
 
     setVariable::RFGunGenerator RFGen;
     RFGen.generate(Control, "Gun");
+
+    name = "PipeBelowGun";
+    PipeGen.setCF<setVariable::CF25>(); // dummy TODO
+    PipeGen.generatePipe(Control,name,6.3);
+    // These are correct radius and lengh, but then the pipe cuts two more cells,
+    // so that we leave it to CF25 defaults in order to simplify geometry:
+    // Control.addVariable(name+"FlangeBRadius", 3.4);
+    // Control.addVariable(name+"FlangeBLength", 1.3);
+    Control.addParse<double>(name+"FlangeARadius", name+"Radius"+"+"+name+"PipeThick");
+
 
     name = "PipeA";
     PipeGen.setCF<setVariable::CF63>(); // dummy TODO - is it a conic pipe?

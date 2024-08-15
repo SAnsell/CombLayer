@@ -75,7 +75,7 @@ namespace xraySystem
 
 RFGun::RFGun(const std::string& Key)  :
   attachSystem::ContainedGroup("Body", "Guide"),
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key,8),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -118,6 +118,7 @@ RFGun::RFGun(const RFGun& A) :
   insertDepth(A.insertDepth),
   insertWallThick(A.insertWallThick),
   insertCut(A.insertCut),
+  insertLowerPipeRadius(A.insertLowerPipeRadius),
   guideHeight(A.guideHeight),
   mainMat(A.mainMat),wallMat(A.wallMat),
   frontTubePipeMat(A.frontTubePipeMat),
@@ -171,6 +172,7 @@ RFGun::operator=(const RFGun& A)
       insertDepth=A.insertDepth;
       insertWallThick=A.insertWallThick;
       insertCut=A.insertCut;
+      insertLowerPipeRadius=A.insertLowerPipeRadius;
       guideHeight=A.guideHeight;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -267,6 +269,7 @@ RFGun::populate(const FuncDataBase& Control)
   insertDepth=Control.EvalVar<double>(keyName+"InsertDepth");
   insertWallThick=Control.EvalVar<double>(keyName+"InsertWallThick");
   insertCut=Control.EvalVar<double>(keyName+"InsertCut");
+  insertLowerPipeRadius=Control.EvalVar<double>(keyName+"InsertLowerPipeRadius");
   guideHeight=Control.EvalVar<double>(keyName+"GuideHeight");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -368,6 +371,7 @@ RFGun::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+112,buildIndex+102,Y,insertWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+113,buildIndex+103,X,-insertWallThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+114,buildIndex+104,X,insertWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin+Y*(frontTubeLength-frontPreFlangeThick+cavityOffset+irisThick+cavityLength/2.0),Z,insertLowerPipeRadius);
 
   // insert cut
   ModelSupport::buildPlane(SMap,buildIndex+123,Origin-X*(insertCut/2.0),X);
@@ -460,8 +464,11 @@ RFGun::createObjects(Simulation& System)
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"27 101 -102 123 -124 105 -106");
   makeCell("InsertCut",System,cellIndex++,0,0.0,HR);
 
-  HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -105 -1057 ");
-  makeCell("InsertLower",System,cellIndex++,0,0.0,HR);
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 -105 -1057 107 ");
+  makeCell("InsertLower",System,cellIndex++,wallMat,0.0,HR);
+
+  HR = ModelSupport::getHeadRule(SMap,buildIndex,"-105 -1057 -107");
+  makeCell("InsertLowerPipe",System,cellIndex++,0,0.0,HR);
 
   // HR = ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 106 -1053 ");
   // makeCell("InsertUpper",System,cellIndex++,0,0.0,HR);
@@ -591,6 +598,9 @@ RFGun::createLinks()
 
   FixedComp::setConnect(6,Origin+Y*(frontTubeLength-frontPreFlangeThick),Y);
   FixedComp::setNamedLinkSurf(6,"Cathode", SMap.realSurf(buildIndex+21));
+
+  FixedComp::setConnect(7,Origin+Y*(frontTubeLength-frontPreFlangeThick+cavityOffset+irisThick+cavityLength/2.0)-Z*(frameWidth/2.0),-Z);
+  FixedComp::setNamedLinkSurf(7,"InsertLower", SMap.realSurf(buildIndex+1057));
 
   return;
 }

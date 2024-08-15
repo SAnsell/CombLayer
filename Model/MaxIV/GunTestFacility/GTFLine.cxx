@@ -98,6 +98,7 @@ GTFLine::GTFLine(const std::string& Key) :
   ionPumpA(std::make_shared<IonPumpGammaVacuum>("IonPumpA")),
   extensionA(std::make_shared<constructSystem::VacuumPipe>("ExtensionA")),
   gun(std::make_shared<xraySystem::RFGun>("Gun")),
+  pipeBelowGun(std::make_shared<constructSystem::VacuumPipe>("PipeBelowGun")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
   gate(new constructSystem::GTFGateValve("Gate")),
@@ -129,6 +130,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(ionPumpA);
   OR.addObject(extensionA);
   OR.addObject(gun);
+  OR.addObject(pipeBelowGun);
   OR.addObject(pipeA);
   OR.addObject(solenoid);
   OR.addObject(gate);
@@ -241,7 +243,15 @@ GTFLine::buildObjects(Simulation& System)
   ionPumpA->insertInCell(System,outerCell);
 
   constructSystem::constructUnit(System,buildZone,*ionPumpA,"back",*extensionA);
-  constructSystem::constructUnit(System,buildZone,*extensionA,"back",*gun);
+  outerCell = constructSystem::constructUnit(System,buildZone,*extensionA,"back",*gun);
+
+
+  pipeBelowGun->setFront(*gun,"InsertLower");
+  pipeBelowGun->createAll(System, *gun, "InsertLower");
+  pipeBelowGun->insertAllInCell(System, gun->getCell("FrameOuterVoid"));
+  pipeBelowGun->insertAllInCell(System, outerCell);
+
+
 
   pipeA->setFront(*gun,"back");
   pipeA->createAll(System, *gun, "back");
