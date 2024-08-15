@@ -267,6 +267,7 @@ namespace setVariable
 
     PipeGen.setNoWindow();   // no window
     PipeGen.setCF<setVariable::CF100>();
+    PipeGen.setOuterVoid(1);
     PipeGen.generatePipe(Control,name,11.0);
     Control.addVariable(name+"PipeThick", 0.2);
 
@@ -293,6 +294,7 @@ namespace setVariable
     PipeGen.generatePipe(Control,name,40.0);
     Control.addVariable(name+"PipeThick", 0.2);
     Control.addVariable(name+"FlangeALength", 1.2); // measured
+    Control.addVariable(name+"OuterVoid", 0);
 
     name = "Solenoid";
     setVariable::SolenoidGenerator SolGen;
@@ -311,7 +313,7 @@ namespace setVariable
     GateGen.setAPortCF<CF63>(); // TODO
     GateGen.setBPortCF<CF63>(); // TODO
     //    GateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO
-    GateGen.generateValve(Control,name,0.0,1);
+    GateGen.generateValve(Control,name,0.0,0);
     Control.addVariable(name+"PortARadius", 3.15); // measured
     Control.addVariable(name+"PortBRadius", 3.15); // measured
     Control.addVariable(name+"PortAThick", 5.8); // measured
@@ -396,6 +398,8 @@ namespace setVariable
     FPGen.setCF<setVariable::CF63>(1.5); // measured
     FPGen.setFlange(lcRadius+lcWall, 1.3); // 1.3 is measured
     FPGen.generateFlangePlate(Control,name);
+    Control.addVariable(name+"InnerRadius",0.9); // measured
+    ELog::EM << "Important to have BackPlate inner radius correct as the beam can clip it" << ELog::endWarn;
 
     PipeGen.setCF<setVariable::CF63>();
     PipeGen.setFlange(lcRadius+lcWall, 1.3); // dummy
