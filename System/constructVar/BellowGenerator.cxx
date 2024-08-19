@@ -154,8 +154,10 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
 
   template void BellowGenerator::setCF<CF18_TDC>();
   template void BellowGenerator::setCF<CF26_TDC>();
+  template void BellowGenerator::setCF<CF35_TDC>();
   template void BellowGenerator::setCF<CF37_TDC>();
   template void BellowGenerator::setCF<CF40_22>();
+  template void BellowGenerator::setCF<CF25>();
   template void BellowGenerator::setCF<CF40>();
   template void BellowGenerator::setCF<CF50>();
   template void BellowGenerator::setCF<CF63>();
