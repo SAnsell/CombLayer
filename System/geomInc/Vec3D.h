@@ -118,7 +118,8 @@ class Vec3D
 
   M3<double> outerProd(const Vec3D&) const;
   double dotProd(const Vec3D&) const;
-  double abs() const;    
+  double abs() const;
+  double absFlat(const size_t) const;    
   template<typename T> void rotate(const Matrix<T>&); 
   template<typename T> void rotate(const M3<T>&);
   
@@ -137,6 +138,7 @@ class Vec3D
   void write(std::ostream&) const;
 };
 
+Vec3D angleVec(const double,const double);
 
 std::ostream& operator<<(std::ostream&,const Vec3D&);
 std::istream& operator>>(std::istream&,Vec3D&);

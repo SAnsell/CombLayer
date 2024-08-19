@@ -3,7 +3,7 @@
  
  * File:   xml/XMLdatablock.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -184,7 +184,7 @@ XMLdatablock<T>::writeXML(std::ostream& OX) const
   if (Data)
     {
       const std::vector<size_t>& shape=Data->shape();  
-      for(int i=0;i<shape.size();i++)
+      for(size_t i=0;i<shape.size();i++)
 	OX<<" index_"<<i<<"=\""<<shape[i]<<"\"";
     }
   if (isEmpty())

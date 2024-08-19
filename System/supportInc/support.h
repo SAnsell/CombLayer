@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,6 +157,8 @@ int sliceVector(V<T,Alloc>&,const T&,const T&);
 
 template<typename T>
 int sectionRange(std::string&,std::vector<T>&);
+template<typename T>
+int sectionCount(const size_t,std::string&,std::vector<T>&);
 
 /// Convert a VAX number to x86 little eindien
 float getVAXnum(const float);

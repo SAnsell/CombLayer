@@ -111,6 +111,7 @@ localRotate::reverseRotate(const Geometry::Vec3D& V) const
   */
 {
   Geometry::Vec3D Vpt(V);
+
   // Helper func ptr for boost since can't resolve type as overloaded:
   void (transComp::*fn)(Geometry::Vec3D&) const =  
     &transComp::reverse;

@@ -3,7 +3,7 @@
  
  * File:   support/support.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -643,7 +643,7 @@ sectionBracket(std::string& A,std::string& out)
   /*!
     Given a string of type (.(.).)
     extract the full bracket section and remove from the string
-    \param A :: string to intpu
+    \param A :: string to input
     \param out :: string for output
     \return 1 if bracket closes correctly
    */
@@ -763,6 +763,32 @@ sectionRange(std::string& A,std::vector<T>& out)
 	}
     }
   return 1;
+}
+
+template<typename T>
+int 
+sectionCount(const size_t maxCnt,
+	     std::string& A,
+	     std::vector<T>& out)
+  /*!
+    Take a string of parts 
+      -- A B C  .. list
+    Only use maxCnt components and return
+    unprocessed stirng in A:
+    \param maxCnt :: full count
+    \param A :: String to process
+    \param out :: place for output
+    \returns 1 on success 0 on failure
+   */ 
+{
+  if (A.empty()) return 0;  
+
+  size_t i;
+  T item;
+  for(i=0;i<maxCnt && section(A,item);i++) 
+    out.push_back(item);
+  
+  return (i==maxCnt) ? 1 : 0;
 }
 
   
@@ -1413,6 +1439,9 @@ template int section(std::string&,size_t&);
 template int section(std::string&,unsigned int&);
 template int section(std::string&,std::string&);
 template int section(std::string&,DError::doubleErr&);
+
+template int sectionCount(const size_t,std::string&,std::vector<std::string>&);
+template int sectionCount(const size_t,std::string&,std::vector<double>&);
 
 template int sectPartNum(std::string&,double&);
 template int sectPartNum(std::string&,int&);

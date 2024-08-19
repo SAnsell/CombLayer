@@ -650,6 +650,20 @@ Vec3D::abs() const
   return sqrt(x*x+y*y+z*z);
 }
 
+double
+Vec3D::absFlat(const size_t zeroIndex) const
+  /*!
+    Calculate the magnatude of the point with one component
+    zero
+    \returns \f$ | this | \f$ 
+  */
+{
+  double xx=(zeroIndex) ? x*x : 0.0;
+  xx +=(zeroIndex!=1) ? y*y : 0.0;
+  xx +=(zeroIndex!=2) ? z*z : 0.0;
+  return std::sqrt(xx);
+}
+
 template<typename T>
 void
 Vec3D::rotate(const Matrix<T>& A)
@@ -918,6 +932,23 @@ Vec3D::write(std::ostream& OX) const
 {
   OX<<x<<" "<<y<<" "<<z;
   return;
+}
+
+Vec3D
+angleVec(const double theta,const double phi)
+  /*!
+    Helper function to get a direction
+    vector.
+    \param theta :: angle [radian]
+    \param phi :: angle [radian]
+    \return normalized vector on unit sphere
+   */
+{  
+  const double vx=cos(theta)*sin(phi);
+  const double vy=sin(theta)*sin(phi);
+  const double vz=cos(phi); 
+ 
+  return Vec3D(vx,vy,vz);
 }
 
 /// \cond TEMPLATE
