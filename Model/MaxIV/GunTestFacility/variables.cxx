@@ -262,6 +262,15 @@ namespace setVariable
     Control.addVariable("IonPumpBYStep",0.0);
     Control.addVariable("IonPumpBXStep",0.0);
 
+    Control.copyVarSet("IonPumpA", "PumpBelowGun");
+    Control.addVariable("PumpBelowGunYStep",0.0);
+    Control.addVariable("PumpBelowGunXStep",0.0);
+    Control.addVariable("PumpBelowGunFlangeTubeRadius", setVariable::CF35_TDC::innerRadius);
+    Control.addVariable("PumpBelowGunFlangeRadius", setVariable::CF35_TDC::flangeRadius);
+    Control.addVariable("PumpBelowGunZClearance", 3.0);
+    Control.addVariable("PumpBelowGunFlangeThick", setVariable::CF35_TDC::flangeLength);
+    Control.addVariable("PumpBelowGunPistonWidth",9.7); // approx
+
     name = "ExtensionA";
     setVariable::PipeGenerator PipeGen;
 

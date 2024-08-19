@@ -100,6 +100,7 @@ GTFLine::GTFLine(const std::string& Key) :
   gun(std::make_shared<xraySystem::RFGun>("Gun")),
   pipeBelowGun(std::make_shared<constructSystem::VacuumPipe>("PipeBelowGun")),
   bellowBelowGun(std::make_shared<constructSystem::Bellows>("BellowBelowGun")),
+  pumpBelowGun(std::make_shared<IonPumpGammaVacuum>("PumpBelowGun")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
   gate(new constructSystem::GTFGateValve("Gate")),
@@ -133,6 +134,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(gun);
   OR.addObject(pipeBelowGun);
   OR.addObject(bellowBelowGun);
+  OR.addObject(pumpBelowGun);
   OR.addObject(pipeA);
   OR.addObject(solenoid);
   OR.addObject(gate);
@@ -257,12 +259,18 @@ GTFLine::buildObjects(Simulation& System)
   bellowBelowGun->createAll(System, *pipeBelowGun, "back");
   bellowBelowGun->insertAllInCell(System, outerCell);
 
+  pumpBelowGun->createAll(System,*bellowBelowGun,"#back");
+  pumpBelowGun->insertInCell(System,outerCell);
+
+  const int outerCell2 = outerCell;
 
   pipeA->setFront(*gun,"back");
   pipeA->createAll(System, *gun, "back");
 
   tdcSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
   outerCell = tdcSystem::pipeTerminate(System,buildZone,pipeA);
+
+  pumpBelowGun->insertInCell(System,outerCell2+1);
 
   outerCell1 = constructSystem::constructUnit(System,buildZone,*pipeA,"back",*gate);
 

@@ -79,6 +79,7 @@ class GTFLine :
   std::shared_ptr<xraySystem::RFGun> gun;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBelowGun;
   std::shared_ptr<constructSystem::Bellows> bellowBelowGun;
+  std::shared_ptr<IonPumpGammaVacuum> pumpBelowGun;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<xraySystem::Solenoid> solenoid; // emittance-compensating solenoid by Radiabeam, drawing 204282
   std::shared_ptr<constructSystem::GTFGateValve> gate; // Gate Valve 48236-CE24, drawing 200564
