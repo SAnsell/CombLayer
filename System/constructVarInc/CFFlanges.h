@@ -246,8 +246,8 @@ struct CF35_TDC
   static constexpr double outerRadius=wallThick+innerRadius;;
   static constexpr double flangeRadius=3.5;
   static constexpr double flangeLength=1.3;
-  /* static constexpr double bellowStep=0.5; */
-  /* static constexpr double bellowThick=0.5; */
+  static constexpr double bellowStep=0.5;
+  static constexpr double bellowThick=0.5;
   /* static constexpr double gasketRadius=0.5; */
   /* static constexpr double gasketThick=0.7; */
   /* static constexpr double boltRadius=0.4; */
