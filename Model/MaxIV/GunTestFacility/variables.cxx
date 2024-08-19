@@ -289,12 +289,13 @@ namespace setVariable
     RFGen.generate(Control, "Gun");
 
     name = "PipeBelowGun";
-    PipeGen.setCF<setVariable::CF25>(); // dummy TODO
-    PipeGen.generatePipe(Control,name,6.3);
+    PipeGen.setCF<setVariable::CF25>(); // CF25 - inner radius is OK
+    PipeGen.generatePipe(Control,name,6.3); // measured approx (difficult to measure)
+    Control.addVariable(name+"PipeThick", 0.4); // measured
     // These are correct radius and lengh, but then the pipe cuts two more cells,
     // so that we leave it to CF25 defaults in order to simplify geometry:
-    // Control.addVariable(name+"FlangeBRadius", 3.4);
-    // Control.addVariable(name+"FlangeBLength", 1.3);
+    //    Control.addVariable(name+"FlangeBRadius", 3.45);
+    Control.addVariable(name+"FlangeBLength", 1.2); // measured
     Control.addParse<double>(name+"FlangeARadius", name+"Radius"+"+"+name+"PipeThick");
 
 
@@ -336,8 +337,13 @@ namespace setVariable
     Control.addVariable(name+"PipeThick", 0.2);
     Control.addVariable(name+"FlangeBLength", 0.0);
 
-    name = "BellowA";
     setVariable::BellowGenerator BellowGen;
+    name = "BellowBelowGun";
+    BellowGen.setCF<setVariable::CF35_TDC>(); // CF35 - measured
+    BellowGen.generateBellow(Control,name,15.0); // measured CAD
+    Control.addVariable(name+"BellowStep", 3.0); // guess
+
+    name = "BellowA";
     BellowGen.setCF<setVariable::CF63>();
     BellowGen.generateBellow(Control,name,4.0); // measured
     Control.addVariable(name+"PipeThick", 0.2);

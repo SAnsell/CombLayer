@@ -99,6 +99,7 @@ GTFLine::GTFLine(const std::string& Key) :
   extensionA(std::make_shared<constructSystem::VacuumPipe>("ExtensionA")),
   gun(std::make_shared<xraySystem::RFGun>("Gun")),
   pipeBelowGun(std::make_shared<constructSystem::VacuumPipe>("PipeBelowGun")),
+  bellowBelowGun(std::make_shared<constructSystem::Bellows>("BellowBelowGun")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>("PipeA")),
   solenoid(std::make_shared<xraySystem::Solenoid>("Solenoid")),
   gate(new constructSystem::GTFGateValve("Gate")),
@@ -131,6 +132,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(extensionA);
   OR.addObject(gun);
   OR.addObject(pipeBelowGun);
+  OR.addObject(bellowBelowGun);
   OR.addObject(pipeA);
   OR.addObject(solenoid);
   OR.addObject(gate);
@@ -251,6 +253,9 @@ GTFLine::buildObjects(Simulation& System)
   pipeBelowGun->insertAllInCell(System, gun->getCell("FrameOuterVoid"));
   pipeBelowGun->insertAllInCell(System, outerCell);
 
+  bellowBelowGun->setFront(*pipeBelowGun,"back");
+  bellowBelowGun->createAll(System, *pipeBelowGun, "back");
+  bellowBelowGun->insertAllInCell(System, outerCell);
 
 
   pipeA->setFront(*gun,"back");
