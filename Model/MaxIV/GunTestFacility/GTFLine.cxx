@@ -120,7 +120,9 @@ GTFLine::GTFLine(const std::string& Key) :
   bellowC(std::make_shared<constructSystem::Bellows>("BellowC")),
   yagUnitC(new tdcSystem::YagUnit("YagUnitC")),
   yagScreenC(new tdcSystem::YagScreen("YagScreenC")),
-  bellowD(std::make_shared<constructSystem::Bellows>("BellowD"))
+  bellowD(std::make_shared<constructSystem::Bellows>("BellowD")),
+  yagUnitD(new tdcSystem::YagUnit("YagUnitD")),
+  yagScreenD(new tdcSystem::YagScreen("YagScreenD"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -155,6 +157,8 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(yagUnitC);
   OR.addObject(yagScreenC);
   OR.addObject(bellowD);
+  OR.addObject(yagUnitD);
+  OR.addObject(yagScreenD);
 }
 
 GTFLine::~GTFLine()
@@ -324,25 +328,24 @@ GTFLine::buildObjects(Simulation& System)
 
   ELog::EM << "add Solenoid after yagScreenA" << ELog::endWarn;
 
-  constructSystem::constructUnit(System,buildZone,*yagUnitA,"back",*bellowB);
-
   ELog::EM << "Make below densities to be a function of their length" << ELog::endWarn;
   ELog::EM << "Total emittance meter length should be constant with different bellow lengths" << ELog::endWarn;
 
+  constructSystem::constructUnit(System,buildZone,*yagUnitA,"back",*bellowB);
   constructYAG(System,buildZone,*bellowB,"back",*yagUnitB,*yagScreenB);
 
   constructSystem::constructUnit(System,buildZone,*yagUnitB,"back",*bellowC);
   constructYAG(System,buildZone,*bellowC,"back",*yagUnitC,*yagScreenC);
 
   constructSystem::constructUnit(System,buildZone,*yagUnitC,"back",*bellowD);
-
+  constructYAG(System,buildZone,*bellowD,"back",*yagUnitD,*yagScreenD);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=laserChamberBackPlate;
+  lastComp=yagUnitD;
 
   return;
 }
