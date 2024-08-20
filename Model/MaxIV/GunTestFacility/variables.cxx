@@ -424,8 +424,9 @@ namespace setVariable
     Control.addVariable(name+"InnerRadius",0.9); // measured
     ELog::EM << "Important to have BackPlate inner radius correct as the beam can clip it" << ELog::endWarn;
 
-    PipeGen.setCF<setVariable::CF63>();
-    PipeGen.setFlange(lcRadius+lcWall, 1.3); // dummy
+    PipeGen.setCF<setVariable::CF40>();
+    PipeGen.setAFlange(lcRadius+lcWall, 1.3); // dummy
+    PipeGen.setBFlange(setVariable::CF40::flangeRadius, setVariable::CF40::flangeLength); // dummy
     PipeGen.generatePipe(Control,"PipeC",7.9+CF63::flangeLength); // TODO: dummy
 
     ELog::EM << "Use correct PipeC variables" << ELog::endWarn;
@@ -441,6 +442,7 @@ namespace setVariable
     ELog::EM << "Measured: bellow diameter: 15 cm, flanges are 5 mm thick" << ELog::endWarn;
 
     name = "BellowB";
+    BellowGen.setCF<setVariable::CF40>();
     BellowGen.generateBellow(Control,name,30.0); // [4]: 30 cm - 2.6 m
     // Control.addVariable(name+"PipeThick", 0.2);
     // Control.addVariable(name+"FlangeALength", 0.0);
