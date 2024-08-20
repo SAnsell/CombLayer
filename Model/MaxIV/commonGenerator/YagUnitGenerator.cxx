@@ -65,8 +65,10 @@ YagUnitGenerator::YagUnitGenerator() :
   portFlangeRadius(CF40::flangeRadius),
   portFlangeLength(CF40::flangeLength),
   frontLength(7.0),backLength(13.0),
+  backCapThick(0.0),
   outerRadius(CF63::flangeRadius*1.2),
-  voidMat("Void"),mainMat("Stainless304L")
+  voidMat("Void"),mainMat("Stainless304L"),
+  backCapMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -141,18 +143,21 @@ YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
   if (flip)
     {
       Control.addVariable(keyName+"FrontLength",backLength);
+  Control.addVariable(keyName+"BackCapThick",backCapThick);
       Control.addVariable(keyName+"BackLength",frontLength);
     }
   else
     {
       Control.addVariable(keyName+"FrontLength",frontLength);
       Control.addVariable(keyName+"BackLength",backLength);
+  Control.addVariable(keyName+"BackCapThick",backCapThick);
     }
 
   Control.addVariable(keyName+"OuterRadius",outerRadius);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"BackCapMat",backCapMat);
 
   return;
 

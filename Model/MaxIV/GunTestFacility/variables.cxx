@@ -222,7 +222,6 @@ namespace setVariable
 
     Control.addVariable(name+"ConcreteDoorFlipX",1);
     Control.addVariable(name+"ConcreteDoorXStep",134.25); // [0]
-    ELog::EM << "Concrete door: distance to the north building B wall?" << ELog::endDiag;
   }
 
   void BeamLineVariables(FuncDataBase& Control)
@@ -460,6 +459,8 @@ namespace setVariable
 
     BellowGen.generateBellow(Control,"BellowD",120.0-27); // dummy
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
+    Control.addVariable("YagUnitDBackLength",7.0); // approx
+    Control.copyVar("YagUnitDBackCapThick", "YagUnitDFlangeLength");
     YagScreenGen.generateScreen(Control,"YagScreenD",1);
     Control.addVariable("YagScreenDYAngle",-90.0);
   }

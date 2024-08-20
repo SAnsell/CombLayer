@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   LinacInc/YagUnit.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tdcSystem_YagUnit_h
@@ -45,12 +45,12 @@ class YagUnit :
 {
  private:
 
-  double radius;               ///< void radius   
+  double radius;               ///< void radius
   double height;               ///< void height [+z]
   double depth;                ///< void depth [-z]
   double wallThick;            ///< pipe thickness
 
-  double flangeRadius;         ///< Joining Flange radius 
+  double flangeRadius;         ///< Joining Flange radius
   double flangeLength;         ///< Joining Flange length
   double plateThick;           ///< flange plate thick
 
@@ -63,7 +63,7 @@ class YagUnit :
   double viewFlangeLength;     ///< Flange length
   double viewPlateThick;       ///< View Flange Plate thickness
 
-  // front/back port 
+  // front/back port
   double portRadius;         ///< port Radius
   double portThick;          ///< port wall thickness
   double portFlangeRadius;   ///< port Flange radius
@@ -71,13 +71,15 @@ class YagUnit :
 
   double frontLength;        ///< front Length [centre to flange end]
   double backLength;         ///< back Length [centre to flange end]
+  double backCapThick;       ///< Back pipe cap thickness
 
   double outerRadius;        ///< Radius to build simple tower void
 
   int voidMat;               ///< void material
   int mainMat;               ///< electrode material
- 
-  void populate(const FuncDataBase&) override;  
+  int backCapMat;               ///< Back pipe cap material
+
+  void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -99,4 +101,3 @@ class YagUnit :
 }
 
 #endif
- 

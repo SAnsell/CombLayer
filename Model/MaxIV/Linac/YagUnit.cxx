@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   Linac/YagUnit.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -50,15 +50,15 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h" 
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
 #include "YagUnit.h"
 
@@ -78,7 +78,7 @@ YagUnit::YagUnit(const std::string& Key) :
 {}
 
 
-YagUnit::~YagUnit() 
+YagUnit::~YagUnit()
   /*!
     Destructor
   */
@@ -106,7 +106,7 @@ YagUnit::populate(const FuncDataBase& Control)
   if (radius+wallThick>flangeRadius-Geometry::zeroTol)
     throw ColErr::OrderError(radius+wallThick,flangeRadius,
 			     "Radius+wall bigger than FlangeRadius");
-  
+
   viewZStep=Control.EvalVar<double>(keyName+"ViewZStep");
   viewRadius=Control.EvalVar<double>(keyName+"ViewRadius");
   viewThick=Control.EvalVar<double>(keyName+"ViewThick");
@@ -114,7 +114,7 @@ YagUnit::populate(const FuncDataBase& Control)
   viewFlangeRadius=Control.EvalVar<double>(keyName+"ViewFlangeRadius");
   viewFlangeLength=Control.EvalVar<double>(keyName+"ViewFlangeLength");
   viewPlateThick=Control.EvalVar<double>(keyName+"ViewPlateThick");
-  
+
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
   portThick=Control.EvalVar<double>(keyName+"PortThick");
   portFlangeRadius=Control.EvalVar<double>(keyName+"PortFlangeRadius");
@@ -122,11 +122,13 @@ YagUnit::populate(const FuncDataBase& Control)
 
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   backLength=Control.EvalVar<double>(keyName+"BackLength");
+  backCapThick=Control.EvalVar<double>(keyName+"BackCapThick");
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  backCapMat=ModelSupport::EvalMat<int>(Control,keyName+"BackCapMat");
 
   return;
 }
@@ -165,7 +167,7 @@ YagUnit::createSurfaces()
 
   // flange
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Z,flangeRadius);
-    
+
   ModelSupport::buildPlane(SMap,buildIndex+115,
 			   Origin-Z*(depth-flangeLength),Z);
   ModelSupport::buildPlane(SMap,buildIndex+116,
@@ -182,13 +184,13 @@ YagUnit::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+207,viewOrg,X,viewRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+217,viewOrg,X,viewRadius+viewThick);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*viewLength,X);
 
   // view flange
 
   ModelSupport::buildCylinder
-    (SMap,buildIndex+227,viewOrg,X,viewFlangeRadius);    
+    (SMap,buildIndex+227,viewOrg,X,viewFlangeRadius);
 
   ModelSupport::buildPlane
     (SMap,buildIndex+213,viewOrg-X*(viewLength-viewFlangeLength),X);
@@ -196,19 +198,21 @@ YagUnit::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+253,viewOrg-X*(viewLength+viewPlateThick),X);
 
-    
+
   // Both Front/Back port [300] -- front/back at [400/500]
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Y,portRadius);
   ModelSupport::buildCylinder
     (SMap,buildIndex+317,Origin,Y,portRadius+portThick);
   ModelSupport::buildCylinder(SMap,buildIndex+327,Origin,Y,portFlangeRadius);
 
-  // front 
+  // front
   ModelSupport::buildPlane
     (SMap,buildIndex+411,Origin-Y*(frontLength-portFlangeLength),Y);
   // back
   ModelSupport::buildPlane
-    (SMap,buildIndex+512,Origin+Y*(backLength-portFlangeLength),Y);
+    (SMap,buildIndex+512,Origin+Y*(backLength-backCapThick-portFlangeLength),Y);
+  // back cup
+  ModelSupport::buildPlane(SMap,buildIndex+522,Origin+Y*(backLength-backCapThick),Y);
 
    return;
 }
@@ -223,7 +227,7 @@ YagUnit::createObjects(Simulation& System)
   ELog::RegMethod RegA("YagUnit","createObjects");
 
   HeadRule HR;
-  
+
   const HeadRule frontHR=getRule("front");
   const HeadRule backHR=getRule("back");
 
@@ -234,7 +238,7 @@ YagUnit::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"105 -106 7 -17 307 (200:207)");
   makeCell("Tube",System,cellIndex++,mainMat,0.0,HR);
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"105 -115 17 -107");
   makeCell("FlangeA",System,cellIndex++,mainMat,0.0,HR);
 
@@ -243,7 +247,7 @@ YagUnit::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-106 116 17 -107");
   makeCell("FlangeB",System,cellIndex++,mainMat,0.0,HR);
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-156 106 -107");
   makeCell("PlateB",System,cellIndex++,mainMat,0.0,HR);
 
@@ -268,7 +272,7 @@ YagUnit::createObjects(Simulation& System)
   makeCell("viewOut",System,cellIndex++,0,0.0,HR);
 
 
-  // view 
+  // view
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 7 -307");
   makeCell("frontPort",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
@@ -282,8 +286,13 @@ YagUnit::createObjects(Simulation& System)
     (SMap,buildIndex,"(217:200) 411 -100 17 -327 317");
   makeCell("frontOut",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 7 -307");
-  makeCell("backPort",System,cellIndex++,voidMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-522 100 7 -307");
+  makeCell("backPort",System,cellIndex++,voidMat,0.0,HR);
+
+  if (backCapThick>Geometry::zeroTol) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"522 -307");
+    makeCell("backPortCap",System,cellIndex++,backCapMat,0.0,HR*backHR);
+  }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"(207:200) 100 17 307 -317");
   makeCell("backWall",System,cellIndex++,mainMat,0.0,HR*backHR);
@@ -299,11 +308,11 @@ YagUnit::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"155 -156 253 (-327 : -107 : (-227 -200))");
   addOuterSurf(HR*frontHR*backHR);
-  
+
   return;
 }
 
-void 
+void
 YagUnit::createLinks()
   /*!
     Create the linked units
@@ -313,7 +322,7 @@ YagUnit::createLinks()
 
   ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
-  
+
   FixedComp::setConnect(2,Origin-Z*(depth+plateThick),Z);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+155));
 
@@ -330,20 +339,20 @@ YagUnit::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("YagUnit","createAll");
-  
+
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,frontLength);
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE tdcSystem

@@ -65,12 +65,14 @@ class YagUnitGenerator
   double frontLength;        ///< front Length [centre to flange end]
   double frontILen;          ///< front Length [centre to start]
   double backLength;         ///< back Length [centre to flange end]
+  double backCapThick;          ///< Back pipe cap thickness
   double backILen;           ///< front Length [centre to start]
 
   double outerRadius;        ///< Radius to build simple tower void
 
   std::string voidMat;               ///< void material
   std::string mainMat;               ///< wall material
+  std::string backCapMat;       ///< Back pipe cap material
 
  public:
 
