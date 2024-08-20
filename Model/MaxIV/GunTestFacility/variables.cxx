@@ -77,7 +77,7 @@ namespace setVariable
     */
   {
     // References:
-    // [0] Bjorn's drawings (have higher priority than other refs)
+    // [0] Bjorn's drawings (have higher priority than other refs except own measurements)
     // http://localhost:8080/maxiv/work-log/100hz/gtf/guntestfacility-bjornnilsson.djvu/view
     // [1] 221413_radiation_caclulation.STEP
     // [2] K_20-1_08C6b4
@@ -221,7 +221,7 @@ namespace setVariable
     Control.addVariable(name+"ConcreteDoorOuterTopGap",4.5);
 
     Control.addVariable(name+"ConcreteDoorFlipX",1);
-    Control.addVariable(name+"ConcreteDoorXStep",137); // TODO check
+    Control.addVariable(name+"ConcreteDoorXStep",134.25); // [0]
     ELog::EM << "Concrete door: distance to the north building B wall?" << ELog::endDiag;
   }
 
