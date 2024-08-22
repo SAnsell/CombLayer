@@ -272,6 +272,7 @@ namespace setVariable
 
     name = "ExtensionA";
     setVariable::PipeGenerator PipeGen;
+    PipeGen.setMat("Stainless316L", "Stainless304L");
 
     PipeGen.setNoWindow();   // no window
     PipeGen.setCF<setVariable::CF100>();
@@ -285,7 +286,6 @@ namespace setVariable
     PipeGen.generatePipe(Control,name,14.3);
     Control.addVariable(name+"Radius", 5.0);
     Control.addVariable(name+"PipeThick", 0.2);
-    Control.addVariable(name+"PipeMat", "Aluminium"); // TODO
     Control.addVariable(name+"FlangeAType", 1);
     Control.addVariable(name+"FlangeBType", 1);
     Control.addVariable(name+"OuterVoid", 1);
@@ -346,6 +346,8 @@ namespace setVariable
     Control.addVariable(name+"FlangeBLength", 0.0);
 
     setVariable::BellowGenerator BellowGen;
+    BellowGen.setMat("Stainless316L", 8.0);
+
     name = "BellowBelowGun";
     BellowGen.setCF<setVariable::CF35_TDC>(); // CF35 - measured
     BellowGen.generateBellow(Control,name,15.0); // measured CAD
@@ -462,7 +464,8 @@ namespace setVariable
     BellowGen.generateBellow(Control,"BellowD",120.0-27); // dummy
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
     Control.addVariable("YagUnitDBackLength",7.0); // approx
-    Control.copyVar("YagUnitDBackCapThick", "YagUnitDFlangeLength");
+    Control.addVariable("YagUnitDBackCapThick", 0.05); // 0.5 mm:  email AR 2024-02-13
+    ELog::EM << "* Blind flange at the end of the beamline:  email AR 2024-02-13: 0.5mm , photo: ~2cm" << ELog::endDiag;
     YagScreenGen.generateScreen(Control,"YagScreenD",1);
     Control.addVariable("YagScreenDYAngle",-90.0);
   }

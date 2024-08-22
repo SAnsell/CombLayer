@@ -82,9 +82,9 @@ RFGunGenerator::RFGunGenerator() :
   insertLowerPipeRadius(CF25::innerRadius),
   guideHeight(90.0), // approx, no need to be precise
   mainMat("Void"),
-  wallMat("Copper"), // TODO,
-  frontTubePipeMat("Aluminium"), // TODO
-  backTubePipeMat("Aluminium") // TODO
+  wallMat("Copper"),
+  frontTubePipeMat("Stainless316L"), // Guess
+  backTubePipeMat("Stainless316L") // Guess
   /*!
     Constructor and defaults
   */
