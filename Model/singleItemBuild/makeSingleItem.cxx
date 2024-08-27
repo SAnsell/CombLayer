@@ -1742,7 +1742,7 @@ makeSingleItem::build(Simulation& System,
     {
       const auto rfgun = std::make_shared<xraySystem::RFGun>("RFGun");
       OR.addObject(rfgun);
-      rfgun->addInsertCell(voidCell);
+      rfgun->addAllInsertCell(voidCell);
       rfgun->createAll(System,World::masterOrigin(),0);
       return;
     }
