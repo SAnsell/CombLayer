@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   source/BeamSource.cxx
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -60,7 +60,7 @@
 namespace SDef
 {
 
-BeamSource::BeamSource(const std::string& keyName) : 
+BeamSource::BeamSource(const std::string& keyName) :
   FixedRotate(keyName,0),SourceBase(),
   radius(1.0),angleSpread(0)
   /*!
@@ -69,7 +69,7 @@ BeamSource::BeamSource(const std::string& keyName) :
   */
 {}
 
-BeamSource::BeamSource(const BeamSource& A) : 
+BeamSource::BeamSource(const BeamSource& A) :
   attachSystem::FixedRotate(A),SourceBase(A),
   radius(A.radius),angleSpread(A.angleSpread)
   /*!
@@ -96,7 +96,7 @@ BeamSource::operator=(const BeamSource& A)
   return *this;
 }
 
-BeamSource::~BeamSource() 
+BeamSource::~BeamSource()
   /*!
     Destructor
   */
@@ -111,9 +111,9 @@ BeamSource::clone() const
 {
   return new BeamSource(*this);
 }
-  
-  
-  
+
+
+
 void
 BeamSource::populate(const ITYPE& inputMap)
   /*!
@@ -126,7 +126,7 @@ BeamSource::populate(const ITYPE& inputMap)
   attachSystem::FixedRotate::populate(inputMap);
   SourceBase::populate(inputMap);
   // default neutron
-  
+
   angleSpread=mainSystem::getDefInput(inputMap,"aSpread",0,0.0);
   radius=mainSystem::getDefInput(inputMap,"radius",0,radius);
 
@@ -145,7 +145,7 @@ BeamSource::rotate(const localRotate& LR)
   FixedComp::applyRotation(LR);
   return;
 }
-  
+
 void
 BeamSource::createSource(SDef::Source& sourceCard) const
   /*!
@@ -159,10 +159,10 @@ BeamSource::createSource(SDef::Source& sourceCard) const
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
-  sourceCard.setComp("ara",M_PI*radius*radius);         
-    
+  sourceCard.setComp("ara",M_PI*radius*radius);
+
   sourceCard.setComp("pos",Origin);
-  
+
   // RAD
   SDef::SrcData D1(1);
   SDef::SrcInfo SI1;
@@ -177,7 +177,7 @@ BeamSource::createSource(SDef::Source& sourceCard) const
   SourceBase::createEnergySource(sourceCard);
 
   return;
-}  
+}
 
 void
 BeamSource::createAll(const attachSystem::FixedComp& FC,
@@ -185,7 +185,7 @@ BeamSource::createAll(const attachSystem::FixedComp& FC,
   /*!
     Create all with out using Control variables
     \param FC :: Fixed Point for origin/axis of beam
-    \param linkIndex :: link Index				
+    \param linkIndex :: link Index
   */
 {
   ELog::RegMethod RegA("BeamSource","createAll(FC)");
@@ -193,7 +193,7 @@ BeamSource::createAll(const attachSystem::FixedComp& FC,
   return;
 }
 
-  
+
 void
 BeamSource::createAll(const ITYPE& inputMap,
 		      const attachSystem::FixedComp& FC,
@@ -203,7 +203,7 @@ BeamSource::createAll(const ITYPE& inputMap,
     Create all the source
     \param Control :: DataBase for variables
     \param FC :: Fixed Point for origin/axis of beam
-    \param linkIndex :: link Index				
+    \param linkIndex :: link Index
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
@@ -292,7 +292,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
 
   const flukaGenParticle& PC=flukaGenParticle::Instance();
   masterWrite& MW=masterWrite::Instance();
-  
+
   // can be two for an energy range
   if (Energy.size()!=1)
     throw ColErr::SizeError<size_t>
@@ -303,8 +303,8 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   // radius : innerRadius : -1 t o means radius
   const double scaleValue=
     (PC.mass(particleType)<Geometry::zeroTol) ? 0.001 : -0.001;
-  cx<<"BEAM "<<scaleValue*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
-    <<" "<<radius<<" 0.0 -1.0 ";
+  cx<<"BEAM "<<scaleValue*Energy.front()<<" "<<0.0<<" "<<M_PI*angleSpread/0.180
+    <<" "<<radius<<" "<<0.0<<" "<<-1.0<<" ";
   cx<<StrFunc::toUpperString(PC.nameToFLUKA(particleType));
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
@@ -320,11 +320,11 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   // Note the cos directs fro the beamPos are for particle
   // leaving the beam NOT the orientation of the disk
   cx<<"BEAMPOS "<<MW.Num(Origin);
-    
+
   StrFunc::writeFLUKA(cx.str(),OX);
 
   SourceBase::writeFLUKA(OX);
   return;
 }
-  
+
 } // NAMESPACE SDef
