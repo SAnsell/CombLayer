@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_COMPILER g++)
 
-set(CMAKE_CXX_FLAGS "-Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++20 -O2")
+set(CMAKE_CXX_FLAGS "-Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++20 -O2 -fPIC")
 #if (${CMAKE_CXX_COMPLILER}=="g++")
 #  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}."-Wl,--as-needed")
 #endif
