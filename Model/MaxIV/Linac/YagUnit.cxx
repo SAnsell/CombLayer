@@ -236,8 +236,20 @@ YagUnit::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"105 -106 7 -17 307 (200:207)");
+    (SMap,buildIndex,"105 -106 7 -17 307 207 ");
   makeCell("Tube",System,cellIndex++,mainMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"7 -17 -307 ");
+  makeCell("TubeVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"-200 7 -17 -207");
+  makeCell("TubeVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"200 7 -17 -207");
+  makeCell("TubeVoidSteel",System,cellIndex++,mainMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"105 -115 17 -107");
   makeCell("FlangeA",System,cellIndex++,mainMat,0.0,HR);
@@ -256,7 +268,7 @@ YagUnit::createObjects(Simulation& System)
   makeCell("OutTube",System,cellIndex++,0,0.0,HR);
 
   // view
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"307 7 -200 -207 203");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"307 17 -200 -207 203");
   makeCell("viewVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 17 -200 -217 207 203");
@@ -271,12 +283,11 @@ YagUnit::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 -227 -200 17 213 327");
   makeCell("viewOut",System,cellIndex++,0,0.0,HR);
 
-
   // view
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 7 -307");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 17 -307");
   makeCell("frontPort",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(207:200) -100 17 307 -317");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-100 17 307 -317");
   makeCell("frontWall",System,cellIndex++,mainMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-411 -327 317");
@@ -286,7 +297,7 @@ YagUnit::createObjects(Simulation& System)
     (SMap,buildIndex,"(217:200) 411 -100 17 -327 317");
   makeCell("frontOut",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-522 100 7 -307");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-522 100 17 -307");
   makeCell("backPort",System,cellIndex++,voidMat,0.0,HR);
 
   if (backCapThick>Geometry::zeroTol) {
@@ -294,7 +305,7 @@ YagUnit::createObjects(Simulation& System)
     makeCell("backPortCap",System,cellIndex++,backCapMat,0.0,HR*backHR);
   }
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(207:200) 100 17 307 -317");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"100 17 307 -317");
   makeCell("backWall",System,cellIndex++,mainMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"512 -327 317");

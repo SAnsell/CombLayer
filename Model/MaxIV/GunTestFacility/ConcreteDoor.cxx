@@ -118,7 +118,6 @@ ConcreteDoor::populate(const FuncDataBase& Control)
   jambCornerCut=Control.EvalVar<double>(keyName+"JambCornerCut");
 
   underMat=ModelSupport::EvalDefMat(Control,keyName+"UnderMat",0);
-  ELog::EM << "Is underMat void through the whole wall thickness?" << ELog::endDiag;
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
 
   return;
