@@ -772,10 +772,10 @@ SimFLUKA::write(const std::string& Fname) const
 {
   ELog::RegMethod RegA("SimFLUKA","write");
 
-
   std::ofstream OX(Fname.c_str());
   const size_t nCells(OList.size());
-  const size_t maxCells(20000);
+  const size_t maxCells = cernFluka ? 20000 : 100000;
+
   if (nCells>maxCells)
     {
       ELog::EM<<"Number of regions in geometry exceeds FLUKA max: "<<nCells
@@ -783,11 +783,9 @@ SimFLUKA::write(const std::string& Fname) const
       ELog::EM<<"See the GLOBAL card documentation"<<ELog::endCrit;
     }
 
-  // cell/names(not numbers)/free geometry
-  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells)+" - 1 1",OX);
+  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells)+" - - 1",OX);
   OX<<"TITLE"<<std::endl;
-  OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"
-    <<std::endl;
+  OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer" <<std::endl;
 
   StrFunc::writeMCNPXcomment("RunCmd:",OX,"* ");
   const std::vector<std::string> SCL=
