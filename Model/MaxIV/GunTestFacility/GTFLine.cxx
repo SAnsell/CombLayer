@@ -253,7 +253,6 @@ GTFLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*ionPumpA,"back",*extensionA);
   outerCell = constructSystem::constructUnit(System,buildZone,*extensionA,"back",*gun);
 
-
   pipeBelowGun->setFront(*gun,"InsertLower");
   pipeBelowGun->createAll(System, *gun, "InsertLower");
   pipeBelowGun->insertAllInCell(System, gun->getCell("FrameOuterVoid"));
@@ -289,8 +288,37 @@ GTFLine::buildObjects(Simulation& System)
   gate->insertInCell("Shaft", System, outerCell);
 
   constructSystem::constructUnit(System,buildZone,*pipeB,"back",*bellowA);
+
   constructSystem::constructUnit(System,buildZone,*bellowA,"back",*mon);
-  constructSystem::constructUnit(System,buildZone,*mon,"back",*laserChamber);
+  // instead of this line:
+  // constructSystem::constructUnit(System,buildZone,*mon,"back",*laserChamber);
+  // we split the zone Cell to 4 simpler ones so that FLUKA does not complain:
+
+  //  laserChamber->setOuterVoid(); // not yet implemented
+  laserChamber->createAll(System,*mon,"back");
+
+  const constructSystem::portItem& VP0=laserChamber->getPort(0);
+  const constructSystem::portItem& VP1=laserChamber->getPort(1);
+  const constructSystem::portItem& VP2=laserChamber->getPort(2);
+  const constructSystem::portItem& VP3=laserChamber->getPort(3);
+
+  outerCell=buildZone.createUnit(System,*laserChamber,"back");
+  this->setCell("OuterVoid",outerCell);
+
+  const Geometry::Vec3D  Axis02=laserChamber->getY()*(VP0.getY()+VP2.getY())/2.0;
+  const Geometry::Vec3D  Axis03=laserChamber->getY()*(VP0.getY()+VP3.getY())/2.0;
+  const Geometry::Vec3D  Axis21=laserChamber->getY()*(VP2.getY()+VP1.getY())/2.0;
+
+  this->splitObjectAbsolute(System,1503,outerCell,laserChamber->getCentre(),Axis02);
+  this->splitObjectAbsolute(System,1504,getCell("OuterVoid",1),laserChamber->getCentre(),Axis21);
+  this->splitObjectAbsolute(System,1505,outerCell,laserChamber->getCentre(),Axis03);
+
+  laserChamber->insertMainInCell(System,getCells("OuterVoid"));
+  laserChamber->insertPortInCell(System,0,getCell("OuterVoid",3));
+  laserChamber->insertPortInCell(System,1,getCell("OuterVoid",2));
+  laserChamber->insertPortInCell(System,2,getCell("OuterVoid",1));
+  laserChamber->insertPortInCell(System,3,getCell("OuterVoid",0));
+  // end of the splitting-related code
 
   laserChamberBackPlate->setCutSurf("plate", *laserChamber, "back");
   laserChamberBackPlate->createAll(System,*laserChamber,"back");
@@ -299,7 +327,7 @@ GTFLine::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*laserChamberBackPlate,"back");
   laserChamberBackPlate->insertInCell(System,outerCell);
 
-  laserChamber->insertPortInCell(System,3,outerCell);
+  //  laserChamber->insertPortInCell(System,3,outerCell); // not really needed
 
   const constructSystem::portItem& PI=laserChamber->getPort(3);
 
@@ -313,12 +341,10 @@ GTFLine::buildObjects(Simulation& System)
   ionPumpB->insertInCell(System,outerCell-1);
   ionPumpB->insertInCell(System,outerCell-2);
 
+
   constructSystem::constructUnit(System,buildZone,*laserChamberBackPlate,"back",*pipeC);
   ionPumpB->insertInCell(System,outerCell+1);
   extensionB->insertAllInCell(System,outerCell+1); // pipeC zone cell
-
-
-
 
   // Emittance meter (movable)
 
