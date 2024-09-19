@@ -149,13 +149,21 @@ ConcreteDoor::testDistances() const
   const HeadRule outerHR=ExternalCut::getRule("outerWall");
   const HeadRule floorHR=ExternalCut::getRule("floor");
 
-    // checking distances
-  const double epsilon = 0.1;
+  // checking distances
+  constexpr double epsilon = 0.1;
+  // middle shorter width
   const Geometry::Vec3D a1 = getCorner(buildIndex+4, innerHR.getPrimarySurface(), buildIndex+6);
   const Geometry::Vec3D b1 = getCorner(buildIndex+3, innerHR.getPrimarySurface(), buildIndex+6);
   const double d1 = a1.Distance(b1);
   if (std::abs(d1-130.5) > epsilon)
     ELog::EM << "WARNING: The 130.5 distance is not maintained: " << d1 << ELog::endDiag;
+
+  // middle longer width
+  const Geometry::Vec3D a9 = getCorner(buildIndex+24, buildIndex+201, buildIndex+6);
+  const Geometry::Vec3D b9 = getCorner(buildIndex+23, buildIndex+201, buildIndex+6);
+  const double d9 = a9.Distance(b9);
+  if (std::abs(d9-153.1) > epsilon)
+    ELog::EM << "WARNING: The 153.1 distance is not maintained: " << d9 << ELog::endWarn;
 
   const Geometry::Vec3D a2 = getCorner(buildIndex+23, buildIndex+201, buildIndex+6);
   const Geometry::Vec3D b2 = getCorner(buildIndex+3, buildIndex+201, buildIndex+6);
@@ -203,6 +211,7 @@ ConcreteDoor::testDistances() const
   const double d8 = a8.Distance(b8);
   if (std::abs(d8-161.0) > epsilon)
     ELog::EM << "WARNING: The doorjamb outer width of 161.0 cm is not maintained: " << d8 << ELog::endWarn;
+
 
   return;
 }

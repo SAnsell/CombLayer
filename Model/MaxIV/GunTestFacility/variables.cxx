@@ -198,8 +198,8 @@ namespace setVariable
     Control.addVariable(name+"ConcreteDoorDoorMat","Concrete");
     Control.addVariable(name+"ConcreteDoorCornerCut",3.0); // measured
     Control.addVariable(name+"ConcreteDoorJambCornerCut",3.5); // measured
-    Control.addVariable(name+"ConcreteDoorOuterWidth",153.1); // measured
-    Control.addVariable(name+"ConcreteDoorInnerWidth",136.83); // set to have coorect distance of 6.3 cm to the outside right
+    Control.addVariable(name+"ConcreteDoorOuterWidth",157.143); // measured
+    Control.addVariable(name+"ConcreteDoorInnerWidth",143.0); // set to have coorect distance of 6.3 cm to the outside right
     Control.addVariable(name+"ConcreteDoorInnerThick",20.0);
     Control.addVariable(name+"ConcreteDoorInnerXStep",10.0); // measured
     Control.addVariable(name+"ConcreteDoorInnerHeight",194.9); // measured
@@ -210,18 +210,19 @@ namespace setVariable
     Control.addVariable(name+"ConcreteDoorUnderStepWidth",110.5); // somewhat average of measured: 110.2 and 110.6
     Control.addVariable(name+"ConcreteDoorUnderStepXStep",1.4); //
 
-    Control.addVariable(name+"ConcreteDoorInnerSideGapLeft",3.0); // adjusted to have 8.5 cm gap to the jamb
+    Control.addVariable(name+"ConcreteDoorInnerSideGapLeft",-3.17); // adjusted to have 8.5 cm gap to the jamb
     Control.addVariable(name+"ConcreteDoorInnerSideGapRight",1.17); // adjusted to have total inner jamb width of 141 cm
-    Control.addVariable(name+"ConcreteDoorOuterSideGapLeft",7.7); // adjusted to have 4 cm gap to the jamb
+    Control.addVariable(name+"ConcreteDoorOuterSideGapLeft",1.857); // adjusted to have 4 cm gap to the jamb
     Control.addVariable(name+"ConcreteDoorOuterSideGapRight",2.0); // should be -0.8 to match total width of 1.6 m TODO: check
 
-    Control.addVariable(name+"ConcreteDoorInnerThickGap",0.5); // TODO check
+    Control.addVariable(name+"ConcreteDoorInnerThickGap",0.5); // guess TODO check
 
     Control.addVariable(name+"ConcreteDoorInnerTopGap",4.3); // 199.2(total)-194.9(InnerHeight)
     Control.addVariable(name+"ConcreteDoorOuterTopGap",4.5);
 
     Control.addVariable(name+"ConcreteDoorFlipX",1);
     Control.addVariable(name+"ConcreteDoorXStep",134.25); // [0]
+    ELog::EM << "*** Check the door-wall distance" << ELog::endWarn;
   }
 
   void BeamLineVariables(FuncDataBase& Control)
@@ -464,8 +465,7 @@ namespace setVariable
     BellowGen.generateBellow(Control,"BellowD",120.0-27); // dummy
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
     Control.addVariable("YagUnitDBackLength",7.0); // approx
-    Control.addVariable("YagUnitDBackCapThick", 0.05); // 0.5 mm:  email AR 2024-02-13
-    ELog::EM << "* Blind flange at the end of the beamline:  email AR 2024-02-13: 0.5mm , photo: ~2cm" << ELog::endDiag;
+    Control.addVariable("YagUnitDBackCapThick", 0.05); // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
     YagScreenGen.generateScreen(Control,"YagScreenD",1);
     Control.addVariable("YagScreenDYAngle",-90.0);
   }
