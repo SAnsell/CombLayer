@@ -93,7 +93,7 @@ namespace MAXIV::GunTestFacility
     int voidMat;                  ///< void material
     int oilRoomWallMat;           ///< material of the oil room walls
     int level9VentDuctShieldMat;  ///< ventillation ducts shield material
-  int doorBricksMat;            ///< Material of the lead bricks
+    int doorBricksMat;            ///< Material of the lead bricks
 
     std::shared_ptr<xraySystem::Duct> ductWave; // wave guide
     std::shared_ptr<xraySystem::Duct> ductSignal1; // electrical duct
@@ -110,15 +110,21 @@ namespace MAXIV::GunTestFacility
 
     std::shared_ptr<ConcreteDoor> door; // back wall concrete door
     double doorBricksThick;       ///< Thickness of lead bricks at the concrete door base
-  double doorBricksHeight;      ///< Height of lead bricks at the concrete door base
-  double doorBricksLength;      ///< Length of lead bricks at the concrete door base
-  double doorBricksOffset;      ///< Offset of the lead bricks from the north wall
+    double doorBricksHeight;      ///< Height of lead bricks at the concrete door base
+    double doorBricksLength;      ///< Length of lead bricks at the concrete door base
+    double doorBricksOffset;      ///< Offset of the lead bricks from the north wall
+
+    int doorWallNLayers ;         ///< Number of door wall biasing layers
+    int midWallNLayers;           ///< Number of MidWall biasing layers
+    int outerWallEastNLayers;     ///< Number of OuterWallEast biasing layers
 
     void populate(const FuncDataBase&);
     void createSurfaces();
     void createObjects(Simulation&);
     void createLinks();
     void createDucts(Simulation&);
+    void layerProcess(Simulation&,const std::string&,
+		      const int,const int,const size_t);
 
   public:
 

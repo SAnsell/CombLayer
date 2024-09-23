@@ -35,6 +35,7 @@
 
 #include "FileReport.h"
 #include "OutputLog.h"
+#include "Exception.h"
 #include "objectRegister.h"
 
 #include "NameStack.h"
@@ -59,8 +60,13 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "surfDivide.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "Importance.h"
+#include "Object.h"
 #include "Duct.h"
 #include "ConcreteDoor.h"
 
@@ -161,7 +167,10 @@ namespace MAXIV::GunTestFacility
     doorBricksThick(A.doorBricksThick),
     doorBricksHeight(A.doorBricksHeight),
     doorBricksLength(A.doorBricksLength),
-    doorBricksOffset(A.doorBricksOffset)
+    doorBricksOffset(A.doorBricksOffset),
+    doorWallNLayers(A.doorWallNLayers),
+    midWallNLayers(A.midWallNLayers),
+    outerWallEastNLayers(A.outerWallEastNLayers)
     /*!
       Copy constructor
       \param A :: BuildingB to copy
@@ -229,6 +238,9 @@ namespace MAXIV::GunTestFacility
 	doorBricksHeight=A.doorBricksHeight;
 	doorBricksLength=A.doorBricksLength;
 	doorBricksOffset=A.doorBricksOffset;
+	doorWallNLayers=A.doorWallNLayers;
+        midWallNLayers=A.midWallNLayers;
+        outerWallEastNLayers=A.outerWallEastNLayers;
       }
     return *this;
   }
@@ -303,6 +315,9 @@ namespace MAXIV::GunTestFacility
     doorBricksHeight=Control.EvalVar<double>(keyName+"DoorBricksHeight");
     doorBricksLength=Control.EvalVar<double>(keyName+"DoorBricksLength");
     doorBricksOffset=Control.EvalVar<double>(keyName+"DoorBricksOffset");
+    doorWallNLayers=Control.EvalDefVar<int>(keyName+"DoorWallNLayers", 1);
+    midWallNLayers=Control.EvalDefVar<int>(keyName+"MidWallNLayers", 1);
+    outerWallEastNLayers=Control.EvalDefVar<int>(keyName+"OuterWallEastNLayers", 1);
 
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
     voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat","Void");
@@ -488,7 +503,7 @@ namespace MAXIV::GunTestFacility
     makeCell("MazeEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 44 -4 ");
-    makeCell("MazeWallSide",System,cellIndex++,wallMat,0.0,Out*tb);
+    makeCell("DoorWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -32 34 -3 ");
     makeCell("MazeWallFront",System,cellIndex++,wallMat,0.0,Out*tb);
@@ -618,7 +633,6 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 211 -212 213 -4 215 -216 ");
     makeCell("Level9VentDuctShieldWallTop",System,cellIndex++,level9VentDuctShieldMat,0.0,Out);
 
-
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -92 83 -24 15 -36");
     addOuterSurf(Out);
 
@@ -667,10 +681,10 @@ namespace MAXIV::GunTestFacility
     FixedComp::setNamedLinkSurf(8,"MazeWallFrontBack",SMap.realSurf(buildIndex+34));
 
     FixedComp::setConnect(9,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth),Y);
-    FixedComp::setNamedLinkSurf(9,"MazeWallSideBack",SMap.realSurf(buildIndex+31));
+    FixedComp::setNamedLinkSurf(9,"DoorWallBack",SMap.realSurf(buildIndex+31));
 
     FixedComp::setConnect(10,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth+outerWallThick),Y);
-    FixedComp::setNamedLinkSurf(10,"MazeWallSideFront",SMap.realSurf(buildIndex+32));
+    FixedComp::setNamedLinkSurf(10,"DoorWallFront",SMap.realSurf(buildIndex+32));
 
     FixedComp::setConnect(11,Origin+Z*(height),Z);
     FixedComp::setNamedLinkSurf(11,"RoofGunTestBottom",SMap.realSurf(buildIndex+6));
@@ -719,23 +733,23 @@ namespace MAXIV::GunTestFacility
     ductVent->addInsertCell(getCell("MazeWallFront"));
     ductVent->createAll(System,*this,0);
 
-    ductLaser->setFront(getFullRule("#MazeWallSideFront"));
-    ductLaser->setBack(getFullRule("MazeWallSideBack"));
-    ductLaser->addInsertCell(getCell("MazeWallSide"));
+    ductLaser->setFront(getFullRule("#DoorWallFront"));
+    ductLaser->setBack(getFullRule("DoorWallBack"));
+    ductLaser->addInsertCell(getCell("DoorWall"));
     ductLaser->createAll(System,*this,0);
 
-    ductSignal4->setFront(getFullRule("#MazeWallSideFront"));
-    ductSignal4->setBack(getFullRule("MazeWallSideBack"));
-    ductSignal4->addInsertCell(getCell("MazeWallSide"));
+    ductSignal4->setFront(getFullRule("#DoorWallFront"));
+    ductSignal4->setBack(getFullRule("DoorWallBack"));
+    ductSignal4->addInsertCell(getCell("DoorWall"));
     ductSignal4->createAll(System,*this,0);
 
-    ductWater2->setFront(getFullRule("#MazeWallSideFront"));
-    ductWater2->setBack(getFullRule("MazeWallSideBack"));
+    ductWater2->setFront(getFullRule("#DoorWallFront"));
+    ductWater2->setBack(getFullRule("DoorWallBack"));
     ductWater2->addInsertCell(getCell("MazeEntranceLintel"));
     ductWater2->createAll(System,*this,0);
 
-    ductSuction->setFront(getFullRule("#MazeWallSideFront"));
-    ductSuction->setBack(getFullRule("MazeWallSideBack"));
+    ductSuction->setFront(getFullRule("#DoorWallFront"));
+    ductSuction->setBack(getFullRule("DoorWallBack"));
     ductSuction->addInsertCell(getCell("MazeEntranceLintel"));
     ductSuction->createAll(System,*this,0);
 
@@ -749,6 +763,65 @@ namespace MAXIV::GunTestFacility
     ductVentRoof2->addInsertCell(getCell("Roof8GunTest"));
     ductVentRoof2->createAll(System,*this,"RoofGunTestBottom");
   }
+
+  void
+  BuildingB::layerProcess(Simulation& System,
+			    const std::string& cellName,
+			    const int primSurf,
+			    const int sndSurf,
+			    const size_t NLayers)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: cell name
+    \param primSurf :: primary surface
+    \param sndSurf  :: secondary surface
+    \param NLayers :: number of layers to divide to
+  */
+{
+    ELog::RegMethod RegA("InjectionHall","layerProcess");
+
+    if (NLayers<=1) return;
+
+    // cellmap -> material
+    const int wallCell=this->getCell(cellName);
+    const MonteCarlo::Object* wallObj=System.findObject(wallCell);
+    if (!wallObj)
+      throw ColErr::InContainerError<int>
+	(wallCell,"Cell '" + cellName + "' not found");
+
+    const int mat=wallObj->getMatID();
+    double baseFrac = 1.0/static_cast<double>(NLayers);
+    ModelSupport::surfDivide DA;
+    for(size_t i=1;i<NLayers;i++)
+      {
+	DA.addFrac(baseFrac);
+	DA.addMaterial(mat);
+	baseFrac += 1.0/static_cast<double>(NLayers);
+      }
+    DA.addMaterial(mat);
+
+    DA.setCellN(wallCell);
+    // CARE here :: buildIndex + X should be so that X+NLayer does not
+    // interfer.
+    DA.setOutNum(cellIndex, buildIndex+8000);
+
+    ModelSupport::mergeTemplate<Geometry::Plane,
+				Geometry::Plane> surroundRule;
+
+    surroundRule.setSurfPair(primSurf,sndSurf);
+
+    surroundRule.setInnerRule(primSurf);
+    surroundRule.setOuterRule(sndSurf);
+
+    DA.addRule(&surroundRule);
+    DA.activeDivideTemplate(System,this);
+
+    cellIndex=DA.getCellNum();
+
+    return;
+}
+
 
   void
   BuildingB::createAll(Simulation& System,
@@ -771,15 +844,30 @@ namespace MAXIV::GunTestFacility
 
     createDucts(System);
 
-    door->setCutSurf("innerWall", *this, "MazeWallSideBack");
-    door->setCutSurf("outerWall", *this, "#MazeWallSideFront");
+    door->setCutSurf("innerWall", *this, "DoorWallBack");
+    door->setCutSurf("outerWall", *this, "#DoorWallFront");
     door->setCutSurf("floor", getSurf("bottom"));
-    door->addInsertCell(getCell("MazeWallSide"));
-    door->createAll(System,*this,getSideIndex("MazeWallSideFront"));
+    door->addInsertCell(getCell("DoorWall"));
+    door->createAll(System,*this,getSideIndex("DoorWallFront"));
 
-    // ELog::EM << getSideIndex("#MazeWallSideFront") << ELog::endDiag;
-    // ELog::EM << getLinkPt("MazeWallSideFront") << ELog::endDiag;
-    // ELog::EM << getLinkAxis("#MazeWallSideFront") << ELog::endDiag;
+    layerProcess(System,"DoorWall",
+		 SMap.realSurf(buildIndex+31),
+		 -SMap.realSurf(buildIndex+32),
+		 doorWallNLayers);
+
+    layerProcess(System,"MidWall",
+		 SMap.realSurf(buildIndex+13),
+		 -SMap.realSurf(buildIndex+3),
+		 midWallNLayers);
+
+    layerProcess(System,"OuterWallEast",
+		 SMap.realSurf(buildIndex+11),
+		 -SMap.realSurf(buildIndex+1),
+		 outerWallEastNLayers);
+
+    // ELog::EM << getSideIndex("#DoorWallFront") << ELog::endDiag;
+    // ELog::EM << getLinkPt("DoorWallFront") << ELog::endDiag;
+    // ELog::EM << getLinkAxis("#DoorWallFront") << ELog::endDiag;
     insertObjects(System);
 
     return;
