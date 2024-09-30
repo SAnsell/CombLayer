@@ -424,10 +424,9 @@ namespace setVariable
     FPGen.setCF<setVariable::CF63>(1.5); // measured
     FPGen.setFlange(lcRadius+lcWall, 1.3); // 1.3 is measured
     FPGen.generateFlangePlate(Control,name);
-    Control.addVariable(name+"InnerRadius",0.9); // measured
-    ELog::EM << "Important to have BackPlate inner radius correct as the beam can clip it" << ELog::endWarn;
+    Control.addVariable(name+"InnerRadius",0.95); // measured + email from KÅ 240926
 
-    PipeGen.setCF<setVariable::CF40>();
+    PipeGen.setCF<setVariable::CF40_22>();
     PipeGen.setAFlange(lcRadius+lcWall, 1.3); // dummy
     PipeGen.setBFlange(setVariable::CF40::flangeRadius, setVariable::CF40::flangeLength); // dummy
     PipeGen.generatePipe(Control,"PipeC",7.9+CF63::flangeLength); // TODO: dummy
