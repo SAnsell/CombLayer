@@ -295,7 +295,11 @@ GTFLine::buildObjects(Simulation& System)
   // we split the zone Cell to 4 simpler ones so that FLUKA does not complain:
 
   //  laserChamber->setOuterVoid(); // not yet implemented
-  laserChamber->createAll(System,*mon,"back");
+  laserChamber->createAll(System,*mon,"InnerBack");
+  laserChamber->insertInCell("Main", System, mon->getCell("BackVoid"));
+  laserChamber->insertInCell("FlangeA", System, mon->getCell("BackVoid"));
+  laserChamber->insertInCell("FlangeA", System, mon->getCell("Back"));
+
 
   const constructSystem::portItem& VP0=laserChamber->getPort(0);
   const constructSystem::portItem& VP1=laserChamber->getPort(1);
