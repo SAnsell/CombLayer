@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVarInc/PortItemGenerator.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_PortItemGenerator_h
@@ -42,7 +42,7 @@ class PortItemGenerator
   double length;            ///< length from outer
   double radius;            ///< Inner radius
   double wallThick;         ///< wall thickness
-  
+
   double flangeLen;         ///< Flange length
   double flangeRadius;      ///< Flange radius
   double capThick;          ///< Plate thickness
@@ -53,35 +53,36 @@ class PortItemGenerator
   std::string capMat;          ///< cover plate material
   std::string windowMat;       ///< window plate material
   std::string outerVoidMat;    ///< outer void material
-  
+
   bool outerVoid;          ///< Construct outer void
-  
+
  public:
 
   PortItemGenerator();
   PortItemGenerator(const PortItemGenerator&);
   PortItemGenerator& operator=(const PortItemGenerator&);
   ~PortItemGenerator();
-  
+
 
   template<typename CF> void setCF(const double);
   template<typename CF> void setFlangeCF();
-  
+
   // set L,R,WT
   void setPort(const double,const double,const double);
   // set flangeLen,flangeRad
   void setFlange(const double,const double);
   /// set only length
   void setLength(const double L) { length=L; }
+  void setWallMat(const std::string& mat) { wallMat=mat; }
   // plate thick / mat
   void setPlate(const double,const std::string&);
   void setWindowPlate(const double,const double,const double,
 		      const std::string&,const std::string&);
-  void setNoPlate(); 
+  void setNoPlate();
 
   /// accessor to outerVoid
   void setOuterVoid(const bool F) { outerVoid=F; }
-  
+
   void generatePort(FuncDataBase&,const std::string&,
 		    const Geometry::Vec3D&,
 		    const Geometry::Vec3D&) const;
@@ -96,10 +97,9 @@ class PortItemGenerator
 			  const PortItemGenerator&,
 			  const Geometry::Vec3D&,
 			  const Geometry::Vec3D&) const;
-  
+
 };
 
 }
 
 #endif
- 
