@@ -370,6 +370,8 @@ namespace setVariable
     constexpr double lcRadius = 5.0; // measured
     constexpr double lcWall = 0.2; // measured
     setVariable::PipeTubeGenerator PipeTubeGen;
+    PipeTubeGen.setMat("Stainless304L"); // discussion 2409: low carbon stainless steel
+    PipeTubeGen.setCapMat("Stainless304L"); // discussion 2409: "low carbon stainless steel"
     PipeTubeGen.setCF<CF63>();
     PipeTubeGen.setCap();
     PipeTubeGen.generateTube(Control,name,12.0);
@@ -383,9 +385,10 @@ namespace setVariable
     Control.addVariable(name+"NPorts",4);
 
     setVariable::PortItemGenerator PItemGen;
+    PItemGen.setWallMat("Stainless304L"); // discussion 2409: "low carbon stainless steel"
     constexpr double dr = lcRadius-lcWall;
     PItemGen.setCF<setVariable::CF35_TDC>(dr);
-    PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"Stainless304");
+    PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"Stainless304L");
     PItemGen.generatePort(Control,name+"Port0",
 			  Geometry::Vec3D(-dr,0,0),
 			  Geometry::Vec3D(-1,0,0));
