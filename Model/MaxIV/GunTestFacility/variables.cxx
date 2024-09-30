@@ -310,15 +310,15 @@ namespace setVariable
 
     name = "PipeA";
     PipeGen.setCF<setVariable::CF63>(); // dummy TODO - is it a conic pipe?
-    PipeGen.generatePipe(Control,name,40.0);
+    PipeGen.generatePipe(Control,name,27.0); // CAD
     Control.addVariable(name+"PipeThick", 0.2);
-    Control.addVariable(name+"FlangeALength", 1.2); // measured
+    Control.addVariable(name+"FlangeALength", 0.0);
     Control.addVariable(name+"OuterVoid", 0);
 
     name = "Solenoid";
     setVariable::SolenoidGenerator SolGen;
     SolGen.generate(Control,name);
-    Control.addVariable(name+"YStep", 5.0); // dummy TODO
+    Control.addVariable(name+"YStep", 0.0);
 
     // 48.2 XHV All-Metal Gate Valve
     // https://www.vatvalve.com/series/extreme-high-vacuum-all-metal-gate-valve-DN-63-100-160?_locale=en&region=SE
@@ -356,11 +356,11 @@ namespace setVariable
 
     name = "BellowA";
     BellowGen.setCF<setVariable::CF63>();
-    BellowGen.generateBellow(Control,name,4.0); // measured
+    BellowGen.generateBellow(Control,name,2.2); // approx to have correct y-offset of current transormer
     Control.addVariable(name+"PipeThick", 0.2);
     Control.addVariable(name+"FlangeALength", 0.0);
     Control.addVariable(name+"FlangeBLength", 0.0);
-    Control.addVariable(name+"BellowStep", 0.8); // measured
+    Control.addVariable(name+"BellowStep", 0.1); // approx
 
     name = "CurrentTransformer";
     setVariable::CurrentTransformerGenerator CMGen;

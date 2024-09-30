@@ -273,7 +273,7 @@ GTFLine::buildObjects(Simulation& System)
   tdcSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
   outerCell = tdcSystem::pipeTerminate(System,buildZone,pipeA);
 
-  pumpBelowGun->insertInCell(System,outerCell2+1);
+  pumpBelowGun->insertInCell(System,outerCell2+2);
 
   outerCell1 = constructSystem::constructUnit(System,buildZone,*pipeA,"back",*gate);
 
