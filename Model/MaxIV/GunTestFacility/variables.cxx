@@ -567,7 +567,7 @@ namespace setVariable
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
     Control.addVariable("YagUnitDBackLength",7.0); // approx
     Control.addVariable("YagUnitDBackCapThick", 0.05); // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
-    YagScreenGen.generateScreen(Control,"YagScreenD",1);
+    YagScreenGen.generateScreen(Control,"YagScreenD",0);
     Control.addVariable("YagScreenDYAngle",-90.0);
   }
 
