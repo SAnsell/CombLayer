@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   construct/Bellows.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -76,8 +76,8 @@ Bellows::Bellows(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
-  
-Bellows::Bellows(const Bellows& A) : 
+
+Bellows::Bellows(const Bellows& A) :
   GeneralPipe(A),
   bellowThick(A.bellowThick),
   bellowStep(A.bellowStep),
@@ -106,7 +106,7 @@ Bellows::operator=(const Bellows& A)
   return *this;
 }
 
-Bellows::~Bellows() 
+Bellows::~Bellows()
   /*!
     Destructor
   */
@@ -142,20 +142,20 @@ Bellows::createSurfaces()
   GeneralPipe::createSurfaces();
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,
 			      Y,radius+pipeThick+bellowThick);
-  
-  
+
+
   FrontBackCut::getShiftedFront
     (SMap,buildIndex+121,Y,(flangeA.thick+bellowStep));
-  
+
 
   FrontBackCut::getShiftedBack
     (SMap,buildIndex+221,Y,-(flangeB.thick+bellowStep));
 
 
-  
+
   return;
 }
-  
+
 void
 Bellows::createObjects(Simulation& System)
   /*!
@@ -172,7 +172,11 @@ Bellows::createObjects(Simulation& System)
 
   // Void
   HR=HeadRule(SMap,buildIndex,-7);
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  const HeadRule& voidFront =
+    (flangeA.radius>flangeA.innerRadius+Geometry::zeroTol) ? HeadRule(SMap,buildIndex,101) : frontHR;
+  const HeadRule& voidBack =
+    (flangeB.radius>flangeB.innerRadius+Geometry::zeroTol) ? HeadRule(SMap,buildIndex,-201) : backHR;
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*voidFront*voidBack);
 
   GeneralPipe::createFlange(System,HR.complement());
 
@@ -181,10 +185,10 @@ Bellows::createObjects(Simulation& System)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -121 -17 7");
       makeCell("FrontClip",System,cellIndex++,pipeMat,0.0,HR);
-      
+
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-201 221 -17 7");
       makeCell("BackClip",System,cellIndex++,pipeMat,0.0,HR);
-      
+
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"121 -221 -27 7");
       makeCell("Bellow",System,cellIndex++,bellowMat,0.0,HR);
 

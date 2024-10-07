@@ -136,8 +136,12 @@ VacuumPipe::createObjects(Simulation& System)
     getRule("BWindow").complement();
 
   HR=HeadRule(SMap,buildIndex,-7);
+  const HeadRule& voidFront =
+    (flangeA.radius>flangeA.innerRadius+Geometry::zeroTol) ? HeadRule(SMap,buildIndex,101) : frontHR;
+  const HeadRule& voidBack =
+    (flangeB.radius>flangeB.innerRadius+Geometry::zeroTol) ? HeadRule(SMap,buildIndex,-201) : backHR;
   makeCell("Void",System,cellIndex++,voidMat,0.0,
-	   HR*frontHR*backHR*windowHR);
+	   HR*voidFront*voidBack*windowHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 7 -17");
   makeCell("Steel",System,cellIndex++,pipeMat,0.0,HR);
@@ -172,17 +176,17 @@ VacuumPipe::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
-  
+
   FixedComp::setConnect(7,Origin-Z*(radius+pipeThick),-Z);
   FixedComp::setConnect(8,Origin+Z*(radius+pipeThick),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
-  
+
   FixedComp::nameSideIndex(7,"outerPipe");
   FixedComp::nameSideIndex(7,"pipeOuterBase");
   FixedComp::nameSideIndex(8,"pipeOuterTop");
 
-  
+
   // MID Point: [NO SURF]
   const Geometry::Vec3D midPt=
     (getLinkPt(1)+getLinkPt(2))/2.0;
@@ -221,7 +225,7 @@ VacuumPipe::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  
+
   insertObjects(System);
 
   return;

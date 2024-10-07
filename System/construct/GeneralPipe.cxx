@@ -105,7 +105,7 @@ GeneralPipe::GeneralPipe(const std::string& Key,
   FixedComp::nameSideIndex(6,"midPoint");
 }
 
-GeneralPipe::GeneralPipe(const GeneralPipe& A) : 
+GeneralPipe::GeneralPipe(const GeneralPipe& A) :
   attachSystem::FixedRotate(A),
   attachSystem::ContainedGroup(A),
   attachSystem::CellMap(A),
@@ -167,7 +167,7 @@ GeneralPipe::applyActiveFrontBack(const double length)
     getFrontPoint() : Origin;
   const Geometry::Vec3D curBP=((activeFlag & 2) && backPointActive()) ?
     getBackPoint() : Origin+Y*length;
-  
+
   Origin=(curFP+curBP)/2.0;
 
   if (activeFlag)
@@ -175,7 +175,7 @@ GeneralPipe::applyActiveFrontBack(const double length)
       const Geometry::Vec3D YAxis=(curBP-curFP).unit();
       // need unit for numerical acc.
       Geometry::Vec3D RotAxis=(YAxis*Y).unit();
-      
+
       if (!RotAxis.nullVector())
 	{
 	  const Geometry::Quaternion QR=
@@ -202,9 +202,9 @@ GeneralPipe::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("GeneralPipe","populate");
-  
+
   FixedRotate::populate(Control);
-  
+
   radius=Control.EvalDefVar<double>(keyName+"Radius",-1.0);
   length=Control.EvalVar<double>(keyName+"Length");
   pipeThick=Control.EvalVar<double>(keyName+"PipeThick");
@@ -219,7 +219,7 @@ GeneralPipe::populate(const FuncDataBase& Control)
   populateUnit(Control,"Flange","B",flangeB);
   populateUnit(Control,"Window","A",windowA);
   populateUnit(Control,"Window","B",windowB);
-    
+
   return;
 }
 
@@ -236,13 +236,13 @@ GeneralPipe::populateUnit(const FuncDataBase& Control,
     \param WI :: windowInfo to populate
   */
 {
-  ELog::RegMethod RegA("GeneralPipe","populateUnit");  
-  
+  ELog::RegMethod RegA("GeneralPipe","populateUnit");
+
   const std::string baseName(keyName+partName);
   const std::string AName(baseName+indexName);
   WI.type=Control.EvalDefTail<int>(AName,baseName,"Type",0);
   WI.thick=0.0;       // in case flange/window is not present
-  
+
   if (WI.type)
     {
       WI.mat=ModelSupport::EvalMat<int>
@@ -252,9 +252,12 @@ GeneralPipe::populateUnit(const FuncDataBase& Control,
 	Control.EvalDefTail<double>(AName,baseName,"Thick",0.0);
       WI.thick=
 	Control.EvalDefTail<double>(AName,baseName,"Length",WI.thick);
-      if (WI.type==1)
+      if (WI.type==1) {
 	WI.radius=Control.EvalTail<double>(AName,baseName,"Radius");
-      else
+	WI.innerRadius=Control.EvalDefTail<double>(AName,baseName,"InnerRadius", WI.radius);
+	if (WI.radius<WI.innerRadius-Geometry::zeroTol)
+	  throw ColErr::OrderError<double>(WI.radius,WI.innerRadius,"InnerRadius must be <= Radius");
+      } else
 	{
 	  WI.height=Control.EvalTail<double>(AName,baseName,"Height");
 	  WI.width=Control.EvalTail<double>(AName,baseName,"Width");
@@ -270,7 +273,7 @@ GeneralPipe::createUnitVector(const attachSystem::FixedComp& FC,
     Create the unit vectors
     Note that the active:front/back is applied afterwards.
     This corrects the mid point and Y based on front/back surfaces.
-    
+
     \param FC :: Fixed component to link to
     \param sideIndex :: Link point and direction [0 for origin]
   */
@@ -293,7 +296,7 @@ GeneralPipe::createCommonSurfaces()
   */
 {
   ELog::RegMethod RegA("GeneralPipe","createCommonSurfaces");
-  
+
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
@@ -304,7 +307,7 @@ GeneralPipe::createCommonSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-  
+
   // Front Inner void
   return;
 }
@@ -346,7 +349,7 @@ GeneralPipe::createWindowSurfaces()
 				   Origin+Z*(windowA.height/2.0),Z);
 	}
     }
-  
+
   // BACK WINDOW SURFACES:
   if (windowB.type)
     {
@@ -357,8 +360,8 @@ GeneralPipe::createWindowSurfaces()
       // add data to surface
       addSurf("BackWindow",buildIndex+1101);
       addSurf("BackWindow",buildIndex+1102);
-      
-      
+
+
       if (windowB.type==1)
 	ModelSupport::buildCylinder(SMap,buildIndex+1107,Origin,Y,
 				    windowB.radius);
@@ -384,18 +387,20 @@ GeneralPipe::createFlangeSurfaces()
   */
 {
   ELog::RegMethod RegA("GeneralPipe","createFlangeSurfaces");
-  
+
 
   if (flangeA.type)
     {
       getShiftedFront(SMap,buildIndex+101,Y,flangeA.thick);
       addSurf("FrontFlange",SMap.realSurf(buildIndex+1011));
-      
+
       // FRONT FLANGE SURFACES:
-      if (flangeA.type==1)
-	ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,
+      if (flangeA.type==1) {
+	if (flangeA.radius>flangeA.innerRadius+Geometry::zeroTol)
+	  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeA.innerRadius);
+	ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,
 				    flangeA.radius);
-      else
+      } else
 	{
 	  ModelSupport::buildPlane(SMap,buildIndex+103,
 				   Origin-X*(flangeA.width/2.0),X);
@@ -407,17 +412,19 @@ GeneralPipe::createFlangeSurfaces()
 				   Origin+Z*(flangeA.height/2.0),Z);
 	}
     }
-  
+
   // BACK FLANGE SURFACES:
   if (flangeB.type)
     {
       getShiftedBack(SMap,buildIndex+201,Y,-flangeB.thick);
       addSurf("BackFlange",buildIndex+201);
-      
-      if (flangeB.type==1)
-	ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,
+
+      if (flangeB.type==1) {
+	if (flangeB.radius>flangeB.innerRadius+Geometry::zeroTol)
+	  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeB.innerRadius);
+	ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,
 				    flangeB.radius);
-      else
+      } else
 	{
 	  ModelSupport::buildPlane(SMap,buildIndex+203,
 				   Origin-X*(flangeB.width/2.0),X);
@@ -443,7 +450,7 @@ GeneralPipe::createSurfaces()
   createCommonSurfaces();
   createFlangeSurfaces();
   createWindowSurfaces();
-  
+
   // MAIN SURFACES:
   makeCylinder("InnerCyl",SMap,buildIndex+7,Origin,Y,radius);
   makeCylinder("PipeCyl",SMap,buildIndex+17,Origin,Y,radius+pipeThick);
@@ -459,7 +466,7 @@ GeneralPipe::createRectangleSurfaces(const double width,
     Create the surfaces for a rectanglular system
     This is only here because of the mess of working with
     round/cylindrical pipe and it is possibliy better to have
-    two types... 
+    two types...
     \param width :: Width of pipe (inner)
     \param height :: Heigh of pipe (inner)
   */
@@ -484,7 +491,7 @@ GeneralPipe::createRectangleSurfaces(const double width,
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*W,X);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*H,Z);
-  
+
   return;
 }
 
@@ -517,10 +524,16 @@ GeneralPipe::createFlange(Simulation& System,
 	  windowAExclude=HR.complement();
 	}
 
-      HR=ModelSupport::getSetHeadRule
-	(SMap,buildIndex,"-101 103 -104 105 -106 -107");
-      makeCell("FlangeA",System,cellIndex++,flangeA.mat,0.0,
-	       HR*frontHR*windowAExclude*outerHR);
+      if (flangeA.radius>flangeA.innerRadius+Geometry::zeroTol) {
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
+	makeCell("FlangeAInnerVoid",System,cellIndex++,0,0.0,HR*frontHR*windowAExclude);
+	HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-101 103 -104 105 -106 107 -117");
+	makeCell("FlangeA",System,cellIndex++,flangeA.mat,0.0,HR*frontHR);
+      } else {
+	HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-101 103 -104 105 -106 -117");
+	makeCell("FlangeA",System,cellIndex++,flangeA.mat,0.0,
+		 HR*frontHR*outerHR*windowAExclude);
+      }
     }
   if (flangeB.type)  // no flange - no window
     {
@@ -537,10 +550,16 @@ GeneralPipe::createFlange(Simulation& System,
 	  windowBExclude=HR.complement();
 	}
 
-      HR=ModelSupport::getSetHeadRule
-	(SMap,buildIndex,"201 203 -204 205 -206 -207");
-      makeCell("FlangeB",System,cellIndex++,flangeB.mat,0.0,
-	       HR*backHR*windowBExclude*outerHR);
+      if (flangeB.radius>flangeB.innerRadius+Geometry::zeroTol) {
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -207");
+	makeCell("FlangeBInnerVoid",System,cellIndex++,0,0.0,HR*backHR*windowBExclude);
+	HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"201 203 -204 205 -206 207 -217");
+	makeCell("FlangeB",System,cellIndex++,flangeA.mat,0.0,HR*backHR);
+      } else {
+	HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"201 203 -204 205 -206 -217");
+	makeCell("FlangeB",System,cellIndex++,flangeB.mat,0.0,
+		 HR*backHR*outerHR*windowBExclude);
+      }
     }
   return;
 }
@@ -556,43 +575,43 @@ GeneralPipe::createOuterVoid(Simulation& System,
   */
 {
   ELog::RegMethod RegA("GeneralPipe","createOuterVoid");
-  
+
   const HeadRule& frontHR=getRule("front");
   const HeadRule& backHR=getRule("back");
   HeadRule HR;
   if (outerVoid)
     {
-	
+
       if (flangeA.type==1 && flangeB.type==1) // both cylinders
 	{
 	  if (std::abs(flangeA.radius-flangeB.radius)<Geometry::zeroTol)
 	    {
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -107");
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -117");
 	      makeCell("outerVoid",System,cellIndex++,0,0.0,HR*outerHR);
-	      HR=HeadRule(SMap,buildIndex,-107);
+	      HR=HeadRule(SMap,buildIndex,-117);
 	      addOuterSurf("Main",HR*frontHR*backHR);
 	    }
 	  else if (flangeA.radius>flangeB.radius)
 	    {
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -107");
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201 -117");
 	      makeCell("outerVoid",System,cellIndex++,0,0.0,HR*outerHR);
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 207 -107");
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 217 -117");
 	      makeCell("outerVoid",System,cellIndex++,0,0.0,HR*backHR);
-	      HR=HeadRule(SMap,buildIndex,-107);
+	      HR=HeadRule(SMap,buildIndex,-117);
 	      addOuterSurf("Main",HR*frontHR*backHR);
 	    }
 	  else
 	    {
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -201 -207 ");
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -201 -217 ");
 	      makeCell("outerVoid",System,cellIndex++,0,0.0,HR*outerHR);
-	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 107 -207");
+	      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 117 -217");
 	      makeCell("outerVoid",System,cellIndex++,0,0.0,HR*frontHR);
-	      HR=HeadRule(SMap,buildIndex,-207);
+	      HR=HeadRule(SMap,buildIndex,-217);
 	      addOuterSurf("Main",HR*frontHR*backHR);
 	    }
-	  return; 
+	  return;
 	}
-      
+
       if (flangeA.type==2 && flangeB.type==2)
 	{
 	  if (std::abs(flangeA.width-flangeB.width)<Geometry::zeroTol &&
@@ -613,7 +632,7 @@ GeneralPipe::createOuterVoid(Simulation& System,
 	      midHR=ModelSupport::getHeadRule(SMap,buildIndex,"103 -104");
 	      bIndex=1;
 	    }
-	  else 
+	  else
 	    {
 	      midHR=ModelSupport::getHeadRule(SMap,buildIndex,"203 -204");
 	      fIndex=1;
@@ -623,7 +642,7 @@ GeneralPipe::createOuterVoid(Simulation& System,
 	      midHR*=ModelSupport::getHeadRule(SMap,buildIndex,"105 -106");
 	      bIndex |=2;
 	    }
-	  else 
+	  else
 	    {
 	      midHR*=ModelSupport::getHeadRule(SMap,buildIndex,"205 -206");
 	      fIndex |=2;
@@ -659,13 +678,13 @@ GeneralPipe::createOuterVoid(Simulation& System,
     {
       // outer boundary [flange front]
       HR= (flangeA.type==1) ?
-	ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107") :
+	ModelSupport::getHeadRule(SMap,buildIndex,"-101 -117") :
 	ModelSupport::getHeadRule(SMap,buildIndex,"-101 103 -104 105 -106");
       addOuterSurf("FlangeA",HR*frontHR);
 
       // outer boundary [flange back]
       HR= (flangeB.type==1) ?
-	ModelSupport::getSetHeadRule(SMap,buildIndex,"201 -207") :
+	ModelSupport::getSetHeadRule(SMap,buildIndex,"201 -217") :
 	ModelSupport::getHeadRule(SMap,buildIndex,"201 203 -204 205 -206");
       addOuterSurf("FlangeB",HR*backHR);
 
@@ -673,7 +692,7 @@ GeneralPipe::createOuterVoid(Simulation& System,
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -201");
       addOuterSurf("Main",HR*outerHR.complement());
     }
-  
+
   return;
 }
 
@@ -704,6 +723,6 @@ GeneralPipe::setJoinBack(const attachSystem::FixedComp& FC,
   activeFlag |= 2;
   return;
 }
-  
-  
+
+
 }  // NAMESPACE constructSystem

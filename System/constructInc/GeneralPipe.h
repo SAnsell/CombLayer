@@ -32,14 +32,15 @@ namespace constructSystem
     \version 1.0
     \date July 2015
     \author S. Ansell
-    \brief window or flange build data 
+    \brief window or flange build data
   */
-  
+
 struct windowInfo
 {
   int type;               ///< type 0:none, 1: round 2 : rectangle
   double thick;           ///< Joining Flange length
   double radius;          ///< Window/flange radius
+  double innerRadius;     ///< flange inner radius
   double height;          ///< Window/flange Height
   double width;           ///< Window/flange Width
   int mat;                ///< Material
@@ -75,7 +76,7 @@ class GeneralPipe :
   // window information
   windowInfo windowA;           ///< Front window info
   windowInfo windowB;           ///< Back window info
-  
+
   int voidMat;                  ///< Void material
   int pipeMat;                  ///< Pipe material
 
@@ -84,7 +85,7 @@ class GeneralPipe :
 
   void populateUnit(const FuncDataBase&,const std::string&,
 		    const std::string&,windowInfo&) const;
-  
+
   void applyActiveFrontBack(const double);
   virtual void populate(const FuncDataBase&) override;
   void populateWindows(const FuncDataBase&);
@@ -100,7 +101,7 @@ class GeneralPipe :
   void createFlange(Simulation&,const HeadRule&);
   void createOuterVoid(Simulation&,const HeadRule&);
 
-  
+
  public:
 
   GeneralPipe(const std::string&);
