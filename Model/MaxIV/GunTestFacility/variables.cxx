@@ -545,15 +545,25 @@ namespace setVariable
 						 bellowCLength, bellowFlangeLength, bellowFlangeLength,
 						 bellowStep);
     BellowGen.setMat("Stainless316L", bellowCFrac*100.0);
-
-
     BellowGen.generateBellow(Control,"BellowC",bellowCLength);
 
     YagUnitGen.generateYagUnit(Control,"YagUnitC");
     YagScreenGen.generateScreen(Control,"YagScreenC",0);
     Control.addVariable("YagScreenCYAngle",-90.0);
 
-    BellowGen.generateBellow(Control,"BellowD",120.0-27); // dummy
+    // Bellow D
+    constexpr double bellowDLength = 95.2; // approx
+    constexpr unsigned int bellowDN = 52; // dummy
+    const double bellowDThick =
+      getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
+		     bellowFlangeLength, bellowFlangeLength, bellowStep);
+    BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowDThick);
+    const double bellowDFrac = getBellowDensityFraction(bellowDN, bellowWallThick,
+						 bellowInnerR, bellowOuterR,
+						 bellowDLength, bellowFlangeLength, bellowFlangeLength,
+						 bellowStep);
+    BellowGen.setMat("Stainless316L", bellowDFrac*100.0);
+    BellowGen.generateBellow(Control,"BellowD",bellowDLength); // approx
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
     Control.addVariable("YagUnitDBackLength",7.0); // approx
     Control.addVariable("YagUnitDBackCapThick", 0.05); // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
