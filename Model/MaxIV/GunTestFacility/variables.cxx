@@ -485,6 +485,10 @@ namespace setVariable
     setVariable::YagScreenGenerator YagScreenGen;
     YagUnitGen.generateYagUnit(Control,"YagUnitA");
     Control.addVariable("YagUnitAYAngle",180.0);
+    constexpr double yagPortRadius = 1.965; // email from EM 240930: 39.3mm/2 = 1.965 cm
+    constexpr double yagPortThick = 0.15; // email from EM 240930: (42.3-39.3)mm/2 = 0.15 cm
+    Control.addVariable("YagUnitAPortRadius",yagPortRadius);
+    Control.addVariable("YagUnitAPortThick",yagPortThick);
     YagScreenGen.generateScreen(Control,"YagScreenA",0);
     Control.addVariable("YagScreenAYAngle",-90.0);
 
