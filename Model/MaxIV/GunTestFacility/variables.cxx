@@ -69,6 +69,49 @@ constexpr double ystep = 24.1+86.5;
 
 namespace setVariable
 {
+  double getBellowLength(const double lTot,
+			 const double flangeALength, const double flangeBLength,
+			 const double step)
+  {
+    return lTot - flangeALength - flangeBLength - step*2.0;
+  }
+
+  double getBellowThick(const unsigned int N,
+			const double r, const double R, const double pipeThick,
+			const double lTot,
+			const double flangeALength, const double flangeBLength,
+			const double step)
+  {
+    const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
+    const double stepLength = l/N;
+    const double halfStep = stepLength/2.0;
+    const double maxThick = R-r-pipeThick; // thickness at max compression
+    return sqrt(maxThick*maxThick - halfStep*halfStep); // actual thickness
+  }
+
+  double getBellowDensityFraction(const unsigned int N, const double t,
+				  const double r, const double R, const double lTot,
+				  const double flangeALength, const double flangeBLength,
+				  const double step)
+  /*!
+    Return bellow density fraction
+    \param N :: number of the folding structure maxima
+    \param t :: thickness of the folding structure material (bellow wall thickness)
+    \param r :: inner radius
+    \param R :: outer radius
+    \param lTot :: total bellow length (with flanges and steps)
+    \param flangeALength :: flange A length
+    \param flangeBLength :: flange B length
+    \param step :: bellow step
+
+   */
+  {
+    const double L = N*2*t; // max compressed length
+    const double V = M_PI*(R*R-r*r)*L; // volume at max compression
+    const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
+    return L/l;
+  }
+
   void BuildingBVariables(FuncDataBase& Control, const std::string& name)
     /*!
       Set Gun Test Facility Building variables
@@ -448,19 +491,44 @@ namespace setVariable
     ELog::EM << "Use correct variables/materials for the Emittance meter objects (currently all are dummy)" << ELog::endWarn;
     ELog::EM << "Measured: bellow diameter: 15 cm, flanges are 5 mm thick" << ELog::endWarn;
 
+
+    // Bellows in the emittance meter:
+    // email from EM 240930:
+    constexpr double bellowWallThick = 0.03;
+    constexpr double bellowInnerR = 5.3; // D=106 mm => R=5.3 cm
+    constexpr double bellowOuterR = 7.5; // D=150 mm => R=7.5 cm
+
+    constexpr double bellowPipeThick = 0.15; // dummy
+    constexpr double bellowStep = 0.1; // approx (TODO)
+    constexpr double bellowFlangeLength = 1.3; //  approx TODO
+
+    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
+
     name = "BellowB";
-    BellowGen.setCF<setVariable::CF40>();
-    BellowGen.generateBellow(Control,name,30.0); // [4]: 30 cm - 2.6 m
-    // Control.addVariable(name+"PipeThick", 0.2);
-    // Control.addVariable(name+"FlangeALength", 0.0);
-    // Control.addVariable(name+"FlangeBLength", 0.0);
-    // Control.addVariable(name+"BellowStep", 0.8);
+    constexpr double bellowBLength = 30.0; // [4]: 30 cm - 2.6 m
+    // Bellow C folding structure has 52 maxima
+    // assume Bellow B is the same since hard to count
+    constexpr unsigned int bellowBN = 52;
+    BellowGen.setFlange(bellowOuterR, bellowFlangeLength);
+
+    const double bellowBThick =
+      getBellowThick(bellowBN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowBLength,
+		     bellowFlangeLength, bellowFlangeLength, bellowStep);
+    BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowBThick);
+
+    const double bellowBFrac = getBellowDensityFraction(bellowBN, bellowWallThick,
+						 bellowInnerR, bellowOuterR,
+						 bellowBLength, bellowFlangeLength, bellowFlangeLength,
+						 bellowStep);
+    BellowGen.setMat("Stainless316L", bellowBFrac*100.0);
+    BellowGen.generateBellow(Control,name,bellowBLength);
 
     YagUnitGen.generateYagUnit(Control,"YagUnitB");
     // Control.addVariable("YagUnitBYAngle",180.0);
     YagScreenGen.generateScreen(Control,"YagScreenB",0);
     Control.addVariable("YagScreenBYAngle",-90.0);
 
+    // Bellow C folding structure has 52 maxima
     BellowGen.generateBellow(Control,"BellowC",80.0); // dummy
     YagUnitGen.generateYagUnit(Control,"YagUnitC");
     YagScreenGen.generateScreen(Control,"YagScreenC",0);
