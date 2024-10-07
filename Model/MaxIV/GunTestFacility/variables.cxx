@@ -514,7 +514,7 @@ namespace setVariable
     // Bellow C folding structure has 52 maxima
     // assume Bellow B is the same since hard to count
     constexpr unsigned int bellowBN = 52;
-    BellowGen.setFlange(bellowOuterR, bellowFlangeLength);
+    BellowGen.setFlange(bellowOuterR, bellowFlangeLength, yagPortRadius);
 
     const double bellowBThick =
       getBellowThick(bellowBN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowBLength,
