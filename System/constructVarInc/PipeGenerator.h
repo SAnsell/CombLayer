@@ -31,12 +31,13 @@ struct segInfo
 {
   int type;
   double radius;
+  double innerRadius;
   double height;
   double width;
   double thick;
   std::string mat;
 };
-  
+
 /*!
   \class PipeGenerator
   \version 1.0
@@ -57,7 +58,7 @@ class PipeGenerator
   segInfo windowB;
 
   double claddingThick;         ///< cladding radius
-  
+
   std::string voidMat;          ///< void mat
   std::string claddingMat;      ///< Primary default mat
 
@@ -75,7 +76,7 @@ class PipeGenerator
   void setNoWindow();
   void setWindow(const double,const double);
   void setRectWindow(const double,const double,const double);
-  void setFlange(const double,const double);
+  void setFlange(const double R,const double L, const double =-1.0);
   void setRectFlange(const double,const double,const double);
   void setAFlange(const double,const double);
   void setARectFlange(const double,const double,const double);
@@ -99,7 +100,7 @@ class PipeGenerator
   /// accessor
   const std::string& getPipeMat() const { return pipe.mat; }
 
- 
+
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double) const;
 

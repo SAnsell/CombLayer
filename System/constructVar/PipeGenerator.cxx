@@ -50,11 +50,11 @@ namespace setVariable
 {
 
 PipeGenerator::PipeGenerator() :
-  pipe{0,8.0,16.0,16.0,0.5,"Aluminium"},
-  flangeA{1,12.0,24.0,24.0,1.0,"Aluminium"},
-  flangeB{1,12.0,24.0,24.0,1.0,"Aluminium"},
-  windowA{0,6.0,14,14.0,0.1,"Silicon300K"},
-  windowB{0,6.0,14,14.0,0.1,"Silicon300K"},  
+  pipe{0,8.0,8.0,16.0,16.0,0.5,"Aluminium"},
+  flangeA{1,12.0,-1.0,24.0,24.0,1.0,"Aluminium"},
+  flangeB{1,12.0,-1.0,24.0,24.0,1.0,"Aluminium"},
+  windowA{0,6.0,-1.0,14,14.0,0.1,"Silicon300K"},
+  windowB{0,6.0,-1.0,14,14.0,0.1,"Silicon300K"},
   claddingThick(0.0),
   voidMat("Void"),claddingMat("B4C"),
   outerVoid(0)
@@ -161,7 +161,7 @@ PipeGenerator::setFlangeLength(const double A,const double B)
 }
 
 void
-PipeGenerator::setFlange(const double R,const double L)
+PipeGenerator::setFlange(const double R,const double L,const double innerR)
   /*!
     Set all the flange values
     \param R :: radius of flange
@@ -170,6 +170,10 @@ PipeGenerator::setFlange(const double R,const double L)
 {
   setAFlange(R,L);
   setBFlange(R,L);
+  if (innerR>0.0) {
+    flangeA.innerRadius = innerR;
+    flangeB.innerRadius = innerR;
+  }
   return;
 }
 
@@ -270,7 +274,7 @@ void
 PipeGenerator::setMat(const std::string& M,
 		      const std::string& FM)
   /*!
-    Set the pipe/flange materials 
+    Set the pipe/flange materials
     \param M :: Material for main pipe
     \param FM :: material for flange (if different)
   */
@@ -281,7 +285,7 @@ PipeGenerator::setMat(const std::string& M,
   flangeB.mat=FMunit;
   return;
 }
-  
+
 void
 PipeGenerator::setWindowMat(const std::string& M)
   /*!
@@ -362,7 +366,7 @@ PipeGenerator::setBFlangeCF()
   flangeB.thick=CF::flangeLength;
   return;
 }
-  
+
 void
 PipeGenerator::generatePipe(FuncDataBase& Control,
 			    const std::string& keyName,
@@ -401,9 +405,11 @@ PipeGenerator::generatePipe(FuncDataBase& Control,
 
   if (flangeA.type)
     {
-      if (flangeA.type==1)
+      if (flangeA.type==1) {
 	Control.addVariable(keyName+"FlangeARadius",realFlangeARadius);
-      else 
+	if (flangeA.innerRadius>0.0)
+	  Control.addVariable(keyName+"FlangeAInnerRadius",flangeA.innerRadius);
+      } else
 	{
 	  Control.addVariable(keyName+"FlangeAWidth",flangeA.width);
 	  Control.addVariable(keyName+"FlangeAHeight",flangeA.height);
@@ -413,9 +419,11 @@ PipeGenerator::generatePipe(FuncDataBase& Control,
     }
   if (flangeB.type)
     {
-      if (flangeB.type==1)
+      if (flangeB.type==1) {
 	Control.addVariable(keyName+"FlangeBRadius",realFlangeBRadius);
-      else 
+	if (flangeB.innerRadius>0.0)
+	  Control.addVariable(keyName+"FlangeBInnerRadius",flangeB.innerRadius);
+      } else
 	{
 	  Control.addVariable(keyName+"FlangeBWidth",flangeB.width);
 	  Control.addVariable(keyName+"FlangeBHeight",flangeB.height);
