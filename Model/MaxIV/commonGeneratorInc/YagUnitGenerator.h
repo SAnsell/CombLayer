@@ -86,6 +86,8 @@ class YagUnitGenerator
   template<typename T> void setPortCF();
   template<typename T> void setViewCF();
 
+  void setPort(const double, const double, const double, const double);
+
   void generateYagUnit(FuncDataBase&,
 		       const std::string&,
 		       const bool flip=false) const;

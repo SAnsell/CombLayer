@@ -104,6 +104,26 @@ YagUnitGenerator::setFlangeCF()
 }
 
 void
+YagUnitGenerator::setPort(const double R, const double T,
+			  const double fR, const double fL)
+/*!
+  Set port dimensions
+  \param R :: port radius
+  \param T :: port wall thickness
+  \param fR :: flange radius
+  \param fL :: flange length
+ */
+{
+  portRadius = R;
+  portThick = T;
+  portFlangeRadius = fR;
+  portFlangeLength = fL;
+
+  return;
+}
+
+
+void
 YagUnitGenerator::generateYagUnit(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const bool flip) const
