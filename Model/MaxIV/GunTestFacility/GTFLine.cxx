@@ -318,10 +318,12 @@ GTFLine::buildObjects(Simulation& System)
   this->splitObjectAbsolute(System,1505,outerCell,laserChamber->getCentre(),Axis03);
 
   laserChamber->insertMainInCell(System,getCells("OuterVoid"));
+  // Insert individual ports in the appropriate outerCell splits:
   laserChamber->insertPortInCell(System,0,getCell("OuterVoid",3));
   laserChamber->insertPortInCell(System,1,getCell("OuterVoid",2));
   laserChamber->insertPortInCell(System,2,getCell("OuterVoid",1));
   laserChamber->insertPortInCell(System,3,getCell("OuterVoid",0));
+  laserChamber->insertPortInCell(System,3,outerCell-1); // previous zone
   // end of the splitting-related code
 
   laserChamberBackPlate->setCutSurf("plate", *laserChamber, "back");
