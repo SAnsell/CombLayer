@@ -107,7 +107,7 @@ namespace setVariable
    */
   {
     const double L = N*2*t; // max compressed length
-    const double V = M_PI*(R*R-r*r)*L; // volume at max compression
+    // const double V = M_PI*(R*R-r*r)*L; // volume at max compression
     const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
     return L/l;
   }
@@ -507,7 +507,7 @@ namespace setVariable
     constexpr double bellowStep = 0.1; // approx (TODO)
     constexpr double bellowFlangeLength = 1.3; //  approx TODO
 
-    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
+    //    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
 
     name = "BellowB";
     constexpr double bellowBLength = 30.0; // [4]: 30 cm - 2.6 m
@@ -534,7 +534,21 @@ namespace setVariable
     Control.addVariable("YagScreenBYAngle",-90.0);
 
     // Bellow C folding structure has 52 maxima
-    BellowGen.generateBellow(Control,"BellowC",80.0); // dummy
+    constexpr double bellowCLength = 80.0; // dummy
+    constexpr unsigned int bellowCN = 52;
+    const double bellowCThick =
+      getBellowThick(bellowCN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowCLength,
+		     bellowFlangeLength, bellowFlangeLength, bellowStep);
+    BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowCThick);
+    const double bellowCFrac = getBellowDensityFraction(bellowCN, bellowWallThick,
+						 bellowInnerR, bellowOuterR,
+						 bellowCLength, bellowFlangeLength, bellowFlangeLength,
+						 bellowStep);
+    BellowGen.setMat("Stainless316L", bellowCFrac*100.0);
+
+
+    BellowGen.generateBellow(Control,"BellowC",bellowCLength);
+
     YagUnitGen.generateYagUnit(Control,"YagUnitC");
     YagScreenGen.generateScreen(Control,"YagScreenC",0);
     Control.addVariable("YagScreenCYAngle",-90.0);
