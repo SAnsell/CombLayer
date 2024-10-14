@@ -80,6 +80,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "FlangePlate.h"
+#include "LocalShielding.h"
 
 #include "LObjectSupport.h"
 #include "GTFLine.h"
@@ -124,7 +125,8 @@ GTFLine::GTFLine(const std::string& Key) :
   bellowD(std::make_shared<constructSystem::Bellows>("BellowD")),
   yagUnitD(new tdcSystem::YagUnit("YagUnitD")),
   yagScreenD(new tdcSystem::YagScreen("YagScreenD")),
-  slits(new xraySystem::SlitsMask("Slits"))
+  slits(new xraySystem::SlitsMask("Slits")),
+  lsw(new tdcSystem::LocalShielding("LocalShieldingWall"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -162,6 +164,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(yagUnitD);
   OR.addObject(yagScreenD);
   OR.addObject(slits);
+  OR.addObject(lsw);
 }
 
 GTFLine::~GTFLine()
@@ -243,7 +246,7 @@ void GTFLine::constructSlits(Simulation& System, attachSystem::BlockZone& buildZ
   Construct YAG unit and its slits
  */
 {
-  int outerCell = constructSystem::constructUnit(System, buildZone, linkUnit, sideName, yag);
+  constructSystem::constructUnit(System, buildZone, linkUnit, sideName, yag);
   //  yag.setBeamAxis(yag, 1);
   slits.createAll(System, yag, 0);
   slits.insertInCell(System, yag.getCell("Void"));
@@ -389,8 +392,12 @@ GTFLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*yagUnitB,"back",*bellowC);
   constructYAG(System,buildZone,*bellowC,"back",*yagUnitC,*yagScreenC);
 
-  constructSystem::constructUnit(System,buildZone,*yagUnitC,"back",*bellowD);
+  outerCell = constructSystem::constructUnit(System,buildZone,*yagUnitC,"back",*bellowD);
   constructYAG(System,buildZone,*bellowD,"back",*yagUnitD,*yagScreenD);
+
+  lsw->createAll(System, *ionPumpA, 0);
+  for (int i=0; i<2; ++i)
+    lsw->insertInCell(System,outerCell-3-i);
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

@@ -26,6 +26,7 @@ namespace tdcSystem
 {
   class YagUnit;
   class YagScreen;
+  class LocalShielding;
 }
 
 
@@ -104,6 +105,8 @@ class GTFLine :
   std::shared_ptr<tdcSystem::YagUnit> yagUnitD;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenD;
   std::shared_ptr<xraySystem::SlitsMask> slits;
+
+  std::shared_ptr<tdcSystem::LocalShielding> lsw; // local shielding wall along the beam line
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

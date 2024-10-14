@@ -59,6 +59,7 @@
 #include "YagScreenGenerator.h"
 #include "SlitsMaskGenerator.h"
 #include "RFGunGenerator.h"
+#include "LocalShieldingGenerator.h"
 
 constexpr double xstep = 11.5;
 constexpr double xyangle = 0.0; //5.0;
@@ -569,6 +570,13 @@ namespace setVariable
     Control.addVariable("YagUnitDBackCapThick", 0.05); // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
     YagScreenGen.generateScreen(Control,"YagScreenD",0);
     Control.addVariable("YagScreenDYAngle",-90.0);
+
+    setVariable::LocalShieldingGenerator LSGen;
+    LSGen.setSize(40.0,10.0,15.0); // y,x,z
+    name="LocalShieldingWall";
+    LSGen.generate(Control,name);
+    Control.addVariable(name+"YStep",150.0);
+    Control.addVariable(name+"XStep",-30.0);
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
