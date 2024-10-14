@@ -72,6 +72,7 @@
 #include "VacuumPipe.h"
 #include "YagUnit.h"
 #include "YagScreen.h"
+#include "SlitsMask.h"
 #include "GTFGateValve.h"
 #include "Solenoid.h"
 #include "CurrentTransformer.h"
@@ -122,7 +123,8 @@ GTFLine::GTFLine(const std::string& Key) :
   yagScreenC(new tdcSystem::YagScreen("YagScreenC")),
   bellowD(std::make_shared<constructSystem::Bellows>("BellowD")),
   yagUnitD(new tdcSystem::YagUnit("YagUnitD")),
-  yagScreenD(new tdcSystem::YagScreen("YagScreenD"))
+  yagScreenD(new tdcSystem::YagScreen("YagScreenD")),
+  slits(new xraySystem::SlitsMask("Slits"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -159,6 +161,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(bellowD);
   OR.addObject(yagUnitD);
   OR.addObject(yagScreenD);
+  OR.addObject(slits);
 }
 
 GTFLine::~GTFLine()
@@ -231,6 +234,20 @@ void GTFLine::constructYAG(Simulation& System, attachSystem::BlockZone& buildZon
   screen.insertInCell("Payload", System, yag.getCell("Void"));
 }
 
+void GTFLine::constructSlits(Simulation& System, attachSystem::BlockZone& buildZone,
+			   const attachSystem::FixedComp& linkUnit,
+			   const std::string& sideName,
+			   tdcSystem::YagUnit& yag,
+			   xraySystem::SlitsMask& slits)
+/*!
+  Construct YAG unit and its slits
+ */
+{
+  int outerCell = constructSystem::constructUnit(System, buildZone, linkUnit, sideName, yag);
+  //  yag.setBeamAxis(yag, 1);
+  slits.createAll(System, yag, 0);
+  slits.insertInCell(System, yag.getCell("Void"));
+}
 
 void
 GTFLine::buildObjects(Simulation& System)
@@ -364,7 +381,10 @@ GTFLine::buildObjects(Simulation& System)
   ELog::EM << "Total emittance meter length should be constant with different bellow lengths" << ELog::endWarn;
 
   constructSystem::constructUnit(System,buildZone,*yagUnitA,"back",*bellowB);
-  constructYAG(System,buildZone,*bellowB,"back",*yagUnitB,*yagScreenB);
+  if (false)
+    constructYAG(System,buildZone,*bellowB,"back",*yagUnitB,*yagScreenB);
+  else
+    constructSlits(System,buildZone,*bellowB,"back",*yagUnitB,*slits);
 
   constructSystem::constructUnit(System,buildZone,*yagUnitB,"back",*bellowC);
   constructYAG(System,buildZone,*bellowC,"back",*yagUnitC,*yagScreenC);

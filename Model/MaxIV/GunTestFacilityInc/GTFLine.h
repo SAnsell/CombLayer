@@ -34,6 +34,7 @@ namespace xraySystem
   class RFGun;
   class Solenoid;
   class CurrentTransformer;
+  class SlitsMask;
 }
 
 namespace constructSystem
@@ -102,6 +103,7 @@ class GTFLine :
   std::shared_ptr<constructSystem::Bellows> bellowD;
   std::shared_ptr<tdcSystem::YagUnit> yagUnitD;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenD;
+  std::shared_ptr<xraySystem::SlitsMask> slits;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -112,6 +114,11 @@ class GTFLine :
 		    const std::string& sideName,
 		    tdcSystem::YagUnit& yag,
 		    tdcSystem::YagScreen& screen);
+  void constructSlits(Simulation& System, attachSystem::BlockZone& buildZone,
+		    const attachSystem::FixedComp& linkUnit,
+		    const std::string& sideName,
+		    tdcSystem::YagUnit& yag,
+		    xraySystem::SlitsMask& slits);
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);

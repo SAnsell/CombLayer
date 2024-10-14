@@ -57,6 +57,7 @@
 #include "ScreenGenerator.h"
 #include "YagUnitGenerator.h"
 #include "YagScreenGenerator.h"
+#include "SlitsMaskGenerator.h"
 #include "RFGunGenerator.h"
 
 constexpr double xstep = 11.5;
@@ -493,10 +494,6 @@ namespace setVariable
     YagScreenGen.generateScreen(Control,"YagScreenA",0);
     Control.addVariable("YagScreenAYAngle",-90.0);
 
-    ELog::EM << "Use correct variables/materials for the Emittance meter objects (currently all are dummy)" << ELog::endWarn;
-    ELog::EM << "Measured: bellow diameter: 15 cm, flanges are 5 mm thick" << ELog::endWarn;
-
-
     // Bellows in the emittance meter:
     // email from EM 240930:
     constexpr double bellowWallThick = 0.03;
@@ -505,7 +502,7 @@ namespace setVariable
 
     constexpr double bellowPipeThick = 0.15; // dummy
     constexpr double bellowStep = 0.1; // approx (TODO)
-    constexpr double bellowFlangeLength = 1.3; //  approx TODO
+    constexpr double bellowFlangeLength = 0.5; // measured
 
     //    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
 
@@ -532,6 +529,9 @@ namespace setVariable
     // Control.addVariable("YagUnitBYAngle",180.0);
     YagScreenGen.generateScreen(Control,"YagScreenB",0);
     Control.addVariable("YagScreenBYAngle",-90.0);
+
+    setVariable::SlitsMaskGenerator slitsGen;
+    slitsGen.generate(Control, "Slits");
 
     // Bellow C folding structure has 52 maxima
     constexpr double bellowCLength = 80.0; // dummy

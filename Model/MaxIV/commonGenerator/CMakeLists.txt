@@ -36,7 +36,7 @@ set (commonGeneratorSources
     TriggerGenerator.cxx TriGroupGenerator.cxx TriPipeGenerator.cxx
     TWCavityGenerator.cxx TwinPipeGenerator.cxx UndVacGenerator.cxx
     ViewScreenGenerator.cxx WallLeadGenerator.cxx YagScreenGenerator.cxx
-    YagUnitBigGenerator.cxx YagUnitGenerator.cxx
+    YagUnitBigGenerator.cxx YagUnitGenerator.cxx SlitsMaskGenerator.cxx
 )
 
 add_library (commonGenerator SHARED
@@ -166,6 +166,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/YagScreenGenerator.cxx
   ${tarDIR}/YagUnitBigGenerator.cxx
   ${tarDIR}/YagUnitGenerator.cxx
+  $(tarDIR)/SlitsMaskGenerator.cxx
   ${tarINC}/AreaDetectorGenerator.h
   ${tarINC}/BeamBoxGenerator.h
   ${tarINC}/BeamDividerGenerator.h
@@ -274,4 +275,5 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/YagScreenGenerator.h
   ${tarINC}/YagUnitBigGenerator.h
   ${tarINC}/YagUnitGenerator.h
+  $(tarINC)/SlitsMaskGenerator.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
