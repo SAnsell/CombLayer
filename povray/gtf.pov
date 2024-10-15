@@ -72,7 +72,8 @@ global_settings {
 
 #switch ( 0 )
   #case(strcmp(ITEM,"Slits"))
-    #declare cameraLocation = <0, -136.4, 0>;
+//    #declare cameraLocation = <0, -136.4, 0>; // most upstream position
+    #declare cameraLocation = <0, -230, 0>; // ~ most downstream position
     #declare cameraLookAt   = <242, 326, 0>;
     #declare cameraAngle = 90;
     #declare projection = 0;

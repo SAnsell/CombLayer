@@ -20,7 +20,9 @@ echo $void
 trap "rm -f /tmp/gtf.txt" EXIT
 
 if [ $ITEM == "Slits" ]; then
-    void+=" -v LocalShieldingWallMainMat Iron -v SlitsMainMat Void -v YagUnitBMainMat Void -v BellowBBellowMat Void -v  BellowBFlangeAMat Void -v BellowBFlangeBMat Void -v BellowBPipeMat Void "
+    void+=" -v LocalShieldingWallMainMat Iron -v SlitsMainMat Void -v YagUnitBMainMat Void "
+    void+=" -v BellowBBellowMat Void -v  BellowBFlangeAMat Void -v BellowBFlangeBMat Void -v BellowBPipeMat Void "
+    void+=" -v BellowCBellowMat Void -v  BellowCFlangeAMat Void -v BellowCFlangeBMat Void -v BellowCPipeMat Void "
     void+=" -v BellowBLength 20 -v LocalShieldingWallYStep 65 "
 fi
 make maxiv && ./maxiv -defaultConfig Single GunTestFacility -offset object Gun Cathode  -povray $void a \
