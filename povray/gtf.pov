@@ -71,6 +71,12 @@ global_settings {
 }
 
 #switch ( 0 )
+  #case(strcmp(ITEM,"Slits"))
+    #declare cameraLocation = <0, -136.4, 0>;
+    #declare cameraLookAt   = <242, 326, 0>;
+    #declare cameraAngle = 90;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Door"))
     #declare cameraLocation = <169, 271, 40>;
     #declare cameraLookAt   = <152, 525, 0>;

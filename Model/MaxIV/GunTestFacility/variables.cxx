@@ -572,11 +572,14 @@ namespace setVariable
     Control.addVariable("YagScreenDYAngle",-90.0);
 
     setVariable::LocalShieldingGenerator LSGen;
-    LSGen.setSize(40.0,10.0,15.0); // y,x,z
+    const double lsWidth = 5.0;
+    const double lsLength = 170.0;
+    LSGen.setSize(lsLength, lsWidth, 100); // y,x,z
     name="LocalShieldingWall";
     LSGen.generate(Control,name);
-    Control.addVariable(name+"YStep",150.0);
-    Control.addVariable(name+"XStep",-30.0);
+    Control.addVariable(name+"YStep",lsLength/2);
+    Control.addVariable(name+"XStep",-30.0-lsWidth/2.0);
+    Control.addVariable(name+"ZStep",10.0+5);
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

@@ -395,9 +395,14 @@ GTFLine::buildObjects(Simulation& System)
   outerCell = constructSystem::constructUnit(System,buildZone,*yagUnitC,"back",*bellowD);
   constructYAG(System,buildZone,*bellowD,"back",*yagUnitD,*yagScreenD);
 
-  lsw->createAll(System, *ionPumpA, 0);
-  for (int i=0; i<2; ++i)
-    lsw->insertInCell(System,outerCell-3-i);
+  lsw->createAll(System, *solenoid, "back");
+  for (int i=0; i<13; ++i)
+    lsw->insertInCell(System,outerCell-2-i);
+  // laser chamber outer voids:
+  // lsw->insertInCell(System,getCell("OuterVoid",0));
+  lsw->insertInCell(System,getCell("OuterVoid",1));
+  //lsw->insertInCell(System,getCell("OuterVoid",2));
+  lsw->insertInCell(System,getCell("OuterVoid",3));
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);

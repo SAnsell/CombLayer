@@ -12,13 +12,17 @@ make -j$(nproc) maxiv
 ITEM=${BASH_ARGV} # last argument is the view in povray/tdc.pov
 
 params=" +A +W800 +H600 "
-void=" -v BldBConcreteDoorDoorMat Mercury"
+void=" -v BldBConcreteDoorDoorMat Mercury "
 
 echo $ITEM
 echo $void
 
 trap "rm -f /tmp/gtf.txt" EXIT
 
-./maxiv -defaultConfig Single GunTestFacility -povray $void a \
+if [ $ITEM == "Slits" ]; then
+    void+=" -v LocalShieldingWallMainMat Iron -v SlitsMainMat Void -v YagUnitBMainMat Void -v BellowBBellowMat Void -v  BellowBFlangeAMat Void -v BellowBFlangeBMat Void -v BellowBPipeMat Void "
+    void+=" -v BellowBLength 20 -v LocalShieldingWallYStep 65 "
+fi
+make maxiv && ./maxiv -defaultConfig Single GunTestFacility -offset object Gun Cathode  -povray $void a \
     && echo \"$ITEM\" > /tmp/gtf.txt \
     && povray ${params} povray/gtf.pov && exit 0
