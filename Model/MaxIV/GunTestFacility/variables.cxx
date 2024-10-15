@@ -567,19 +567,22 @@ namespace setVariable
     BellowGen.generateBellow(Control,"BellowD",bellowDLength); // approx
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
     Control.addVariable("YagUnitDBackLength",7.0); // approx
-    Control.addVariable("YagUnitDBackCapThick", 0.05); // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
+    // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
+    // 1.2 cm: current installed thickness
+    Control.addVariable("YagUnitDBackCapThick", 1.2);
     YagScreenGen.generateScreen(Control,"YagScreenD",0);
     Control.addVariable("YagScreenDYAngle",-90.0);
 
     setVariable::LocalShieldingGenerator LSGen;
-    const double lsWidth = 5.0;
-    const double lsLength = 170.0;
+    const double lsWidth = 10.0;
+    const double lsLength = 170.0+150;
     LSGen.setSize(lsLength, lsWidth, 100); // y,x,z
     name="LocalShieldingWall";
     LSGen.generate(Control,name);
     Control.addVariable(name+"YStep",lsLength/2);
     Control.addVariable(name+"XStep",-30.0-lsWidth/2.0);
-    Control.addVariable(name+"ZStep",10.0+5);
+    Control.addVariable(name+"ZStep",15.0);
+    Control.addVariable(name+"MainMat", "Stainless304L");
   }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
