@@ -510,8 +510,7 @@ namespace setVariable
     name = "BellowB";
     constexpr double bellowBLength = 30.0; // [4]: 30 cm - 2.6 m
     // Bellow C folding structure has 52 maxima
-    // assume Bellow B is the same since hard to count
-    constexpr unsigned int bellowBN = 52;
+    constexpr unsigned int bellowBN = 328; // Same as BellowD [Dionis]
     BellowGen.setFlange(bellowOuterR, bellowFlangeLength, yagPortRadius);
 
     const double bellowBThick =
@@ -554,7 +553,7 @@ namespace setVariable
 
     // Bellow D
     constexpr double bellowDLength = 153.7; // to fix YagUnitD at 487.7 cm from BackWallEast [TODO: check this distance again]
-    constexpr unsigned int bellowDN = 52; // dummy
+    constexpr unsigned int bellowDN = 328; // counted by KB
     const double bellowDThick =
       getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
 		     bellowFlangeLength, bellowFlangeLength, bellowStep);
