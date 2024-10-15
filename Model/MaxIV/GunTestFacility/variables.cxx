@@ -535,7 +535,7 @@ namespace setVariable
     slitsGen.generate(Control, "Slits");
 
     // Bellow C folding structure has 52 maxima
-    constexpr double bellowCLength = 80.0; // dummy
+    constexpr double bellowCLength = 21.5; // to set YagUnitC to 314 cm from BackWallEast [current position, checked]
     constexpr unsigned int bellowCN = 52;
     const double bellowCThick =
       getBellowThick(bellowCN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowCLength,
@@ -553,7 +553,7 @@ namespace setVariable
     Control.addVariable("YagScreenCYAngle",-90.0);
 
     // Bellow D
-    constexpr double bellowDLength = 95.2; // approx
+    constexpr double bellowDLength = 153.7; // to fix YagUnitD at 487.7 cm from BackWallEast [TODO: check this distance again]
     constexpr unsigned int bellowDN = 52; // dummy
     const double bellowDThick =
       getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
