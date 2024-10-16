@@ -18,6 +18,7 @@
 #include "doubleErr.h"
 #include "IndexCounter.h"
 #include "dataSlice.h"
+#include "multiIndex.h"
 #include "multiData.h"
 
 template<typename T>
@@ -366,7 +367,22 @@ multiData<T>::throwMatchCheck(const multiData<T>& A,
       (index,A.index,callUnit+" dimension");
   return;
 }
-		
+
+template<typename T> 
+void
+multiData<T>::clear()
+  /*!
+    Clears all the memory -- not 100% sure that
+    it works with zero points
+   */
+{
+  flatData.clear();
+  index.clear();
+  strides.resize(1);
+  strides[0]=0;
+  return;
+}
+
 template<typename T>
 multiData<T>&
 multiData<T>::operator+=(const multiData<T>& A)
@@ -687,7 +703,6 @@ multiData<T>::getAxisIntegral(const size_t axisIndex,
       if (!sUnit.end)
 	sUnit.end=index[axisIndex];
       
-      
       std::vector<T> out(vSize);
       std::vector<T> result(vSize);
       for(size_t i=sUnit.begin;i<sUnit.end;i++)
@@ -842,6 +857,21 @@ multiData<T>::getRangeSize(std::vector<sRange>& sR) const
 
 template<typename T>
 void
+multiData<T>::resize(std::vector<long long unsigned int> newIndex)
+  /*!
+    Resize the data [make N-dimensional
+    \param newIndex :: index list
+   */
+{
+  std::vector<size_t> sIndex;
+  for(const long long unsigned int I : newIndex)
+    sIndex.emplace_back(static_cast<size_t>(I));
+  resize(sIndex);
+  return; 
+}
+
+template<typename T>
+void
 multiData<T>::resize(std::vector<size_t> newIndex)
   /*!
     Resize the data [make N-dimensional
@@ -970,6 +1000,37 @@ multiData<T>::setData(const size_t A,const size_t B,
 }
 
 template<typename T>
+void
+multiData<T>::setSubMap(const size_t axisIndex,
+			const size_t unitIndex,
+			const multiData<T>& A)
+/*!
+    Sets A to be in the map over the axisIndex at position
+    unit index. A needs to be shape nDim-1 and have
+    equal sizes to this.
+  */
+{
+  if (axisIndex>=index.size() ||
+      unitIndex>=index[axisIndex])
+    throw ColErr::DimensionError<size_t>
+      (index,A.index,"setSubMap:: dimension["+
+       std::to_string(axisIndex)+":"+
+       std::to_string(unitIndex));
+
+  // IndexCounter IC<size_t>(index);
+  // IndexCounter JC<size_t>(A.index());  
+
+  // IC.setAxis(axisIndex,unitIndex);
+  // const size_t NS(index.size());
+  
+  // for(
+
+  
+  return;
+}
+
+
+template<typename T>
 std::vector<size_t>
 multiData<T>::reduceAxis(const size_t axisIndex) const
   /*!
@@ -1028,7 +1089,7 @@ multiData<T>::combine(const size_t axisA,
 	    }
 	  else if (i!=axisB)
 	    {
-	      //	      primeB=newIndex.size();
+	      //      primeB=newIndex.size();
 	      newIndex.push_back(index[i]);
 	    }
 	}
@@ -1057,10 +1118,11 @@ multiData<T>::projectMap(const size_t axisIndex,
       // single vector
       const size_t nR=(!sR[axisIndex].end) ?
 	index[axisIndex] : sR[axisIndex].end-sR[axisIndex].begin;
+      const size_t nEnd=sR[axisIndex].end;
       
       std::vector<T> outVec(nR);
       size_t index(0);
-      for(size_t i=sR[axisIndex].begin;i<nR;i++)
+      for(size_t i=sR[axisIndex].begin;i<nEnd;i++)
 	{
 	  sR[axisIndex]=sRange({i,i});
 	  outVec[index++]=getFlatIntegration(sR);
@@ -1088,7 +1150,7 @@ multiData<T>::integrateMap(const size_t axisIndex,
 			  outI.getAxisIntegral(axisIndex));
     }
   throw ColErr::AbsObjMethod
-    ("MultiData::getAxisIntegral with non: operator+ class");
+    ("MultiData::integrateMap with non: operator+ class");
 }
 
 template<typename T>
@@ -1123,8 +1185,6 @@ multiData<T>::offset(const size_t A,const size_t B) const
   const T* ptr=get()[A][B].pointer();
   return static_cast<size_t>(ptr-getPtr()); 
 }
-
-
 
 template<typename T>
 size_t
@@ -1195,6 +1255,21 @@ multiData<T>::fill(const T& V)
 {
   std::fill(flatData.begin(),flatData.end(),V);
   return;
+}
+
+
+template<typename T>
+std::string
+multiData<T>::simpleStr() const
+  /*!
+    Write out the shape in a simple way
+  */
+{
+  std::string out("[");
+  out+=std::to_string(flatData.size())+"] ";
+  for(const size_t i : index)
+    out+=std::to_string(i)+" ";
+  return out;
 }
 
 template<typename T>

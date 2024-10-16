@@ -90,6 +90,7 @@ class multiData
   template<typename U> multiData(const multiData<U>&);
   ~multiData();
 
+  void clear(); 
   
   multiData<T>& operator+=(const T&);
   multiData<T>& operator-=(const T&);
@@ -105,7 +106,8 @@ class multiData
   size_t size() const { return flatData.size(); }
 
   size_t getRangeSize(std::vector<sRange>&) const;
-  
+
+  void resize(std::vector<long long unsigned int>);
   void resize(std::vector<size_t>);
   // special resize for 4D
   void resize(const size_t,const size_t,const size_t,const size_t);
@@ -114,11 +116,13 @@ class multiData
   // special resize for 2D
   void resize(const size_t,const size_t);
 
+  
   void combine(const size_t,const size_t);
   
   void setData(std::vector<T>);
   void setData(const size_t,const size_t,std::vector<T>);
   void setData(const size_t,const size_t,const size_t,std::vector<T>);
+
   std::vector<T> getFlatRange(std::vector<sRange>) const;
   T getFlatIntegration(std::vector<sRange>) const;
   std::vector<T> getAxisRange(const size_t,const size_t) const;
@@ -130,6 +134,8 @@ class multiData
   multiData<T> integrateMap(size_t,std::vector<sRange>) const;
   T integrateValue(std::vector<sRange>) const;
 
+  void setSubMap(const size_t,const size_t,const multiData<T>&);
+  
   void fill(const T&);
   multiData<T> exchange(size_t,size_t) const;
   
@@ -169,6 +175,7 @@ class multiData
   const_iterator end() const { return flatData.end(); }
 
   void write(std::ostream&) const;
+  std::string simpleStr() const;
 };
 
 template<typename T> 

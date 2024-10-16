@@ -29,6 +29,8 @@
 #include <typeinfo>
 #include <utility>
 #include <vector>
+#include <map>
+#include <cmath>
 
 #include "TypeString.h"
 #include "FileReport.h"
@@ -703,78 +705,41 @@ DimensionError<T>::setOutLine()
 // ArrayError
 //-------------------------
 
-template<int ndim>
-ArrayError<ndim>::ArrayError(const int* A,const int* I,
-			     const std::string& Place) :
-  ExBase(0,Place)
+ArrayError::ArrayError(const size_t A,const size_t I,
+		       std::vector<size_t> arrDim,
+		       const std::string& Place) :
+  ExBase(0,Place),
+  axis(A),index(I),
+  indexSize(std::move(arrDim))
   /*!
     Set a ArrayError
     \param A :: Array size
     \param I :: Index given
+    \param arrDim :: Array dimension
     \param Place :: String describing the place
   */
 {
-  for(int i=0;i<ndim;i++)
-    {
-      arraySize[i]=A[i];
-      indexSize[i]=I[i];
-    }  
   setOutLine();
 }
 
-template<int ndim>
-ArrayError<ndim>::ArrayError(const ArrayError<ndim>& A) :
-  ExBase(A)
-  /*!
-    Copy constructor 
-    \param A :: Object to copy
-  */
-{
-  for(int i=0;i<ndim;i++)
-    {
-      arraySize[i]=A.arraySize[i];
-      indexSize[i]=A.indexSize[i];
-    }
-}
-
-template<int ndim>
-ArrayError<ndim>&
-ArrayError<ndim>::operator=(const ArrayError<ndim>& A) 
-  /*!
-    Assignment operator
-    \param A :: Object to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      ExBase::operator=(A);
-      for(int i=0;i<ndim;i++)
-        {
-	  arraySize[i]=A.arraySize[i];
-	  indexSize[i]=A.indexSize[i];
-	}
-    }
-  return *this;
-}
-
-template<int ndim>
 void
-ArrayError<ndim>::setOutLine()
+ArrayError::setOutLine()
   /*!
     Writes out the range and aim point
     to OutLine
   */
 {
   std::stringstream cx;
-  cx<<"\nEXCEPTION TYPE :: ArrayError< "<<ndim<<"\n";
+  cx<<"\nEXCEPTION TYPE :: ArrayError\n";
 
-  cx<<"ArrayError<"<<ndim<<">"<<std::endl;
+  cx<<"ArrayError<"<<indexSize.size()<<">"<<std::endl;
+
   cx<<getErr()<<":";
-
-  for(int i=0;i<ndim;i++)
+  cx<<" Axis ="<<axis<<" at "<<index<<"\n";
+  cx<<"   Index :";
+  for(const size_t i : indexSize)
     {
-      cx<<indexSize[i]<<" ("<<arraySize[i]<<") ";
+      cx<<i<<" ";
     }
   OutLine=cx.str();
   return;
@@ -1553,7 +1518,6 @@ template class ColErr::MisMatch<int>;
 template class ColErr::MisMatch<unsigned int>;
 template class ColErr::MisMatch<long int>;
 template class ColErr::MisMatch<unsigned long int>;
-template class ColErr::ArrayError<2>;
 template class ColErr::DimensionError<long int>;
 template class ColErr::DimensionError<size_t>;
 template class ColErr::CastError<mainSystem::IItemBase>;

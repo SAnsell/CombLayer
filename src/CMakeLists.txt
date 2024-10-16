@@ -1,6 +1,7 @@
 set (srcSources
     flukaGenParticle.cxx LowMat.cxx mainJobs.cxx 
-    masterRotate.cxx multiData.cxx NGroup.cxx 
+    masterRotate.cxx multiData.cxx
+    multiIndex.cxx NGroup.cxx 
     NList.cxx NodePoint.cxx NRange.cxx 
     NTree.cxx objectGroups.cxx pairRange.cxx 
     particleConv.cxx ReadFunctions.cxx SimFLUKA.cxx 
@@ -32,6 +33,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/mainJobs.cxx
   ${tarDIR}/masterRotate.cxx
   ${tarDIR}/multiData.cxx
+  ${tarDIR}/multiIndex.cxx
   ${tarDIR}/NGroup.cxx
   ${tarDIR}/NList.cxx
   ${tarDIR}/NodePoint.cxx
@@ -59,6 +61,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/mainJobs.h
   ${tarINC}/masterRotate.h
   ${tarINC}/multiData.h
+  ${tarINC}/multiIndex.h
   ${tarINC}/NGroup.h
   ${tarINC}/NList.h
   ${tarINC}/NodePoint.h

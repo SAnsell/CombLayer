@@ -431,7 +431,7 @@ Matrix<T>::GaussJordan(Matrix<T>& B)
       indxrow[i]=irow;
       indxcol[i]=icol;
 
-      if (std::abs<T>(this->V[icol][icol])>1e-80)
+      if (std::abs<T>(this->V[icol][icol])<1e-80)
 	{
 	  ELog::EM<<"Singular matrix"<<ELog::endCrit;
 	  return 1;
