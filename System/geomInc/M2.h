@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   include/M2.h
+ * File:   geomInc/M2.h
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
  *
@@ -35,7 +35,6 @@ namespace Geometry
 {
 
   class Vec2D;
-  class Vec3D;
   
 /*!
   \class M2
@@ -55,11 +54,11 @@ class M2
 
   T AData[2][2];     ///< original data 
 
-  T U[2][2];          ///< U data
-  T Sigma[2];         ///< sigma (diagonal matrix)
+  T U[2][2];         ///< U data
+  T Sigma[2];        ///< sigma (diagonal matrix)
 
-  T V[2][2];          ///< V data
-  T R[2][2];          ///< R eigen rotation
+  T V[2][2];         ///< V data
+  T R[2][2];         ///< R eigen rotation
   T lambda[2][2];     ///< Eigen values [diagonal]
 
   void copyAll(const M2<T>&);
@@ -75,11 +74,6 @@ class M2
   M2<T>& operator=(const M2<T>&); 
   ~M2() =default;
 
-  //< Ptr accessor
-  const T* operator[](const size_t I) const { return AData[I]; }
-  //< Ptr accessor
-  T* operator[](const size_t I) { return AData[I]; }             
-  void nameAssign(T&,T&,T&,T&) const;
   
   M2<T>& operator+=(const M2<T>&);  
   M2<T> operator+(const M2<T>&) const;    
@@ -99,6 +93,12 @@ class M2
   bool operator==(const M2<T>&) const; 
   bool operator!=(const M2<T>&) const;
 
+  //< Ptr accessor
+  const T* operator[](const size_t I) const { return AData[I]; }
+  //< Ptr accessor
+  T* operator[](const size_t I) { return AData[I]; }             
+  void nameAssign(T&,T&,T&,T&) const;
+
   T& get(const size_t,const size_t);
   const T& get(const size_t,const size_t) const;
   
@@ -109,7 +109,7 @@ class M2
   M2<T>& invert();
   M2<T>& transpose();
   M2<T>& adjoint();
-  M2<T> prime() const;
+  M2<T> Tprime() const;
   void sortEigen();
   
   const T& getU(const size_t,const size_t) const;
@@ -118,8 +118,8 @@ class M2
   void setMinimumSigma(const T&);
   void invertSigma();
 
-  T maxSigma() const;
-  T minSigma() const;
+  T maxSigma() const { return Sigma[0]; }
+  T minSigma() const { return Sigma[1]; }
   T determinate() const;
   T magVector(const T*) const;
   std::pair<T,T> getEigPair() const;
@@ -127,7 +127,6 @@ class M2
 
   M2<T> getEigValues() const;
   M2<T> getEigVectors() const;
-  bool check() const;
   void write(std::ostream&) const;
   
 }; 

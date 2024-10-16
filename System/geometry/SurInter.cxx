@@ -483,7 +483,7 @@ calcIntersect(const Geometry::Cone& Cne,
   MR.constructEigen();
   Geometry::M2<double> R=MR.getEigVectors();
 
-  Geometry::M2<double> Rprime=R.prime();
+  Geometry::M2<double> Rprime=R.Tprime();
   Geometry::M2<double> lambda=MR.getEigValues();
 
   //  Geometry::M2<double> CRcheck=R*lambda*Rprime;

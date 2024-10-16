@@ -3,7 +3,7 @@
  
  * File:   geometry/Vec2D.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,27 +90,30 @@ Vec2D::Vec2D(const double* xy) :
   */
 {}
 
-Vec2D::Vec2D(const M2<double>& A)  :
+Vec2D::Vec2D(const Matrix<double>& A)  :
   x(0.0),y(0.0)
   /*!
     Construct a Vec2D from a mateix
-    The matrix needs to be 2x1 or 1x2
+    The matrix is extracted as a 2x1 or 1x2 component
+    regardless of size
     \param A :: Matrix Item to be cast
   */
 {
-  /*
-  std::pair<size_t,size_t> Asize=A.size();
-  if (Asize.first>Asize.second) 
+  const std::pair<size_t,size_t> Asize=A.size();
+
+  if (Asize.first)
     {
-      for(size_t i=0;i<2;i++)
-	this->operator[](i)=(i<Asize.first) ? A[i][0] : 0.0;
+      if (Asize.first>Asize.second) 
+	{
+	  for(size_t i=0;i<2;i++)
+	    this->operator[](i)=(i<Asize.first) ? A[i][0] : 0.0;
+	}
+      else
+	{
+	  for(size_t i=0;i<2;i++)
+	    this->operator[](i)=(i<Asize.second) ? A[0][i] : 0.0;
+	}
     }
-  else
-    {
-      for(size_t i=0;i<2;i++)
-        this->operator[](i)=(i<Asize.second) ? A[i][0] : 0.0;
-    }
-  */
 }
 
 Vec2D::Vec2D(const Vec2D& A) :

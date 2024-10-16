@@ -51,7 +51,7 @@ class Vec2D
   Vec2D();
   Vec2D(const double,const double);
   explicit Vec2D(const double*);
-  Vec2D(const M2<double>&);
+  Vec2D(const Matrix<double>&);
   Vec2D(const Vec2D&);
   virtual ~Vec2D();
 
