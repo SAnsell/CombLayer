@@ -574,12 +574,11 @@ namespace setVariable
 
     setVariable::LocalShieldingGenerator LSGen;
     const double lsWidth = 10.0;
-    const double tmpdy = 155.8; // tmp while prolonging full length
-    const double lsLength = 170.0+150+174+tmpdy;
+    const double lsLength = 170.0+150;
     LSGen.setSize(lsLength, lsWidth, 100); // y,x,z
     name="LocalShieldingWall";
     LSGen.generate(Control,name);
-    Control.addVariable(name+"YStep",lsLength/2-tmpdy);
+    Control.addVariable(name+"YStep",lsLength/2);
     Control.addVariable(name+"XStep",-30.0-lsWidth/2.0);
     Control.addVariable(name+"ZStep",15.0);
     Control.addVariable(name+"MainMat", "Stainless304L");
