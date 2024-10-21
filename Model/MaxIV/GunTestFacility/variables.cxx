@@ -266,8 +266,7 @@ namespace setVariable
     Control.addVariable(name+"ConcreteDoorOuterTopGap",4.5);
 
     Control.addVariable(name+"ConcreteDoorFlipX",1);
-    Control.addVariable(name+"ConcreteDoorXStep",134.25); // [0]
-    ELog::EM << "*** Check the door-wall distance" << ELog::endWarn;
+    Control.addVariable(name+"ConcreteDoorXStep",138.072); // to set the door-wall distance to 12 cm as measured by AR 241021
   }
 
   void BeamLineVariables(FuncDataBase& Control)
