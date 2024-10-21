@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/GunTestFacilityInc/ConcreteDoor.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2023 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ namespace MAXIV::GunTestFacility
   /*!
     \class ConcreteDoor
     \version 1.0
-    \author S. Ansell / K. Batkov
+    \author K. Batkov
     \date Sep 2023
     \brief a copy of RingDoor modified for Gun Test Facility
   */

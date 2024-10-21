@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/GunTestFacility/ConcreteDoor.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2024 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

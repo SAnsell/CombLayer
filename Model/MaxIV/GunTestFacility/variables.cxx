@@ -192,6 +192,12 @@ namespace setVariable
     Control.addVariable(name+"DoorBricksOffset",34.5); // measured
     Control.addVariable(name+"DoorBricksMat","Lead"); //
 
+    // own design
+    Control.addVariable(name+"DoorSideShieldHeight",210.0);
+    Control.addVariable(name+"DoorSideShieldLength",20.0);
+    Control.addVariable(name+"DoorSideShieldOffset",14.4); // to touch lower lead bricks
+    Control.addVariable(name+"DoorSideShieldMat","Stainless304");
+
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
     DuctGen.generate(Control,name+"DuctWave",90.0, 0.0, length2-136.5, 269-depth); //  [4]

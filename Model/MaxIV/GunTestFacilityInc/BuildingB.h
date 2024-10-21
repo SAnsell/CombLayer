@@ -94,6 +94,7 @@ namespace MAXIV::GunTestFacility
     int oilRoomWallMat;           ///< material of the oil room walls
     int level9VentDuctShieldMat;  ///< ventillation ducts shield material
     int doorBricksMat;            ///< Material of the lead bricks
+    int doorSideShieldMat;        ///< Concrete door side shielding material
 
     std::shared_ptr<xraySystem::Duct> ductWave; // wave guide
     std::shared_ptr<xraySystem::Duct> ductSignal1; // electrical duct
@@ -113,6 +114,10 @@ namespace MAXIV::GunTestFacility
     double doorBricksHeight;      ///< Height of lead bricks at the concrete door base
     double doorBricksLength;      ///< Length of lead bricks at the concrete door base
     double doorBricksOffset;      ///< Offset of the lead bricks from the north wall
+    double doorSideShieldHeight;  ///< Concrete door side shielding height
+    double doorSideShieldThick;   ///< Concrete door side shielding thickness
+    double doorSideShieldLength;  ///< Concrete door side shielding length
+    double doorSideShieldOffset;  ///< Concrete door side shielding offset
 
     int doorWallNLayers ;         ///< Number of door wall biasing layers
     int midWallNLayers;           ///< Number of MidWall biasing layers

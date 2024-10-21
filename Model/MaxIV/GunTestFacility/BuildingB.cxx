@@ -164,10 +164,14 @@ namespace MAXIV::GunTestFacility
     oilRoomWallMat(A.oilRoomWallMat),
     level9VentDuctShieldMat(A.level9VentDuctShieldMat),
     doorBricksMat(A.doorBricksMat),
+    doorSideShieldMat(A.doorSideShieldMat),
     doorBricksThick(A.doorBricksThick),
     doorBricksHeight(A.doorBricksHeight),
     doorBricksLength(A.doorBricksLength),
     doorBricksOffset(A.doorBricksOffset),
+    doorSideShieldHeight(A.doorSideShieldHeight),
+    doorSideShieldLength(A.doorSideShieldLength),
+    doorSideShieldOffset(A.doorSideShieldOffset),
     doorWallNLayers(A.doorWallNLayers),
     midWallNLayers(A.midWallNLayers),
     outerWallEastNLayers(A.outerWallEastNLayers)
@@ -234,10 +238,14 @@ namespace MAXIV::GunTestFacility
         oilRoomWallMat=A.oilRoomWallMat;
         level9VentDuctShieldMat=A.level9VentDuctShieldMat;
 	doorBricksMat=A.doorBricksMat;
+        doorSideShieldMat=A.doorSideShieldMat;
 	doorBricksThick=A.doorBricksThick;
 	doorBricksHeight=A.doorBricksHeight;
 	doorBricksLength=A.doorBricksLength;
 	doorBricksOffset=A.doorBricksOffset;
+        doorSideShieldHeight=A.doorSideShieldHeight;
+        doorSideShieldLength=A.doorSideShieldLength;
+        doorSideShieldOffset=A.doorSideShieldOffset;
 	doorWallNLayers=A.doorWallNLayers;
         midWallNLayers=A.midWallNLayers;
         outerWallEastNLayers=A.outerWallEastNLayers;
@@ -315,6 +323,9 @@ namespace MAXIV::GunTestFacility
     doorBricksHeight=Control.EvalVar<double>(keyName+"DoorBricksHeight");
     doorBricksLength=Control.EvalVar<double>(keyName+"DoorBricksLength");
     doorBricksOffset=Control.EvalVar<double>(keyName+"DoorBricksOffset");
+    doorSideShieldHeight=Control.EvalVar<double>(keyName+"DoorSideShieldHeight");
+    doorSideShieldLength=Control.EvalVar<double>(keyName+"DoorSideShieldLength");
+    doorSideShieldOffset=Control.EvalVar<double>(keyName+"DoorSideShieldOffset");
     doorWallNLayers=Control.EvalDefVar<int>(keyName+"DoorWallNLayers", 1);
     midWallNLayers=Control.EvalDefVar<int>(keyName+"MidWallNLayers", 1);
     outerWallEastNLayers=Control.EvalDefVar<int>(keyName+"OuterWallEastNLayers", 1);
@@ -324,6 +335,7 @@ namespace MAXIV::GunTestFacility
     oilRoomWallMat=ModelSupport::EvalMat<int>(Control,keyName+"OilRoomWallMat");
     level9VentDuctShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"Level9VentillationDuctShieldMat");
     doorBricksMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorBricksMat");
+    doorSideShieldMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorSideShieldMat");
 
     if (std::abs(gunRoomWidth + midWallThick+ klystronRoomWidth + trspRoomWidth + stairRoomWidth + 2.0*internalWallThick-2025.0)>1e-3)
       ELog::EM << "WARNING: gun test room widths do not sum up to 2025 as of K_20-1_08C6b4" << ELog::endWarn;
@@ -427,6 +439,12 @@ namespace MAXIV::GunTestFacility
     ModelSupport::buildShiftedPlane(SMap,buildIndex+304,buildIndex+4,X,-doorBricksOffset);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+306,buildIndex+5,Z,doorBricksHeight);
 
+    // side shield
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+403,buildIndex+4,X,
+				    -doorSideShieldOffset-doorSideShieldLength);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+404,buildIndex+403,X,doorSideShieldLength);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+406,buildIndex+5,Z,doorSideShieldHeight);
+
     return;
   }
 
@@ -478,20 +496,30 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 1 -21 33 -23 ");
     makeCell("KlystronRoomWall",System,cellIndex++,wallMat,0.0,Out*tb);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -301 3 -4 5 -306");
-    makeCell("MazeBircks",System,cellIndex++,voidMat,0.0,Out);
-
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 3 -303 5 -306");
     makeCell("DoorBircksVoid",System,cellIndex++,voidMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 304 -4 5 -306");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 304 -403 5 -306");
     makeCell("DoorBircksVoid",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 404 -4 5 -6");
+    makeCell("DoorSideShieldVoidNord",System,cellIndex++,voidMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 403 -404 5 -406");
+    makeCell("DoorSideShield",System,cellIndex++,doorSideShieldMat,0.0,Out);
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 403 -404 406 -6");
+    makeCell("DoorSideShieldVoidTop",System,cellIndex++,voidMat,0.0,Out);
+
+
+
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 303 -304 5 -306");
     makeCell("DoorBircks",System,cellIndex++,doorBricksMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 3 -4 306 -6");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -301 3 -4 5 -6");
     makeCell("Maze",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 3 -403 306 -6");
+    makeCell("DoorShieldVoid",System,cellIndex++,voidMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 3 -43 5 -25");
     makeCell("MazeWallJamb",System,cellIndex++,wallMat,0.0,Out);
