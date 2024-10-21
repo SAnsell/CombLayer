@@ -217,6 +217,7 @@ namespace setVariable
     DuctGen.setSize(8.0); // [4]
     DuctGen.generate(Control,name+"DuctLaser",0.0,
 		     width2+outerWallThick-55.0,0.0, 263.0-depth+7.0); // [4]
+    Control.addVariable(name+"DuctLaserShieldType","RectangularCover");
 
     constexpr double duct6width = 39.7; // [0], page 3
     constexpr double duct6height = 10.0; // [0], page 3

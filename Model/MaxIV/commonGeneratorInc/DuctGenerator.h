@@ -43,8 +43,18 @@ class DuctGenerator
   double width;                 ///< Width
   double height;                ///< Height
   double radius;                 ///< Radius (if circular)
+  std::string shieldType;       ///< shielding type
+  double shieldPenetrationZOffset; ///< shield penetration z-offset
+  double shieldPenetrationXOffset; ///< shield penetration x-offset
+  double shieldPenetrationRadius; ///< penetration radius in the shield
+  double shieldThick;           ///< shielding thickness
+  double shieldWidthRight;      ///< shielding right-width
+  double shieldWidthLeft;       ///< shielding left-width
+  double shieldDepth;           ///< shielding depth
+  double shieldHeight;          ///< shielding height
 
   int voidMat;                  ///< Void material
+  std::string shieldMat;        ///< shielding material
 
  public:
 

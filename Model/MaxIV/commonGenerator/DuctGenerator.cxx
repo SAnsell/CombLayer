@@ -51,7 +51,17 @@ namespace setVariable
 
 DuctGenerator::DuctGenerator() :
   length(0.0),width(50.0),height(150.0),
-  radius(0.0),voidMat(0)
+  radius(0.0),voidMat(0),
+  shieldMat("Stainless304"),
+  shieldType("None"),
+  shieldPenetrationZOffset(-2.0),
+  shieldPenetrationXOffset(1.0),
+  shieldPenetrationRadius(4.0),
+  shieldThick(5),
+  shieldWidthRight(13),
+  shieldWidthLeft(18),
+  shieldDepth(18),
+  shieldHeight(13)
   /*!
     Constructor and defaults
   */
@@ -82,7 +92,17 @@ DuctGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"ShieldType",shieldType);
+  Control.addVariable(keyName+"ShieldPenetrationZOffset",shieldPenetrationZOffset);
+  Control.addVariable(keyName+"ShieldPenetrationXOffset",shieldPenetrationXOffset);
+  Control.addVariable(keyName+"ShieldPenetrationRadius",shieldPenetrationRadius);
+  Control.addVariable(keyName+"ShieldThick",shieldThick);
+  Control.addVariable(keyName+"ShieldWidthRight",shieldWidthRight);
+  Control.addVariable(keyName+"ShieldWidthLeft",shieldWidthLeft);
+  Control.addVariable(keyName+"ShieldDepth",shieldDepth);
+  Control.addVariable(keyName+"ShieldHeight",shieldHeight);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"ShieldMat",shieldMat);
   Control.addVariable(keyName+"ZAngle",zAngle);
   Control.addVariable(keyName+"XStep",xStep);
   Control.addVariable(keyName+"YStep",yStep);

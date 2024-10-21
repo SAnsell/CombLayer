@@ -48,8 +48,18 @@ class Duct :
   double width;                 ///< Width
   double height;                ///< Height
   double radius;                ///< duct radius (if circular)
+  std::string shieldType;       ///< shielding type
+  double shieldPenetrationZOffset; ///< shield penetration z-offset
+  double shieldPenetrationXOffset; ///< shield penetration x-offset
+  double shieldPenetrationRadius; ///< penetration radius in the shield
+  double shieldThick;           ///< shielding thickness
+  double shieldWidthRight;      ///< shielding right-width
+  double shieldWidthLeft;       ///< shielding left-width
+  double shieldDepth;           ///< shielding depth
+  double shieldHeight;          ///< shielding height
 
   int voidMat;                  ///< Void material
+  int shieldMat;                ///< shielding material
 
   void populate(const FuncDataBase&);
 

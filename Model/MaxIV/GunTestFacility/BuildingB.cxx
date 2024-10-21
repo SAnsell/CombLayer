@@ -765,6 +765,9 @@ namespace MAXIV::GunTestFacility
     ductLaser->setFront(getFullRule("#DoorWallFront"));
     ductLaser->setBack(getFullRule("DoorWallBack"));
     ductLaser->addInsertCell("Main",getCell("DoorWall"));
+    ductLaser->addInsertCell("Shield",getCell("DoorSideShieldVoidTop"));
+    ductLaser->addInsertCell("Shield",getCell("DoorSideShieldVoidNord"));
+    ductLaser->addInsertCell("Shield",getCell("DoorShieldVoid"));
     ductLaser->createAll(System,*this,0);
 
     ductSignal4->setFront(getFullRule("#DoorWallFront"));

@@ -86,7 +86,17 @@ Duct::Duct(const Duct& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
   radius(A.radius),
-  voidMat(A.voidMat)
+  shieldType(A.shieldType),
+  shieldPenetrationZOffset(A.shieldPenetrationZOffset),
+  shieldPenetrationXOffset(A.shieldPenetrationXOffset),
+  shieldPenetrationRadius(A.shieldPenetrationRadius),
+  shieldThick(A.shieldThick),
+  shieldWidthRight(A.shieldWidthRight),
+  shieldWidthLeft(A.shieldWidthLeft),
+  shieldDepth(A.shieldDepth),
+  shieldHeight(A.shieldHeight),
+  voidMat(A.voidMat),
+  shieldMat(A.shieldMat)
   /*!
     Copy constructor
     \param A :: Duct to copy
@@ -112,7 +122,17 @@ Duct::operator=(const Duct& A)
       width=A.width;
       height=A.height;
       radius=A.radius;
+      shieldType=A.shieldType;
+      shieldPenetrationZOffset=A.shieldPenetrationZOffset;
+      shieldPenetrationXOffset=A.shieldPenetrationXOffset;
+      shieldPenetrationRadius=A.shieldPenetrationRadius;
+      shieldThick=A.shieldThick;
+      shieldWidthRight=A.shieldWidthRight;
+      shieldWidthLeft=A.shieldWidthLeft;
+      shieldDepth=A.shieldDepth;
+      shieldHeight=A.shieldHeight;
       voidMat=A.voidMat;
+      shieldMat=A.shieldMat;
     }
   return *this;
 }
@@ -148,6 +168,15 @@ Duct::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   radius=Control.EvalDefVar<double>(keyName+"Radius",0.0);
+  shieldType=Control.EvalVar<std::string>(keyName+"ShieldType");
+  shieldPenetrationZOffset=Control.EvalVar<double>(keyName+"ShieldPenetrationZOffset");
+  shieldPenetrationXOffset=Control.EvalVar<double>(keyName+"ShieldPenetrationXOffset");
+  shieldPenetrationRadius=Control.EvalVar<double>(keyName+"ShieldPenetrationRadius");
+  shieldThick=Control.EvalVar<double>(keyName+"ShieldThick");
+  shieldWidthRight=Control.EvalVar<double>(keyName+"ShieldWidthRight");
+  shieldWidthLeft=Control.EvalVar<double>(keyName+"ShieldWidthLeft");
+  shieldDepth=Control.EvalVar<double>(keyName+"ShieldDepth");
+  shieldHeight=Control.EvalVar<double>(keyName+"ShieldHeight");
 
   if (radius>Geometry::zeroTol)
     if (width>0.0 || height>0.0)
@@ -162,6 +191,7 @@ Duct::populate(const FuncDataBase& Control)
     throw  ColErr::ExitAbort("Either Radius or Length/Width/Height must be non-zero");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
 
   return;
 }
@@ -198,6 +228,22 @@ Duct::createSurfaces()
     ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
   }
 
+  if (shieldType != "None") {
+    ModelSupport::buildCylinder(SMap,buildIndex+17,
+				Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
+				shieldPenetrationRadius);
+  }
+
+
+  if (shieldType == "RectangularCover") {
+    ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+11,Y,-shieldThick);
+
+    ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(shieldWidthLeft),X);
+    ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(shieldWidthRight),X);
+    ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(shieldDepth),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(shieldHeight),Z);
+  }
+
   return;
 }
 
@@ -218,6 +264,17 @@ Duct::createObjects(Simulation& System)
   makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out);
 
   addOuterSurf("Main", Out);
+
+  if (shieldType == "RectangularCover") {
+    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16 17")*backStr.complement();
+    makeCell("ShieldPlate",System,cellIndex++,shieldMat,0.0,Out);
+
+    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 -17")*backStr.complement();
+    makeCell("ShieldPenetration",System,cellIndex++,voidMat,0.0,Out);
+
+    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
+    addOuterSurf("Shield", Out);
+  }
 
   return;
 }
