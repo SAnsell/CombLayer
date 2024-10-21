@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/LinacInc/LocalShielding.h
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2024 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ class LocalShielding :
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
+  double depth;                 ///< Depth
   double midHoleWidth;          ///< Width of the beam pipe penetration
   double midHoleHeight;         ///< Height of the beam pipe penetration
   double cornerWidth;           ///< Corner cut width

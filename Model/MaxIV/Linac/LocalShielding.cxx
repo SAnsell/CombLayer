@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/LocalShielding.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2024 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +82,7 @@ LocalShielding::LocalShielding(const LocalShielding& A) :
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
   length(A.length),width(A.width),height(A.height),
+  depth(A.depth),
   midHoleWidth(A.midHoleWidth),
   midHoleHeight(A.midHoleHeight),
   cornerWidth(A.cornerWidth),
@@ -113,6 +114,7 @@ LocalShielding::operator=(const LocalShielding& A)
       length=A.length;
       width=A.width;
       height=A.height;
+      depth=A.depth;
       midHoleWidth=A.midHoleWidth;
       midHoleHeight=A.midHoleHeight;
       cornerWidth=A.cornerWidth;
@@ -154,7 +156,12 @@ LocalShielding::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  
+  depth=Control.EvalDefVar<double>(keyName+"Depth", std::numeric_limits<double>::quiet_NaN());
+  if (std::isnan(depth)) { //
+    height = height/2.0;
+    depth = height;
+  }
+
   midHoleWidth=Control.EvalVar<double>(keyName+"MidHoleWidth");
   midHoleHeight=Control.EvalVar<double>(keyName+"MidHoleHeight");
   cornerWidth=Control.EvalVar<double>(keyName+"CornerWidth");
@@ -180,8 +187,8 @@ LocalShielding::createSurfaces()
   makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  makePlane("base",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  makePlane("base",SMap,buildIndex+5,Origin-Z*(depth),Z);
+  makePlane("top",SMap,buildIndex+6,Origin+Z*(height),Z);
 
   // penetration for the beam pipe
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(midHoleWidth/2.0+xStep),X);
@@ -325,8 +332,8 @@ LocalShielding::createLinks()
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(4,Origin-Z*(depth),-Z);
+  FixedComp::setConnect(5,Origin+Z*(height),Z);
 
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
@@ -362,7 +369,7 @@ LocalShielding::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);
-  
+
   return;
 }
 

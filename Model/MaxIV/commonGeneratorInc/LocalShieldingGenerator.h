@@ -41,7 +41,8 @@ class LocalShieldingGenerator
 
   double length;                ///< Total length
   double width;                 ///< Total width
-  double height;                ///< Total height
+  double height;                ///< height
+  double depth;                 ///< depth
   double zStep;                 ///< z offset
   double midHoleWidth;          ///< Width of the beam pipe penetration
   double midHoleHeight;         ///< Height of the beam pipe penetration
@@ -59,7 +60,7 @@ class LocalShieldingGenerator
   LocalShieldingGenerator& operator=(const LocalShieldingGenerator&);
   virtual ~LocalShieldingGenerator();
 
-  void setSize(const double, const double, const double);
+  void setSize(const double, const double, const double, const double=std::numeric_limits<double>::quiet_NaN());
   void setMidHole(const double, const double);
   void setCorner(const double, const double, const std::string type="both");
 

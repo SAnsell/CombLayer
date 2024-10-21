@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 LocalShieldingGenerator::LocalShieldingGenerator() :
-  length(10.0),width(60.0),height(40.0),zStep(0.0),
+  length(10.0),width(60.0),height(20.0),depth(20),zStep(0.0),
   midHoleWidth(0.0),midHoleHeight(0.0),
   cornerWidth(0.0),cornerHeight(0.0),
   mainMat("Lead"),
@@ -68,7 +68,7 @@ LocalShieldingGenerator::~LocalShieldingGenerator()
 {}
 
 void
-LocalShieldingGenerator::setSize(const double L, const double W, const double H)
+LocalShieldingGenerator::setSize(const double L, const double W, const double H, const double D)
 /*!
   Wall size setter
   \param L :: total length
@@ -79,6 +79,7 @@ LocalShieldingGenerator::setSize(const double L, const double W, const double H)
   length = L;
   width  = W;
   height = H;
+  depth = D;
 
   return;
 }
@@ -126,6 +127,7 @@ LocalShieldingGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Depth",depth);
   Control.addVariable(keyName+"MidHoleWidth",midHoleWidth);
   Control.addVariable(keyName+"MidHoleHeight",midHoleHeight);
   Control.addVariable(keyName+"CornerHeight",cornerHeight);
