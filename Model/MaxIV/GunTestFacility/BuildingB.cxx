@@ -460,7 +460,7 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 14 -4 5 -6");
     makeCell("GunRoomEntrance",System,cellIndex++,voidMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -12 3 -4 6 -26 ");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 2 -31 3 -4 6 -26 ");
     makeCell("GunRoomEntranceLintel",System,cellIndex++,wallMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 83 -4 5 -36");
@@ -490,7 +490,7 @@ namespace MAXIV::GunTestFacility
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 301 -31 303 -304 5 -306");
     makeCell("DoorBircks",System,cellIndex++,doorBricksMat,0.0,Out);
 
-    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 3 -4 306 -26");
+    Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 3 -4 306 -6");
     makeCell("Maze",System,cellIndex++,voidMat,0.0,Out);
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 3 -43 5 -25");
