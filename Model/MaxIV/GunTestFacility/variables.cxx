@@ -514,7 +514,7 @@ namespace setVariable
     //    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
 
     name = "BellowB";
-    constexpr double bellowBLength = 30.0; // [4]: 30 cm - 2.6 m
+    constexpr double bellowBLength = 20.0; // most upstream location of the slits (see also bellowDLength)
     // Bellow C folding structure has 52 maxima
     constexpr unsigned int bellowBN = 52;//328; // Same as BellowD [Dionis]
     BellowGen.setFlange(bellowOuterR, bellowFlangeLength, yagPortRadius);
@@ -558,7 +558,7 @@ namespace setVariable
     Control.addVariable("YagScreenCYAngle",-90.0);
 
     // Bellow D
-    constexpr double bellowDLength = 153.7; // to fix YagUnitD at 487.7 cm from BackWallEast [TODO: check this distance again]
+    constexpr double bellowDLength = 163.7; // most upstream location of the slits (see also bellowBLength)
     constexpr unsigned int bellowDN = 52;//328; // 328 is counted by KB
     const double bellowDThick =
       getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
