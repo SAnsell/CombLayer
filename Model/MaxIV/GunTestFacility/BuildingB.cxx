@@ -57,6 +57,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -733,62 +734,62 @@ namespace MAXIV::GunTestFacility
 
     ductWave->setFront(getFullRule("MidWallFront"));
     ductWave->setBack(getFullRule("MidWallBack"));
-    ductWave->addInsertCell(getCell("MidWall"));
+    ductWave->addInsertCell("Main",getCell("MidWall"));
     ductWave->createAll(System,*this,0);
 
     ductSignal1->setFront(getFullRule("MidWallFront"));
     ductSignal1->setBack(getFullRule("MidWallBack"));
-    ductSignal1->addInsertCell(getCell("MidWall"));
+    ductSignal1->addInsertCell("Main",getCell("MidWall"));
     ductSignal1->createAll(System,*this,0);
 
     ductSignal2->setFront(getFullRule("MidWallFront"));
     ductSignal2->setBack(getFullRule("MidWallBack"));
-    ductSignal2->addInsertCell(getCell("MidWall"));
+    ductSignal2->addInsertCell("Main",getCell("MidWall"));
     ductSignal2->createAll(System,*this,0);
 
     ductSignal3->setFront(getFullRule("MidWallFront"));
     ductSignal3->setBack(getFullRule("MidWallBack"));
-    ductSignal3->addInsertCell(getCell("MidWall"));
+    ductSignal3->addInsertCell("Main",getCell("MidWall"));
     ductSignal3->createAll(System,*this,0);
 
     ductWater1->setFront(getFullRule("MidWallFront"));
     ductWater1->setBack(getFullRule("MidWallBack"));
-    ductWater1->addInsertCell(getCell("MidWall"));
+    ductWater1->addInsertCell("Main",getCell("MidWall"));
     ductWater1->createAll(System,*this,0);
 
     ductVent->setFront(getFullRule("MidWallFront"));
     ductVent->setBack(getFullRule("MazeWallFrontBack"));
-    ductVent->addInsertCell(getCell("MazeWallFront"));
+    ductVent->addInsertCell("Main",getCell("MazeWallFront"));
     ductVent->createAll(System,*this,0);
 
     ductLaser->setFront(getFullRule("#DoorWallFront"));
     ductLaser->setBack(getFullRule("DoorWallBack"));
-    ductLaser->addInsertCell(getCell("DoorWall"));
+    ductLaser->addInsertCell("Main",getCell("DoorWall"));
     ductLaser->createAll(System,*this,0);
 
     ductSignal4->setFront(getFullRule("#DoorWallFront"));
     ductSignal4->setBack(getFullRule("DoorWallBack"));
-    ductSignal4->addInsertCell(getCell("DoorWall"));
+    ductSignal4->addInsertCell("Main",getCell("DoorWall"));
     ductSignal4->createAll(System,*this,0);
 
     ductWater2->setFront(getFullRule("#DoorWallFront"));
     ductWater2->setBack(getFullRule("DoorWallBack"));
-    ductWater2->addInsertCell(getCell("MazeEntranceLintel"));
+    ductWater2->addInsertCell("Main",getCell("MazeEntranceLintel"));
     ductWater2->createAll(System,*this,0);
 
     ductSuction->setFront(getFullRule("#DoorWallFront"));
     ductSuction->setBack(getFullRule("DoorWallBack"));
-    ductSuction->addInsertCell(getCell("MazeEntranceLintel"));
+    ductSuction->addInsertCell("Main",getCell("MazeEntranceLintel"));
     ductSuction->createAll(System,*this,0);
 
     ductVentRoof1->setFront(getFullRule("RoofGunTestBottom"));
     ductVentRoof1->setBack(getFullRule("#RoofGunTestTop"));
-    ductVentRoof1->addInsertCell(getCell("Roof8GunTest"));
+    ductVentRoof1->addInsertCell("Main",getCell("Roof8GunTest"));
     ductVentRoof1->createAll(System,*this,"RoofGunTestBottom");
 
     ductVentRoof2->setFront(getFullRule("RoofGunTestBottom"));
     ductVentRoof2->setBack(getFullRule("#RoofGunTestTop"));
-    ductVentRoof2->addInsertCell(getCell("Roof8GunTest"));
+    ductVentRoof2->addInsertCell("Main",getCell("Roof8GunTest"));
     ductVentRoof2->createAll(System,*this,"RoofGunTestBottom");
   }
 

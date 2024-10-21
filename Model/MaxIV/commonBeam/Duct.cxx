@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/commonBeam/Duct.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2024 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -66,7 +67,7 @@ namespace xraySystem
 {
 
 Duct::Duct(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Main", "Shield"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -78,7 +79,7 @@ Duct::Duct(const std::string& Key)  :
 {}
 
 Duct::Duct(const Duct& A) :
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
@@ -102,7 +103,7 @@ Duct::operator=(const Duct& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -216,7 +217,7 @@ Duct::createObjects(Simulation& System)
   Out=ModelSupport::getSetHeadRule(SMap,buildIndex," 3 -4 5 -6 -7 ")*frontStr*backStr;
   makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out);
 
-  addOuterSurf(Out);
+  addOuterSurf("Main", Out);
 
   return;
 }
