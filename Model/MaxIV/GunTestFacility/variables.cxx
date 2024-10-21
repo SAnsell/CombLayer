@@ -186,11 +186,11 @@ namespace setVariable
     Control.addVariable(name+"Level9VentillationDuctShieldMat", "Stainless304"); // guess TODO
     Control.addVariable(name+"Level9VentillationDuctShieldOffset",308.0); // [0], page 1
 
-    Control.addVariable(name+"DoorBricksThick",5.0); // TODO check
-    Control.addVariable(name+"DoorBricksHeight",15.0); // TODO check
-    Control.addVariable(name+"DoorBricksLength",150.0); // TODO check
-    Control.addVariable(name+"DoorBricksOffset",10.0); // TODO dummy
-    Control.addVariable(name+"DoorBricksMat","Void"); // TODO dummy
+    Control.addVariable(name+"DoorBricksThick",5.0); // measured
+    Control.addVariable(name+"DoorBricksHeight",20.0); // measured
+    Control.addVariable(name+"DoorBricksLength",120.0); // counting the blocks
+    Control.addVariable(name+"DoorBricksOffset",34.5); // measured
+    Control.addVariable(name+"DoorBricksMat","Lead"); //
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
