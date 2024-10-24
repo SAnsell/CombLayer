@@ -81,6 +81,7 @@ Bellows::Bellows(const Bellows& A) :
   GeneralPipe(A),
   bellowThick(A.bellowThick),
   bellowStep(A.bellowStep),
+  nFolds(A.nFolds),
   bellowMat(A.bellowMat)
   /*!
     Copy constructor
@@ -101,6 +102,7 @@ Bellows::operator=(const Bellows& A)
       GeneralPipe::operator=(A);
       bellowThick=A.bellowThick;
       bellowStep=A.bellowStep;
+      nFolds=A.nFolds;
       bellowMat=A.bellowMat;
     }
   return *this;
@@ -124,6 +126,7 @@ Bellows::populate(const FuncDataBase& Control)
   GeneralPipe::populate(Control);
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
+  bellowStep=Control.EvalDefVar<int>(keyName+"NFolds",10);
 
   bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",pipeMat);
   outerVoid=1;  // no options:
