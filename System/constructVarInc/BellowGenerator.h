@@ -43,6 +43,7 @@ class BellowGenerator :
   double bellowStep;              ///< bellow step from flange
     double wallThick;             ///< wall thickness
     int nFolds;                   ///< number of foldings
+    int engActive;                ///< engineering active flag
   double bellowThick;             ///< bellow thickness.
 
   std::string bellowMat;        ///< Primary bellow material

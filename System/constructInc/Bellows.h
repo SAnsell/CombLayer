@@ -44,6 +44,7 @@ class Bellows :
   double bellowStep;  ///< step from inner flange
   double wallThick;   ///< wall thickness
   int nFolds;         ///< number of foldings
+  int engActive;                ///< engineering active flag
 
   int bellowMat;      ///< Material for bellow (def main)
 

@@ -84,6 +84,7 @@ Bellows::Bellows(const Bellows& A) :
   bellowStep(A.bellowStep),
   wallThick(A.wallThick),
   nFolds(A.nFolds),
+  engActive(A.engActive),
   bellowMat(A.bellowMat)
   /*!
     Copy constructor
@@ -106,6 +107,7 @@ Bellows::operator=(const Bellows& A)
       bellowStep=A.bellowStep;
       wallThick=A.wallThick;
       nFolds=A.nFolds;
+      engActive=A.engActive;
       bellowMat=A.bellowMat;
     }
   return *this;
@@ -171,6 +173,7 @@ Bellows::populate(const FuncDataBase& Control)
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   nFolds=Control.EvalVar<int>(keyName+"NFolds");
+  engActive=Control.EvalPair<int>(keyName+"EngineeringActive","EngineeringActive");
   bellowThick=getBellowThick();
 
   const double frac = getDensityFraction();
