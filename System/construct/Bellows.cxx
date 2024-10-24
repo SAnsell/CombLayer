@@ -128,6 +128,13 @@ Bellows::getBellowLength() const
   return length-flangeA.thick-flangeB.thick-bellowStep*2.0;
 }
 
+double
+Bellows::getHalfFoldLength() const
+{
+  const double L = getBellowLength();
+  const double foldLength = L/nFolds;
+  return foldLength/2.0;
+}
 
 double
 Bellows::getBellowThick() const
@@ -135,9 +142,7 @@ Bellows::getBellowThick() const
   Return bellow thickness based on nFolds
  */
 {
-  const double L = getBellowLength();
-  const double foldLength = L/nFolds;
-  const double halfFold = foldLength/2.0;
+  const double halfFold = getHalfFoldLength();
   const double R = std::max(flangeA.radius, flangeB.radius); // bellow outer radius at max compression TODO: don't guess, make it a variable, but check outerVoid below
   const double r = radius; // bellow inner radius
   const double maxThick = R-r-pipeThick; // thickness at max compression
@@ -197,15 +202,15 @@ Bellows::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,
 			      Y,radius+pipeThick+bellowThick);
 
-
   FrontBackCut::getShiftedFront
     (SMap,buildIndex+121,Y,(flangeA.thick+bellowStep));
-
 
   FrontBackCut::getShiftedBack
     (SMap,buildIndex+221,Y,-(flangeB.thick+bellowStep));
 
+  if (engActive) {
 
+  }
 
   return;
 }

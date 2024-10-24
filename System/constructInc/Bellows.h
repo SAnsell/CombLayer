@@ -49,6 +49,7 @@ class Bellows :
   int bellowMat;      ///< Material for bellow (def main)
 
   double getBellowLength() const;
+  double getHalfFoldLength() const;
   double getBellowThick() const;
   double getDensityFraction() const;
 
