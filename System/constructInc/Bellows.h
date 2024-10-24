@@ -51,6 +51,7 @@ class Bellows :
   double getBellowLength() const;
   double getHalfFoldLength() const;
   double getBellowThick() const;
+  double getBellowRadius() const;
   double getDensityFraction() const;
 
   virtual void populate(const FuncDataBase&) override;
