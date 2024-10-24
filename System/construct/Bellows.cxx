@@ -62,6 +62,7 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"
+#include "Exception.h"
 
 #include "GeneralPipe.h"
 #include "Bellows.h"
@@ -122,15 +123,18 @@ Bellows::getBellowLength() const
 
 
 double
-Bellows::getBellowThick()
+Bellows::getBellowThick() const
 {
   const double L = getBellowLength();
   const double foldLength = L/nFolds;
   const double halfFold = foldLength/2.0;
-  const double R = std::max(flangeA.radius, flangeB.radius); // bellow outer radius
+  const double R = std::max(flangeA.radius, flangeB.radius); // bellow outer radius at max compression TODO: don't guess, make it a variable
   const double r = radius; // bellow inner radius
   const double maxThick = R-r-pipeThick; // thickness at max compression
-  return sqrt(maxThick*maxThick - halfFold-halfFold);
+  ELog::EM << maxThick << " " << halfFold << ELog::endDiag;
+  if (maxThick<halfFold+Geometry::zeroTol)
+    throw ColErr::NumericalAbort("Bellows: impossible combination of R, length and nFolds. Try to increase nFolds.");
+  return sqrt(maxThick*maxThick - halfFold*halfFold);
 }
 
 void
@@ -143,9 +147,9 @@ Bellows::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Bellows","populate");
 
   GeneralPipe::populate(Control);
-  bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
   nFolds=Control.EvalDefVar<int>(keyName+"NFolds",10);
+  bellowThick=getBellowThick();
 
   bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",pipeMat);
   outerVoid=1;  // no options:

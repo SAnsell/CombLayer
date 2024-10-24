@@ -47,7 +47,7 @@ class Bellows :
   int bellowMat;      ///< Material for bellow (def main)
 
   double getBellowLength() const;
-  double getBellowThick();
+  double getBellowThick() const;
 
   virtual void populate(const FuncDataBase&) override;
   void createSurfaces() override;
