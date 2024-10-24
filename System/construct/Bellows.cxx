@@ -82,6 +82,7 @@ Bellows::Bellows(const Bellows& A) :
   GeneralPipe(A),
   bellowThick(A.bellowThick),
   bellowStep(A.bellowStep),
+  wallThick(A.wallThick),
   nFolds(A.nFolds),
   bellowMat(A.bellowMat)
   /*!
@@ -103,6 +104,7 @@ Bellows::operator=(const Bellows& A)
       GeneralPipe::operator=(A);
       bellowThick=A.bellowThick;
       bellowStep=A.bellowStep;
+      wallThick=A.wallThick;
       nFolds=A.nFolds;
       bellowMat=A.bellowMat;
     }
@@ -117,6 +119,9 @@ Bellows::~Bellows()
 
 double
 Bellows::getBellowLength() const
+/*!
+  Return the accordeon structure length
+ */
 {
   return length-flangeA.thick-flangeB.thick-bellowStep*2.0;
 }
@@ -124,17 +129,33 @@ Bellows::getBellowLength() const
 
 double
 Bellows::getBellowThick() const
+/*!
+  Return bellow thickness based on nFolds
+ */
 {
   const double L = getBellowLength();
   const double foldLength = L/nFolds;
   const double halfFold = foldLength/2.0;
-  const double R = std::max(flangeA.radius, flangeB.radius); // bellow outer radius at max compression TODO: don't guess, make it a variable
+  const double R = std::max(flangeA.radius, flangeB.radius); // bellow outer radius at max compression TODO: don't guess, make it a variable, but check outerVoid below
   const double r = radius; // bellow inner radius
   const double maxThick = R-r-pipeThick; // thickness at max compression
   ELog::EM << maxThick << " " << halfFold << ELog::endDiag;
   if (maxThick<halfFold+Geometry::zeroTol)
     throw ColErr::NumericalAbort("Bellows: impossible combination of R, length and nFolds. Try to increase nFolds.");
   return sqrt(maxThick*maxThick - halfFold*halfFold);
+}
+
+double
+Bellows::getDensityFraction() const
+/*!
+  Return density fraction of the homogenised accordion structure with
+  respect to the density of its wall (i.e. return 1 for a fully
+  compressed bellow)
+ */
+{
+  const double L = nFolds*2*wallThick; // max compressed length
+  const double l = getBellowLength();
+  return L/l;
 }
 
 void
@@ -148,10 +169,14 @@ Bellows::populate(const FuncDataBase& Control)
 
   GeneralPipe::populate(Control);
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
-  nFolds=Control.EvalDefVar<int>(keyName+"NFolds",10);
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  nFolds=Control.EvalVar<int>(keyName+"NFolds");
   bellowThick=getBellowThick();
 
+  const double frac = getDensityFraction();
   bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",pipeMat);
+  // bellowMat=ModelSupport::EvalMat<int>(Control,
+  // 				  keyName+"BellowMat"+"%Void%"+std::to_string(frac));
   outerVoid=1;  // no options:
   return;
 }

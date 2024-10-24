@@ -41,6 +41,7 @@ class BellowGenerator :
  private:
 
   double bellowStep;              ///< bellow step from flange
+    double wallThick;             ///< wall thickness
     int nFolds;                   ///< number of foldings
   double bellowThick;             ///< bellow thickness.
 

@@ -42,12 +42,14 @@ class Bellows :
 
   double bellowThick; ///< Total thickness
   double bellowStep;  ///< step from inner flange
+  double wallThick;   ///< wall thickness
   int nFolds;         ///< number of foldings
 
   int bellowMat;      ///< Material for bellow (def main)
 
   double getBellowLength() const;
   double getBellowThick() const;
+  double getDensityFraction() const;
 
   virtual void populate(const FuncDataBase&) override;
   void createSurfaces() override;
