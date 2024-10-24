@@ -114,6 +114,25 @@ Bellows::~Bellows()
   */
 {}
 
+double
+Bellows::getBellowLength() const
+{
+  return length-flangeA.thick-flangeB.thick-bellowStep*2.0;
+}
+
+
+double
+Bellows::getBellowThick()
+{
+  const double L = getBellowLength();
+  const double foldLength = L/nFolds;
+  const double halfFold = foldLength/2.0;
+  const double R = std::max(flangeA.radius, flangeB.radius); // bellow outer radius
+  const double r = radius; // bellow inner radius
+  const double maxThick = R-r-pipeThick; // thickness at max compression
+  return sqrt(maxThick*maxThick - halfFold-halfFold);
+}
+
 void
 Bellows::populate(const FuncDataBase& Control)
   /*!
@@ -126,7 +145,7 @@ Bellows::populate(const FuncDataBase& Control)
   GeneralPipe::populate(Control);
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
-  bellowStep=Control.EvalDefVar<int>(keyName+"NFolds",10);
+  nFolds=Control.EvalDefVar<int>(keyName+"NFolds",10);
 
   bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",pipeMat);
   outerVoid=1;  // no options:
