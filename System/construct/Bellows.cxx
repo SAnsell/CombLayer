@@ -231,6 +231,10 @@ Bellows::createSurfaces()
     (SMap,buildIndex+221,Y,-(flangeB.thick+bellowStep));
 
   if (engActive) {
+
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+122,buildIndex+121,Y,wallThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+222,buildIndex+221,Y,-wallThick);
+
     const double halfFold = getHalfFoldLength();
     const double angle = atan(bellowThick/halfFold)*180.0/M_PI;
     const double rt = halfFold*getBellowRadius()/getBellowThick();
@@ -297,12 +301,18 @@ Bellows::createObjects(Simulation& System)
 	const HeadRule side =
 	  ModelSupport::getHeadRule(SMap,buildIndex,"7 -27");
 
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"121 -122");
+	  makeCell("FoldFront",System,cellIndex++,bellowMat,0.0,HR*side);
+	HR=ModelSupport::getHeadRule(SMap,buildIndex,"222 -221");
+	  makeCell("FoldBack",System,cellIndex++,bellowMat,0.0,HR*side);
+
 	int SI=buildIndex+300;
 	for (int i=0; i<nFolds+1; ++i) {
 	  const HeadRule front = (i == 0) ?
-	    ModelSupport::getHeadRule(SMap,buildIndex,"121") :
+	    ModelSupport::getHeadRule(SMap,buildIndex,"122") :
 	    ModelSupport::getHeadRule(SMap,SI-20,"2");
-	  const HeadRule back =  ModelSupport::getHeadRule(SMap,SI,"-2");
+	  const HeadRule back =  (i==nFolds) ? ModelSupport::getHeadRule(SMap,buildIndex,"-222") :
+	    ModelSupport::getHeadRule(SMap,SI,"-2");
 
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,SI,"7 -1M -8M");
 	  makeCell("VoidBelow1",System,cellIndex++,voidMat,0.0,HR*front);
