@@ -71,6 +71,12 @@ global_settings {
 }
 
 #switch ( 0 )
+  #case(strcmp(ITEM,"DuctWater1"))
+    #declare cameraLocation = <-140, -156, 0>;
+    #declare cameraLookAt   = <-215, -90, -115>;
+    #declare cameraAngle = 90;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"Slits"))
 //    #declare cameraLocation = <0, -136.4, 0>; // most upstream position
     #declare cameraLocation = <0, -230, 0>; // ~ most downstream position
