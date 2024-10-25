@@ -86,10 +86,14 @@ Duct::Duct(const Duct& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
   radius(A.radius),
+  ductType(A.ductType),
   shieldType(A.shieldType),
+  shieldPenetrationType(A.shieldPenetrationType),
   shieldPenetrationZOffset(A.shieldPenetrationZOffset),
   shieldPenetrationXOffset(A.shieldPenetrationXOffset),
   shieldPenetrationRadius(A.shieldPenetrationRadius),
+  shieldPenetrationWidth(A.shieldPenetrationWidth),
+  shieldPenetrationHeight(A.shieldPenetrationHeight),
   shieldThick(A.shieldThick),
   shieldWidthRight(A.shieldWidthRight),
   shieldWidthLeft(A.shieldWidthLeft),
@@ -123,10 +127,14 @@ Duct::operator=(const Duct& A)
       width=A.width;
       height=A.height;
       radius=A.radius;
+      ductType=A.ductType;
       shieldType=A.shieldType;
+      shieldPenetrationType=A.shieldPenetrationType;
       shieldPenetrationZOffset=A.shieldPenetrationZOffset;
       shieldPenetrationXOffset=A.shieldPenetrationXOffset;
       shieldPenetrationRadius=A.shieldPenetrationRadius;
+      shieldPenetrationWidth=A.shieldPenetrationWidth;
+      shieldPenetrationHeight=A.shieldPenetrationHeight;
       shieldThick=A.shieldThick;
       shieldWidthRight=A.shieldWidthRight;
       shieldWidthLeft=A.shieldWidthLeft;
@@ -169,11 +177,15 @@ Duct::populate(const FuncDataBase& Control)
   length=Control.EvalDefVar<double>(keyName+"Length",0.0);
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  radius=Control.EvalDefVar<double>(keyName+"Radius",0.0);
+  radius=Control.EvalVar<double>(keyName+"Radius");
+  ductType=Control.EvalVar<std::string>(keyName+"DuctType");
   shieldType=Control.EvalVar<std::string>(keyName+"ShieldType");
+  shieldPenetrationType=Control.EvalVar<std::string>(keyName+"ShieldPenetrationType");
   shieldPenetrationZOffset=Control.EvalVar<double>(keyName+"ShieldPenetrationZOffset");
   shieldPenetrationXOffset=Control.EvalVar<double>(keyName+"ShieldPenetrationXOffset");
   shieldPenetrationRadius=Control.EvalVar<double>(keyName+"ShieldPenetrationRadius");
+  shieldPenetrationWidth=Control.EvalVar<double>(keyName+"ShieldPenetrationWidth");
+  shieldPenetrationHeight=Control.EvalVar<double>(keyName+"ShieldPenetrationHeight");
   shieldThick=Control.EvalVar<double>(keyName+"ShieldThick");
   shieldWidthRight=Control.EvalVar<double>(keyName+"ShieldWidthRight");
   shieldWidthLeft=Control.EvalVar<double>(keyName+"ShieldWidthLeft");
@@ -207,6 +219,8 @@ Duct::createSurfaces()
 {
   ELog::RegMethod RegA("Duct","createSurfaces");
 
+  ELog::EM << "*****HHH " << keyName << " " << ductType << " " << shieldType << " " << shieldPenetrationType << ELog::endDiag;
+
   if (length<Geometry::zeroTol)
     if (!frontActive() || !backActive())
       throw  ColErr::ExitAbort("Length must be defined of no front/back rules are set");
@@ -221,24 +235,19 @@ Duct::createSurfaces()
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
   }
 
-  if (radius>Geometry::zeroTol) {
+  if (ductType == "Cylinder") {
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-  } else {
+  } else if (ductType == "Rectangle") {
     ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
     ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
     ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
     ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
-  }
+  } else
+    throw  ColErr::ExitAbort(keyName+": Unknown duct type: " + ductType);
 
-  if ((shieldType != "None") && (shieldPenetrationRadius>0.0)) {
-    ModelSupport::buildCylinder(SMap,buildIndex+17,
-				Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
-				shieldPenetrationRadius);
-  }
-
-
-  if (shieldType == "RectangularCover") {
+  if (shieldType == "None") {;}
+  else if (shieldType == "RectangularCover") {
     ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+12,Y,-shieldWallOffset-shieldThick);
     ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+12,Y,shieldThick);
 
@@ -246,7 +255,32 @@ Duct::createSurfaces()
     ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(shieldWidthRight),X);
     ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(shieldDepth),Z);
     ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(shieldHeight),Z);
+  } else
+    throw  ColErr::ExitAbort(keyName+": Unknown shield type: " + shieldType);
+
+  if (shieldType != "None") {
+    if (shieldPenetrationType=="Cylinder")
+      ModelSupport::buildCylinder(SMap,buildIndex+27,
+				  Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
+				  shieldPenetrationRadius);
+    else if (shieldPenetrationType=="Rectangle") {
+      ModelSupport::buildPlane(SMap,buildIndex+23,
+			       Origin-X*(shieldPenetrationWidth/2.0-shieldPenetrationXOffset),X);
+      ModelSupport::buildPlane(SMap,buildIndex+24,
+			       Origin+X*(shieldPenetrationWidth/2.0+shieldPenetrationXOffset),X);
+      ModelSupport::buildPlane(SMap,buildIndex+25,
+			       Origin-Z*(shieldPenetrationHeight/2.0-shieldPenetrationZOffset),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+26,
+			       Origin+Z*(shieldPenetrationHeight/2.0+shieldPenetrationZOffset),Z);
+    } else if (shieldPenetrationType=="None") {
+    } else
+      throw  ColErr::ExitAbort(keyName+": wrong shield penetration type: " + shieldPenetrationType);
   }
+
+  //  if (keyName=="BldBDuctWave") {
+      ELog::EM << "******** HERE1: " << keyName << " " << shieldPenetrationType << " " << ELog::endDiag;
+      //}
+
 
   return;
 }
@@ -264,31 +298,48 @@ Duct::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  Out=ModelSupport::getSetHeadRule(SMap,buildIndex," 3 -4 5 -6 -7 ")*frontStr*backStr;
-  makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out);
+  if (ductType == "Cylinder")
+    Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  else if (ductType == "Rectangle")
+    Out=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  else
+    throw  ColErr::ExitAbort(keyName+": Unknown duct type: " + ductType);
+
+  makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out*frontStr*backStr);
 
   addOuterSurf("Main", Out);
 
-  if (shieldType == "RectangularCover") {
-    HeadRule penetration= shieldPenetrationRadius > 0.0 ?
-      ModelSupport::getSetHeadRule(SMap,buildIndex,"17") : nullptr;
+  HeadRule penetration=nullptr;
+  if (shieldPenetrationType=="None")
+    ;
+  else if (shieldPenetrationType=="Cylinder")
+    penetration=ModelSupport::getHeadRule(SMap,buildIndex,"-27");
+  else if (shieldPenetrationType=="Rectangle")
+    penetration=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 25 -26");
+  else
+    throw  ColErr::ExitAbort(keyName+": Unknown shield penetration type: " + shieldPenetrationType);
 
+  if (shieldType == "RectangularCover") {
     if (shieldWallOffset>0.0) {
-      Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
       makeCell("ShieldWallOffset",System,cellIndex++,voidMat,0.0,Out);
     }
 
-    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -11 13 -14 15 -16");
-    if (shieldPenetrationRadius>0.0)
-      Out *= penetration;
+    if (keyName=="BldBDuctWave") {
+      ELog::EM << "******** HERE2: " << keyName << " " << shieldPenetrationType << " " << penetration << ELog::endDiag;
+    }
+
+    Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -11 13 -14 15 -16");
+    if (shieldPenetrationType!="None")
+      Out *= penetration.complement();
     makeCell("ShieldPlate",System,cellIndex++,shieldMat,0.0,Out);
 
-    if (shieldPenetrationRadius>0.0) {
-      Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -17")*backStr.complement();
+    if (shieldPenetrationType!="None") {
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"12")*backStr.complement()*penetration;
       makeCell("ShieldPenetration",System,cellIndex++,voidMat,0.0,Out);
     }
 
-    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 13 -14 15 -16")*backStr.complement();
+    Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 13 -14 15 -16")*backStr.complement();
     addOuterSurf("Shield", Out);
   }
 

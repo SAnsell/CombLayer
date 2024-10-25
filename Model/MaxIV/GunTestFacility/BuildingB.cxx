@@ -732,9 +732,10 @@ namespace MAXIV::GunTestFacility
   {
     ELog::RegMethod RegA("BuildingB","createDucts");
 
-    ductWave->setFront(getFullRule("MidWallFront"));
-    ductWave->setBack(getFullRule("MidWallBack"));
+    ductWave->setFront(getFullRule("MidWallBack"));
+    ductWave->setBack(getFullRule("MidWallFront"));
     ductWave->addInsertCell("Main",getCell("MidWall"));
+    ductWave->addInsertCell("Shield",getCell("GunRoom"));
     ductWave->createAll(System,*this,0);
 
     ductSignal1->setFront(getFullRule("MidWallFront"));

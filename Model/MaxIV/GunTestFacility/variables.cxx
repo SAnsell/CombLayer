@@ -200,16 +200,23 @@ namespace setVariable
 
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
-    DuctGen.generate(Control,name+"DuctWave",90.0, 0.0, length2-136.5, 269-depth); //  [4]
+    DuctGen.generate(Control,name+"DuctWave","Cylinder","RectangularCover","Rectangle", 90.0, 0.0, length2-136.5, 269-depth); //  [4]
+    Control.addVariable(name+"DuctWaveShieldDepth",20.0);
+    Control.addVariable(name+"DuctWaveShieldHeight",20.0);
+    Control.addVariable(name+"DuctWaveShieldWidthLeft",20.0);
+    Control.addVariable(name+"DuctWaveShieldWidthRight",20.0);
+    Control.addVariable(name+"DuctWaveShieldPenetrationWidth",10);
+    Control.addVariable(name+"DuctWaveShieldPenetrationHeight",5);
+    Control.addVariable(name+"DuctWaveShieldPenetrationXOffset",1);
+    Control.addVariable(name+"DuctWaveShieldPenetrationZOffset",-2.5);
 
     DuctGen.setSize(5.0); // [0], page 4
-    DuctGen.generate(Control,name+"DuctSignal1",90.0, 0.0, length2-161.5, 279.0-depth); // [4]
-    DuctGen.generate(Control,name+"DuctSignal2",90.0, 0.0, length2-191.5+5, 278.5-depth); // [4]
+    DuctGen.generate(Control,name+"DuctSignal1","Cylinder","None","None",90.0, 0.0, length2-161.5, 279.0-depth); // [4]
+    DuctGen.generate(Control,name+"DuctSignal2","Cylinder","None","None",90.0, 0.0, length2-191.5+5, 278.5-depth); // [4]
 
     DuctGen.setSize(8.0); // [4]
-    DuctGen.generate(Control,name+"DuctSignal3",90.0, 0.0, length2-189.0, 11.5-depth); // [0], pages 2, 4
-    DuctGen.generate(Control,name+"DuctWater1",90.0, 0.0, length2-219.0+3, 11.5-depth-2.0); // [4]
-    Control.addVariable(name+"DuctWater1ShieldType","RectangularCover");
+    DuctGen.generate(Control,name+"DuctSignal3","Cylinder","None","None",90.0, 0.0, length2-189.0, 11.5-depth); // [0], pages 2, 4
+    DuctGen.generate(Control,name+"DuctWater1","Cylinder","RectangularCover","None",90.0, 0.0, length2-219.0+3, 11.5-depth-2.0); // [4]
     Control.addVariable(name+"DuctWater1ShieldThick",5.0);
     Control.addVariable(name+"DuctWater1ShieldDepth",-0.5); // -0.5 -> 10 cm from the floor
     Control.addVariable(name+"DuctWater1ShieldHeight",30.5);
@@ -218,39 +225,38 @@ namespace setVariable
     Control.addVariable(name+"DuctWater1ShieldWallOffset",15.0);
 
     DuctGen.setSize(10.0); // [0], page 4
-    DuctGen.generate(Control,name+"DuctVentillationPenetration",90.0,
+    DuctGen.generate(Control,name+"DuctVentillationPenetration","Cylinder","None","None",90.0,
 		     0.0, length2+backWallThick+77.0, 224.5-depth); //[0], pages 2, 4
 
     DuctGen.setSize(8.0); // [4]
-    DuctGen.generate(Control,name+"DuctLaser",0.0,
+    DuctGen.generate(Control,name+"DuctLaser","Cylinder","RectangularCover","Cylinder",0.0,
 		     width2+outerWallThick-55.0,0.0, 263.0-depth+7.0); // [4]
-    Control.addVariable(name+"DuctLaserShieldType","RectangularCover");
     Control.addVariable(name+"DuctLaserShieldPenetrationRadius",4.0);
 
     constexpr double duct6width = 39.7; // [0], page 3
     constexpr double duct6height = 10.0; // [0], page 3
     DuctGen.setSize(duct6width,duct6height);
-    DuctGen.generate(Control,name+"DuctSignal4",0.0,
+    DuctGen.generate(Control,name+"DuctSignal4","Rectangle","None","None",0.0,
 		     185.0-width2-outerWallThick, 0.0,
 		     257.5-depth+duct6height/2.0); //[0], pages 2, 4
 
     constexpr double duct7width = 56.0; // [0], page 3
     constexpr double duct7height = 19.0; // [0], page 3
     DuctGen.setSize(duct7width,duct7height);
-    DuctGen.generate(Control,name+"DuctWater2",0.0,
+    DuctGen.generate(Control,name+"DuctWater2","Rectangle","RectangularCover","None",0.0,
 		     114.0-width2-outerWallThick, 0.0,
 		     271.0-depth+duct7height/2.0); //[0], pages 2, 4
 
     DuctGen.setSize(11.25); // [0], page 3, but [7]: diam = 225 mm => R = 11.25 cm, AR measured: close to 11.25
-    DuctGen.generate(Control,name+"DuctSuctionFan",0.0,
+    DuctGen.generate(Control,name+"DuctSuctionFan","Cylinder","None","None",0.0,
 		     55.0-width2-outerWallThick, 0.0,
 		     280.0-depth); //[0], pages 2 and 3
 
     DuctGen.setSize(22.0); // [0], page 1
-    DuctGen.generate(Control,name+"DuctVentillationRoof1",0.0,
+    DuctGen.generate(Control,name+"DuctVentillationRoof1","Cylinder","None","None",0.0,
 		     30.0-width2, 0.0, // [0] page 1
 		     length2+backWallThick+mazeWidth-370.0); //[0], page 2
-    DuctGen.generate(Control,name+"DuctVentillationRoof2",0.0,
+    DuctGen.generate(Control,name+"DuctVentillationRoof2","Cylinder","None","None",0.0,
 		     30.0-width2, 0.0, // [0] page 1
 		     length2+backWallThick+mazeWidth-370.0-120.0); //[0], page 2
 

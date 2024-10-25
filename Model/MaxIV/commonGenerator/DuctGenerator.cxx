@@ -51,12 +51,16 @@ namespace setVariable
 
 DuctGenerator::DuctGenerator() :
   length(0.0),width(50.0),height(150.0),
-  radius(0.0),voidMat(0),
+  radius(1.0),voidMat(0),
+  ductType("Cylinder"),
   shieldMat("Stainless304"),
   shieldType("None"),
+  shieldPenetrationType("None"),
   shieldPenetrationZOffset(-2.0),
   shieldPenetrationXOffset(1.0),
-  shieldPenetrationRadius(-1.0), // <0 -> no shield penetration
+  shieldPenetrationRadius(1.0),
+  shieldPenetrationWidth(2.0),
+  shieldPenetrationHeight(1.0),
   shieldThick(5),
   shieldWidthRight(13),
   shieldWidthLeft(18),
@@ -77,6 +81,9 @@ DuctGenerator::~DuctGenerator()
 void
 DuctGenerator::generate(FuncDataBase& Control,
 			const std::string& keyName,
+			const std::string& ductType,
+			const std::string& shieldType,
+			const std::string& shieldPenetrationType,
 			const double& zAngle,
 			const double& xStep,
 			const double& yStep,
@@ -93,10 +100,14 @@ DuctGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"DuctType",ductType);
   Control.addVariable(keyName+"ShieldType",shieldType);
+  Control.addVariable(keyName+"ShieldPenetrationType",shieldPenetrationType);
   Control.addVariable(keyName+"ShieldPenetrationZOffset",shieldPenetrationZOffset);
   Control.addVariable(keyName+"ShieldPenetrationXOffset",shieldPenetrationXOffset);
   Control.addVariable(keyName+"ShieldPenetrationRadius",shieldPenetrationRadius);
+  Control.addVariable(keyName+"ShieldPenetrationWidth",shieldPenetrationWidth);
+  Control.addVariable(keyName+"ShieldPenetrationHeight",shieldPenetrationHeight);
   Control.addVariable(keyName+"ShieldThick",shieldThick);
   Control.addVariable(keyName+"ShieldWidthRight",shieldWidthRight);
   Control.addVariable(keyName+"ShieldWidthLeft",shieldWidthLeft);

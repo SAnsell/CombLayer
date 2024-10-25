@@ -71,6 +71,12 @@ global_settings {
 }
 
 #switch ( 0 )
+  #case(strcmp(ITEM,"DuctWave"))
+    #declare cameraLocation = <155, 122, 40>;
+    #declare cameraLookAt   = <-215, -7, 135>;
+    #declare cameraAngle = 60;
+    #declare projection = 0;
+  #break
   #case(strcmp(ITEM,"DuctWater1"))
     #declare cameraLocation = <-140, -156, 0>;
     #declare cameraLookAt   = <-215, -90, -115>;

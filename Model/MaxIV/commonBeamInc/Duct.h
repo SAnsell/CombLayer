@@ -48,10 +48,14 @@ class Duct :
   double width;                 ///< Width
   double height;                ///< Height
   double radius;                ///< duct radius (if circular)
+  std::string ductType;         ///< duct type (Cylindrical/Rectangular)
   std::string shieldType;       ///< shielding type
+  std::string shieldPenetrationType; ///< shielding penetration type (Cylindrical/Rectangular)
   double shieldPenetrationZOffset; ///< shield penetration z-offset
   double shieldPenetrationXOffset; ///< shield penetration x-offset
   double shieldPenetrationRadius; ///< penetration radius in the shield
+  double shieldPenetrationWidth; ///< shielding rectangular penetration full width
+  double shieldPenetrationHeight; ///< shielding rectangular penetration full height
   double shieldThick;           ///< shielding thickness
   double shieldWidthRight;      ///< shielding right-width
   double shieldWidthLeft;       ///< shielding left-width
