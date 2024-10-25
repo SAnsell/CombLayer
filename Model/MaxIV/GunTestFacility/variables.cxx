@@ -243,7 +243,7 @@ namespace setVariable
     constexpr double duct7width = 56.0; // [0], page 3
     constexpr double duct7height = 19.0; // [0], page 3
     DuctGen.setSize(duct7width,duct7height);
-    DuctGen.generate(Control,name+"DuctWater2","Rectangle","RectangularCover","None",0.0,
+    DuctGen.generate(Control,name+"DuctWater2","Rectangle","None","None",0.0,
 		     114.0-width2-outerWallThick, 0.0,
 		     271.0-depth+duct7height/2.0); //[0], pages 2, 4
 
