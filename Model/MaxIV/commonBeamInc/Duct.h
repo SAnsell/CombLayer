@@ -57,6 +57,7 @@ class Duct :
   double shieldWidthLeft;       ///< shielding left-width
   double shieldDepth;           ///< shielding depth
   double shieldHeight;          ///< shielding height
+  double shieldWallOffset;      ///< shield offset from the wall (along y)
 
   int voidMat;                  ///< Void material
   int shieldMat;                ///< shielding material

@@ -209,6 +209,13 @@ namespace setVariable
     DuctGen.setSize(8.0); // [4]
     DuctGen.generate(Control,name+"DuctSignal3",90.0, 0.0, length2-189.0, 11.5-depth); // [0], pages 2, 4
     DuctGen.generate(Control,name+"DuctWater1",90.0, 0.0, length2-219.0+3, 11.5-depth-2.0); // [4]
+    Control.addVariable(name+"DuctWater1ShieldType","RectangularCover");
+    Control.addVariable(name+"DuctWater1ShieldThick",5.0);
+    Control.addVariable(name+"DuctWater1ShieldDepth",-0.5); // -0.5 -> 10 cm from the floor
+    Control.addVariable(name+"DuctWater1ShieldHeight",30.5);
+    Control.addVariable(name+"DuctWater1ShieldWidthLeft",26.5); // downstream
+    Control.addVariable(name+"DuctWater1ShieldWidthRight",53.5); // upstream
+    Control.addVariable(name+"DuctWater1ShieldWallOffset",15.0);
 
     DuctGen.setSize(10.0); // [0], page 4
     DuctGen.generate(Control,name+"DuctVentillationPenetration",90.0,

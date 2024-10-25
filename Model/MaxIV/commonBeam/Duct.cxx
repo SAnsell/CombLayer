@@ -95,6 +95,7 @@ Duct::Duct(const Duct& A) :
   shieldWidthLeft(A.shieldWidthLeft),
   shieldDepth(A.shieldDepth),
   shieldHeight(A.shieldHeight),
+  shieldWallOffset(A.shieldWallOffset),
   voidMat(A.voidMat),
   shieldMat(A.shieldMat)
   /*!
@@ -131,6 +132,7 @@ Duct::operator=(const Duct& A)
       shieldWidthLeft=A.shieldWidthLeft;
       shieldDepth=A.shieldDepth;
       shieldHeight=A.shieldHeight;
+      shieldWallOffset=A.shieldWallOffset;
       voidMat=A.voidMat;
       shieldMat=A.shieldMat;
     }
@@ -177,6 +179,7 @@ Duct::populate(const FuncDataBase& Control)
   shieldWidthLeft=Control.EvalVar<double>(keyName+"ShieldWidthLeft");
   shieldDepth=Control.EvalVar<double>(keyName+"ShieldDepth");
   shieldHeight=Control.EvalVar<double>(keyName+"ShieldHeight");
+  shieldWallOffset=Control.EvalVar<double>(keyName+"ShieldWallOffset");
 
   if (radius>Geometry::zeroTol)
     if (width>0.0 || height>0.0)
@@ -228,16 +231,16 @@ Duct::createSurfaces()
     ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
   }
 
-  if (shieldType != "None") {
-    if (shieldPenetrationRadius>0.0)
-      ModelSupport::buildCylinder(SMap,buildIndex+17,
-				  Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
-				  shieldPenetrationRadius);
+  if ((shieldType != "None") && (shieldPenetrationRadius>0.0)) {
+    ModelSupport::buildCylinder(SMap,buildIndex+17,
+				Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
+				shieldPenetrationRadius);
   }
 
 
   if (shieldType == "RectangularCover") {
-    ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+11,Y,-shieldThick);
+    ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+12,Y,-shieldWallOffset-shieldThick);
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+12,Y,shieldThick);
 
     ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(shieldWidthLeft),X);
     ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(shieldWidthRight),X);
@@ -270,17 +273,22 @@ Duct::createObjects(Simulation& System)
     HeadRule penetration= shieldPenetrationRadius > 0.0 ?
       ModelSupport::getSetHeadRule(SMap,buildIndex,"17") : nullptr;
 
-    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
+    if (shieldWallOffset>0.0) {
+      Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
+      makeCell("ShieldWallOffset",System,cellIndex++,voidMat,0.0,Out);
+    }
+
+    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -11 13 -14 15 -16");
     if (shieldPenetrationRadius>0.0)
       Out *= penetration;
     makeCell("ShieldPlate",System,cellIndex++,shieldMat,0.0,Out);
 
     if (shieldPenetrationRadius>0.0) {
-      Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 -17")*backStr.complement();
+      Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 -17")*backStr.complement();
       makeCell("ShieldPenetration",System,cellIndex++,voidMat,0.0,Out);
     }
 
-    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
+    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"12 13 -14 15 -16")*backStr.complement();
     addOuterSurf("Shield", Out);
   }
 
