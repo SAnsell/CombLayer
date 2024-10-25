@@ -160,7 +160,9 @@ Bellows::getBellowThick() const
   const double maxThick = R-r; // thickness at max compression
 
   if (maxThick<halfFold+Geometry::zeroTol)
-    throw ColErr::NumericalAbort("Bellows: impossible combination of R, length and nFolds. Try to increase nFolds.");
+    throw ColErr::NumericalAbort(keyName + ": impossible combination of R="+std::to_string(R)+
+				 ", length="+std::to_string(getBellowLength())+
+				 " and nFolds="+std::to_string(nFolds)+". Try to increase nFolds.");
 
   return sqrt(maxThick*maxThick - halfFold*halfFold);
 }
