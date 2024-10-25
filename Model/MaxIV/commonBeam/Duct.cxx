@@ -229,9 +229,10 @@ Duct::createSurfaces()
   }
 
   if (shieldType != "None") {
-    ModelSupport::buildCylinder(SMap,buildIndex+17,
-				Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
-				shieldPenetrationRadius);
+    if (shieldPenetrationRadius>0.0)
+      ModelSupport::buildCylinder(SMap,buildIndex+17,
+				  Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
+				  shieldPenetrationRadius);
   }
 
 
@@ -266,11 +267,18 @@ Duct::createObjects(Simulation& System)
   addOuterSurf("Main", Out);
 
   if (shieldType == "RectangularCover") {
-    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16 17")*backStr.complement();
+    HeadRule penetration= shieldPenetrationRadius > 0.0 ?
+      ModelSupport::getSetHeadRule(SMap,buildIndex,"17") : nullptr;
+
+    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
+    if (shieldPenetrationRadius>0.0)
+      Out *= penetration;
     makeCell("ShieldPlate",System,cellIndex++,shieldMat,0.0,Out);
 
-    Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 -17")*backStr.complement();
-    makeCell("ShieldPenetration",System,cellIndex++,voidMat,0.0,Out);
+    if (shieldPenetrationRadius>0.0) {
+      Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 -17")*backStr.complement();
+      makeCell("ShieldPenetration",System,cellIndex++,voidMat,0.0,Out);
+    }
 
     Out=ModelSupport::getSetHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
     addOuterSurf("Shield", Out);

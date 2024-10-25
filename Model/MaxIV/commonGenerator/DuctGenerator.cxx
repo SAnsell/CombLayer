@@ -56,7 +56,7 @@ DuctGenerator::DuctGenerator() :
   shieldType("None"),
   shieldPenetrationZOffset(-2.0),
   shieldPenetrationXOffset(1.0),
-  shieldPenetrationRadius(4.0),
+  shieldPenetrationRadius(-1.0), // <0 -> no shield penetration
   shieldThick(5),
   shieldWidthRight(13),
   shieldWidthLeft(18),
