@@ -732,26 +732,29 @@ namespace MAXIV::GunTestFacility
   {
     ELog::RegMethod RegA("BuildingB","createDucts");
 
-    ductWave->setFront(getFullRule("MidWallBack"));
-    ductWave->setBack(getFullRule("MidWallFront"));
-    ductWave->addInsertCell("Main",getCell("MidWall"));
-    ductWave->addInsertCell("Shield",getCell("GunRoom"));
-    ductWave->createAll(System,*this,0);
-
-    ductSignal1->setFront(getFullRule("MidWallFront"));
-    ductSignal1->setBack(getFullRule("MidWallBack"));
+    ductSignal1->setFront(getFullRule("MidWallBack"));
+    ductSignal1->setBack(getFullRule("MidWallFront"));
     ductSignal1->addInsertCell("Main",getCell("MidWall"));
+    ductSignal1->addInsertCell("Shield",getCell("GunRoom"));
     ductSignal1->createAll(System,*this,0);
 
-    ductSignal2->setFront(getFullRule("MidWallFront"));
-    ductSignal2->setBack(getFullRule("MidWallBack"));
+    ductSignal2->setFront(getFullRule("MidWallBack"));
+    ductSignal2->setBack(getFullRule("MidWallFront"));
     ductSignal2->addInsertCell("Main",getCell("MidWall"));
+    ductSignal2->addInsertCell("Shield",getCell("GunRoom"));
     ductSignal2->createAll(System,*this,0);
 
     ductSignal3->setFront(getFullRule("MidWallFront"));
     ductSignal3->setBack(getFullRule("MidWallBack"));
     ductSignal3->addInsertCell("Main",getCell("MidWall"));
     ductSignal3->createAll(System,*this,0);
+
+    ductWave->setFront(getFullRule("MidWallBack"));
+    ductWave->setBack(getFullRule("MidWallFront"));
+    ductWave->addInsertCell("Main",getCell("MidWall"));
+    ductWave->addInsertCell("Shield",getCell("GunRoom"));
+    ductWave->addInsertCell("Shield",ductSignal1->getCell("ShieldWallOffset"));
+    ductWave->createAll(System,*this,0);
 
     ductWater1->setFront(getFullRule("MidWallBack"));
     ductWater1->setBack(getFullRule("MidWallFront"));
