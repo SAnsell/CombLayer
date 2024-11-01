@@ -325,9 +325,9 @@ Duct::createObjects(Simulation& System)
       makeCell("ShieldWallOffset",System,cellIndex++,voidMat,0.0,Out);
     }
 
-    if (keyName=="BldBDuctWave") {
-      ELog::EM << "******** HERE2: " << keyName << " " << shieldPenetrationType << " " << penetration << ELog::endDiag;
-    }
+    // if (keyName=="BldBDuctWave") {
+    //   ELog::EM << "******** HERE2: " << keyName << " " << shieldPenetrationType << " " << penetration << ELog::endDiag;
+    // }
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -11 13 -14 15 -16");
     if (shieldPenetrationType!="None")
@@ -335,7 +335,7 @@ Duct::createObjects(Simulation& System)
     makeCell("ShieldPlate",System,cellIndex++,shieldMat,0.0,Out);
 
     if (shieldPenetrationType!="None") {
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,"12")*backStr.complement()*penetration;
+      Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -11 ")*penetration;
       makeCell("ShieldPenetration",System,cellIndex++,voidMat,0.0,Out);
     }
 
