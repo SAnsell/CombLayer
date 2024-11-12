@@ -211,26 +211,15 @@ namespace setVariable
     Control.addVariable(name+"DuctWaveShieldPenetrationZOffset",-2.5);
 
     DuctGen.setSize(5.0); // [0], page 4
-    DuctGen.generate(Control,name+"DuctSignal1","Cylinder","RectangularCover","Cylinder",90.0, 0.0, length2-161.5, 279.0-depth); // [4]
-    Control.addVariable(name+"DuctSignal1ShieldPenetrationRadius",5.0);
-    Control.addVariable(name+"DuctSignal1ShieldPenetrationXOffset",0.0);
-    Control.addVariable(name+"DuctSignal1ShieldPenetrationZOffset",0.0);
-    Control.addVariable(name+"DuctSignal1ShieldWidthLeft",12.495);
+    DuctGen.generate(Control,name+"DuctSignal1","Cylinder","RectangularCover","None",90.0, 0.0, length2-161.5, 279.0-depth); // [4]
+    Control.addVariable(name+"DuctSignal1ShieldWidthLeft",45.0);
     Control.addVariable(name+"DuctSignal1ShieldWidthRight",20.0);
     Control.addVariable(name+"DuctSignal1ShieldDepth",20+0.5); // +0.5 since DuctSingl1 and DuctSignal2 have different ZOffset
     Control.addVariable(name+"DuctSignal1ShieldHeight",10);
     Control.addVariable(name+"DuctSignal1ShieldWallOffset",10.0);
 
 
-    DuctGen.generate(Control,name+"DuctSignal2","Cylinder","RectangularCover","Cylinder",90.0, 0.0, length2-191.5+5, 278.5-depth); // [4]
-    Control.addVariable(name+"DuctSignal2ShieldPenetrationRadius",5.0);
-    Control.addVariable(name+"DuctSignal2ShieldPenetrationXOffset",0.0);
-    Control.addVariable(name+"DuctSignal2ShieldPenetrationZOffset",0.0);
-    Control.addVariable(name+"DuctSignal2ShieldWidthLeft",20.0);
-    Control.addVariable(name+"DuctSignal2ShieldWidthRight",12.495);
-    Control.addVariable(name+"DuctSignal2ShieldDepth",20);
-    Control.addVariable(name+"DuctSignal2ShieldHeight",10+0.5); // +0.5 since DuctSingl1 and DuctSignal2 have different ZOffset
-    Control.addVariable(name+"DuctSignal2ShieldWallOffset",10.0);
+    DuctGen.generate(Control,name+"DuctSignal2","Cylinder","None","None",90.0, 0.0, length2-191.5+5, 278.5-depth); // [4]
 
     DuctGen.setSize(8.0); // [4]
     DuctGen.generate(Control,name+"DuctSignal3","Cylinder","None","None",90.0, 0.0, length2-189.0, 11.5-depth); // [0], pages 2, 4

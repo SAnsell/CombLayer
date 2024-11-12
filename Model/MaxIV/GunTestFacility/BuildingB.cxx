@@ -741,7 +741,6 @@ namespace MAXIV::GunTestFacility
     ductSignal2->setFront(getFullRule("MidWallBack"));
     ductSignal2->setBack(getFullRule("MidWallFront"));
     ductSignal2->addInsertCell("Main",getCell("MidWall"));
-    ductSignal2->addInsertCell("Shield",getCell("GunRoom"));
     ductSignal2->createAll(System,*this,0);
 
     ductSignal3->setFront(getFullRule("MidWallFront"));
