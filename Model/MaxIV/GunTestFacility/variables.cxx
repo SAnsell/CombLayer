@@ -602,7 +602,7 @@ namespace setVariable
     setVariable::LocalShieldingGenerator LSGen;
     const double lsWidth = 10.0;
     const double lsLength = 324; // 324: from yagUnitD to end of solenoid
-    LSGen.setSize(lsLength, lsWidth, 35,65); // y,x,height,depth
+    LSGen.setSize(lsLength, lsWidth, 45,35); // y,x,height,depth
     name="LocalShieldingWall";
     LSGen.generate(Control,name);
     Control.addVariable(name+"YStep",lsLength/2);
