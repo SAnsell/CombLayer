@@ -79,9 +79,8 @@ Torus::Torus(const Torus& A) :
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  length(A.length),width(A.width),height(A.height),
-    rMinor(A.rMinor),
-  mainMat(A.mainMat)
+  rMinor(A.rMinor),
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: Torus to copy
@@ -101,11 +100,8 @@ Torus::operator=(const Torus& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
-      length=A.length;
-      width=A.width;
-      height=A.height;
-        rMinor=A.rMinor;
-      mainMat=A.mainMat;
+      rMinor=A.rMinor;
+      mat=A.mat;
     }
   return *this;
 }
@@ -137,12 +133,9 @@ Torus::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-    rMinor=Control.EvalVar<double>(keyName+"MinorRadius");
+  rMinor=Control.EvalVar<double>(keyName+"MinorRadius");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
 }
@@ -155,14 +148,14 @@ Torus::createSurfaces()
 {
   ELog::RegMethod RegA("Torus","createSurfaces");
 
-  SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  // SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  // SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
-  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  // SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  // SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  // SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+  // SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   return;
 }
@@ -178,7 +171,7 @@ Torus::createObjects(Simulation& System)
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  makeCell("MainCell",System,cellIndex++,mat,0.0,HR);
 
   addOuterSurf(HR);
 
@@ -194,25 +187,25 @@ Torus::createLinks()
 {
   ELog::RegMethod RegA("Torus","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
+  // FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  // FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
 
   ELog::EM << "TODO: Check and use names for the links below:" << ELog::endDiag;
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
+  // FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
+  // FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  // FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
+  // FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  // FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
+  // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  // FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
+  // FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  // FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
 
   return;
 }

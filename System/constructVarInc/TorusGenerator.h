@@ -39,14 +39,9 @@ class TorusGenerator
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double rMinor;                ///< minor radius
-  double wallThick;             ///< Wall thickness
+  double rMinor;            ///< minor radius
 
-  std::string mainMat;          ///< Main material
-  std::string wallMat;          ///< Wall material
+  std::string mat;          ///< Material
 
  public:
 

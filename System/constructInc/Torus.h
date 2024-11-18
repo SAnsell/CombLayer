@@ -42,12 +42,9 @@ class Torus : public attachSystem::ContainedComp,
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-    double rMinor;                ///< minor radius
+  double rMinor;             ///< minor radius
 
-  int mainMat;                   ///< Main material
+  int mat;                   ///< Material
 
   void populate(const FuncDataBase&);
   void createSurfaces();
