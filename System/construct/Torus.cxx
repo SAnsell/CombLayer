@@ -175,6 +175,23 @@ std::vector<std::pair<double, double>> Torus::getVertices() const
   return vertices;
 }
 
+double Torus::getApex(const std::pair<double, double>& a, const std::pair<double, double>& b) const
+/*!
+  Return the y-coordinate of the cone apex
+ */
+{
+  if (std::abs(a.first-b.first)<Geometry::zeroTol)
+    throw ColErr::ExitAbort("The line is vertical and does not intersect the y-axis.");
+
+  //  Calculate slope (m) of the line
+  const double m = (b.second - a.second) / (b.first - a.first);
+
+  // Calculate y-intercept (c) using the line equation: y = mx + c
+  const double c = b.second - m * a.first;
+
+  return c;
+}
+
 
 
 void
