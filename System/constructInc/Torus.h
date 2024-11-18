@@ -32,7 +32,7 @@ namespace constructSystem
   \version 1.0
   \author Konstantin Batkov
   \date November 2024
-  \brief Torus approximated with cones and cylinders
+  \brief Torus approximated with concentric cones and cylinders
 */
 
 class Torus : public attachSystem::ContainedComp,

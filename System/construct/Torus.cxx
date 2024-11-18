@@ -159,9 +159,9 @@ std::vector<std::pair<double, double>> Torus::getVertices() const
   const double angle_step = 2 * M_PI / nSides;  // Angle between consecutive vertices in radians
   const double angle0 = angle_step/2.0;
 
-  for (size_t i=0; i<nSides; ++i) {
+  for (int i=0; i<nSides; ++i) {
     // Calculate the angle for the current vertex
-    const double angle = i * angle_step + angle0;
+    const double angle = static_cast<double>(i) * angle_step + angle0;
     // Compute x and y coordinates
     const std::pair<double, double> v(rMinor*cos(angle), rMinor*sin(angle));
     vertices.push_back(v);
@@ -179,14 +179,27 @@ Torus::createSurfaces()
 {
   ELog::RegMethod RegA("Torus","createSurfaces");
 
+  const std::vector<std::pair<double, double>> vertices = getVertices();
+
+  const double r = rMajor-vertices[0].first;
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,r);
+  const double R = rMajor-vertices[nSides/2].first;
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,R);
+
+  const double height = vertices[nSides/4].second;
+  const double depth = vertices[3*nSides/4].second;
+  SurfMap::makePlane("bottom",SMap,buildIndex+1,Origin+Y*(depth),Y);
+  SurfMap::makePlane("top",SMap,buildIndex+2,Origin+Y*(height),Y);
+
+
+  ELog::EM << depth << " " << height << ELog::endDiag;
+
   // SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   // SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
   // SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   // SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  // SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  // SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   return;
 }
@@ -201,9 +214,13 @@ Torus::createObjects(Simulation& System)
   ELog::RegMethod RegA("Torus","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 7 -17");
+  makeCell("Main",System,cellIndex++,mat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 -7");
+  makeCell("Inner",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 -17");
   addOuterSurf(HR);
 
   return;

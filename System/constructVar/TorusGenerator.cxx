@@ -53,7 +53,7 @@ TorusGenerator::TorusGenerator() :
   rMinor(1.0),
   rMajor(5.0),
   nSides(12),
-  mat("Void")
+  mat("Air")
   /*!
     Constructor and defaults
   */
