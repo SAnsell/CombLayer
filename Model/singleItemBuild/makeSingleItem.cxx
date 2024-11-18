@@ -183,6 +183,7 @@
 #include "LegoBrick.h"
 #include "HeimdalCave.h"
 #include "M1Detail.h"
+#include "Torus.h"
 
 #include "makeSingleItem.h"
 
@@ -241,7 +242,7 @@ makeSingleItem::build(Simulation& System,
 	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
-        "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid",
+        "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","Torus",
 	"M1detail","M1Full",
 	"Help","help"
     });
@@ -1767,6 +1768,16 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
+    if (item == "Torus")
+    {
+      const auto torus = std::make_shared<constructSystem::Torus>("Torus");
+      OR.addObject(torus);
+      torus->addInsertCell(voidCell);
+      torus->createAll(System,World::masterOrigin(),0);
+      return;
+    }
+
 
     if (item=="Help" || item=="help")
       {

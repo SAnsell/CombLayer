@@ -143,6 +143,7 @@
 #include "TubeDetBoxGenerator.h"
 #include "RFGunGenerator.h"
 #include "SolenoidGenerator.h"
+#include "TorusGenerator.h"
 
 namespace setVariable
 {
@@ -893,6 +894,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SolenoidGenerator SolGen;
   SolGen.generate(Control,"Solenoid");
+
+  setVariable::TorusGenerator TorGen;
+  TorGen.generate(Control,"Torus");
 
   return;
 }

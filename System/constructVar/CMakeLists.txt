@@ -1,11 +1,12 @@
 set (constructVarSources
-    BellowGenerator.cxx CornerPipeGenerator.cxx CrossGenerator.cxx 
+    BellowGenerator.cxx CornerPipeGenerator.cxx CrossGenerator.cxx
     DomeConnectorGenerator.cxx DoublePortItemGenerator.cxx
-    FlangeDomeGenerator.cxx 
-    FlangePlateGenerator.cxx GateValveGenerator.cxx JawFlangeGenerator.cxx 
-    JawValveGenerator.cxx LeadPipeGenerator.cxx PipeGenerator.cxx 
-    PipeTubeGenerator.cxx PortItemGenerator.cxx PortTubeGenerator.cxx 
-    TubeDetBoxGenerator.cxx VacBoxGenerator.cxx 
+    FlangeDomeGenerator.cxx
+    FlangePlateGenerator.cxx GateValveGenerator.cxx JawFlangeGenerator.cxx
+    JawValveGenerator.cxx LeadPipeGenerator.cxx PipeGenerator.cxx
+    PipeTubeGenerator.cxx PortItemGenerator.cxx PortTubeGenerator.cxx
+    TorusGenerator.cxx
+    TubeDetBoxGenerator.cxx VacBoxGenerator.cxx
 )
 
 add_library (constructVar SHARED
@@ -16,11 +17,11 @@ target_include_directories (constructVar PUBLIC
    ${GENERAL_INCLUDE}
 )
 
-file(RELATIVE_PATH tarDIR 
+file(RELATIVE_PATH tarDIR
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-file(RELATIVE_PATH tarINC 
+file(RELATIVE_PATH tarINC
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/../constructVarInc")
 
@@ -40,6 +41,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/PipeTubeGenerator.cxx
   ${tarDIR}/PortItemGenerator.cxx
   ${tarDIR}/PortTubeGenerator.cxx
+  ${tarDIR}/TorusGenerator.cxx
   ${tarDIR}/TubeDetBoxGenerator.cxx
   ${tarDIR}/VacBoxGenerator.cxx
   ${tarINC}/BellowGenerator.h
@@ -58,7 +60,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/PipeTubeGenerator.h
   ${tarINC}/PortItemGenerator.h
   ${tarINC}/PortTubeGenerator.h
+  ${tarINC}/TorusGenerator.h
   ${tarINC}/TubeDetBoxGenerator.h
   ${tarINC}/VacBoxGenerator.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
-

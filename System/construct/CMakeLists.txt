@@ -1,24 +1,24 @@
 set (constructSources
-    anglePortItem.cxx Aperture.cxx BasicFlightLine.cxx 
-    BeamWindow.cxx Bellows.cxx BlankTube.cxx 
-    CentredHoleShape.cxx ChopperPit.cxx ConicInfo.cxx 
-    CornerPipe.cxx CrossPipe.cxx Cryostat.cxx 
-    CrystalMount.cxx DomeConnector.cxx doublePortItem.cxx 
-    FlangeDome.cxx FlangePlate.cxx FlightLine.cxx 
-    GateValveCube.cxx GateValveCylinder.cxx generalConstruct.cxx 
-    GeneralPipe.cxx gridUnit.cxx GroupOrigin.cxx 
-    hexUnit.cxx HoleShape.cxx JawFlange.cxx 
-    Jaws.cxx JawSet.cxx JawUnit.cxx 
-    JawValveBase.cxx JawValveCube.cxx JawValveCylinder.cxx 
-    JawValveTube.cxx LeadPipe.cxx LineShield.cxx 
-    MultiChannel.cxx OffsetFlangePipe.cxx PinHole.cxx 
-    PipeCollimator.cxx PipeTube.cxx portBuilder.cxx 
+    anglePortItem.cxx Aperture.cxx BasicFlightLine.cxx
+    BeamWindow.cxx Bellows.cxx BlankTube.cxx
+    CentredHoleShape.cxx ChopperPit.cxx ConicInfo.cxx
+    CornerPipe.cxx CrossPipe.cxx Cryostat.cxx
+    CrystalMount.cxx DomeConnector.cxx doublePortItem.cxx
+    FlangeDome.cxx FlangePlate.cxx FlightLine.cxx
+    GateValveCube.cxx GateValveCylinder.cxx generalConstruct.cxx
+    GeneralPipe.cxx gridUnit.cxx GroupOrigin.cxx
+    hexUnit.cxx HoleShape.cxx JawFlange.cxx
+    Jaws.cxx JawSet.cxx JawUnit.cxx
+    JawValveBase.cxx JawValveCube.cxx JawValveCylinder.cxx
+    JawValveTube.cxx LeadPipe.cxx LineShield.cxx
+    MultiChannel.cxx OffsetFlangePipe.cxx PinHole.cxx
+    PipeCollimator.cxx PipeTube.cxx portBuilder.cxx
     portItem.cxx portSet.cxx PortTube.cxx RectanglePipe.cxx
-    RingFlange.cxx RingSeal.cxx RotaryCollimator.cxx 
-    SupplyPipe.cxx TriangleShield.cxx 
-    TubeDetBox.cxx tubeUnit.cxx VacuumBox.cxx 
-    VacuumPipe.cxx VirtualTube.cxx voidCylVolume.cxx 
-    VoidUnit.cxx WallCut.cxx Window.cxx 
+    RingFlange.cxx RingSeal.cxx RotaryCollimator.cxx
+    SupplyPipe.cxx Torus.cxx TriangleShield.cxx
+    TubeDetBox.cxx tubeUnit.cxx VacuumBox.cxx
+    VacuumPipe.cxx VirtualTube.cxx voidCylVolume.cxx
+    VoidUnit.cxx WallCut.cxx Window.cxx
 )
 
 add_library (construct SHARED
@@ -29,11 +29,11 @@ target_include_directories (construct PUBLIC
    ${GENERAL_INCLUDE}
 )
 
-file(RELATIVE_PATH tarDIR 
+file(RELATIVE_PATH tarDIR
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-file(RELATIVE_PATH tarINC 
+file(RELATIVE_PATH tarINC
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/../constructInc")
 
@@ -88,6 +88,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/RingSeal.cxx
   ${tarDIR}/RotaryCollimator.cxx
   ${tarDIR}/SupplyPipe.cxx
+  ${tarDIR}/Torus.cxx
   ${tarDIR}/TriangleShield.cxx
   ${tarDIR}/TubeDetBox.cxx
   ${tarDIR}/tubeUnit.cxx
@@ -148,6 +149,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/RingSeal.h
   ${tarINC}/RotaryCollimator.h
   ${tarINC}/SupplyPipe.h
+  ${tarINC}/Torus.h
   ${tarINC}/TriangleShield.h
   ${tarINC}/TubeDetBox.h
   ${tarINC}/tubeUnit.h
@@ -159,4 +161,3 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/WallCut.h
   ${tarINC}/Window.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
-

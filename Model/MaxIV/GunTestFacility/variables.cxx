@@ -203,8 +203,8 @@ namespace setVariable
     DuctGen.generate(Control,name+"DuctWave","Cylinder","RectangularCover","Rectangle", 90.0, 0.0, length2-136.5, 269-depth); //  [4]
     Control.addVariable(name+"DuctWaveShieldDepth",20.0);
     Control.addVariable(name+"DuctWaveShieldHeight",20.0);
-    Control.addVariable(name+"DuctWaveShieldWidthLeft",20.0);
-    Control.addVariable(name+"DuctWaveShieldWidthRight",20.0);
+    Control.addVariable(name+"DuctWaveShieldWidthLeft",40.0); // optimised 241114
+    Control.addVariable(name+"DuctWaveShieldWidthRight",40.0); // same as left width (to be optimised later)
     Control.addVariable(name+"DuctWaveShieldPenetrationWidth",10);
     Control.addVariable(name+"DuctWaveShieldPenetrationHeight",5);
     Control.addVariable(name+"DuctWaveShieldPenetrationXOffset",1);
@@ -227,8 +227,8 @@ namespace setVariable
     Control.addVariable(name+"DuctWater1ShieldThick",5.0);
     Control.addVariable(name+"DuctWater1ShieldDepth",9.5); // -0.5 -> 10 cm from the floor; 9.5 -> until the floor
     Control.addVariable(name+"DuctWater1ShieldHeight",30.5);
-    Control.addVariable(name+"DuctWater1ShieldWidthLeft",26.5); // downstream
-    Control.addVariable(name+"DuctWater1ShieldWidthRight",53.5); // upstream
+    Control.addVariable(name+"DuctWater1ShieldWidthLeft",30); // optimisd 241114
+    Control.addVariable(name+"DuctWater1ShieldWidthRight",30.0); // same as left width (to be optimised later)
     Control.addVariable(name+"DuctWater1ShieldWallOffset",15.0);
 
     DuctGen.setSize(10.0); // [0], page 4
