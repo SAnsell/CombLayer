@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "Exception.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -138,8 +139,13 @@ Torus::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   rMinor=Control.EvalVar<double>(keyName+"MinorRadius");
-    rMajor=Control.EvalVar<double>(keyName+"MajorRadius");
-    nSides=Control.EvalVar<int>(keyName+"NSides");
+  rMajor=Control.EvalVar<double>(keyName+"MajorRadius");
+  if (rMinor*2>rMajor)
+    throw ColErr::OrderError<double>(rMinor*2,rMajor,"MinorRadius*2 < MajorRadius");
+
+  nSides=Control.EvalVar<int>(keyName+"NSides");
+  if (nSides % 4 != 0)
+    throw ColErr::ExitAbort("NSides must be evenly divisible by 4");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
