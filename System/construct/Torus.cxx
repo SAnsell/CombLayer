@@ -183,11 +183,16 @@ double Torus::getApex(const std::pair<double, double>& a, const std::pair<double
   if (std::abs(a.first-b.first)<Geometry::zeroTol)
     throw ColErr::ExitAbort("The line is vertical and does not intersect the y-axis.");
 
-  //  Calculate slope (m) of the line
-  const double m = (b.second - a.second) / (b.first - a.first);
+  const double x1 = a.first-rMajor;
+  const double y1 = a.second;
+  const double x2 = b.first-rMajor;
+  const double y2 = b.second;
 
-  // Calculate y-intercept (c) using the line equation: y = mx + c
-  const double c = b.second - m * a.first;
+  //  Calculate slope (k) of the line
+  const double k = (y2 - y1) / (x2 - x1);
+
+  // Calculate y-intercept (b) using the line equation: y = kx + c
+  const double c = y2 - k * x1;
 
   return c;
 }
@@ -214,8 +219,20 @@ Torus::createSurfaces()
   SurfMap::makePlane("bottom",SMap,buildIndex+1,Origin+Y*(depth),Y);
   SurfMap::makePlane("top",SMap,buildIndex+2,Origin+Y*(height),Y);
 
+  size_t SI(8);
+  for (int i=1; i<nSides; ++i) {
+    if ((i==nSides/2) || (i==nSides/4) || (i==3*nSides/4))
+      continue;
+    const auto a = vertices[i-1];
+    const auto b = vertices[i];
+    const double apex = getApex(a, b);
+    const double angle = -atan2(b.first-a.first, b.second-a.second) * 180.0/M_PI;
+    ELog::EM << buildIndex+SI << " " << apex << " " << angle << ELog::endDiag;
 
-  ELog::EM << depth << " " << height << ELog::endDiag;
+    ModelSupport::buildCone(SMap, buildIndex+SI, Origin+Y*apex, Y, angle);
+    SI+=10;
+  }
+
 
   // SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   // SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
@@ -237,13 +254,10 @@ Torus::createObjects(Simulation& System)
   ELog::RegMethod RegA("Torus","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 7 -17");
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 7 -17");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7 -17 8 18 -28 -38 -48 -58 68 78");
   makeCell("Main",System,cellIndex++,mat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 -7");
-  makeCell("Inner",System,cellIndex++,0,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 -17");
   addOuterSurf(HR);
 
   return;
