@@ -51,6 +51,8 @@ namespace setVariable
 
 TorusGenerator::TorusGenerator() :
   rMinor(1.0),
+  rMajor(5.0),
+  nSides(12),
   mat("Void")
   /*!
     Constructor and defaults
@@ -75,6 +77,8 @@ TorusGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("TorusGenerator","generate");
 
   Control.addVariable(keyName+"MinorRadius",rMinor);
+  Control.addVariable(keyName+"MajorRadius",rMajor);
+  Control.addVariable(keyName+"NSides",nSides);
   Control.addVariable(keyName+"Mat",mat);
 
   return;

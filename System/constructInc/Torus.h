@@ -43,8 +43,12 @@ class Torus : public attachSystem::ContainedComp,
  private:
 
   double rMinor;             ///< minor radius
+    double rMajor;                ///< major radius
+    int nSides;                   ///< number of the inscribed polygon sides
 
   int mat;                   ///< Material
+
+  std::vector<std::pair<double, double>> getVertices() const;
 
   void populate(const FuncDataBase&);
   void createSurfaces();

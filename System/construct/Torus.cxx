@@ -80,6 +80,8 @@ Torus::Torus(const Torus& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   rMinor(A.rMinor),
+    rMajor(A.rMajor),
+    nSides(A.nSides),
   mat(A.mat)
   /*!
     Copy constructor
@@ -101,6 +103,8 @@ Torus::operator=(const Torus& A)
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       rMinor=A.rMinor;
+        rMajor=A.rMajor;
+        nSides=A.nSides;
       mat=A.mat;
     }
   return *this;
@@ -134,11 +138,38 @@ Torus::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   rMinor=Control.EvalVar<double>(keyName+"MinorRadius");
+    rMajor=Control.EvalVar<double>(keyName+"MajorRadius");
+    nSides=Control.EvalVar<int>(keyName+"NSides");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
 }
+
+std::vector<std::pair<double, double>> Torus::getVertices() const
+/*!
+    Calculate the coordinates of the vertices of a regular polygon with n sides
+    inscribed in a circle of radius r.
+
+    Returns:
+    list[tuple]: A list of (x, y) coordinates of the vertices.
+ */
+{
+  std::vector<std::pair<double, double>> vertices;
+  const double angle_step = 2 * M_PI / nSides;  // Angle between consecutive vertices in radians
+  const double angle0 = angle_step/2.0;
+
+  for (size_t i=0; i<nSides; ++i) {
+    // Calculate the angle for the current vertex
+    const double angle = i * angle_step + angle0;
+    // Compute x and y coordinates
+    const std::pair<double, double> v(rMinor*cos(angle), rMinor*sin(angle));
+    vertices.push_back(v);
+  }
+  return vertices;
+}
+
+
 
 void
 Torus::createSurfaces()
