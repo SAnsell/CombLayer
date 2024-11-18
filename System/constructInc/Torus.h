@@ -43,8 +43,8 @@ class Torus : public attachSystem::ContainedComp,
  private:
 
   double rMinor;             ///< minor radius
-  double rMajor;                ///< major radius
-  int nSides;                   ///< number of the inscribed polygon sides
+  double rMajor;             ///< major radius
+  int nFaces;                ///< number of the inscribed polygon faces
 
   int mat;                   ///< Material
 

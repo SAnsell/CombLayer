@@ -52,7 +52,7 @@ namespace setVariable
 TorusGenerator::TorusGenerator() :
   rMinor(1.0),
   rMajor(5.0),
-  nSides(12),
+  nFaces(12),
   mat("Air")
   /*!
     Constructor and defaults
@@ -78,7 +78,7 @@ TorusGenerator::generate(FuncDataBase& Control,
 
   Control.addVariable(keyName+"MinorRadius",rMinor);
   Control.addVariable(keyName+"MajorRadius",rMajor);
-  Control.addVariable(keyName+"NSides",nSides);
+  Control.addVariable(keyName+"NFaces",nFaces);
   Control.addVariable(keyName+"Mat",mat);
 
   return;

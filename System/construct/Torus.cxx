@@ -82,7 +82,7 @@ Torus::Torus(const Torus& A) :
   attachSystem::SurfMap(A),
   rMinor(A.rMinor),
     rMajor(A.rMajor),
-    nSides(A.nSides),
+    nFaces(A.nFaces),
   mat(A.mat)
   /*!
     Copy constructor
@@ -105,7 +105,7 @@ Torus::operator=(const Torus& A)
       attachSystem::CellMap::operator=(A);
       rMinor=A.rMinor;
         rMajor=A.rMajor;
-        nSides=A.nSides;
+        nFaces=A.nFaces;
       mat=A.mat;
     }
   return *this;
@@ -140,12 +140,12 @@ Torus::populate(const FuncDataBase& Control)
 
   rMinor=Control.EvalVar<double>(keyName+"MinorRadius");
   rMajor=Control.EvalVar<double>(keyName+"MajorRadius");
-  if (rMinor*2>rMajor)
-    throw ColErr::OrderError<double>(rMinor*2,rMajor,"MinorRadius*2 < MajorRadius");
+  if (rMinor>rMajor)
+    throw ColErr::OrderError<double>(rMinor,rMajor,"MinorRadius < MajorRadius");
 
-  nSides=Control.EvalVar<int>(keyName+"NSides");
-  if (nSides % 4 != 0)
-    throw ColErr::ExitAbort("NSides must be evenly divisible by 4");
+  nFaces=Control.EvalVar<int>(keyName+"NFaces");
+  if (nFaces % 4 != 0)
+    throw ColErr::ExitAbort("NFaces must be evenly divisible by 4");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -162,14 +162,14 @@ std::vector<std::pair<double, double>> Torus::getVertices() const
  */
 {
   std::vector<std::pair<double, double>> vertices;
-  const double angle_step = 2 * M_PI / nSides;  // Angle between consecutive vertices in radians
+  const double angle_step = 2 * M_PI / nFaces;  // Angle between consecutive vertices in radians
   const double angle0 = angle_step/2.0;
 
-  for (int i=0; i<nSides; ++i) {
+  for (int i=0; i<nFaces; ++i) {
     // Calculate the angle for the current vertex
     const double angle = static_cast<double>(i) * angle_step + angle0;
     // Compute x and y coordinates
-    const std::pair<double, double> v(rMinor*cos(angle), rMinor*sin(angle));
+    const std::pair<double, double> v(rMinor*cos(angle)-rMajor, rMinor*sin(angle));
     vertices.push_back(v);
   }
   return vertices;
@@ -183,16 +183,16 @@ double Torus::getApex(const std::pair<double, double>& a, const std::pair<double
   if (std::abs(a.first-b.first)<Geometry::zeroTol)
     throw ColErr::ExitAbort("The line is vertical and does not intersect the y-axis.");
 
-  const double x1 = a.first-rMajor;
+  const double x1 = a.first;
   const double y1 = a.second;
-  const double x2 = b.first-rMajor;
+  const double x2 = b.first;
   const double y2 = b.second;
 
   //  Calculate slope (k) of the line
   const double k = (y2 - y1) / (x2 - x1);
 
   // Calculate y-intercept (b) using the line equation: y = kx + c
-  const double c = y2 - k * x1;
+  const double c = y1 - k * (x1);
 
   return c;
 }
@@ -207,29 +207,33 @@ Torus::createSurfaces()
 {
   ELog::RegMethod RegA("Torus","createSurfaces");
 
+  // dividing surfaces
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,rMajor);
+
+
   const std::vector<std::pair<double, double>> vertices = getVertices();
 
-  const double r = rMajor-vertices[0].first;
+  const double r = -vertices[0].first;
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,r);
-  const double R = rMajor-vertices[nSides/2].first;
+  const double R = -vertices[nFaces/2].first;
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,R);
 
-  const double height = vertices[nSides/4].second;
-  const double depth = vertices[3*nSides/4].second;
+  const double height = vertices[nFaces/4].second;
+  const double depth = vertices[3*nFaces/4].second;
   SurfMap::makePlane("bottom",SMap,buildIndex+1,Origin+Y*(depth),Y);
   SurfMap::makePlane("top",SMap,buildIndex+2,Origin+Y*(height),Y);
 
-  size_t SI(8);
-  for (int i=1; i<nSides; ++i) {
-    if ((i==nSides/2) || (i==nSides/4) || (i==3*nSides/4))
+  int SI(8);
+  for (int i=1; i<nFaces; ++i) {
+    if ((i==nFaces/2) || (i==nFaces/4) || (i==3*nFaces/4))
       continue;
     const auto a = vertices[i-1];
     const auto b = vertices[i];
     const double apex = getApex(a, b);
     const double angle = -atan2(b.first-a.first, b.second-a.second) * 180.0/M_PI;
-    ELog::EM << buildIndex+SI << " " << apex << " " << angle << ELog::endDiag;
 
-    ModelSupport::buildCone(SMap, buildIndex+SI, Origin+Y*apex, Y, angle);
+    ModelSupport::buildCone(SMap, buildIndex+SI, Origin+Y*apex, -Y, angle);
     SI+=10;
   }
 
@@ -253,11 +257,56 @@ Torus::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Torus","createObjects");
 
-  HeadRule HR;
-  //  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 7 -17");
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 7 -17 8 18 -28 -38 -48 -58 68 78");
-  makeCell("Main",System,cellIndex++,mat,0.0,HR);
+  HeadRule HR,HR1;
+  const int n = (nFaces-4)/4;
+  int SI(0);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 7 -27");// 8 18");
+  for (int i=0; i<n; ++i) {
+    HR1 *= ModelSupport::getHeadRule(SMap,buildIndex+SI,"8");
+    SI+=10;
+  }
+  makeCell("Main1",System,cellIndex++,mat,0.0,HR*HR1);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2");
+  HR1 *= ModelSupport::getHeadRule(SMap,buildIndex,"7");
+  makeCell("InnerUpper",System,cellIndex++,0,0.0,HR*HR1.complement());
+
+  HR1.reset();
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 27 -17");
+  for (int i=0; i<n; ++i) {
+    HR1 *= ModelSupport::getHeadRule(SMap,buildIndex+SI,"-8");
+    SI+=10;
+  }
+  makeCell("Main4",System,cellIndex++,mat,0.0,HR*HR1);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -2 -17");
+  makeCell("OuterUpper",System,cellIndex++,0,0.0,HR*HR1.complement());
+
+  HR1.reset();
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 27 -17");// -48 -58");
+  for (int i=0; i<n; ++i) {
+    HR1 *= ModelSupport::getHeadRule(SMap,buildIndex+SI,"-8");
+    SI+=10;
+  }
+  makeCell("Main3",System,cellIndex++,mat,0.0,HR*HR1);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 -17");
+  makeCell("OuterUpper",System,cellIndex++,0,0.0,HR*HR1.complement());
+
+  HR1.reset();
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 7 -27");// 68 78");
+  for (int i=0; i<n; ++i) {
+    HR1 *= ModelSupport::getHeadRule(SMap,buildIndex+SI,"8");
+    SI+=10;
+  }
+  makeCell("Main2",System,cellIndex++,mat,0.0,HR*HR1);
+
+  HR1 *= ModelSupport::getHeadRule(SMap,buildIndex,"7");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -11");
+  makeCell("InnerBottom",System,cellIndex++,0,0.0,HR*HR1.complement());
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 -17");
   addOuterSurf(HR);
 
   return;

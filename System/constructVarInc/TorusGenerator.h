@@ -39,11 +39,11 @@ class TorusGenerator
 {
  private:
 
-  double rMinor;            ///< minor radius
-    double rMajor;                ///< major radius
-    int nSides;                   ///< number of the inscribed polygon sides
+  double rMinor;           ///< minor radius
+  double rMajor;           ///< major radius
+  int nFaces;              ///< number of the inscribed polygon faces
 
-  std::string mat;          ///< Material
+  std::string mat;         ///< Material
 
  public:
 
