@@ -201,6 +201,8 @@ namespace setVariable
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
     DuctGen.generate(Control,name+"DuctWave","Cylinder","RectangularCover","Rectangle", 90.0, 0.0, length2-136.5, 269-depth); //  [4]
+    Control.addVariable(name+"DuctWaveShieldThick",10.0);
+    Control.addVariable(name+"DuctWaveShieldMat","Lead");
     Control.addVariable(name+"DuctWaveShieldDepth",20.0);
     Control.addVariable(name+"DuctWaveShieldHeight",20.0);
     Control.addVariable(name+"DuctWaveShieldWidthLeft",20.0); // 20 is max, otherwise cuts the cables
@@ -226,7 +228,7 @@ namespace setVariable
     DuctGen.setSize(8.0); // [4]
     DuctGen.generate(Control,name+"DuctSignal3","Cylinder","None","None",90.0, 0.0, length2-189.0, 11.5-depth); // [0], pages 2, 4
     DuctGen.generate(Control,name+"DuctWater1","Cylinder","RectangularCover","None",90.0, 0.0, length2-216.0, 9.5-depth); // [4]
-    Control.addVariable(name+"DuctWater1ShieldThick",5.0);
+    Control.addVariable(name+"DuctWater1ShieldThick",10.0);
     Control.addVariable(name+"DuctWater1ShieldDepth",9.5); // -0.5 -> 10 cm from the floor; 9.5 -> until the floor
     Control.addVariable(name+"DuctWater1ShieldHeight",30.5);
     Control.addVariable(name+"DuctWater1ShieldWidthLeft",30); // optimisd 241119
