@@ -203,7 +203,7 @@ namespace setVariable
     DuctGen.generate(Control,name+"DuctWave","Cylinder","RectangularCover","Rectangle", 90.0, 0.0, length2-136.5, 269-depth); //  [4]
     Control.addVariable(name+"DuctWaveShieldDepth",20.0);
     Control.addVariable(name+"DuctWaveShieldHeight",20.0);
-    Control.addVariable(name+"DuctWaveShieldWidthLeft",30.0); // optimised 241119
+    Control.addVariable(name+"DuctWaveShieldWidthLeft",20.0); // 20 is max, otherwise cuts the cables
     Control.addVariable(name+"DuctWaveShieldWidthRight",30.0); // same as left width (to be optimised later)
     Control.addVariable(name+"DuctWaveShieldPenetrationWidth",10);
     Control.addVariable(name+"DuctWaveShieldPenetrationHeight",5);
