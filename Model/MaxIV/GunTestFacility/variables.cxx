@@ -212,7 +212,7 @@ namespace setVariable
 
     DuctGen.setSize(5.0); // [0], page 4
     DuctGen.generate(Control,name+"DuctSignal1","Cylinder","RectangularCover","None",90.0, 0.0, length2-161.5, 279.0-depth); // [4]
-    Control.addVariable(name+"DuctSignal1ShieldWidthLeft",45.0);
+    Control.addVariable(name+"DuctSignal1ShieldWidthLeft",40.0);
     Control.addVariable(name+"DuctSignal1ShieldWidthRight",20.0);
     Control.addVariable(name+"DuctSignal1ShieldDepth",20+0.5); // +0.5 since DuctSingl1 and DuctSignal2 have different ZOffset
     Control.addVariable(name+"DuctSignal1ShieldHeight",10);
