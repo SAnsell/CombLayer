@@ -36,6 +36,7 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "Exception.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -90,7 +91,7 @@ namespace setVariable
     return sqrt(maxThick*maxThick - halfStep*halfStep); // actual thickness
   }
 
-  double getBellowDensityFraction(const unsigned int N, const double t,
+  double getBellowDensityFraction(const std::string& name, const unsigned int N, const double t,
 				  const double r, const double R, const double lTot,
 				  const double flangeALength, const double flangeBLength,
 				  const double step)
@@ -110,7 +111,10 @@ namespace setVariable
     const double L = N*2*t; // max compressed length
     // const double V = M_PI*(R*R-r*r)*L; // volume at max compression
     const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
-    return L/l;
+    const double val = L/l;
+    if (val>1)
+      throw ColErr::RangeError<double>(val,0.0,1,"Bellow "+name+" density fraction is above 1.");
+    return val;
   }
 
   void BuildingBVariables(FuncDataBase& Control, const std::string& name)
@@ -540,16 +544,15 @@ namespace setVariable
 
     name = "BellowB";
     constexpr double bellowBLength = 20.0; // most upstream location of the slits (see also bellowDLength)
-    // Bellow C folding structure has 52 maxima
-    constexpr unsigned int bellowBN = 52;//328; // Same as BellowD [Dionis]
     BellowGen.setFlange(bellowOuterR, bellowFlangeLength, yagPortRadius);
 
+    constexpr unsigned int bellowBN = 328-15; // 328, Same as BellowD [Dionis], 15 is substracted since otherwise bellowBFrac is > 1
     const double bellowBThick =
       getBellowThick(bellowBN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowBLength,
 		     bellowFlangeLength, bellowFlangeLength, bellowStep);
-    BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowBThick);
+    BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowBThick,bellowBN);
 
-    const double bellowBFrac = getBellowDensityFraction(bellowBN, bellowWallThick,
+    const double bellowBFrac = getBellowDensityFraction(name, bellowBN, bellowWallThick,
 						 bellowInnerR, bellowOuterR,
 						 bellowBLength, bellowFlangeLength, bellowFlangeLength,
 						 bellowStep);
@@ -564,37 +567,39 @@ namespace setVariable
     setVariable::SlitsMaskGenerator slitsGen;
     slitsGen.generate(Control, "Slits");
 
-    // Bellow C folding structure has 52 maxima
+    name="BellowC";
     constexpr double bellowCLength = 21.5; // to set YagUnitC to 314 cm from BackWallEast [current position, checked]
+    // Bellow C folding structure has 52 maxima
     constexpr unsigned int bellowCN = 52;
     const double bellowCThick =
       getBellowThick(bellowCN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowCLength,
 		     bellowFlangeLength, bellowFlangeLength, bellowStep);
     BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowCThick);
-    const double bellowCFrac = getBellowDensityFraction(bellowCN, bellowWallThick,
+    const double bellowCFrac = getBellowDensityFraction(name,bellowCN, bellowWallThick,
 						 bellowInnerR, bellowOuterR,
 						 bellowCLength, bellowFlangeLength, bellowFlangeLength,
 						 bellowStep);
     BellowGen.setMat("Stainless316L", bellowCFrac*100.0);
-    BellowGen.generateBellow(Control,"BellowC",bellowCLength);
+    BellowGen.generateBellow(Control,name,bellowCLength);
 
     YagUnitGen.generateYagUnit(Control,"YagUnitC");
     YagScreenGen.generateScreen(Control,"YagScreenC",0);
     Control.addVariable("YagScreenCYAngle",-90.0);
 
     // Bellow D
+    name="BellowD";
     constexpr double bellowDLength = 163.7; // most upstream location of the slits (see also bellowBLength)
     constexpr unsigned int bellowDN = 328; // 328 is counted by KB
     const double bellowDThick =
       getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
 		     bellowFlangeLength, bellowFlangeLength, bellowStep);
     BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowDThick);
-    const double bellowDFrac = getBellowDensityFraction(bellowDN, bellowWallThick,
+    const double bellowDFrac = getBellowDensityFraction(name,bellowDN, bellowWallThick,
 						 bellowInnerR, bellowOuterR,
 						 bellowDLength, bellowFlangeLength, bellowFlangeLength,
 						 bellowStep);
     BellowGen.setMat("Stainless316L", bellowDFrac*100.0);
-    BellowGen.generateBellow(Control,"BellowD",bellowDLength); // approx
+    BellowGen.generateBellow(Control,name,bellowDLength); // approx
     Control.addVariable("BellowDNFolds",328.0);
 
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
