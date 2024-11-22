@@ -112,8 +112,11 @@ namespace setVariable
     // const double V = M_PI*(R*R-r*r)*L; // volume at max compression
     const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
     const double val = L/l;
-    if (val>1)
+    if (val>1.0)
       throw ColErr::RangeError<double>(val,0.0,1,"Bellow "+name+" density fraction is above 1.");
+
+    ELog::EM << "Density fraction: " << name << " " << val << ELog::endDiag;
+
     return val;
   }
 
@@ -542,8 +545,34 @@ namespace setVariable
 
     //    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
 
+    const char slitLocation='A'; // A: most upstream, E: most downstream
+
+    double bellowBLength, bellowDLength;
+    switch (slitLocation) {
+    case 'A':
+      bellowBLength = 20.0;
+      bellowDLength = 163.7;
+      break;
+    case 'B':
+      bellowBLength = 49.0;
+      bellowDLength = 134.7;
+      break;
+    case 'C':
+      bellowBLength = 78.0;
+      bellowDLength = 105.7;
+      break;
+    case 'D':
+      bellowBLength = 107.0;
+      bellowDLength = 76.7;
+      break;
+    case 'E':
+      bellowBLength = 136.0;
+      bellowDLength = 47.7;
+      break;
+    }
+
     name = "BellowB";
-    constexpr double bellowBLength = 20.0; // most upstream location of the slits (see also bellowDLength)
+    //constexpr double bellowBLength = 20.0; // most upstream location of the slits (see also bellowDLength)
     BellowGen.setFlange(bellowOuterR, bellowFlangeLength, yagPortRadius);
 
     constexpr unsigned int bellowBN = 328-15; // 328, Same as BellowD [Dionis], 15 is substracted since otherwise bellowBFrac is > 1
@@ -588,7 +617,6 @@ namespace setVariable
 
     // Bellow D
     name="BellowD";
-    constexpr double bellowDLength = 163.7; // most upstream location of the slits (see also bellowBLength)
     constexpr unsigned int bellowDN = 328; // 328 is counted by KB
     const double bellowDThick =
       getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
