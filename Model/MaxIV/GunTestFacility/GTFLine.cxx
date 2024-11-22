@@ -80,7 +80,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "FlangePlate.h"
-#include "LocalShielding.h"
+#include "GTFWall.h"
 
 #include "LObjectSupport.h"
 #include "GTFLine.h"
@@ -126,7 +126,7 @@ GTFLine::GTFLine(const std::string& Key) :
   yagUnitD(new tdcSystem::YagUnit("YagUnitD")),
   yagScreenD(new tdcSystem::YagScreen("YagScreenD")),
   slits(new xraySystem::SlitsMask("Slits")),
-  lsw(new tdcSystem::LocalShielding("LocalShieldingWall"))
+  lsw(new MAXIV::GunTestFacility::GTFWall("LocalShieldingWall"))
   /*!
     Constructor
     \param Key :: Name of construction key

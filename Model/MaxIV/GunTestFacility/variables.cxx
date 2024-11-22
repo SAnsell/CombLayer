@@ -59,7 +59,6 @@
 #include "YagScreenGenerator.h"
 #include "SlitsMaskGenerator.h"
 #include "RFGunGenerator.h"
-#include "LocalShieldingGenerator.h"
 
 constexpr double xstep = 11.5;
 constexpr double xyangle = 0.0; //5.0;
@@ -604,16 +603,14 @@ namespace setVariable
     YagScreenGen.generateScreen(Control,"YagScreenD",0);
     Control.addVariable("YagScreenDYAngle",-90.0);
 
-    setVariable::LocalShieldingGenerator LSGen;
-    const double lsWidth = 10.0;
-    const double lsLength = 324; // 324: optimised with AR 241214
-    LSGen.setSize(lsLength, lsWidth, 45,35); // y,x,height,depth
     name="LocalShieldingWall";
-    LSGen.generate(Control,name);
-    Control.addVariable(name+"YStep",lsLength/2);
-    Control.addVariable(name+"XStep",-30.0-lsWidth/2.0);
-    Control.addVariable(name+"MainMat", "Stainless304L");
-  }
+    Control.addVariable(name+"XStep",  -30.0);
+    Control.addVariable(name+"Width",  10.0);
+    Control.addVariable(name+"Length", 324.0); // 324: optimised with AR 241214
+    Control.addVariable(name+"Height", 45.0);
+    Control.addVariable(name+"Depth",  35.0);
+    Control.addVariable(name+"Mat", "Stainless304L");
+ }
 
   void GunTestFacilityVariables(FuncDataBase& Control)
   /*!

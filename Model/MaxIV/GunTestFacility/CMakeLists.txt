@@ -1,5 +1,5 @@
 set (GunTestFacilitySources
-    BuildingB.cxx ConcreteDoor.cxx GTFLine.cxx
+    BuildingB.cxx ConcreteDoor.cxx GTFLine.cxx GTFWall.cxx
     GunTestFacility.cxx IonPumpGammaVacuum.cxx RFGun.cxx
     Solenoid.cxx GTFGateValve.cxx CurrentTransformer.cxx SlitsMask.cxx variables.cxx
 )
@@ -25,6 +25,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/BuildingB.cxx
   ${tarDIR}/ConcreteDoor.cxx
   ${tarDIR}/GTFLine.cxx
+  ${tarDIR}/GTFWall.cxx
   ${tarDIR}/GunTestFacility.cxx
   ${tarDIR}/IonPumpGammaVacuum.cxx
   ${tarDIR}/RFGun.cxx
@@ -34,6 +35,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/BuildingB.h
   ${tarINC}/ConcreteDoor.h
   ${tarINC}/GTFLine.h
+  ${tarINC}/GTFWall.h
   ${tarINC}/GunTestFacility.h
   ${tarINC}/IonPumpGammaVacuum.h
   ${tarINC}/RFGun.h
