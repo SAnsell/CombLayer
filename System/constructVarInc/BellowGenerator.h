@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVarInc/BellowGenerator.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_BellowGenerator_h
@@ -41,10 +41,13 @@ class BellowGenerator :
  private:
 
   double bellowStep;              ///< bellow step from flange
+    double wallThick;             ///< wall thickness
+    int nFolds;                   ///< number of foldings
+    int engActive;                ///< engineering active flag
   double bellowThick;             ///< bellow thickness.
-  
+
   std::string bellowMat;        ///< Primary bellow material
-    
+
  public:
 
   BellowGenerator();
@@ -58,7 +61,7 @@ class BellowGenerator :
   void setMat(const std::string&,const double);
   void setMat(const std::string&,const std::string&);
 
-  
+
   void generateBellow(FuncDataBase&,const std::string&,
 		      const double) const;
 
@@ -67,4 +70,4 @@ class BellowGenerator :
 }
 
 #endif
- 
+

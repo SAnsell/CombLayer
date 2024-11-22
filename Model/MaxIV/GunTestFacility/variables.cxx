@@ -584,7 +584,7 @@ namespace setVariable
 
     // Bellow D
     constexpr double bellowDLength = 163.7; // most upstream location of the slits (see also bellowBLength)
-    constexpr unsigned int bellowDN = 52;//328; // 328 is counted by KB
+    constexpr unsigned int bellowDN = 328; // 328 is counted by KB
     const double bellowDThick =
       getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
 		     bellowFlangeLength, bellowFlangeLength, bellowStep);
@@ -595,6 +595,8 @@ namespace setVariable
 						 bellowStep);
     BellowGen.setMat("Stainless316L", bellowDFrac*100.0);
     BellowGen.generateBellow(Control,"BellowD",bellowDLength); // approx
+    Control.addVariable("BellowDNFolds",328.0);
+
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
     Control.addVariable("YagUnitDBackLength",7.0); // approx
     // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
