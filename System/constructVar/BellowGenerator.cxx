@@ -84,18 +84,21 @@ BellowGenerator::setCF()
 
 void
 BellowGenerator::setPipe(const double R,const double T,
-			 const double S,const double BT)
+			 const double S,const double BT,
+			 const int n)
   /*!
     Set all the pipe values
     \param R :: radius of main pipe
     \param T :: Thickness
     \parma S :: Bellow step
     \param BT :: Bellow Thickness
+    \param n :: Number of folds
    */
 {
   PipeGenerator::setPipe(R,T);
   bellowStep=S;
   bellowThick=BT;
+  nFolds=n;
   return;
 }
 

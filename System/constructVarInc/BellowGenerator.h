@@ -57,7 +57,7 @@ class BellowGenerator :
 
   template<typename CF> void setCF();
 
-  void setPipe(const double,const double,const double,const double);
+  void setPipe(const double,const double,const double,const double, const int=10);
   void setMat(const std::string&,const double);
   void setMat(const std::string&,const std::string&);
 
@@ -70,4 +70,3 @@ class BellowGenerator :
 }
 
 #endif
-
