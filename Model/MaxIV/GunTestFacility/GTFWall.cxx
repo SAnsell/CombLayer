@@ -81,6 +81,8 @@ GTFWall::GTFWall(const GTFWall& A) :
   attachSystem::SurfMap(A),
   length(A.length),width(A.width),height(A.height),
   depth(A.depth),
+  cornerLength(A.cornerLength),
+  cornerHeight(A.cornerHeight),
   mat(A.mat)
   /*!
     Copy constructor
@@ -105,6 +107,8 @@ GTFWall::operator=(const GTFWall& A)
       width=A.width;
       height=A.height;
       depth=A.depth;
+      cornerLength=A.cornerLength;
+      cornerHeight=A.cornerHeight;
       mat=A.mat;
     }
   return *this;
@@ -141,6 +145,8 @@ GTFWall::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
+  cornerLength=Control.EvalVar<double>(keyName+"CornerLength");
+  cornerHeight=Control.EvalVar<double>(keyName+"CornerHeight");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -164,6 +170,9 @@ GTFWall::createSurfaces()
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(depth),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height),Z);
 
+  SurfMap::makeShiftedPlane("cornerSide",SMap,buildIndex+12,buildIndex+1,Y,cornerLength);
+  SurfMap::makeShiftedPlane("cornerTop",SMap,buildIndex+15,buildIndex+5,Z,cornerHeight);
+
   return;
 }
 
@@ -177,9 +186,16 @@ GTFWall::createObjects(Simulation& System)
   ELog::RegMethod RegA("GTFWall","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -2 3 -4 5 -6 ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 3 -4 15 -6 ");
+  makeCell("AboveCorner",System,cellIndex++,mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -12 3 -4 5 -15 ");
+  makeCell("Corner",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(HR);
 
   return;

@@ -610,6 +610,8 @@ namespace setVariable
     Control.addVariable(name+"Height", 45.0);
     Control.addVariable(name+"Depth",  35.0);
     Control.addVariable(name+"Mat", "Stainless304L");
+    Control.addVariable(name+"CornerLength",  20.0);
+    Control.addVariable(name+"CornerHeight", 25.0);
  }
 
   void GunTestFacilityVariables(FuncDataBase& Control)

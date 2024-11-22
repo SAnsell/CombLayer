@@ -46,6 +46,8 @@ class GTFWall : public attachSystem::ContainedComp,
   double width;                 ///< Width
   double height;                ///< Height
   double depth;                 ///< wall depth
+  double cornerLength;          ///< corner length
+  double cornerHeight;          ///< corner height
 
   int mat;                      ///< Main material
 
