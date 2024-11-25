@@ -33,10 +33,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "Exception.h"
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
@@ -60,6 +57,19 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+
+#include "Exception.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+
+#include "Quaternion.h"
+#include "Surface.h"
+#include "Quadratic.h"
+
+#include "Plane.h"
+#include "SurInter.h"
 
 #include "Duct.h"
 
@@ -94,6 +104,7 @@ Duct::Duct(const Duct& A) :
   shieldPenetrationRadius(A.shieldPenetrationRadius),
   shieldPenetrationWidth(A.shieldPenetrationWidth),
   shieldPenetrationHeight(A.shieldPenetrationHeight),
+  shieldPenetrationTiltXmin(A.shieldPenetrationTiltXmin),
   shieldThick(A.shieldThick),
   shieldWidthRight(A.shieldWidthRight),
   shieldWidthLeft(A.shieldWidthLeft),
@@ -135,6 +146,7 @@ Duct::operator=(const Duct& A)
       shieldPenetrationRadius=A.shieldPenetrationRadius;
       shieldPenetrationWidth=A.shieldPenetrationWidth;
       shieldPenetrationHeight=A.shieldPenetrationHeight;
+      shieldPenetrationTiltXmin=A.shieldPenetrationTiltXmin;
       shieldThick=A.shieldThick;
       shieldWidthRight=A.shieldWidthRight;
       shieldWidthLeft=A.shieldWidthLeft;
@@ -186,6 +198,7 @@ Duct::populate(const FuncDataBase& Control)
   shieldPenetrationRadius=Control.EvalVar<double>(keyName+"ShieldPenetrationRadius");
   shieldPenetrationWidth=Control.EvalVar<double>(keyName+"ShieldPenetrationWidth");
   shieldPenetrationHeight=Control.EvalVar<double>(keyName+"ShieldPenetrationHeight");
+  shieldPenetrationTiltXmin=Control.EvalVar<double>(keyName+"ShieldPenetrationTiltXmin");
   shieldThick=Control.EvalVar<double>(keyName+"ShieldThick");
   shieldWidthRight=Control.EvalVar<double>(keyName+"ShieldWidthRight");
   shieldWidthLeft=Control.EvalVar<double>(keyName+"ShieldWidthLeft");
@@ -218,8 +231,6 @@ Duct::createSurfaces()
   */
 {
   ELog::RegMethod RegA("Duct","createSurfaces");
-
-  ELog::EM << "*****HHH " << keyName << " " << ductType << " " << shieldType << " " << shieldPenetrationType << ELog::endDiag;
 
   if (length<Geometry::zeroTol)
     if (!frontActive() || !backActive())
@@ -264,23 +275,24 @@ Duct::createSurfaces()
 				  Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
 				  shieldPenetrationRadius);
     else if (shieldPenetrationType=="Rectangle") {
-      ModelSupport::buildPlane(SMap,buildIndex+23,
-			       Origin-X*(shieldPenetrationWidth/2.0-shieldPenetrationXOffset),X);
+
+      const Geometry::Vec3D pos = Origin-X*(shieldPenetrationWidth/2.0-shieldPenetrationXOffset);
+      Geometry::Vec3D myX(X);
+      Geometry::Quaternion::calcQRotDeg(shieldPenetrationTiltXmin,Z).rotate(myX);
+
+      ModelSupport::buildPlane(SMap,buildIndex+23,pos,myX);
+
       ModelSupport::buildPlane(SMap,buildIndex+24,
 			       Origin+X*(shieldPenetrationWidth/2.0+shieldPenetrationXOffset),X);
       ModelSupport::buildPlane(SMap,buildIndex+25,
-			       Origin-Z*(shieldPenetrationHeight/2.0-shieldPenetrationZOffset),Z);
+				 Origin-Z*(shieldPenetrationHeight/2.0-shieldPenetrationZOffset),Z);
       ModelSupport::buildPlane(SMap,buildIndex+26,
 			       Origin+Z*(shieldPenetrationHeight/2.0+shieldPenetrationZOffset),Z);
+
     } else if (shieldPenetrationType=="None") {
     } else
       throw  ColErr::ExitAbort(keyName+": wrong shield penetration type: " + shieldPenetrationType);
   }
-
-  //  if (keyName=="BldBDuctWave") {
-      ELog::EM << "******** HERE1: " << keyName << " " << shieldPenetrationType << " " << ELog::endDiag;
-      //}
-
 
   return;
 }
@@ -315,7 +327,7 @@ Duct::createObjects(Simulation& System)
   else if (shieldPenetrationType=="Cylinder")
     penetration=ModelSupport::getHeadRule(SMap,buildIndex,"-27");
   else if (shieldPenetrationType=="Rectangle")
-    penetration=ModelSupport::getHeadRule(SMap,buildIndex,"23 -24 25 -26");
+    penetration=ModelSupport::getSetHeadRule(SMap,buildIndex,"23 -14 -24 25 -26"); // -14 allows the penetration to cut the shield
   else
     throw  ColErr::ExitAbort(keyName+": Unknown shield penetration type: " + shieldPenetrationType);
 
@@ -324,10 +336,6 @@ Duct::createObjects(Simulation& System)
       Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
       makeCell("ShieldWallOffset",System,cellIndex++,voidMat,0.0,Out);
     }
-
-    // if (keyName=="BldBDuctWave") {
-    //   ELog::EM << "******** HERE2: " << keyName << " " << shieldPenetrationType << " " << penetration << ELog::endDiag;
-    // }
 
     Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -11 13 -14 15 -16");
     if (shieldPenetrationType!="None")

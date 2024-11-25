@@ -51,6 +51,7 @@ class DuctGenerator
   double shieldPenetrationRadius; ///< penetration radius in the shield
   double shieldPenetrationWidth; ///< shielding rectangular penetration full width
   double shieldPenetrationHeight; ///< shielding rectangular penetration full height
+  double shieldPenetrationTiltXmin; ///< shielding penetration xmin plane tilt angle
   double shieldThick;           ///< shielding thickness
   double shieldWidthRight;      ///< shielding right-width
   double shieldWidthLeft;       ///< shielding left-width
