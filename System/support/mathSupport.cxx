@@ -136,7 +136,7 @@ countBits(const size_t& u)
   */
 {
   // This is a nice way of getting (a0+a1+a2) in little groups of three
-  size_t uCount = u
+  const size_t uCount = u
     - ((u >> 1) & 0333333333333333333333UL)
     - ((u >> 2) & 0111111111111111111111UL);
   return
@@ -153,6 +153,7 @@ getPowerTwo(const size_t N)
     \return number
   */
 {
+  // note template forms of pow are ONLY float
   return static_cast<size_t>(std::pow(2L,std::floor(std::log2(N))));
 }
 
@@ -361,8 +362,6 @@ indexSort(const std::vector<T>& pVec,std::vector<U>& Index)
   transform(pVec.begin(),pVec.end(),PartList.begin(),
 	    mathSupport::PIndex<T>());
   sort(PartList.begin(),PartList.end());
-
-  
   transform(PartList.begin(),PartList.end(),Index.begin(),
 	    mathSupport::PSep<T>());
   
@@ -404,6 +403,7 @@ inUnorderedRange(const std::vector<T>& VOffset,
 		 const T& Item)
   /*!
     Determine if the Item is in the range VOffset[] + VRange[]
+    Note that we don't assume that VOffset is ordered in any way
     \param VOffset :: start values						
     \param VRange :: range values
     \param Item :: test value
@@ -448,7 +448,7 @@ rangePos(const std::vector<T>& xArray,const T& Aim)
   This also gives 0 and size-1
   \param xArray :: Array to search
   \param Aim :: Aim Point
-  \return position in array  [ranged between: -1 and size-1  ] 
+  \return position in array  [ranged between: 0 and size-1  ] 
 */
 {
   if (xArray.empty() || Aim<=xArray.front())
@@ -460,6 +460,28 @@ rangePos(const std::vector<T>& xArray,const T& Aim)
     xV=lower_bound(xArray.begin(),xArray.end(),Aim);
   const size_t out=static_cast<size_t>(distance(xArray.begin(),xV));
   return (out) ? out-1 : 0;
+}
+
+template<typename T>
+size_t
+flaggedRangePos(const std::vector<T>& xArray,const T& Aim)
+/*!
+  Detemine the point that matches an array.
+  and return +1 that position 
+  Such that  \f$ xArray[index-1] > Aim> xArray[index] \f$
+  
+  \param xArray :: Array to search
+  \param Aim :: Aim Point
+  \retval position in array [ranged between: 1 and size  ]
+  \retval 0 point out of range 
+*/
+{
+  if (xArray.empty() || Aim<xArray.front() || Aim>xArray.back())
+    return 0;
+  
+  typename std::vector<T>::const_iterator 
+    xV=lower_bound(xArray.begin(),xArray.end(),Aim);
+  return static_cast<size_t>(distance(xArray.begin(),xV)+1);
 }
 
 template<typename T>
@@ -989,6 +1011,9 @@ template class mathSupport::PSep<double>;
 template size_t rangePos(const std::vector<float>&,const float&);
 template size_t rangePos(const std::vector<int>&,const int&);
 template size_t rangePos(const std::vector<double>&,const double&);
+template size_t flaggedRangePos(const std::vector<float>&,const float&);
+template size_t flaggedRangePos(const std::vector<double>&,const double&);
+
 template size_t rangePos(const std::vector<DError::doubleErr>&,
                            const DError::doubleErr&);
 template long int indexPos(const std::vector<double>&,const double&);
@@ -996,6 +1021,8 @@ template long int indexPos(const std::vector<DError::doubleErr>&,
                            const DError::doubleErr&);
 
 template void indexSort(const std::vector<double>&,std::vector<int>&);
+template void indexSort(const std::vector<long double>&,
+			std::vector<size_t>&);
 template void indexSort(const std::vector<int>&,std::vector<int>&);
 template void indexSort(const std::vector<std::string>&,std::vector<int>&);
 template void indexSort(const std::vector<double>&,std::vector<size_t>&);

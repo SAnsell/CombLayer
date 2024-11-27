@@ -4,7 +4,8 @@ set (testSources
     testBoxLine.cxx testCone.cxx testContained.cxx 
     testConvex2D.cxx testConvex.cxx testCylinder.cxx 
     testDBMaterial.cxx testDoubleErr.cxx testElement.cxx 
-    testEllipsoid.cxx testEllipticCyl.cxx testExtControl.cxx 
+    testEllipsoid.cxx testEllipse.cxx testEllipticCyl.cxx
+    testExtControl.cxx 
     testFace.cxx testFortranWrite.cxx testFunc.cxx 
     testFunction.cxx testGenerateSurf.cxx testGeomSupport.cxx 
     testGroupRange.cxx testHeadRule.cxx testIndexCounter.cxx

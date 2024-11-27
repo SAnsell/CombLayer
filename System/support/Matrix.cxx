@@ -66,6 +66,18 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> A) :
 {}
 
 template<typename T>
+Matrix<T>::Matrix(const size_t nrow,const size_t ncol,
+		  const std::vector<T>& data) :
+  MatrixBase<T>(nrow,ncol,data)
+  /*!
+    Constructor with pre-set sizes. Matrix is zeroed
+    \param nrow :: number of rows
+    \param ncol :: number of columns
+    \param data :: flat data
+  */
+{}
+  
+template<typename T>
 Matrix<T>::Matrix(const std::vector<T>& A,const std::vector<T>& B) :
   MatrixBase<T>(A,B)
   /*!

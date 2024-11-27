@@ -50,7 +50,7 @@ class Cone : public Quadratic
  public:
 
   Cone();
-  Cone(const int);
+  explicit Cone(const int);
   Cone(const int,Geometry::Vec3D,
        const Geometry::Vec3D&,const double);
   Cone(const Cone&);

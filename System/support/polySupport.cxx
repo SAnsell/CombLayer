@@ -96,18 +96,30 @@ solveRealQuadratic(const T& a,const T& b,const T& c,
       return 1;
     }
 
-  const T B=b/(2.0*a);
-  const T D=c/(a*B*B);
-  if (D<1.0)          /* Real Roots */
+  if (c==0.0)
     {
-      const T l=1.0-std::sqrt(1.0-D);
-      AnsA=B*l;
-      AnsB=B*D/l;
-      if (AnsA>AnsB)
-	std::swap(AnsA,AnsB);
-      return (AnsA==AnsB) ? 1 : 2;
-    } 
-  return 0;
+      AnsA=0.0;
+      AnsB=b/a;     // a not zero
+    }
+  else
+    {
+      T D=b*b-4*a*c;
+      if (D<0.0) return 0;  // no real roots
+      D=std::sqrt(D);
+      if (b>=0.0)
+	{
+	  AnsA= (-b-D)/(2.0*a);
+	  AnsB= (2.0*c)/(-b-D);
+	}
+      else
+	{
+	  AnsA= (-b+D)/(2.0*a);
+	  AnsB= (2.0*c)/(-b+D);
+	}
+    }
+  if (AnsA>AnsB)
+    std::swap(AnsA,AnsB);
+  return (AnsA==AnsB) ? 1 : 2;
 }
 
 template<typename T>
@@ -470,6 +482,7 @@ long double quad(const long double,const long double,
 template size_t 
 solveRealQuadratic(const long double&,const long double&,
 		   const long double&,long double&,long double&);
+
 template size_t 
 solveRealQuadratic(const std::vector<long double>&,
 		   long double&,long double&);
