@@ -1,45 +1,49 @@
 \section{Installation}
 
-CombLayer is predominately written for the Linux platform using {\tt C++}
-compilers that support {\tt C++11} or greater. The code is available from \\
-\href{https://github.com/SAnsell/CombLayer}{https://github.com/SAnsell/CombLayer}, \\ either as a download of a {\tt zip} file or
-by cloning/pulling the git repository.
+CombLayer is primarily designed for the Linux platform and requires a
+\CC compiler that supports {\CC}11 or later. The code is available at
+\href{https://github.com/SAnsell/CombLayer}{https://github.com/SAnsell/CombLayer},
+either as a downloadable
+\href{https://github.com/SAnsell/CombLayer/archive/master.zip}{zip
+  file} or by cloning/pulling the Git repository:
+\begin{bash}
+  git clone https://github.com/SAnsell/CombLayer.git
+\end{bash}
 
 \subsection{Requirments}
 
-CombLayer needs to have the GNU Scietific Library [GSL] and the {\tt
-  boost::regex} system along with the STL libraries from your {\tt
-  C++} compiler. The GSL can be avoided with the {\tt -NS} flag in the
-{\tt getMk.pl} and the {\tt CMake.pl} script but some functionality will be
-lost, particularly in the choice of variance reduction methods.
-
-Additionally, the primary build system uses {\tt cmake}. There is another
-that just uses {\tt make} but is significantly more time-consuming.
-
-Functional documentation is supported using {\tt Doxygen} and the construction
-of new cmake text files can be done via PERL scripts.
-
-Currenly it is know that {\tt gcc} version 4.6 and above can compile
-CombLayer as can {\tt clang} (all tested versions). {\tt gcc} 4.4 which is often
-the default on RedHat systems (2015) does not work.
+CombLayer requires the GNU Scientific
+Library~(\href{https://www.gnu.org/software/gsl}{GSL}),
+\href{https://www.boost.org}{boost::regex}, as well as the
+\href{https://github.com/fmtlib/fmt}{\{fmt\}} and STL libraries
+provided by your \CC compiler. The build process is managed with
+\href{https://cmake.org}{CMake}, and the class reference documentation
+is generated using \href{https://www.doxygen.nl}{Doxygen}.
+Both {\tt gcc} and {\tt clang} compilers are supported.
 
 \subsection{Basic build method}
 
-If a clean directory is made and then the {\tt .zip} file is uncompressed, the
-following commands should build a version of CombLayer.
+CombLayer can be built either in the source code directory or in a separate build directory. If built in the source directory, the command is
 
 \begin{bash}
-  ./CMake.pl
   cmake ./
   make
 \end{bash}
 
-This should make a number of executables, e.g. {\tt ess}, {\tt simple}, {\tt fullBuild} etc. These
-can be used to make a simple model with commands like
+or for a separate build directory
+
 \begin{bash}
-  ./simple -r AA
+  cmake -B/path/to/buildDirectory -S/path/to/srcDirectory
+  make
 \end{bash}
-This will produce an output file {\tt AA1.x} which is a MCNP model.
 
-
-
+This should make a number of executables, e.g. {\tt ess}, {\tt maxiv},
+{\tt reactor}, {\tt fullBuild} etc, which can be used to make a model
+with commands listed in the {\tt all.sh} script. For instance, the
+\begin{bash}
+  singleItem --singleItem Octupole AA
+\end{bash}
+command generates an output file named {\tt AA1.x}, which is an MCNP
+model of an octupole magnet. To generate a FLUKA model, add the {\tt
+  -fluka} argument, and for PHITS models, use the {\tt -phits}
+argument.
