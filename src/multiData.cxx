@@ -395,7 +395,7 @@ multiData<T>::operator+=(const multiData<T>& A)
 
   throwMatchCheck(A,"operator+=");
   
-  if constexpr (requires (T a,T b) { a+b; })
+  if constexpr (std::is_integral<T>::value) // requires (T a,T b) { a+b; })
     {
       std::transform(flatData.begin(),flatData.end(),
 		     A.flatData.begin(),flatData.begin(),
@@ -489,7 +489,7 @@ multiData<T>::operator+=(const T& V)
     \param V :: Value to multiply by
   */
 {
-  if constexpr (requires (T a,T b) { a+b; })
+  if constexpr (std::is_integral<T>::value)
     {
       for(T& vItem : flatData)
 	vItem+=V;
@@ -597,7 +597,7 @@ multiData<T>::getRangeSumImpl(T& out,
      \param index :: current index to work on     y
     */
 {
-  if constexpr (requires (T a,T b) { a+b; })
+  if constexpr (std::is_integral<T>::value) // requires (T a,T b) { a+b; })
     {
       const sRange& RR=sR[dim];
       if (dim+1==sR.size())
@@ -1280,8 +1280,8 @@ multiData<T>::write(std::ostream& OX) const
     \param OX :: Output
   */
 {
-  if constexpr (requires (std::ostream& OX,T A) { OX<<A; })
-    {
+  //  if constexpr (requires (std::ostream& OX,T A) { OX<<A; })
+  //    {
       OX<<"Index =";
       for(const size_t i : index)
 	OX<<" "<<i;
@@ -1314,7 +1314,7 @@ multiData<T>::write(std::ostream& OX) const
 	  OX<<"\n";
 	  
 	}
-    }
+      //    }
   return;
 }
 
