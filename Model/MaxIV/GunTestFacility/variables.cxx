@@ -647,7 +647,7 @@ namespace setVariable
     name="LocalShieldingWall";
     Control.addVariable(name+"XStep",  -30.0);
     Control.addVariable(name+"Width",  6.0);
-    Control.addVariable(name+"Length", 324.0); // 324: optimised with AR 241214
+    Control.addVariable(name+"Length", 350.0); // 350: guess since not enough with the most downstream slit position at 6 cm wall width
     Control.addVariable(name+"Height", 45.0);
     Control.addVariable(name+"Depth",  35.0);
     Control.addVariable(name+"Mat", "Stainless304L");
