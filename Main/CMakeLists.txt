@@ -17,5 +17,5 @@ set(SRC_LIST
   ${tarDIR}/fullBuild.cxx ${tarDIR}/maxiv.cxx ${tarDIR}/pipe.cxx
   ${tarDIR}/reactor.cxx ${tarDIR}/saxsSim.cxx ${tarDIR}/singleItem.cxx
   ${tarDIR}/t1Real.cxx ${tarDIR}/testMain.cxx ${tarDIR}/xrayHut.cxx
-  PARENT_SCOPE
-)
+  ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
+

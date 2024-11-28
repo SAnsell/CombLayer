@@ -65,6 +65,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/testDBMaterial.cxx
   ${tarDIR}/testDoubleErr.cxx
   ${tarDIR}/testElement.cxx
+  ${tarDIR}/testEllipse.cxx
   ${tarDIR}/testEllipsoid.cxx
   ${tarDIR}/testEllipticCyl.cxx
   ${tarDIR}/testExtControl.cxx
@@ -80,9 +81,11 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/testInputParam.cxx
   ${tarDIR}/testInsertComp.cxx
   ${tarDIR}/testLine.cxx
+  ${tarDIR}/testLineIntersect.cxx
   ${tarDIR}/testLineTrack.cxx
   ${tarDIR}/testLog.cxx
   ${tarDIR}/testM2.cxx
+  ${tarDIR}/testM3.cxx
   ${tarDIR}/testMapRange.cxx
   ${tarDIR}/testMapSupport.cxx
   ${tarDIR}/testMasterRotate.cxx
@@ -149,6 +152,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/testDBMaterial.h
   ${tarINC}/testDoubleErr.h
   ${tarINC}/testElement.h
+  ${tarINC}/testEllipse.h
   ${tarINC}/testEllipsoid.h
   ${tarINC}/testEllipticCyl.h
   ${tarINC}/testExtControl.h
@@ -164,9 +168,11 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/testInputParam.h
   ${tarINC}/testInsertComp.h
   ${tarINC}/testLine.h
+  ${tarINC}/testLineIntersect.h
   ${tarINC}/testLineTrack.h
   ${tarINC}/testLog.h
   ${tarINC}/testM2.h
+  ${tarINC}/testM3.h
   ${tarINC}/testMapRange.h
   ${tarINC}/testMapSupport.h
   ${tarINC}/testMasterRotate.h
