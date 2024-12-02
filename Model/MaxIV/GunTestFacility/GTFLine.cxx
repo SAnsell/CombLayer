@@ -398,7 +398,11 @@ GTFLine::buildObjects(Simulation& System)
   outerCell = constructSystem::constructUnit(System,buildZone,*yagUnitC,"back",*bellowD);
   constructYAG(System,buildZone,*bellowD,"back",*yagUnitD,*yagScreenD);
 
-  constructSystem::constructUnit(System,buildZone,*yagUnitD,"back",*dump);
+  //constructSystem::constructUnit(System,buildZone,*yagUnitD,"back",*dump);
+  dump->createAll(System, *yagUnitD, "back");
+  // outerCell=buildZone.createUnit(System,*dump,"back");
+  dump->insertInCell(System,outerCell+1);
+  yagUnitD->insertInCell(System,dump->getCell("Void"));
 
   lsw->createAll(System, *solenoid, "#front");
   for (int i=-3; i<14; ++i)
@@ -414,7 +418,8 @@ GTFLine::buildObjects(Simulation& System)
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=yagUnitD;
+  lastComp=dump;
+  dump->insertInCell(System,outerCell+2);
 
   return;
 }
