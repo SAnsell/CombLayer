@@ -163,43 +163,39 @@ GTFBeamDump::createSurfaces()
 {
   ELog::RegMethod RegA("GTFBeamDump","createSurfaces");
 
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
+  if (frontActive()) {
+      ModelSupport::buildShiftedPlane(SMap, buildIndex+12,
+				      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+				      brickLength);
+  } else {
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+    FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(gapThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      gapThick);
-    }
+    ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(brickLength),Y);
+  }
 
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(brickLength+gapThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
+  if (backActive()) {
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+11,
+				    SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				    -brickWidth*2.0);
+  } else {
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(brickLength+brickThick),Y);
+    FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
 
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(brickLength),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -gapThick);
-    }
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+11, buildIndex+2, Y, -brickWidth*2.0);
+  }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(brickWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(brickWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(brickLength/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(brickLength/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(brickThick/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(brickThick/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(brickWidth/2.0+brickThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(brickWidth/2.0+brickThick),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(brickWidth/2.0+gapThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(brickWidth/2.0+gapThick),X);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+13, buildIndex+3, X,  brickThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+14, buildIndex+4, X, -brickThick);
 
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(brickThick/2.0+gapThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(brickThick/2.0+gapThick),Z);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+15, buildIndex+5, Z,  brickThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+16, buildIndex+6, Z, -brickThick);
 
   return;
 }
@@ -217,14 +213,28 @@ GTFBeamDump::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 13 -14 15 -16 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,brickMat,0.0,HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 3 -4 15 -16 (-13:14)");
+  makeCell("Side",System,cellIndex++,brickMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 3 -4 15 -16 ");
+  makeCell("Back",System,cellIndex++,brickMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 3 -4 5 -15 ");
+  makeCell("Floor",System,cellIndex++,brickMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 3 -4 5 -15 ");
+  makeCell("FloorVoid",System,cellIndex++,voidMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 3 -4 16 -6 ");
+  makeCell("Roof",System,cellIndex++,brickMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 3 -4 16 -6 ");
+  makeCell("RoofVoid",System,cellIndex++,voidMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(HR*frontStr*backStr);
 
   return;

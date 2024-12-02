@@ -647,6 +647,7 @@ namespace setVariable
 
     setVariable::GTFBeamDumpGenerator DumpGen;
     DumpGen.generate(Control,"Dump");
+    Control.addVariable("DumpYAngle",180.0);
 
     name="LocalShieldingWall";
     Control.addVariable(name+"XStep",  -30.0);
