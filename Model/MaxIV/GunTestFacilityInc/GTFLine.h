@@ -62,6 +62,7 @@ namespace MAXIV
   namespace GunTestFacility
   {
     class GTFWall;
+    class GTFBeamDump;
   }
 
 class GTFLine :
@@ -111,6 +112,7 @@ class GTFLine :
   std::shared_ptr<xraySystem::SlitsMask> slits;
 
   std::shared_ptr<MAXIV::GunTestFacility::GTFWall> lsw; // local shielding wall along the beam line
+  std::shared_ptr<MAXIV::GunTestFacility::GTFBeamDump> dump;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle

@@ -1,7 +1,7 @@
 set (GunTestFacilitySources
     BuildingB.cxx ConcreteDoor.cxx GTFLine.cxx GTFWall.cxx
     GunTestFacility.cxx IonPumpGammaVacuum.cxx RFGun.cxx
-    Solenoid.cxx GTFGateValve.cxx CurrentTransformer.cxx SlitsMask.cxx variables.cxx
+    Solenoid.cxx GTFGateValve.cxx CurrentTransformer.cxx SlitsMask.cxx GTFBeamDump.cxx variables.cxx
 )
 
 add_library (GunTestFacility SHARED
@@ -43,4 +43,5 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/GTFGateValve.h
   ${tarINC}/CurrentTransformer.h
   ${tarINC}/SlitsMask.h
+  ${tarINC}/GTFBeamDump.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)

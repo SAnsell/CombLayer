@@ -81,6 +81,7 @@
 #include "PipeTube.h"
 #include "FlangePlate.h"
 #include "GTFWall.h"
+#include "GTFBeamDump.h"
 
 #include "LObjectSupport.h"
 #include "GTFLine.h"
@@ -126,7 +127,8 @@ GTFLine::GTFLine(const std::string& Key) :
   yagUnitD(new tdcSystem::YagUnit("YagUnitD")),
   yagScreenD(new tdcSystem::YagScreen("YagScreenD")),
   slits(new xraySystem::SlitsMask("Slits")),
-  lsw(new MAXIV::GunTestFacility::GTFWall("LocalShieldingWall"))
+  lsw(new MAXIV::GunTestFacility::GTFWall("LocalShieldingWall")),
+  dump(new MAXIV::GunTestFacility::GTFBeamDump("Dump"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -165,6 +167,7 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(yagScreenD);
   OR.addObject(slits);
   OR.addObject(lsw);
+  OR.addObject(dump);
 }
 
 GTFLine::~GTFLine()
@@ -394,6 +397,8 @@ GTFLine::buildObjects(Simulation& System)
 
   outerCell = constructSystem::constructUnit(System,buildZone,*yagUnitC,"back",*bellowD);
   constructYAG(System,buildZone,*bellowD,"back",*yagUnitD,*yagScreenD);
+
+  constructSystem::constructUnit(System,buildZone,*yagUnitD,"back",*dump);
 
   lsw->createAll(System, *solenoid, "#front");
   for (int i=-3; i<14; ++i)

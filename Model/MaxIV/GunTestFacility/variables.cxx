@@ -60,6 +60,7 @@
 #include "YagScreenGenerator.h"
 #include "SlitsMaskGenerator.h"
 #include "RFGunGenerator.h"
+#include "GTFBeamDumpGenerator.h"
 
 constexpr double xstep = 11.5;
 constexpr double xyangle = 0.0; //5.0;
@@ -643,6 +644,9 @@ namespace setVariable
     Control.addVariable("YagUnitDBackCapThick", 1.2);
     YagScreenGen.generateScreen(Control,"YagScreenD",0);
     Control.addVariable("YagScreenDYAngle",-90.0);
+
+    setVariable::GTFBeamDumpGenerator DumpGen;
+    DumpGen.generate(Control,"Dump");
 
     name="LocalShieldingWall";
     Control.addVariable(name+"XStep",  -30.0);
