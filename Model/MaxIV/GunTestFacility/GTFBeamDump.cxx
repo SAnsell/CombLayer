@@ -83,9 +83,9 @@ GTFBeamDump::GTFBeamDump(const GTFBeamDump& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
-  wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  brickLength(A.brickLength),brickWidth(A.brickWidth),brickThick(A.brickThick),
+  gapThick(A.gapThick),
+  brickMat(A.brickMat),voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: GTFBeamDump to copy
@@ -107,12 +107,12 @@ GTFBeamDump::operator=(const GTFBeamDump& A)
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      length=A.length;
-      width=A.width;
-      height=A.height;
-      wallThick=A.wallThick;
-      mainMat=A.mainMat;
-      wallMat=A.wallMat;
+      brickLength=A.brickLength;
+      brickWidth=A.brickWidth;
+      brickThick=A.brickThick;
+      gapThick=A.gapThick;
+      brickMat=A.brickMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -144,13 +144,13 @@ GTFBeamDump::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  brickLength=Control.EvalVar<double>(keyName+"BrickLength");
+  brickWidth=Control.EvalVar<double>(keyName+"BrickWidth");
+  brickThick=Control.EvalVar<double>(keyName+"BrickThick");
+  gapThick=Control.EvalVar<double>(keyName+"GapThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  brickMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   return;
 }
@@ -168,38 +168,38 @@ GTFBeamDump::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
       FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(gapThick),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
 	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+				      gapThick);
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(brickLength+gapThick),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
 
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(brickLength),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
 	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
+				      -gapThick);
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(brickWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(brickWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(brickThick/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(brickThick/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(brickWidth/2.0+gapThick),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(brickWidth/2.0+gapThick),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(brickThick/2.0+gapThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(brickThick/2.0+gapThick),Z);
 
   return;
 }
@@ -218,11 +218,11 @@ GTFBeamDump::createObjects(Simulation& System)
   const HeadRule backStr(backRule());
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  makeCell("MainCell",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontStr*backStr);
+  makeCell("Wall",System,cellIndex++,brickMat,0.0,HR*frontStr*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16");
   addOuterSurf(HR*frontStr*backStr);
@@ -241,16 +241,16 @@ GTFBeamDump::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(brickWidth/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(brickWidth/2.0),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(brickThick/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(brickThick/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;

@@ -39,13 +39,13 @@ class GTFBeamDumpGenerator
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double brickLength;          ///< Brick length
+  double brickWidth;           ///< Brick brickWidth
+  double brickThick;           ///< Brick thick
+  double gapThick;             ///< Gap thick
 
-  std::string mainMat;          ///< Main material
-  std::string wallMat;          ///< Wall material
+  std::string brickMat;         ///< Brick material
+  std::string voidMat;          ///< Void material
 
  public:
 

@@ -44,13 +44,13 @@ class GTFBeamDump :
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double brickLength;           ///< Brick length
+  double brickWidth;            ///< Brick brickWidth
+  double brickThick;            ///< Brick thick
+  double gapThick;              ///< Gap thick
 
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
+  int brickMat;                 ///< Brick material
+  int voidMat;                  ///< Void material
 
   void populate(const FuncDataBase&);
 

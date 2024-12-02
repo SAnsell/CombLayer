@@ -50,8 +50,8 @@ namespace setVariable
 {
 
 GTFBeamDumpGenerator::GTFBeamDumpGenerator() :
-  length(10.0),width(5.0),height(15.0),wallThick(1.0),
-  mainMat("Void"),wallMat("Stainless316L")
+  brickLength(20.0),brickWidth(10.0),brickThick(5.0),gapThick(0.1),
+  brickMat("Lead"),voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -74,12 +74,12 @@ GTFBeamDumpGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("GTFBeamDumpGenerator","generate");
 
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MainMat",mainMat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"BrickLength",brickLength);
+  Control.addVariable(keyName+"BrickWidth",brickWidth);
+  Control.addVariable(keyName+"BrickThick",brickThick);
+  Control.addVariable(keyName+"GapThick",gapThick);
+  Control.addVariable(keyName+"BrickMat",brickMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
 
