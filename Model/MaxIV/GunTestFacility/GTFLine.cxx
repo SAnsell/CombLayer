@@ -403,6 +403,9 @@ GTFLine::buildObjects(Simulation& System)
   // outerCell=buildZone.createUnit(System,*dump,"back");
   dump->insertInCell(System,outerCell+1);
   yagUnitD->insertInCell(System,dump->getCell("Void"));
+  yagUnitD->insertInCell(System,dump->getCell("FloorVoid"));
+  yagUnitD->insertInCell(System,dump->getCell("RoofVoid"));
+  //  dump->insertInCell(System,yagUnitD->getCell("viewOut"));
 
   lsw->createAll(System, *solenoid, "#front");
   for (int i=-3; i<14; ++i)

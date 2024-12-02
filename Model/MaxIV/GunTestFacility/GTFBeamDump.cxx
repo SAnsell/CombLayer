@@ -216,8 +216,11 @@ GTFBeamDump::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 13 -14 15 -16 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 3 -4 15 -16 (-13:14)");
-  makeCell("Side",System,cellIndex++,brickMat,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 3 -13 15 -16 ");
+  makeCell("Left",System,cellIndex++,brickMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 14 -4 15 -16 ");
+  makeCell("Right",System,cellIndex++,brickMat,0.0,HR*frontStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 3 -4 15 -16 ");
   makeCell("Back",System,cellIndex++,brickMat,0.0,HR*backStr);
