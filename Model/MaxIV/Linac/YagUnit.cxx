@@ -316,9 +316,10 @@ YagUnit::createObjects(Simulation& System)
   makeCell("backOut",System,cellIndex++,0,0.0,HR);
 
   // outer void box:
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"155 -156 253 (-327 : -107 : (-227 -200))");
-  addOuterSurf(HR*frontHR*backHR);
+  HR =ModelSupport::getHeadRule(SMap,buildIndex,"-327")*frontHR*backHR;
+  HR+=ModelSupport::getHeadRule(SMap,buildIndex,"155 -156 -107");
+  HR+=ModelSupport::getHeadRule(SMap,buildIndex,"253 -200 -227");
+  addOuterSurf(HR);
 
   return;
 }
