@@ -188,8 +188,8 @@ GTFBeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(brickLength/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(brickLength/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(brickWidth/2.0+brickThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(brickWidth/2.0+brickThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(brickWidth/2.0+brickThick+gapThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(brickWidth/2.0+brickThick+gapThick),Z);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+13, buildIndex+3, X,  brickThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+14, buildIndex+4, X, -brickThick);
@@ -198,8 +198,10 @@ GTFBeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+16, buildIndex+6, Z, -brickThick);
 
   // Gaps
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+21, buildIndex+2, Y, -brickWidth);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+22, buildIndex+21, Y, -gapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+21, buildIndex+2,  Y,-brickWidth);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+22, buildIndex+21, Y,  -gapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+25, buildIndex+15, Z,   gapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+26, buildIndex+16, Z,  -gapThick);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+31, buildIndex+12, Y, gapThick);
 
@@ -222,14 +224,29 @@ GTFBeamDump::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -31 13 -14 15 -16 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 3 -13 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 3 -13 25 -26 ");
   makeCell("Left",System,cellIndex++,brickMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 14 -4 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 3 -13 15 -25 ");
+  makeCell("LeftGapFloor",System,cellIndex++,voidMat,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 3 -13 26 -16 ");
+  makeCell("LeftGapRoof",System,cellIndex++,voidMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 14 -4 25 -26 ");
   makeCell("Right",System,cellIndex++,brickMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 3 -4 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 14 -4 15 -25 ");
+  makeCell("RightGapFloor",System,cellIndex++,voidMat,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 14 -4 26 -16 ");
+  makeCell("RightGapRoof",System,cellIndex++,voidMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 3 -4 25 -26 ");
   makeCell("Back",System,cellIndex++,brickMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 3 -4 15 -25 ");
+  makeCell("BackGapFloor",System,cellIndex++,voidMat,0.0,HR*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 3 -4 26 -16 ");
+  makeCell("BackGapRoof",System,cellIndex++,voidMat,0.0,HR*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 3 -13 15 -16 ");
   makeCell("BackGapLeft",System,cellIndex++,voidMat,0.0,HR);
