@@ -182,7 +182,7 @@ GTFBeamDump::createSurfaces()
     ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(brickLength+brickThick),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
 
-    ModelSupport::buildShiftedPlane(SMap, buildIndex+11, buildIndex+2, Y, -brickWidth*2.0);
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+11, buildIndex+2, Y, -brickWidth*2.0-gapThick);
   }
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(brickLength/2.0),X);
@@ -196,6 +196,10 @@ GTFBeamDump::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+15, buildIndex+5, Z,  brickThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+16, buildIndex+6, Z, -brickThick);
+
+  // Gaps
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+21, buildIndex+2, Y, -brickWidth);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+22, buildIndex+21, Y, -gapThick);
 
   return;
 }
@@ -225,14 +229,22 @@ GTFBeamDump::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 3 -4 15 -16 ");
   makeCell("Back",System,cellIndex++,brickMat,0.0,HR*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 3 -4 5 -15 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 3 -4 5 -15 ");
   makeCell("Floor",System,cellIndex++,brickMat,0.0,HR*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -21 3 -4 5 -15 ");
+  makeCell("FloorGap",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -22 3 -4 5 -15 ");
+  makeCell("Floor",System,cellIndex++,brickMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 3 -4 5 -15 ");
   makeCell("FloorVoid",System,cellIndex++,voidMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 3 -4 16 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 3 -4 16 -6 ");
   makeCell("Roof",System,cellIndex++,brickMat,0.0,HR*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -21 3 -4 16 -6 ");
+  makeCell("RoofGap",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -22 3 -4 16 -6 ");
+  makeCell("Roof",System,cellIndex++,brickMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 3 -4 16 -6 ");
   makeCell("RoofVoid",System,cellIndex++,voidMat,0.0,HR*frontStr);

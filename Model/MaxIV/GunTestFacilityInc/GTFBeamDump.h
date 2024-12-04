@@ -32,7 +32,7 @@ namespace MAXIV::GunTestFacility
   \version 1.0
   \author Konstantin Batkov
   \date December 2024
-  \brief GTF BeamDump
+  \brief A small BeamDump made from shielding bricks with gaps between them.
 */
 
 class GTFBeamDump :
