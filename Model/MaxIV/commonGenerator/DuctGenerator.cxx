@@ -62,6 +62,10 @@ DuctGenerator::DuctGenerator() :
   shieldPenetrationWidth(2.0),
   shieldPenetrationHeight(1.0),
   shieldPenetrationTiltXmin(0.0),
+  shieldLedgeThick(5),
+  shieldLedgeLength(10.0),
+  shieldLedgeZOffset(0.0),
+  shieldLedgeActive(0),
   shieldThick(5),
   shieldWidthRight(13),
   shieldWidthLeft(18),
@@ -110,6 +114,10 @@ DuctGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"ShieldPenetrationWidth",shieldPenetrationWidth);
   Control.addVariable(keyName+"ShieldPenetrationHeight",shieldPenetrationHeight);
   Control.addVariable(keyName+"ShieldPenetrationTiltXmin",shieldPenetrationTiltXmin);
+  Control.addVariable(keyName+"ShieldLedgeThick",shieldLedgeThick);
+  Control.addVariable(keyName+"ShieldLedgeLength",shieldLedgeLength);
+  Control.addVariable(keyName+"ShieldLedgeZOffset",shieldLedgeZOffset);
+  Control.addVariable(keyName+"ShieldLedgeActive",shieldLedgeActive);
   Control.addVariable(keyName+"ShieldThick",shieldThick);
   Control.addVariable(keyName+"ShieldWidthRight",shieldWidthRight);
   Control.addVariable(keyName+"ShieldWidthLeft",shieldWidthLeft);

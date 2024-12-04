@@ -105,6 +105,10 @@ Duct::Duct(const Duct& A) :
   shieldPenetrationWidth(A.shieldPenetrationWidth),
   shieldPenetrationHeight(A.shieldPenetrationHeight),
   shieldPenetrationTiltXmin(A.shieldPenetrationTiltXmin),
+  shieldLedgeThick(A.shieldLedgeThick),
+  shieldLedgeLength(A.shieldLedgeLength),
+  shieldLedgeZOffset(A.shieldLedgeZOffset),
+  shieldLedgeActive(A.shieldLedgeActive),
   shieldThick(A.shieldThick),
   shieldWidthRight(A.shieldWidthRight),
   shieldWidthLeft(A.shieldWidthLeft),
@@ -147,6 +151,10 @@ Duct::operator=(const Duct& A)
       shieldPenetrationWidth=A.shieldPenetrationWidth;
       shieldPenetrationHeight=A.shieldPenetrationHeight;
       shieldPenetrationTiltXmin=A.shieldPenetrationTiltXmin;
+      shieldLedgeThick=A.shieldLedgeThick;
+      shieldLedgeLength=A.shieldLedgeLength;
+      shieldLedgeZOffset=A.shieldLedgeZOffset;
+      shieldLedgeActive=A.shieldLedgeActive;
       shieldThick=A.shieldThick;
       shieldWidthRight=A.shieldWidthRight;
       shieldWidthLeft=A.shieldWidthLeft;
@@ -199,6 +207,12 @@ Duct::populate(const FuncDataBase& Control)
   shieldPenetrationWidth=Control.EvalVar<double>(keyName+"ShieldPenetrationWidth");
   shieldPenetrationHeight=Control.EvalVar<double>(keyName+"ShieldPenetrationHeight");
   shieldPenetrationTiltXmin=Control.EvalVar<double>(keyName+"ShieldPenetrationTiltXmin");
+  shieldLedgeActive=Control.EvalVar<int>(keyName+"ShieldLedgeActive");
+  if (shieldLedgeActive) {
+    shieldLedgeThick=Control.EvalVar<double>(keyName+"ShieldLedgeThick");
+    shieldLedgeLength=Control.EvalVar<double>(keyName+"ShieldLedgeLength");
+    shieldLedgeZOffset=Control.EvalVar<double>(keyName+"ShieldLedgeZOffset");
+  }
   shieldThick=Control.EvalVar<double>(keyName+"ShieldThick");
   shieldWidthRight=Control.EvalVar<double>(keyName+"ShieldWidthRight");
   shieldWidthLeft=Control.EvalVar<double>(keyName+"ShieldWidthLeft");
@@ -270,6 +284,12 @@ Duct::createSurfaces()
     throw  ColErr::ExitAbort(keyName+": Unknown shield type: " + shieldType);
 
   if (shieldType != "None") {
+    if (shieldLedgeActive) {
+      ModelSupport::buildPlane(SMap,buildIndex+105,Origin+Z*(shieldLedgeZOffset),Z);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+106,buildIndex+105,Z,shieldLedgeThick);
+      ModelSupport::buildShiftedPlane(SMap,buildIndex+111,buildIndex+12,Y,-shieldLedgeLength);
+    }
+
     if (shieldPenetrationType=="Cylinder")
       ModelSupport::buildCylinder(SMap,buildIndex+27,
 				  Origin+X*shieldPenetrationXOffset+Z*shieldPenetrationZOffset,Y,
@@ -331,24 +351,40 @@ Duct::createObjects(Simulation& System)
   else
     throw  ColErr::ExitAbort(keyName+": Unknown shield penetration type: " + shieldPenetrationType);
 
-  if (shieldType == "RectangularCover") {
-    if (shieldWallOffset>0.0) {
-      Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
-      makeCell("ShieldWallOffset",System,cellIndex++,voidMat,0.0,Out);
+  if (shieldType != "None") {
+    if (shieldType == "RectangularCover") {
+      if (shieldWallOffset>0.0) {
+	Out=ModelSupport::getHeadRule(SMap,buildIndex,"11 13 -14 15 -16")*backStr.complement();
+	makeCell("ShieldWallOffset",System,cellIndex++,voidMat,0.0,Out);
+      }
+
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -11 13 -14 15 -16");
+      if (shieldPenetrationType!="None")
+	Out *= penetration.complement();
+      makeCell("ShieldPlate",System,cellIndex++,shieldMat,0.0,Out);
+
+      if (shieldPenetrationType!="None") {
+	Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -11 ")*penetration;
+	makeCell("ShieldPenetration",System,cellIndex++,voidMat,0.0,Out);
+      }
+
+      if (shieldLedgeActive > Geometry::zeroTol) {
+	Out=ModelSupport::getHeadRule(SMap,buildIndex," -12 111 13 -14 105 -106 ");
+	makeCell("Ledge",System,cellIndex++,shieldMat,0.0,Out);
+
+	Out=ModelSupport::getHeadRule(SMap,buildIndex," -12 111 13 -14 15 -105 ");
+	makeCell("LedgeBelow",System,cellIndex++,voidMat,0.0,Out);
+
+	Out=ModelSupport::getHeadRule(SMap,buildIndex," -12 111 13 -14 106 -16");
+	makeCell("LedgeAbove",System,cellIndex++,voidMat,0.0,Out);
+
+	Out=ModelSupport::getHeadRule(SMap,buildIndex,"111 13 -14 15 -16")*backStr.complement();
+	addOuterSurf("Shield", Out);
+      } else {
+	Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 13 -14 15 -16")*backStr.complement();
+	addOuterSurf("Shield", Out);
+      }
     }
-
-    Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 -11 13 -14 15 -16");
-    if (shieldPenetrationType!="None")
-      Out *= penetration.complement();
-    makeCell("ShieldPlate",System,cellIndex++,shieldMat,0.0,Out);
-
-    if (shieldPenetrationType!="None") {
-      Out=ModelSupport::getHeadRule(SMap,buildIndex," 12 -11 ")*penetration;
-      makeCell("ShieldPenetration",System,cellIndex++,voidMat,0.0,Out);
-    }
-
-    Out=ModelSupport::getHeadRule(SMap,buildIndex,"12 13 -14 15 -16")*backStr.complement();
-    addOuterSurf("Shield", Out);
   }
 
   return;

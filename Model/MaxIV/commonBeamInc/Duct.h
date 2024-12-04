@@ -57,6 +57,10 @@ class Duct :
   double shieldPenetrationWidth; ///< shielding rectangular penetration full width
   double shieldPenetrationHeight; ///< shielding rectangular penetration full height
   double shieldPenetrationTiltXmin; ///< shielding penetration xmin plane tilt angle
+  double shieldLedgeThick;      ///< thickness of ledge above penetration (rectangular shield only)
+  double shieldLedgeLength;     ///< length of ledge above penetration (rectangular shield only)
+  double shieldLedgeZOffset;    ///< z-offset of ledge above penetration (rectangular shield only)
+  int shieldLedgeActive;        ///< shield ledge active flag (rectangular shield only)
   double shieldThick;           ///< shielding thickness
   double shieldWidthRight;      ///< shielding right-width
   double shieldWidthLeft;       ///< shielding left-width

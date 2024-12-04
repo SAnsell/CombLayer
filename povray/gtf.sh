@@ -7,8 +7,6 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-make -j$(nproc) maxiv
-
 ITEM=${BASH_ARGV} # last argument is the view in povray/tdc.pov
 
 params=" +A +W800 +H600 "
@@ -25,6 +23,6 @@ if [ $ITEM == "Slits" ]; then
     void+=" -v BellowCBellowMat Void -v  BellowCFlangeAMat Void -v BellowCFlangeBMat Void -v BellowCPipeMat Void "
     void+=" -v BellowBLength 20 -v LocalShieldingWallYStep 65 "
 fi
-make maxiv && ./maxiv -defaultConfig Single GunTestFacility -offset object Gun Cathode  -povray $void a \
+make -j$(nproc) maxiv && ./maxiv -defaultConfig Single GunTestFacility -offset object Gun Cathode  -povray $void a \
     && echo \"$ITEM\" > /tmp/gtf.txt \
     && povray ${params} povray/gtf.pov && exit 0

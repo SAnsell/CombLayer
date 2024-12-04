@@ -247,6 +247,8 @@ namespace setVariable
     Control.addVariable(name+"DuctWater1ShieldPenetrationXOffset",-39.8);
     Control.addVariable(name+"DuctWater1ShieldPenetrationZOffset",-5.5);
     Control.addVariable(name+"DuctWater1ShieldPenetrationTiltXmin", atan(10./7.)*180.0/M_PI-90.0); // 10cm = shield thick 7=11-4: 11cm and 4cm = distances to the duct centre
+    Control.addVariable(name+"DuctWater1ShieldLedgeActive",1);
+    Control.addVariable(name+"DuctWater1ShieldLedgeZOffset",-1.5);
 
 
     DuctGen.setSize(10.0); // [0], page 4
