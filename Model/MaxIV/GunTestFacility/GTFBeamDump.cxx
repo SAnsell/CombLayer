@@ -179,7 +179,7 @@ GTFBeamDump::createSurfaces()
 				    SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
 				    -brickWidth*2.0);
   } else {
-    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(brickLength+brickThick),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(brickLength+brickThick+gapThick),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
 
     ModelSupport::buildShiftedPlane(SMap, buildIndex+11, buildIndex+2, Y, -brickWidth*2.0-gapThick);
@@ -201,6 +201,8 @@ GTFBeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+21, buildIndex+2, Y, -brickWidth);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+22, buildIndex+21, Y, -gapThick);
 
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+31, buildIndex+12, Y, gapThick);
+
   return;
 }
 
@@ -217,7 +219,7 @@ GTFBeamDump::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 13 -14 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -31 13 -14 15 -16 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 3 -13 15 -16 ");
@@ -226,8 +228,13 @@ GTFBeamDump::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -12 14 -4 15 -16 ");
   makeCell("Right",System,cellIndex++,brickMat,0.0,HR*frontStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 3 -4 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 3 -4 15 -16 ");
   makeCell("Back",System,cellIndex++,brickMat,0.0,HR*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 3 -13 15 -16 ");
+  makeCell("BackGapLeft",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -31 14 -4 15 -16 ");
+  makeCell("BackGapRight",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 3 -4 5 -15 ");
   makeCell("Floor",System,cellIndex++,brickMat,0.0,HR*backStr);
