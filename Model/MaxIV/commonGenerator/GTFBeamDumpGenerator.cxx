@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 GTFBeamDumpGenerator::GTFBeamDumpGenerator() :
-  brickLength(20.0),brickWidth(10.0),brickThick(5.0),gapThick(0.1),
+  brickLength(20.0),brickWidth(10.0),brickThick(5.0),gapThick(0.05),
   brickMat("Lead"),voidMat("Void")
   /*!
     Constructor and defaults
