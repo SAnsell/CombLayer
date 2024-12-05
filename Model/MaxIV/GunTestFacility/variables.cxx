@@ -208,9 +208,10 @@ namespace setVariable
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
     DuctGen.generate(Control,name+"DuctWave","Cylinder","RectangularCover","Rectangle", 90.0, 0.0, length2-136.5, 269-depth); //  [4]
-    Control.addVariable(name+"DuctWaveShieldThick",10.0);
+    constexpr double DuctWaveShieldThick = 12;
+    Control.addVariable(name+"DuctWaveShieldThick",DuctWaveShieldThick);
     Control.addVariable(name+"DuctWaveShieldMat","Lead");
-    Control.addVariable(name+"DuctWaveShieldDepth",35.0); // 40 is better but can cut the cables at 43 cm distance
+    Control.addVariable(name+"DuctWaveShieldDepth",36.0); // 40 is better but can cut the cables at 43 cm distance
     Control.addVariable(name+"DuctWaveShieldHeight",20.0);
     Control.addVariable(name+"DuctWaveShieldWidthLeft",20.0); // 20 is max, otherwise cuts the cables
     Control.addVariable(name+"DuctWaveShieldWidthRight",20.0);
@@ -221,12 +222,12 @@ namespace setVariable
 
     DuctGen.setSize(5.0); // [0], page 4
     DuctGen.generate(Control,name+"DuctSignal1","Cylinder","RectangularCover","None",90.0, 0.0, length2-161.5, 279.0-depth); // [4]
-    Control.addVariable(name+"DuctSignal1ShieldWidthLeft",40.0);
-    Control.addVariable(name+"DuctSignal1ShieldWidthRight",10.0);
-    Control.addVariable(name+"DuctSignal1ShieldDepth",45);
+    Control.addVariable(name+"DuctSignal1ShieldWidthLeft",49.0); // 49+15 = 64 mod 16 = 0
+    Control.addVariable(name+"DuctSignal1ShieldWidthRight",15.0);
+    Control.addVariable(name+"DuctSignal1ShieldDepth",46); // 46+10 (height) = 56 mod 8 = 0
     Control.addVariable(name+"DuctSignal1ShieldHeight",10);
-    Control.addVariable(name+"DuctSignal1ShieldWallOffset",10.0);
-    Control.addVariable(name+"DuctSignal1ShieldThick",5.0);
+    Control.addVariable(name+"DuctSignal1ShieldWallOffset",DuctWaveShieldThick);
+    Control.addVariable(name+"DuctSignal1ShieldThick",4.0); // 4 cm brick thick will be used
     Control.addVariable(name+"DuctSignal1ShieldMat","Lead");
 
 
@@ -247,7 +248,7 @@ namespace setVariable
     Control.addVariable(name+"DuctWater1ShieldPenetrationXOffset",-39.8);
     Control.addVariable(name+"DuctWater1ShieldPenetrationZOffset",-5.5);
     Control.addVariable(name+"DuctWater1ShieldPenetrationTiltXmin", atan(10./7.)*180.0/M_PI-90.0); // 10cm = shield thick 7=11-4: 11cm and 4cm = distances to the duct centre
-    Control.addVariable(name+"DuctWater1ShieldLedgeActive",1);
+    Control.addVariable(name+"DuctWater1ShieldLedgeActive",0);
     Control.addVariable(name+"DuctWater1ShieldLedgeZOffset",-1.5);
 
 
