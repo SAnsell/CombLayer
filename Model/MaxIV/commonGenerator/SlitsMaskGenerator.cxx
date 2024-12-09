@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 SlitsMaskGenerator::SlitsMaskGenerator() :
-  length(0.2),width(5.0),height(5.0),
+  length(0.2),width(4.0),height(4.0),
   chamberLengthBack(3),
   chamberLengthFront(3),
   chamberDepth(6),

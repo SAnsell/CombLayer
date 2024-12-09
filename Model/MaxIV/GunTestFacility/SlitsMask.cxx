@@ -274,54 +274,52 @@ SlitsMask::createObjects(Simulation& System)
   ELog::RegMethod RegA("SlitsMask","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) 207 307");
-  makeCell("ChamberWalls",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 13 -14 15 -16 (-101:102:-103:104:-105:106) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 15 -16 (-101:102:-103:104:-105:106) ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
 
   // front
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 201 -1");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 201 -202 317");
   makeCell("PortFrontWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 201 -11");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 201 -202 307");
   makeCell("PortFrontInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 201 -1 3 -4 5 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 201 -202 3 -4 305 -306");
   makeCell("PortFrontOuter",System,cellIndex++,voidMat,0.0,HR);
 
   // back
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 2 -202");
-  makeCell("PortBackWall",System,cellIndex++,chamberMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 2 -202");
+  // makeCell("PortBackWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 12 -202");
-  makeCell("PortBackInner",System,cellIndex++,voidMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 12 -202");
+  // makeCell("PortBackInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 -202 2 3 -4 5 -6");
-  makeCell("PortBackOuter",System,cellIndex++,voidMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 -202 2 3 -4 5 -6");
+  // makeCell("PortBackOuter",System,cellIndex++,voidMat,0.0,HR);
 
   // top-bottom
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 305 -5");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 207 305 -306");
   makeCell("PortBottomWall",System,cellIndex++,chamberMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 305 -15");
   makeCell("PortBottomInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 3 -4 305 -5 317");
-  makeCell("PortBottomOuter",System,cellIndex++,voidMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 3 -4 305 -5 317");
+  // makeCell("PortBottomOuter",System,cellIndex++,voidMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 6 -306");
-  makeCell("PortTopWall",System,cellIndex++,chamberMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 6 -306");
+  // makeCell("PortTopWall",System,cellIndex++,chamberMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 16 -306");
   makeCell("PortTopInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 3 -4 6 -306 317");
-  makeCell("PortTopOuter",System,cellIndex++,voidMat,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 3 -4 6 -306 317");
+  // makeCell("PortTopOuter",System,cellIndex++,voidMat,0.0,HR);
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 3 -4 305 -306 ");
