@@ -36,8 +36,8 @@ parallel $popts "./singleItem --singleItem {} $opts AA" ::: \
  LSexupole LocalShield M1detail MagTube MagnetBlock MagnetM1 \
  MagnetU1 MonoShutter MultiPipe NBeamStop Octupole OffsetFlangePipe PipeTube \
  PortTube PrismaChamber Quadrupole  \
- R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
- TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
+ R3ChokeChamber RoundMonoShutter Scrapper Sexupole SlitsMask SixPort StriplineBPM \
+ TWCavity TargetShield Torus TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
  UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac RFGun || exit
 
 exit

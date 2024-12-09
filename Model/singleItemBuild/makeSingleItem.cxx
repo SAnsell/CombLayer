@@ -184,6 +184,7 @@
 #include "HeimdalCave.h"
 #include "M1Detail.h"
 #include "Torus.h"
+#include "SlitsMask.h"
 
 #include "makeSingleItem.h"
 
@@ -242,7 +243,7 @@ makeSingleItem::build(Simulation& System,
 	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
-        "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","Torus",
+        "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full",
 	"Help","help"
     });
@@ -1775,6 +1776,15 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(torus);
       torus->addInsertCell(voidCell);
       torus->createAll(System,World::masterOrigin(),0);
+      return;
+    }
+
+    if (item == "SlitsMask")
+    {
+      const auto slits = std::make_shared<xraySystem::SlitsMask>("Slits");
+      OR.addObject(slits);
+      slits->addInsertCell(voidCell);
+      slits->createAll(System,World::masterOrigin(),0);
       return;
     }
 

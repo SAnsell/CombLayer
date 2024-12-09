@@ -29,16 +29,16 @@ namespace xraySystem
 
 /*!
   \class SlitsMask
-  \version 1.0
+  \version 2.0
   \author Konstantin Batkov
   \date October 2024
   \brief Slits mask
 */
 
 class SlitsMask : public attachSystem::ContainedComp,
-                    public attachSystem::FixedRotate,
-                    public attachSystem::CellMap,
-                    public attachSystem::SurfMap
+		  public attachSystem::FixedRotate,
+		  public attachSystem::CellMap,
+		  public attachSystem::SurfMap
 {
  private:
 
