@@ -57,6 +57,10 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   chamberHeight(10),
   chamberWidth(10),
   chamberWallThick(1),
+  portRadius(2.0),
+  portThick(1),
+  frontLength(15),
+  backLength(15),
   slitsMat("Tungsten"),
   chamberMat("Stainless304"),
   voidMat("Void")
@@ -93,6 +97,10 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"ChamberHeight",chamberHeight);
   Control.addVariable(keyName+"ChamberWidth",chamberWidth);
   Control.addVariable(keyName+"ChamberWallThick",chamberWallThick);
+  Control.addVariable(keyName+"PortRadius",portRadius);
+  Control.addVariable(keyName+"PortThick",portThick);
+  Control.addVariable(keyName+"FrontLength",frontLength);
+  Control.addVariable(keyName+"BackLength",backLength);
   Control.addVariable(keyName+"SlitsMat",slitsMat);
   Control.addVariable(keyName+"ChamberMat",chamberMat);
   Control.addVariable(keyName+"VoidMat",voidMat);

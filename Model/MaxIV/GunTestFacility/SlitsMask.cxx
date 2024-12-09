@@ -90,6 +90,10 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   chamberHeight(A.chamberHeight),
   chamberWidth(A.chamberWidth),
   chamberWallThick(A.chamberWallThick),
+  portRadius(A.portRadius),
+  portThick(A.portThick),
+  frontLength(A.frontLength),
+  backLength(A.backLength),
   slitsMat(A.slitsMat),
   chamberMat(A.chamberMat),
   voidMat(A.voidMat)
@@ -122,6 +126,10 @@ SlitsMask::operator=(const SlitsMask& A)
       chamberHeight=A.chamberHeight;
       chamberWidth=A.chamberWidth;
       chamberWallThick=A.chamberWallThick;
+      portRadius=A.portRadius;
+      portThick=A.portThick;
+      frontLength=A.frontLength;
+      backLength=A.backLength;
       slitsMat=A.slitsMat;
       chamberMat=A.chamberMat;
       voidMat=A.voidMat;
@@ -165,6 +173,10 @@ SlitsMask::populate(const FuncDataBase& Control)
   chamberHeight=Control.EvalVar<double>(keyName+"ChamberHeight");
   chamberWidth=Control.EvalVar<double>(keyName+"ChamberWidth");
   chamberWallThick=Control.EvalVar<double>(keyName+"ChamberWallThick");
+  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
+  portThick=Control.EvalVar<double>(keyName+"PortThick");
+  frontLength=Control.EvalVar<double>(keyName+"FrontLength");
+  backLength=Control.EvalVar<double>(keyName+"BackLength");
 
   slitsMat=ModelSupport::EvalMat<int>(Control,keyName+"SlitsMat");
   chamberMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberMat");
@@ -216,6 +228,13 @@ SlitsMask::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+15, buildIndex+5, X, chamberWallThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+16, buildIndex+6, X, -chamberWallThick);
 
+  // Ports
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,portRadius+portThick);
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(frontLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(backLength),Y);
+
+
 
   // Slits
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(length/2.0),Y);
@@ -238,7 +257,7 @@ SlitsMask::createObjects(Simulation& System)
   ELog::RegMethod RegA("SlitsMask","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) 207");
   makeCell("ChamberWalls",System,cellIndex++,chamberMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 13 -14 15 -16 (-101:102:-103:104:-105:106) ");
@@ -247,7 +266,17 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 201 -1");
+  makeCell("PortFrontWall",System,cellIndex++,chamberMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 201 -11");
+  makeCell("PortFrontInner",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 201 -1 3 -4 5 -6");
+  makeCell("PortFrontOuter",System,cellIndex++,voidMat,0.0,HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -2 3 -4 5 -6 ");
 
   addOuterSurf(HR);
 
