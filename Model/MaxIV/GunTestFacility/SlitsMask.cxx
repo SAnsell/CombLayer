@@ -188,27 +188,30 @@ SlitsMask::createSurfaces()
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
   }
 
-  if (backActive()) {
-    ModelSupport::buildShiftedPlane(SMap, buildIndex+12,
-				    SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				    -chamberWallThick);
-  } else {
+  if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,
 			     Origin+Y*(chamberLengthFront+chamberLengthBack+chamberWallThick*2.0),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
-
-    ModelSupport::buildShiftedPlane(SMap, buildIndex+12, buildIndex+2, Y, -chamberWallThick);
   }
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+11,
 				  SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
 				  chamberWallThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+12,
+				  SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				  -chamberWallThick);
 
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+13, buildIndex+3, X, chamberWallThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+14, buildIndex+4, X, -chamberWallThick);
+
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+15, buildIndex+5, X, chamberWallThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+16, buildIndex+6, X, -chamberWallThick);
 
   return;
 }
@@ -223,7 +226,7 @@ SlitsMask::createObjects(Simulation& System)
   ELog::RegMethod RegA("SlitsMask","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) ");
   makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
 
   addOuterSurf(HR);
