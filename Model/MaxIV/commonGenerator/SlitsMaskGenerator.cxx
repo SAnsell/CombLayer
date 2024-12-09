@@ -60,7 +60,7 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   portRadius(2.0),
   portThick(1),
   frontLength(15),
-  backLength(15),
+  backLength(25),
   slitsMat("Tungsten"),
   chamberMat("Stainless304"),
   voidMat("Void")

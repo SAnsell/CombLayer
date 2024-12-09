@@ -205,7 +205,7 @@ SlitsMask::createSurfaces()
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,
-			     Origin+Y*(chamberLengthFront+chamberLengthBack+chamberWallThick*2.0),Y);
+			     Origin+Y*(chamberLengthBack+chamberWallThick*2.0),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
   }
 
@@ -275,8 +275,18 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 201 -1 3 -4 5 -6");
   makeCell("PortFrontOuter",System,cellIndex++,voidMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 2 -202");
+  makeCell("PortBackWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -2 3 -4 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 12 -202");
+  makeCell("PortBackInner",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 -202 2 3 -4 5 -6");
+  makeCell("PortBackOuter",System,cellIndex++,voidMat,0.0,HR);
+
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 3 -4 5 -6 ");
 
   addOuterSurf(HR);
 
