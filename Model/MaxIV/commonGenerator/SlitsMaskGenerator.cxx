@@ -51,12 +51,12 @@ namespace setVariable
 
 SlitsMaskGenerator::SlitsMaskGenerator() :
   length(0.2),width(5.0),height(5.0),
-  chamberLengthBack(10),
-  chamberLengthFront(5),
-  chamberDepth(10),
-  chamberHeight(10),
-  chamberWidth(10),
-  chamberWallThick(1),
+  chamberLengthBack(3),
+  chamberLengthFront(3),
+  chamberDepth(6),
+  chamberHeight(6),
+  chamberWidth(12),
+  chamberWallThick(1), // ???
   portRadius(2.0),
   portThick(1),
   frontLength(15),
