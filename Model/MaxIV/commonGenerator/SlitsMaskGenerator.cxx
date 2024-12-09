@@ -51,7 +51,13 @@ namespace setVariable
 
 SlitsMaskGenerator::SlitsMaskGenerator() :
   length(0.2),width(5.0),height(5.0),
-  mainMat("Tungsten")
+  chamberLength(10),
+  chamberDepth(10),
+  chamberHeight(10),
+  chamberWidth(10),
+  chamberWallThick(1),
+  slitsMat("Tungsten"),
+  chamberMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -79,7 +85,13 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"ChamberLength",chamberLength);
+  Control.addVariable(keyName+"ChamberDepth",chamberDepth);
+  Control.addVariable(keyName+"ChamberHeight",chamberHeight);
+  Control.addVariable(keyName+"ChamberWidth",chamberWidth);
+  Control.addVariable(keyName+"ChamberWallThick",chamberWallThick);
+  Control.addVariable(keyName+"SlitsMat",slitsMat);
+  Control.addVariable(keyName+"ChamberMat",chamberMat);
 
   return;
 

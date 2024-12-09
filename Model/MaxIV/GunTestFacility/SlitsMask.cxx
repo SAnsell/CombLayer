@@ -57,6 +57,8 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
 
 #include "SlitsMask.h"
 
@@ -67,7 +69,8 @@ SlitsMask::SlitsMask(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  attachSystem::FrontBackCut()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -79,8 +82,15 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
+  attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  mainMat(A.mainMat)
+  chamberLength(A.chamberLength),
+  chamberDepth(A.chamberDepth),
+  chamberHeight(A.chamberHeight),
+  chamberWidth(A.chamberWidth),
+  chamberWallThick(A.chamberWallThick),
+  slitsMat(A.slitsMat),
+  chamberMat(A.chamberMat)
   /*!
     Copy constructor
     \param A :: SlitsMask to copy
@@ -100,10 +110,17 @@ SlitsMask::operator=(const SlitsMask& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
       length=A.length;
       width=A.width;
       height=A.height;
-      mainMat=A.mainMat;
+      chamberLength=A.chamberLength;
+      chamberDepth=A.chamberDepth;
+      chamberHeight=A.chamberHeight;
+      chamberWidth=A.chamberWidth;
+      chamberWallThick=A.chamberWallThick;
+      slitsMat=A.slitsMat;
+      chamberMat=A.chamberMat;
     }
   return *this;
 }
@@ -138,8 +155,14 @@ SlitsMask::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  chamberLength=Control.EvalVar<double>(keyName+"ChamberLength");
+  chamberDepth=Control.EvalVar<double>(keyName+"ChamberDepth");
+  chamberHeight=Control.EvalVar<double>(keyName+"ChamberHeight");
+  chamberWidth=Control.EvalVar<double>(keyName+"ChamberWidth");
+  chamberWallThick=Control.EvalVar<double>(keyName+"ChamberWallThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  slitsMat=ModelSupport::EvalMat<int>(Control,keyName+"SlitsMat");
+  chamberMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberMat");
 
   return;
 }
@@ -152,8 +175,32 @@ SlitsMask::createSurfaces()
 {
   ELog::RegMethod RegA("SlitsMask","createSurfaces");
 
-  SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  if (frontActive()) {
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
+				    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+				    chamberLength+chamberWallThick*2.0);
+
+  } else {
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+    FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+
+    // ModelSupport::buildPlane(SMap,buildIndex+2,
+    // 			     Origin+Y*(chamberLength+chamberWallThick*2.0),Y);
+  }
+
+  if (backActive()) {
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+12,
+				    SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				    -chamberWallThick);
+  } else {
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(chamberLength+chamberWallThick*2.0),Y);
+    FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+12, buildIndex+2, Y, -chamberWallThick);
+  }
+
+  // SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  // SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
 
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -175,7 +222,7 @@ SlitsMask::createObjects(Simulation& System)
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
 
   addOuterSurf(HR);
 
@@ -191,11 +238,7 @@ SlitsMask::createLinks()
 {
   ELog::RegMethod RegA("SlitsMask","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
-
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
+  FrontBackCut::createLinks(*this,Origin,Y);
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
   FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));

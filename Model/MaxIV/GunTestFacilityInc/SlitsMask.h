@@ -38,15 +38,22 @@ namespace xraySystem
 class SlitsMask : public attachSystem::ContainedComp,
 		  public attachSystem::FixedRotate,
 		  public attachSystem::CellMap,
-		  public attachSystem::SurfMap
+		  public attachSystem::SurfMap,
+		  public attachSystem::FrontBackCut
 {
  private:
 
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
+  double chamberLength;         ///< chamber length
+  double chamberDepth;          ///< chamber depth
+  double chamberHeight;         ///< chamber height
+  double chamberWidth;          ///< chamber width
+  double chamberWallThick;      ///< chamber wall thickness
 
-  int mainMat;                   ///< Main material
+  int slitsMat;                 ///< Slits material
+  int chamberMat;               ///< chamber wall material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

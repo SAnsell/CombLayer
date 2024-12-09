@@ -42,8 +42,14 @@ class SlitsMaskGenerator
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
+  double chamberLength;         ///< chamber length
+  double chamberDepth;          ///< chamber depth
+  double chamberHeight;         ///< chamber height
+  double chamberWidth;          ///< chamber width
+  double chamberWallThick;      ///< chamber wall thickness
 
-  std::string mainMat;          ///< Main material
+  std::string slitsMat;          ///< Main material
+  std::string chamberMat;       ///< chamber wall material
 
  public:
 
