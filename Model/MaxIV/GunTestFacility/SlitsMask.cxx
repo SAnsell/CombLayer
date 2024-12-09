@@ -204,17 +204,26 @@ SlitsMask::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
 				  -chamberWallThick);
 
-  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(chamberWidth/2.0),X);
+  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(chamberWidth/2.0),X);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+13, buildIndex+3, X, chamberWallThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+14, buildIndex+4, X, -chamberWallThick);
 
-  SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(chamberDepth),Z);
+  SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(chamberHeight),Z);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+15, buildIndex+5, X, chamberWallThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+16, buildIndex+6, X, -chamberWallThick);
+
+
+  // Slits
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(height/2.0),Z);
 
   return;
 }
@@ -230,10 +239,13 @@ SlitsMask::createObjects(Simulation& System)
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) ");
-  makeCell("ChamberWalls",System,cellIndex++,slitsMat,0.0,HR);
+  makeCell("ChamberWalls",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 13 -14 15 -16 (-101:102:-103:104:-105:106) ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+  makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 
@@ -253,16 +265,16 @@ SlitsMask::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(chamberWidth/2.0),-X);
   FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(chamberWidth/2.0),X);
   FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*(chamberDepth),-Z);
   FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(chamberHeight),Z);
   FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
 
   return;
