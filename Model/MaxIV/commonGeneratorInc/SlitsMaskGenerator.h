@@ -51,6 +51,7 @@ class SlitsMaskGenerator
 
   std::string slitsMat;          ///< Main material
   std::string chamberMat;       ///< chamber wall material
+  std::string voidMat;          ///< void material
 
  public:
 

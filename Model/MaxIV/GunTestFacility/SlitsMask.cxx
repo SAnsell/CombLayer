@@ -91,7 +91,8 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   chamberWidth(A.chamberWidth),
   chamberWallThick(A.chamberWallThick),
   slitsMat(A.slitsMat),
-  chamberMat(A.chamberMat)
+  chamberMat(A.chamberMat),
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: SlitsMask to copy
@@ -123,6 +124,7 @@ SlitsMask::operator=(const SlitsMask& A)
       chamberWallThick=A.chamberWallThick;
       slitsMat=A.slitsMat;
       chamberMat=A.chamberMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -166,6 +168,7 @@ SlitsMask::populate(const FuncDataBase& Control)
 
   slitsMat=ModelSupport::EvalMat<int>(Control,keyName+"SlitsMat");
   chamberMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   return;
 }
@@ -227,7 +230,12 @@ SlitsMask::createObjects(Simulation& System)
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16) ");
-  makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
+  makeCell("ChamberWalls",System,cellIndex++,slitsMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 
   addOuterSurf(HR);
 

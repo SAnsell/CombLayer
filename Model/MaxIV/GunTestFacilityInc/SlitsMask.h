@@ -55,6 +55,7 @@ class SlitsMask : public attachSystem::ContainedComp,
 
   int slitsMat;                 ///< Slits material
   int chamberMat;               ///< chamber wall material
+  int voidMat;                  ///< void material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

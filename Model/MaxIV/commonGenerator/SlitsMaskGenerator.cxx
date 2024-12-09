@@ -58,7 +58,8 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   chamberWidth(10),
   chamberWallThick(1),
   slitsMat("Tungsten"),
-  chamberMat("Stainless304")
+  chamberMat("Stainless304"),
+  voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -94,6 +95,7 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"ChamberWallThick",chamberWallThick);
   Control.addVariable(keyName+"SlitsMat",slitsMat);
   Control.addVariable(keyName+"ChamberMat",chamberMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
 
