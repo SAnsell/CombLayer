@@ -205,13 +205,13 @@ SlitsMask::createSurfaces()
 				    chamberLengthFront+chamberLengthBack+chamberWallThick*2.0);
 
   } else {
-    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*chamberLengthBack,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(chamberLengthFront+chamberWallThick),Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
   }
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,
-			     Origin+Y*(chamberLengthBack+chamberWallThick*2.0),Y);
+			     Origin+Y*(chamberLengthBack+chamberWallThick),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
   }
 
@@ -238,8 +238,10 @@ SlitsMask::createSurfaces()
   // back-front
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,portRadius+portThick);
-  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(frontLength),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(backLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+201,
+			   Origin-Y*(frontLength+chamberLengthFront+chamberWallThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,
+			   Origin+Y*(backLength+chamberLengthBack+chamberWallThick),Y);
 
   // top-bottom
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,Z,portRadius);
