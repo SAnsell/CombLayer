@@ -84,7 +84,8 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  chamberLength(A.chamberLength),
+  chamberLengthBack(A.chamberLengthBack),
+  chamberLengthFront(A.chamberLengthFront),
   chamberDepth(A.chamberDepth),
   chamberHeight(A.chamberHeight),
   chamberWidth(A.chamberWidth),
@@ -114,7 +115,8 @@ SlitsMask::operator=(const SlitsMask& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      chamberLength=A.chamberLength;
+      chamberLengthBack=A.chamberLengthBack;
+      chamberLengthFront=A.chamberLengthFront;
       chamberDepth=A.chamberDepth;
       chamberHeight=A.chamberHeight;
       chamberWidth=A.chamberWidth;
@@ -155,7 +157,8 @@ SlitsMask::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  chamberLength=Control.EvalVar<double>(keyName+"ChamberLength");
+  chamberLengthBack=Control.EvalVar<double>(keyName+"ChamberLengthBack");
+  chamberLengthFront=Control.EvalVar<double>(keyName+"ChamberLengthFront");
   chamberDepth=Control.EvalVar<double>(keyName+"ChamberDepth");
   chamberHeight=Control.EvalVar<double>(keyName+"ChamberHeight");
   chamberWidth=Control.EvalVar<double>(keyName+"ChamberWidth");
@@ -178,14 +181,11 @@ SlitsMask::createSurfaces()
   if (frontActive()) {
     ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
 				    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				    chamberLength+chamberWallThick*2.0);
+				    chamberLengthFront+chamberLengthBack+chamberWallThick*2.0);
 
   } else {
-    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*chamberLengthBack,Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
-
-    // ModelSupport::buildPlane(SMap,buildIndex+2,
-    // 			     Origin+Y*(chamberLength+chamberWallThick*2.0),Y);
   }
 
   if (backActive()) {
@@ -193,14 +193,16 @@ SlitsMask::createSurfaces()
 				    SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
 				    -chamberWallThick);
   } else {
-    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(chamberLength+chamberWallThick*2.0),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+2,
+			     Origin+Y*(chamberLengthFront+chamberLengthBack+chamberWallThick*2.0),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
 
     ModelSupport::buildShiftedPlane(SMap, buildIndex+12, buildIndex+2, Y, -chamberWallThick);
   }
 
-  // SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  // SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+11,
+				  SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+				  chamberWallThick);
 
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);

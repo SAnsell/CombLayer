@@ -46,7 +46,8 @@ class SlitsMask : public attachSystem::ContainedComp,
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
-  double chamberLength;         ///< chamber length
+  double chamberLengthBack;     ///< chamber length back
+  double chamberLengthFront;    ///< chamber length front
   double chamberDepth;          ///< chamber depth
   double chamberHeight;         ///< chamber height
   double chamberWidth;          ///< chamber width
