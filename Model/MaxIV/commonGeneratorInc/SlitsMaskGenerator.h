@@ -53,6 +53,8 @@ class SlitsMaskGenerator
   double portThick;             ///< port thick
   double frontLength;           ///< front length (centre to flange end)
   double backLength;            ///< back length (centre to flange end)
+  double bottomPortLength;      ///< bottom port total length
+  double topPortLength;         ///< top port total length
 
   std::string slitsMat;          ///< Main material
   std::string chamberMat;       ///< chamber wall material
