@@ -98,6 +98,8 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   rightPortLength(A.rightPortLength),
   bottomPortLength(A.bottomPortLength),
   topPortLength(A.topPortLength),
+  innerFlangeRadius(A.innerFlangeRadius),
+  innerFlangeThick(A.innerFlangeThick),
   outerFlangeRadius(A.outerFlangeRadius),
   outerFlangeThick(A.outerFlangeThick),
   outerFlangeCapThick(A.outerFlangeCapThick),
@@ -143,6 +145,8 @@ SlitsMask::operator=(const SlitsMask& A)
       rightPortLength=A.rightPortLength;
       bottomPortLength=A.bottomPortLength;
       topPortLength=A.topPortLength;
+      innerFlangeRadius=A.innerFlangeRadius;
+      innerFlangeThick=A.innerFlangeThick;
       outerFlangeRadius=A.outerFlangeRadius;
       outerFlangeThick=A.outerFlangeThick;
       outerFlangeCapThick=A.outerFlangeCapThick;
@@ -199,6 +203,8 @@ SlitsMask::populate(const FuncDataBase& Control)
   rightPortLength=Control.EvalVar<double>(keyName+"RightPortLength");
   bottomPortLength=Control.EvalVar<double>(keyName+"BottomPortLength");
   topPortLength=Control.EvalVar<double>(keyName+"TopPortLength");
+  innerFlangeRadius=Control.EvalVar<double>(keyName+"InnerFlangeRadius");
+  innerFlangeThick=Control.EvalVar<double>(keyName+"InnerFlangeThick");
   outerFlangeRadius=Control.EvalVar<double>(keyName+"OuterFlangeRadius");
   outerFlangeThick=Control.EvalVar<double>(keyName+"OuterFlangeThickness");
   outerFlangeCapThick=Control.EvalVar<double>(keyName+"OuterFlangeCapThickness");
@@ -302,6 +308,11 @@ SlitsMask::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+505,Origin-Z*(chamberHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+506,Origin+Z*(chamberHeight/2.0),Z);
 
+  // Inner flanges
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+603,buildIndex+503,  X, -innerFlangeThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+604,buildIndex+504,  X,  innerFlangeThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+607,Origin,X,innerFlangeRadius);
+
   return;
 }
 
@@ -341,10 +352,6 @@ SlitsMask::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR*slits);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 317 417 1 -2 23 -24 25 -26");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*chamber.complement());
-
 
   // top-bottom
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 407 -417 207 317 15 -16");
@@ -400,6 +407,18 @@ SlitsMask::createObjects(Simulation& System)
   makeCell("RightFlange",System,cellIndex++,wallMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 24 -4 25 -26 327");
   makeCell("RightFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
+
+  // Inner flanges
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"603 -503 317 -607");
+  makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"607 1 -2 603 -503 25 -26");
+  makeCell("LeftFlangeOuterVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  // Void and external
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 1 -2 23 -603 25 -26");
+  makeCell("VoidLeft",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 317 417 1 -2 503 -24 25 -26");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*chamber.complement());
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 

@@ -57,6 +57,8 @@ class SlitsMaskGenerator
   double rightPortLength;       ///< right port length (centre to flange end)
   double bottomPortLength;      ///< bottom port length (centre to flange end)
   double topPortLength;         ///< top port total length (centre to flange end)
+  double innerFlangeRadius;     ///< inner flange radius
+  double innerFlangeThick;      ///< inner flange thickness
   double outerFlangeRadius;     ///< outer flange radius
   double outerFlangeThick;      ///< outer flange thickness
   double outerFlangeCapThick;   ///< outer flange cap thickness

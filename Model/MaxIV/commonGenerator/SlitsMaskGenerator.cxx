@@ -67,6 +67,8 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   rightPortLength(10.5),
   bottomPortLength(8.2),
   topPortLength(12.5),
+  innerFlangeRadius(4.0),
+  innerFlangeThick(1.7),
   outerFlangeRadius(3.5),
   outerFlangeThick(1.2),
   outerFlangeCapThick(1.2),
@@ -116,6 +118,8 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"RightPortLength",rightPortLength);
   Control.addVariable(keyName+"BottomPortLength",bottomPortLength);
   Control.addVariable(keyName+"TopPortLength",topPortLength);
+  Control.addVariable(keyName+"InnerFlangeRadius",innerFlangeRadius);
+  Control.addVariable(keyName+"InnerFlangeThick",innerFlangeThick);
   Control.addVariable(keyName+"OuterFlangeRadius",outerFlangeRadius);
   Control.addVariable(keyName+"OuterFlangeThickness",outerFlangeThick);
   Control.addVariable(keyName+"OuterFlangeCapThickness",outerFlangeCapThick);
