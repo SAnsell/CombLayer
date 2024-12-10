@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 SlitsMaskGenerator::SlitsMaskGenerator() :
-  length(0.2),width(4.0),height(4.0),
+  length(0.2),width(3.0),height(3.0),
   chamberLengthBack(3),
   chamberLengthFront(3),
   chamberDepth(6),
@@ -61,6 +61,8 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   portThick(1.5),
   frontLength(5.75),
   backLength(5.75),
+  leftPortLength(8.7),
+  rightPortLength(8.7),
   bottomPortLength(6.4),
   topPortLength(10.7),
   slitsMat("Tungsten"),
@@ -103,6 +105,8 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"PortThick",portThick);
   Control.addVariable(keyName+"FrontLength",frontLength);
   Control.addVariable(keyName+"BackLength",backLength);
+  Control.addVariable(keyName+"LeftPortLength",leftPortLength);
+  Control.addVariable(keyName+"RightPortLength",rightPortLength);
   Control.addVariable(keyName+"BottomPortLength",bottomPortLength);
   Control.addVariable(keyName+"TopPortLength",topPortLength);
   Control.addVariable(keyName+"SlitsMat",slitsMat);
