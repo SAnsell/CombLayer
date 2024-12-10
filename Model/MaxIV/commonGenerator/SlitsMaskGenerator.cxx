@@ -72,7 +72,7 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   outerFlangeRadius(3.5),
   outerFlangeThick(1.2),
   outerFlangeCapThick(1.2),
-  leftFlangeCapWindowMat("LeadGlass"),
+  leftFlangeCapWindowMat("SiO2"),
   slitsMat("Tungsten"),
   slitSupportMat("Aluminium"),
   wallMat("Stainless304"),
