@@ -43,14 +43,8 @@ class SlitsMaskGenerator
   double slitWidth;             ///< Slit width
   double slitHeight;            ///< Slit height
 
-  double chamberLengthBack;     ///< chamber length back
-  double chamberLengthFront;    ///< chamber length front
-  double chamberDepth;          ///< chamber depth
-  double chamberHeight;         ///< chamber height
-  double chamberWidth;          ///< chamber width
-  double chamberWallThick;      ///< chamber wall thickness
+  double wallThick;             ///< wall thickness
   double portRadius;            ///< port radius
-  double portThick;             ///< port thick
   double frontLength;           ///< front length (centre to flange end)
   double backLength;            ///< back length (centre to flange end)
   double leftPortLength;        ///< left port total length

@@ -51,14 +51,8 @@ namespace setVariable
 
 SlitsMaskGenerator::SlitsMaskGenerator() :
   slitLength(0.2),slitWidth(3.0),slitHeight(3.0),
-  chamberLengthBack(3),
-  chamberLengthFront(3),
-  chamberDepth(6),
-  chamberHeight(6),
-  chamberWidth(12),
-  chamberWallThick(1), // ???
+  wallThick(0.15),
   portRadius(1.95),
-  portThick(0.15),
   frontLength(5.75),
   backLength(5.75),
   leftPortLength(8.7),
@@ -95,14 +89,8 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"SlitLength",slitLength);
   Control.addVariable(keyName+"SlitWidth",slitWidth);
   Control.addVariable(keyName+"SlitHeight",slitHeight);
-  Control.addVariable(keyName+"ChamberLengthBack",chamberLengthBack);
-  Control.addVariable(keyName+"ChamberLengthFront",chamberLengthFront);
-  Control.addVariable(keyName+"ChamberDepth",chamberDepth);
-  Control.addVariable(keyName+"ChamberHeight",chamberHeight);
-  Control.addVariable(keyName+"ChamberWidth",chamberWidth);
-  Control.addVariable(keyName+"ChamberWallThick",chamberWallThick);
+  Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"PortRadius",portRadius);
-  Control.addVariable(keyName+"PortThick",portThick);
   Control.addVariable(keyName+"FrontLength",frontLength);
   Control.addVariable(keyName+"BackLength",backLength);
   Control.addVariable(keyName+"LeftPortLength",leftPortLength);

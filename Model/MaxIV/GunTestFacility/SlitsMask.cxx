@@ -84,14 +84,8 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   slitLength(A.slitLength),slitWidth(A.slitWidth),slitHeight(A.slitHeight),
-  chamberLengthBack(A.chamberLengthBack),
-  chamberLengthFront(A.chamberLengthFront),
-  chamberDepth(A.chamberDepth),
-  chamberHeight(A.chamberHeight),
-  chamberWidth(A.chamberWidth),
-  chamberWallThick(A.chamberWallThick),
+  wallThick(A.wallThick),
   portRadius(A.portRadius),
-  portThick(A.portThick),
   frontLength(A.frontLength),
   backLength(A.backLength),
   leftPortLength(A.leftPortLength),
@@ -124,14 +118,8 @@ SlitsMask::operator=(const SlitsMask& A)
       slitLength=A.slitLength;
       slitWidth=A.slitWidth;
       slitHeight=A.slitHeight;
-      chamberLengthBack=A.chamberLengthBack;
-      chamberLengthFront=A.chamberLengthFront;
-      chamberDepth=A.chamberDepth;
-      chamberHeight=A.chamberHeight;
-      chamberWidth=A.chamberWidth;
-      chamberWallThick=A.chamberWallThick;
+      wallThick=A.wallThick;
       portRadius=A.portRadius;
-      portThick=A.portThick;
       frontLength=A.frontLength;
       backLength=A.backLength;
       leftPortLength=A.leftPortLength;
@@ -175,14 +163,8 @@ SlitsMask::populate(const FuncDataBase& Control)
   slitLength=Control.EvalVar<double>(keyName+"SlitLength");
   slitWidth=Control.EvalVar<double>(keyName+"SlitWidth");
   slitHeight=Control.EvalVar<double>(keyName+"SlitHeight");
-  chamberLengthBack=Control.EvalVar<double>(keyName+"ChamberLengthBack");
-  chamberLengthFront=Control.EvalVar<double>(keyName+"ChamberLengthFront");
-  chamberDepth=Control.EvalVar<double>(keyName+"ChamberDepth");
-  chamberHeight=Control.EvalVar<double>(keyName+"ChamberHeight");
-  chamberWidth=Control.EvalVar<double>(keyName+"ChamberWidth");
-  chamberWallThick=Control.EvalVar<double>(keyName+"ChamberWallThick");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
-  portThick=Control.EvalVar<double>(keyName+"PortThick");
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   backLength=Control.EvalVar<double>(keyName+"BackLength");
   leftPortLength=Control.EvalVar<double>(keyName+"LeftPortLength");
@@ -208,55 +190,38 @@ SlitsMask::createSurfaces()
   if (frontActive()) {
     ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
 	    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-	    frontLength+chamberWallThick+chamberLengthFront+chamberLengthBack+backLength+chamberWallThick);
+	    frontLength+backLength);
 
   } else {
     ModelSupport::buildPlane(SMap,buildIndex+1,
-			     Origin-Y*(frontLength+chamberLengthFront+chamberWallThick),Y);
+			     Origin-Y*(frontLength),Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
   }
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,
-			     Origin+Y*(chamberLengthBack+chamberWallThick),Y);
+			     Origin+Y*(backLength),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
   }
 
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+11,
-				  SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				  chamberWallThick);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+12,
-				  SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				  -chamberWallThick);
+  SurfMap::makePlane("left", SMap,buildIndex+3, Origin-X*(leftPortLength), X);
+  SurfMap::makePlane("right",SMap,buildIndex+4, Origin+X*(rightPortLength),X);
 
-  SurfMap::makePlane("left",SMap,buildIndex+3,
-		     Origin-X*(chamberDepth+chamberWallThick+leftPortLength),X);
-  SurfMap::makePlane("right",SMap,buildIndex+4,
-		     Origin+X*(chamberHeight+chamberWallThick+rightPortLength),X);
-
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+13, buildIndex+3, X, chamberWallThick);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+14, buildIndex+4, X, -chamberWallThick);
-
-  SurfMap::makePlane("bottom",SMap,buildIndex+5,
-		     Origin-Z*(chamberDepth+chamberWallThick+bottomPortLength),Z);
-  SurfMap::makePlane("top",SMap,buildIndex+6,
-		     Origin+Z*(chamberHeight+chamberWallThick+topPortLength),Z);
-
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+15, buildIndex+5, X, chamberWallThick);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+16, buildIndex+6, X, -chamberWallThick);
+  SurfMap::makePlane("bottom",SMap,buildIndex+5, Origin-Z*(bottomPortLength),Z);
+  SurfMap::makePlane("top",   SMap,buildIndex+6, Origin+Z*(topPortLength),   Z);
 
   // Ports
   // back-front
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,portRadius+portThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,portRadius+wallThick);
 
   // left-right
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,X,portRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,X,portRadius+portThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,X,portRadius+wallThick);
 
   // top-bottom
   ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Z,portRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,portRadius+portThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,portRadius+wallThick);
 
 
 
@@ -310,10 +275,6 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 3 -4 207");
   makeCell("PortLeftInner",System,cellIndex++,voidMat,0.0,HR);
 
-  // HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 16 -4");
-  // makeCell("PortLeftRightInner",System,cellIndex++,voidMat,0.0,HR);
-
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 
   addOuterSurf(HR);
@@ -332,16 +293,16 @@ SlitsMask::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(chamberWidth/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(leftPortLength),-X);
   FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(chamberWidth/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(rightPortLength),X);
   FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(chamberDepth),-Z);
+  FixedComp::setConnect(4,Origin-Z*(bottomPortLength),-Z);
   FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(chamberHeight),Z);
+  FixedComp::setConnect(5,Origin+Z*(topPortLength),Z);
   FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
 
   return;
