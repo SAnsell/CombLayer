@@ -202,40 +202,41 @@ SlitsMask::createSurfaces()
   if (frontActive()) {
     ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
 	    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-	    frontPortLength+backPortLength);
+	    frontPortLength+backPortLength+2*outerFlangeCapThick);
 
   } else {
     ModelSupport::buildPlane(SMap,buildIndex+1,
-			     Origin-Y*(frontPortLength),Y);
+			     Origin-Y*(frontPortLength+outerFlangeCapThick),Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
   }
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,
-			     Origin+Y*(backPortLength),Y);
+			     Origin+Y*(backPortLength+outerFlangeCapThick),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
   }
 
-  SurfMap::makePlane("left", SMap,buildIndex+3, Origin-X*(leftPortLength), X);
-  SurfMap::makePlane("right",SMap,buildIndex+4, Origin+X*(rightPortLength),X);
+  SurfMap::makePlane("left", SMap,buildIndex+3, Origin-X*(leftPortLength+outerFlangeCapThick), X);
+  SurfMap::makePlane("right",SMap,buildIndex+4, Origin+X*(rightPortLength+outerFlangeCapThick),X);
 
-  SurfMap::makePlane("bottom",SMap,buildIndex+5, Origin-Z*(bottomPortLength),Z);
-  SurfMap::makePlane("top",   SMap,buildIndex+6, Origin+Z*(topPortLength),   Z);
+  SurfMap::makePlane("bottom",SMap,buildIndex+5, Origin-Z*(bottomPortLength+outerFlangeCapThick),Z);
+  SurfMap::makePlane("top",   SMap,buildIndex+6, Origin+Z*(topPortLength+outerFlangeCapThick),   Z);
 
   // Ports
   // back-front
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,portRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+227,Origin,Y,outerFlangeRadius);
 
   // left-right
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,X,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,X,portRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin,X,outerFlangeRadius);
 
   // top-bottom
   ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Z,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,portRadius+wallThick);
-
-
+  ModelSupport::buildCylinder(SMap,buildIndex+427,Origin,Z,outerFlangeRadius);
 
   // Slits
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(slitLength/2.0),Y);
@@ -244,6 +245,15 @@ SlitsMask::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(slitWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(slitHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(slitHeight/2.0),Z);
+
+  // Outer flanges
+  // ModelSupport::buildShiftedPlane(SMap, buildIndex+11,
+  // 				  SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+  // 				  outerFlangeCapThick);
+  // ModelSupport::buildShiftedPlane(SMap, buildIndex+21,buildIndex+11,outerFlangeThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+15,buildIndex+5,  Z, outerFlangeCapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+25,buildIndex+15, Z, outerFlangeThick);
+
 
   return;
 }
@@ -269,15 +279,15 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2 ");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 3 -4 5 -6");
-  makeCell("Outer",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 3 -4 25 -6");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
 
   // top-bottom
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 407 -417 207 317 5 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 407 -417 207 317 15 -6");
   makeCell("PortTopBottomWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 307 -407 5 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 307 -407 15 -6");
   makeCell("PortTopBottomInner",System,cellIndex++,voidMat,0.0,HR);
 
   // // // left-right
@@ -286,6 +296,14 @@ SlitsMask::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 3 -4 207");
   makeCell("PortLeftInner",System,cellIndex++,voidMat,0.0,HR);
+
+  // Flanges
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 5 -15 -427");
+  makeCell("BottomFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 15 -25");
+  makeCell("BottomFlange",System,cellIndex++,chamberMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -25 427");
+  makeCell("BottomFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 
@@ -305,16 +323,16 @@ SlitsMask::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(leftPortLength),-X);
+  FixedComp::setConnect(2,Origin-X*(leftPortLength+outerFlangeCapThick),-X);
   FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(rightPortLength),X);
+  FixedComp::setConnect(3,Origin+X*(rightPortLength+outerFlangeCapThick),X);
   FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(bottomPortLength),-Z);
+  FixedComp::setConnect(4,Origin-Z*(bottomPortLength+outerFlangeCapThick),-Z);
   FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(topPortLength),Z);
+  FixedComp::setConnect(5,Origin+Z*(topPortLength+outerFlangeCapThick),Z);
   FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
 
   return;
