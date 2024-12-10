@@ -251,13 +251,20 @@ SlitsMask::createSurfaces()
   // 				  SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
   // 				  outerFlangeCapThick);
   // ModelSupport::buildShiftedPlane(SMap, buildIndex+21,buildIndex+11,outerFlangeThick);
+
+  // bottom and top flanges
   ModelSupport::buildShiftedPlane(SMap, buildIndex+15,buildIndex+5,  Z, outerFlangeCapThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+25,buildIndex+15, Z, outerFlangeThick);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+16,buildIndex+6,  Z, -outerFlangeCapThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+26,buildIndex+16, Z, -outerFlangeThick);
 
+  // left and right flanges
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+13,buildIndex+3,  X, outerFlangeCapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+23,buildIndex+13, X, outerFlangeThick);
 
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+14,buildIndex+4,  X, -outerFlangeCapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+24,buildIndex+14, X, -outerFlangeThick);
   return;
 }
 
@@ -282,7 +289,7 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2 ");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 3 -4 25 -26");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 23 -4 25 -26");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
 
@@ -294,10 +301,10 @@ SlitsMask::createObjects(Simulation& System)
   makeCell("PortTopBottomInner",System,cellIndex++,voidMat,0.0,HR);
 
   // left-right
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 207 407 3 -4");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 207 407 13 -4");
   makeCell("PortLeftWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 3 -4 207");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 13 -4 207");
   makeCell("PortLeftInner",System,cellIndex++,voidMat,0.0,HR);
 
   // Flanges
@@ -315,6 +322,12 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 26 -6 427");
   makeCell("TopFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -327");
+  makeCell("LeftFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 317 -327 13 -23");
+  makeCell("LeftFlange",System,cellIndex++,chamberMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -23 25 -26 327");
+  makeCell("LeftFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 
