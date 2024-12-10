@@ -118,7 +118,6 @@ GTFLine::GTFLine(const std::string& Key) :
   yagUnitA(new tdcSystem::YagUnit("YagUnitA")),
   yagScreenA(new tdcSystem::YagScreen("YagScreenA")),
   bellowB(std::make_shared<constructSystem::Bellows>("BellowB")),
-  yagUnitB(new tdcSystem::YagUnit("YagUnitB")),
   yagScreenB(new tdcSystem::YagScreen("YagScreenB")),
   bellowC(std::make_shared<constructSystem::Bellows>("BellowC")),
   yagUnitC(new tdcSystem::YagUnit("YagUnitC")),
@@ -157,7 +156,6 @@ GTFLine::GTFLine(const std::string& Key) :
   OR.addObject(yagUnitA);
   OR.addObject(yagScreenA);
   OR.addObject(bellowB);
-  OR.addObject(yagUnitB);
   OR.addObject(yagScreenB);
   OR.addObject(bellowC);
   OR.addObject(yagUnitC);
@@ -240,20 +238,20 @@ void GTFLine::constructYAG(Simulation& System, attachSystem::BlockZone& buildZon
   screen.insertInCell("Payload", System, yag.getCell("Void"));
 }
 
-void GTFLine::constructSlits(Simulation& System, attachSystem::BlockZone& buildZone,
-			   const attachSystem::FixedComp& linkUnit,
-			   const std::string& sideName,
-			   tdcSystem::YagUnit& yag,
-			   xraySystem::SlitsMask& slits)
-/*!
-  Construct YAG unit and its slits
- */
-{
-  constructSystem::constructUnit(System, buildZone, linkUnit, sideName, yag);
-  //  yag.setBeamAxis(yag, 1);
-  slits.createAll(System, yag, 0);
-  slits.insertInCell(System, yag.getCell("Void"));
-}
+// void GTFLine::constructSlits(Simulation& System, attachSystem::BlockZone& buildZone,
+// 			   const attachSystem::FixedComp& linkUnit,
+// 			   const std::string& sideName,
+// 			   tdcSystem::YagUnit& yag,
+// 			   xraySystem::SlitsMask& slits)
+// /*!
+//   Construct YAG unit and its slits
+//  */
+// {
+//   constructSystem::constructUnit(System, buildZone, linkUnit, sideName, yag);
+//   //  yag.setBeamAxis(yag, 1);
+//   slits.createAll(System, yag, 0);
+//   slits.insertInCell(System, yag.getCell("Void"));
+// }
 
 void
 GTFLine::buildObjects(Simulation& System)
@@ -387,12 +385,11 @@ GTFLine::buildObjects(Simulation& System)
   ELog::EM << "Total emittance meter length should be constant with different bellow lengths" << ELog::endWarn;
 
   constructSystem::constructUnit(System,buildZone,*yagUnitA,"back",*bellowB);
-  if (false)
-    constructYAG(System,buildZone,*bellowB,"back",*yagUnitB,*yagScreenB);
-  else
-    constructSlits(System,buildZone,*bellowB,"back",*yagUnitB,*slits);
 
-  constructSystem::constructUnit(System,buildZone,*yagUnitB,"back",*bellowC);
+  constructSystem::constructUnit(System, buildZone, *bellowB, "back", *slits);
+
+
+  constructSystem::constructUnit(System,buildZone,*slits,"back",*bellowC);
   constructYAG(System,buildZone,*bellowC,"back",*yagUnitC,*yagScreenC);
 
   outerCell = constructSystem::constructUnit(System,buildZone,*yagUnitC,"back",*bellowD);

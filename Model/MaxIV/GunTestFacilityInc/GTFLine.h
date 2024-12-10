@@ -101,7 +101,6 @@ class GTFLine :
   std::shared_ptr<tdcSystem::YagUnit> yagUnitA;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenA;
   std::shared_ptr<constructSystem::Bellows> bellowB;
-  std::shared_ptr<tdcSystem::YagUnit> yagUnitB;
   std::shared_ptr<tdcSystem::YagScreen> yagScreenB;
   std::shared_ptr<constructSystem::Bellows> bellowC;
   std::shared_ptr<tdcSystem::YagUnit> yagUnitC;
@@ -123,11 +122,11 @@ class GTFLine :
 		    const std::string& sideName,
 		    tdcSystem::YagUnit& yag,
 		    tdcSystem::YagScreen& screen);
-  void constructSlits(Simulation& System, attachSystem::BlockZone& buildZone,
-		    const attachSystem::FixedComp& linkUnit,
-		    const std::string& sideName,
-		    tdcSystem::YagUnit& yag,
-		    xraySystem::SlitsMask& slits);
+  // void constructSlits(Simulation& System, attachSystem::BlockZone& buildZone,
+  // 		    const attachSystem::FixedComp& linkUnit,
+  // 		    const std::string& sideName,
+  // 		    tdcSystem::YagUnit& yag,
+  // 		    xraySystem::SlitsMask& slits);
   void populate(const FuncDataBase&);
   void createSurfaces();
   void buildObjects(Simulation&);

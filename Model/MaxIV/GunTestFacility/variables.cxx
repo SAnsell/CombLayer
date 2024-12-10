@@ -597,6 +597,7 @@ namespace setVariable
 						 bellowStep);
     BellowGen.setMat("Stainless316L", bellowBFrac*100.0);
     BellowGen.generateBellow(Control,name,bellowBLength);
+    Control.addVariable(name+"YAngle",180.0);
 
     YagUnitGen.generateYagUnit(Control,"YagUnitB");
     // Control.addVariable("YagUnitBYAngle",180.0);
@@ -621,6 +622,7 @@ namespace setVariable
     BellowGen.setMat("Stainless316L", bellowCFrac*100.0);
     BellowGen.generateBellow(Control,name,bellowCLength);
     Control.addVariable("BellowCNFolds",static_cast<int>(bellowCN));
+    Control.addVariable(name+"YAngle",-180.0);
 
     YagUnitGen.generateYagUnit(Control,"YagUnitC");
     YagScreenGen.generateScreen(Control,"YagScreenC",0);
