@@ -57,14 +57,14 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   slitSupportWidth(3.5),
   slitSupportHeight(5.1),
   chamberLength(6.0),
-  chamberWidth(6.0),
+  chamberWidth(6.4),
   chamberHeight(6.0),
   wallThick(0.15),
   portRadius(1.95),
-  frontPortLength(8.75),
-  backPortLength(8.75),
-  leftPortLength(10.5),
-  rightPortLength(10.5),
+  frontPortLength(8.75-1.15),
+  backPortLength(8.75-1.15),
+  leftPortLength(10.5+1.9),
+  rightPortLength(10.5+1.9),
   bottomPortLength(8.2),
   topPortLength(12.5),
   innerFlangeRadius(4.0),
@@ -81,7 +81,6 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
     Constructor and defaults
   */
 {
-  ELog::EM << "Slits width/height are arbitrary (big enough to cover the beam)" << ELog::endWarn;
 }
 
 SlitsMaskGenerator::~SlitsMaskGenerator()
