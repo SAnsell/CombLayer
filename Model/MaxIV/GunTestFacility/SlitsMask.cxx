@@ -229,8 +229,10 @@ SlitsMask::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
 				  -chamberWallThick);
 
-  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(chamberWidth/2.0),X);
-  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(chamberWidth/2.0),X);
+  SurfMap::makePlane("left",SMap,buildIndex+3,
+		     Origin-X*(chamberDepth+chamberWallThick+leftPortLength),X);
+  SurfMap::makePlane("right",SMap,buildIndex+4,
+		     Origin+X*(chamberHeight+chamberWallThick+rightPortLength),X);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+13, buildIndex+3, X, chamberWallThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+14, buildIndex+4, X, -chamberWallThick);
@@ -251,10 +253,6 @@ SlitsMask::createSurfaces()
   // left-right
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,X,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin,X,portRadius+portThick);
-  ModelSupport::buildPlane(SMap,buildIndex+303,
-			   Origin-X*(chamberDepth+chamberWallThick+leftPortLength),X);
-  ModelSupport::buildPlane(SMap,buildIndex+304,
-			   Origin+X*(chamberHeight+chamberWallThick+rightPortLength),X);
 
   // top-bottom
   ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Z,portRadius);
@@ -294,7 +292,7 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2 ");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 303 -304 5 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 3 -4 5 -6");
   makeCell("Outer",System,cellIndex++,voidMat,0.0,HR);
 
 
@@ -306,17 +304,17 @@ SlitsMask::createObjects(Simulation& System)
   makeCell("PortTopBottomInner",System,cellIndex++,voidMat,0.0,HR);
 
   // // // left-right
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 207 407 303 -304");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 207 407 3 -4");
   makeCell("PortLeftWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 303 -304 207");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 3 -4 207");
   makeCell("PortLeftInner",System,cellIndex++,voidMat,0.0,HR);
 
-  // HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 16 -304");
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 16 -4");
   // makeCell("PortLeftRightInner",System,cellIndex++,voidMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 303 -304 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 
   addOuterSurf(HR);
 
