@@ -46,6 +46,9 @@ class SlitsMask : public attachSystem::ContainedComp,
   double slitLength;            ///< Slit length
   double slitWidth;             ///< Slit width
   double slitHeight;            ///< Slit height
+  double slitSupportLength;     ///< slit support length
+  double slitSupportWidth;      ///< slit support width
+  double slitSupportHeight;     ///< slit support height
   double wallThick;             ///< wall thickness
   double portRadius;            ///< port radius
   double frontPortLength;       ///< front port length (centre to flange end)
@@ -61,6 +64,7 @@ class SlitsMask : public attachSystem::ContainedComp,
   int leftFlangeCapWindowMat;   ///< left flange cap window material
 
   int slitsMat;                 ///< Slits material
+  int slitSupportMat;           ///< slit support material
   int wallMat;                  ///< wall material
   int voidMat;                  ///< void material
 

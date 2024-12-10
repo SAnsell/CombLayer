@@ -84,6 +84,9 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   slitLength(A.slitLength),slitWidth(A.slitWidth),slitHeight(A.slitHeight),
+  slitSupportLength(A.slitSupportLength),
+  slitSupportWidth(A.slitSupportWidth),
+  slitSupportHeight(A.slitSupportHeight),
   wallThick(A.wallThick),
   portRadius(A.portRadius),
   frontPortLength(A.frontPortLength),
@@ -97,6 +100,7 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   outerFlangeCapThick(A.outerFlangeCapThick),
   leftFlangeCapWindowMat(A.leftFlangeCapWindowMat),
   slitsMat(A.slitsMat),
+  slitSupportMat(A.slitSupportMat),
   wallMat(A.wallMat),
   voidMat(A.voidMat)
   /*!
@@ -122,6 +126,9 @@ SlitsMask::operator=(const SlitsMask& A)
       slitLength=A.slitLength;
       slitWidth=A.slitWidth;
       slitHeight=A.slitHeight;
+      slitSupportLength=A.slitSupportLength;
+      slitSupportWidth=A.slitSupportWidth;
+      slitSupportHeight=A.slitSupportHeight;
       wallThick=A.wallThick;
       portRadius=A.portRadius;
       frontPortLength=A.frontPortLength;
@@ -135,6 +142,7 @@ SlitsMask::operator=(const SlitsMask& A)
       outerFlangeCapThick=A.outerFlangeCapThick;
       leftFlangeCapWindowMat=A.leftFlangeCapWindowMat;
       slitsMat=A.slitsMat;
+      slitSupportMat=A.slitSupportMat;
       wallMat=A.wallMat;
       voidMat=A.voidMat;
     }
@@ -171,6 +179,9 @@ SlitsMask::populate(const FuncDataBase& Control)
   slitLength=Control.EvalVar<double>(keyName+"SlitLength");
   slitWidth=Control.EvalVar<double>(keyName+"SlitWidth");
   slitHeight=Control.EvalVar<double>(keyName+"SlitHeight");
+  slitSupportLength=Control.EvalVar<double>(keyName+"SlitSupportLength");
+  slitSupportWidth=Control.EvalVar<double>(keyName+"SlitSupportWidth");
+  slitSupportHeight=Control.EvalVar<double>(keyName+"SlitSupportHeight");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
   frontPortLength=Control.EvalVar<double>(keyName+"FrontPortLength");
@@ -185,6 +196,7 @@ SlitsMask::populate(const FuncDataBase& Control)
   leftFlangeCapWindowMat=ModelSupport::EvalMat<int>(Control,keyName+"LeftFlangeCapWindowMat");
 
   slitsMat=ModelSupport::EvalMat<int>(Control,keyName+"SlitsMat");
+  slitSupportMat=ModelSupport::EvalMat<int>(Control,keyName+"SlitSupportMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
@@ -245,6 +257,13 @@ SlitsMask::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(slitWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(slitHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(slitHeight/2.0),Z);
+  // Slits support
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin-Y*(slitSupportLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(slitSupportLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(slitSupportWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(slitSupportWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(slitSupportHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(slitSupportHeight/2.0),Z);
 
   // Outer flanges
   // ModelSupport::buildShiftedPlane(SMap, buildIndex+11,
@@ -278,10 +297,19 @@ SlitsMask::createObjects(Simulation& System)
   ELog::RegMethod RegA("SlitsMask","createObjects");
 
   HeadRule HR;
-  HeadRule slits;
 
-  slits=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  makeCell("Slits",System,cellIndex++,slitsMat,0.0,slits);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+  makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -101 103 -104 105 -106 ");
+  makeCell("SupportBackVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 102 -202 103 -104 105 -106 ");
+  makeCell("SupportFrontVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 203 -204 205 -206 (-103:104:-105:106)");
+  makeCell("Support",System,cellIndex++,slitSupportMat,0.0,HR);
+
+  HeadRule slits=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
   slits = slits.complement();
 
   // back-front

@@ -42,6 +42,9 @@ class SlitsMaskGenerator
   double slitLength;            ///< Slit length
   double slitWidth;             ///< Slit width
   double slitHeight;            ///< Slit height
+  double slitSupportLength;     ///< slit support length
+  double slitSupportWidth;      ///< slit support width
+  double slitSupportHeight;     ///< slit support height
 
   double wallThick;             ///< wall thickness
   double portRadius;            ///< port radius
@@ -57,6 +60,7 @@ class SlitsMaskGenerator
   std::string leftFlangeCapWindowMat;  ///< left flange cap window material
 
   std::string slitsMat;         ///< Main material
+  std::string slitSupportMat;   ///< slit support material
   std::string wallMat;          ///< wall material
   std::string voidMat;          ///< void material
 

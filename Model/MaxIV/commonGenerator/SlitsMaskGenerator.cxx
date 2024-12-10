@@ -50,7 +50,12 @@ namespace setVariable
 {
 
 SlitsMaskGenerator::SlitsMaskGenerator() :
-  slitLength(0.2),slitWidth(3.0),slitHeight(4.5),
+  slitLength(0.2),
+  slitWidth(3.0),
+  slitHeight(4.5),
+  slitSupportLength(0.5),
+  slitSupportWidth(4.0),
+  slitSupportHeight(5.1),
   wallThick(0.15),
   portRadius(1.95),
   frontPortLength(8.75),
@@ -64,6 +69,7 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   outerFlangeCapThick(1.2),
   leftFlangeCapWindowMat("LeadGlass"),
   slitsMat("Tungsten"),
+  slitSupportMat("Aluminium"),
   wallMat("Stainless304"),
   voidMat("Void")
   /*!
@@ -93,6 +99,9 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"SlitLength",slitLength);
   Control.addVariable(keyName+"SlitWidth",slitWidth);
   Control.addVariable(keyName+"SlitHeight",slitHeight);
+  Control.addVariable(keyName+"SlitSupportLength",slitSupportLength);
+  Control.addVariable(keyName+"SlitSupportWidth",slitSupportWidth);
+  Control.addVariable(keyName+"SlitSupportHeight",slitSupportHeight);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"PortRadius",portRadius);
   Control.addVariable(keyName+"FrontPortLength",frontPortLength);
@@ -106,6 +115,7 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterFlangeCapThickness",outerFlangeCapThick);
   Control.addVariable(keyName+"LeftFlangeCapWindowMat",leftFlangeCapWindowMat);
   Control.addVariable(keyName+"SlitsMat",slitsMat);
+  Control.addVariable(keyName+"SlitSupportMat",slitSupportMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 
