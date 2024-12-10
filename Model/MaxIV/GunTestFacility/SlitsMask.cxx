@@ -315,8 +315,15 @@ SlitsMask::createObjects(Simulation& System)
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"16 -6 -427");
     makeCell("TopFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
 
-    HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -327");
-    makeCell("LeftFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+    if (leftFlangeCapWindowMat == chamberMat) {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -327");
+      makeCell("LeftFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+    } else {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 307 -327");
+      makeCell("LeftFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -307");
+      makeCell("LeftFlangeCapWindow",System,cellIndex++,leftFlangeCapWindowMat,0.0,HR);
+    }
 
     HR=ModelSupport::getHeadRule(SMap,buildIndex," 14 -4 -327");
     makeCell("RightFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
