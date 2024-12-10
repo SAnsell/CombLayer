@@ -74,6 +74,7 @@ class SlitsMask : public attachSystem::ContainedComp,
   int voidMat;                  ///< void material
 
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

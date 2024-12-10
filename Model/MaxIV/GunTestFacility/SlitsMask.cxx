@@ -219,6 +219,27 @@ SlitsMask::populate(const FuncDataBase& Control)
 }
 
 void
+SlitsMask::createUnitVector(const attachSystem::FixedComp& FC,
+                             const long int sideIndex)
+  /*!
+    Create the unit vector
+    \param FC :: Fixed component to link to
+    \param sideIndex :: Link point and direction [0 for origin]
+  */
+{
+  ELog::RegMethod RegA("GTFGateValve","createUnitVector");
+
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+
+  // moved to centre
+  Origin+=Y*(backPortLength+outerFlangeCapThick);
+
+  return;
+}
+
+
+void
 SlitsMask::createSurfaces()
   /*!
     Create All the surfaces
@@ -226,16 +247,13 @@ SlitsMask::createSurfaces()
 {
   ELog::RegMethod RegA("SlitsMask","createSurfaces");
 
-  if (frontActive()) {
-    ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-	    frontPortLength+backPortLength+2*outerFlangeCapThick);
 
-  } else {
+  if (!frontActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+1,
 			     Origin-Y*(frontPortLength+outerFlangeCapThick),Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
   }
+
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,
