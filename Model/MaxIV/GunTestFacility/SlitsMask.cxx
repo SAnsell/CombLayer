@@ -207,8 +207,8 @@ SlitsMask::createSurfaces()
 
   if (frontActive()) {
     ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-				    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				    chamberLengthFront+chamberLengthBack+chamberWallThick*2.0);
+	    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+	    frontLength+chamberWallThick+chamberLengthFront+chamberLengthBack+backLength+chamberWallThick);
 
   } else {
     ModelSupport::buildPlane(SMap,buildIndex+1,
@@ -245,8 +245,6 @@ SlitsMask::createSurfaces()
   // back-front
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,portRadius+portThick);
-  ModelSupport::buildPlane(SMap,buildIndex+202,
-			   Origin+Y*(backLength+chamberLengthBack+chamberWallThick),Y);
 
   // left-right
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin,X,portRadius);
@@ -292,13 +290,13 @@ SlitsMask::createObjects(Simulation& System)
   // makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
 
   // back-front
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 1 -202 317 417");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 1 -2 317 417");
   makeCell("PortFrontBackWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -202 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2 ");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -202 303 -304 405 -406");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 303 -304 405 -406");
   makeCell("Outer",System,cellIndex++,voidMat,0.0,HR);
 
 
@@ -320,7 +318,7 @@ SlitsMask::createObjects(Simulation& System)
   // makeCell("PortLeftRightInner",System,cellIndex++,voidMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -202 303 -304 405 -406 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 303 -304 405 -406 ");
 
   addOuterSurf(HR);
 
