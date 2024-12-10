@@ -414,11 +414,18 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"607 1 -2 603 -503 25 -26");
   makeCell("LeftFlangeOuterVoid",System,cellIndex++,voidMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"504 -604 317 -607");
+  makeCell("RightFlange",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -604 607 25 -26");
+  makeCell("RightFlangeOuterVoid",System,cellIndex++,voidMat,0.0,HR);
+
   // Void and external
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 1 -2 23 -603 25 -26");
   makeCell("VoidLeft",System,cellIndex++,voidMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 317 417 1 -2 503 -24 25 -26");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 317 417 1 -2 503 -504 25 -26");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*chamber.complement());
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 1 -2 604 -24 25 -26");
+  makeCell("VoidRight",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 
