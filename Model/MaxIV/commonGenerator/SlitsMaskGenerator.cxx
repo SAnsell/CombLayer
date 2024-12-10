@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 SlitsMaskGenerator::SlitsMaskGenerator() :
-  slitLength(0.2),slitWidth(3.0),slitHeight(3.0),
+  slitLength(0.2),slitWidth(3.0),slitHeight(4.5),
   wallThick(0.15),
   portRadius(1.95),
   frontPortLength(8.75),

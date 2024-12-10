@@ -278,16 +278,18 @@ SlitsMask::createObjects(Simulation& System)
   ELog::RegMethod RegA("SlitsMask","createObjects");
 
   HeadRule HR;
+  HeadRule slits;
 
-  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
-  // makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
+  slits=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
+  makeCell("Slits",System,cellIndex++,slitsMat,0.0,slits);
+  slits = slits.complement();
 
   // back-front
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 1 -2 317 417");
   makeCell("PortFrontBackWall",System,cellIndex++,wallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2 ");
-  makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2");
+  makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR*slits);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 23 -24 25 -26");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
@@ -298,14 +300,14 @@ SlitsMask::createObjects(Simulation& System)
   makeCell("PortTopBottomWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 307 -407 15 -16");
-  makeCell("PortTopBottomInner",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("PortTopBottomInner",System,cellIndex++,voidMat,0.0,HR*slits);
 
   // left-right
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 207 407 13 -14");
   makeCell("PortLeftWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -307 13 -14 207");
-  makeCell("PortLeftInner",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("PortLeftInner",System,cellIndex++,voidMat,0.0,HR*slits);
 
   // Flanges
   if (outerFlangeCapThick>Geometry::zeroTol) {
