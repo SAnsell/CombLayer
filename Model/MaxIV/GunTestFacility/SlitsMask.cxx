@@ -254,6 +254,9 @@ SlitsMask::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+15,buildIndex+5,  Z, outerFlangeCapThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+25,buildIndex+15, Z, outerFlangeThick);
 
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+16,buildIndex+6,  Z, -outerFlangeCapThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+26,buildIndex+16, Z, -outerFlangeThick);
+
 
   return;
 }
@@ -279,18 +282,18 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2 ");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 3 -4 25 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 3 -4 25 -26");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
 
   // top-bottom
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 407 -417 207 317 15 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 407 -417 207 317 15 -16");
   makeCell("PortTopBottomWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 307 -407 15 -6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 307 -407 15 -16");
   makeCell("PortTopBottomInner",System,cellIndex++,voidMat,0.0,HR);
 
-  // // // left-right
+  // left-right
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 307 -317 207 407 3 -4");
   makeCell("PortLeftWall",System,cellIndex++,chamberMat,0.0,HR);
 
@@ -304,6 +307,14 @@ SlitsMask::createObjects(Simulation& System)
   makeCell("BottomFlange",System,cellIndex++,chamberMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -25 427");
   makeCell("BottomFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"16 -6 -427");
+  makeCell("TopFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"417 -427 26 -16");
+  makeCell("TopFlange",System,cellIndex++,chamberMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 26 -6 427");
+  makeCell("TopFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
 
