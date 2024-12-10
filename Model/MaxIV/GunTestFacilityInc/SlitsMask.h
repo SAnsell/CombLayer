@@ -58,7 +58,7 @@ class SlitsMask : public attachSystem::ContainedComp,
   double outerFlangeRadius;     ///< outer flange radius
   double outerFlangeThick;      ///< outer flange thickness
   double outerFlangeCapThick;   ///< outer flange cap thickness
-  int outerFlangeWindowMat;  ///< outer flange window material
+  int leftFlangeCapWindowMat;   ///< left flange cap window material
 
   int slitsMat;                 ///< Slits material
   int chamberMat;               ///< chamber wall material

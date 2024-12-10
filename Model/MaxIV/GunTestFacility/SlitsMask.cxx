@@ -95,7 +95,7 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   outerFlangeRadius(A.outerFlangeRadius),
   outerFlangeThick(A.outerFlangeThick),
   outerFlangeCapThick(A.outerFlangeCapThick),
-  outerFlangeWindowMat(A.outerFlangeWindowMat),
+  leftFlangeCapWindowMat(A.leftFlangeCapWindowMat),
   slitsMat(A.slitsMat),
   chamberMat(A.chamberMat),
   voidMat(A.voidMat)
@@ -133,7 +133,7 @@ SlitsMask::operator=(const SlitsMask& A)
       outerFlangeRadius=A.outerFlangeRadius;
       outerFlangeThick=A.outerFlangeThick;
       outerFlangeCapThick=A.outerFlangeCapThick;
-      outerFlangeWindowMat=A.outerFlangeWindowMat;
+      leftFlangeCapWindowMat=A.leftFlangeCapWindowMat;
       slitsMat=A.slitsMat;
       chamberMat=A.chamberMat;
       voidMat=A.voidMat;
@@ -182,7 +182,7 @@ SlitsMask::populate(const FuncDataBase& Control)
   outerFlangeRadius=Control.EvalVar<double>(keyName+"OuterFlangeRadius");
   outerFlangeThick=Control.EvalVar<double>(keyName+"OuterFlangeThickness");
   outerFlangeCapThick=Control.EvalVar<double>(keyName+"OuterFlangeCapThickness");
-  outerFlangeWindowMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterFlangeWindowMat");
+  leftFlangeCapWindowMat=ModelSupport::EvalMat<int>(Control,keyName+"LeftFlangeCapWindowMat");
 
   slitsMat=ModelSupport::EvalMat<int>(Control,keyName+"SlitsMat");
   chamberMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberMat");

@@ -62,7 +62,7 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   outerFlangeRadius(3.5),
   outerFlangeThick(1.2),
   outerFlangeCapThick(1.2),
-  outerFlangeWindowMat("LeadGlass"),
+  leftFlangeCapWindowMat("LeadGlass"),
   slitsMat("Tungsten"),
   chamberMat("Stainless304"),
   voidMat("Void")
@@ -104,7 +104,7 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"OuterFlangeRadius",outerFlangeRadius);
   Control.addVariable(keyName+"OuterFlangeThickness",outerFlangeThick);
   Control.addVariable(keyName+"OuterFlangeCapThickness",outerFlangeCapThick);
-  Control.addVariable(keyName+"OuterFlangeWindowMat",outerFlangeWindowMat);
+  Control.addVariable(keyName+"LeftFlangeCapWindowMat",leftFlangeCapWindowMat);
   Control.addVariable(keyName+"SlitsMat",slitsMat);
   Control.addVariable(keyName+"ChamberMat",chamberMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
