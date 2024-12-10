@@ -308,29 +308,34 @@ SlitsMask::createObjects(Simulation& System)
   makeCell("PortLeftInner",System,cellIndex++,voidMat,0.0,HR);
 
   // Flanges
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 5 -15 -427");
-  makeCell("BottomFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+  if (outerFlangeCapThick>Geometry::zeroTol) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 5 -15 -427");
+    makeCell("BottomFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"16 -6 -427");
+    makeCell("TopFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -327");
+    makeCell("LeftFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 14 -4 -327");
+    makeCell("RightFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
+  }
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 15 -25");
   makeCell("BottomFlange",System,cellIndex++,chamberMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -25 427");
   makeCell("BottomFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"16 -6 -427");
-  makeCell("TopFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"417 -427 26 -16");
   makeCell("TopFlange",System,cellIndex++,chamberMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 26 -6 427");
   makeCell("TopFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -327");
-  makeCell("LeftFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 317 -327 13 -23");
   makeCell("LeftFlange",System,cellIndex++,chamberMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -23 25 -26 327");
   makeCell("LeftFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 14 -4 -327");
-  makeCell("RightFlangeCap",System,cellIndex++,chamberMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 317 -327 24 -14");
   makeCell("RightFlange",System,cellIndex++,chamberMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 24 -4 25 -26 327");
