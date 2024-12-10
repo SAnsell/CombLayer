@@ -608,7 +608,7 @@ namespace setVariable
     slitsGen.generate(Control, "Slits");
 
     name="BellowC";
-    constexpr double bellowCLength = 21.5; // to set YagUnitC to 314 cm from BackWallEast [current position, checked]
+    constexpr double bellowCLength = 23.9; // to set YagUnitD -361.6 with the new SlitMask geometry
     // Bellow C folding structure has 52 maxima
     constexpr unsigned int bellowCN = 52;
     const double bellowCThick =
