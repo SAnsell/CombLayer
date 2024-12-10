@@ -92,6 +92,10 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   rightPortLength(A.rightPortLength),
   bottomPortLength(A.bottomPortLength),
   topPortLength(A.topPortLength),
+  outerFlangeRadius(A.outerFlangeRadius),
+  outerFlangeThick(A.outerFlangeThick),
+  outerFlangeCapThick(A.outerFlangeCapThick),
+  outerFlangeWindowMat(A.outerFlangeWindowMat),
   slitsMat(A.slitsMat),
   chamberMat(A.chamberMat),
   voidMat(A.voidMat)
@@ -126,6 +130,10 @@ SlitsMask::operator=(const SlitsMask& A)
       rightPortLength=A.rightPortLength;
       bottomPortLength=A.bottomPortLength;
       topPortLength=A.topPortLength;
+      outerFlangeRadius=A.outerFlangeRadius;
+      outerFlangeThick=A.outerFlangeThick;
+      outerFlangeCapThick=A.outerFlangeCapThick;
+      outerFlangeWindowMat=A.outerFlangeWindowMat;
       slitsMat=A.slitsMat;
       chamberMat=A.chamberMat;
       voidMat=A.voidMat;
@@ -171,6 +179,10 @@ SlitsMask::populate(const FuncDataBase& Control)
   rightPortLength=Control.EvalVar<double>(keyName+"RightPortLength");
   bottomPortLength=Control.EvalVar<double>(keyName+"BottomPortLength");
   topPortLength=Control.EvalVar<double>(keyName+"TopPortLength");
+  outerFlangeRadius=Control.EvalVar<double>(keyName+"OuterFlangeRadius");
+  outerFlangeThick=Control.EvalVar<double>(keyName+"OuterFlangeThickness");
+  outerFlangeCapThick=Control.EvalVar<double>(keyName+"OuterFlangeCapThickness");
+  outerFlangeWindowMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterFlangeWindowMat");
 
   slitsMat=ModelSupport::EvalMat<int>(Control,keyName+"SlitsMat");
   chamberMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberMat");
