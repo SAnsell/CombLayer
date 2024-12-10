@@ -43,9 +43,9 @@ class SlitsMask : public attachSystem::ContainedComp,
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  double slitLength;            ///< Slit length
+  double slitWidth;             ///< Slit width
+  double slitHeight;            ///< Slit height
   double chamberLengthBack;     ///< chamber length back
   double chamberLengthFront;    ///< chamber length front
   double chamberDepth;          ///< chamber depth

@@ -83,7 +83,7 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
+  slitLength(A.slitLength),slitWidth(A.slitWidth),slitHeight(A.slitHeight),
   chamberLengthBack(A.chamberLengthBack),
   chamberLengthFront(A.chamberLengthFront),
   chamberDepth(A.chamberDepth),
@@ -121,9 +121,9 @@ SlitsMask::operator=(const SlitsMask& A)
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      length=A.length;
-      width=A.width;
-      height=A.height;
+      slitLength=A.slitLength;
+      slitWidth=A.slitWidth;
+      slitHeight=A.slitHeight;
       chamberLengthBack=A.chamberLengthBack;
       chamberLengthFront=A.chamberLengthFront;
       chamberDepth=A.chamberDepth;
@@ -172,9 +172,9 @@ SlitsMask::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
+  slitLength=Control.EvalVar<double>(keyName+"SlitLength");
+  slitWidth=Control.EvalVar<double>(keyName+"SlitWidth");
+  slitHeight=Control.EvalVar<double>(keyName+"SlitHeight");
   chamberLengthBack=Control.EvalVar<double>(keyName+"ChamberLengthBack");
   chamberLengthFront=Control.EvalVar<double>(keyName+"ChamberLengthFront");
   chamberDepth=Control.EvalVar<double>(keyName+"ChamberDepth");
@@ -268,12 +268,12 @@ SlitsMask::createSurfaces()
 
 
   // Slits
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(slitLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(slitLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(slitWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(slitWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(slitHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(slitHeight/2.0),Z);
 
   return;
 }

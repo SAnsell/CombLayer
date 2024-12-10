@@ -50,7 +50,7 @@ namespace setVariable
 {
 
 SlitsMaskGenerator::SlitsMaskGenerator() :
-  length(0.2),width(3.0),height(3.0),
+  slitLength(0.2),slitWidth(3.0),slitHeight(3.0),
   chamberLengthBack(3),
   chamberLengthFront(3),
   chamberDepth(6),
@@ -92,9 +92,9 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("SlitsMaskGenerator","generate");
 
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"SlitLength",slitLength);
+  Control.addVariable(keyName+"SlitWidth",slitWidth);
+  Control.addVariable(keyName+"SlitHeight",slitHeight);
   Control.addVariable(keyName+"ChamberLengthBack",chamberLengthBack);
   Control.addVariable(keyName+"ChamberLengthFront",chamberLengthFront);
   Control.addVariable(keyName+"ChamberDepth",chamberDepth);
