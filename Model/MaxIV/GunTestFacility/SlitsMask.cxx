@@ -86,8 +86,8 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   slitLength(A.slitLength),slitWidth(A.slitWidth),slitHeight(A.slitHeight),
   wallThick(A.wallThick),
   portRadius(A.portRadius),
-  frontLength(A.frontLength),
-  backLength(A.backLength),
+  frontPortLength(A.frontPortLength),
+  backPortLength(A.backPortLength),
   leftPortLength(A.leftPortLength),
   rightPortLength(A.rightPortLength),
   bottomPortLength(A.bottomPortLength),
@@ -120,8 +120,8 @@ SlitsMask::operator=(const SlitsMask& A)
       slitHeight=A.slitHeight;
       wallThick=A.wallThick;
       portRadius=A.portRadius;
-      frontLength=A.frontLength;
-      backLength=A.backLength;
+      frontPortLength=A.frontPortLength;
+      backPortLength=A.backPortLength;
       leftPortLength=A.leftPortLength;
       rightPortLength=A.rightPortLength;
       bottomPortLength=A.bottomPortLength;
@@ -165,8 +165,8 @@ SlitsMask::populate(const FuncDataBase& Control)
   slitHeight=Control.EvalVar<double>(keyName+"SlitHeight");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
-  frontLength=Control.EvalVar<double>(keyName+"FrontLength");
-  backLength=Control.EvalVar<double>(keyName+"BackLength");
+  frontPortLength=Control.EvalVar<double>(keyName+"FrontPortLength");
+  backPortLength=Control.EvalVar<double>(keyName+"BackPortLength");
   leftPortLength=Control.EvalVar<double>(keyName+"LeftPortLength");
   rightPortLength=Control.EvalVar<double>(keyName+"RightPortLength");
   bottomPortLength=Control.EvalVar<double>(keyName+"BottomPortLength");
@@ -190,17 +190,17 @@ SlitsMask::createSurfaces()
   if (frontActive()) {
     ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
 	    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-	    frontLength+backLength);
+	    frontPortLength+backPortLength);
 
   } else {
     ModelSupport::buildPlane(SMap,buildIndex+1,
-			     Origin-Y*(frontLength),Y);
+			     Origin-Y*(frontPortLength),Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
   }
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,
-			     Origin+Y*(backLength),Y);
+			     Origin+Y*(backPortLength),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
   }
 

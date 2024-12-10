@@ -48,12 +48,12 @@ class SlitsMask : public attachSystem::ContainedComp,
   double slitHeight;            ///< Slit height
   double wallThick;             ///< wall thickness
   double portRadius;            ///< port radius
-  double frontLength;           ///< front length (centre to flange end)
-  double backLength;            ///< back length (centre to flange end)
-  double leftPortLength;        ///< left port total length
-  double rightPortLength;       ///< right port total length
-  double bottomPortLength;      ///< bottom port total length
-  double topPortLength;         ///< top port total length
+  double frontPortLength;       ///< front port length (centre to flange end)
+  double backPortLength;        ///< back port length (centre to flange end)
+  double leftPortLength;        ///< left port length (centre to flange end)
+  double rightPortLength;       ///< right port length (centre to flange end)
+  double bottomPortLength;      ///< bottom port length (centre to flange end)
+  double topPortLength;         ///< top port length (centre to flange end)
 
   int slitsMat;                 ///< Slits material
   int chamberMat;               ///< chamber wall material
