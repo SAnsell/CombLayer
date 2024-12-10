@@ -61,7 +61,7 @@ class SlitsMask : public attachSystem::ContainedComp,
   int leftFlangeCapWindowMat;   ///< left flange cap window material
 
   int slitsMat;                 ///< Slits material
-  int chamberMat;               ///< chamber wall material
+  int wallMat;                  ///< wall material
   int voidMat;                  ///< void material
 
   void populate(const FuncDataBase&);
