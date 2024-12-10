@@ -45,6 +45,9 @@ class SlitsMaskGenerator
   double slitSupportLength;     ///< slit support length
   double slitSupportWidth;      ///< slit support width
   double slitSupportHeight;     ///< slit support height
+  double chamberLength;         ///< chamber length
+  double chamberWidth;          ///< chamber width
+  double chamberHeight;         ///< chamber height
 
   double wallThick;             ///< wall thickness
   double portRadius;            ///< port radius

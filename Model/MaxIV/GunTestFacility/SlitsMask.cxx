@@ -87,6 +87,9 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   slitSupportLength(A.slitSupportLength),
   slitSupportWidth(A.slitSupportWidth),
   slitSupportHeight(A.slitSupportHeight),
+  chamberLength(A.chamberLength),
+  chamberWidth(A.chamberWidth),
+  chamberHeight(A.chamberHeight),
   wallThick(A.wallThick),
   portRadius(A.portRadius),
   frontPortLength(A.frontPortLength),
@@ -129,6 +132,9 @@ SlitsMask::operator=(const SlitsMask& A)
       slitSupportLength=A.slitSupportLength;
       slitSupportWidth=A.slitSupportWidth;
       slitSupportHeight=A.slitSupportHeight;
+      chamberLength=A.chamberLength;
+      chamberWidth=A.chamberWidth;
+      chamberHeight=A.chamberHeight;
       wallThick=A.wallThick;
       portRadius=A.portRadius;
       frontPortLength=A.frontPortLength;
@@ -182,6 +188,9 @@ SlitsMask::populate(const FuncDataBase& Control)
   slitSupportLength=Control.EvalVar<double>(keyName+"SlitSupportLength");
   slitSupportWidth=Control.EvalVar<double>(keyName+"SlitSupportWidth");
   slitSupportHeight=Control.EvalVar<double>(keyName+"SlitSupportHeight");
+  chamberLength=Control.EvalVar<double>(keyName+"ChamberLength");
+  chamberWidth=Control.EvalVar<double>(keyName+"ChamberWidth");
+  chamberHeight=Control.EvalVar<double>(keyName+"ChamberHeight");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
   frontPortLength=Control.EvalVar<double>(keyName+"FrontPortLength");
@@ -284,6 +293,15 @@ SlitsMask::createSurfaces()
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+14,buildIndex+4,  X, -outerFlangeCapThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+24,buildIndex+14, X, -outerFlangeThick);
+
+  // Chambaer
+  ModelSupport::buildPlane(SMap,buildIndex+501,Origin-Y*(chamberLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+502,Origin+Y*(chamberLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+503,Origin-X*(chamberWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+504,Origin+X*(chamberWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+505,Origin-Z*(chamberHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+506,Origin+Z*(chamberHeight/2.0),Z);
+
   return;
 }
 
@@ -312,6 +330,11 @@ SlitsMask::createObjects(Simulation& System)
   HeadRule slits=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 203 -204 205 -206 ");
   slits = slits.complement();
 
+  //chamber
+  HeadRule chamber=ModelSupport::getHeadRule(SMap,buildIndex," 501 -502 503 -504 505 -506");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 317 417");
+  makeCell("Chamber",System,cellIndex++,wallMat,0.0,HR*chamber);
+
   // back-front
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 1 -2 317 417");
   makeCell("PortFrontBackWall",System,cellIndex++,wallMat,0.0,HR);
@@ -319,8 +342,8 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR*slits);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 23 -24 25 -26");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 317 417 1 -2 23 -24 25 -26");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*chamber.complement());
 
 
   // top-bottom

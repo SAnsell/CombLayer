@@ -56,6 +56,9 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   slitSupportLength(0.5),
   slitSupportWidth(3.5),
   slitSupportHeight(5.1),
+  chamberLength(6.0),
+  chamberWidth(6.0),
+  chamberHeight(6.0),
   wallThick(0.15),
   portRadius(1.95),
   frontPortLength(8.75),
@@ -102,6 +105,9 @@ SlitsMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"SlitSupportLength",slitSupportLength);
   Control.addVariable(keyName+"SlitSupportWidth",slitSupportWidth);
   Control.addVariable(keyName+"SlitSupportHeight",slitSupportHeight);
+  Control.addVariable(keyName+"ChamberLength",chamberLength);
+  Control.addVariable(keyName+"ChamberWidth",chamberWidth);
+  Control.addVariable(keyName+"ChamberHeight",chamberHeight);
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"PortRadius",portRadius);
   Control.addVariable(keyName+"FrontPortLength",frontPortLength);
