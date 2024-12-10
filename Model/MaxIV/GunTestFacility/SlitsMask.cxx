@@ -326,7 +326,8 @@ SlitsMask::createObjects(Simulation& System)
   ELog::RegMethod RegA("SlitsMask","createObjects");
 
   HeadRule HR;
-
+  const HeadRule front(frontRule());
+  const HeadRule back(backRule());
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 103 -104 105 -106 ");
   makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
@@ -347,11 +348,11 @@ SlitsMask::createObjects(Simulation& System)
   makeCell("Chamber",System,cellIndex++,wallMat,0.0,HR*chamber);
 
   // back-front
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 1 -2 317 417");
-  makeCell("PortFrontBackWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 317 417");
+  makeCell("PortFrontBackWall",System,cellIndex++,wallMat,0.0,HR*front*back);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2");
-  makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR*slits);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207");
+  makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR*slits*front*back);
 
   // top-bottom
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 407 -417 207 317 15 -16");
@@ -390,46 +391,46 @@ SlitsMask::createObjects(Simulation& System)
   }
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 417 -427 15 -25");
   makeCell("BottomFlange",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -25 427");
-  makeCell("BottomFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -25 427");
+  makeCell("BottomFlangeOuter",System,cellIndex++,voidMat,0.0,HR*front*back);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"417 -427 26 -16");
   makeCell("TopFlange",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 26 -6 427");
-  makeCell("TopFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 26 -6 427");
+  makeCell("TopFlangeOuter",System,cellIndex++,voidMat,0.0,HR*front*back);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 317 -327 13 -23");
   makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -23 25 -26 327");
-  makeCell("LeftFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -23 25 -26 327");
+  makeCell("LeftFlangeOuter",System,cellIndex++,voidMat,0.0,HR*front*back);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 317 -327 24 -14");
   makeCell("RightFlange",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 24 -4 25 -26 327");
-  makeCell("RightFlangeOuter",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 24 -4 25 -26 327");
+  makeCell("RightFlangeOuter",System,cellIndex++,voidMat,0.0,HR*front*back);
 
   // Inner flanges
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"603 -503 317 -607");
   makeCell("LeftFlange",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"607 1 -2 603 -503 25 -26");
-  makeCell("LeftFlangeOuterVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"607 603 -503 25 -26");
+  makeCell("LeftFlangeOuterVoid",System,cellIndex++,voidMat,0.0,HR*front*back);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"504 -604 317 -607");
   makeCell("RightFlange",System,cellIndex++,wallMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 504 -604 607 25 -26");
-  makeCell("RightFlangeOuterVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"504 -604 607 25 -26");
+  makeCell("RightFlangeOuterVoid",System,cellIndex++,voidMat,0.0,HR*front*back);
 
   // Void and external
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 1 -2 23 -603 25 -26");
-  makeCell("VoidLeft",System,cellIndex++,voidMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 317 417 1 -2 503 -504 25 -26");
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*chamber.complement());
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 1 -2 604 -24 25 -26");
-  makeCell("VoidRight",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 23 -603 25 -26");
+  makeCell("VoidLeft",System,cellIndex++,voidMat,0.0,HR*front*back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"217 317 417 503 -504 25 -26");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*chamber.complement()*front*back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"317 604 -24 25 -26");
+  makeCell("VoidRight",System,cellIndex++,voidMat,0.0,HR*front*back);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
 
-  addOuterSurf(HR);
+  addOuterSurf(HR*front*back);
 
   return;
 }
