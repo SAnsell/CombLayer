@@ -211,7 +211,8 @@ SlitsMask::createSurfaces()
 				    chamberLengthFront+chamberLengthBack+chamberWallThick*2.0);
 
   } else {
-    ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(chamberLengthFront+chamberWallThick),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+1,
+			     Origin-Y*(frontLength+chamberLengthFront+chamberWallThick),Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
   }
 
@@ -244,8 +245,6 @@ SlitsMask::createSurfaces()
   // back-front
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,portRadius+portThick);
-  ModelSupport::buildPlane(SMap,buildIndex+201,
-			   Origin-Y*(frontLength+chamberLengthFront+chamberWallThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+202,
 			   Origin+Y*(backLength+chamberLengthBack+chamberWallThick),Y);
 
@@ -293,13 +292,13 @@ SlitsMask::createObjects(Simulation& System)
   // makeCell("Slits",System,cellIndex++,slitsMat,0.0,HR);
 
   // back-front
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 201 -202 317 417");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 -217 1 -202 317 417");
   makeCell("PortFrontBackWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 201 -202 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -202 ");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 201 -202 303 -304 405 -406");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -202 303 -304 405 -406");
   makeCell("Outer",System,cellIndex++,voidMat,0.0,HR);
 
 
@@ -321,7 +320,7 @@ SlitsMask::createObjects(Simulation& System)
   // makeCell("PortLeftRightInner",System,cellIndex++,voidMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -202 303 -304 405 -406 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -202 303 -304 405 -406 ");
 
   addOuterSurf(HR);
 
