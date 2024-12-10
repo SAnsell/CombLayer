@@ -58,7 +58,7 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   chamberWidth(12),
   chamberWallThick(1), // ???
   portRadius(1.95),
-  portThick(1.5),
+  portThick(0.15),
   frontLength(5.75),
   backLength(5.75),
   leftPortLength(8.7),
