@@ -237,7 +237,8 @@ SlitsMask::createSurfaces()
 
   SurfMap::makePlane("bottom",SMap,buildIndex+5,
 		     Origin-Z*(chamberDepth+chamberWallThick+bottomPortLength),Z);
-  SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(chamberHeight),Z);
+  SurfMap::makePlane("top",SMap,buildIndex+6,
+		     Origin+Z*(chamberHeight+chamberWallThick+topPortLength),Z);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+15, buildIndex+5, X, chamberWallThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+16, buildIndex+6, X, -chamberWallThick);
@@ -258,8 +259,6 @@ SlitsMask::createSurfaces()
   // top-bottom
   ModelSupport::buildCylinder(SMap,buildIndex+407,Origin,Z,portRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+417,Origin,Z,portRadius+portThick);
-  ModelSupport::buildPlane(SMap,buildIndex+406,
-			   Origin+Z*(chamberHeight+chamberWallThick+topPortLength),Z);
 
 
 
@@ -295,15 +294,15 @@ SlitsMask::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -207 1 -2 ");
   makeCell("PortFrontBackInner",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 303 -304 5 -406");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 317 417 1 -2 303 -304 5 -6");
   makeCell("Outer",System,cellIndex++,voidMat,0.0,HR);
 
 
   // top-bottom
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 407 -417 207 317 5 -406");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 407 -417 207 317 5 -6");
   makeCell("PortTopBottomWall",System,cellIndex++,chamberMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 307 -407 5 -406");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 207 307 -407 5 -6");
   makeCell("PortTopBottomInner",System,cellIndex++,voidMat,0.0,HR);
 
   // // // left-right
@@ -317,7 +316,7 @@ SlitsMask::createObjects(Simulation& System)
   // makeCell("PortLeftRightInner",System,cellIndex++,voidMat,0.0,HR);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 303 -304 5 -406 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 303 -304 5 -6 ");
 
   addOuterSurf(HR);
 
