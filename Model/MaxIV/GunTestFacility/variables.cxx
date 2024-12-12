@@ -208,7 +208,7 @@ namespace setVariable
     setVariable::DuctGenerator DuctGen;
     DuctGen.setSize(10.0); // [0], page 4 (diameter 20.0)
     DuctGen.generate(Control,name+"DuctWave","Cylinder","RectangularCover","Rectangle", 90.0, 0.0, length2-136.5, 269-depth); //  [4]
-    constexpr double DuctWaveShieldThick = 12;
+    constexpr double DuctWaveShieldThick = 8;
     Control.addVariable(name+"DuctWaveShieldThick",DuctWaveShieldThick);
     Control.addVariable(name+"DuctWaveShieldMat","Lead");
     Control.addVariable(name+"DuctWaveShieldDepth",36.0); // 40 is better but can cut the cables at 43 cm distance
