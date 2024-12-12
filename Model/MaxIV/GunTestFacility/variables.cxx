@@ -546,6 +546,8 @@ namespace setVariable
 
     YagUnitGen.generateYagUnit(Control,"YagUnitA");
     Control.addVariable("YagUnitAYAngle",180.0);
+    Control.addVariable("YagUnitABackLength",7.9);
+    Control.addVariable("YagUnitAFrontLength",12.1);
     YagScreenGen.generateScreen(Control,"YagScreenA",0);
     Control.addVariable("YagScreenAYAngle",-90.0);
 
@@ -561,7 +563,7 @@ namespace setVariable
 
     //    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
 
-    const char slitLocation='A'; // A: most upstream, E: most downstream
+    const char slitLocation='E'; // A: most upstream, E: most downstream
 
     double bellowBLength, bellowDLength;
     switch (slitLocation) {
@@ -570,20 +572,20 @@ namespace setVariable
       bellowDLength = 164.1; // AR 241212
       break;
     case 'B':
-      bellowBLength = 45.1;
-      bellowDLength = 139.0;
+      bellowBLength = 50.1;
+      bellowDLength = 134.0;
       break;
     case 'C':
-      bellowBLength = 70.2;
-      bellowDLength = 113.9;
+      bellowBLength = 80.2;
+      bellowDLength = 103.9;
       break;
     case 'D':
-      bellowBLength = 95.3;
-      bellowDLength = 88.8;
+      bellowBLength = 110.3;
+      bellowDLength = 73.8;
       break;
     case 'E':
-      bellowBLength = 120.4;
-      bellowDLength = 63.7;
+      bellowBLength = 140.4;
+      bellowDLength = 43.7;
       break;
     }
 
@@ -632,8 +634,8 @@ namespace setVariable
 
     name="YagUnitC";
     YagUnitGen.generateYagUnit(Control,name);
-    Control.addVariable(name+"BackLength",8.8);
-    Control.addVariable(name+"FrontLength",8.8);
+    Control.addVariable(name+"FrontLength",7.2);
+    Control.addVariable(name+"BackLength",10.4);
     YagScreenGen.generateScreen(Control,"YagScreenC",0);
     Control.addVariable("YagScreenCYAngle",-90.0);
 
@@ -653,8 +655,8 @@ namespace setVariable
     Control.addVariable("BellowDNFolds",383.0); // KB: 328
 
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
-    Control.addVariable("YagUnitDBackLength",8.8);
-    Control.addVariable("YagUnitDFrontLength",8.8);
+    Control.addVariable("YagUnitDFrontLength",8.1);
+    Control.addVariable("YagUnitDBackLength",9.5);
     // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
     // 1.2 cm: current installed thickness
     Control.addVariable("YagUnitDBackCapThick", 1.2);
@@ -664,7 +666,7 @@ namespace setVariable
     setVariable::GTFBeamDumpGenerator DumpGen;
     DumpGen.generate(Control,"Dump");
     Control.addVariable("DumpYAngle",180.0);
-    Control.addVariable("DumpYStep",-3.0);
+    Control.addVariable("DumpYStep",-3.7);
 
     name="LocalShieldingWall";
     Control.addVariable(name+"XStep",  -30.0);
