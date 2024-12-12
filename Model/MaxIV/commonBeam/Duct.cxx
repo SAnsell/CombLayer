@@ -211,6 +211,10 @@ Duct::populate(const FuncDataBase& Control)
   ductType=Control.EvalVar<std::string>(keyName+"DuctType");
   shieldType=Control.EvalVar<std::string>(keyName+"ShieldType");
   shieldPenetrationType=Control.EvalVar<std::string>(keyName+"ShieldPenetrationType");
+
+  if ((shieldType=="None") && (shieldPenetrationType != "None"))
+    throw ColErr::ExitAbort(keyName+": shieldPenetrationType must also be None if shieldType is None");
+
   shieldPenetrationZOffset=Control.EvalVar<double>(keyName+"ShieldPenetrationZOffset");
   shieldPenetrationXOffset=Control.EvalVar<double>(keyName+"ShieldPenetrationXOffset");
   shieldPenetrationRadius=Control.EvalVar<double>(keyName+"ShieldPenetrationRadius");
@@ -240,7 +244,7 @@ Duct::populate(const FuncDataBase& Control)
 
   if (radius<Geometry::zeroTol && length<Geometry::zeroTol &&
       width<Geometry::zeroTol  && height<Geometry::zeroTol)
-    throw  ColErr::ExitAbort("Either Radius or Length/Width/Height must be non-zero");
+    throw  ColErr::ExitAbort(keyName+": Either Radius or Length/Width/Height must be non-zero");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
