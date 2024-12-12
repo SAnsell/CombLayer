@@ -650,7 +650,7 @@ namespace setVariable
 						 bellowStep);
     BellowGen.setMat("Stainless316L", bellowDFrac*100.0);
     BellowGen.generateBellow(Control,name,bellowDLength); // approx
-    Control.addVariable("BellowDNFolds",328.0);
+    Control.addVariable("BellowDNFolds",383.0); // KB: 328
 
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
     Control.addVariable("YagUnitDBackLength",8.8);
