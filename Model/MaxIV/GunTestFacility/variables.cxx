@@ -531,7 +531,7 @@ namespace setVariable
     PipeGen.setCF<setVariable::CF40_22>();
     PipeGen.setAFlange(lcRadius+lcWall, 1.3); // dummy
     PipeGen.setBFlange(setVariable::CF40::flangeRadius, setVariable::CF40::flangeLength); // dummy
-    PipeGen.generatePipe(Control,"PipeC",7.9+CF63::flangeLength); // TODO: dummy
+    PipeGen.generatePipe(Control,"PipeC",7.6+CF63::flangeLength); // TODO: dummy
     Control.addVariable("PipeCRadius",0.9); // same as BackPlateInnerRadius
     Control.addVariable("PipeCPipeThick",0.2);
     Control.addVariable("PipeCFlangeALength", 0.0);
@@ -567,7 +567,7 @@ namespace setVariable
     switch (slitLocation) {
     case 'A':
       bellowBLength = 20.0;
-      bellowDLength = 163.7;
+      bellowDLength = 164.1; // AR 241212
       break;
     case 'B':
       bellowBLength = 49.0;
@@ -591,7 +591,7 @@ namespace setVariable
     //constexpr double bellowBLength = 20.0; // most upstream location of the slits (see also bellowDLength)
     BellowGen.setFlange(bellowOuterR, bellowFlangeLength, yagPortRadius);
 
-    constexpr unsigned int bellowBN = 328-15; // 328, Same as BellowD [Dionis], 15 is substracted since otherwise bellowBFrac is > 1
+    constexpr unsigned int bellowBN = 202; // AR 241212
     const double bellowBThick =
       getBellowThick(bellowBN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowBLength,
 		     bellowFlangeLength, bellowFlangeLength, bellowStep);
@@ -614,8 +614,8 @@ namespace setVariable
     slitsGen.generate(Control, "Slits");
 
     name="BellowC";
-    constexpr double bellowCLength = 23.9; // to set YagUnitD -361.6 with the new SlitMask geometry
-    // Bellow C folding structure has 52 maxima
+    constexpr double bellowCLength = 26.0;
+    // Bellow C folding structure has 52 folds
     constexpr unsigned int bellowCN = 52;
     const double bellowCThick =
       getBellowThick(bellowCN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowCLength,
@@ -630,7 +630,10 @@ namespace setVariable
     Control.addVariable("BellowCNFolds",static_cast<int>(bellowCN));
     Control.addVariable(name+"YAngle",-180.0);
 
-    YagUnitGen.generateYagUnit(Control,"YagUnitC");
+    name="YagUnitC";
+    YagUnitGen.generateYagUnit(Control,name);
+    Control.addVariable(name+"BackLength",8.8);
+    Control.addVariable(name+"FrontLength",8.8);
     YagScreenGen.generateScreen(Control,"YagScreenC",0);
     Control.addVariable("YagScreenCYAngle",-90.0);
 
@@ -650,7 +653,8 @@ namespace setVariable
     Control.addVariable("BellowDNFolds",328.0);
 
     YagUnitGen.generateYagUnit(Control,"YagUnitD");
-    Control.addVariable("YagUnitDBackLength",7.0); // approx
+    Control.addVariable("YagUnitDBackLength",8.8);
+    Control.addVariable("YagUnitDFrontLength",8.8);
     // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
     // 1.2 cm: current installed thickness
     Control.addVariable("YagUnitDBackCapThick", 1.2);
@@ -660,7 +664,7 @@ namespace setVariable
     setVariable::GTFBeamDumpGenerator DumpGen;
     DumpGen.generate(Control,"Dump");
     Control.addVariable("DumpYAngle",180.0);
-    Control.addVariable("DumpYStep",-1.2);
+    Control.addVariable("DumpYStep",-3.0);
 
     name="LocalShieldingWall";
     Control.addVariable(name+"XStep",  -30.0);
