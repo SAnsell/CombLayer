@@ -66,6 +66,8 @@ class DuctGenerator
   std::string ductMat;          ///< material inside duct
   std::string fillMat;          ///< fill material inside duct
   double fillDuctHeightRatio;   ///< ratio of fill/duct material heights
+  double fillOffset;            ///< fill material y-offset
+  double fillLength;            ///< fill material length
 
   int voidMat;                  ///< Void material
   std::string shieldMat;        ///< shielding material

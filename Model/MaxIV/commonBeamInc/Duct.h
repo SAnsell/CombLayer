@@ -71,6 +71,8 @@ class Duct :
   int ductMat;                  ///< material inside duct
   int fillMat;                  ///< fill material inside duct
   double fillDuctHeightRatio;   ///< ratio of fill/duct material heights
+  double fillOffset;            ///< fill material y-offset
+  double fillLength;            ///< fill material length
 
   int voidMat;                  ///< Void material
   int shieldMat;                ///< shielding material

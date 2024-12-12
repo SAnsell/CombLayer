@@ -237,7 +237,9 @@ namespace setVariable
     DuctGen.generate(Control,name+"DuctSignal3","Cylinder","None","None",90.0, 0.0, length2-189.0, 11.5-depth); // [0], pages 2, 4
     Control.addVariable(name+"DuctSignal3DuctMat","StbTCABL");
     Control.addVariable(name+"DuctSignal3FillMat","Void");
-    Control.addVariable(name+"DuctSignal3FillDuctHeightRatio",0.5);
+    Control.addVariable(name+"DuctSignal3FillDuctHeightRatio",0.64);
+    Control.addVariable(name+"DuctSignal3FillOffset",10.0);
+    Control.addVariable(name+"DuctSignal3FillLength",50.0);
 
     DuctGen.generate(Control,name+"DuctWater1","Cylinder","RectangularCover","Rectangle",90.0, 0.0, length2-216.0, 9.5-depth); // [4]
     Control.addVariable(name+"DuctWater1ShieldMat","Lead");

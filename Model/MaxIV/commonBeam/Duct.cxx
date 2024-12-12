@@ -118,6 +118,8 @@ Duct::Duct(const Duct& A) :
   ductMat(A.ductMat),
   fillMat(A.fillMat),
   fillDuctHeightRatio(A.fillDuctHeightRatio),
+  fillOffset(A.fillOffset),
+  fillLength(A.fillLength),
   voidMat(A.voidMat),
   shieldMat(A.shieldMat)
   /*!
@@ -167,6 +169,8 @@ Duct::operator=(const Duct& A)
       ductMat=A.ductMat;
       fillMat=A.fillMat;
       fillDuctHeightRatio=A.fillDuctHeightRatio;
+      fillOffset=A.fillOffset;
+      fillLength=A.fillLength;
       voidMat=A.voidMat;
       shieldMat=A.shieldMat;
     }
@@ -248,8 +252,14 @@ Duct::populate(const FuncDataBase& Control)
   if ((fillDuctHeightRatio<-Geometry::zeroTol) || (fillDuctHeightRatio>1.0+Geometry::zeroTol))
     throw ColErr::RangeError<double>(fillDuctHeightRatio,0.0,1.0,"fillDuctHeightRatio");
 
-  if ((fillDuctHeightRatio>Geometry::zeroTol) && (ductType != "Cylinder")) {
-    throw ColErr::AbsObjMethod("Not implemented yet");
+  fillOffset=Control.EvalVar<double>(keyName+"FillOffset");
+  fillLength=Control.EvalVar<double>(keyName+"FillLength");
+
+  if (fillDuctHeightRatio>Geometry::zeroTol) {
+    if (ductType != "Cylinder")
+      throw ColErr::AbsObjMethod("Not implemented yet");
+    if (fillLength<Geometry::zeroTol)
+      throw  ColErr::ExitAbort(keyName+": fillLength must be defined if 0 < fillDuctHeightRatio <= 1");
   }
 
   return;
@@ -279,10 +289,15 @@ Duct::createSurfaces()
 
   if (ductType == "Cylinder") {
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
-    if ((fillDuctHeightRatio>Geometry::zeroTol) || (fillDuctHeightRatio<1.0-Geometry::zeroTol)) {
-      const double ductHeight = 2.0*radius;
-      ModelSupport::buildPlane(SMap,buildIndex+605,Origin+Z*(radius-ductHeight*fillDuctHeightRatio),Z);
-    }
+    const double ductHeight = 2.0*radius;
+    ModelSupport::buildPlane(SMap,buildIndex+605,Origin+Z*(radius-ductHeight*fillDuctHeightRatio),Z);
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+601,
+				    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+				    -fillOffset-fillLength);
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+602,
+				    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
+				    -fillOffset);
+
   } else if (ductType == "Rectangle") {
     ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
     ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -356,8 +371,14 @@ Duct::createObjects(Simulation& System)
       if (fillDuctHeightRatio<1.0-Geometry::zeroTol) { // duct/fill
 	Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -605");
 	makeCell("DuctLower",System,cellIndex++,ductMat,0.0,Out*frontStr*backStr);
-	Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7 605");
-	makeCell("DuctUpper",System,cellIndex++,fillMat,0.0,Out*frontStr*backStr);
+	if (fillOffset>Geometry::zeroTol) {
+	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"602 605 -7");
+	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out*frontStr);
+	}
+	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"601 -602 605 -7");
+	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out);
+	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"-601 605 -7");
+	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out*backStr);
       } else { // fill only
 	Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
 	makeCell("Duct",System,cellIndex++,fillMat,0.0,Out*frontStr*backStr);
