@@ -295,12 +295,12 @@ Duct::createSurfaces()
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
     const double ductHeight = 2.0*radius;
     ModelSupport::buildPlane(SMap,buildIndex+605,Origin+Z*(radius-ductHeight*fillDuctHeightRatio),Z);
-    ModelSupport::buildShiftedPlane(SMap, buildIndex+601,
-				    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				    -fillOffset-fillLength);
     ModelSupport::buildShiftedPlane(SMap, buildIndex+602,
-				    SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				    -fillOffset);
+				    SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				    fillOffset+fillLength);
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+601,
+				    SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				    +fillOffset);
 
   } else if (ductType == "Rectangle") {
     ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -376,13 +376,13 @@ Duct::createObjects(Simulation& System)
 	Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -605");
 	makeCell("DuctLower",System,cellIndex++,ductMat,0.0,Out*frontStr*backStr);
 	if (fillOffset>Geometry::zeroTol) {
-	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"602 605 -7");
-	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out*frontStr);
+	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"-601 605 -7");
+	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out*backStr);
 	}
 	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"601 -602 605 -7");
 	  makeCell("DuctUpper",System,cellIndex++,fillMat,0.0,Out);
-	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"-601 605 -7");
-	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out*backStr);
+	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"602 605 -7");
+	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out*frontStr);
       } else { // fill only
 	Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
 	makeCell("Duct",System,cellIndex++,fillMat,0.0,Out*frontStr*backStr);
