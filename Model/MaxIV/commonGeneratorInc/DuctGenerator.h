@@ -63,6 +63,10 @@ class DuctGenerator
   double shieldHeight;          ///< shielding height
   double shieldWallOffset;      ///< shield offset from the wall (along y)
 
+  std::string ductMat;          ///< material inside duct
+  std::string fillMat;          ///< fill material inside duct
+  double fillDuctHeightRatio;   ///< ratio of fill/duct material heights
+
   int voidMat;                  ///< Void material
   std::string shieldMat;        ///< shielding material
 

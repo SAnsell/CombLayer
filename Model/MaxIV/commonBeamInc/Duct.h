@@ -68,6 +68,10 @@ class Duct :
   double shieldHeight;          ///< shielding height
   double shieldWallOffset;      ///< shield offset from the wall (along y)
 
+  int ductMat;                  ///< material inside duct
+  int fillMat;                  ///< fill material inside duct
+  double fillDuctHeightRatio;   ///< ratio of fill/duct material heights
+
   int voidMat;                  ///< Void material
   int shieldMat;                ///< shielding material
 

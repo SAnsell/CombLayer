@@ -71,7 +71,10 @@ DuctGenerator::DuctGenerator() :
   shieldWidthLeft(18),
   shieldDepth(18),
   shieldHeight(13),
-  shieldWallOffset(0.0)
+  shieldWallOffset(0.0),
+  ductMat("Void"),
+  fillMat("Void"),
+  fillDuctHeightRatio(0.0)
   /*!
     Constructor and defaults
   */
@@ -124,6 +127,9 @@ DuctGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"ShieldDepth",shieldDepth);
   Control.addVariable(keyName+"ShieldHeight",shieldHeight);
   Control.addVariable(keyName+"ShieldWallOffset",shieldWallOffset);
+  Control.addVariable(keyName+"DuctMat",ductMat);
+  Control.addVariable(keyName+"FillMat",fillMat);
+  Control.addVariable(keyName+"FillDuctHeightRatio",fillDuctHeightRatio);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"ShieldMat",shieldMat);
   Control.addVariable(keyName+"ZAngle",zAngle);

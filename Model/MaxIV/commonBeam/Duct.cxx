@@ -115,6 +115,9 @@ Duct::Duct(const Duct& A) :
   shieldDepth(A.shieldDepth),
   shieldHeight(A.shieldHeight),
   shieldWallOffset(A.shieldWallOffset),
+  ductMat(A.ductMat),
+  fillMat(A.fillMat),
+  fillDuctHeightRatio(A.fillDuctHeightRatio),
   voidMat(A.voidMat),
   shieldMat(A.shieldMat)
   /*!
@@ -161,6 +164,9 @@ Duct::operator=(const Duct& A)
       shieldDepth=A.shieldDepth;
       shieldHeight=A.shieldHeight;
       shieldWallOffset=A.shieldWallOffset;
+      ductMat=A.ductMat;
+      fillMat=A.fillMat;
+      fillDuctHeightRatio=A.fillDuctHeightRatio;
       voidMat=A.voidMat;
       shieldMat=A.shieldMat;
     }
@@ -235,6 +241,17 @@ Duct::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
 
+  ductMat=ModelSupport::EvalDefMat(Control,keyName+"DuctMat",voidMat);
+  fillMat=ModelSupport::EvalMat<int>(Control,keyName+"FillMat");
+  fillDuctHeightRatio=Control.EvalDefVar<double>(keyName+"FillDuctHeightRatio", 0.0);
+
+  if ((fillDuctHeightRatio<-Geometry::zeroTol) || (fillDuctHeightRatio>1.0+Geometry::zeroTol))
+    throw ColErr::RangeError<double>(fillDuctHeightRatio,0.0,1.0,"fillDuctHeightRatio");
+
+  if ((fillDuctHeightRatio>Geometry::zeroTol) && (ductType != "Cylinder")) {
+    throw ColErr::AbsObjMethod("Not implemented yet");
+  }
+
   return;
 }
 
@@ -262,6 +279,10 @@ Duct::createSurfaces()
 
   if (ductType == "Cylinder") {
     ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+    if ((fillDuctHeightRatio>Geometry::zeroTol) || (fillDuctHeightRatio<1.0-Geometry::zeroTol)) {
+      const double ductHeight = 2.0*radius;
+      ModelSupport::buildPlane(SMap,buildIndex+605,Origin+Z*(radius-ductHeight*fillDuctHeightRatio),Z);
+    }
   } else if (ductType == "Rectangle") {
     ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
     ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -326,20 +347,37 @@ Duct::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Duct","createObjects");
 
-  HeadRule Out;
+  HeadRule Out, outer;
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  if (ductType == "Cylinder")
-    Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
-  else if (ductType == "Rectangle")
+  if (ductType == "Cylinder") {
+    if (fillDuctHeightRatio>Geometry::zeroTol) { // duct/fill or fill
+      if (fillDuctHeightRatio<1.0-Geometry::zeroTol) { // duct/fill
+	Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -605");
+	makeCell("DuctLower",System,cellIndex++,ductMat,0.0,Out*frontStr*backStr);
+	Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7 605");
+	makeCell("DuctUpper",System,cellIndex++,fillMat,0.0,Out*frontStr*backStr);
+      } else { // fill only
+	Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+	makeCell("Duct",System,cellIndex++,fillMat,0.0,Out*frontStr*backStr);
+      }
+    } else { // duct only
+      Out=ModelSupport::getHeadRule(SMap,buildIndex,"-7 ");
+      makeCell("Duct",System,cellIndex++,ductMat,0.0,Out*frontStr*backStr);
+    }
+
+    outer=ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  } else if (ductType == "Rectangle") {
     Out=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+    makeCell("MainCell",System,cellIndex++,ductMat,0.0,Out*frontStr*backStr);
+    outer=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
+  }
   else
     throw  ColErr::ExitAbort(keyName+": Unknown duct type: " + ductType);
 
-  makeCell("MainCell",System,cellIndex++,voidMat,0.0,Out*frontStr*backStr);
 
-  addOuterSurf("Main", Out);
+  addOuterSurf("Main", outer);
 
   HeadRule penetration=nullptr;
   if (shieldPenetrationType=="None")
