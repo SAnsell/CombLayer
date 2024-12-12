@@ -376,7 +376,7 @@ Duct::createObjects(Simulation& System)
 	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out*frontStr);
 	}
 	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"601 -602 605 -7");
-	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out);
+	  makeCell("DuctUpper",System,cellIndex++,fillMat,0.0,Out);
 	  Out=ModelSupport::getHeadRule(SMap,buildIndex,"-601 605 -7");
 	  makeCell("DuctUpper",System,cellIndex++,voidMat,0.0,Out*backStr);
       } else { // fill only
