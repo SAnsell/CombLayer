@@ -570,20 +570,20 @@ namespace setVariable
       bellowDLength = 164.1; // AR 241212
       break;
     case 'B':
-      bellowBLength = 49.0;
-      bellowDLength = 134.7;
+      bellowBLength = 45.1;
+      bellowDLength = 139.0;
       break;
     case 'C':
-      bellowBLength = 78.0;
-      bellowDLength = 105.7;
+      bellowBLength = 70.2;
+      bellowDLength = 113.9;
       break;
     case 'D':
-      bellowBLength = 107.0;
-      bellowDLength = 76.7;
+      bellowBLength = 95.3;
+      bellowDLength = 88.8;
       break;
     case 'E':
-      bellowBLength = 136.0;
-      bellowDLength = 47.7;
+      bellowBLength = 120.4;
+      bellowDLength = 63.7;
       break;
     }
 
