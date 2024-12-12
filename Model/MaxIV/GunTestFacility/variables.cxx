@@ -116,7 +116,7 @@ namespace setVariable
     if (val>1.0)
       throw ColErr::RangeError<double>(val,0.0,1,"Bellow "+name+" density fraction is above 1.");
 
-    ELog::EM << "Density fraction: " << name << " " << val << ELog::endDiag;
+    ELog::EM << "Density fraction: " << name << " " << val*100.0 << ELog::endDiag;
 
     return val;
   }
