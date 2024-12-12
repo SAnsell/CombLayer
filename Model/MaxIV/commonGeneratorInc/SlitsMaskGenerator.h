@@ -62,6 +62,7 @@ class SlitsMaskGenerator
   double outerFlangeRadius;     ///< outer flange radius
   double outerFlangeThick;      ///< outer flange thickness
   double outerFlangeCapThick;   ///< outer flange cap thickness
+  double leftFlangeCapWindowThick; ///< left flange cap window thickness
   std::string leftFlangeCapWindowMat;  ///< left flange cap window material
 
   std::string slitsMat;         ///< Main material

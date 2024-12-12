@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "Exception.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -103,6 +104,7 @@ SlitsMask::SlitsMask(const SlitsMask& A) :
   outerFlangeRadius(A.outerFlangeRadius),
   outerFlangeThick(A.outerFlangeThick),
   outerFlangeCapThick(A.outerFlangeCapThick),
+  leftFlangeCapWindowThick(A.leftFlangeCapWindowThick),
   leftFlangeCapWindowMat(A.leftFlangeCapWindowMat),
   slitsMat(A.slitsMat),
   slitSupportMat(A.slitSupportMat),
@@ -150,6 +152,7 @@ SlitsMask::operator=(const SlitsMask& A)
       outerFlangeRadius=A.outerFlangeRadius;
       outerFlangeThick=A.outerFlangeThick;
       outerFlangeCapThick=A.outerFlangeCapThick;
+      leftFlangeCapWindowThick=A.leftFlangeCapWindowThick;
       leftFlangeCapWindowMat=A.leftFlangeCapWindowMat;
       slitsMat=A.slitsMat;
       slitSupportMat=A.slitSupportMat;
@@ -208,6 +211,13 @@ SlitsMask::populate(const FuncDataBase& Control)
   outerFlangeRadius=Control.EvalVar<double>(keyName+"OuterFlangeRadius");
   outerFlangeThick=Control.EvalVar<double>(keyName+"OuterFlangeThickness");
   outerFlangeCapThick=Control.EvalVar<double>(keyName+"OuterFlangeCapThickness");
+  leftFlangeCapWindowThick=Control.EvalVar<double>(keyName+"LeftFlangeCapWindowThick");
+
+  if (leftFlangeCapWindowThick+Geometry::zeroTol>outerFlangeCapThick)
+    throw ColErr::RangeError<double>(leftFlangeCapWindowThick,
+				     0.0,outerFlangeCapThick,
+				     keyName+": LeftFlangeCapWindowThick cant'be longer OuterFlangeCapThickness");
+
   leftFlangeCapWindowMat=ModelSupport::EvalMat<int>(Control,keyName+"LeftFlangeCapWindowMat");
 
   slitsMat=ModelSupport::EvalMat<int>(Control,keyName+"SlitsMat");
@@ -314,6 +324,7 @@ SlitsMask::createSurfaces()
   // left and right flanges
   ModelSupport::buildShiftedPlane(SMap, buildIndex+13,buildIndex+3,  X, outerFlangeCapThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+23,buildIndex+13, X, outerFlangeThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+33,buildIndex+3,  X, leftFlangeCapWindowThick);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+14,buildIndex+4,  X, -outerFlangeCapThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+24,buildIndex+14, X, -outerFlangeThick);
@@ -400,8 +411,12 @@ SlitsMask::createObjects(Simulation& System)
     } else {
       HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 307 -327");
       makeCell("LeftFlangeCap",System,cellIndex++,wallMat,0.0,HR);
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -307");
-      makeCell("LeftFlangeCapWindow",System,cellIndex++,leftFlangeCapWindowMat,0.0,HR);
+      if (leftFlangeCapWindowThick>Geometry::zeroTol) {
+	HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -33 -307");
+	makeCell("LeftFlangeCapWindow",System,cellIndex++,leftFlangeCapWindowMat,0.0,HR);
+      }
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 33 -13 -307");
+      makeCell("LeftFlangeCapWindowVoid",System,cellIndex++,voidMat,0.0,HR);
     }
 
     HR=ModelSupport::getHeadRule(SMap,buildIndex," 14 -4 -327");
