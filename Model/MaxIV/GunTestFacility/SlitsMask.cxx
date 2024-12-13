@@ -324,7 +324,8 @@ SlitsMask::createSurfaces()
   // left and right flanges
   ModelSupport::buildShiftedPlane(SMap, buildIndex+13,buildIndex+3,  X, outerFlangeCapThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+23,buildIndex+13, X, outerFlangeThick);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+33,buildIndex+3,  X, leftFlangeCapWindowThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+33,buildIndex+3,  X, outerFlangeCapThick/2.0-leftFlangeCapWindowThick/2);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+34,buildIndex+33,  X, leftFlangeCapWindowThick);
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+14,buildIndex+4,  X, -outerFlangeCapThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+24,buildIndex+14, X, -outerFlangeThick);
@@ -405,17 +406,17 @@ SlitsMask::createObjects(Simulation& System)
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"16 -6 -427");
     makeCell("TopFlangeCap",System,cellIndex++,wallMat,0.0,HR);
 
-    if (leftFlangeCapWindowMat == wallMat) {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -327");
-      makeCell("LeftFlangeCap",System,cellIndex++,wallMat,0.0,HR);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 307 -327");
+    makeCell("LeftFlangeCap",System,cellIndex++,wallMat,0.0,HR);
+    if (leftFlangeCapWindowThick>Geometry::zeroTol) {
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -33 -307");
+      makeCell("LeftFlangeCapPreWindow",System,cellIndex++,voidMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 33 -34 -307");
+      makeCell("LeftFlangeCapWindow",System,cellIndex++,leftFlangeCapWindowMat,0.0,HR);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 34 -13 -307");
+      makeCell("LeftFlangeCapPowtWindow",System,cellIndex++,voidMat,0.0,HR);
     } else {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 307 -327");
-      makeCell("LeftFlangeCap",System,cellIndex++,wallMat,0.0,HR);
-      if (leftFlangeCapWindowThick>Geometry::zeroTol) {
-	HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -33 -307");
-	makeCell("LeftFlangeCapWindow",System,cellIndex++,leftFlangeCapWindowMat,0.0,HR);
-      }
-      HR=ModelSupport::getHeadRule(SMap,buildIndex," 33 -13 -307");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 -307");
       makeCell("LeftFlangeCapWindowVoid",System,cellIndex++,voidMat,0.0,HR);
     }
 
