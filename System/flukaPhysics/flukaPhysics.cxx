@@ -123,7 +123,7 @@ flukaPhysics::flukaPhysics() :
       { "exptrans", unitTYPE(0," 1 %2 R0 R1 1 - ") },
       { "exppart", unitTYPE(0," -1 %2 %2 1 - - ") },
 
-      { "emfcut", unitTYPE(0,"%2 %3 0 R0 R1 1") },
+      { "emfcut", unitTYPE(0,"%2 %3 - R0 R1 1") },
       { "emffluo", unitTYPE(1,"%2 M0 M1 1 - - ") },
       { "evaporation", unitTYPE(-100,"3 - - - - - ") },
       { "evap-noheavy", unitTYPE(-100,"2 - - - - - ") },
