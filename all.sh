@@ -9,27 +9,31 @@ inp="/tmp/AA"
 
 # FLUKA estimators
 # the uq is a perl replacement string to unquote the argument
-$parallel ./maxiv -fluka infn -defaultConfig Linac -T '{=1 uq(); =}' ::: \
- "myname resnuclei InjectionHall:Floor Concrete $inp" \
- "myname resnuclei InjectionHall:Floor $inp" \
- "myname surface electron InjectionHall back $inp" \
- "myname surface 'e+&e-'  InjectionHall back 1e-11 3000 100 0 6.28318 3 $inp" \
- "help $inp" "help resnuclei $inp" "help surface $inp"  || exit
+$parallel ./maxiv -fluka infn -defaultConfig Linac -T '{=1 uq(); =}' $inp ::: \
+ "myname resnuclei InjectionHall:Floor Concrete" \
+ "myname resnuclei InjectionHall:Floor" \
+ "myname surface electron InjectionHall back" \
+ "myname surface 'e+&e-'  InjectionHall back 1e-11 3000 100 0 6.28318 3" \
+ "myname surface electron InjectionHall back  -TMod energy myname 1e-11 3000 100" \
+ "myname mesh dose-eq free 'Vec3D(-15.0,-400.0,-55.0)' 'Vec3D(15.0, 40.0,40.0)' 10 20 30 " \
+ "myname mesh dose-eq free 'Vec3D(-15.0,-400.0,-55.0)' 'Vec3D(15.0, 40.0,40.0)' 10 20 30 -TMod doseType myname  all-part EWT74" \
+ "-TMod help " \
+ "help" "help resnuclei" "help surface"  || exit
 
 # MCNP tallies
-$parallel ./maxiv -defaultConfig Linac -T myname '{=1 uq(); =}' ::: \
-	 " surface e object     InjectionHall back $inp" \
-	 " surface e surfMap    InjectionHall InnerBack  1 $inp" \
-	 " surface e surfMap    InjectionHall InnerBack -1 $inp" \
-	 " surface e viewObject InjectionHall front BackWallFront \#BackWallBack '#SPFMazeIn' $inp" \
-	 " flux e InjectionHall:Floor Concrete $inp" \
-	 " flux e InjectionHall:Floor All $inp" || exit
+$parallel ./maxiv -defaultConfig Linac -T myname '{=1 uq(); =}' $inp ::: \
+	 " surface e object     InjectionHall back" \
+	 " surface e surfMap    InjectionHall InnerBack  1" \
+	 " surface e surfMap    InjectionHall InnerBack -1" \
+	 " surface e viewObject InjectionHall front BackWallFront \#BackWallBack '#SPFMazeIn'" \
+	 " flux e InjectionHall:Floor Concrete" \
+	 " flux e InjectionHall:Floor All" || exit
 
 # GEOMETRY
-$parallel ::: "./maxiv --noLengthCheck --defaultConfig Linac All $opts $inp" \
-	  "./ess --bunkerPillars ABunker $opts $inp" \
-	  "./ess --topModType Butterfly $opts $inp" \
-	  "./ess --topModType Pancake   $opts $inp" || exit
+$parallel {} $inp ::: "./maxiv --noLengthCheck --defaultConfig Linac All $opts" \
+	  "./ess --bunkerPillars ABunker $opts" \
+	  "./ess --topModType Butterfly $opts" \
+	  "./ess --topModType Pancake   $opts" || exit
 
 $parallel "./maxiv --defaultConfig Single {} $opts $inp " ::: \
    SOFTIMAX BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
