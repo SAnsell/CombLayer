@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ T signum(T x)
   \brief Holds support functions for strings
   \author S. Ansell
   \date February 2006
-  \version 1.0
+ s  \version 1.0
 */
 
 namespace StrFunc
@@ -149,6 +149,9 @@ splitPair(const std::string&,const char delim);
 std::vector<std::string>
 splitParts(const std::string&,const char delim);
 
+std::vector<std::string>
+splitNSParts(const std::string&,const char delim);
+  
 std::vector<std::string>
 StrSeparate(const std::string&,const std::string&);
 

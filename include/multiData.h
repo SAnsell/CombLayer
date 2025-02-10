@@ -3,7 +3,7 @@
  
  * File:   include/multiDAta.h
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,11 @@ class multiData
   void resize(const size_t,const size_t,const size_t);
   // special resize for 2D
   void resize(const size_t,const size_t);
+  // special resize for 1D
+  void resize(const size_t);
 
+  multiData<T>& reduce();
+  multiData<T>& cut(const size_t,const size_t);
   
   void combine(const size_t,const size_t);
   
@@ -130,6 +134,7 @@ class multiData
   std::vector<T> getAxisProjection(const size_t) const;
   multiData<T> getRange(std::vector<sRange>) const;
   multiData<T> reduceMap(const size_t) const;
+
   multiData<T> projectMap(const size_t,std::vector<sRange>) const;
   multiData<T> integrateMap(size_t,std::vector<sRange>) const;
   T integrateValue(std::vector<sRange>) const;

@@ -12,6 +12,7 @@
 #include <memory>
 #include <ranges>
 #include <functional>
+#include <algorithm>
 #include <type_traits>
 
 #include "Exception.h"
@@ -157,8 +158,8 @@ multiData<T>::multiData(const size_t A,const size_t B,
   /*!
     Constructor with full size
     \param A :: size of first item
-    \param B :: size of first item
-    \param C :: size of first item
+    \param B :: size of second item
+    \param C :: size of third item
   */
 {
   if (flatData.size()!=strides[0]*index[0])
@@ -949,7 +950,7 @@ multiData<T>::resize(const size_t A,const size_t B)
   /*!
     Resize the data to a 2d array
     \param A :: first index
-    \param A :: second index
+    \param B :: second index
    */
 {
   const size_t NSize(A*B);
@@ -957,6 +958,22 @@ multiData<T>::resize(const size_t A,const size_t B)
     flatData.resize(NSize);
   index={A,B};
   strides={B,1,0};
+  return; 
+}
+
+template<typename T>
+void
+multiData<T>::resize(const size_t A)
+  /*!
+    Resize the data to a 1d array
+    \param A :: first index
+   */
+{
+  const size_t NSize(A);
+  if (index.empty() || (index[0]*strides[0])!=NSize)
+    flatData.resize(NSize);
+  index={A};
+  strides={1,0};
   return; 
 }
 
@@ -1047,15 +1064,82 @@ multiData<T>::reduceAxis(const size_t axisIndex) const
 }
 
 template<typename T>
+multiData<T>&
+multiData<T>::reduce() 
+  /*!
+    Reduce out any size 1 dimentions
+  */
+{
+  std::vector<size_t> newIndex;
+  for(const size_t i : index)
+    if (i!=1)
+      newIndex.push_back(i);
+
+
+  if (newIndex.size()!=index.size())
+    resize(newIndex);
+  return *this;
+}
+
+template<typename T>
 multiData<T>
 multiData<T>::reduceMap(const size_t axisIndex) const
   /*!
+    Integrate across the map :
     Return a shape vector (index) without the axisIndex
     value (effectively move the shape to nDim-1
+
+    \param axisIndex :: axis to remove 
   */
 {
   std::vector<T> intData=getAxisIntegral(axisIndex);
   return multiData<T>(reduceAxis(axisIndex),intData);
+}
+
+template<typename T>
+multiData<T>&
+multiData<T>::cut(const size_t axisIndex,
+		  const size_t itemIndex) 
+/*!
+    Integrate across the map :
+    Return a shape vector (index) without the axisIndex
+    value (effectively move the shape to nDim-1
+
+    \param axisIndex :: axis to remove
+    \param itemIndex :: component of axis to use
+  */
+{
+  if (axisIndex>=index.size())
+    throw ColErr::IndexError<size_t>
+      (axisIndex,index.size(),"axisIndex out of dimenstion");
+  if (itemIndex>=index[axisIndex])
+    throw ColErr::IndexError<size_t>
+      (itemIndex,index[axisIndex],"itemIndex out of shape range");
+
+  // special case for no data
+  if (index.size()==1)
+    {
+      index.clear();
+      strides={0};
+      flatData.clear();
+      return *this;
+    }
+  
+  std::vector<T> intData=getAxisRange(axisIndex,itemIndex);
+
+  index.erase(index.begin()+axisIndex);
+  strides.resize(index.size()+1);
+  strides[index.size()]=0;
+  size_t prod=1;
+  for(size_t i=index.size();i>0;i--)
+    {
+      strides[i-1]=prod;
+      prod*=index[i-1];
+    }
+  
+  flatData=std::move(intData);
+
+  return *this;
 }
 
 template<typename T>
@@ -1288,10 +1372,11 @@ multiData<T>::write(std::ostream& OX) const
       OX<<"\n";
       const size_t nDim=index.size();
       
-      typename std::vector<T>::const_iterator vc(flatData.begin());
+
       
       if (nDim>1)
 	{
+	  typename std::vector<T>::const_iterator vc(flatData.begin());
 	  IndexCounter<size_t> primeIndex(index.begin(),index.end()-2);
 	  do
 	    {
@@ -1309,10 +1394,9 @@ multiData<T>::write(std::ostream& OX) const
       else if (nDim==1)
 	{
 	  OX<<"   ";
-	  for(size_t j=0;j<strides[0];j++)
-	    OX<<" "<<*vc++;
+	  for(const T& v : flatData)
+	    OX<<" "<<v;
 	  OX<<"\n";
-	  
 	}
     }
   return;

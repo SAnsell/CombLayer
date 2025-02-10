@@ -3,7 +3,7 @@
  
  * File:   polyInc/PolyVar.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,7 +165,7 @@ class PolyVar<1> : public PolyFunction
 
  public:
 
-  explicit PolyVar<1>(const size_t =0);
+  explicit PolyVar(const size_t =0);
   PolyVar(const size_t,const double);
   PolyVar(const std::vector<double>&);
   //  PolyVar<1>(const double);

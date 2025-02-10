@@ -3,7 +3,7 @@
  
  * File:   simMC/SimPhoton.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -270,7 +270,7 @@ SimPhoton::writeMaterial(std::ostream& OX) const
   OX<<"c -------------------------------------------------------"<<std::endl;
   OX<<"c --------------- MATERIAL CARDS ------------------------"<<std::endl;
   OX<<"c -------------------------------------------------------"<<std::endl;
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  //  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
 
     // set ordered otherwize output random [which is annoying]
   const std::map<int,const MonteCarlo::Material*> orderedMat=

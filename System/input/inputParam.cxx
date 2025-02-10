@@ -1224,7 +1224,7 @@ inputParam::processMainInput(std::vector<std::string>& Names)
 void
 inputParam::writeDescription(std::ostream& OX) const
   /*!
-    Construct all the keys and items 
+    Write out a description of all the keys
     \param OX :: Output stream
    */
 {

@@ -3,7 +3,7 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,23 +61,26 @@ signSplit(const T& aNumber,T& aSign,U& aValue)
   return;
 }
 
-
-
 double
 mathFunc::logFromLinear(const double A,const double B,const size_t N,
                         const size_t index)
   /*!
     Calculate the log step in a range A-B
-    \param A :: Low range 
-    \param B :: High range 
-    \param N :: Number of steps [not checked]
-    \param index :: value at step size [index between 0 - N] 
-    \return value at log(Index)
+    Note if used in a differentual the step is:
+    log(b/a)/N or log [(b/a)^(1/N)]
+    
+    \param A :: Low range (or high)
+    \param B :: High range (or low)
+    \param N :: Number of steps 
+    \param index :: value at step size [index between 1 - N] 
+    \return value at a+exp((log(b)-log(a))*Index/n)
   */
 {
-  const double step(static_cast<double>(index)*
-		    log(std::abs((B-A)/A))/static_cast<double>(N));
-  return (A>B) ? B*exp(step) : A*exp(step);
+  if (A<1e-20 || B<1e-20 || !N) return 0.0;
+  const double eComp=static_cast<double>(index)*
+    std::log(B/A)/static_cast<double>(N);
+  return (A>B) ? std::exp(std::log(B)-eComp) :
+    std::exp(std::log(A)+eComp);
 }
   
 

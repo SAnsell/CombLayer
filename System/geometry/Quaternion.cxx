@@ -3,7 +3,7 @@
  
  * File:   geometry/Quaternion.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -229,7 +229,6 @@ Quaternion::calcQRotMatrix(const Geometry::M3<double>& M)
 
   const double s= 2.0*std::sqrt(1.0+m22-m00-m11);
   return Quaternion((m01-m10)/s,(m02+m20)/s,(m12+m21)/s,0.25*s);
-
 }
 
 Quaternion::Quaternion() :
