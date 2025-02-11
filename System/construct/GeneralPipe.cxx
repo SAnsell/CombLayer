@@ -396,10 +396,8 @@ GeneralPipe::createFlangeSurfaces()
 
       // FRONT FLANGE SURFACES:
       if (flangeA.type==1) {
-	if (flangeA.radius>flangeA.innerRadius+Geometry::zeroTol)
-	  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeA.innerRadius);
-	ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,
-				    flangeA.radius);
+	ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeA.innerRadius);
+	ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,flangeA.radius);
       } else
 	{
 	  ModelSupport::buildPlane(SMap,buildIndex+103,
@@ -420,10 +418,8 @@ GeneralPipe::createFlangeSurfaces()
       addSurf("BackFlange",buildIndex+201);
 
       if (flangeB.type==1) {
-	if (flangeB.radius>flangeB.innerRadius+Geometry::zeroTol)
-	  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeB.innerRadius);
-	ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,
-				    flangeB.radius);
+	ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeB.innerRadius);
+	ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Y,flangeB.radius);
       } else
 	{
 	  ModelSupport::buildPlane(SMap,buildIndex+203,
