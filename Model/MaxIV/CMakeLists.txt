@@ -16,6 +16,7 @@ add_subdirectory(R3Common)
 add_subdirectory(softimax)
 add_subdirectory(species)
 add_subdirectory(GunTestFacility)
+add_subdirectory(tomowise)
 
 set(SRC_LIST ${SRC_LIST}
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)

@@ -71,6 +71,7 @@
 #include "FORMAX.h"
 #include "MICROMAX.h"
 #include "SPECIES.h"
+#include "TOMOWISE.h"
 
 #include "TDC.h"
 #include "GunTestFacility.h"
@@ -407,6 +408,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","buildR3Ring");
+
+
   ModelSupport::objectRegister& OR=
      ModelSupport::objectRegister::Instance();
 
@@ -419,7 +422,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
        {"SOFTIMAX","OpticCentre1"},
        {"DANMAX","OpticCentre1"},
        {"FORMAX","OpticCentre1"},  // was 8
-       {"MICROMAX","OpticCentre1"}
+       {"MICROMAX","OpticCentre1"},
+       {"TOMOWISE","OpticCentre1"}
     });
 
   // Determine if R1Ring/beamlines need to be built
@@ -446,6 +450,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	  index++;
 	}
     }
+
+
   if (!activeR3) return 0;
 
 
@@ -475,6 +481,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	BLPtr.reset(new FORMAX("Formax"));
       else if (BL=="MICROMAX")
 	BLPtr.reset(new MICROMAX("MicroMax"));
+      else if (BL=="TOMOWISE")
+	BLPtr.reset(new TOMOWISE("TomoWISE"));
 
       if (!activeStop.empty())
 	{
@@ -526,6 +534,7 @@ makeMaxIV::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RegA("makeMaxIV","build");
+
 
   //  const FuncDataBase& Control=System.getDataBase();
 

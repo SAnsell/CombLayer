@@ -112,7 +112,8 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
       {"SOFTIMAX","SoftiMAX"},
       {"DANMAX", "Danmax"},
       {"BALDER", "Balder"},
-      {"MICROMAX","MicroMAX"}
+      {"MICROMAX","MicroMAX"},
+      {"TOMOWISE","TomoWISE"}
     });
 
   typedef void (*VariableFunction)(FuncDataBase&);
@@ -127,7 +128,8 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
      {"MICROMAX",  &MICROMAXvariables},
      {"FORMAX",    &FORMAXvariables},
      {"MAXPEEM",   &MAXPEEMvariables},
-     {"SPECIES",   &SPECIESvariables}
+     {"SPECIES",   &SPECIESvariables},
+     {"TOMOWISE",  &TOMOWISEvariables}
    });
 
   bool r1Flag(0);
@@ -167,7 +169,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
 	  linacFlag=1;
 	}
 
-      if (!gtfFlag)
+      if (!gtfFlag && (Linac.find(beam)!=Linac.end()))
 	{
 	  GunTestFacilityVariables(Control);
 	  gtfFlag=true;

@@ -121,7 +121,8 @@ setMaxIVSingle(defaultConfig& A,
       { "RING3", "World 0"},
       { "R1RING", "World 0"},
       { "R3RING", "World 0"},
-      { "GunTestFacility", "World 0"}
+      { "GunTestFacility", "World 0"},
+      { "TOMOWISE", "World 0"}
     };
 
   size_t beamLineIndex(0);

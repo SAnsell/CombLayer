@@ -54,6 +54,7 @@ namespace setVariable
   void DANMAXvariables(FuncDataBase&);
   void FORMAXvariables(FuncDataBase&);
   void MICROMAXvariables(FuncDataBase&);
+  void TOMOWISEvariables(FuncDataBase&);
 
   void R3FrontEndVariables(FuncDataBase&,const std::string&);
   void R3MagnetVariables(FuncDataBase&,const std::string&);

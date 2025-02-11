@@ -99,6 +99,7 @@ set(MAXIV_INCLUDE
   ${MAXIV_DIR}/formaxInc
   ${MAXIV_DIR}/speciesInc
   ${MAXIV_DIR}/GunTestFacilityInc
+  ${MAXIV_DIR}/tomowiseInc
 )
 
 set(ESS_INCLUDE
@@ -208,7 +209,7 @@ set(ESS_LIB
 set(MAXIV_LIB
   maxivBuild balder commonBeam commonGenerator cosaxs
   danmax flexpes formax Linac maxpeem micromax
-  R1Common R3Common softimax species GunTestFacility
+  R1Common R3Common softimax species GunTestFacility tomowise
 )
 
 target_link_libraries(ess
