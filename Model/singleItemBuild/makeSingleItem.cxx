@@ -183,7 +183,7 @@
 #include "LegoBrick.h"
 #include "HeimdalCave.h"
 #include "M1Detail.h"
-#include "Torus.h"
+#include "torusUnit.h"
 #include "SlitsMask.h"
 
 #include "makeSingleItem.h"
@@ -1772,7 +1772,7 @@ makeSingleItem::build(Simulation& System,
 
     if (item == "Torus")
     {
-      const auto torus = std::make_shared<constructSystem::Torus>("Torus");
+      const auto torus = std::make_shared<constructSystem::torusUnit>("Torus");
       OR.addObject(torus);
       torus->addInsertCell(voidCell);
       torus->createAll(System,World::masterOrigin(),0);

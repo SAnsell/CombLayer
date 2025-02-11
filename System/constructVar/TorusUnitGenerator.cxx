@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/TorusGenerator.cxx
+ * File:   commonBeam/TorusUnitGenerator.cxx
  *
- * Copyright (c) 2004-2024 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,12 +44,12 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "TorusGenerator.h"
+#include "TorusUnitGenerator.h"
 
 namespace setVariable
 {
 
-TorusGenerator::TorusGenerator() :
+TorusUnitGenerator::TorusUnitGenerator() :
   rMinor(1.0),
   rMajor(5.0),
   nFaces(12),
@@ -59,14 +59,14 @@ TorusGenerator::TorusGenerator() :
   */
 {}
 
-TorusGenerator::~TorusGenerator()
+TorusUnitGenerator::~TorusUnitGenerator()
  /*!
    Destructor
  */
 {}
 
 void
-TorusGenerator::generate(FuncDataBase& Control,
+TorusUnitGenerator::generate(FuncDataBase& Control,
 			       const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
@@ -74,7 +74,7 @@ TorusGenerator::generate(FuncDataBase& Control,
     \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("TorusGenerator","generate");
+  ELog::RegMethod RegA("TorusUnitGenerator","generate");
 
   Control.addVariable(keyName+"MinorRadius",rMinor);
   Control.addVariable(keyName+"MajorRadius",rMajor);
