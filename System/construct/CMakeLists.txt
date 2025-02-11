@@ -15,7 +15,7 @@ set (constructSources
     PipeCollimator.cxx PipeTube.cxx portBuilder.cxx
     portItem.cxx portSet.cxx PortTube.cxx RectanglePipe.cxx
     RingFlange.cxx RingSeal.cxx RotaryCollimator.cxx
-    SupplyPipe.cxx Torus.cxx TriangleShield.cxx
+    SupplyPipe.cxx torusUnit.cxx TriangleShield.cxx
     TubeDetBox.cxx tubeUnit.cxx VacuumBox.cxx
     VacuumPipe.cxx VirtualTube.cxx voidCylVolume.cxx
     VoidUnit.cxx WallCut.cxx Window.cxx
@@ -88,7 +88,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/RingSeal.cxx
   ${tarDIR}/RotaryCollimator.cxx
   ${tarDIR}/SupplyPipe.cxx
-  ${tarDIR}/Torus.cxx
+  ${tarDIR}/torusUnit.cxx
   ${tarDIR}/TriangleShield.cxx
   ${tarDIR}/TubeDetBox.cxx
   ${tarDIR}/tubeUnit.cxx
@@ -149,7 +149,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/RingSeal.h
   ${tarINC}/RotaryCollimator.h
   ${tarINC}/SupplyPipe.h
-  ${tarINC}/Torus.h
+  ${tarINC}/torusUnit.h
   ${tarINC}/TriangleShield.h
   ${tarINC}/TubeDetBox.h
   ${tarINC}/tubeUnit.h

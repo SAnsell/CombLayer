@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   System/construct/Torus.cxx
+ * File:   System/construct/torusUnit.cxx
  *
- * Copyright (c) 2004-2024 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,12 +59,12 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 
-#include "Torus.h"
+#include "torusUnit.h"
 
 namespace constructSystem
 {
 
-Torus::Torus(const std::string& Key)  :
+torusUnit::torusUnit(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
@@ -75,7 +75,7 @@ Torus::Torus(const std::string& Key)  :
   */
 {}
 
-Torus::Torus(const Torus& A) :
+torusUnit::torusUnit(const torusUnit& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
@@ -86,15 +86,15 @@ Torus::Torus(const Torus& A) :
   mat(A.mat)
   /*!
     Copy constructor
-    \param A :: Torus to copy
+    \param A :: torusUnit to copy
   */
 {}
 
-Torus&
-Torus::operator=(const Torus& A)
+torusUnit&
+torusUnit::operator=(const torusUnit& A)
   /*!
     Assignment operator
-    \param A :: Torus to copy
+    \param A :: torusUnit to copy
     \return *this
   */
 {
@@ -111,30 +111,30 @@ Torus::operator=(const Torus& A)
   return *this;
 }
 
-Torus*
-Torus::clone() const
+torusUnit*
+torusUnit::clone() const
 /*!
   Clone self
   \return new (this)
  */
 {
-    return new Torus(*this);
+    return new torusUnit(*this);
 }
 
-Torus::~Torus()
+torusUnit::~torusUnit()
   /*!
     Destructor
   */
 {}
 
 void
-Torus::populate(const FuncDataBase& Control)
+torusUnit::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("Torus","populate");
+  ELog::RegMethod RegA("torusUnit","populate");
 
   FixedRotate::populate(Control);
 
@@ -152,7 +152,7 @@ Torus::populate(const FuncDataBase& Control)
   return;
 }
 
-std::vector<std::pair<double, double>> Torus::getVertices() const
+std::vector<std::pair<double, double>> torusUnit::getVertices() const
 /*!
     Calculate the coordinates of the vertices of a regular polygon with n sides
     inscribed in a circle of radius r.
@@ -175,7 +175,7 @@ std::vector<std::pair<double, double>> Torus::getVertices() const
   return vertices;
 }
 
-double Torus::getApex(const std::pair<double, double>& a, const std::pair<double, double>& b) const
+double torusUnit::getApex(const std::pair<double, double>& a, const std::pair<double, double>& b) const
 /*!
   Return the y-coordinate of the cone apex
  */
@@ -200,12 +200,12 @@ double Torus::getApex(const std::pair<double, double>& a, const std::pair<double
 
 
 void
-Torus::createSurfaces()
+torusUnit::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("Torus","createSurfaces");
+  ELog::RegMethod RegA("torusUnit","createSurfaces");
 
   // dividing surfaces
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
@@ -249,13 +249,13 @@ Torus::createSurfaces()
 }
 
 void
-Torus::createObjects(Simulation& System)
+torusUnit::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("Torus","createObjects");
+  ELog::RegMethod RegA("torusUnit","createObjects");
 
   HeadRule HR,HR1;
   const int n = (nFaces-4)/4;
@@ -314,17 +314,17 @@ Torus::createObjects(Simulation& System)
 
 
 void
-Torus::createLinks()
+torusUnit::createLinks()
   /*!
     Create all the links
   */
 {
-  ELog::RegMethod RegA("Torus","createLinks");
+  ELog::RegMethod RegA("torusUnit","createLinks");
 
   // FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
   // FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
 
-  ELog::EM << "TODO: Check and use names for the links below:" << ELog::endDiag;
+  //  ELog::EM << "TODO: Check and use names for the links below:" << ELog::endDiag;
 
   // FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
   // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
@@ -345,7 +345,7 @@ Torus::createLinks()
 }
 
 void
-Torus::createAll(Simulation& System,
+torusUnit::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -355,7 +355,7 @@ Torus::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("Torus","createAll");
+  ELog::RegMethod RegA("torusUnit","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

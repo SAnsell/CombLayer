@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   System/constructInc/Torus.h
+ * File:   System/constructInc/torusUnit.h
  *
  * Copyright (c) 2004-2024 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef constructSystem_Torus_h
-#define constructSystem_Torus_h
+#ifndef constructSystem_torusUnit_h
+#define constructSystem_torusUnit_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace constructSystem
 {
 
 /*!
-  \class Torus
+  \class torusUnit
   \version 1.0
   \author Konstantin Batkov
-  \date November 2024
+  \date November 2025
   \brief Torus approximated with concentric cones and cylinders
 */
 
-class Torus : public attachSystem::ContainedComp,
+class torusUnit : public attachSystem::ContainedComp,
                     public attachSystem::FixedRotate,
                     public attachSystem::CellMap,
                     public attachSystem::SurfMap
@@ -58,11 +58,11 @@ class Torus : public attachSystem::ContainedComp,
 
  public:
 
-  Torus(const std::string&);
-  Torus(const Torus&);
-  Torus& operator=(const Torus&);
-  virtual Torus* clone() const;
-  virtual ~Torus();
+  torusUnit(const std::string&);
+  torusUnit(const torusUnit&);
+  torusUnit& operator=(const torusUnit&);
+  virtual torusUnit* clone() const;
+  virtual ~torusUnit();
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);

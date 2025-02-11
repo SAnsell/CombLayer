@@ -5,7 +5,7 @@ set (constructVarSources
     FlangePlateGenerator.cxx GateValveGenerator.cxx JawFlangeGenerator.cxx
     JawValveGenerator.cxx LeadPipeGenerator.cxx PipeGenerator.cxx
     PipeTubeGenerator.cxx PortItemGenerator.cxx PortTubeGenerator.cxx
-    TorusGenerator.cxx
+    TorusUnitGenerator.cxx
     TubeDetBoxGenerator.cxx VacBoxGenerator.cxx
 )
 
@@ -41,7 +41,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/PipeTubeGenerator.cxx
   ${tarDIR}/PortItemGenerator.cxx
   ${tarDIR}/PortTubeGenerator.cxx
-  ${tarDIR}/TorusGenerator.cxx
+  ${tarDIR}/TorusUnitGenerator.cxx
   ${tarDIR}/TubeDetBoxGenerator.cxx
   ${tarDIR}/VacBoxGenerator.cxx
   ${tarINC}/BellowGenerator.h
@@ -60,7 +60,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/PipeTubeGenerator.h
   ${tarINC}/PortItemGenerator.h
   ${tarINC}/PortTubeGenerator.h
-  ${tarINC}/TorusGenerator.h
+  ${tarINC}/TorusUnitGenerator.h
   ${tarINC}/TubeDetBoxGenerator.h
   ${tarINC}/VacBoxGenerator.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
