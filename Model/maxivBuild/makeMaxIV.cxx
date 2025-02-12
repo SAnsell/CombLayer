@@ -417,13 +417,14 @@ makeMaxIV::buildR3Ring(Simulation& System,
   OR.addObject(r3Ring);
 
   static const std::map<std::string,std::string> beamNAMES
-    ({ {"BALDER","OpticCentre1"},
-       {"COSAXS","OpticCentre1"},
-       {"SOFTIMAX","OpticCentre1"},
-       {"DANMAX","OpticCentre1"},
-       {"FORMAX","OpticCentre1"},  // was 8
-       {"MICROMAX","OpticCentre1"},
-       {"TOMOWISE","OpticCentre1"}
+    ({
+      {"DANMAX","OpticCentre4"},
+      {"TOMOWISE","OpticCentre7"},
+      {"BALDER","OpticCentre8"},
+      {"FORMAX","OpticCentre9"},
+      {"COSAXS","OpticCentre10"},
+      {"MICROMAX","OpticCentre12"},
+      {"SOFTIMAX","OpticCentre18"}
     });
 
   // Determine if R1Ring/beamlines need to be built
