@@ -1187,25 +1187,25 @@ TOMOWISEvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"TomowiseJoinPipe",130.0);
-  Control.addVariable("TomowiseJoinPipeFlipX",1);
+  PipeGen.generatePipe(Control,"TomoWISEJoinPipe",130.0);
+  Control.addVariable("TomoWISEJoinPipeFlipX",1);
 
-  tomowiseVar::opticsHutVariables(Control,"TomowiseOpticsHut");
-  tomowiseVar::opticsVariables(Control,"Tomowise");
-
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"TomowiseJoinPipeB",70.0);
-
-  tomowiseVar::shieldVariables(Control,"Tomowise");
-
-  tomowiseVar::exptHutVariables(Control,"Tomowise",0.0);
-  tomowiseVar::exptHutBVariables(Control,"Tomowise",0.0);
-  tomowiseVar::exptLineVariables(Control,"Tomowise");
-  tomowiseVar::exptLineBVariables(Control,"Tomowise");
-  //  tomowiseVar::detectorTubePackage(Control,"Tomowise");
+  tomowiseVar::opticsHutVariables(Control,"TomoWISEOpticsHut");
+  tomowiseVar::opticsVariables(Control,"TomoWISE");
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"TomowiseJoinPipeC",20.0);
+  PipeGen.generatePipe(Control,"TomoWISEJoinPipeB",70.0);
+
+  tomowiseVar::shieldVariables(Control,"TomoWISE");
+
+  tomowiseVar::exptHutVariables(Control,"TomoWISE",0.0);
+  tomowiseVar::exptHutBVariables(Control,"TomoWISE",0.0);
+  tomowiseVar::exptLineVariables(Control,"TomoWISE");
+  tomowiseVar::exptLineBVariables(Control,"TomoWISE");
+  //  tomowiseVar::detectorTubePackage(Control,"TomoWISE");
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,"TomoWISEJoinPipeC",20.0);
 
 
   return;
