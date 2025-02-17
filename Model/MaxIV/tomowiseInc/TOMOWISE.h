@@ -40,7 +40,6 @@ namespace xraySystem
 {
   class BeamMount;
   class OpticsHutch;
-  class OpticsStepHutch;
   class ExperimentalHutch;
   class ExptBeamline;
   class tomowiseDetectorTube;
@@ -74,7 +73,7 @@ class TOMOWISE : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
-  std::shared_ptr<OpticsStepHutch> opticsHut;
+  std::shared_ptr<OpticsHutch> opticsHut;
 
   /// Beamline
   std::shared_ptr<tomowiseOpticsLine> opticsBeam;

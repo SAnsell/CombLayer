@@ -62,7 +62,6 @@
 #include "PipeShield.h"
 #include "forkHoles.h"
 #include "OpticsHutch.h"
-#include "OpticsStepHutch.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 #include "R3Ring.h"
@@ -83,7 +82,7 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   frontBeam(new tomowiseFrontEnd(newName+"FrontBeam")),
   wallLead(new WallLead(newName+"WallLead")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
-  opticsHut(new OpticsStepHutch(newName+"OpticsHut")),
+  opticsHut(new OpticsHutch(newName+"OpticsHut")),
   opticsBeam(new tomowiseOpticsLine(newName+"OpticsLine")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
@@ -147,7 +146,7 @@ TOMOWISE::build(Simulation& System,
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-  return;
+  //  return;
 
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
