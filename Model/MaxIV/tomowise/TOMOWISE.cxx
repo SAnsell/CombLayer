@@ -159,20 +159,19 @@ TOMOWISE::build(Simulation& System,
 
   if (stopPoint=="opticsHut") return;
 
-  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
-  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
-  joinPipe->createAll(System,*frontBeam,2);
-  // new
+  // joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  // joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  // joinPipe->createAll(System,*frontBeam,2);
 
-  opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
-  opticsBeam->addInsertCell(opticsHut->getCell("Void"));
-  opticsBeam->setCutSurf("front",*opticsHut,
-			 opticsHut->getSideIndex("innerFront"));
-  opticsBeam->setCutSurf("back",*opticsHut,
-			 opticsHut->getSideIndex("innerBack"));
-  opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
-  opticsBeam->setPreInsert(joinPipe);
-  opticsBeam->createAll(System,*joinPipe,2);
+  // opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
+  // opticsBeam->addInsertCell(opticsHut->getCell("Void"));
+  // opticsBeam->setCutSurf("front",*opticsHut,
+  // 			 opticsHut->getSideIndex("innerFront"));
+  // opticsBeam->setCutSurf("back",*opticsHut,
+  // 			 opticsHut->getSideIndex("innerBack"));
+  // opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  // opticsBeam->setPreInsert(joinPipe);
+  // opticsBeam->createAll(System,*joinPipe,2);
 
   exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
@@ -181,28 +180,30 @@ TOMOWISE::build(Simulation& System,
   exptHut->createAll(System,*opticsHut,"back");
   exptHut->splitChicane(System,1,2);
 
-  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
-  joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
-  joinPipeB->setFront(*opticsBeam,2);
-  joinPipeB->createAll(System,*opticsBeam,2);
+  // joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  // joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
+  // joinPipeB->setFront(*opticsBeam,2);
+  // joinPipeB->createAll(System,*opticsBeam,2);
 
   // pipe shield goes around joinPipeB:
 
-  pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
-  pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
-  pShield->createAll(System,*opticsHut,"innerBack");
+  // pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  // pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
+  // pShield->createAll(System,*opticsHut,"innerBack");
 
   if (stopPoint=="exptHut") return;
 
-  exptBeam->setInsertCell(exptHut->getCells("Void"));
-  exptBeam->setOuterMat(exptHut->getInnerMat());
-  exptBeam->setCutSurf("front",*exptHut,
-			 exptHut->getSideIndex("innerFront"));
-  exptBeam->setCutSurf("back",*exptHut,
-			 exptHut->getSideIndex("innerBack"));
-  exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
-  exptBeam->setPreInsert(joinPipeB);
-  exptBeam->createAll(System,*joinPipeB,2);
+  // exptBeam->setInsertCell(exptHut->getCells("Void"));
+  // exptBeam->setOuterMat(exptHut->getInnerMat());
+  // exptBeam->setCutSurf("front",*exptHut,
+  // 			 exptHut->getSideIndex("innerFront"));
+  // exptBeam->setCutSurf("back",*exptHut,
+  // 			 exptHut->getSideIndex("innerBack"));
+  // exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  // exptBeam->setPreInsert(joinPipeB);
+  // exptBeam->createAll(System,*joinPipeB,2);
+
+
 
   // exptHutB->setCutSurf("floor",r3Ring->getSurf("Floor"));
   // exptHutB->setCutSurf("frontWall",*exptHut,"back");
