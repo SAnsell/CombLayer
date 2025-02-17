@@ -541,6 +541,7 @@ exptHutVariables(FuncDataBase& Control,
   EGen.addHole(Geometry::Vec3D(beamOffset,0,0),3.5);
   EGen.setBackExt(10.0);
   EGen.setFrontExt(10.0);
+  EGen.setCorner(45.0,120.0);   // step-y back
   EGen.generateHut(Control,hutName,0.0,901.0);
 
   // lead shield on pipe
@@ -554,19 +555,19 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"PShieldWallMat","Stainless304");
   Control.addVariable(hutName+"PShieldMat","Lead");
 
-  Control.addVariable(hutName+"NChicane",7);
+  Control.addVariable(hutName+"NChicane",5);
   PortChicaneGenerator PGen;
   PGen.setSize(4.0,60.0,40.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",-350,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-250.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3","Left",-50.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",0.0,-5.0);
 
-  PGen.generatePortChicane(Control,hutName+"Chicane5","Right",-70.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane6","Right",70.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",50.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane2","Right",-50.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane3","Right",-150.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane4","Right",-250.0,-5.0);
 
   PGen.setSize(4.0,40.0,40.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2","Left",-150.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane4","Back",-180,-5.0);
+  //  PGen.generatePortChicane(Control,hutName+"Chicane5","Right",-150.0,-5.0);
+  //  PGen.generatePortChicane(Control,hutName+"Chicane4","Back",-180,-5.0);
 
   // Forklift truck holes
   Control.addVariable(hutName+"ForkNHoles",0);

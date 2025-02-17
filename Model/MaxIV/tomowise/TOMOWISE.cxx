@@ -210,10 +210,10 @@ TOMOWISE::build(Simulation& System,
   // exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   // exptHutB->createAll(System,*exptHut,"back");
   // special for portItem transfer
-  const PortChicane* PCPtr=exptHut->getPortItem(4);
-  if (PCPtr)
-    PCPtr->insertInCell
-      ("Main",System,r3Ring->getCell("OuterSegment",PIndex));
+  // const PortChicane* PCPtr=exptHut->getPortItem(4);
+  // if (PCPtr)
+  //   PCPtr->insertInCell
+  //     ("Main",System,r3Ring->getCell("OuterSegment",PIndex));
 
   // joinPipeC->addAllInsertCell(exptBeam->getCell("LastVoid"));
   // joinPipeC->addInsertCell("Main",exptHut->getCell("ExitHole"));
