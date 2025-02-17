@@ -90,9 +90,6 @@ class TOMOWISE : public R3Beamline
   /// Beamline expt
   std::shared_ptr<tomowiseExptLine> exptBeam;
 
-  /// Expt hutch B
-  std::shared_ptr<ExperimentalHutch> exptHutB;
-
   /// Pipe joining Expt Hutch to Expt Hutch B
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeC;
 

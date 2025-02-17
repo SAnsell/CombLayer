@@ -116,7 +116,6 @@ void detectorTubePackage(FuncDataBase&,const std::string&);
 
 void opticsHutVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
-void exptHutBVariables(FuncDataBase&,const std::string&,const double);
 void opticsVariables(FuncDataBase&,const std::string&);
 void exptLineVariables(FuncDataBase&,const std::string&);
 void exptLineBVariables(FuncDataBase&,const std::string&);
@@ -578,65 +577,6 @@ exptHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"ForkZStep0",-115.0);
   Control.addVariable(hutName+"ForkZStep1",0.0);
   Control.addVariable(hutName+"ForkZStep2",80.0);
-  return;
-}
-
-void
-exptHutBVariables(FuncDataBase& Control,
-		  const std::string& beamName,
-		  const double beamXStep)
-  /*!
-    Optics hut variables
-    \param Control :: DataBase to add
-    \param beamName :: Beamline name
-    \param bremXStep :: Offset of beam from main centre line
-  */
-{
-  ELog::RegMethod RegA("tomowiseVariables[F]","exptHutBVariables");
-
-  setVariable::ExptHutGenerator EGen;
-
-  const double beamOffset(-1.0);
-  const std::string hutName(beamName+"ExptHutB");
-
-  EGen.setFrontHole(beamXStep-beamOffset,0.0,3.0);
-  EGen.setFrontExt(10.0);
-  EGen.setOuterBackExt(10.0);
-  EGen.setBackExt(10.0);
-  EGen.generateHut(Control,hutName,0.0,478.0);
-
-
-  // lead shield on pipe
-  Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
-  Control.addVariable(hutName+"PShieldYStep",0.3);
-  Control.addVariable(hutName+"PShieldLength",1.0);
-  Control.addVariable(hutName+"PShieldWidth",10.0);
-  Control.addVariable(hutName+"PShieldHeight",10.0);
-  Control.addVariable(hutName+"PShieldWallThick",0.2);
-  Control.addVariable(hutName+"PShieldClearGap",0.3);
-  Control.addVariable(hutName+"PShieldWallMat","Stainless304");
-  Control.addVariable(hutName+"PShieldMat","Lead");
-
-  Control.addVariable(hutName+"NChicane",4);
-  PortChicaneGenerator PGen;
-  PGen.setSize(4.0,60.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Right",-40.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2","Right",80.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3","Back",-120.0,-5.0);
-
-  PGen.setSize(4.0,30.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",20.0,-5.0);
-
-  // Forklift truck holesa
-  Control.addVariable(hutName+"ForkNHoles",0);
-  Control.addVariable(hutName+"ForkWall","Back");
-  Control.addVariable(hutName+"ForkXStep",-223.0);
-  Control.addVariable(hutName+"ForkLength",60.0);
-  Control.addVariable(hutName+"ForkHeight",10.0);
-  Control.addVariable(hutName+"ForkZStep0",-115.0);
-  Control.addVariable(hutName+"ForkZStep1",0.0);
-  Control.addVariable(hutName+"ForkZStep2",80.0);
-
   return;
 }
 
@@ -1199,14 +1139,9 @@ TOMOWISEvariables(FuncDataBase& Control)
   tomowiseVar::shieldVariables(Control,"TomoWISE");
 
   tomowiseVar::exptHutVariables(Control,"TomoWISE",0.0);
-  tomowiseVar::exptHutBVariables(Control,"TomoWISE",0.0);
   tomowiseVar::exptLineVariables(Control,"TomoWISE");
   tomowiseVar::exptLineBVariables(Control,"TomoWISE");
   //  tomowiseVar::detectorTubePackage(Control,"TomoWISE");
-
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"TomoWISEJoinPipeC",20.0);
-
 
   return;
 }

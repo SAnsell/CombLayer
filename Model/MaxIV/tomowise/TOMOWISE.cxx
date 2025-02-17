@@ -88,7 +88,6 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
   pShield(new xraySystem::PipeShield(newName+"PShield")),
   exptBeam(new tomowiseExptLine(newName+"ExptLine")),
-  exptHutB(new ExperimentalHutch(newName+"ExptHutB")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC"))
   /*!
     Constructor
@@ -107,7 +106,6 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   OR.addObject(joinPipeB);
   OR.addObject(exptHut);
   OR.addObject(exptBeam);
-  OR.addObject(exptHutB);
   OR.addObject(joinPipeC);
 }
 
@@ -206,21 +204,21 @@ TOMOWISE::build(Simulation& System,
   exptBeam->setPreInsert(joinPipeB);
   exptBeam->createAll(System,*joinPipeB,2);
 
-  exptHutB->setCutSurf("floor",r3Ring->getSurf("Floor"));
-  exptHutB->setCutSurf("frontWall",*exptHut,"back");
-  exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-  exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  exptHutB->createAll(System,*exptHut,"back");
+  // exptHutB->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  // exptHutB->setCutSurf("frontWall",*exptHut,"back");
+  // exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  // exptHutB->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  // exptHutB->createAll(System,*exptHut,"back");
   // special for portItem transfer
   const PortChicane* PCPtr=exptHut->getPortItem(4);
   if (PCPtr)
     PCPtr->insertInCell
-      ("Main",System,exptHutB->getCell("FrontVoid"));
+      ("Main",System,r3Ring->getCell("OuterSegment",PIndex));
 
-  joinPipeC->addAllInsertCell(exptBeam->getCell("LastVoid"));
-  joinPipeC->addInsertCell("Main",exptHut->getCell("ExitHole"));
-  joinPipeC->setFront(*exptBeam,2);
-  joinPipeC->createAll(System,*exptBeam,2);
+  // joinPipeC->addAllInsertCell(exptBeam->getCell("LastVoid"));
+  // joinPipeC->addInsertCell("Main",exptHut->getCell("ExitHole"));
+  // joinPipeC->setFront(*exptBeam,2);
+  // joinPipeC->createAll(System,*exptBeam,2);
 
   return;
 }
