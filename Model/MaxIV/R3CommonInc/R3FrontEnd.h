@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3CommonInc/R3FrontEnd.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_R3FrontEnd_h
@@ -40,7 +40,7 @@ namespace constructSystem
   class PortTube;
   class SupplyPipe;
   class VacuumBox;
-  class VacuumPipe; 
+  class VacuumPipe;
 }
 
 /*!
@@ -69,7 +69,7 @@ namespace xraySystem
   class EPCombine;
   class R3ChokeChamber;
   class R3ChokeInsert;
-    
+
   /*!
     \class balderFrontEnd
     \version 1.0
@@ -89,26 +89,26 @@ class R3FrontEnd :
  protected:
 
   /// point to stop [normal none]
-  std::string stopPoint;          
+  std::string stopPoint;
 
   /// Inner buildzone
   attachSystem::BlockZone buildZone;
-  
+
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// transfer pipe from undulator/wiggler
   std::shared_ptr<constructSystem::VacuumPipe> transPipe;
-  
+
   /// First magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetM1> magBlockM1;
 
   /// Second magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetU1> magBlockU1;
 
-  
+
   std::shared_ptr<xraySystem::EPSeparator> epSeparator;
-  
+
   /// Electron/photon separator to choke 1
   std::shared_ptr<xraySystem::R3ChokeChamber> chokeChamber;
 
@@ -175,7 +175,7 @@ class R3FrontEnd :
   /// Exit of movables
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
-   
+
   /// Exit of movables [?]
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// bellows for florescence system
@@ -196,7 +196,7 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
   /// Front port connection for shutterbox exit
   std::shared_ptr<constructSystem::Bellows> bellowK;
-  
+
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   bool collFM3Active;   ///< Coll C active
@@ -208,7 +208,7 @@ class R3FrontEnd :
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
-		   const long int) =0;
+		   const long int) = 0;
 
   /// Null op for extra components after build
   virtual void buildExtras(Simulation&) {}
@@ -218,17 +218,17 @@ class R3FrontEnd :
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const std::string&);  
+			 const std::string&);
 
-  
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   virtual void createLinks()=0;
 
   void buildObjects(Simulation&);
-  
+
  public:
-  
+
   R3FrontEnd(const std::string&);
   R3FrontEnd(const R3FrontEnd&);
   R3FrontEnd& operator=(const R3FrontEnd&);
