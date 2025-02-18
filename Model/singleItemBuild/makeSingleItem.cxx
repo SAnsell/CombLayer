@@ -185,6 +185,7 @@
 #include "M1Detail.h"
 #include "torusUnit.h"
 #include "SlitsMask.h"
+#include "MovableSafetyMask.h"
 
 #include "makeSingleItem.h"
 
@@ -244,7 +245,7 @@ makeSingleItem::build(Simulation& System,
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
-	"M1detail","M1Full",
+	"M1detail","M1Full", "MovableSafetyMask",
 	"Help","help"
     });
 
@@ -675,6 +676,26 @@ makeSingleItem::build(Simulation& System,
       // with pipes:
       std::shared_ptr<xraySystem::SquareFMask>
 	fmb(new xraySystem::SquareFMask("FMaskB"));
+      OR.addObject(fmb);
+
+      fmb->addInsertCell(voidCell);
+      fmb->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "MovableSafetyMask")
+    {
+      std::shared_ptr<xraySystem::MovableSafetyMask>
+	fm(new xraySystem::MovableSafetyMask("FMask"));
+      OR.addObject(fm);
+
+      fm->addInsertCell(voidCell);
+      fm->createAll(System,World::masterOrigin(),0);
+
+      // with pipes:
+      std::shared_ptr<xraySystem::MovableSafetyMask>
+	fmb(new xraySystem::MovableSafetyMask("FMaskB"));
       OR.addObject(fmb);
 
       fmb->addInsertCell(voidCell);

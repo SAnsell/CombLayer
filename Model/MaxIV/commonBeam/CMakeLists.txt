@@ -1,27 +1,27 @@
 set (commonBeamSources
-    AreaDetector.cxx BeamMount.cxx BeamPair.cxx 
-    BeamScrapper.cxx BlockStand.cxx BoxJaws.cxx 
-    BremBlock.cxx BremColl.cxx BremMonoColl.cxx 
-    BremTube.cxx CollTube.cxx CollUnit.cxx 
-    ConnectorTube.cxx CooledScreen2.cxx CooledScreen.cxx 
-    CorrectorMag.cxx CRLTube.cxx CrossWayTube.cxx 
-    CylGateValve.cxx DCMTank.cxx DiffPumpXIADP03.cxx 
-    Dipole.cxx Duct.cxx FilterHolder.cxx 
-    FlangeMount.cxx forkHoles.cxx FourPortTube.cxx 
-    GaugeTube.cxx GrateHolder.cxx GrateMonoBox.cxx 
-    GratingMono.cxx GratingUnit.cxx HeatDump.cxx 
-    HPJaws.cxx IonGauge.cxx IonPumpTube.cxx 
-    LCollimator.cxx Maze.cxx Mirror.cxx 
-    MLMono.cxx MonoBeamStop.cxx MonoBlockXstals.cxx 
-    MonoBox.cxx MonoCrystals.cxx MonoShutter.cxx 
-    Octupole.cxx OpticsHutch.cxx PipeShield.cxx 
-    PortChicane.cxx Quadrupole.cxx RingDoor.cxx 
-    RoundMonoShutter.cxx Sexupole.cxx ShutterUnit.cxx 
-    SideShield.cxx SimpleChicane.cxx SixPortTube.cxx 
-    SqrCollimator.cxx SquareFMask.cxx Table.cxx 
-    TankMonoVessel.cxx TriggerTube.cxx TwinPipe.cxx 
-    Undulator.cxx UTubePipe.cxx ViewScreenTube.cxx 
-    WallLead.cxx XrayInputs.cxx 
+    AreaDetector.cxx BeamMount.cxx BeamPair.cxx
+    BeamScrapper.cxx BlockStand.cxx BoxJaws.cxx
+    BremBlock.cxx BremColl.cxx BremMonoColl.cxx
+    BremTube.cxx CollTube.cxx CollUnit.cxx
+    ConnectorTube.cxx CooledScreen2.cxx CooledScreen.cxx
+    CorrectorMag.cxx CRLTube.cxx CrossWayTube.cxx
+    CylGateValve.cxx DCMTank.cxx DiffPumpXIADP03.cxx
+    Dipole.cxx Duct.cxx FilterHolder.cxx
+    FlangeMount.cxx forkHoles.cxx FourPortTube.cxx
+    GaugeTube.cxx GrateHolder.cxx GrateMonoBox.cxx
+    GratingMono.cxx GratingUnit.cxx HeatDump.cxx
+    HPJaws.cxx IonGauge.cxx IonPumpTube.cxx
+    LCollimator.cxx Maze.cxx Mirror.cxx
+    MLMono.cxx MonoBeamStop.cxx MonoBlockXstals.cxx
+    MonoBox.cxx MonoCrystals.cxx MonoShutter.cxx MovableSafetyMask.cxx
+    Octupole.cxx OpticsHutch.cxx PipeShield.cxx
+    PortChicane.cxx Quadrupole.cxx RingDoor.cxx
+    RoundMonoShutter.cxx Sexupole.cxx ShutterUnit.cxx
+    SideShield.cxx SimpleChicane.cxx SixPortTube.cxx
+    SqrCollimator.cxx SquareFMask.cxx Table.cxx
+    TankMonoVessel.cxx TriggerTube.cxx TwinPipe.cxx
+    Undulator.cxx UTubePipe.cxx ViewScreenTube.cxx
+    WallLead.cxx XrayInputs.cxx
 )
 
 add_library (commonBeam SHARED
@@ -33,11 +33,11 @@ target_include_directories (commonBeam PUBLIC
    ${MAXIV_INCLUDE}
 )
 
-file(RELATIVE_PATH tarDIR 
+file(RELATIVE_PATH tarDIR
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-file(RELATIVE_PATH tarINC 
+file(RELATIVE_PATH tarINC
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/../commonBeamInc")
 
@@ -87,6 +87,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MonoBox.cxx
   ${tarDIR}/MonoCrystals.cxx
   ${tarDIR}/MonoShutter.cxx
+  ${tarDir}/MovableSafetyMask.cxx
   ${tarDIR}/Octupole.cxx
   ${tarDIR}/OpticsHutch.cxx
   ${tarDIR}/PipeShield.cxx
@@ -155,6 +156,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/MonoBox.h
   ${tarINC}/MonoCrystals.h
   ${tarINC}/MonoShutter.h
+  ${tarINC}/MovableSafetyMask.h
   ${tarINC}/Octupole.h
   ${tarINC}/OpticsHutch.h
   ${tarINC}/PipeShield.h
@@ -178,4 +180,3 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/ViewScreenTube.h
   ${tarINC}/WallLead.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
-
