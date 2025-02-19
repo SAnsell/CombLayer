@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeamInc/MovableSafetyMaskGenerator.h
+ * File:   Model/MaxIV/commonBeamInc/MovableSafetyMaskGenerator.h
  *
- * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,51 +30,29 @@ namespace setVariable
 /*!
   \class MovableSafetyMaskGenerator
   \version 1.0
-  \author S. Ansell
-  \date May 2018
+  \author Konstantin Batkov
+  \date February 2025
   \brief MovableSafetyMaskGenerator for variables
 */
 
-class MovableSafetyMaskGenerator :
-  public CollGenerator
+class MovableSafetyMaskGenerator
 {
  private:
+  double width;                 ///< Width
+  double height;                ///< Height
+  double wallThick;             ///< Wall thickness
 
-  double width;           ///< Outer width
-  double height;          ///< Outer height
-
-  double aFInRadius;      ///< A flange Inner radius
-  double aFOutRadius;     ///< A flange Outer radius
-  double aFLength;        ///< A flange length
-  double bFInRadius;      ///< B flange Inner radius
-  double bFOutRadius;     ///< B flange Outer radius
-  double bFLength;        ///< B flange length
-
-  double pipeRadius;      ///< Pipe radius [water]
-  double pipeXWidth;      ///< Pipe x-width
-  double pipeZDepth;      ///< Pipe distance below beam
-  double pipeYStart;      ///< Pipe yStart point [from front]
-  double pipeYStep;       ///< Pipe yStep
-
-  std::string flangeMat;         ///< main material
-  std::string waterMat;          ///< coolant material
+  std::string mainMat;          ///< Main material
+  std::string wallMat;          ///< Wall material
 
  public:
 
   MovableSafetyMaskGenerator();
   MovableSafetyMaskGenerator(const MovableSafetyMaskGenerator&);
   MovableSafetyMaskGenerator& operator=(const MovableSafetyMaskGenerator&);
-  ~MovableSafetyMaskGenerator() override;
+  virtual ~MovableSafetyMaskGenerator();
 
-  template<typename CF> void setCF();
-  template<typename CF> void setAFlangeCF();
-  template<typename CF> void setBFlangeCF();
-
-  void setPipeRadius(const double R) { pipeRadius=R; }
-  void setFlangeMat(const std::string&);
-
-  virtual void generate(FuncDataBase&,const std::string&,
-			const double,const double) const;
+  virtual void generate(FuncDataBase&,const std::string&,const double) const;
 
 };
 

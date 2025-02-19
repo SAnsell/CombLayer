@@ -3,7 +3,7 @@
 
  * File:   commonBeam/MovableSafetyMaskGenerator.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,23 +44,14 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "CFFlanges.h"
-#include "CollGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 
 namespace setVariable
 {
 
 MovableSafetyMaskGenerator::MovableSafetyMaskGenerator() :
-  width(7.0),height(7.0),
-  aFInRadius(4.0),aFOutRadius(6.0),
-  aFLength(1.0),bFInRadius(4.0),
-  bFOutRadius(6.0),bFLength(1.0),
-  pipeRadius(0.3),pipeXWidth(4.0),
-  pipeZDepth(1.8),
-  pipeYStart(2.5/15.0),pipeYStep(3.0/15.0),
-  flangeMat("Stainless304"),
-  waterMat("H2O")
+  width(5.0),height(15.0),wallThick(1.0),
+  mainMat("Void"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
   */
@@ -72,109 +63,27 @@ MovableSafetyMaskGenerator::~MovableSafetyMaskGenerator()
  */
 {}
 
-
-template<typename CF>
-void
-MovableSafetyMaskGenerator::setCF()
-  /*!
-    Set pipe/flange to CF-X format
-  */
-{
-  setAFlangeCF<CF>();
-  setBFlangeCF<CF>();
-
-  return;
-}
-
-template<typename CF>
-void
-MovableSafetyMaskGenerator::setAFlangeCF()
-  /*!
-    Setter for flange A
-  */
-{
-  aFInRadius=CF::innerRadius;
-  aFOutRadius=CF::flangeRadius;
-  aFLength=CF::flangeLength;
-  return;
-}
-
-template<typename CF>
-void
-MovableSafetyMaskGenerator::setBFlangeCF()
-  /*!
-    Setter for flange B
-  */
-{
-  bFInRadius=CF::innerRadius;
-  bFOutRadius=CF::flangeRadius;
-  bFLength=CF::flangeLength;
-  return;
-}
-
 void
 MovableSafetyMaskGenerator::generate(FuncDataBase& Control,
-				const std::string& keyName,
-				const double yStep,
-				const double length) const
+				     const std::string& keyName, const double length) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
-    \param keyName :: head name for variable
-    \param yStep :: Step along beam centre
-    \param length :: length of copper
+    \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("MovableSafetyMaskGenerator","generateColl");
+  ELog::RegMethod RegA("MovableSafetyMaskGenerator","generate");
 
-  CollGenerator::generateColl(Control,keyName,yStep,length);
-
+  Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"FlangeFrontInRadius",aFInRadius);
-  Control.addVariable(keyName+"FlangeFrontOutRadius",aFOutRadius);
-  Control.addVariable(keyName+"FlangeFrontLength",aFLength);
-
-  Control.addVariable(keyName+"FlangeBackInRadius",bFInRadius);
-  Control.addVariable(keyName+"FlangeBackOutRadius",bFOutRadius);
-  Control.addVariable(keyName+"FlangeBackLength",bFLength);
-  Control.addVariable(keyName+"FlangeMat",flangeMat);
-
-
-  Control.addVariable(keyName+"PipeRadius",pipeRadius);
-  Control.addVariable(keyName+"PipeXWidth",pipeXWidth);
-  Control.addVariable(keyName+"PipeZDepth",pipeZDepth);
-
-  const double L=pipeYStart*length;
-  if (L>pipeRadius+aFLength)
-    Control.addVariable(keyName+"PipeYStep0",pipeYStart*length);
-  else
-    Control.addVariable(keyName+"PipeYStep0",aFLength+pipeRadius*1.01);
-
-  Control.addVariable(keyName+"PipeYStep1",(pipeYStart+pipeYStep)*length);
-  Control.addVariable(keyName+"PipeYStep2",(pipeYStart+2*pipeYStep)*length);
-  Control.addVariable(keyName+"PipeYStep3",(pipeYStart+3*pipeYStep)*length);
-  Control.addVariable(keyName+"WaterMat",waterMat);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
 
   return;
 
 }
 
 
-///\cond TEMPLATE
-  template void MovableSafetyMaskGenerator::setCF<CF40>();
-  template void MovableSafetyMaskGenerator::setCF<CF63>();
-  template void MovableSafetyMaskGenerator::setCF<CF100>();
-  template void MovableSafetyMaskGenerator::setCF<CF120>();
-  template void MovableSafetyMaskGenerator::setAFlangeCF<CF40>();
-  template void MovableSafetyMaskGenerator::setAFlangeCF<CF63>();
-  template void MovableSafetyMaskGenerator::setAFlangeCF<CF100>();
-  template void MovableSafetyMaskGenerator::setAFlangeCF<CF120>();
-  template void MovableSafetyMaskGenerator::setBFlangeCF<CF40>();
-  template void MovableSafetyMaskGenerator::setBFlangeCF<CF63>();
-  template void MovableSafetyMaskGenerator::setBFlangeCF<CF100>();
-  template void MovableSafetyMaskGenerator::setBFlangeCF<CF120>();
-
-///\endcond TEMPLATE
-
-}  // NAMESPACE setVariable
+}  // namespace setVariable

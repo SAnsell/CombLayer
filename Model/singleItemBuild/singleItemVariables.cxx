@@ -297,8 +297,7 @@ SingleItemVariables(FuncDataBase& Control)
   FMaskGen.generateColl(Control,"FMaskB",40.0,15.0);
 
   MovableSafetyMaskGenerator MSMGen;
-  //MSMGen.setPipeRadius(-10.0); // negative - no water pipes
-  MSMGen.generate(Control,"MSM",0.0,40.0);
+  MSMGen.generate(Control,"MSM",40.0);
 
 
   setVariable::EPSeparatorGenerator EPSGen;
