@@ -84,8 +84,11 @@ MovableSafetyMask::MovableSafetyMask(const MovableSafetyMask& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  uMaskWidth(A.uMaskWidth),
+  uMaskHeight(A.uMaskHeight),
+  wMaskWidth(A.wMaskWidth),
+  wMaskHeight(A.wMaskHeight),
+  mainMat(A.mainMat),voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: MovableSafetyMask to copy
@@ -110,9 +113,12 @@ MovableSafetyMask::operator=(const MovableSafetyMask& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      wallThick=A.wallThick;
+      uMaskWidth=A.uMaskWidth;
+      uMaskHeight=A.uMaskHeight;
+      wMaskWidth=A.wMaskWidth;
+      wMaskHeight=A.wMaskHeight;
       mainMat=A.mainMat;
-      wallMat=A.wallMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -147,10 +153,13 @@ MovableSafetyMask::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  uMaskWidth=Control.EvalVar<double>(keyName+"UMaskWidth");
+  uMaskHeight=Control.EvalVar<double>(keyName+"UMaskHeight");
+  wMaskWidth=Control.EvalVar<double>(keyName+"WMaskWidth");
+  wMaskHeight=Control.EvalVar<double>(keyName+"WMaskHeight");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   return;
 }
@@ -163,31 +172,15 @@ MovableSafetyMask::createSurfaces()
 {
   ELog::RegMethod RegA("MovableSafetyMask","createSurfaces");
 
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
+  if (!frontActive()) {
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+    FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+  }
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
-    }
-
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
-    }
+  if (!backActive()) {
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+uMaskWidth),Y);
+    FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+  }
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -195,11 +188,11 @@ MovableSafetyMask::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  // wiggler mask
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wMaskWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wMaskWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wMaskHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wMaskHeight/2.0),Z);
 
   return;
 }
@@ -217,14 +210,22 @@ MovableSafetyMask::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -15 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 16 -6 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 15 -16 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 14 -4 15 -16 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16 ");
+  makeCell("WigglerMask",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(HR*frontStr*backStr);
 
   return;

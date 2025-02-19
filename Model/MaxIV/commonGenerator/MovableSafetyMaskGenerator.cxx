@@ -50,8 +50,10 @@ namespace setVariable
 {
 
 MovableSafetyMaskGenerator::MovableSafetyMaskGenerator() :
-  width(5.0),height(15.0),wallThick(1.0),
-  mainMat("Void"),wallMat("Stainless316L")
+  width(7.0),height(7.0),
+  uMaskWidth(1.0),uMaskHeight(1.0),
+  wMaskWidth(1.8),wMaskHeight(0.4),
+  mainMat("Stainless304"),voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -77,9 +79,12 @@ MovableSafetyMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"UMaskWidth",uMaskWidth);
+  Control.addVariable(keyName+"UMaskHeight",uMaskHeight);
+  Control.addVariable(keyName+"WMaskWidth",wMaskWidth);
+  Control.addVariable(keyName+"WMaskHeight",wMaskHeight);
   Control.addVariable(keyName+"MainMat",mainMat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
 

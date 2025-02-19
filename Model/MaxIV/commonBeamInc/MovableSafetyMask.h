@@ -32,7 +32,7 @@ namespace xraySystem
   \version 1.0
   \author Konstantin Batkov
   \date February 2025
-  \brief Movable Safety Mask
+  \brief Movable Safety Mask (for a double insertion device front-end, like e.g. TomoWISE)
 */
 
 class MovableSafetyMask :
@@ -47,10 +47,13 @@ class MovableSafetyMask :
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double uMaskWidth;            ///< Undulator mask width (back side)
+  double uMaskHeight;           ///< Undulator mask height
+  double wMaskWidth;            ///< Wiggler mask width
+  double wMaskHeight;           ///< Wiggler mask height
 
   int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
+  int voidMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
 
