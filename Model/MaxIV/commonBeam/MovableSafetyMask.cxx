@@ -188,11 +188,16 @@ MovableSafetyMask::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  // wiggler mask
+  // wiggler mask (lower mask, wide)
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wMaskWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wMaskWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wMaskHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wMaskHeight/2.0),Z);
+
+  // undulator mask (upper mask, tall)
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(uMaskWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(uMaskWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(wMaskHeight/2.0+uMaskHeight),Z);
 
   return;
 }
@@ -210,20 +215,29 @@ MovableSafetyMask::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -15 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 5 -16 ");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 16 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 5 -15 ");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -13 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 14 -4 5 -16 ");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 14 -4 15 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -23 16 -26 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 24 -4 16 -26 ");
+  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 26 -6 ");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16 ");
   makeCell("WigglerMask",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 23 -24 16 -26 ");
+  makeCell("UndulatorMask",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(HR*frontStr*backStr);

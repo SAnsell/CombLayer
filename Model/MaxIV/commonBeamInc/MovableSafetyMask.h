@@ -47,8 +47,10 @@ class MovableSafetyMask :
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
+  // upper mask (tall)
   double uMaskWidth;            ///< Undulator mask width (back side)
   double uMaskHeight;           ///< Undulator mask height
+  // lower mask (wide)
   double wMaskWidth;            ///< Wiggler mask width
   double wMaskHeight;           ///< Wiggler mask height
 
