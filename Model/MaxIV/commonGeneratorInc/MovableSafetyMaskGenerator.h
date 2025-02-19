@@ -50,7 +50,7 @@ class MovableSafetyMaskGenerator :
   double bFOutRadius;     ///< B flange Outer radius
   double bFLength;        ///< B flange length
 
-  double pipeRadius;      ///< Pipe radius
+  double pipeRadius;      ///< Pipe radius [water]
   double pipeXWidth;      ///< Pipe x-width
   double pipeZDepth;      ///< Pipe distance below beam
   double pipeYStart;      ///< Pipe yStart point [from front]
@@ -73,8 +73,8 @@ class MovableSafetyMaskGenerator :
   void setPipeRadius(const double R) { pipeRadius=R; }
   void setFlangeMat(const std::string&);
 
-  virtual void generateColl(FuncDataBase&,const std::string&,
-		    const double,const double) const;
+  virtual void generate(FuncDataBase&,const std::string&,
+			const double,const double) const;
 
 };
 

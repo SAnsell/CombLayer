@@ -145,6 +145,7 @@
 #include "SolenoidGenerator.h"
 #include "TorusUnitGenerator.h"
 #include "SlitsMaskGenerator.h"
+#include "MovableSafetyMaskGenerator.h"
 
 namespace setVariable
 {
@@ -284,17 +285,20 @@ SingleItemVariables(FuncDataBase& Control)
 
   // collimator block
   setVariable::SqrFMaskGenerator FMaskGen;
-
   // B is standard
-  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
+  //  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
 
-  FMaskGen.setPipeRadius(-10.0);
+  FMaskGen.setPipeRadius(-10.0);// negative - no water pipes
   // FMaskGen.setCF<CF63>();
   // FMaskGen.setBFlangeCF<CF40>();
   // FMaskGen.setFrontGap(3.99,1.97);  //1033.8
   // FMaskGen.setBackGap(0.71,0.71);
   // FMaskGen.setMinSize(10.2,0.71,0.71);
   FMaskGen.generateColl(Control,"FMaskB",40.0,15.0);
+
+  MovableSafetyMaskGenerator MSMGen;
+  //MSMGen.setPipeRadius(-10.0); // negative - no water pipes
+  MSMGen.generate(Control,"MSM",0.0,40.0);
 
 
   setVariable::EPSeparatorGenerator EPSGen;

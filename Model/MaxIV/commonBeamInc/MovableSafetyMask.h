@@ -29,9 +29,9 @@ namespace xraySystem
   /*!
     \class MovableSafetyMask
     \version 1.0
-    \author S. Ansell
-    \date June 2015
-    \brief Build a square FM mask
+    \author K. Batkov
+    \date February 2025
+    \brief Movable safety mask for use with two insertion devices (e.g. in the MAX IV TomoWISE beamline)
 
     Note that this object is CENTRE orientated.
     It is designed to exact placment.

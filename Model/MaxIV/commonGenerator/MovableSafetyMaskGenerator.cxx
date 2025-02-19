@@ -52,7 +52,7 @@ namespace setVariable
 {
 
 MovableSafetyMaskGenerator::MovableSafetyMaskGenerator() :
-  width(7.1),height(7.1),
+  width(7.0),height(7.0),
   aFInRadius(4.0),aFOutRadius(6.0),
   aFLength(1.0),bFInRadius(4.0),
   bFOutRadius(6.0),bFLength(1.0),
@@ -113,7 +113,7 @@ MovableSafetyMaskGenerator::setBFlangeCF()
 }
 
 void
-MovableSafetyMaskGenerator::generateColl(FuncDataBase& Control,
+MovableSafetyMaskGenerator::generate(FuncDataBase& Control,
 				const std::string& keyName,
 				const double yStep,
 				const double length) const

@@ -687,19 +687,11 @@ makeSingleItem::build(Simulation& System,
   if (item == "MovableSafetyMask")
     {
       std::shared_ptr<xraySystem::MovableSafetyMask>
-	fm(new xraySystem::MovableSafetyMask("FMask"));
+	fm(new xraySystem::MovableSafetyMask("MSM"));
       OR.addObject(fm);
 
       fm->addInsertCell(voidCell);
       fm->createAll(System,World::masterOrigin(),0);
-
-      // with pipes:
-      std::shared_ptr<xraySystem::MovableSafetyMask>
-	fmb(new xraySystem::MovableSafetyMask("FMaskB"));
-      OR.addObject(fmb);
-
-      fmb->addInsertCell(voidCell);
-      fmb->createAll(System,World::masterOrigin(),0);
 
       return;
     }
