@@ -69,7 +69,6 @@
 #include "tomowiseFrontEnd.h"
 #include "tomowiseOpticsLine.h"
 #include "tomowiseExptLine.h"
-#include "PortChicane.h"
 
 #include "R3Beamline.h"
 #include "TOMOWISE.h"
