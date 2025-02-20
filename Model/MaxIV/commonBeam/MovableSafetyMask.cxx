@@ -172,15 +172,22 @@ MovableSafetyMask::createSurfaces()
 {
   ELog::RegMethod RegA("MovableSafetyMask","createSurfaces");
 
+  Geometry::Vec3D APt;  // front
+  Geometry::Vec3D BPt;  // back
+
   if (!frontActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
-  }
+    APt = Origin;
+  } else
+    APt=ExternalCut::interPoint("front",Origin,Y);
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+uMaskWidth),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
-  }
+    BPt = Origin+Y*(length);
+  } else
+    BPt=ExternalCut::interPoint("back",Origin,Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -195,8 +202,16 @@ MovableSafetyMask::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wMaskHeight/2.0),Z);
 
   // undulator mask (upper mask, tall)
-  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(uMaskWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(uMaskWidth/2.0),X);
+  const double AW2 = wMaskWidth/2.0;
+  const double BW2 = uMaskWidth/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+23,
+			   APt-X*AW2+Z*wMaskHeight/2.0,
+			   APt-X*AW2+Z*(wMaskHeight/2.0+uMaskHeight),
+			   BPt-X*BW2+Z*wMaskHeight/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,
+			   APt+X*AW2+Z*wMaskHeight/2.0,
+			   APt+X*AW2+Z*(wMaskHeight/2.0+uMaskHeight),
+			   BPt+X*BW2+Z*wMaskHeight/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(wMaskHeight/2.0+uMaskHeight),Z);
 
   return;
