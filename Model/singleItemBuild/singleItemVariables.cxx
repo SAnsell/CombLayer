@@ -146,6 +146,7 @@
 #include "TorusUnitGenerator.h"
 #include "SlitsMaskGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
+#include "HeatAbsorberToyamaGenerator.h"
 
 namespace setVariable
 {
@@ -298,6 +299,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   MovableSafetyMaskGenerator MSMGen;
   MSMGen.generate(Control,"MSM",40.0);
+
+  HeatAbsorberToyamaGenerator HAGen;
+  HAGen.generate(Control,"HA",30.0);
 
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator");

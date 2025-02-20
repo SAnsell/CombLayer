@@ -186,6 +186,7 @@
 #include "torusUnit.h"
 #include "SlitsMask.h"
 #include "MovableSafetyMask.h"
+#include "HeatAbsorberToyama.h"
 
 #include "makeSingleItem.h"
 
@@ -245,7 +246,7 @@ makeSingleItem::build(Simulation& System,
 	"MonoShutter","RoundMonoShutter","TubeDetBox",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
-	"M1detail","M1Full", "MovableSafetyMask",
+	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama",
 	"Help","help"
     });
 
@@ -692,6 +693,18 @@ makeSingleItem::build(Simulation& System,
 
       fm->addInsertCell(voidCell);
       fm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "HeatAbsorberToyama")
+    {
+      std::shared_ptr<xraySystem::HeatAbsorberToyama>
+	ha(new xraySystem::HeatAbsorberToyama("HA"));
+      OR.addObject(ha);
+
+      ha->addInsertCell(voidCell);
+      ha->createAll(System,World::masterOrigin(),0);
 
       return;
     }

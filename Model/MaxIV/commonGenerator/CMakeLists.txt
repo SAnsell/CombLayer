@@ -17,6 +17,7 @@ set (commonGeneratorSources
     FlatPipeGenerator.cxx FMUndulatorGenerator.cxx GaugeGenerator.cxx
     GrateMonoBoxGenerator.cxx GratingMonoGenerator.cxx GratingUnitGenerator.cxx
     GTFGateValveGenerator.cxx
+    HeatAbsorberToyamaGenerator.cxx
     HeatDumpGenerator.cxx HPJawsGenerator.cxx IonGaugeGenerator.cxx
     IonPTubeGenerator.cxx LBeamStopGenerator.cxx LinacQuadGenerator.cxx
     LinacSexuGenerator.cxx LocalShieldingGenerator.cxx M1DetailGenerator.cxx
@@ -108,6 +109,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/GratingMonoGenerator.cxx
   ${tarDIR}/GratingUnitGenerator.cxx
   ${tarDIR}/GTFGateValveGenerator.cxx
+  ${tarDIR}/HeatAbsorberToyamaGenerator.cxx
   ${tarDIR}/HeatDumpGenerator.cxx
   ${tarDIR}/HPJawsGenerator.cxx
   ${tarDIR}/IonGaugeGenerator.cxx
@@ -219,6 +221,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/GratingMonoGenerator.h
   ${tarINC}/GratingUnitGenerator.h
   ${tarINC}/GTFGateValveGenerator.h
+  ${tarINC}/HeatAbsorberToyamaGenerator.h
   ${tarINC}/HeatDumpGenerator.h
   ${tarINC}/HPJawsGenerator.h
   ${tarINC}/IonGaugeGenerator.h
