@@ -54,6 +54,8 @@ class MovableSafetyMask :
   double wMaskWidth;            ///< Wiggler mask width
   double wMaskHeight;           ///< Wiggler mask height
 
+  std::string idType;           ///< Insertion device type (wiggler/undulator)
+
   int mainMat;                  ///< Main material
   int voidMat;                  ///< Wall material
 

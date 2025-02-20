@@ -40,10 +40,14 @@ class MovableSafetyMaskGenerator
  private:
   double width;                 ///< Width
   double height;                ///< Height
-  double uMaskWidth;          ///< Undulator mask width
+  // upper mask (tall)
+  double uMaskWidth;            ///< Undulator mask width
   double uMaskHeight;           ///< Undulator mask height
+  // lower mask (wide)
   double wMaskWidth;            ///< Wiggler mask width
   double wMaskHeight;           ///< Wiggler mask height
+
+  std::string idType;           ///< Insertion device type (wiggler/undulator)
 
   std::string mainMat;          ///< Main material
   std::string voidMat;          ///< Wall material

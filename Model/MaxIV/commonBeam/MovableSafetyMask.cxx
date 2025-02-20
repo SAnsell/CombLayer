@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "Exception.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -88,6 +89,7 @@ MovableSafetyMask::MovableSafetyMask(const MovableSafetyMask& A) :
   uMaskHeight(A.uMaskHeight),
   wMaskWidth(A.wMaskWidth),
   wMaskHeight(A.wMaskHeight),
+  idType(A.idType),
   mainMat(A.mainMat),voidMat(A.voidMat)
   /*!
     Copy constructor
@@ -117,6 +119,7 @@ MovableSafetyMask::operator=(const MovableSafetyMask& A)
       uMaskHeight=A.uMaskHeight;
       wMaskWidth=A.wMaskWidth;
       wMaskHeight=A.wMaskHeight;
+      idType=A.idType;
       mainMat=A.mainMat;
       voidMat=A.voidMat;
     }
@@ -157,6 +160,7 @@ MovableSafetyMask::populate(const FuncDataBase& Control)
   uMaskHeight=Control.EvalVar<double>(keyName+"UMaskHeight");
   wMaskWidth=Control.EvalVar<double>(keyName+"WMaskWidth");
   wMaskHeight=Control.EvalVar<double>(keyName+"WMaskHeight");
+  idType=Control.EvalVar<std::string>(keyName+"IDType");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -175,6 +179,13 @@ MovableSafetyMask::createSurfaces()
   Geometry::Vec3D APt;  // front
   Geometry::Vec3D BPt;  // back
 
+  double zoffset;
+  if (idType == "wiggler")
+    zoffset = 0.0;
+  else if (idType == "undulator")
+    zoffset = (wMaskHeight+uMaskHeight)/2.0;
+  else throw ColErr::ExitAbort("Wrong IDType value: " + idType + ". Allowed are either 'wiggler' or 'undulator'.");
+
   if (!frontActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
@@ -192,14 +203,14 @@ MovableSafetyMask::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0+zoffset),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0-zoffset),Z);
 
   // wiggler mask (lower mask, wide)
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wMaskWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wMaskWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wMaskHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wMaskHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(wMaskHeight/2.0+zoffset),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(wMaskHeight/2.0-zoffset),Z);
 
   // undulator mask (upper mask, tall)
   const double AW2 = wMaskWidth/2.0;
@@ -212,7 +223,7 @@ MovableSafetyMask::createSurfaces()
 			   APt+X*AW2+Z*wMaskHeight/2.0,
 			   APt+X*AW2+Z*(wMaskHeight/2.0+uMaskHeight),
 			   BPt+X*BW2+Z*wMaskHeight/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(wMaskHeight/2.0+uMaskHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(wMaskHeight/2.0+uMaskHeight-zoffset),Z);
 
   return;
 }

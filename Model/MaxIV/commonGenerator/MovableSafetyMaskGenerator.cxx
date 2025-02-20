@@ -53,6 +53,7 @@ MovableSafetyMaskGenerator::MovableSafetyMaskGenerator() :
   width(7.0),height(7.0),
   uMaskWidth(0.16),uMaskHeight(0.9),
   wMaskWidth(1.8),wMaskHeight(0.4),
+  idType("wiggler"),
   mainMat("Stainless304"),voidMat("Void")
   /*!
     Constructor and defaults
@@ -83,6 +84,7 @@ MovableSafetyMaskGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"UMaskHeight",uMaskHeight);
   Control.addVariable(keyName+"WMaskWidth",wMaskWidth);
   Control.addVariable(keyName+"WMaskHeight",wMaskHeight);
+  Control.addVariable(keyName+"IDType",idType);
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
 
