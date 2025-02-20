@@ -299,7 +299,6 @@ SingleItemVariables(FuncDataBase& Control)
   MovableSafetyMaskGenerator MSMGen;
   MSMGen.generate(Control,"MSM",40.0);
 
-
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator");
 

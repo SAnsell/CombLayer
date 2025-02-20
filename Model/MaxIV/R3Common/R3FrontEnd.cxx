@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: R3Common/R3FrontEnd.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -91,6 +91,7 @@
 #include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
+#include "MovableSafetyMask.h"
 
 #include "R3FrontEnd.h"
 
@@ -98,7 +99,7 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 R3FrontEnd::R3FrontEnd(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
@@ -127,6 +128,8 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   collB(new xraySystem::SquareFMask(newName+"CollB")),
   collC(new xraySystem::SquareFMask(newName+"CollC")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
+  msm(new xraySystem::MovableSafetyMask(newName+"MSM")),
+  msmEntrancePipe(new constructSystem::VacuumPipe(newName+"MSMEntrancePipe")),
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -136,15 +139,15 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   aperturePipe(new constructSystem::VacuumPipe(newName+"AperturePipe")),
-  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),  
+  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
-  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),  
+  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  
+
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
@@ -158,11 +161,10 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
     }),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")) ,
-
   exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe")),
+  collFM3Active(true),
+  msmActive(false)
 
-  collFM3Active(1)
-   
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -178,21 +180,23 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(epSeparator);
   OR.addObject(chokeChamber);
   OR.addObject(chokeInsert);
-      
+
   OR.addObject(dipolePipe);
   OR.addObject(eTransPipe);
   OR.addObject(bellowA);
   OR.addObject(collA);
   OR.addObject(bellowB);
   OR.addObject(collABPipe);
-  OR.addObject(bellowC);    
+  OR.addObject(bellowC);
   OR.addObject(collB);
   OR.addObject(collC);
+  OR.addObject(msmEntrancePipe);
+  OR.addObject(msm);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
   OR.addObject(collExitPipe);
   OR.addObject(heatBox);
-  OR.addObject(heatDump);    
+  OR.addObject(heatDump);
 
   OR.addObject(pipeB);
   OR.addObject(bellowE);
@@ -220,9 +224,9 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   OR.addObject(exitPipe);
 
- 
+
 }
-  
+
 R3FrontEnd::~R3FrontEnd()
   /*!
     Destructor
@@ -265,7 +269,7 @@ R3FrontEnd::createSurfaces()
     }
   else
     buildZone.setFront(getFrontRule());
-  
+
   return;
 }
 
@@ -281,7 +285,7 @@ R3FrontEnd::insertFlanges(Simulation& System,
    */
 {
   ELog::RegMethod RegA("R3FrontEnd","insertFlanges");
-  
+
   size_t voidN=buildZone.getNItems("Unit");
   if (voidN<offset)
     throw ColErr::InContainerError<size_t>
@@ -315,8 +319,8 @@ R3FrontEnd::buildHeatTable(Simulation& System)
 
   const constructSystem::portItem& PIA=heatBox->getPort(0);
   const constructSystem::portItem& PIB=heatBox->getPort(1);
-  
-  // cant use heatbox here because of port rotation  
+
+  // cant use heatbox here because of port rotation
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
   heatDump->createAll(System,PIB,0,*heatBox,2);
 
@@ -329,7 +333,7 @@ R3FrontEnd::buildHeatTable(Simulation& System)
   outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
   heatBox->insertAllInCell(System,outerCell);
   heatDump->insertInCell("Outer",System,outerCell);
-  
+
   constructSystem::constructUnit
     (System,buildZone,PIB,"OuterPlate",*bellowD);
 
@@ -343,14 +347,14 @@ R3FrontEnd::buildHeatTable(Simulation& System)
     (System,buildZone,*ionPB,"back",*pipeB);
 
   return;
-  
+
 }
 
 void
 R3FrontEnd::buildApertureTable(Simulation& System,
 				   const attachSystem::FixedComp& preFC,
 				   const long int preSideIndex)
-  
+
   /*!
     Build the moveable aperature table
     \param System :: Simulation to use
@@ -365,7 +369,7 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   aperturePipe->createAll(System,preFC,preSideIndex);  // pipeB
   moveCollA->addInsertCell(aperturePipe->getCell("Void"));
   moveCollA->createAll(System,*aperturePipe,"midPoint");
-  
+
   // bellows AFTER movable aperture pipe
   bellowE->setFront(preFC,preSideIndex);
   bellowE->setBack(*aperturePipe,1);
@@ -381,10 +385,10 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   // now do insert:
   outerCell=buildZone.createUnit(System,*bellowE,2);
   bellowE->insertAllInCell(System,outerCell);
-    
+
   outerCell=buildZone.createUnit(System,*aperturePipe,2);
   aperturePipe->insertAllInCell(System,outerCell);
-  
+
   outerCell=buildZone.createUnit(System,*bellowF,2);
   bellowF->insertAllInCell(System,outerCell);
 
@@ -396,7 +400,7 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   aperturePipeB->createAll(System,*ionPC,2);
   moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
   moveCollB->createAll(System,*aperturePipeB,"midPoint");
-  
+
   // bellows AFTER movable aperture pipe
   bellowG->setFront(*ionPC,2);
   bellowG->setBack(*aperturePipeB,1);
@@ -413,17 +417,17 @@ R3FrontEnd::buildApertureTable(Simulation& System,
   // now do insert:
   outerCell=buildZone.createUnit(System,*bellowG,2);
   bellowG->insertAllInCell(System,outerCell);
-    
+
   outerCell=buildZone.createUnit(System,*aperturePipeB,2);
   aperturePipeB->insertAllInCell(System,outerCell);
-  
+
   outerCell=buildZone.createUnit(System,*bellowH,2);
   bellowH->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*pipeC,2);
   pipeC->insertAllInCell(System,outerCell);
 
-  
+
   return;
 }
 
@@ -434,13 +438,13 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   /*!
     Build the shutter block table
     \param System :: Simulation to use
-    \param preFC :: initial Fixedcomp 
+    \param preFC :: initial Fixedcomp
     \param preSide :: link point on initial FC
   */
 {
   ELog::RegMethod RegA("R3FrontEnd","buildShutterTable");
   int outerCell;
-  
+
   constructSystem::constructUnit
     (System,buildZone,preFC,preSide,*gateA);
 
@@ -460,7 +464,7 @@ R3FrontEnd::buildShutterTable(Simulation& System,
 
   florTubeA->insertAllInCell(System,outerCell);
 
-  // bellows 
+  // bellows
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
   outerCell=buildZone.createUnit(System,*bellowJ,2);
   bellowJ->insertAllInCell(System,outerCell);
@@ -496,7 +500,7 @@ R3FrontEnd::buildShutterTable(Simulation& System,
       shutters[i]->addInsertCell("Support",PI.getCell("Void"));
       shutters[i]->addInsertCell("Support",shutterBox->getCell("SplitVoid",i));
       shutters[i]->addInsertCell("Block",shutterBox->getCell("SplitVoid",i));
-      
+
       shutters[i]->createAll(System,*offPipeA,
 			     offPipeA->getSideIndex("FlangeACentre"),
 			     PI,PI.getSideIndex("InnerPlate"));
@@ -504,12 +508,12 @@ R3FrontEnd::buildShutterTable(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*shutterBox,"back",*offPipeB);
-      
+
   // bellows
   constructSystem::constructUnit
     (System,buildZone,*offPipeB,"back",*bellowK);
 
-  
+
   return;
 }
 
@@ -529,12 +533,12 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,*this,0);
-					      
+
   outerCell=buildZone.createUnit(System,undulatorFC,"back");
 
   magBlockM1->createAll(System,*this,0);
-  
-  
+
+
   transPipe->setCutSurf("front",undulatorFC,2);
   transPipe->setCutSurf("back",*magBlockM1,1);
   transPipe->createAll(System,undulatorFC,2);
@@ -544,7 +548,7 @@ R3FrontEnd::buildObjects(Simulation& System)
 
   outerCell=buildZone.createUnit(System,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
-  
+
   epSeparator->setCutSurf("front",*magBlockM1,2);
   epSeparator->setEPOriginPair(*magBlockM1,"Photon","Electron");
   epSeparator->createAll(System,*magBlockM1,2);
@@ -557,7 +561,7 @@ R3FrontEnd::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*chokeChamber,2);
   chokeChamber->insertAllInCell(System,outerCell);
   chokeChamber->setCell("BlockOuter",outerCell);
-  
+
   chokeInsert->setCutSurf("front",*chokeChamber,"innerSide");
   chokeInsert->addInsertCell(chokeChamber->getCell("MainVoid"));
   chokeInsert->addInsertCell(chokeChamber->getCell("SideVoid"));
@@ -567,10 +571,10 @@ R3FrontEnd::buildObjects(Simulation& System)
   eCutDisk->addInsertCell(chokeChamber->getCell("PhotonVoid"));
   eCutDisk->createAll(System,*chokeChamber,
 		      chokeChamber->getSideIndex("-photon"));
-  
+
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
-  bellowA->createAll(System,*collA,1);  
+  bellowA->createAll(System,*collA,1);
 
   dipolePipe->setFront(*chokeChamber,"photon");
   dipolePipe->setBack(*bellowA,"back");
@@ -615,13 +619,13 @@ R3FrontEnd::buildObjects(Simulation& System)
       setCell("MasterVoid",outerCell);
       return;
     }
-      
+
   constructSystem::constructUnit
     (System,buildZone,*collA,"back",*bellowB);
 
   // FM2 Built relateive to MASTER coordinate
 
-  collB->createAll(System,*this,0);    
+  collB->createAll(System,*this,0);
   bellowC->createAll(System,*collB,1);
 
   collABPipe->setFront(*bellowB,2);
@@ -643,10 +647,18 @@ R3FrontEnd::buildObjects(Simulation& System)
 	(System,buildZone,*collB,"back",*collC);
       linkFC=collC;
     }
+  if (msmActive)
+    {
+      constructSystem::constructUnit
+	(System,buildZone,*linkFC,"back",*msmEntrancePipe);
+      constructSystem::constructUnit
+	(System,buildZone,*msmEntrancePipe,"back",*msm);
+      linkFC=msm;
+    }
 
   collExitPipe->setFront(*linkFC,2);
 
-  buildHeatTable(System);  
+  buildHeatTable(System);
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,"back");
 
@@ -662,14 +674,14 @@ R3FrontEnd::buildObjects(Simulation& System)
   buildZone.rebuildInsertCells(System);
 
   buildExtras(System);
-  setCell("MasterVoid",outerCell);  
+  setCell("MasterVoid",outerCell);
   lastComp=exitPipe;
-  
+
   return;
 }
-  
-  
-void 
+
+
+void
 R3FrontEnd::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex)
@@ -694,4 +706,3 @@ R3FrontEnd::createAll(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

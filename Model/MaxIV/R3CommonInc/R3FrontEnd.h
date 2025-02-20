@@ -59,6 +59,7 @@ namespace xraySystem
   class LCollimator;
   class SqrCollimator;
   class SquareFMask;
+  class MovableSafetyMask;
   class BeamMount;
   class PreDipole;
   class MagnetM1;
@@ -137,8 +138,11 @@ class R3FrontEnd :
   std::shared_ptr<xraySystem::SquareFMask> collB;
   /// collimator C
   std::shared_ptr<xraySystem::SquareFMask> collC;
-  /// Pipe from collimator B to heat dump
+  /// Pipe from collimator B to heat dump or MSM
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
+  /// Movable Safety Mask (e.g. for the two insertion device beamlines like TomoWISE)
+  std::shared_ptr<xraySystem::MovableSafetyMask> msm;
+  std::shared_ptr<constructSystem::VacuumPipe> msmEntrancePipe;
 
   /// head dump port
   std::shared_ptr<constructSystem::PipeTube> heatBox;
@@ -200,6 +204,7 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   bool collFM3Active;   ///< Coll C active
+  bool msmActive;       ///< Movable safety mask active
   double outerRadius;   ///< radius of tube for divisions
   double frontOffset;   ///< Distance to move start point from origin
 
@@ -235,7 +240,8 @@ class R3FrontEnd :
   ~R3FrontEnd() override;
 
   /// remove FM3
-  void deactivateFM3() { collFM3Active=0; }
+  void deactivateFM3() { collFM3Active=false; }
+  void activateMSM() { msmActive=true; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,

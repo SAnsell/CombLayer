@@ -85,6 +85,7 @@
 #include "TableGenerator.h"
 #include "OpticsHutGenerator.h"
 #include "ExptHutGenerator.h"
+#include "MovableSafetyMaskGenerator.h"
 
 namespace setVariable
 {
@@ -214,6 +215,15 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setMinAngleSize(12.0,FM2dist, 100.0, 100.0 );
   FMaskGen.setBackAngleSize(FM2dist, 160.0,160.0 );
   FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
+
+  setVariable::PipeGenerator PipeGen;
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF40>(); // dummy
+  PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy
+
+  MovableSafetyMaskGenerator MSMGen;
+  MSMGen.generate(Control,preName+"MSM",40.0);
+  Control.addVariable(preName+"MSMIDType","wiggler");
 
   return;
 }
