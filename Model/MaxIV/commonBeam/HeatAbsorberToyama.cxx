@@ -207,6 +207,17 @@ HeatAbsorberToyama::createSurfaces()
   } else
     BPt=ExternalCut::interPoint("back",Origin,Y);
 
+  //  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+11,Y,dumpEndRadius);
+  const Geometry::Vec3D dumpFrontCentre =
+    APt - X*(dumpWidth/2.0-dumpXOffset) + Y*(dumpFrontRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,dumpFrontCentre,Z,dumpFrontRadius);
+
+  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+11,Y,dumpFrontRadius);
+  ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+12,Y,dumpLength-dumpEndRadius);
+  const Geometry::Vec3D dumpEndCentre =
+    APt + X*(dumpWidth/2.0+dumpXOffset-dumpEndRadius) + Y*(dumpLength-dumpEndRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,dumpEndCentre,Z,dumpEndRadius);
+
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
@@ -220,12 +231,11 @@ HeatAbsorberToyama::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(gapHeight/2.0-zoffset),Z);
 
   // undulator mask (upper mask, tall)
-  const double AW2 = gapWidth/2.0;
-  const double BW2 = dumpWidth/2.0;
   ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*(dumpWidth/2.0-dumpXOffset),X);
-			   // APt-X*AW2+Z*gapHeight/2.0,
-			   // APt-X*AW2+Z*(gapHeight/2.0+dumpHeight),
-			   // BPt-X*BW2+Z*gapHeight/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+33,
+			   dumpFrontCentre+X*dumpFrontRadius,
+			   dumpFrontCentre+X*dumpFrontRadius+Z*1.0,
+			   dumpEndCentre-X*dumpEndRadius, X);
   ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*(dumpWidth/2.0+dumpXOffset),X);
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(gapHeight/2.0+dumpHeight-zoffset),Z);
 
@@ -264,10 +274,25 @@ HeatAbsorberToyama::createObjects(Simulation& System)
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16 ");
-  makeCell("WigglerMask",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr);
+  makeCell("Penetration",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 23 -24 16 -26 ");
-  makeCell("UndulatorMask",System,cellIndex++,voidMat,0.0,HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -33 7 11 -12 16 -26");
+  makeCell("Dump",System,cellIndex++,mainMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -33 7 -11 16 -26");
+  makeCell("DumpVoidFront",System,cellIndex++,voidMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -24 -12 16 -26");
+  makeCell("DumpVoid",System,cellIndex++,voidMat,0.0,HR*frontStr);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"23 -7 16 -26 -33");
+  makeCell("DumpFrontCylinder",System,cellIndex++,mainMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 16 -26 12 -17 ");
+  makeCell("DumpEndCylinder",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 23 -24 16 -26 12 17 ");
+  makeCell("DumpEnd",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(HR*frontStr*backStr);

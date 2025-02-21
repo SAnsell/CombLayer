@@ -55,7 +55,7 @@ HeatAbsorberToyamaGenerator::HeatAbsorberToyamaGenerator() :
   dumpLength(28.0),
   dumpEndRadius(1.0),
   dumpFrontRadius(1.0),
-  dumpXOffset(1.2/2),
+  dumpXOffset(0.6),
   gapWidth(1.9),gapHeight(0.6),
   closed(false),
   mainMat("Stainless304"),voidMat("Void")
