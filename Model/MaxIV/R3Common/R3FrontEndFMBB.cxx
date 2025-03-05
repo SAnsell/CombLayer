@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: R3Common/R3FrontEndToyama.cxx
+ * File: R3Common/R3FrontEndFMBB.cxx
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,89 +93,153 @@
 #include "MagnetU1.h"
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
-#include "R3FrontEnd.h"
-#include "R3FrontEndToyama.h"
+
+#include "R3FrontEndFMBB.h"
 
 namespace xraySystem
 {
 
 // Note currently uncopied:
 
-R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
-  R3FrontEnd(Key),
-  buildZone(Key+"R3FrontEndToyama")
+R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
+  attachSystem::CopiedComp(Key,Key),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedRotate(newName,2),
+  attachSystem::FrontBackCut(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
+
+  buildZone(Key+"R3FrontEndFMBB"),
+
+  transPipe(new constructSystem::VacuumPipe(newName+"TransPipe")),
+  magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
+  magBlockU1(new xraySystem::MagnetU1(newName+"U1Block")),
+  epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
+  chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
+  chokeInsert(new xraySystem::R3ChokeInsert(newName+"ChokeInsert")),
+  dipolePipe(new constructSystem::CornerPipe(newName+"DipolePipe")),
+  eTransPipe(new constructSystem::VacuumPipe(newName+"ETransPipe")),
+  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
+  eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
+  bellowA(new constructSystem::Bellows(newName+"BellowA")),
+  collA(new xraySystem::SquareFMask(newName+"CollA")),
+  bellowB(new constructSystem::Bellows(newName+"BellowB")),
+  collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  collB(new xraySystem::SquareFMask(newName+"CollB")),
+  collC(new xraySystem::SquareFMask(newName+"CollC")),
+  collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
+  msm(new xraySystem::MovableSafetyMask(newName+"MSM")),
+  msmEntrancePipe(new constructSystem::VacuumPipe(newName+"MSMEntrancePipe")),
+  heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
+  heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
+  haToyama(new xraySystem::HeatAbsorberToyama(newName+"HAToyama")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
+  ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
+  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  aperturePipe(new constructSystem::VacuumPipe(newName+"AperturePipe")),
+  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),
+  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
+  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
+  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),
+  bellowH(new constructSystem::Bellows(newName+"BellowH")),
+  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
+  bellowI(new constructSystem::Bellows(newName+"BellowI")),
+  florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
+  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
+  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
+  offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
+  shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
+  shutters({
+      std::make_shared<xraySystem::BeamMount>(newName+"Shutter0"),
+      std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
+    }),
+  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
+  bellowK(new constructSystem::Bellows(newName+"BellowK")) ,
+  exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe")),
+  collFM3Active(true),
+  msmActive(false)
+
   /*!
     Constructor
     \param Key :: Name of construction key
     \param Index :: Index number
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","R3FrontEndToyama");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-  // ModelSupport::objectRegister& OR=
-  //   ModelSupport::objectRegister::Instance();
+  ELog::EM << "***** use the original R3FrontEnd class before my edits - rename it to R3FrontEndFMBB """ << ELog::endDiag;
 
-  // OR.addObject(transPipe);
-  // OR.addObject(magBlockM1);
-  // OR.addObject(magBlockU1);
-  // OR.addObject(epSeparator);
-  // OR.addObject(chokeChamber);
-  // OR.addObject(chokeInsert);
+  OR.addObject(transPipe);
+  OR.addObject(magBlockM1);
+  OR.addObject(magBlockU1);
+  OR.addObject(epSeparator);
+  OR.addObject(chokeChamber);
+  OR.addObject(chokeInsert);
 
-  // OR.addObject(dipolePipe);
-  // OR.addObject(eTransPipe);
-  // OR.addObject(bellowA);
-  // OR.addObject(collA);
-  // OR.addObject(bellowB);
-  // OR.addObject(collABPipe);
-  // OR.addObject(bellowC);
-  // OR.addObject(collB);
-  // OR.addObject(collC);
-  // OR.addObject(msmEntrancePipe);
-  // OR.addObject(msm);
-  // OR.addObject(eCutDisk);
-  // OR.addObject(eCutMagDisk);
-  // OR.addObject(collExitPipe);
-  // OR.addObject(heatBox);
-  // OR.addObject(heatDump);
-  // OR.addObject(haToyama);
+  OR.addObject(dipolePipe);
+  OR.addObject(eTransPipe);
+  OR.addObject(bellowA);
+  OR.addObject(collA);
+  OR.addObject(bellowB);
+  OR.addObject(collABPipe);
+  OR.addObject(bellowC);
+  OR.addObject(collB);
+  OR.addObject(collC);
+  OR.addObject(msmEntrancePipe);
+  OR.addObject(msm);
+  OR.addObject(eCutDisk);
+  OR.addObject(eCutMagDisk);
+  OR.addObject(collExitPipe);
+  OR.addObject(heatBox);
+  OR.addObject(heatDump);
+  OR.addObject(haToyama);
 
-  // OR.addObject(pipeB);
-  // OR.addObject(bellowE);
-  // OR.addObject(aperturePipe);
-  // OR.addObject(moveCollA);
-  // OR.addObject(bellowF);
-  // OR.addObject(ionPC);
-  // OR.addObject(bellowG);
-  // OR.addObject(aperturePipeB);
-  // OR.addObject(moveCollB);
-  // OR.addObject(bellowH);
-  // OR.addObject(pipeC);
+  OR.addObject(pipeB);
+  OR.addObject(bellowE);
+  OR.addObject(aperturePipe);
+  OR.addObject(moveCollA);
+  OR.addObject(bellowF);
+  OR.addObject(ionPC);
+  OR.addObject(bellowG);
+  OR.addObject(aperturePipeB);
+  OR.addObject(moveCollB);
+  OR.addObject(bellowH);
+  OR.addObject(pipeC);
 
-  // OR.addObject(gateA);
-  // OR.addObject(bellowI);
-  // OR.addObject(florTubeA);
-  // OR.addObject(bellowJ);
-  // OR.addObject(gateTubeB);
-  // OR.addObject(offPipeA);
-  // OR.addObject(shutterBox);
-  // OR.addObject(shutters[0]);
-  // OR.addObject(shutters[1]);
-  // OR.addObject(offPipeB);
-  // OR.addObject(bellowK);
+  OR.addObject(gateA);
+  OR.addObject(bellowI);
+  OR.addObject(florTubeA);
+  OR.addObject(bellowJ);
+  OR.addObject(gateTubeB);
+  OR.addObject(offPipeA);
+  OR.addObject(shutterBox);
+  OR.addObject(shutters[0]);
+  OR.addObject(shutters[1]);
+  OR.addObject(offPipeB);
+  OR.addObject(bellowK);
 
-  // OR.addObject(exitPipe);
+  OR.addObject(exitPipe);
+
 
 }
 
-R3FrontEndToyama::~R3FrontEndToyama()
+R3FrontEndFMBB::~R3FrontEndFMBB()
   /*!
     Destructor
    */
 {}
 
 void
-R3FrontEndToyama::populate(const FuncDataBase& Control)
+R3FrontEndFMBB::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
     \param Control :: DataBase
@@ -189,12 +253,12 @@ R3FrontEndToyama::populate(const FuncDataBase& Control)
 
 
 void
-R3FrontEndToyama::createSurfaces()
+R3FrontEndFMBB::createSurfaces()
   /*!
     Create surfaces
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","createSurfaces");
+  ELog::RegMethod RegA("R3FrontEndFMBB","createSurfaces");
 
   if (outerRadius>Geometry::zeroTol)
     {
@@ -215,7 +279,7 @@ R3FrontEndToyama::createSurfaces()
 }
 
 void
-R3FrontEndToyama::insertFlanges(Simulation& System,
+R3FrontEndFMBB::insertFlanges(Simulation& System,
 			  const constructSystem::PipeTube& PT,
 			  const size_t offset)
   /*!
@@ -225,7 +289,7 @@ R3FrontEndToyama::insertFlanges(Simulation& System,
     \param PT :: PipeTube
    */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","insertFlanges");
+  ELog::RegMethod RegA("R3FrontEndFMBB","insertFlanges");
 
   size_t voidN=buildZone.getNItems("Unit");
   if (voidN<offset)
@@ -245,13 +309,13 @@ R3FrontEndToyama::insertFlanges(Simulation& System,
 }
 
 void
-R3FrontEndToyama::buildHeatTable(Simulation& System)
+R3FrontEndFMBB::buildHeatTable(Simulation& System)
   /*!
     Build the heatDump table
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","buildHeatTable");
+  ELog::RegMethod RegA("R3FrontEndFMBB","buildHeatTable");
 
   int outerCell;
 
@@ -304,7 +368,7 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
 }
 
 void
-R3FrontEndToyama::buildApertureTable(Simulation& System,
+R3FrontEndFMBB::buildApertureTable(Simulation& System,
 				   const attachSystem::FixedComp& preFC,
 				   const long int preSideIndex)
 
@@ -315,7 +379,7 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
     \param preSideIndex :: Initial side index
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","buildApertureTable");
+  ELog::RegMethod RegA("R3FrontEndFMBB","buildApertureTable");
 
   int outerCell;
   // NOTE order for master cell [Next 4 objects]
@@ -385,7 +449,7 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
 }
 
 void
-R3FrontEndToyama::buildShutterTable(Simulation& System,
+R3FrontEndFMBB::buildShutterTable(Simulation& System,
 			      const attachSystem::FixedComp& preFC,
 			      const std::string& preSide)
   /*!
@@ -395,7 +459,7 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
     \param preSide :: link point on initial FC
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","buildShutterTable");
+  ELog::RegMethod RegA("R3FrontEndFMBB","buildShutterTable");
   int outerCell;
 
   constructSystem::constructUnit
@@ -471,16 +535,14 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
 }
 
 void
-R3FrontEndToyama::buildObjects(Simulation& System)
+R3FrontEndFMBB::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","buildObjects");
-
-  //  ELog::EM << "here2" << ELog::endDiag;
+  ELog::RegMethod RegA("R3FrontEndFMBB","buildObjects");
 
   int outerCell;
 
@@ -489,12 +551,9 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   const attachSystem::FixedComp& undulatorFC=
     buildUndulator(System,*this,0);
 
-
   outerCell=buildZone.createUnit(System,undulatorFC,"back");
 
-  ELog::EM << "here2" << ELog::endDiag;
   magBlockM1->createAll(System,*this,0);
-  ELog::EM << "there2" << ELog::endDiag;
 
 
   transPipe->setCutSurf("front",undulatorFC,2);
@@ -529,7 +588,6 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   eCutDisk->addInsertCell(chokeChamber->getCell("PhotonVoid"));
   eCutDisk->createAll(System,*chokeChamber,
 		      chokeChamber->getSideIndex("-photon"));
-  //  ELog::EM << "there2" << ELog::endDiag;
 
   // FM1 Built relateive to MASTER coordinate
   collA->createAll(System,*this,0);
@@ -641,7 +699,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
 
 void
-R3FrontEndToyama::createAll(Simulation& System,
+R3FrontEndFMBB::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex)
   /*!
@@ -652,15 +710,12 @@ R3FrontEndToyama::createAll(Simulation& System,
   */
 {
   // For output stream
-  ELog::RegMethod RControl("R3FrontEndToyama","createAll");
-
+  ELog::RegMethod RControl("R3FrontEndFMBB","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  ELog::EM << "here1" << ELog::endDiag;
   buildObjects(System);
-  ELog::EM << "there2" << ELog::endDiag;
   createLinks();
 
   return;

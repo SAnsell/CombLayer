@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   balderInc/balderFrontEnd.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_balderFrontEnd_h
@@ -38,7 +38,7 @@ namespace constructSystem
   class PortTube;
   class SupplyPipe;
   class VacuumBox;
-  class VacuumPipe; 
+  class VacuumPipe;
 }
 
 namespace xraySystem
@@ -51,7 +51,7 @@ namespace xraySystem
   class UTubePipe;
   class Undulator;
   class Wiggler;
-    
+
   /*!
     \class balderFrontEnd
     \version 1.0
@@ -61,7 +61,7 @@ namespace xraySystem
   */
 
 class balderFrontEnd :
-  public R3FrontEnd
+  public R3FrontEndFMBB
 {
  private:
 
@@ -73,13 +73,13 @@ class balderFrontEnd :
   const attachSystem::FixedComp&
     buildUndulator(Simulation&,const attachSystem::FixedComp&,
 		   const long int) override;
-			      
+
   void createSurfaces();
   void buildObjects(Simulation&);
   void createLinks() override;
-  
+
  public:
-  
+
   balderFrontEnd(const std::string&);
   balderFrontEnd(const balderFrontEnd&);
   balderFrontEnd& operator=(const balderFrontEnd&);

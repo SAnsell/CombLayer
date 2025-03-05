@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   attachComp/BlockZone.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -84,7 +84,7 @@ BlockZone::BlockZone() :
     Simple constructor
   */
 {}
-  
+
 BlockZone::BlockZone(const std::string& key) :
   attachSystem::FixedComp(key,6),
   attachSystem::CellMap(),
@@ -95,7 +95,7 @@ BlockZone::BlockZone(const std::string& key) :
 {}
 
 
-BlockZone::BlockZone(const BlockZone& A) : 
+BlockZone::BlockZone(const BlockZone& A) :
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   surroundHR(A.surroundHR),frontHR(A.frontHR),backHR(A.backHR),
   maxExtentHR(A.maxExtentHR),voidMat(A.voidMat),
@@ -155,7 +155,7 @@ BlockZone::merge(const BlockZone& BZ)
     }
   return 0;
 }
-  
+
 HeadRule
 BlockZone::getVolume() const
   /*!
@@ -167,7 +167,7 @@ BlockZone::getVolume() const
   Out*=backHR.complement();
   return Out;
 }
-  
+
 
 void
 BlockZone::setSurround(const HeadRule& HR)
@@ -179,7 +179,7 @@ BlockZone::setSurround(const HeadRule& HR)
   surroundHR=HR;
   return;
 }
-  
+
 void
 BlockZone::setFront(const HeadRule& HR)
   /*!
@@ -249,18 +249,18 @@ BlockZone::addInsertCells(const std::vector<int>& CVec)
     insertCells.push_back(CN);
   return;
 }
-		 
+
 void
 BlockZone::insertCell(Simulation& System,const HeadRule& HR)
   /*!
-    Insert the new volume into the cell(s) : 
-    \todo Check HR fits in 
+    Insert the new volume into the cell(s) :
+    \todo Check HR fits in
     \param System :: simulation for cells
     \param HR :: Volume to be exclude [not complemented yet]
    */
 {
   ELog::RegMethod RegA("BlockZone","insertCell");
-  
+
   if (HR.hasRule())
     {
       for(const int cellN : insertCells)
@@ -269,7 +269,7 @@ BlockZone::insertCell(Simulation& System,const HeadRule& HR)
 	  if (!outerObj)
 	    throw ColErr::InContainerError<int>
 	      (cellN,"Cell not in Simulation");
-	  
+
 	  if (insertHR.find(cellN)==insertHR.end())
 	    {
 	      insertHR.emplace(cellN,outerObj->getHeadRule());
@@ -302,9 +302,9 @@ BlockZone::rebuildInsertCells(Simulation& System)
       outerObj->populate();
     }
   return;
-  
+
 }
-  
+
 int
 BlockZone::createUnit(Simulation& System)
   /*!
@@ -340,9 +340,10 @@ BlockZone::createUnit(Simulation& System,
     \return cell nubmer
   */
 {
+  ELog::RegMethod RegA("BlockZone","createUnit(System,FC,linkName)");
   return createUnit(System,FC,FC.getSideIndex(linkName));
 }
-  
+
 int
 BlockZone::createUnit(Simulation& System,
 		      const attachSystem::FixedComp& FC,
@@ -355,14 +356,16 @@ BlockZone::createUnit(Simulation& System,
     \return cell nubmer
   */
 {
-  ELog::RegMethod RegA("BlockZone","createUnit");
+  ELog::RegMethod RegA("BlockZone","createUnit(System,FC,sideIndex)");
+
+  ELog::EM << "* cellIndex: " << cellIndex << ELog::endDiag;
 
   // alway outgoing [so use complement]
   const HeadRule newBackFC=FC.getFullRule(sideIndex);
   HeadRule Volume=surroundHR * backHR * newBackFC.complement();
   makeCell("Unit",System,cellIndex++,voidMat,0.0,Volume);
   backHR=newBackFC;
-  
+
   insertCell(System,Volume);
 
   return cellIndex-1;
@@ -380,7 +383,7 @@ BlockZone::createLinks(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("BlockZone","createLinks");
 
   createUnitVector(FC,sideIndex);
-  
+
   frontHR.populateSurf();
   backHR.populateSurf();
 
@@ -425,6 +428,6 @@ BlockZone::createAll(Simulation&,
   createUnitVector(FC,sideIndex);
   return;
 }
-  
-  
+
+
 }  // NAMESPACE attachSystem

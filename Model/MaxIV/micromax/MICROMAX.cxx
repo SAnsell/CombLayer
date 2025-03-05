@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: micromax/MICROMAX.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,6 +67,7 @@
 #include "WallLead.h"
 #include "R3Ring.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 #include "micromaxFrontEnd.h"
 #include "micromaxOpticsLine.h"
 #include "micromaxExptLine.h"
@@ -104,7 +105,7 @@ MICROMAX::MICROMAX(const std::string& KN) :
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(joinPipe);
-  
+
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
@@ -121,7 +122,7 @@ MICROMAX::~MICROMAX()
    */
 {}
 
-void 
+void
 MICROMAX::build(Simulation& System,
 	      const attachSystem::FixedComp& FCOrigin,
 	      const long int sideIndex)
@@ -152,7 +153,7 @@ MICROMAX::build(Simulation& System,
 
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
-  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole"
@@ -185,7 +186,7 @@ MICROMAX::build(Simulation& System,
   exptHut->createAll(System,*opticsHut,"back");
   exptHut->splitChicane(System,1,2);
 
-  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
+  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
@@ -218,8 +219,8 @@ MICROMAX::build(Simulation& System,
   if (PCPtr)
     PCPtr->insertInCell
       ("Main",System,exptHutB->getCell("FrontVoid"));
-  
-  joinPipeC->addAllInsertCell(exptBeam->getCell("LastVoid"));  
+
+  joinPipeC->addAllInsertCell(exptBeam->getCell("LastVoid"));
   joinPipeC->addInsertCell("Main",exptHut->getCell("ExitHole"));
   joinPipeC->setFront(*exptBeam,2);
   joinPipeC->createAll(System,*exptBeam,2);
@@ -240,4 +241,3 @@ MICROMAX::build(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

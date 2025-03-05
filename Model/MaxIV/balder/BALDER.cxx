@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: balder/BALDER.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,6 +66,7 @@
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 #include "balderFrontEnd.h"
 #include "balderOpticsLine.h"
 #include "balderConnectZone.h"
@@ -105,7 +106,7 @@ BALDER::BALDER(const std::string& KN) :
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(joinPipe);
-  
+
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
@@ -123,7 +124,7 @@ BALDER::~BALDER()
    */
 {}
 
-void 
+void
 BALDER::build(Simulation& System,
 	      const attachSystem::FixedComp& FCOrigin,
 	      const long int sideIndex)
@@ -140,7 +141,7 @@ BALDER::build(Simulation& System,
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
-  
+
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
   frontBeam->setStopPoint(stopPoint);
@@ -153,9 +154,9 @@ BALDER::build(Simulation& System,
 
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
-  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
-  
+
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);
@@ -172,7 +173,7 @@ BALDER::build(Simulation& System,
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
-  
+
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
@@ -201,10 +202,10 @@ BALDER::build(Simulation& System,
   connectZone->setCutSurf("front",*opticsHut,2);
   connectZone->setCutSurf("back",*exptHut,1);
   connectZone->createAll(System,*joinPipeB,2);
-    
+
   joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
   //  joinPipeC->insertInCell(System,exptHut->getCell("EntranceHole"));
-  
+
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);
 
@@ -231,4 +232,3 @@ BALDER::build(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

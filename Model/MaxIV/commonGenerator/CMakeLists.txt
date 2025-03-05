@@ -171,7 +171,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/YagUnitBigGenerator.cxx
   ${tarDIR}/YagUnitGenerator.cxx
   $(tarDIR)/SlitsMaskGenerator.cxx
-  $(tarDir)/GTFBeamDumpGenerator.cxx
+  $(tarDIR)/GTFBeamDumpGenerator.cxx
   ${tarINC}/AreaDetectorGenerator.h
   ${tarINC}/BeamBoxGenerator.h
   ${tarINC}/BeamDividerGenerator.h

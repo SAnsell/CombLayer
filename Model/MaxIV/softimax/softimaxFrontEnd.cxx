@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: softimax/softimaxFrontEnd.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -60,6 +60,7 @@
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 
 #include "softimaxFrontEnd.h"
 
@@ -67,11 +68,11 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 softimaxFrontEnd::softimaxFrontEnd(const std::string& Key) :
-  R3FrontEnd(Key),
+  R3FrontEndFMBB(Key),
   undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
-  undulator(new xraySystem::Undulator(newName+"Undulator"))   
+  undulator(new xraySystem::Undulator(newName+"Undulator"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -84,7 +85,7 @@ softimaxFrontEnd::softimaxFrontEnd(const std::string& Key) :
   OR.addObject(undulatorPipe);
   OR.addObject(undulator);
 }
-  
+
 softimaxFrontEnd::~softimaxFrontEnd()
   /*!
     Destructor
@@ -103,7 +104,7 @@ softimaxFrontEnd::createLinks()
 }
 
 
-  
+
 const attachSystem::FixedComp&
 softimaxFrontEnd::buildUndulator(Simulation& System,
 				 const attachSystem::FixedComp& preFC,
@@ -114,7 +115,7 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
     \param System :: Simulation to use
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
-    \return link object 
+    \return link object
   */
 {
   ELog::RegMethod RegA("softimaxFrontEnd","buildUndulator");
@@ -124,7 +125,7 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
   outerCell=buildZone.createUnit(System,*undulatorPipe,2);
 
   CellMap::addCell("UndulatorOuter",outerCell);
-  
+
   undulatorPipe->insertAllInCell(System,outerCell);
 
   undulator->addInsertCell(outerCell);
@@ -135,6 +136,5 @@ softimaxFrontEnd::buildUndulator(Simulation& System,
   return *undulatorPipe;
 }
 
-  
-}   // NAMESPACE xraySystem
 
+}   // NAMESPACE xraySystem

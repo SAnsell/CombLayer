@@ -46,7 +46,7 @@ namespace xraySystem
   */
 
 class softimaxFrontEnd :
-  public R3FrontEnd
+  public R3FrontEndFMBB
 {
  private:
 

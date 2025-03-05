@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: balder/balderFrontEnd.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -59,6 +59,7 @@
 #include "VacuumBox.h"
 #include "Wiggler.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 
 #include "balderFrontEnd.h"
 
@@ -66,9 +67,9 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 balderFrontEnd::balderFrontEnd(const std::string& Key) :
-  R3FrontEnd(Key),
+  R3FrontEndFMBB(Key),
   wigglerBox(new constructSystem::VacuumBox(newName+"WigglerBox",1)),
   wiggler(new Wiggler(newName+"Wiggler"))
   /*!
@@ -83,7 +84,7 @@ balderFrontEnd::balderFrontEnd(const std::string& Key) :
   OR.addObject(wigglerBox);
   OR.addObject(wiggler);
 }
-  
+
 balderFrontEnd::~balderFrontEnd()
   /*!
     Destructor
@@ -97,12 +98,12 @@ balderFrontEnd::createLinks()
    */
 {
   ELog::RegMethod RegA("balderFrontEnd","createLinks");
-  
+
   setLinkCopy(0,*wigglerBox,1);
   setLinkCopy(1,*lastComp,2);
   return;
 }
-  
+
 
 const attachSystem::FixedComp&
 balderFrontEnd::buildUndulator(Simulation& System,
@@ -115,7 +116,7 @@ balderFrontEnd::buildUndulator(Simulation& System,
     \param masterCell :: Main cell with all components in
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
-    \return link object 
+    \return link object
   */
 {
   ELog::RegMethod RegA("balderFrontEnd","buildUndulator");
@@ -128,13 +129,12 @@ balderFrontEnd::buildUndulator(Simulation& System,
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
   wiggler->createAll(System,*wigglerBox,0);
 
-  
+
   CellMap::addCell("WiggerOuter",outerCell);
   wigglerBox->insertInCell(System,outerCell);
   return *wigglerBox;
 
 }
 
-  
-}   // NAMESPACE xraySystem
 
+}   // NAMESPACE xraySystem

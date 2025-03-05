@@ -1,17 +1,17 @@
 set (monteSources
-    Acomp.cxx AcompExtra.cxx AcompTools.cxx 
-    Algebra.cxx BnId.cxx DBMaterial.cxx 
-    DBMaterialRegister.cxx DBModify.cxx Element.cxx 
-    eTrack.cxx FEMdatabase.cxx HeadRule.cxx 
-    Importance.cxx Intersection.cxx IsoTable.cxx 
-    LayerDivide1D.cxx LayerDivide3D.cxx LineIntersectVisit.cxx 
-    mapIterator.cxx Material.cxx MXcards.cxx 
-    neutron.cxx Object.cxx objectSupport.cxx 
-    particle.cxx photon.cxx 
-    RuleBinary.cxx RuleCheck.cxx RuleItems.cxx 
-    Rules.cxx SurfPoint.cxx 
-    SurfVertex.cxx Token.cxx Track.cxx 
-    Union.cxx Zaid.cxx 
+    Acomp.cxx AcompExtra.cxx AcompTools.cxx
+    Algebra.cxx BnId.cxx DBMaterial.cxx
+    DBMaterialRegister.cxx DBModify.cxx Element.cxx
+    eTrack.cxx FEMdatabase.cxx HeadRule.cxx
+    Importance.cxx Intersection.cxx IsoTable.cxx
+    LayerDivide1D.cxx LayerDivide3D.cxx LineIntersectVisit.cxx
+    mapIterator.cxx Material.cxx MXcards.cxx
+    neutron.cxx Object.cxx objectSupport.cxx
+    particle.cxx photon.cxx
+    RuleBinary.cxx RuleCheck.cxx RuleItems.cxx
+    Rules.cxx SurfPoint.cxx
+    SurfVertex.cxx Token.cxx Track.cxx
+    Union.cxx Zaid.cxx
 )
 
 add_library (monte SHARED
@@ -22,11 +22,11 @@ target_include_directories (monte PUBLIC
    ${GENERAL_INCLUDE}
 )
 
-file(RELATIVE_PATH tarDIR 
+file(RELATIVE_PATH tarDIR
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-file(RELATIVE_PATH tarINC 
+file(RELATIVE_PATH tarINC
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/../monteInc")
 
@@ -61,7 +61,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/RuleCheck.cxx
   ${tarDIR}/RuleItems.cxx
   ${tarDIR}/Rules.cxx
-  ${tarDIR}/RuleSupport.cxx
   ${tarDIR}/SurfPoint.cxx
   ${tarDIR}/SurfVertex.cxx
   ${tarDIR}/Token.cxx
@@ -95,10 +94,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/RuleBinary.h
   ${tarINC}/RuleCheck.h
   ${tarINC}/Rules.h
-  ${tarINC}/RuleSupport.h
   ${tarINC}/SurfVertex.h
   ${tarINC}/Token.h
   ${tarINC}/Track.h
   ${tarINC}/Zaid.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
-

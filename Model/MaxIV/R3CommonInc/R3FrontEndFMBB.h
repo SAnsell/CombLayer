@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   R3CommonInc/R3FrontEnd.h
+ * File:   R3CommonInc/R3FrontEndFMBB.h
  *
- * Copyright (c) 2004-2025 by Stuart Ansell / K. Batkov
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_R3FrontEnd_h
-#define xraySystem_R3FrontEnd_h
+#ifndef xraySystem_R3FrontEndFMBB_h
+#define xraySystem_R3FrontEndFMBB_h
 
 namespace insertSystem
 {
@@ -45,10 +45,10 @@ namespace constructSystem
 
 /*!
   \namespace xraySystem
-  \brief R3 front-end base class (for either Toyama or FMB/B)
-  \version 2.0
-  \date March 2025
-  \author S. Ansell / K. Batkov
+  \brief R3 FMB/B front-end
+  \version 1.0
+  \date March 2028
+  \author S. Ansell
 */
 
 namespace xraySystem
@@ -80,7 +80,7 @@ namespace xraySystem
     \brief General constructor front end optics
   */
 
-class R3FrontEnd :
+class R3FrontEndFMBB :
   public attachSystem::CopiedComp,
   public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
@@ -232,14 +232,14 @@ class R3FrontEnd :
   void createSurfaces();
   virtual void createLinks()=0;
 
-  virtual void buildObjects(Simulation&) = 0;
+  void buildObjects(Simulation&);
 
  public:
 
-  R3FrontEnd(const std::string&);
-  R3FrontEnd(const R3FrontEnd&);
-  R3FrontEnd& operator=(const R3FrontEnd&);
-  ~R3FrontEnd() override;
+  R3FrontEndFMBB(const std::string&);
+  R3FrontEndFMBB(const R3FrontEndFMBB&);
+  R3FrontEndFMBB& operator=(const R3FrontEndFMBB&);
+  ~R3FrontEndFMBB() override;
 
   /// remove FM3
   void deactivateFM3() { collFM3Active=false; }

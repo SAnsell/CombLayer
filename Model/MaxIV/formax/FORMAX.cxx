@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: formax/FORMAX.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -66,6 +66,7 @@
 #include "WallLead.h"
 #include "R3Ring.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 #include "formaxFrontEnd.h"
 #include "formaxOpticsLine.h"
 #include "formaxExptLine.h"
@@ -100,7 +101,7 @@ FORMAX::FORMAX(const std::string& KN) :
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(joinPipe);
-  
+
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(exptHut);
@@ -114,7 +115,7 @@ FORMAX::~FORMAX()
    */
 {}
 
-void 
+void
 FORMAX::build(Simulation& System,
 	      const attachSystem::FixedComp& FCOrigin,
 	      const long int sideIndex)
@@ -145,14 +146,14 @@ FORMAX::build(Simulation& System,
 
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
-  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  
+
   if (stopPoint=="frontEnd" || stopPoint=="Dipole"
       || stopPoint=="FM1" || stopPoint=="FM2")
     return;
-  
+
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
@@ -179,7 +180,7 @@ FORMAX::build(Simulation& System,
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut->createAll(System,*opticsHut,"back");
 
-  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));  
+  joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
@@ -208,7 +209,7 @@ FORMAX::build(Simulation& System,
   detectorTube->createAll(System,*joinPipeB,2);
 
   exptBeam->insertSample(System,detectorTube->getCell("FirstVoid"));
-  
+
   return;
 }
 

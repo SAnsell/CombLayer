@@ -118,6 +118,7 @@ tomowiseFrontEnd::buildUndulator(Simulation& System,
 {
   ELog::RegMethod RegA("tomowiseFrontEnd","buildUndulator");
 
+
   int outerCell;
   undulatorPipe->createAll(System,preFC,preSideIndex);
   outerCell=buildZone.createUnit(System,*undulatorPipe,2);
@@ -128,7 +129,6 @@ tomowiseFrontEnd::buildUndulator(Simulation& System,
   undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
   undulatorPipe->insertInCell("Main",System,undulator->getCell("Void"));
-
 
   return *undulatorPipe;
 }

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: danmax/DANMAX.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,6 +67,7 @@
 #include "OpticsStepHutch.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 #include "danmaxFrontEnd.h"
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
@@ -112,7 +113,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(joinPipeC);
   OR.addObject(exptHut);
   OR.addObject(pShield);
-  
+
 }
 
 DANMAX::~DANMAX()
@@ -121,7 +122,7 @@ DANMAX::~DANMAX()
    */
 {}
 
-void 
+void
 DANMAX::build(Simulation& System,
 	      const attachSystem::FixedComp& FCOrigin,
 	      const long int sideIndex)
@@ -138,7 +139,7 @@ DANMAX::build(Simulation& System,
   const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
   const size_t SIndex=(PIndex+1) % NS;
   const size_t prevIndex=(NS+PIndex-1) % NS;
-  
+
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
   frontBeam->setStopPoint(stopPoint);
@@ -151,14 +152,14 @@ DANMAX::build(Simulation& System,
 
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
-  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);
-  
+
   // Inner space
 
   if (stopPoint=="opticsHut") return;
@@ -178,7 +179,7 @@ DANMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
- 
+
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
@@ -199,7 +200,7 @@ DANMAX::build(Simulation& System,
 
 
   joinPipeB->insertAllInCell(System,connectUnit->getCell("FirstVoid"));
-  
+
   joinPipeC->insertAllInCell(System,exptHut->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut->getCell("EntranceHole"));
 
@@ -217,4 +218,3 @@ DANMAX::build(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

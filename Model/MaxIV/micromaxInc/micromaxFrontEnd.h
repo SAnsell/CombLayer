@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   micromaxInc/micromaxFrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_micromaxFrontEnd_h
@@ -38,7 +38,7 @@ namespace constructSystem
   class PortTube;
   class SupplyPipe;
   class VacuumBox;
-  class VacuumPipe; 
+  class VacuumPipe;
 }
 
 /*!
@@ -59,7 +59,7 @@ namespace xraySystem
   class UTubePipe;
   class Undulator;
 
-    
+
   /*!
     \class micromaxFrontEnd
     \version 1.0
@@ -69,7 +69,7 @@ namespace xraySystem
   */
 
 class micromaxFrontEnd :
-  public R3FrontEnd
+  public R3FrontEndFMBB
 {
  private:
 
@@ -81,11 +81,11 @@ class micromaxFrontEnd :
   const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,const long int) override;
-			      
+
   void createLinks() override;
-  
+
  public:
-  
+
   micromaxFrontEnd(const std::string&);
   micromaxFrontEnd(const micromaxFrontEnd&);
   micromaxFrontEnd& operator=(const micromaxFrontEnd&);

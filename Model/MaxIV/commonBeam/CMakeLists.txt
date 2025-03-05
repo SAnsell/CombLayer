@@ -88,7 +88,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MonoBox.cxx
   ${tarDIR}/MonoCrystals.cxx
   ${tarDIR}/MonoShutter.cxx
-  ${tarDir}/MovableSafetyMask.cxx
+  ${tarDIR}/MovableSafetyMask.cxx
   ${tarDIR}/Octupole.cxx
   ${tarDIR}/OpticsHutch.cxx
   ${tarDIR}/PipeShield.cxx
@@ -144,7 +144,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/GrateMonoBox.h
   ${tarINC}/GratingMono.h
   ${tarINC}/GratingUnit.h
-  ${tarDIR}/HeatAbsorberToyama.h
+  ${tarINC}/HeatAbsorberToyama.h
   ${tarINC}/HeatDump.h
   ${tarINC}/HPJaws.h
   ${tarINC}/IonGauge.h

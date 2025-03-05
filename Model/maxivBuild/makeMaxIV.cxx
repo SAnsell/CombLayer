@@ -482,17 +482,19 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	BLPtr.reset(new FORMAX("Formax"));
       else if (BL=="MICROMAX")
 	BLPtr.reset(new MICROMAX("MicroMax"));
-      else if (BL=="TOMOWISE")
+      else if (BL=="TOMOWISE") {
 	BLPtr.reset(new TOMOWISE("TomoWISE"));
-
+      }
       if (!activeStop.empty())
 	{
 	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
 	  BLPtr->setStopPoint(activeStop);
 	}
       BLPtr->setRing(r3Ring);
+      ELog::EM << "here" << ELog::endDiag;
       BLPtr->build(System,*r3Ring,
 		   r3Ring->getSideIndex(beamNAMES.at(BL)));
+      ELog::EM << "there" << ELog::endDiag;
     }
   return 1;    // R3 Built
 }

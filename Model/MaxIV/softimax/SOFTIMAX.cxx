@@ -63,6 +63,7 @@
 #include "VacuumPipe.h"
 #include "JawFlange.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 #include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "softimaxFrontEnd.h"
@@ -89,13 +90,13 @@ SOFTIMAX::SOFTIMAX(const std::string& KN) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(opticsHut);
   OR.addObject(joinPipe);
   OR.addObject(opticsBeam);
-  
+
 }
 
 SOFTIMAX::~SOFTIMAX()
@@ -103,7 +104,7 @@ SOFTIMAX::~SOFTIMAX()
   Destructor
 */
 {}
-  
+
 void
 SOFTIMAX::build(Simulation& System,
 		const attachSystem::FixedComp& FCOrigin,
@@ -166,7 +167,7 @@ SOFTIMAX::build(Simulation& System,
 
   //  joinPipeAB->insertInCell("Main",System,opticsHut->getCell("exitHole",0));
 
-  
+
   return;
 }
 

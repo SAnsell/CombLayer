@@ -46,7 +46,7 @@ namespace xraySystem
   */
 
 class cosaxsFrontEnd :
-  public R3FrontEnd
+  public R3FrontEndFMBB
 {
  private:
 

@@ -94,8 +94,11 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
     \param KN :: Keyname
   */
 {
+  ELog::RegMethod RControl("TOMOWISE","TOMOWISE");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
 
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
