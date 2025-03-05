@@ -66,6 +66,7 @@
 #include "WallLead.h"
 #include "R3Ring.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndToyama.h"
 #include "tomowiseFrontEnd.h"
 #include "tomowiseOpticsLine.h"
 #include "tomowiseExptLine.h"

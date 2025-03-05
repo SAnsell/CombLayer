@@ -43,7 +43,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
-
+  class R3FrontEndToyama;
   class HeatDump;
   class LCollimator;
   class SqrCollimator;
@@ -61,7 +61,7 @@ namespace xraySystem
   */
 
 class tomowiseFrontEnd :
-  public R3FrontEnd
+  public R3FrontEndToyama
 {
  private:
 

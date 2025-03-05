@@ -60,6 +60,7 @@
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndToyama.h"
 
 #include "tomowiseFrontEnd.h"
 
@@ -69,7 +70,7 @@ namespace xraySystem
 // Note currently uncopied:
 
 tomowiseFrontEnd::tomowiseFrontEnd(const std::string& Key) :
-  R3FrontEnd(Key),
+  R3FrontEndToyama(Key),
   undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
   undulator(new xraySystem::Undulator(newName+"Undulator"))
   /*!
