@@ -92,6 +92,7 @@
 #include "MagnetM1.h"
 #include "MagnetU1.h"
 #include "MovableSafetyMask.h"
+#include "HeatAbsorberToyama.h"
 
 #include "R3FrontEnd.h"
 
@@ -132,6 +133,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   msmEntrancePipe(new constructSystem::VacuumPipe(newName+"MSMEntrancePipe")),
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
+  haToyama(new xraySystem::HeatAbsorberToyama(newName+"HAToyama")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
@@ -197,6 +199,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(collExitPipe);
   OR.addObject(heatBox);
   OR.addObject(heatDump);
+  OR.addObject(haToyama);
 
   OR.addObject(pipeB);
   OR.addObject(bellowE);
@@ -314,28 +317,40 @@ R3FrontEnd::buildHeatTable(Simulation& System)
 
   int outerCell;
 
-  heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  heatBox->createAll(System,*this,0);
+  if (!true) { // FMB/B (/B is Berlin)
+    heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
+    heatBox->createAll(System,*this,0);
 
-  const constructSystem::portItem& PIA=heatBox->getPort(0);
-  const constructSystem::portItem& PIB=heatBox->getPort(1);
+    const constructSystem::portItem& PIA=heatBox->getPort(0);
+    const constructSystem::portItem& PIB=heatBox->getPort(1);
 
-  // cant use heatbox here because of port rotation
-  heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
-  heatDump->createAll(System,PIB,0,*heatBox,2);
+    // cant use heatbox here because of port rotation
+    heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
+    heatDump->createAll(System,PIB,0,*heatBox,2);
 
-  // Built after heatDump
-  collExitPipe->setBack(PIA,"OuterPlate");
-  collExitPipe->createAll(System,*collB,2);
-  outerCell=buildZone.createUnit(System,*collExitPipe,2);
-  collExitPipe->insertAllInCell(System,outerCell);
+    // Built after heatDump
+    collExitPipe->setBack(PIA,"OuterPlate");
+    collExitPipe->createAll(System,*collB,2);
+    outerCell=buildZone.createUnit(System,*collExitPipe,2);
+    collExitPipe->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
-  heatBox->insertAllInCell(System,outerCell);
-  heatDump->insertInCell("Outer",System,outerCell);
+    outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
+    heatBox->insertAllInCell(System,outerCell);
+    heatDump->insertInCell("Outer",System,outerCell);
 
-  constructSystem::constructUnit
-    (System,buildZone,PIB,"OuterPlate",*bellowD);
+    constructSystem::constructUnit
+      (System,buildZone,PIB,"OuterPlate",*bellowD);
+  } else {
+    haToyama->createAll(System,*this,0);
+    collExitPipe->setBack(*haToyama,"front");
+    collExitPipe->createAll(System,*collB,2);
+    outerCell=buildZone.createUnit(System,*collExitPipe,2);
+    collExitPipe->insertAllInCell(System,outerCell);
+
+    outerCell=buildZone.createUnit(System,*haToyama,"back");
+    haToyama->insertInCell(System,outerCell);
+    constructSystem::constructUnit(System,buildZone,*haToyama,"back",*bellowD);
+  }
 
   constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*gateTubeA);

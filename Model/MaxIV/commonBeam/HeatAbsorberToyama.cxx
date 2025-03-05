@@ -172,7 +172,7 @@ HeatAbsorberToyama::populate(const FuncDataBase& Control)
   dumpXOffset=Control.EvalVar<double>(keyName+"DumpXOffset");
   gapWidth=Control.EvalVar<double>(keyName+"GapWidth");
   gapHeight=Control.EvalVar<double>(keyName+"GapHeight");
-  closed=true;//Control.EvalVar<int>(keyName+"Closed");
+  closed=Control.EvalVar<int>(keyName+"Closed");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
@@ -192,6 +192,8 @@ HeatAbsorberToyama::createSurfaces()
   Geometry::Vec3D BPt;  // back
 
   double zoffset = closed ? (gapHeight+dumpHeight)/2.0 : 0.0;
+
+  ELog::EM << "zoffset: " << zoffset << ELog::endDiag;
 
   if (!frontActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);

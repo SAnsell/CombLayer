@@ -3,7 +3,7 @@
 
  * File:   R3CommonInc/R3FrontEnd.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ namespace constructSystem
 
 /*!
   \namespace xraySystem
-  \brief General xray optics system
+  \brief R3 FMB/B front-end
   \version 1.0
   \date January 2018
   \author S. Ansell
@@ -60,6 +60,7 @@ namespace xraySystem
   class SqrCollimator;
   class SquareFMask;
   class MovableSafetyMask;
+  class HeatAbsorberToyama;
   class BeamMount;
   class PreDipole;
   class MagnetM1;
@@ -148,6 +149,7 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::PipeTube> heatBox;
   /// Heat dump container
   std::shared_ptr<xraySystem::HeatDump> heatDump;
+  std::shared_ptr<xraySystem::HeatAbsorberToyama> haToyama;
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Gate box

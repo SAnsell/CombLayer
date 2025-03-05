@@ -61,6 +61,7 @@
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
 #include "MagnetU1Generator.h"
+#include "HeatAbsorberToyamaGenerator.h"
 
 #include "maxivVariables.h"
 
@@ -363,6 +364,12 @@ heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
   HeatGen.setCF<CF100>();
   HeatGen.setTopCF<CF150>();
   HeatGen.generateHD(Control,hDump,1);
+
+
+  // Toyama heat absorber
+  setVariable::HeatAbsorberToyamaGenerator HATGen;
+  HATGen.generate(Control, frontKey+"HAToyama", 30);
+  Control.addVariable(frontKey+"HAToyamaYStep",heatDumpDist);
 
   return;
 }
