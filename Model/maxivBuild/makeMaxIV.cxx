@@ -419,10 +419,10 @@ makeMaxIV::buildR3Ring(Simulation& System,
   static const std::map<std::string,std::string> beamNAMES
     ({
       {"DANMAX","OpticCentre4"},
-      {"TOMOWISE","OpticCentre7"},
+      {"TOMOWISE","OpticCentre1"}, // should be 7. if not 1 then RingDoor is built in the wrong ring sector
       {"BALDER","OpticCentre8"},
       {"FORMAX","OpticCentre9"},
-      {"COSAXS","OpticCentre10"},
+      {"COSAXS","OpticCentre10"}, // if not 1 then RingDoor is built in the wrong ring sector
       {"MICROMAX","OpticCentre12"},
       {"SOFTIMAX","OpticCentre18"}
     });
