@@ -91,8 +91,6 @@
 #include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
-#include "MovableSafetyMask.h"
-#include "HeatAbsorberToyama.h"
 
 #include "R3FrontEndFMBB.h"
 
@@ -129,11 +127,8 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   collB(new xraySystem::SquareFMask(newName+"CollB")),
   collC(new xraySystem::SquareFMask(newName+"CollC")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
-  msm(new xraySystem::MovableSafetyMask(newName+"MSM")),
-  msmEntrancePipe(new constructSystem::VacuumPipe(newName+"MSMEntrancePipe")),
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
-  haToyama(new xraySystem::HeatAbsorberToyama(newName+"HAToyama")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
@@ -163,9 +158,10 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
     }),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")) ,
+
   exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe")),
-  collFM3Active(true),
-  msmActive(false)
+
+  collFM3Active(1)
 
   /*!
     Constructor
@@ -175,8 +171,6 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-  ELog::EM << "***** use the original R3FrontEnd class before my edits - rename it to R3FrontEndFMBB """ << ELog::endDiag;
 
   OR.addObject(transPipe);
   OR.addObject(magBlockM1);
@@ -194,14 +188,11 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(collB);
   OR.addObject(collC);
-  OR.addObject(msmEntrancePipe);
-  OR.addObject(msm);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
   OR.addObject(collExitPipe);
   OR.addObject(heatBox);
   OR.addObject(heatDump);
-  OR.addObject(haToyama);
 
   OR.addObject(pipeB);
   OR.addObject(bellowE);
@@ -319,40 +310,28 @@ R3FrontEndFMBB::buildHeatTable(Simulation& System)
 
   int outerCell;
 
-  if (!true) { // FMB/B (/B is Berlin)
-    heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-    heatBox->createAll(System,*this,0);
+  heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  heatBox->createAll(System,*this,0);
 
-    const constructSystem::portItem& PIA=heatBox->getPort(0);
-    const constructSystem::portItem& PIB=heatBox->getPort(1);
+  const constructSystem::portItem& PIA=heatBox->getPort(0);
+  const constructSystem::portItem& PIB=heatBox->getPort(1);
 
-    // cant use heatbox here because of port rotation
-    heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
-    heatDump->createAll(System,PIB,0,*heatBox,2);
+  // cant use heatbox here because of port rotation
+  heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
+  heatDump->createAll(System,PIB,0,*heatBox,2);
 
-    // Built after heatDump
-    collExitPipe->setBack(PIA,"OuterPlate");
-    collExitPipe->createAll(System,*collB,2);
-    outerCell=buildZone.createUnit(System,*collExitPipe,2);
-    collExitPipe->insertAllInCell(System,outerCell);
+  // Built after heatDump
+  collExitPipe->setBack(PIA,"OuterPlate");
+  collExitPipe->createAll(System,*collB,2);
+  outerCell=buildZone.createUnit(System,*collExitPipe,2);
+  collExitPipe->insertAllInCell(System,outerCell);
 
-    outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
-    heatBox->insertAllInCell(System,outerCell);
-    heatDump->insertInCell("Outer",System,outerCell);
+  outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
+  heatBox->insertAllInCell(System,outerCell);
+  heatDump->insertInCell("Outer",System,outerCell);
 
-    constructSystem::constructUnit
-      (System,buildZone,PIB,"OuterPlate",*bellowD);
-  } else {
-    haToyama->createAll(System,*this,0);
-    collExitPipe->setBack(*haToyama,"front");
-    collExitPipe->createAll(System,*collB,2);
-    outerCell=buildZone.createUnit(System,*collExitPipe,2);
-    collExitPipe->insertAllInCell(System,outerCell);
-
-    outerCell=buildZone.createUnit(System,*haToyama,"back");
-    haToyama->insertInCell(System,outerCell);
-    constructSystem::constructUnit(System,buildZone,*haToyama,"back",*bellowD);
-  }
+  constructSystem::constructUnit
+    (System,buildZone,PIB,"OuterPlate",*bellowD);
 
   constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*gateTubeA);
@@ -663,14 +642,6 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
       constructSystem::constructUnit
 	(System,buildZone,*collB,"back",*collC);
       linkFC=collC;
-    }
-  if (msmActive)
-    {
-      constructSystem::constructUnit
-	(System,buildZone,*linkFC,"back",*msmEntrancePipe);
-      constructSystem::constructUnit
-	(System,buildZone,*msmEntrancePipe,"back",*msm);
-      linkFC=msm;
     }
 
   collExitPipe->setFront(*linkFC,2);

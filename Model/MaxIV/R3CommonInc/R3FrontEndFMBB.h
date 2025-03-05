@@ -3,7 +3,7 @@
 
  * File:   R3CommonInc/R3FrontEndFMBB.h
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2022 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,9 @@ namespace constructSystem
 
 /*!
   \namespace xraySystem
-  \brief R3 FMB/B front-end
+  \brief General xray optics system
   \version 1.0
-  \date March 2028
+  \date January 2018
   \author S. Ansell
 */
 
@@ -59,8 +59,6 @@ namespace xraySystem
   class LCollimator;
   class SqrCollimator;
   class SquareFMask;
-  class MovableSafetyMask;
-  class HeatAbsorberToyama;
   class BeamMount;
   class PreDipole;
   class MagnetM1;
@@ -139,17 +137,13 @@ class R3FrontEndFMBB :
   std::shared_ptr<xraySystem::SquareFMask> collB;
   /// collimator C
   std::shared_ptr<xraySystem::SquareFMask> collC;
-  /// Pipe from collimator B to heat dump or MSM
+  /// Pipe from collimator B to heat dump
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
-  /// Movable Safety Mask (e.g. for the two insertion device beamlines like TomoWISE)
-  std::shared_ptr<xraySystem::MovableSafetyMask> msm;
-  std::shared_ptr<constructSystem::VacuumPipe> msmEntrancePipe;
 
   /// head dump port
   std::shared_ptr<constructSystem::PipeTube> heatBox;
   /// Heat dump container
   std::shared_ptr<xraySystem::HeatDump> heatDump;
-  std::shared_ptr<xraySystem::HeatAbsorberToyama> haToyama;
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
   /// Gate box
@@ -206,7 +200,6 @@ class R3FrontEndFMBB :
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   bool collFM3Active;   ///< Coll C active
-  bool msmActive;       ///< Movable safety mask active
   double outerRadius;   ///< radius of tube for divisions
   double frontOffset;   ///< Distance to move start point from origin
 
@@ -215,7 +208,7 @@ class R3FrontEndFMBB :
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
-		   const long int) = 0;
+		   const long int) =0;
 
   /// Null op for extra components after build
   virtual void buildExtras(Simulation&) {}
@@ -242,8 +235,7 @@ class R3FrontEndFMBB :
   ~R3FrontEndFMBB() override;
 
   /// remove FM3
-  void deactivateFM3() { collFM3Active=false; }
-  void activateMSM() { msmActive=true; }
+  void deactivateFM3() { collFM3Active=0; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
