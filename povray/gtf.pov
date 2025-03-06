@@ -63,7 +63,7 @@ global_settings {
   #end
   #if (PhotonsOK=1)
     photons {
-      count 40000000                 // specify the density of photons
+      count 400000000                 // specify the density of photons
       autostop 0
       jitter .4
     }
@@ -115,9 +115,13 @@ global_settings {
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"Line"))
-    #declare cameraLocation = <-140, 0, 40>;
-    #declare cameraLookAt   = <0, -75, 10>;
-    #declare cameraAngle = 90;
+    // #declare cameraLocation = <-140, 0, 40>; // from corner to see the local shielding wall
+    // #declare cameraLookAt   = <0, -75, 10>;
+    // #declare cameraLocation = <240, -180, 40>; // from centre to see the klystron wall
+    // #declare cameraLookAt   = <0, -180, 20>;
+    #declare cameraLocation = <-80, -380, 15>;
+    #declare cameraLookAt   = <0, -300, 10>;
+    #declare cameraAngle = 100;
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"CurrentTransformer"))
@@ -143,19 +147,30 @@ global_settings {
    shadowless
   }
   light_source { // back
-    cameraLocation + <100,0,70> C_Sun
+    cameraLocation + <1,0,70> C_Sun
     shadowless
   }
 #else
-  light_source{cameraLocation + <100,0,70>,color C_Sun
+  light_source{<-100,-300,120>,color C_Sun
     photons {
       refraction off
       reflection on
     }
     #if (AreaOK=1)
-      area_light 100*x,100*y,5,5 adaptive 1 jitter orient circular
+      area_light 100*z,100*y,5,5 adaptive 1 jitter orient circular
     #end
   }
+
+  light_source{<30,290,0>,color C_Sun
+    photons {
+      refraction off
+      reflection on
+    }
+    #if (AreaOK=1)
+      area_light 100*z,100*y,5,5 adaptive 1 jitter orient circular
+    #end
+  }
+
 #end
 
 camera {
