@@ -21,7 +21,7 @@
 #declare projection = 1;
 #declare cameraAngle = 150;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -63,7 +63,7 @@ global_settings {
   #end
   #if (PhotonsOK=1)
     photons {
-      count 4000000                 // specify the density of photons
+      count 40000000                 // specify the density of photons
       autostop 0
       jitter .4
     }
@@ -115,9 +115,9 @@ global_settings {
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"Line"))
-    #declare cameraLocation = <-215, 271, 40>;
-    #declare cameraLookAt   = <0, 270, 3>;
-    #declare cameraAngle = 35;
+    #declare cameraLocation = <-140, 0, 40>;
+    #declare cameraLookAt   = <0, -75, 10>;
+    #declare cameraAngle = 90;
     #declare projection = 0;
   #break
   #case(strcmp(ITEM,"CurrentTransformer"))

@@ -9,7 +9,8 @@ fi
 
 ITEM=${BASH_ARGV} # last argument is the view in povray/tdc.pov
 
-params=" +A +W800 +H600 "
+#params=" +A +W800 +H600 "
+params=" +A +W1800 +H1000 " # ~ max resolution
 void=" -v BldBConcreteDoorDoorMat Mercury "
 
 echo $ITEM
@@ -22,6 +23,12 @@ if [ $ITEM == "Slits" ]; then
     void+=" -v BellowBBellowMat Void -v  BellowBFlangeAMat Void -v BellowBFlangeBMat Void -v BellowBPipeMat Void "
     void+=" -v BellowCBellowMat Void -v  BellowCFlangeAMat Void -v BellowCFlangeBMat Void -v BellowCPipeMat Void "
     void+=" -v BellowBLength 20 -v LocalShieldingWallYStep 65 "
+fi
+
+if [ $ITEM == "Line" ]; then
+#    void+=" -v LocalShieldingWallMat Void "
+    void+=" -v BellowAEngineeringActive 1 -v BellowBEngineeringActive 1 -v BellowBelowGunEngineeringActive 1 -v BellowCEngineeringActive 1 -v BellowDEngineeringActive 1 "
+#    void+=" -v BellowBelowGunEngineeringActive 1 "
 fi
 make -j$(nproc) maxiv && ./maxiv -defaultConfig Single GunTestFacility -offset object Gun Cathode  -povray $void a \
     && echo \"$ITEM\" > /tmp/gtf.txt \
