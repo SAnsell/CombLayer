@@ -92,6 +92,7 @@
 #include "MagnetM1.h"
 #include "MagnetU1.h"
 
+#include "R3FrontEnd.h"
 #include "R3FrontEndFMBB.h"
 
 namespace xraySystem
@@ -100,125 +101,63 @@ namespace xraySystem
 // Note currently uncopied:
 
 R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
-  attachSystem::CopiedComp(Key,Key),
-  attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(newName,2),
-  attachSystem::FrontBackCut(),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-
-  buildZone(Key+"R3FrontEndFMBB"),
-
-  transPipe(new constructSystem::VacuumPipe(newName+"TransPipe")),
-  magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
-  magBlockU1(new xraySystem::MagnetU1(newName+"U1Block")),
-  epSeparator(new xraySystem::EPSeparator(newName+"EPSeparator")),
-  chokeChamber(new xraySystem::R3ChokeChamber(newName+"ChokeChamber")),
-  chokeInsert(new xraySystem::R3ChokeInsert(newName+"ChokeInsert")),
-  dipolePipe(new constructSystem::CornerPipe(newName+"DipolePipe")),
-  eTransPipe(new constructSystem::VacuumPipe(newName+"ETransPipe")),
-  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
-  eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
-  bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collA(new xraySystem::SquareFMask(newName+"CollA")),
-  bellowB(new constructSystem::Bellows(newName+"BellowB")),
-  collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
-  bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  collB(new xraySystem::SquareFMask(newName+"CollB")),
-  collC(new xraySystem::SquareFMask(newName+"CollC")),
-  collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
-  heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
-  heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
-  bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
-  ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
-  pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-
-  bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  aperturePipe(new constructSystem::VacuumPipe(newName+"AperturePipe")),
-  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),
-  bellowF(new constructSystem::Bellows(newName+"BellowF")),
-  ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
-  bellowG(new constructSystem::Bellows(newName+"BellowG")),
-  aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
-  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),
-  bellowH(new constructSystem::Bellows(newName+"BellowH")),
-  pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-
-  gateA(new constructSystem::GateValveCube(newName+"GateA")),
-  bellowI(new constructSystem::Bellows(newName+"BellowI")),
-  florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
-  bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
-  offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
-  shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
-  shutters({
-      std::make_shared<xraySystem::BeamMount>(newName+"Shutter0"),
-      std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
-    }),
-  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
-  bellowK(new constructSystem::Bellows(newName+"BellowK")) ,
-
-  exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe")),
-
-  collFM3Active(1)
-
+  R3FrontEnd(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
     \param Index :: Index number
   */
 {
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
+  // ModelSupport::objectRegister& OR=
+  //   ModelSupport::objectRegister::Instance();
 
-  OR.addObject(transPipe);
-  OR.addObject(magBlockM1);
-  OR.addObject(magBlockU1);
-  OR.addObject(epSeparator);
-  OR.addObject(chokeChamber);
-  OR.addObject(chokeInsert);
+  // OR.addObject(transPipe);
+  // OR.addObject(magBlockM1);
+  // OR.addObject(magBlockU1);
+  // OR.addObject(epSeparator);
+  // OR.addObject(chokeChamber);
+  // OR.addObject(chokeInsert);
 
-  OR.addObject(dipolePipe);
-  OR.addObject(eTransPipe);
-  OR.addObject(bellowA);
-  OR.addObject(collA);
-  OR.addObject(bellowB);
-  OR.addObject(collABPipe);
-  OR.addObject(bellowC);
-  OR.addObject(collB);
-  OR.addObject(collC);
-  OR.addObject(eCutDisk);
-  OR.addObject(eCutMagDisk);
-  OR.addObject(collExitPipe);
-  OR.addObject(heatBox);
-  OR.addObject(heatDump);
+  // OR.addObject(dipolePipe);
+  // OR.addObject(eTransPipe);
+  // OR.addObject(bellowA);
+  // OR.addObject(collA);
+  // OR.addObject(bellowB);
+  // OR.addObject(collABPipe);
+  // OR.addObject(bellowC);
+  // OR.addObject(collB);
+  // OR.addObject(collC);
+  // OR.addObject(eCutDisk);
+  // OR.addObject(eCutMagDisk);
+  // OR.addObject(collExitPipe);
+  // OR.addObject(heatBox);
+  // OR.addObject(heatDump);
 
-  OR.addObject(pipeB);
-  OR.addObject(bellowE);
-  OR.addObject(aperturePipe);
-  OR.addObject(moveCollA);
-  OR.addObject(bellowF);
-  OR.addObject(ionPC);
-  OR.addObject(bellowG);
-  OR.addObject(aperturePipeB);
-  OR.addObject(moveCollB);
-  OR.addObject(bellowH);
-  OR.addObject(pipeC);
+  // OR.addObject(pipeB);
+  // OR.addObject(bellowE);
+  // OR.addObject(aperturePipe);
+  // OR.addObject(moveCollA);
+  // OR.addObject(bellowF);
+  // OR.addObject(ionPC);
+  // OR.addObject(bellowG);
+  // OR.addObject(aperturePipeB);
+  // OR.addObject(moveCollB);
+  // OR.addObject(bellowH);
+  // OR.addObject(pipeC);
 
-  OR.addObject(gateA);
-  OR.addObject(bellowI);
-  OR.addObject(florTubeA);
-  OR.addObject(bellowJ);
-  OR.addObject(gateTubeB);
-  OR.addObject(offPipeA);
-  OR.addObject(shutterBox);
-  OR.addObject(shutters[0]);
-  OR.addObject(shutters[1]);
-  OR.addObject(offPipeB);
-  OR.addObject(bellowK);
+  // OR.addObject(gateA);
+  // OR.addObject(bellowI);
+  // OR.addObject(florTubeA);
+  // OR.addObject(bellowJ);
+  // OR.addObject(gateTubeB);
+  // OR.addObject(offPipeA);
+  // OR.addObject(shutterBox);
+  // OR.addObject(shutters[0]);
+  // OR.addObject(shutters[1]);
+  // OR.addObject(offPipeB);
+  // OR.addObject(bellowK);
 
-  OR.addObject(exitPipe);
+  // OR.addObject(exitPipe);
 
 
 }
@@ -269,35 +208,35 @@ R3FrontEndFMBB::createSurfaces()
   return;
 }
 
-void
-R3FrontEndFMBB::insertFlanges(Simulation& System,
-			  const constructSystem::PipeTube& PT,
-			  const size_t offset)
-  /*!
-    Boilerplate function to insert the flanges from pipetubes
-    that extend past the linkzone in to ther neighbouring regions.
-    \param System :: Simulation to use
-    \param PT :: PipeTube
-   */
-{
-  ELog::RegMethod RegA("R3FrontEndFMBB","insertFlanges");
+// void
+// R3FrontEndFMBB::insertFlanges(Simulation& System,
+// 			  const constructSystem::PipeTube& PT,
+// 			  const size_t offset)
+//   /*!
+//     Boilerplate function to insert the flanges from pipetubes
+//     that extend past the linkzone in to ther neighbouring regions.
+//     \param System :: Simulation to use
+//     \param PT :: PipeTube
+//    */
+// {
+//   ELog::RegMethod RegA("R3FrontEndFMBB","insertFlanges");
 
-  size_t voidN=buildZone.getNItems("Unit");
-  if (voidN<offset)
-    throw ColErr::InContainerError<size_t>
-      (offset, "Offset to large for buildZone cells:"+std::to_string(voidN));
-  voidN-=offset;
+//   size_t voidN=buildZone.getNItems("Unit");
+//   if (voidN<offset)
+//     throw ColErr::InContainerError<size_t>
+//       (offset, "Offset to large for buildZone cells:"+std::to_string(voidN));
+//   voidN-=offset;
 
-  buildZone.insertComponent(System,"Unit",voidN,
-			PT.getFullRule("FlangeA"));
-  buildZone.insertComponent(System,"Unit",voidN,
-			PT.getFullRule("FlangeB"));
-  buildZone.insertComponent(System,"Unit",voidN+2,
-			PT.getFullRule("FlangeA"));
-  buildZone.insertComponent(System,"Unit",voidN+2,
-			PT.getFullRule("FlangeB"));
-  return;
-}
+//   buildZone.insertComponent(System,"Unit",voidN,
+// 			PT.getFullRule("FlangeA"));
+//   buildZone.insertComponent(System,"Unit",voidN,
+// 			PT.getFullRule("FlangeB"));
+//   buildZone.insertComponent(System,"Unit",voidN+2,
+// 			PT.getFullRule("FlangeA"));
+//   buildZone.insertComponent(System,"Unit",voidN+2,
+// 			PT.getFullRule("FlangeB"));
+//   return;
+// }
 
 void
 R3FrontEndFMBB::buildHeatTable(Simulation& System)

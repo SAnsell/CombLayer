@@ -210,8 +210,8 @@ class R3FrontEnd :
   double outerRadius;   ///< radius of tube for divisions
   double frontOffset;   ///< Distance to move start point from origin
 
-  void insertFlanges(Simulation&,const constructSystem::PipeTube&,
-		     const size_t);
+  void insertFlanges(Simulation&,const constructSystem::PipeTube&, const size_t);
+
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
@@ -246,8 +246,8 @@ class R3FrontEnd :
   void activateMSM() { msmActive=true; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int) override;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

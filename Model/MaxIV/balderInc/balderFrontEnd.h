@@ -75,7 +75,6 @@ class balderFrontEnd :
 		   const long int) override;
 
   void createSurfaces();
-  void buildObjects(Simulation&);
   void createLinks() override;
 
  public:

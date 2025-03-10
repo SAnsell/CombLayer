@@ -75,7 +75,6 @@ class danmaxFrontEnd :
 		   const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
-  void buildObjects(Simulation&);
   void createLinks() override;
 
  public:

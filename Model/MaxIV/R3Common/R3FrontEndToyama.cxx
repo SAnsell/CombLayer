@@ -102,8 +102,7 @@ namespace xraySystem
 // Note currently uncopied:
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
-  R3FrontEnd(Key),
-  buildZone(Key+"R3FrontEndToyama")
+  R3FrontEnd(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -214,35 +213,35 @@ R3FrontEndToyama::createSurfaces()
   return;
 }
 
-void
-R3FrontEndToyama::insertFlanges(Simulation& System,
-			  const constructSystem::PipeTube& PT,
-			  const size_t offset)
-  /*!
-    Boilerplate function to insert the flanges from pipetubes
-    that extend past the linkzone in to ther neighbouring regions.
-    \param System :: Simulation to use
-    \param PT :: PipeTube
-   */
-{
-  ELog::RegMethod RegA("R3FrontEndToyama","insertFlanges");
+// void
+// R3FrontEndToyama::insertFlanges(Simulation& System,
+// 			  const constructSystem::PipeTube& PT,
+// 			  const size_t offset)
+//   /*!
+//     Boilerplate function to insert the flanges from pipetubes
+//     that extend past the linkzone in to ther neighbouring regions.
+//     \param System :: Simulation to use
+//     \param PT :: PipeTube
+//    */
+// {
+//   ELog::RegMethod RegA("R3FrontEndToyama","insertFlanges");
 
-  size_t voidN=buildZone.getNItems("Unit");
-  if (voidN<offset)
-    throw ColErr::InContainerError<size_t>
-      (offset, "Offset to large for buildZone cells:"+std::to_string(voidN));
-  voidN-=offset;
+//   size_t voidN=buildZone.getNItems("Unit");
+//   if (voidN<offset)
+//     throw ColErr::InContainerError<size_t>
+//       (offset, "Offset to large for buildZone cells:"+std::to_string(voidN));
+//   voidN-=offset;
 
-  buildZone.insertComponent(System,"Unit",voidN,
-			PT.getFullRule("FlangeA"));
-  buildZone.insertComponent(System,"Unit",voidN,
-			PT.getFullRule("FlangeB"));
-  buildZone.insertComponent(System,"Unit",voidN+2,
-			PT.getFullRule("FlangeA"));
-  buildZone.insertComponent(System,"Unit",voidN+2,
-			PT.getFullRule("FlangeB"));
-  return;
-}
+//   buildZone.insertComponent(System,"Unit",voidN,
+// 			PT.getFullRule("FlangeA"));
+//   buildZone.insertComponent(System,"Unit",voidN,
+// 			PT.getFullRule("FlangeB"));
+//   buildZone.insertComponent(System,"Unit",voidN+2,
+// 			PT.getFullRule("FlangeA"));
+//   buildZone.insertComponent(System,"Unit",voidN+2,
+// 			PT.getFullRule("FlangeB"));
+//   return;
+// }
 
 void
 R3FrontEndToyama::buildHeatTable(Simulation& System)

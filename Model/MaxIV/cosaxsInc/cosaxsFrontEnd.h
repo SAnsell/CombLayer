@@ -60,7 +60,7 @@ class cosaxsFrontEnd :
 		   const attachSystem::FixedComp&,const long int) override;
 
   void createSurfaces();
-  void buildObjects(Simulation&);
+  //  void buildObjects(Simulation&) override;
   void createLinks() override;
 
  public:

@@ -89,7 +89,7 @@ class R3FrontEndToyama :
   // std::string stopPoint;
 
   // /// Inner buildzone
-  attachSystem::BlockZone buildZone;
+  //  attachSystem::BlockZone buildZone;
 
   // /// Shared point to use for last component:
   // std::shared_ptr<attachSystem::FixedComp> lastComp;
@@ -205,8 +205,8 @@ class R3FrontEndToyama :
   // double outerRadius;   ///< radius of tube for divisions
   // double frontOffset;   ///< Distance to move start point from origin
 
-  void insertFlanges(Simulation&,const constructSystem::PipeTube&,
-		     const size_t);
+  // void insertFlanges(Simulation&,const constructSystem::PipeTube&,
+  // 		     const size_t);
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
