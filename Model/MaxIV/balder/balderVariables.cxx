@@ -721,7 +721,7 @@ BALDERvariables(FuncDataBase& Control)
 
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep [0] / dipole pipe / exit pipe
-  setVariable::R3FrontEndVariables(Control,"Balder");  
+  setVariable::R3FrontEndFMBBVariables(Control,"Balder");  
   balderVar::frontMaskVariables(Control,"BalderFrontBeam");  
   
   PipeGen.setMat("Stainless304");

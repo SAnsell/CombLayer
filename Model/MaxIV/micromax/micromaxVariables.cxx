@@ -1180,7 +1180,7 @@ MICROMAXvariables(FuncDataBase& Control)
   const std::string frontKey("MicroMaxFrontBeam");
 
   micromaxVar::undulatorVariables(Control,frontKey);
-  setVariable::R3FrontEndVariables(Control,"MicroMax");
+  setVariable::R3FrontEndFMBBVariables(Control,"MicroMax");
   micromaxVar::frontMaskVariables(Control,"MicroMaxFrontBeam");
     
   

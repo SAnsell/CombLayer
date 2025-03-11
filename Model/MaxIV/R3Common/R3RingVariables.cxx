@@ -395,7 +395,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 
 
 void
-R3FrontEndVariables(FuncDataBase& Control,
+R3FrontEndFMBBVariables(FuncDataBase& Control,
 		    const std::string& beamlineKey)
   /*!
     Set the variables for the front end
@@ -403,7 +403,7 @@ R3FrontEndVariables(FuncDataBase& Control,
     \param beamlineKey :: name of beamline
   */
 {
-  ELog::RegMethod RegA("R3RingVariables[F]","R3FrontEndVariables");
+  ELog::RegMethod RegA("R3RingVariables[F]","R3FrontEndFMBBVariables");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -488,8 +488,106 @@ R3FrontEndVariables(FuncDataBase& Control,
   moveApertureTable(Control,frontKey);
   shutterTable(Control,frontKey);
 
-  // PipeGen.setCF<setVariable::CF40>();
-  // PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0-6);
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0-6);
+
+  wallVariables(Control,beamlineKey+"ProxiShield");
+  return;
+}
+
+void
+R3FrontEndToyamaVariables(FuncDataBase& Control,
+		    const std::string& beamlineKey)
+  /*!
+    Set the variables for the front end
+    \param Control :: DataBase to use
+    \param beamlineKey :: name of beamline
+  */
+{
+  ELog::RegMethod RegA("R3RingVariables[F]","R3FrontEndToyamaVariables");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::CornerPipeGenerator CPipeGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::VacBoxGenerator VBoxGen;
+
+  setVariable::EPSeparatorGenerator ESGen;
+  setVariable::R3ChokeChamberGenerator CCGen;
+
+  const std::string frontKey(beamlineKey+"FrontBeam");
+  // Master off set from division --
+  Control.addVariable(frontKey+"YStep",524.4);
+  Control.addVariable(frontKey+"XStep",0.0);
+  Control.addVariable(frontKey+"OuterRadius",60.0);
+
+  // BuildZone offset
+  Control.addVariable(frontKey+"FrontOffset",-450.0);
+
+  PipeGen.setCF<CF40>();
+  PipeGen.setNoWindow();
+  PipeGen.setMat("Copper");
+  // placeholder length (100.0)
+  PipeGen.generatePipe(Control,frontKey+"TransPipe",100.0);
+
+  setVariable::MagnetM1Generator M1Gen;
+  M1Gen.generateBlock(Control,frontKey+"M1Block");
+
+  setVariable::MagnetU1Generator U1Gen;
+  U1Gen.generateBlock(Control,frontKey+"U1Block");
+
+  ESGen.generatePipe(Control,frontKey+"EPSeparator");
+
+  CCGen.generateChamber(Control,frontKey+"ChokeChamber");
+  CCGen.generateInsert(Control,frontKey+"ChokeInsert");
+
+  CPipeGen.setCF<CF40>();
+  CPipeGen.setAFlangeCF<CF25>();
+  CPipeGen.setMat("Aluminium","Stainless304");
+  CPipeGen.generatePipe(Control,frontKey+"DipolePipe",800.0);
+
+  PipeGen.setCF<CF25>();
+  PipeGen.setMat("Stainless304");
+  PipeGen.generatePipe(Control,frontKey+"ETransPipe",800.0);
+
+  //  Note bellow reversed for FM fixed:
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowA",16.0);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
+
+  PipeGen.setCF<CF40>();
+  PipeGen.setMat("Stainless304");
+  PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0);
+
+  Control.addVariable(frontKey+"ECutDiskYStep",5.0);
+  Control.addVariable(frontKey+"ECutDiskLength",0.1);
+  Control.addVariable(frontKey+"ECutDiskRadius",1.0);
+  Control.addVariable(frontKey+"ECutDiskMat","H2Gas#0.1");
+
+  Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutMagDiskLength",0.1);
+  // note: CF40::innerRadius is some complex template type
+  Control.addVariable
+    (frontKey+"ECutMagDiskRadius",static_cast<double>(CF25::innerRadius));
+  Control.addVariable(frontKey+"ECutMagDiskMat","H2Gas#0.1");
+
+  // note : reversed becaues using fixed FM
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
+  BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setAFlangeCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5);
+
+  // Create HEAT DUMP
+  heatDumpTable(Control,frontKey);
+  moveApertureTable(Control,frontKey);
+  shutterTable(Control,frontKey);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,frontKey+"CollAPipe",24.0-6);

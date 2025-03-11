@@ -956,7 +956,7 @@ DANMAXvariables(FuncDataBase& Control)
 
 
   danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
-  setVariable::R3FrontEndVariables(Control,"Danmax");
+  setVariable::R3FrontEndFMBBVariables(Control,"Danmax");
 
 
   //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);

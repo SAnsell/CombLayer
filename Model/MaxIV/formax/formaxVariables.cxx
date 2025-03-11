@@ -1154,7 +1154,7 @@ FORMAXvariables(FuncDataBase& Control)
 
   formaxVar::undulatorVariables(Control,frontKey);
   // exit pipe
-  setVariable::R3FrontEndVariables(Control,"Formax");
+  setVariable::R3FrontEndFMBBVariables(Control,"Formax");
   formaxVar::frontMaskVariables(Control,"FormaxFrontBeam");
   formaxVar::extraVariables(Control,frontKey);
   

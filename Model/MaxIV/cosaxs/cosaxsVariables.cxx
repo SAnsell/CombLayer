@@ -1065,7 +1065,7 @@ COSAXSvariables(FuncDataBase& Control)
   cosaxsVar::undulatorVariables(Control,"CosaxsFrontBeam");
 
   // ystep (310.0)/ trans/ exit pipe
-  setVariable::R3FrontEndVariables(Control,"Cosaxs");
+  setVariable::R3FrontEndFMBBVariables(Control,"Cosaxs");
   cosaxsVar::frontMaskVariables(Control,"CosaxsFrontBeam");
   
   PipeGen.setMat("Stainless304");

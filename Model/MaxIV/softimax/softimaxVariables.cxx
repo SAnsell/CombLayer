@@ -946,7 +946,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   softimaxVar::undulatorVariables(Control,"SoftiMAXFrontBeam");
 
-  setVariable::R3FrontEndVariables(Control,"SoftiMAX");
+  setVariable::R3FrontEndFMBBVariables(Control,"SoftiMAX");
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
   PipeGen.setMat("Stainless304");
