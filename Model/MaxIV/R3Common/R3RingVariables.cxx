@@ -488,8 +488,12 @@ R3FrontEndVariables(FuncDataBase& Control,
   moveApertureTable(Control,frontKey);
   shutterTable(Control,frontKey);
 
+  // PipeGen.setCF<setVariable::CF40>();
+  // PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0-6);
+
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0-6);
+  PipeGen.generatePipe(Control,frontKey+"CollAPipe",24.0-6);
+
 
   wallVariables(Control,beamlineKey+"ProxiShield");
   return;

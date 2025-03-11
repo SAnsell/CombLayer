@@ -102,69 +102,19 @@ namespace xraySystem
 // Note currently uncopied:
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
-  R3FrontEnd(Key)
+  R3FrontEnd(Key),
+  collAPipe(new constructSystem::VacuumPipe(newName+"CollAPipe"))
   /*!
     Constructor
     \param Key :: Name of construction key
-    \param Index :: Index number
   */
 {
   ELog::RegMethod RegA("R3FrontEndToyama","R3FrontEndToyama");
 
-  // ModelSupport::objectRegister& OR=
-  //   ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-  // OR.addObject(transPipe);
-  // OR.addObject(magBlockM1);
-  // OR.addObject(magBlockU1);
-  // OR.addObject(epSeparator);
-  // OR.addObject(chokeChamber);
-  // OR.addObject(chokeInsert);
-
-  // OR.addObject(dipolePipe);
-  // OR.addObject(eTransPipe);
-  // OR.addObject(bellowA);
-  // OR.addObject(collA);
-  // OR.addObject(bellowB);
-  // OR.addObject(collABPipe);
-  // OR.addObject(bellowC);
-  // OR.addObject(collB);
-  // OR.addObject(collC);
-  // OR.addObject(msmEntrancePipe);
-  // OR.addObject(msm);
-  // OR.addObject(eCutDisk);
-  // OR.addObject(eCutMagDisk);
-  // OR.addObject(collExitPipe);
-  // OR.addObject(heatBox);
-  // OR.addObject(heatDump);
-  // OR.addObject(haToyama);
-
-  // OR.addObject(pipeB);
-  // OR.addObject(bellowE);
-  // OR.addObject(aperturePipe);
-  // OR.addObject(moveCollA);
-  // OR.addObject(bellowF);
-  // OR.addObject(ionPC);
-  // OR.addObject(bellowG);
-  // OR.addObject(aperturePipeB);
-  // OR.addObject(moveCollB);
-  // OR.addObject(bellowH);
-  // OR.addObject(pipeC);
-
-  // OR.addObject(gateA);
-  // OR.addObject(bellowI);
-  // OR.addObject(florTubeA);
-  // OR.addObject(bellowJ);
-  // OR.addObject(gateTubeB);
-  // OR.addObject(offPipeA);
-  // OR.addObject(shutterBox);
-  // OR.addObject(shutters[0]);
-  // OR.addObject(shutters[1]);
-  // OR.addObject(offPipeB);
-  // OR.addObject(bellowK);
-
-  // OR.addObject(exitPipe);
-
+  OR.addObject(collAPipe);
 }
 
 R3FrontEndToyama::~R3FrontEndToyama()
@@ -620,8 +570,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,"back");
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowK,"back",*exitPipe);
+  constructSystem::constructUnit(System,buildZone,*bellowK,"back",*collAPipe);
 
   if (ExternalCut::isActive("REWall"))
     {

@@ -1124,7 +1124,7 @@ TOMOWISEvariables(FuncDataBase& Control)
   const std::string frontKey(beamLineName+"FrontBeam");
 
   tomowiseVar::undulatorVariables(Control,frontKey);
-  setVariable::R3FrontEndVariables(Control,beamLineName);
+  setVariable::R3FrontEndToyamaVariables(Control,beamLineName);
   tomowiseVar::frontMaskVariables(Control,frontKey);
 
 

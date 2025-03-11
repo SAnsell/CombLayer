@@ -85,6 +85,9 @@ class R3FrontEndToyama :
 {
  protected:
 
+  // Bremsstrahlung collimator
+  std::shared_ptr<constructSystem::VacuumPipe> collAPipe;
+
   // /// point to stop [normal none]
   // std::string stopPoint;
 
