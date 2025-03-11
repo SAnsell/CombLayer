@@ -80,7 +80,7 @@ namespace xraySystem
 TOMOWISE::TOMOWISE(const std::string& KN) :
   R3Beamline("Balder",KN),
   frontBeam(new tomowiseFrontEnd(newName+"FrontBeam")),
-  wallLead(new WallLead(newName+"WallLead")),
+  wallLead(new WallLead(newName+"ProxiShield")),
   joinPipe(new constructSystem::VacuumPipe(newName+"JoinPipe")),
   opticsHut(new OpticsHutch(newName+"OpticsHut")),
   opticsBeam(new tomowiseOpticsLine(newName+"OpticsLine")),
