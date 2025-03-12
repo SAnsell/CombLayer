@@ -53,7 +53,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
-
+  class BremBlock;
   class CylGateValve;
   class HeatDump;
   class LCollimator;
@@ -87,6 +87,7 @@ class R3FrontEndToyama :
 
   // Bremsstrahlung collimator
   std::shared_ptr<constructSystem::VacuumPipe> bremCollPipe;
+  std::shared_ptr<xraySystem::BremBlock> bremColl;
 
   // /// point to stop [normal none]
   // std::string stopPoint;

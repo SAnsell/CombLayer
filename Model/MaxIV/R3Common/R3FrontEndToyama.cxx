@@ -93,6 +93,7 @@
 #include "MagnetU1.h"
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
+#include "BremBlock.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
 
@@ -103,7 +104,8 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
-  bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe"))
+  bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
+  bremColl(new xraySystem::BremBlock(newName+"BremColl"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -115,6 +117,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(bremCollPipe);
+  OR.addObject(bremColl);
 }
 
 R3FrontEndToyama::~R3FrontEndToyama()
@@ -571,6 +574,8 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   buildShutterTable(System,*pipeC,"back");
 
   constructSystem::constructUnit(System,buildZone,*bellowK,"back",*bremCollPipe);
+  bremColl->addInsertCell(bremCollPipe->getCell("Void"));
+  bremColl->createAll(System,*bremCollPipe,0);
 
   if (ExternalCut::isActive("REWall"))
     {

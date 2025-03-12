@@ -62,6 +62,7 @@
 #include "MagnetM1Generator.h"
 #include "MagnetU1Generator.h"
 #include "HeatAbsorberToyamaGenerator.h"
+#include "BremBlockGenerator.h"
 
 #include "maxivVariables.h"
 
@@ -514,6 +515,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
+  setVariable::BremBlockGenerator BBGen;
 
   const std::string frontKey(beamlineKey+"FrontBeam");
   // Master off set from division --
@@ -590,8 +592,12 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,frontKey+"BremCollPipe",24.0-6);
+  PipeGen.generatePipe(Control,frontKey+"BremCollPipe",21.0);
 
+  constexpr double bremCollLength(20.0); // CAD
+  BBGen.setLength(bremCollLength);
+  BBGen.setAperature(-1.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7);
+  BBGen.generateBlock(Control,frontKey+"BremColl",-bremCollLength/2.0);
 
   wallVariables(Control,beamlineKey+"ProxiShield");
   return;
