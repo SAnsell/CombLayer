@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/BremBlock.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -51,7 +51,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -75,8 +75,8 @@ BremBlock::BremBlock(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
-  
-BremBlock::~BremBlock() 
+
+BremBlock::~BremBlock()
   /*!
     Destructor
   */
@@ -90,15 +90,16 @@ BremBlock::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("BremBlock","populate");
-  
+
   FixedRotate::populate(Control);
 
   // Void + Fe special:
   centreFlag=Control.EvalDefVar<int>(keyName+"CentreFlag",0);
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  radius=Control.EvalVar<double>(keyName+"Radius");
 
-  length=Control.EvalVar<double>(keyName+"Length");  
+  length=Control.EvalVar<double>(keyName+"Length");
 
   holeXStep=Control.EvalDefVar<double>(keyName+"HoleXStep",0.0);
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
@@ -109,7 +110,7 @@ BremBlock::populate(const FuncDataBase& Control)
   holeMidWidth=Control.EvalDefVar<double>(keyName+"HoleMidWidth",-1.0);
   holeBHeight=Control.EvalDefVar<double>(keyName+"HoleBHeight",holeAHeight);
   holeBWidth=Control.EvalDefVar<double>(keyName+"HoleBWidth",holeAWidth);
-  
+
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
 
@@ -143,7 +144,7 @@ BremBlock::createSurfaces()
   const Geometry::Vec3D holeBack=
     Origin+X*holeXStep+Z*holeZStep+Y*length;
 
-	 
+
   if (holeMidDist>Geometry::zeroTol &&
       length-holeMidDist>Geometry::zeroTol)
     {
@@ -213,13 +214,16 @@ BremBlock::createSurfaces()
 			       holeBack+Z*(holeBHeight/2.0)+X,
 			       Z);
     }
-  
 
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  if (radius<Geometry::zeroTol) { // outer shape is rectangular
+    ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  } else { // outer shape is cylindrical
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  }
   return;
 }
 
@@ -257,7 +261,7 @@ BremBlock::createObjects(Simulation& System)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1005 -1006");
       makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontSurf*backSurf);
-      
+
       HR=ModelSupport::getSetHeadRule
 	(SMap,buildIndex,"3 -4 5 -6 -7 (-1003: 1004 : -1005: 1006)");
       makeCell("Shield",System,cellIndex++,mainMat,0.0,HR*frontSurf*backSurf);
@@ -282,10 +286,10 @@ BremBlock::createLinks()
   ELog::RegMethod RegA("BremBlock","createLinks");
 
   // port centre
-  
-  FrontBackCut::createFrontLinks(*this,Origin,Y); 
-  FrontBackCut::createBackLinks(*this,Origin,Y);  
-  
+
+  FrontBackCut::createFrontLinks(*this,Origin,Y);
+  FrontBackCut::createBackLinks(*this,Origin,Y);
+
   return;
 }
 
@@ -307,14 +311,14 @@ BremBlock::createAll(Simulation& System,
     createCentredUnitVector(FC,FIndex,-length/2.0);
   else
     createUnitVector(FC,FIndex);
-  
-  createSurfaces();    
+
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
 
   return;
 }
-  
+
 }  // NAMESPACE xraySystem

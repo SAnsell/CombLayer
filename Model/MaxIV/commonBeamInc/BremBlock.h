@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/BremBlock.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_BremBlock_h
@@ -26,13 +26,13 @@ class Simulation;
 
 namespace xraySystem
 {
-  
+
 /*!
   \class BremBlock
   \version 1.0
   \author S. Ansell
   \date May 2018
-  \brief Bremsstralung Collimator unit  
+  \brief Bremsstralung Collimator unit
 */
 
 class BremBlock :
@@ -47,7 +47,8 @@ class BremBlock :
 
   double width;               ///< Optional width
   double height;              ///< Optional height
-  double length;              ///< Main length  
+  double radius;              ///< Optional outer radius
+  double length;              ///< Main length
 
   double holeXStep;            ///< X-offset of hole
   double holeZStep;            ///< Z-offset of hole
@@ -58,7 +59,7 @@ class BremBlock :
   double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
-  
+
   int voidMat;                ///< void material
   int mainMat;                ///< main material
 
@@ -66,7 +67,7 @@ class BremBlock :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   BremBlock(const std::string&);
@@ -83,4 +84,3 @@ class BremBlock :
 }
 
 #endif
- 

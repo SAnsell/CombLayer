@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/BremBlockGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_BremBlockGenerator_h
@@ -26,7 +26,7 @@ class Simulation;
 
 namespace setVariable
 {
-  
+
 /*!
   \class BremBlockGenerator
   \version 1.0
@@ -35,7 +35,7 @@ namespace setVariable
   \brief Bremsstralung Collimator unit  builder
 */
 
-class BremBlockGenerator 
+class BremBlockGenerator
 {
  private:
 
@@ -43,10 +43,11 @@ class BremBlockGenerator
   double length;              ///< Main length
   double width;               ///< Optional width
   double height;              ///< Optional height
+  double radius;              ///< Optional outer radius
 
   double holeXStep;            ///< X-offset of hole
   double holeZStep;            ///< Z-offset of hole
-  
+
   double holeAWidth;           ///< Front width of hole
   double holeAHeight;          ///< Front height of hole
   double holeMidDist;          ///< Mid distance width of hole
@@ -54,11 +55,11 @@ class BremBlockGenerator
   double holeMidHeight;        ///< Mid height of hole
   double holeBWidth;           ///< Back width of hole
   double holeBHeight;          ///< Back height of hole
-  
+
   std::string voidMat;                ///< void material
   std::string mainMat;                ///< main material
 
-  
+
  public:
 
   BremBlockGenerator();
@@ -70,6 +71,7 @@ class BremBlockGenerator
   void setMaterial(const std::string&,const std::string&);
   void setLength(const double);
   void setCube(const double,const double);
+  void setRadius(const double);
   void setHoleXY(const double,const double);
   void setAperature(const double,const double,const double,
 		    const double,const double,
@@ -77,7 +79,7 @@ class BremBlockGenerator
   void setAperatureAngle(const double,const double,
 			 const double,const double,
 			 const double);
-  
+
   void generateBlock(FuncDataBase&,const std::string&,const double) const;
 
 };
