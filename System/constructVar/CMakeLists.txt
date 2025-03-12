@@ -2,7 +2,9 @@ set (constructVarSources
     BellowGenerator.cxx CornerPipeGenerator.cxx CrossGenerator.cxx
     DomeConnectorGenerator.cxx DoublePortItemGenerator.cxx
     FlangeDomeGenerator.cxx
-    FlangePlateGenerator.cxx GateValveGenerator.cxx JawFlangeGenerator.cxx
+    FlangePlateGenerator.cxx
+    FocusGenerator.cxx
+    GateValveGenerator.cxx JawFlangeGenerator.cxx
     JawValveGenerator.cxx LeadPipeGenerator.cxx PipeGenerator.cxx
     PipeTubeGenerator.cxx PortItemGenerator.cxx PortTubeGenerator.cxx
     TorusUnitGenerator.cxx
@@ -33,6 +35,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/DoublePortItemGenerator.cxx
   ${tarDIR}/FlangeDomeGenerator.cxx
   ${tarDIR}/FlangePlateGenerator.cxx
+  ${tarDIR}/FocusGenerator.cxx
   ${tarDIR}/GateValveGenerator.cxx
   ${tarDIR}/JawFlangeGenerator.cxx
   ${tarDIR}/JawValveGenerator.cxx
@@ -52,6 +55,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/DoublePortItemGenerator.h
   ${tarINC}/FlangeDomeGenerator.h
   ${tarINC}/FlangePlateGenerator.h
+  ${tarINC}/FocusGenerator.h
   ${tarINC}/GateValveGenerator.h
   ${tarINC}/JawFlangeGenerator.h
   ${tarINC}/JawValveGenerator.h
