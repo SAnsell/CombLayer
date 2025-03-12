@@ -595,9 +595,11 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"BremCollPipe",21.0);
 
   constexpr double bremCollLength(20.0); // CAD
+  BBGen.centre();
+  BBGen.setRadius(3.0); // CAD
   BBGen.setLength(bremCollLength);
   BBGen.setAperature(-1.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7);
-  BBGen.generateBlock(Control,frontKey+"BremColl",-bremCollLength/2.0);
+  BBGen.generateBlock(Control,frontKey+"BremColl",0);
 
   wallVariables(Control,beamlineKey+"ProxiShield");
   return;
