@@ -591,10 +591,12 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   moveApertureTable(Control,frontKey);
   shutterTable(Control,frontKey);
 
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,frontKey+"BremCollPipe",21.0);
-
   constexpr double bremCollLength(20.0); // CAD
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,frontKey+"BremCollPipe",bremCollLength);
+  Control.addVariable(frontKey+"BremCollPipeRadius",4.5);
+  Control.addVariable(frontKey+"BremCollFlangeARadius",7.5);
+
   BBGen.centre();
   BBGen.setRadius(3.0); // CAD
   BBGen.setLength(bremCollLength);
