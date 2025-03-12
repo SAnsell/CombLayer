@@ -103,7 +103,7 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
-  collAPipe(new constructSystem::VacuumPipe(newName+"CollAPipe"))
+  bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -114,7 +114,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(collAPipe);
+  OR.addObject(bremCollPipe);
 }
 
 R3FrontEndToyama::~R3FrontEndToyama()
@@ -570,7 +570,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,"back");
 
-  constructSystem::constructUnit(System,buildZone,*bellowK,"back",*collAPipe);
+  constructSystem::constructUnit(System,buildZone,*bellowK,"back",*bremCollPipe);
 
   if (ExternalCut::isActive("REWall"))
     {

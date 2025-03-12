@@ -590,7 +590,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,frontKey+"CollAPipe",24.0-6);
+  PipeGen.generatePipe(Control,frontKey+"BremCollPipe",24.0-6);
 
 
   wallVariables(Control,beamlineKey+"ProxiShield");
