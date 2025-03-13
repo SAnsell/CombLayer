@@ -162,7 +162,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
       std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
     }),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
-  bellowK(new constructSystem::Bellows(newName+"BellowK")) ,
   exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe")),
   collFM3Active(true),
   msmActive(false)
@@ -223,7 +222,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(shutters[0]);
   OR.addObject(shutters[1]);
   OR.addObject(offPipeB);
-  OR.addObject(bellowK);
 
   OR.addObject(exitPipe);
 
@@ -523,11 +521,6 @@ R3FrontEnd::buildShutterTable(Simulation& System,
 
   // constructSystem::constructUnit
   //   (System,buildZone,*shutterBox,"back",*offPipeB);
-
-  // // bellows
-  // constructSystem::constructUnit
-  //   (System,buildZone,*offPipeB,"back",*bellowK);
-
 
   return;
 }

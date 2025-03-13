@@ -350,8 +350,7 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
   ELog::RegMethod RegA("R3FrontEndToyama","buildShutterTable");
   int outerCell;
 
-  constructSystem::constructUnit
-    (System,buildZone,preFC,preSide,*gateA);
+  constructSystem::constructUnit(System,buildZone,preFC,preSide,*gateA);
 
   // gateA->createAll(System,preFC,preSideIndex);
   // outerCell=buildZone.createUnit(System,*gateA,2);
@@ -413,11 +412,6 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*shutterBox,"back",*offPipeB);
-
-  // bellows
-  constructSystem::constructUnit
-    (System,buildZone,*offPipeB,"back",*bellowK);
-
 
   return;
 }
@@ -573,7 +567,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,"back");
 
-  constructSystem::constructUnit(System,buildZone,*bellowK,"back",*bremCollPipe);
+  constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bremCollPipe);
   bremColl->addInsertCell(bremCollPipe->getCell("Void"));
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeAInnerVoid"));
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeBInnerVoid"));

@@ -101,15 +101,15 @@ namespace xraySystem
 // Note currently uncopied:
 
 R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
-  R3FrontEnd(Key)
+  R3FrontEnd(Key),
+  bellowK(new constructSystem::Bellows(newName+"BellowK"))
   /*!
     Constructor
     \param Key :: Name of construction key
     \param Index :: Index number
   */
 {
-  // ModelSupport::objectRegister& OR=
-  //   ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
 
   // OR.addObject(transPipe);
   // OR.addObject(magBlockM1);
@@ -155,7 +155,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
-  // OR.addObject(bellowK);
+  OR.addObject(bellowK);
 
   // OR.addObject(exitPipe);
 

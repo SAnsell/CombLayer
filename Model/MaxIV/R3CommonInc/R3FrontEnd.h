@@ -200,8 +200,6 @@ class R3FrontEnd :
   std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
   /// Back port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
-  /// Front port connection for shutterbox exit
-  std::shared_ptr<constructSystem::Bellows> bellowK;
 
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 

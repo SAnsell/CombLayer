@@ -403,7 +403,7 @@ void
 R3FrontEndFMBBVariables(FuncDataBase& Control,
 		    const std::string& beamlineKey)
   /*!
-    Set the variables for the front end
+    Set the variables for the FMB/B front-end
     \param Control :: DataBase to use
     \param beamlineKey :: name of beamline
   */
@@ -504,7 +504,7 @@ void
 R3FrontEndToyamaVariables(FuncDataBase& Control,
 		    const std::string& beamlineKey)
   /*!
-    Set the variables for the front end
+    Set the variables for the Toyama front-end
     \param Control :: DataBase to use
     \param beamlineKey :: name of beamline
   */
