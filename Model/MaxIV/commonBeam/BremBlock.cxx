@@ -97,7 +97,7 @@ BremBlock::populate(const FuncDataBase& Control)
   centreFlag=Control.EvalDefVar<int>(keyName+"CentreFlag",0);
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  radius=Control.EvalVar<double>(keyName+"Radius");
+  radius=Control.EvalDefVar<double>(keyName+"Radius", 0.0);
 
   length=Control.EvalVar<double>(keyName+"Length");
 
