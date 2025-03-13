@@ -66,6 +66,10 @@
 
 #include "maxivVariables.h"
 
+// References
+// [1] ForMAX and MicroMAX Frontend Technical Specification
+//     http://localhost:8080/maxiv/work-log/micromax/pictures/front-end/formax-and-micromax-frontend-technical-specification.pdf/view
+
 namespace setVariable
 {
 
@@ -507,6 +511,8 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("R3RingVariables[F]","R3FrontEndToyamaVariables");
 
+  std::string name;
+
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CornerPipeGenerator CPipeGen;
@@ -591,16 +597,22 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   moveApertureTable(Control,frontKey);
   shutterTable(Control,frontKey);
 
-  constexpr double bremCollLength(20.0); // CAD
+
+  name=frontKey+"BremCollPipe";
+  constexpr double bremCollLength(20.0); // CAD and [1, page 26]
+  constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
   PipeGen.setCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,frontKey+"BremCollPipe",bremCollLength);
-  Control.addVariable(frontKey+"BremCollPipeRadius",4.5);
-  Control.addVariable(frontKey+"BremCollFlangeARadius",7.5);
+  PipeGen.generatePipe(Control,name,bremCollLength);
+  Control.addVariable(name+"Radius",4.5);
+  Control.addVariable(name+"FlangeARadius",7.5);
+  Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
+  Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
 
   BBGen.centre();
-  BBGen.setRadius(3.0); // CAD
+  BBGen.setMaterial("Tungsten", "Void");
+  BBGen.setRadius(bremCollRadius);
   BBGen.setLength(bremCollLength);
-  BBGen.setAperature(-1.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7);
+  BBGen.setAperature(-1.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7); // CAD and [1, page 26]
   BBGen.generateBlock(Control,frontKey+"BremColl",0);
 
   wallVariables(Control,beamlineKey+"ProxiShield");

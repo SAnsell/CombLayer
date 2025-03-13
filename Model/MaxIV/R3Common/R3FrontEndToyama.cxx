@@ -575,6 +575,8 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*bellowK,"back",*bremCollPipe);
   bremColl->addInsertCell(bremCollPipe->getCell("Void"));
+  bremColl->addInsertCell(bremCollPipe->getCell("FlangeAInnerVoid"));
+  bremColl->addInsertCell(bremCollPipe->getCell("FlangeBInnerVoid"));
   bremColl->createAll(System,*bremCollPipe,0);
 
   if (ExternalCut::isActive("REWall"))
