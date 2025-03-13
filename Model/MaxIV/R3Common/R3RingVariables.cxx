@@ -348,9 +348,10 @@ shutterTableToyama(FuncDataBase& Control,
   const std::string shutterName=frontKey+"ShutterBox";
   const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setPipe(9.7,0.3,10,2.2); // CAD
   SimpleTubeGen.setCap(0,0);
   SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
-  Control.addVariable(frontKey+"ShutterBoxNPorts",2);
+  Control.addVariable(shutterName+"NPorts",2);
 
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
@@ -358,7 +359,7 @@ shutterTableToyama(FuncDataBase& Control,
   // lift is actually 60mm [check]
   BeamMGen.setThread(1.0,"Nickel");
   BeamMGen.setLift(5.0,0.0);
-  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten"); // CAD
 
   // centre of mid point
   Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
@@ -374,7 +375,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeB",5.0);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",2.6); // adjusted
   Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
   Control.addVariable(frontKey+"OffPipeBFlangeBType",0);
