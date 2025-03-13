@@ -75,7 +75,8 @@ namespace setVariable
 
 void heatDumpTable(FuncDataBase&,const std::string&);
 void heatDumpVariables(FuncDataBase&,const std::string&);
-void shutterTable(FuncDataBase&,const std::string&);
+void shutterTableFMBB(FuncDataBase&,const std::string&);
+void shutterTableToyama(FuncDataBase&,const std::string&);
 void moveApertureTable(FuncDataBase&,const std::string&);
 void collimatorVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
@@ -185,15 +186,118 @@ moveApertureTable(FuncDataBase& Control,
 }
 
 void
-shutterTable(FuncDataBase& Control,
+shutterTableFMBB(FuncDataBase& Control,
 	     const std::string& frontKey)
   /*!
-    Set the variables for the shutter table (number 3)
+    Set the variables for the FMB/B front-end shutter table (number 3)
     \param Control :: DataBase to use
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("R3RingVariables[F]","shutterTable");
+  ELog::RegMethod RegA("R3RingVariables[F]","shutterTableFMBB");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::BeamMountGenerator BeamMGen;
+  setVariable::CylGateValveGenerator GVGen;
+
+  // joined and open
+  GateGen.setLength(3.5);
+  GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowI",10.0);
+
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
+
+  // beam ports
+  const std::string florName(frontKey+"FlorTubeA");
+  Control.addVariable(florName+"NPorts",4);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);
+  PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
+
+  GVGen.generateGate(Control,frontKey+"GateTubeB",0);
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setBFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
+  Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
+
+
+  const std::string shutterName=frontKey+"ShutterBox";
+  const double sBoxLen(51.0);
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(0,0);
+  SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
+  Control.addVariable(frontKey+"ShutterBoxNPorts",2);
+
+  // 20cm above port tube
+  PItemGen.setCF<setVariable::CF50>(14.0);
+  PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
+  // lift is actually 60mm [check]
+  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setLift(5.0,0.0);
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");
+
+  // centre of mid point
+  Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
+  for(size_t i=0;i<2;i++)
+    {
+      const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
+      const std::string fname=frontKey+"Shutter"+std::to_string(i);
+
+      PItemGen.generatePort(Control,name,CPos,ZVec);
+      BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
+      CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
+    }
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",20.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
+
+  Control.addVariable(frontKey+"BremBlockRadius",3.0);
+  Control.addVariable(frontKey+"BremBlockLength",20.0);
+  Control.addVariable(frontKey+"BremBlockHoleWidth",2.0);
+  Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
+  Control.addVariable(frontKey+"BremBlockMainMat","Tungsten");
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowK",11.05);
+
+  return;
+}
+
+void
+shutterTableToyama(FuncDataBase& Control,
+	     const std::string& frontKey)
+  /*!
+    Set the variables for the Toyama front-end shutter table (number 3)
+    \param Control :: DataBase to use
+    \param frontKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("R3RingVariables[F]","shutterTableToyama");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::GateValveGenerator GateGen;
@@ -273,7 +377,6 @@ shutterTable(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"OffPipeB",5.0);
   Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
-  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBFlangeBType",0);
 
   Control.addVariable(frontKey+"BremBlockRadius",3.0);
@@ -288,6 +391,7 @@ shutterTable(FuncDataBase& Control,
 
   return;
 }
+
 
 void
 heatDumpTable(FuncDataBase& Control,
@@ -493,7 +597,7 @@ R3FrontEndFMBBVariables(FuncDataBase& Control,
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);
   moveApertureTable(Control,frontKey);
-  shutterTable(Control,frontKey);
+  shutterTableFMBB(Control,frontKey);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0);
@@ -597,7 +701,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   // Create HEAT DUMP
   heatDumpTable(Control,frontKey);
   moveApertureTable(Control,frontKey);
-  shutterTable(Control,frontKey);
+  shutterTableToyama(Control,frontKey);
 
 
   name=frontKey+"BremCollPipe";
@@ -619,7 +723,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   BBGen.setAperature(-1.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7); // CAD and [1, page 26]
   BBGen.generateBlock(Control,frontKey+"BremColl",0);
 
-  wallVariables(Control,beamlineKey+"ProxiShield");
+  wallVariables(Control,beamlineKey+"WallLead");
   return;
 }
 
