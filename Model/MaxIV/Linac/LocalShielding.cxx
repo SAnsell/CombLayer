@@ -156,11 +156,7 @@ LocalShielding::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  depth=Control.EvalDefVar<double>(keyName+"Depth", std::numeric_limits<double>::quiet_NaN());
-  if (std::isnan(depth)) { //
-    height = height/2.0;
-    depth = height;
-  }
+  depth=Control.EvalVar<double>(keyName+"Depth");
 
   midHoleWidth=Control.EvalVar<double>(keyName+"MidHoleWidth");
   midHoleHeight=Control.EvalVar<double>(keyName+"MidHoleHeight");

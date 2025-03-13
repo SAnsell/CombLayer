@@ -49,6 +49,7 @@
     dents .5 scale .5 }}};
 
 #declare matIron = material{ texture { pigment{color rgb<0.0552288609,0.640654786,0.765840204> filter 0.9 } }};
+#declare matB4C = material{ texture { pigment{color rgb<0.9, 0.0 ,0.1> } }};
 
 #declare matLead = material{ texture { pigment{color P_Chrome2 transmit 0.4 } }};
 

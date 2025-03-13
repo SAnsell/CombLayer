@@ -292,14 +292,25 @@ FlatPipe::createObjects(Simulation& System)
   makeCell("RightPipe",System,cellIndex++,wallMat,0.0,HR);
 
   // FLANGE Front:
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				"-11 -107 ((7 -3) : (8 4) : -5 : 6)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 7 -3");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 8 4");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 3 -4 -5");
+  makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107 3 -4 6");
   makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
   // FLANGE Back:
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"12 -207 ((7 -3) : (8 4) : -5 : 6)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 7 -3");
   makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 8 4");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 3 -4 -5");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -207 3 -4 6");
+  makeCell("BackFlange",System,cellIndex++,wallMat,0.0,HR*backHR);
+
 
   // outer boundary [flange front/back]
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -107");

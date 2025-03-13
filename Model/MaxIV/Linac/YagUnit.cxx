@@ -128,8 +128,8 @@ YagUnit::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  backCapMat=ModelSupport::EvalMat<int>(Control,keyName+"BackCapMat");
-
+  backCapMat = (backCapThick>Geometry::zeroTol) ?
+    ModelSupport::EvalMat<int>(Control,keyName+"BackCapMat") : 0;
   return;
 }
 
