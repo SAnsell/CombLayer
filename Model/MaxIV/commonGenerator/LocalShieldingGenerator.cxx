@@ -81,6 +81,11 @@ LocalShieldingGenerator::setSize(const double L, const double W, const double H,
   height = H;
   depth = D;
 
+  if (std::isnan(depth)) {
+    height /= 2.0;
+    depth = height;
+  }
+
   return;
 }
 
