@@ -270,9 +270,11 @@ shutterTable(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeB",20.0);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",5.0);
   Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeBType",0);
 
   Control.addVariable(frontKey+"BremBlockRadius",3.0);
   Control.addVariable(frontKey+"BremBlockLength",20.0);
@@ -603,8 +605,10 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
   PipeGen.setCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,name,bremCollLength);
-  Control.addVariable(name+"Radius",4.5);
-  Control.addVariable(name+"FlangeARadius",7.5);
+  constexpr double bremCollPipeInnerRadius = 4.5; // CAD
+  Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
+  Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
+  Control.addVariable(name+"FlangeBRadius",7.5); // CAD
   Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
   Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
 
