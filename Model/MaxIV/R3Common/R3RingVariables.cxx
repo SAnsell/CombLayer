@@ -496,9 +496,9 @@ R3FrontEndFMBBVariables(FuncDataBase& Control,
   shutterTable(Control,frontKey);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0-6);
+  PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0);
 
-  wallVariables(Control,beamlineKey+"ProxiShield");
+  wallVariables(Control,beamlineKey+"WallLead");
   return;
 }
 
