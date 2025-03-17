@@ -94,6 +94,7 @@
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
 #include "BremBlock.h"
+#include "ProximityShielding.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
 
@@ -104,6 +105,7 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl"))
   /*!
@@ -116,6 +118,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(proxiShieldA);
   OR.addObject(bremCollPipe);
   OR.addObject(bremColl);
 }
@@ -378,8 +381,8 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*bellowJ,"back",*gateTubeB);
 
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeB,"back",*offPipeA);
+  constructSystem::constructUnit(System,buildZone,*gateTubeB,"back",*proxiShieldA);
+  constructSystem::constructUnit(System,buildZone,*proxiShieldA,"back",*offPipeA);
 
   //  insertFlanges(System,*gateTubeB);
 

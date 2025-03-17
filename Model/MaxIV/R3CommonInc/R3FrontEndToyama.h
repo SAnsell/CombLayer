@@ -43,14 +43,6 @@ namespace constructSystem
   class VacuumPipe;
 }
 
-/*!
-  \namespace xraySystem
-  \brief R3 Toyama front-end
-  \version 1.0
-  \date March 2025
-  \author K. Batkov
-*/
-
 namespace xraySystem
 {
   class BremBlock;
@@ -71,13 +63,14 @@ namespace xraySystem
   class EPCombine;
   class R3ChokeChamber;
   class R3ChokeInsert;
+  class ProximityShielding;
 
   /*!
-    \class balderFrontEnd
-    \version 1.0
-    \author S. Ansell
-    \date March 2018
-    \brief General constructor front end optics
+    \class R3FrontEndToyama
+    \version 2.0
+    \author K. Batkov / S. Ansell
+    \date March 2025
+    \brief Toyama front-end beam components
   */
 
 class R3FrontEndToyama :
@@ -85,6 +78,7 @@ class R3FrontEndToyama :
 {
  protected:
 
+  std::shared_ptr<xraySystem::ProximityShielding> proxiShieldA; // proximity shielding
   // Bremsstrahlung collimator
   std::shared_ptr<constructSystem::VacuumPipe> bremCollPipe;
   std::shared_ptr<xraySystem::BremBlock> bremColl;

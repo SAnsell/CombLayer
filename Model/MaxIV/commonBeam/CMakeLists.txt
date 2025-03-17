@@ -15,7 +15,7 @@ set (commonBeamSources
     MLMono.cxx MonoBeamStop.cxx MonoBlockXstals.cxx
     MonoBox.cxx MonoCrystals.cxx MonoShutter.cxx MovableSafetyMask.cxx
     Octupole.cxx OpticsHutch.cxx PipeShield.cxx
-    PortChicane.cxx Quadrupole.cxx RingDoor.cxx
+    PortChicane.cxx ProximityShielding.cxx Quadrupole.cxx RingDoor.cxx
     RoundMonoShutter.cxx Sexupole.cxx ShutterUnit.cxx
     SideShield.cxx SimpleChicane.cxx SixPortTube.cxx
     SqrCollimator.cxx SquareFMask.cxx Table.cxx
@@ -93,6 +93,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/OpticsHutch.cxx
   ${tarDIR}/PipeShield.cxx
   ${tarDIR}/PortChicane.cxx
+  ${tarDIR}/ProximityShielding.cxx
   ${tarDIR}/Quadrupole.cxx
   ${tarDIR}/RingDoor.cxx
   ${tarDIR}/RoundMonoShutter.cxx
@@ -163,6 +164,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/OpticsHutch.h
   ${tarINC}/PipeShield.h
   ${tarINC}/PortChicane.h
+  ${tarINC}/ProximityShielding.h
   ${tarINC}/Quadrupole.h
   ${tarINC}/RingDoor.h
   ${tarINC}/RoundMonoShutter.h

@@ -27,6 +27,7 @@ set (commonGeneratorSources
     MonoBlockXstalsGenerator.cxx MonoBoxGenerator.cxx MonoShutterGenerator.cxx
     MultiPipeGenerator.cxx MovableSafetyMaskGenerator.cxx NBeamStopGenerator.cxx OctupoleGenerator.cxx
     OpticsHutGenerator.cxx PipeShieldGenerator.cxx PortChicaneGenerator.cxx
+    ProximityShieldingGenerator.cxx
     PreDipoleGenerator.cxx PrismaChamberGenerator.cxx QuadrupoleGenerator.cxx
     QuadUnitGenerator.cxx R3ChokeChamberGenerator.cxx RFGunGenerator.cxx
     RingDoorGenerator.cxx RoundShutterGenerator.cxx ScrapperGenerator.cxx
@@ -138,6 +139,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/OpticsHutGenerator.cxx
   ${tarDIR}/PipeShieldGenerator.cxx
   ${tarDIR}/PortChicaneGenerator.cxx
+  ${tarDIR}/ProximityShieldingGenerator.cxx
   ${tarDIR}/PreDipoleGenerator.cxx
   ${tarDIR}/PrismaChamberGenerator.cxx
   ${tarDIR}/QuadrupoleGenerator.cxx
@@ -250,6 +252,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/OpticsHutGenerator.h
   ${tarINC}/PipeShieldGenerator.h
   ${tarINC}/PortChicaneGenerator.h
+  ${tarINC}/ProximityShieldingGenerator.h
   ${tarINC}/PreDipoleGenerator.h
   ${tarINC}/PrismaChamberGenerator.h
   ${tarINC}/QuadrupoleGenerator.h

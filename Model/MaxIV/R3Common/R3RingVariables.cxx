@@ -63,6 +63,7 @@
 #include "MagnetU1Generator.h"
 #include "HeatAbsorberToyamaGenerator.h"
 #include "BremBlockGenerator.h"
+#include "ProximityShieldingGenerator.h"
 
 #include "maxivVariables.h"
 
@@ -306,6 +307,7 @@ shutterTableToyama(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::BeamMountGenerator BeamMGen;
   setVariable::CylGateValveGenerator GVGen;
+  setVariable::ProximityShieldingGenerator PSGen;
 
   // joined and open
   GateGen.setLength(3.5);
@@ -336,6 +338,7 @@ shutterTableToyama(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
 
   GVGen.generateGate(Control,frontKey+"GateTubeB",0);
+  PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window
