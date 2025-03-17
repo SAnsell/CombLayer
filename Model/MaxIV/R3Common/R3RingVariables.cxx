@@ -341,7 +341,7 @@ shutterTableToyama(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeA",7.1); // CAD
   Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
 
 
