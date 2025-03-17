@@ -50,8 +50,8 @@ namespace setVariable
 {
 
 ProximityShieldingGenerator::ProximityShieldingGenerator() :
-  length(15.0),width(20.0),height(20.0),wallThick(1.0),
-  mainMat("Void"),wallMat("Stainless316L")
+  length(15.0),width(20.0),height(20.0), pipeRadius(2.25), // all dimensions: CAD
+  voidMat("Void"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
   */
@@ -78,8 +78,8 @@ ProximityShieldingGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"PipeRadius",pipeRadius);
+  Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
   return;

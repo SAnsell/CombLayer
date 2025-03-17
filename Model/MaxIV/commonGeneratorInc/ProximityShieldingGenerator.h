@@ -42,9 +42,9 @@ class ProximityShieldingGenerator
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double pipeRadius;             ///< Wall thickness
 
-  std::string mainMat;          ///< Main material
+  std::string voidMat;          ///< Main material
   std::string wallMat;          ///< Wall material
 
  public:

@@ -84,8 +84,8 @@ ProximityShielding::ProximityShielding(const ProximityShielding& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  pipeRadius(A.pipeRadius),
+  voidMat(A.voidMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: ProximityShielding to copy
@@ -110,8 +110,8 @@ ProximityShielding::operator=(const ProximityShielding& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      wallThick=A.wallThick;
-      mainMat=A.mainMat;
+      pipeRadius=A.pipeRadius;
+      voidMat=A.voidMat;
       wallMat=A.wallMat;
     }
   return *this;
@@ -147,9 +147,9 @@ ProximityShielding::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  pipeRadius=Control.EvalVar<double>(keyName+"PipeRadius");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -165,28 +165,14 @@ ProximityShielding::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
-
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
@@ -195,11 +181,7 @@ ProximityShielding::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin, Y, pipeRadius);
 
   return;
 }
@@ -216,16 +198,16 @@ ProximityShielding::createObjects(Simulation& System)
   HeadRule HR;
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
+  const HeadRule fb = frontStr*backStr;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 7 ");
+  makeCell("MainCell",System,cellIndex++,wallMat,0.0,HR*fb);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+  makeCell("VoidCell",System,cellIndex++,voidMat,0.0,HR*fb);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16");
-  addOuterSurf(HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
+  addOuterSurf(HR*fb);
 
   return;
 }

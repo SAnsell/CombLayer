@@ -47,9 +47,9 @@ class ProximityShielding :
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double pipeRadius;            ///< Penetration thickness
 
-  int mainMat;                  ///< Main material
+  int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
 
   void populate(const FuncDataBase&);
