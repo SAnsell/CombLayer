@@ -84,7 +84,7 @@ ProximityShielding::ProximityShielding(const ProximityShielding& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   length(A.length),width(A.width),height(A.height),
-  pipeRadius(A.pipeRadius),
+  boreRadius(A.boreRadius),
   voidMat(A.voidMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -110,7 +110,7 @@ ProximityShielding::operator=(const ProximityShielding& A)
       length=A.length;
       width=A.width;
       height=A.height;
-      pipeRadius=A.pipeRadius;
+      boreRadius=A.boreRadius;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
     }
@@ -147,7 +147,7 @@ ProximityShielding::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  pipeRadius=Control.EvalVar<double>(keyName+"PipeRadius");
+  boreRadius=Control.EvalVar<double>(keyName+"BoreRadius");
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -181,7 +181,7 @@ ProximityShielding::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin, Y, pipeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin, Y, boreRadius);
 
   return;
 }

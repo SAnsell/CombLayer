@@ -47,7 +47,7 @@ class ProximityShielding :
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
-  double pipeRadius;            ///< Penetration thickness
+  double boreRadius;            ///< Pipe penetration radius
 
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material
