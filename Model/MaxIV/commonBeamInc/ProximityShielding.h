@@ -47,7 +47,7 @@ class ProximityShielding :
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< Height
-  double boreRadius;            ///< Pipe penetration radius
+  double boreRadius;            ///< Pipe penetration radius. Set it to 0. to avoid gap between the pipe.
 
   int voidMat;                  ///< Void material
   int wallMat;                  ///< Wall material

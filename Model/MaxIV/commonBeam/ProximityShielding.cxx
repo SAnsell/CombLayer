@@ -181,7 +181,8 @@ ProximityShielding::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin, Y, boreRadius);
+  if (boreRadius>Geometry::zeroTol)
+    ModelSupport::buildCylinder(SMap,buildIndex+7,Origin, Y, boreRadius);
 
   return;
 }
@@ -202,11 +203,16 @@ ProximityShielding::createObjects(Simulation& System)
 
   const HeadRule IPipeHR=getRule("Inner");
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 7 ");
-  makeCell("MainCell",System,cellIndex++,wallMat,0.0,HR*fb);
+  if (boreRadius>Geometry::zeroTol) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 7 ");
+    makeCell("MainCell",System,cellIndex++,wallMat,0.0,HR*fb);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
-  makeCell("VoidCell",System,cellIndex++,voidMat,0.0,HR*fb*IPipeHR);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+    makeCell("VoidCell",System,cellIndex++,voidMat,0.0,HR*fb*IPipeHR);
+  } else {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
+    makeCell("MainCell",System,cellIndex++,wallMat,0.0,HR*fb*IPipeHR);
+  }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(HR*fb);
