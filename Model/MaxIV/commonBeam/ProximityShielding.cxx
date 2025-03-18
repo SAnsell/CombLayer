@@ -200,11 +200,13 @@ ProximityShielding::createObjects(Simulation& System)
   const HeadRule backStr(backRule());
   const HeadRule fb = frontStr*backStr;
 
+  const HeadRule IPipeHR=getRule("Inner");
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 7 ");
   makeCell("MainCell",System,cellIndex++,wallMat,0.0,HR*fb);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
-  makeCell("VoidCell",System,cellIndex++,voidMat,0.0,HR*fb);
+  makeCell("VoidCell",System,cellIndex++,voidMat,0.0,HR*fb*IPipeHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(HR*fb);

@@ -106,6 +106,7 @@ namespace xraySystem
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
+  proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl"))
   /*!
@@ -119,6 +120,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(proxiShieldA);
+  OR.addObject(proxiShieldAPipe);
   OR.addObject(bremCollPipe);
   OR.addObject(bremColl);
 }
@@ -381,8 +383,14 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*bellowJ,"back",*gateTubeB);
 
-  constructSystem::constructUnit(System,buildZone,*gateTubeB,"back",*proxiShieldA);
-  constructSystem::constructUnit(System,buildZone,*proxiShieldA,"back",*offPipeA);
+  proxiShieldAPipe->createAll(System,*gateTubeB,"back");
+  outerCell=buildZone.createUnit(System,*proxiShieldAPipe,2);
+  proxiShieldAPipe->insertAllInCell(System,outerCell);
+
+  proxiShieldA->setCutSurf("Inner",*proxiShieldAPipe,"outerPipe");
+  proxiShieldA->createAll(System,*proxiShieldAPipe,0);
+  proxiShieldA->insertInCell(System,outerCell);
+  constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);
 
   //  insertFlanges(System,*gateTubeB);
 

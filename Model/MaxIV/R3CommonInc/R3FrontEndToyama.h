@@ -79,6 +79,7 @@ class R3FrontEndToyama :
  protected:
 
   std::shared_ptr<xraySystem::ProximityShielding> proxiShieldA; // proximity shielding
+  std::shared_ptr<constructSystem::VacuumPipe> proxiShieldAPipe; // pipe inside proxiShieldA
   // Bremsstrahlung collimator
   std::shared_ptr<constructSystem::VacuumPipe> bremCollPipe;
   std::shared_ptr<xraySystem::BremBlock> bremColl;
