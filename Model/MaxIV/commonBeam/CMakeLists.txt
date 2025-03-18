@@ -10,7 +10,7 @@ set (commonBeamSources
     FlangeMount.cxx forkHoles.cxx FourPortTube.cxx
     GaugeTube.cxx GrateHolder.cxx GrateMonoBox.cxx
     GratingMono.cxx GratingUnit.cxx HeatAbsorberToyama.cxx HeatDump.cxx
-    HPJaws.cxx IonGauge.cxx IonPumpTube.cxx
+    HPJaws.cxx IonGauge.cxx IonPumpTube.cxx LObjectSupport.cxx
     LCollimator.cxx Maze.cxx Mirror.cxx
     MLMono.cxx MonoBeamStop.cxx MonoBlockXstals.cxx
     MonoBox.cxx MonoCrystals.cxx MonoShutter.cxx MovableSafetyMask.cxx
@@ -79,6 +79,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/HPJaws.cxx
   ${tarDIR}/IonGauge.cxx
   ${tarDIR}/IonPumpTube.cxx
+  ${tarDIR}/LObjectSupport.cxx
   ${tarDIR}/LCollimator.cxx
   ${tarDIR}/Maze.cxx
   ${tarDIR}/Mirror.cxx
@@ -150,6 +151,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/HPJaws.h
   ${tarINC}/IonGauge.h
   ${tarINC}/IonPumpTube.h
+  ${tarINC}/LObjectSupport.h
   ${tarINC}/LCollimator.h
   ${tarINC}/Maze.h
   ${tarINC}/Mirror.h

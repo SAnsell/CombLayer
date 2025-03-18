@@ -41,12 +41,13 @@ namespace constructSystem
 }
 namespace xraySystem
 {
-    class CorrectorMag;
+  class CorrectorMag;
+  class ProximityShielding;
 }
 
 namespace tdcSystem
 {
-  
+
 int
 pipeTerminate(Simulation&,
 	      attachSystem::BlockZone&,

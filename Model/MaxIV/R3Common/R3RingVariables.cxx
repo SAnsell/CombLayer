@@ -341,7 +341,7 @@ shutterTableToyama(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",21.5);
   PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
-  Control.addVariable(frontKey+"ProxiShieldAYStep",-15.0/2);
+  Control.addVariable(frontKey+"ProxiShieldAYStep",21.5/2-15.0/2);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window

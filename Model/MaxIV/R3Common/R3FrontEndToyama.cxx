@@ -94,6 +94,7 @@
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
 #include "BremBlock.h"
+#include "LObjectSupport.h"
 #include "ProximityShielding.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
@@ -384,12 +385,9 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
     (System,buildZone,*bellowJ,"back",*gateTubeB);
 
   proxiShieldAPipe->createAll(System,*gateTubeB,"back");
-  outerCell=buildZone.createUnit(System,*proxiShieldAPipe,2);
-  proxiShieldAPipe->insertAllInCell(System,outerCell);
+  tdcSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
+  tdcSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
 
-  proxiShieldA->setCutSurf("Inner",*proxiShieldAPipe,"outerPipe");
-  proxiShieldA->createAll(System,*proxiShieldAPipe,0);
-  proxiShieldA->insertInCell(System,outerCell);
   constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);
 
   //  insertFlanges(System,*gateTubeB);

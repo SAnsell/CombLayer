@@ -1,35 +1,35 @@
 set (LinacSources
-    BeamBox.cxx BeamDivider.cxx BeamWing.cxx 
-    ButtonBPM.cxx CeramicGap.cxx CleaningMagnet.cxx 
-    CrossWayBlank.cxx CurveMagnet.cxx DipoleDIBMag.cxx 
-    EArrivalMon.cxx EBeamStop.cxx FlatPipe.cxx 
-    FMUndulator.cxx InjectionHall.cxx LBeamStop.cxx 
-    linacMagnetVariables.cxx linacVariables.cxx LObjectSupport.cxx 
-    LocalShielding3.cxx LocalShielding.cxx LowBeamBox.cxx 
-    LQuadF.cxx LQuadH.cxx LSexupole.cxx 
-    magnetVar.cxx MainBeamDump.cxx MultiPipe.cxx 
-    NBeamStop.cxx PrismaChamber.cxx Scrapper.cxx 
-    Segment10.cxx Segment11.cxx Segment12.cxx 
-    Segment13.cxx Segment14.cxx Segment15.cxx 
-    Segment16.cxx Segment17.cxx Segment18.cxx 
-    Segment19.cxx Segment1.cxx Segment20.cxx 
-    Segment21.cxx Segment23.cxx Segment24.cxx 
-    Segment25.cxx Segment26.cxx Segment27.cxx 
-    Segment28.cxx Segment29.cxx Segment2.cxx 
-    Segment30.cxx Segment31.cxx Segment32.cxx 
-    Segment33.cxx Segment34.cxx Segment35.cxx 
-    Segment36.cxx Segment37.cxx Segment38.cxx 
-    Segment39.cxx Segment3.cxx Segment40.cxx 
-    Segment41.cxx Segment42.cxx Segment43.cxx 
-    Segment44.cxx Segment45.cxx Segment46.cxx 
-    Segment47.cxx Segment48.cxx Segment49.cxx 
-    Segment4.cxx Segment5.cxx Segment6.cxx 
-    Segment7.cxx Segment8.cxx Segment9.cxx 
-    SoilRoof.cxx SPFCameraShield.cxx StriplineBPM.cxx 
-    subPipeUnit.cxx TDCBeamDump.cxx TDC.cxx 
-    TDCsegment.cxx TriGroup.cxx TriPipe.cxx 
-    TWCavity.cxx UndulatorVacuum.cxx YagScreen.cxx 
-    YagUnitBig.cxx YagUnit.cxx 
+    BeamBox.cxx BeamDivider.cxx BeamWing.cxx
+    ButtonBPM.cxx CeramicGap.cxx CleaningMagnet.cxx
+    CrossWayBlank.cxx CurveMagnet.cxx DipoleDIBMag.cxx
+    EArrivalMon.cxx EBeamStop.cxx FlatPipe.cxx
+    FMUndulator.cxx InjectionHall.cxx LBeamStop.cxx
+    linacMagnetVariables.cxx linacVariables.cxx
+    LocalShielding3.cxx LocalShielding.cxx LowBeamBox.cxx
+    LQuadF.cxx LQuadH.cxx LSexupole.cxx
+    magnetVar.cxx MainBeamDump.cxx MultiPipe.cxx
+    NBeamStop.cxx PrismaChamber.cxx Scrapper.cxx
+    Segment10.cxx Segment11.cxx Segment12.cxx
+    Segment13.cxx Segment14.cxx Segment15.cxx
+    Segment16.cxx Segment17.cxx Segment18.cxx
+    Segment19.cxx Segment1.cxx Segment20.cxx
+    Segment21.cxx Segment23.cxx Segment24.cxx
+    Segment25.cxx Segment26.cxx Segment27.cxx
+    Segment28.cxx Segment29.cxx Segment2.cxx
+    Segment30.cxx Segment31.cxx Segment32.cxx
+    Segment33.cxx Segment34.cxx Segment35.cxx
+    Segment36.cxx Segment37.cxx Segment38.cxx
+    Segment39.cxx Segment3.cxx Segment40.cxx
+    Segment41.cxx Segment42.cxx Segment43.cxx
+    Segment44.cxx Segment45.cxx Segment46.cxx
+    Segment47.cxx Segment48.cxx Segment49.cxx
+    Segment4.cxx Segment5.cxx Segment6.cxx
+    Segment7.cxx Segment8.cxx Segment9.cxx
+    SoilRoof.cxx SPFCameraShield.cxx StriplineBPM.cxx
+    subPipeUnit.cxx TDCBeamDump.cxx TDC.cxx
+    TDCsegment.cxx TriGroup.cxx TriPipe.cxx
+    TWCavity.cxx UndulatorVacuum.cxx YagScreen.cxx
+    YagUnitBig.cxx YagUnit.cxx
 )
 
 add_library (Linac SHARED
@@ -41,11 +41,11 @@ target_include_directories (Linac PUBLIC
    ${MAXIV_INCLUDE}
 )
 
-file(RELATIVE_PATH tarDIR 
+file(RELATIVE_PATH tarDIR
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 
-file(RELATIVE_PATH tarINC 
+file(RELATIVE_PATH tarINC
     "${CMAKE_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/../LinacInc")
 
@@ -67,7 +67,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/LBeamStop.cxx
   ${tarDIR}/linacMagnetVariables.cxx
   ${tarDIR}/linacVariables.cxx
-  ${tarDIR}/LObjectSupport.cxx
   ${tarDIR}/LocalShielding3.cxx
   ${tarDIR}/LocalShielding.cxx
   ${tarDIR}/LowBeamBox.cxx
@@ -157,7 +156,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/FMUndulator.h
   ${tarINC}/InjectionHall.h
   ${tarINC}/LBeamStop.h
-  ${tarINC}/LObjectSupport.h
   ${tarINC}/LocalShielding3.h
   ${tarINC}/LocalShielding.h
   ${tarINC}/LowBeamBox.h
@@ -233,4 +231,3 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/YagUnitBig.h
   ${tarINC}/YagUnit.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
-

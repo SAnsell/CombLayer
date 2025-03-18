@@ -62,6 +62,7 @@
 #include "LocalShielding.h"
 #include "FrontBackCut.h"
 #include "Solenoid.h"
+#include "ProximityShielding.h"
 #include "LObjectSupport.h"
 
 namespace tdcSystem
@@ -354,6 +355,14 @@ int pipeMagUnit(Simulation&,
 		const std::string&,
 		const std::string&,
 		const std::shared_ptr<xraySystem::Solenoid>&);
+
+  template
+int pipeMagUnit(Simulation&,
+		attachSystem::BlockZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
+		const std::shared_ptr<xraySystem::ProximityShielding>&);
 
   template
 int pipeMagGroup(Simulation&,
