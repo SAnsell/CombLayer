@@ -147,6 +147,7 @@
 #include "SlitsMaskGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 #include "HeatAbsorberToyamaGenerator.h"
+#include "ProximityShieldingGenerator.h"
 
 namespace setVariable
 {
@@ -907,6 +908,15 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::SlitsMaskGenerator slitsGen;
   slitsGen.generate(Control, "Slits");
+
+  setVariable::ProximityShieldingGenerator PSGen;
+  RPipeGen.setCF<setVariable::CF40>();
+  RPipeGen.generatePipe(Control,"ProxiShieldPipe",25.0);
+  PSGen.generate(Control,"ProxiShield", 15.0);
+  Control.addVariable("ProxiShieldYStep",-5.0);
+  //  Optional: set BoreRadius to zero to avoid gap between the pipe
+  //  Control.addVariable(frontKey+"ProxiShieldBoreRadius",0.0);
+
 
   return;
 }

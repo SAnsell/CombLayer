@@ -187,6 +187,7 @@
 #include "SlitsMask.h"
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
+#include "ProximityShielding.h"
 
 #include "makeSingleItem.h"
 
@@ -236,7 +237,7 @@ makeSingleItem::build(Simulation& System,
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
 	"HalfElectronPipe","HeimdalCave","LegoBrick",
-	"MultiPipe","PipeTube","PortTube","BlankTube","ButtonBPM",
+	"MultiPipe","PipeTube","PortTube", "ProximityShielding", "BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
 	"IonPTube","IonGauge","CollTube",
 	"NBeamStop","MagTube","TriggerTube",
@@ -1542,6 +1543,24 @@ makeSingleItem::build(Simulation& System,
 
 	return;
       }
+
+    if (item == "ProximityShielding" ) {
+      std::shared_ptr<constructSystem::VacuumPipe>
+	VC(new constructSystem::VacuumPipe("ProxiShieldPipe"));
+      std::shared_ptr<xraySystem::ProximityShielding>
+	proxiShield(new xraySystem::ProximityShielding("ProxiShield"));
+
+      OR.addObject(VC);
+      OR.addObject(proxiShield);
+
+      VC->addAllInsertCell(voidCell);
+      VC->createAll(System,World::masterOrigin(),0);
+
+      proxiShield->setCutSurf("Inner",*VC,"outerPipe");
+      proxiShield->addInsertCell(voidCell);
+      proxiShield->createAll(System,*VC,0);
+
+    }
 
     if (item == "BlankTube" )
       {
