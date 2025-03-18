@@ -109,7 +109,9 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
   proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
-  bremColl(new xraySystem::BremBlock(newName+"BremColl"))
+  bremColl(new xraySystem::BremBlock(newName+"BremColl")),
+  proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
+  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -124,6 +126,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(proxiShieldAPipe);
   OR.addObject(bremCollPipe);
   OR.addObject(bremColl);
+  OR.addObject(proxiShieldB);
+  OR.addObject(proxiShieldBPipe);
 }
 
 R3FrontEndToyama::~R3FrontEndToyama()
@@ -580,6 +584,11 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeAInnerVoid"));
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeBInnerVoid"));
   bremColl->createAll(System,*bremCollPipe,0);
+
+  proxiShieldBPipe->createAll(System,*bremCollPipe,"back");
+  constructSystem::pipeMagUnit(System,buildZone,proxiShieldBPipe,"#front","outerPipe",proxiShieldB);
+  constructSystem::pipeTerminate(System,buildZone,proxiShieldBPipe);
+
 
   if (ExternalCut::isActive("REWall"))
     {
