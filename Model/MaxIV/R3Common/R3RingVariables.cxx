@@ -310,15 +310,15 @@ shutterTableToyama(FuncDataBase& Control,
   setVariable::ProximityShieldingGenerator PSGen;
 
   // joined and open
-  GateGen.setLength(3.5);
-  GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
+  // GateGen.setLength(3.5);
+  // GateGen.setCubeCF<setVariable::CF40>();
+  // GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",10.0);
 
-  SimpleTubeGen.setCF<CF100>();
-  SimpleTubeGen.setCap();
+  SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCap(); // add caps (to the top-bottom ports only!)
   SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
 
   // beam ports
@@ -327,6 +327,7 @@ shutterTableToyama(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
+  PItemGen.setOuterVoid(false);
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
@@ -335,7 +336,7 @@ shutterTableToyama(FuncDataBase& Control,
   PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0); // 9 folding structure maxima (IMG_5509)
 
   GVGen.generateGate(Control,frontKey+"GateTubeB",0);
 

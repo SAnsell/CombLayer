@@ -356,15 +356,15 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
   ELog::RegMethod RegA("R3FrontEndToyama","buildShutterTable");
   int outerCell;
 
-  constructSystem::constructUnit(System,buildZone,preFC,preSide,*gateA);
+  constructSystem::constructUnit(System,buildZone,preFC,preSide,*bellowI);
 
   // gateA->createAll(System,preFC,preSideIndex);
   // outerCell=buildZone.createUnit(System,*gateA,2);
   // gateA->insertInCell(System,outerCell);
 
-  // bellows
-  constructSystem::constructUnit
-    (System,buildZone,*gateA,"back",*bellowI);
+  // // bellows
+  // constructSystem::constructUnit
+  //   (System,buildZone,*gateA,"back",*bellowI);
 
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
@@ -379,10 +379,9 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
   outerCell=buildZone.createUnit(System,*bellowJ,2);
   bellowJ->insertAllInCell(System,outerCell);
 
-  insertFlanges(System,*florTubeA,3);
+  //  insertFlanges(System,*florTubeA,3);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowJ,"back",*gateTubeB);
+  constructSystem::constructUnit(System,buildZone,*bellowJ,"back",*gateTubeB); // FMB/B  TODO: check Toyama geometry
 
   proxiShieldAPipe->createAll(System,*gateTubeB,"back");
   constructSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
