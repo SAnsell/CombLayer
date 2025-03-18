@@ -74,8 +74,10 @@
 namespace setVariable
 {
 
-void heatDumpTable(FuncDataBase&,const std::string&);
-void heatDumpVariables(FuncDataBase&,const std::string&);
+void heatDumpTableFMBB(FuncDataBase&,const std::string&);
+void heatDumpTableToyama(FuncDataBase&,const std::string&);
+void heatDumpVariablesFMBB(FuncDataBase&,const std::string&);
+void heatDumpVariablesToyama(FuncDataBase&,const std::string&);
 void shutterTableFMBB(FuncDataBase&,const std::string&);
 void shutterTableToyama(FuncDataBase&,const std::string&);
 void moveApertureTable(FuncDataBase&,const std::string&);
@@ -122,7 +124,7 @@ collimatorVariables(FuncDataBase& Control,const std::string& collKey)
 }
 
 void
-moveApertureTable(FuncDataBase& Control,
+moveApertureTableFMBB(FuncDataBase& Control,
 		  const std::string& frontKey)
   /*!
     Builds the variables for the moveable apperature table
@@ -131,7 +133,7 @@ moveApertureTable(FuncDataBase& Control,
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("R3RingVariables[F]","moveApertureTable");
+  ELog::RegMethod RegA("R3RingVariables[F]","moveApertureTableFMBB");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -185,6 +187,7 @@ moveApertureTable(FuncDataBase& Control,
 
   return;
 }
+
 
 void
 shutterTableFMBB(FuncDataBase& Control,
@@ -285,6 +288,71 @@ shutterTableFMBB(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowK",11.05);
+
+  return;
+}
+
+void
+moveApertureTableToyama(FuncDataBase& Control,
+		  const std::string& frontKey)
+  /*!
+    Builds the variables for the moveable apperature table
+    containing two movable apertures, pumping and bellows
+    \param Control :: Database
+    \param frontKey :: prename
+  */
+{
+  ELog::RegMethod RegA("R3RingVariables[F]","moveApertureTableToyama");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::CrossGenerator CrossGen;
+
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  PipeGen.setBFlangeCF<CF63>();
+  PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowE",14.0);
+
+  // Aperture pipe is movable:
+  PipeGen.setCF<CF63>();
+  PipeGen.generatePipe(Control,frontKey+"AperturePipe",24.0);
+  Control.addVariable(frontKey+"AperturePipeYStep",14.0);
+  collimatorVariables(Control,frontKey+"MoveCollA");
+
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowF",14.0);
+
+  // Stepped 420mm from pipeB so bellows/aperturePipe can move freely
+  CrossGen.setMat("Stainless304");
+  CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
+  CrossGen.setTotalPorts(7.5,7.5);     // len of ports (after main)
+  CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
+    (Control,frontKey+"IonPC",52.0,15.74,28.70);   // height/depth
+
+  // [FREE FLOATING]
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowG",14.0);
+
+  // Aperture pipe is movable:
+  PipeGen.setCF<CF63>();
+  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",24.0);
+  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
+  collimatorVariables(Control,frontKey+"MoveCollB");
+  Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
+
+  // [FREE FLOATING]
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,frontKey+"BellowH",14.0);
+
+  // [End fix for BellowH]
+  PipeGen.setCF<CF40>();
+  PipeGen.setAFlangeCF<CF63>();
+  PipeGen.generatePipe(Control,frontKey+"PipeC",32.5); // CAD
+  Control.addVariable(frontKey+"PipeCYStep",52.0);
 
   return;
 }
@@ -404,7 +472,7 @@ shutterTableToyama(FuncDataBase& Control,
 
 
 void
-heatDumpTable(FuncDataBase& Control,
+heatDumpTableFMBB(FuncDataBase& Control,
 	      const std::string& frontKey)
   /*!
     Builds the variables for the heat dump table
@@ -413,7 +481,7 @@ heatDumpTable(FuncDataBase& Control,
     \param frontKey :: prename
   */
 {
-  ELog::RegMethod RegA("R3RingVariables[F]","heatDumpTable");
+  ELog::RegMethod RegA("R3RingVariables[F]","heatDumpTableFMBB");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
@@ -424,7 +492,48 @@ heatDumpTable(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.setMat("Stainless304");
 
-  heatDumpVariables(Control,frontKey);
+  heatDumpVariablesFMBB(Control,frontKey);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowD",10.0);
+
+  // will be rotated vertical
+  // length 8.1
+  CylGateValveGenerator CGTGen;
+  CGTGen.generateGate(Control,frontKey+"GateTubeA",0);
+
+
+  CrossGen.setMat("Stainless304");
+  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
+  CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
+    (Control,frontKey+"IonPB",0.0,26.6,26.6);
+
+  return;
+}
+
+void
+heatDumpTableToyama(FuncDataBase& Control,
+	      const std::string& frontKey)
+  /*!
+    Builds the variables for the heat dump table
+    containing the heatdump and a gate valve [non-standard]
+    \param Control :: Database
+    \param frontKey :: prename
+  */
+{
+  ELog::RegMethod RegA("R3RingVariables[F]","heatDumpTableToyama");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::CrossGenerator CrossGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+
+  PipeGen.setNoWindow();
+  PipeGen.setMat("Stainless304");
+
+  heatDumpVariablesToyama(Control,frontKey);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowD",10.0);
@@ -446,20 +555,70 @@ heatDumpTable(FuncDataBase& Control,
 
 
 void
-heatDumpVariables(FuncDataBase& Control,const std::string& frontKey)
+heatDumpVariablesFMBB(FuncDataBase& Control,const std::string& frontKey)
   /*!
     Build the heat dump variables
     \param Control :: Database
     \param frontKey :: prename
    */
 {
-  ELog::RegMethod RegA("R3RingVariables[F]","heatDumpVariables");
+  ELog::RegMethod RegA("R3RingVariables[F]","heatDumpVariablesFMBB");
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::HeatDumpGenerator HeatGen;
 
   const double heatDumpDist(1708.75);
+
+  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(1,0);
+  SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",20.0);
+  Control.addVariable(frontKey+"HeatBoxYStep",heatDumpDist);
+  Control.addVariable(frontKey+"HeatBoxNPorts",2);
+
+
+  // beam ports
+  PItemGen.setCF<setVariable::CF40>(13.05);
+  PItemGen.setPlate(0.0,"Void");
+
+
+  const Geometry::Vec3D ZVec(0,0,1);
+  const std::string heatName=frontKey+"HeatBoxPort";
+  const std::string hName=frontKey+"HeatDumpFlange";
+  PItemGen.generatePort(Control,heatName+"0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
+
+
+  const std::string hDump(frontKey+"HeatDump");
+  HeatGen.setCF<CF100>();
+  HeatGen.setTopCF<CF150>();
+  HeatGen.generateHD(Control,hDump,1);
+
+
+  // Toyama heat absorber
+  setVariable::HeatAbsorberToyamaGenerator HATGen;
+  HATGen.generate(Control, frontKey+"HAToyama", 30);
+  Control.addVariable(frontKey+"HAToyamaYStep",heatDumpDist);
+
+  return;
+}
+
+void
+heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
+  /*!
+    Build the heat dump variables
+    \param Control :: Database
+    \param frontKey :: prename
+   */
+{
+  ELog::RegMethod RegA("R3RingVariables[F]","heatDumpVariablesToyama");
+
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::HeatDumpGenerator HeatGen;
+
+  const double heatDumpDist(1708.75-100.0); // dummy
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
@@ -605,8 +764,8 @@ R3FrontEndFMBBVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5);
 
   // Create HEAT DUMP
-  heatDumpTable(Control,frontKey);
-  moveApertureTable(Control,frontKey);
+  heatDumpTableFMBB(Control,frontKey);
+  moveApertureTableFMBB(Control,frontKey);
   shutterTableFMBB(Control,frontKey);
 
   PipeGen.setCF<setVariable::CF40>();
@@ -685,7 +844,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   PipeGen.setCF<CF40>();
   PipeGen.setMat("Stainless304");
-  PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0);
+  PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0); // length does not matter
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
@@ -709,8 +868,8 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5);
 
   // Create HEAT DUMP
-  heatDumpTable(Control,frontKey);
-  moveApertureTable(Control,frontKey);
+  heatDumpTableToyama(Control,frontKey);
+  moveApertureTableToyama(Control,frontKey);
   shutterTableToyama(Control,frontKey);
 
 
