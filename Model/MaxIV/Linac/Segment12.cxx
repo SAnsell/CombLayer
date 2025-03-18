@@ -148,9 +148,9 @@ Segment12::buildObjects(Simulation& System)
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatA,
+  constructSystem::pipeMagGroup(System,*buildZone,flatA,
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  constructSystem::pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
 
   beamA->setCutSurf("front",*flatA,"back");
@@ -167,7 +167,7 @@ Segment12::buildObjects(Simulation& System)
   outerCell=buildZone->createUnit(System,*shieldA,2);
   shieldA->insertInCell(System,outerCell);
 
-  pipeTerminateGroup(System,*buildZone,beamA,"exit",
+  constructSystem::pipeTerminateGroup(System,*buildZone,beamA,"exit",
    		     {"Box","Main","Exit","FlangeE"});
   buildZone->createUnit(System,*beamA,"exit");
   /////////////
@@ -201,7 +201,7 @@ Segment12::buildObjects(Simulation& System)
   beamA->insertInCell("FlangeB",System,cellB);
 
 
-  cellC=pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  cellC=constructSystem::pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   flatB->insertInCell("FlangeA",System,cellB);
   flatB->insertInCell("Pipe",System,cellB);

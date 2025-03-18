@@ -65,7 +65,7 @@
 #include "ProximityShielding.h"
 #include "LObjectSupport.h"
 
-namespace tdcSystem
+namespace constructSystem
 {
 
 int
@@ -393,4 +393,4 @@ int pipeMagGroup(Simulation&,
 
 ///\endcond TEMPLATE
 
-}   // NAMESPACE tdcSystem
+}   // NAMESPACE constructSystem

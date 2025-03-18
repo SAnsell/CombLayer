@@ -124,7 +124,7 @@ Segment15::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*buildZone,pipeA);
+  constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*mirrorChamber);

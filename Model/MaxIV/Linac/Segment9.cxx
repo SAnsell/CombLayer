@@ -152,7 +152,7 @@ Segment9::buildObjects(Simulation& System)
   pipeA->createAll(System,*pumpA,"back");
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
-  pipeTerminate(System,*buildZone,pipeA);
+  constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bellowB);
@@ -162,7 +162,7 @@ Segment9::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*bpm,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*bellowC);

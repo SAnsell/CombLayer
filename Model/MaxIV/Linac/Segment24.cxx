@@ -143,7 +143,7 @@ Segment24::buildObjects(Simulation& System)
   pipeB->createAll(System,*bellow, "back");
 
   correctorMagnetPair(System,*buildZone,pipeB,cMagHA,cMagVA);
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*bpm);
@@ -151,7 +151,7 @@ Segment24::buildObjects(Simulation& System)
   pipeC->createAll(System,*bpm, "back");
 
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",quad);
-  pipeTerminate(System,*buildZone,pipeC);
+  constructSystem::pipeTerminate(System,*buildZone,pipeC);
 
   return;
 }

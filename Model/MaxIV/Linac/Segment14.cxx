@@ -139,18 +139,18 @@ Segment14::buildObjects(Simulation& System)
 
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
-  pipeMagGroup(System,*buildZone,flatA,
+  constructSystem::pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dm1);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  constructSystem::pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatA,"back",*pipeB);
 
   flatB->setFront(*pipeB,"back");
   flatB->createAll(System,*pipeB,"back");
-  pipeMagGroup(System,*buildZone,flatB,
+  constructSystem::pipeMagGroup(System,*buildZone,flatB,
      {"FlangeA","Pipe"},"Origin","outerPipe",dm2);
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  constructSystem::pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatB,"back",*gateA);

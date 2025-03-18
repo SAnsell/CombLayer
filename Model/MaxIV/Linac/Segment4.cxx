@@ -157,7 +157,7 @@ Segment4::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*yagUnit);
@@ -177,7 +177,7 @@ Segment4::buildObjects(Simulation& System)
 
   pipeC->createAll(System,*bellowA,"back");
   correctorMagnetPair(System,*buildZone,pipeC,cMagHA,cMagVA);
-  pipeTerminate(System,*buildZone,pipeC);
+  constructSystem::pipeTerminate(System,*buildZone,pipeC);
 
   return;
 }

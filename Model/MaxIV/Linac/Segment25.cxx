@@ -138,9 +138,9 @@ Segment25::buildObjects(Simulation& System)
   triPipeA->createAll(System,*bellowA,"back");
 
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,triPipeA,
+  constructSystem::pipeMagGroup(System,*buildZone,triPipeA,
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
+  constructSystem::pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*triPipeA,"back",*pipeB);

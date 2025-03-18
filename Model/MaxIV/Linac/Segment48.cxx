@@ -159,7 +159,7 @@ Segment48::buildObjects(Simulation& System)
   pipeA->createAll(System,*beamStopB,"back");
 
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*buildZone,pipeA);
+  constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   shieldB->createAll(System,*shieldA,"right");
   for (int i=2; i<=4; ++i)

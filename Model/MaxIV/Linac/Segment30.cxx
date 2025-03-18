@@ -188,7 +188,7 @@ Segment30::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*gauge,"back");
   pipeMagUnit(System,*IZThin,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*IZThin,pipeA);
+  constructSystem::pipeTerminate(System,*IZThin,pipeA);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*bellow);
@@ -199,7 +199,7 @@ Segment30::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*ionPump,"back");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*IZThin,pipeB);
+  constructSystem::pipeTerminate(System,*IZThin,pipeB);
 
   return;
 }

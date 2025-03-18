@@ -291,8 +291,8 @@ GTFLine::buildObjects(Simulation& System)
   pipeA->setFront(*gun,"back");
   pipeA->createAll(System, *gun, "back");
 
-  tdcSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
-  outerCell = tdcSystem::pipeTerminate(System,buildZone,pipeA);
+  constructSystem::pipeMagUnit(System,buildZone,pipeA,"#front","outerPipe",solenoid);
+  outerCell = constructSystem::pipeTerminate(System,buildZone,pipeA);
 
   pumpBelowGun->insertInCell(System,outerCell2+2);
 

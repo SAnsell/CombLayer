@@ -152,7 +152,7 @@ Segment36::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadB);
-  pipeTerminate(System,*buildZone,pipeA);
+  constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpmA);

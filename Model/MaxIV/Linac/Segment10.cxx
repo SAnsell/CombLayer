@@ -229,7 +229,7 @@ Segment10::buildObjects(Simulation& System)
 
   pipeA->insertInCell("Main",System,outerCell);
   pipeA->insertInCell("FlangeB",System,outerCell);
-  pipeTerminate(System,*nextZone,pipeA);
+  constructSystem::pipeTerminate(System,*nextZone,pipeA);
 
   constructSystem::constructUnit
     (System,*nextZone,*pipeA,"back",*bellowA);
@@ -251,7 +251,7 @@ Segment10::buildObjects(Simulation& System)
   pipeC->createAll(System,*bellowB,"back");
   pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",QuadA);
   pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*nextZone,pipeC);
+  constructSystem::pipeTerminate(System,*nextZone,pipeC);
 
   return;
 }

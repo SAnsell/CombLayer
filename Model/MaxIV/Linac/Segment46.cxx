@@ -231,7 +231,7 @@ Segment46::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
 
   pipeMagUnit(System,*IZThin,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*IZThin,pipeA);
+  constructSystem::pipeTerminate(System,*IZThin,pipeA);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*gateA);
@@ -247,7 +247,7 @@ Segment46::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*mirrorChamberA,"back");
   pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
-  pipeTerminate(System,*IZThin,pipeB);
+  constructSystem::pipeTerminate(System,*IZThin,pipeB);
 
   // Slit tube and jaws
 

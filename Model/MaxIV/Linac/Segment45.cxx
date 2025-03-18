@@ -188,7 +188,7 @@ Segment45::buildObjects(Simulation& System)
   ceramic->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*ceramic,2);
   ceramic->insertInCell(System,outerCell);
-  pipeTerminate(System,*buildZone,ceramic);
+  constructSystem::pipeTerminate(System,*buildZone,ceramic);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*ceramic,"back",*pipeA);

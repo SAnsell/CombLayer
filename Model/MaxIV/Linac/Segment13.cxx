@@ -146,7 +146,7 @@ Segment13::buildObjects(Simulation& System)
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
-  pipeTerminate(System,*buildZone,pipeA);
+  constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpm);
@@ -157,7 +157,7 @@ Segment13::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
 
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*yagUnit);
@@ -171,7 +171,7 @@ Segment13::buildObjects(Simulation& System)
 
   pipeC->createAll(System,*yagUnit,"back");
   pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*buildZone,pipeC);
+  constructSystem::pipeTerminate(System,*buildZone,pipeC);
 
   CellMap::addCells("Unit",buildZone->getCells("Unit"));
   return;

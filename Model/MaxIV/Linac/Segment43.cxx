@@ -154,7 +154,7 @@ Segment43::buildObjects(Simulation& System)
 
   pipe->createAll(System,*gate,"back");
   pipeMagUnit(System,*buildZone,pipe,"#front","outerPipe",cMagHA);
-  pipeTerminate(System,*buildZone,pipe);
+  constructSystem::pipeTerminate(System,*buildZone,pipe);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipe,"back",*bpmB);

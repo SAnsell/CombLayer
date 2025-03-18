@@ -154,7 +154,7 @@ Segment2::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*this,0);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
-  pipeTerminate(System,*buildZone,pipeA);
+  constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpmA);
@@ -164,7 +164,7 @@ Segment2::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*bellowA,"back");
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*gateTube);
@@ -188,7 +188,7 @@ Segment2::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadC);
   pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadD);
   pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadE);
-  pipeTerminate(System,*buildZone,pipeE);
+  constructSystem::pipeTerminate(System,*buildZone,pipeE);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeE,"back",*yagUnit);

@@ -153,7 +153,7 @@ Segment6::buildObjects(Simulation& System)
   pipeD->setFront(*scrapper, "back");
   pipeD->createAll(System,*scrapper,"back");
   pipeMagUnit(System,*buildZone,pipeD,"#front","outerPipe",shieldB);
-  pipeTerminate(System,*buildZone,pipeD);
+  constructSystem::pipeTerminate(System,*buildZone,pipeD);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeD,"back",*ceramicA);

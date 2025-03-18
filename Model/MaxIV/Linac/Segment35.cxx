@@ -154,7 +154,7 @@ Segment35::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*yagUnit, "back");
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadA);
-  pipeTerminate(System,*buildZone,pipeA);
+  constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpm);
@@ -163,7 +163,7 @@ Segment35::buildObjects(Simulation& System)
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",quadB);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*mirrorChamber);

@@ -133,7 +133,7 @@ Segment7::buildObjects(Simulation& System)
 
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
-  outerCell = pipeTerminate(System,*buildZone,pipeA);
+  outerCell = constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   for (const TDCsegment* sideSegment : sideVec)
     {
@@ -167,7 +167,7 @@ Segment7::buildObjects(Simulation& System)
   pipeB->createAll(System,*bpm,"back");
 
   pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*buildZone,pipeB);
+  constructSystem::pipeTerminate(System,*buildZone,pipeB);
 
   setCutSurf("EndPipeFlange",pipeB->getExcludeSurf("FlangeB"));
   setCutSurf("EndPipeMain",pipeB->getExcludeSurf("Main"));

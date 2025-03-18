@@ -125,9 +125,9 @@ Segment5::buildObjects(Simulation& System)
   flatA->createAll(System,*this,0);
 
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatA,
+  constructSystem::pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  constructSystem::pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatA,"back",*beamA);
@@ -135,9 +135,9 @@ Segment5::buildObjects(Simulation& System)
   flatB->setFront(*beamA,"back");
   flatB->createAll(System,*beamA,"back");
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatB,
+  constructSystem::pipeMagGroup(System,*buildZone,flatB,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  constructSystem::pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatB,"back",*bellowA);

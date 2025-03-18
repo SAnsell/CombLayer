@@ -385,8 +385,8 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
     (System,buildZone,*bellowJ,"back",*gateTubeB);
 
   proxiShieldAPipe->createAll(System,*gateTubeB,"back");
-  tdcSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
-  tdcSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
+  constructSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
+  constructSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
 
   constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);
 

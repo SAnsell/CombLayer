@@ -205,7 +205,7 @@ Segment49::buildObjects(Simulation& System)
   pipeA->createAll(System,*gateA,2);
 
   pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*buildZone,pipeA);
+  constructSystem::pipeTerminate(System,*buildZone,pipeA);
 
   pipeB->createAll(System,*pipeA,"back");
   outerCell=buildZone->createUnit(System);
@@ -217,7 +217,7 @@ Segment49::buildObjects(Simulation& System)
   // this creates spfBehindBackWall zone
       outerCell=nextZone->createUnit(System,*pipeB,2);
       pipeB->insertAllInCell(System,outerCell);
-      pipeTerminate(System,*nextZone,pipeB);
+      constructSystem::pipeTerminate(System,*nextZone,pipeB);
       
       constructSystem::constructUnit
 	(System,*nextZone,*pipeB,"back",*gateB);

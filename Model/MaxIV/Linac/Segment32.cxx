@@ -124,9 +124,9 @@ Segment32::buildObjects(Simulation& System)
     flatA->copyCutSurf("front",*this,"front");
 
   flatA->createAll(System,*this,0);
-  pipeMagGroup(System,*buildZone,flatA,
+  constructSystem::pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  constructSystem::pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   pipeA->setFront(*flatA,"back");
   constructSystem::constructUnit
@@ -134,9 +134,9 @@ Segment32::buildObjects(Simulation& System)
 
   flatB->setFront(*pipeA,"back");
   flatB->createAll(System,*pipeA,"back");
-  pipeMagGroup(System,*buildZone,flatB,
+  constructSystem::pipeMagGroup(System,*buildZone,flatB,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  constructSystem::pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatB,"back",*bellow);
