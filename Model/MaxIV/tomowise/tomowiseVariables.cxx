@@ -178,9 +178,9 @@ frontMaskVariables(FuncDataBase& Control,
   const double FM2Length(34.2);
   const double FM3Length(17.0);
 
-  const double FM1dist(1172.60);
-  const double FM2dist(1624.2);
-  const double FM3dist(1624.2+FM2Length);
+  const double FM1dist(1172.60-100);
+  const double FM2dist(1624.2-100);
+  const double FM3dist(1624.2+FM2Length-100);
 
   FMaskGen.setCF<CF100>();
   // Approximated to get 1mrad x 1mrad
