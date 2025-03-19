@@ -108,7 +108,8 @@ namespace xraySystem
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
   msm1(new xraySystem::MovableSafetyMask(newName+"MSM1")),
-  msm2(new xraySystem::MovableSafetyMask(newName+"MSM2")),
+  bellowPreMSM2(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM2")),
+  msm2(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM2")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
   proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
@@ -126,6 +127,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(msm1);
+  OR.addObject(bellowPreMSM2);
   OR.addObject(msm2);
   OR.addObject(proxiShieldA);
   OR.addObject(proxiShieldAPipe);
@@ -567,7 +569,8 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   //     linkFC=collC;
   //   }
 
-  constructSystem::constructUnit(System,buildZone,*collB,"back",*msm2);
+  constructSystem::constructUnit(System,buildZone,*collB,"back",*bellowPreMSM2);
+  constructSystem::constructUnit(System,buildZone,*bellowPreMSM2,"back",*msm2);
 
   constructSystem::constructUnit(System,buildZone,*msm2,"back",*bellowD);
   constructSystem::constructUnit(System,buildZone,*bellowD,"back",*pipeB);
