@@ -206,145 +206,142 @@ R3FrontEndToyama::createSurfaces()
 //   return;
 // }
 
-void
-R3FrontEndToyama::buildHeatTable(Simulation& System)
-  /*!
-    Build the heatDump table
-    \param System :: Simulation to use
-  */
-{
-  ELog::RegMethod RegA("R3FrontEndToyama","buildHeatTable");
+// void
+// R3FrontEndToyama::buildHeatTable(Simulation& System)
+//   /*!
+//     Build the heatDump table
+//     \param System :: Simulation to use
+//   */
+// {
+//   ELog::RegMethod RegA("R3FrontEndToyama","buildHeatTable");
 
-  int outerCell;
+//   int outerCell;
 
-  if (!true) { // FMB/B (/B is Berlin)
-    heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
-    heatBox->createAll(System,*this,0);
+  // if (!true) { // FMB/B (/B is Berlin)
+  //   heatBox->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  //   heatBox->createAll(System,*this,0);
 
-    const constructSystem::portItem& PIA=heatBox->getPort(0);
-    const constructSystem::portItem& PIB=heatBox->getPort(1);
+  //   const constructSystem::portItem& PIA=heatBox->getPort(0);
+  //   const constructSystem::portItem& PIB=heatBox->getPort(1);
 
-    // cant use heatbox here because of port rotation
-    heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
-    heatDump->createAll(System,PIB,0,*heatBox,2);
+  //   // cant use heatbox here because of port rotation
+  //   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
+  //   heatDump->createAll(System,PIB,0,*heatBox,2);
 
-    // Built after heatDump
-    collExitPipe->setBack(PIA,"OuterPlate");
-    collExitPipe->createAll(System,*collB,2);
-    outerCell=buildZone.createUnit(System,*collExitPipe,2);
-    collExitPipe->insertAllInCell(System,outerCell);
+  //   // Built after heatDump
+  //   collExitPipe->setBack(PIA,"OuterPlate");
+  //   collExitPipe->createAll(System,*collB,2);
+  //   outerCell=buildZone.createUnit(System,*collExitPipe,2);
+  //   collExitPipe->insertAllInCell(System,outerCell);
 
-    outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
-    heatBox->insertAllInCell(System,outerCell);
-    heatDump->insertInCell("Outer",System,outerCell);
+  //   outerCell=buildZone.createUnit(System,PIB,"OuterPlate");
+  //   heatBox->insertAllInCell(System,outerCell);
+  //   heatDump->insertInCell("Outer",System,outerCell);
 
-    constructSystem::constructUnit
-      (System,buildZone,PIB,"OuterPlate",*bellowD);
-  } else {
-    haToyama->createAll(System,*this,0);
-    collExitPipe->setBack(*haToyama,"front");
-    collExitPipe->createAll(System,*collB,2);
-    outerCell=buildZone.createUnit(System,*collExitPipe,2);
-    collExitPipe->insertAllInCell(System,outerCell);
+  //   constructSystem::constructUnit
+  //     (System,buildZone,PIB,"OuterPlate",*bellowD);
+  // } else {
+    // haToyama->createAll(System,*this,0);
+    // collExitPipe->setBack(*haToyama,"front");
+    // collExitPipe->createAll(System,*collB,2);
+    // outerCell=buildZone.createUnit(System,*collExitPipe,2);
+    // collExitPipe->insertAllInCell(System,outerCell);
 
-    outerCell=buildZone.createUnit(System,*haToyama,"back");
-    haToyama->insertInCell(System,outerCell);
-    constructSystem::constructUnit(System,buildZone,*haToyama,"back",*bellowD);
-  }
+    // outerCell=buildZone.createUnit(System,*haToyama,"back");
+    // haToyama->insertInCell(System,outerCell);
+  // }
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowD,"back",*gateTubeA);
+  // constructSystem::constructUnit
+  //   (System,buildZone,*bellowD,"back",*gateTubeA);
 
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeA,"back",*ionPB);
-
-  constructSystem::constructUnit
-    (System,buildZone,*ionPB,"back",*pipeB);
-
-  return;
-
-}
-
-void
-R3FrontEndToyama::buildApertureTable(Simulation& System,
-				   const attachSystem::FixedComp& preFC,
-				   const long int preSideIndex)
-
-  /*!
-    Build the moveable aperature table
-    \param System :: Simulation to use
-    \param preFC :: Initial cell
-    \param preSideIndex :: Initial side index
-  */
-{
-  ELog::RegMethod RegA("R3FrontEndToyama","buildApertureTable");
-
-  int outerCell;
-  // NOTE order for master cell [Next 4 objects]
-  aperturePipe->createAll(System,preFC,preSideIndex);  // pipeB
-  moveCollA->addInsertCell(aperturePipe->getCell("Void"));
-  moveCollA->createAll(System,*aperturePipe,"midPoint");
-
-  // bellows AFTER movable aperture pipe
-  bellowE->setFront(preFC,preSideIndex);
-  bellowE->setBack(*aperturePipe,1);
-  bellowE->createAll(System,preFC,preSideIndex);
-
-  ionPC->createAll(System,preFC,preSideIndex);
-
-  // bellows AFTER aperature ionpump and ion pump
-  bellowF->setFront(*aperturePipe,2);
-  bellowF->setBack(*ionPC,1);
-  bellowF->createAll(System,preFC,preSideIndex);
-
-  // now do insert:
-  outerCell=buildZone.createUnit(System,*bellowE,2);
-  bellowE->insertAllInCell(System,outerCell);
-
-  outerCell=buildZone.createUnit(System,*aperturePipe,2);
-  aperturePipe->insertAllInCell(System,outerCell);
-
-  outerCell=buildZone.createUnit(System,*bellowF,2);
-  bellowF->insertAllInCell(System,outerCell);
-
-  outerCell=buildZone.createUnit(System,*ionPC,2);
-  ionPC->insertInCell(System,outerCell);
+  // constructSystem::constructUnit
+  //   (System,buildZone,*gateTubeA,"back",*ionPB);
 
 
-  // Next 4 objects need to be build before insertion
-  aperturePipeB->createAll(System,*ionPC,2);
-  moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
-  moveCollB->createAll(System,*aperturePipeB,"midPoint");
+//   return;
 
-  // bellows AFTER movable aperture pipe
-  bellowG->setFront(*ionPC,2);
-  bellowG->setBack(*aperturePipeB,1);
-  bellowG->createAll(System,*ionPC,2);
+// }
 
-  pipeC->createAll(System,*ionPC,2);
+// void
+// R3FrontEndToyama::buildApertureTable(Simulation& System,
+// 				   const attachSystem::FixedComp& preFC,
+// 				   const long int preSideIndex)
 
-  // bellows AFTER movable aperture pipe
-  bellowH->setFront(*aperturePipeB,2);
-  bellowH->setBack(*pipeC,1);
-  bellowH->createAll(System,*ionPC,2);
+//   /*!
+//     Build the moveable aperature table
+//     \param System :: Simulation to use
+//     \param preFC :: Initial cell
+//     \param preSideIndex :: Initial side index
+//   */
+// {
+//   ELog::RegMethod RegA("R3FrontEndToyama","buildApertureTable");
+
+//   int outerCell;
+//   // NOTE order for master cell [Next 4 objects]
+//   aperturePipe->createAll(System,preFC,preSideIndex);  // pipeB
+//   moveCollA->addInsertCell(aperturePipe->getCell("Void"));
+//   moveCollA->createAll(System,*aperturePipe,"midPoint");
+
+//   // bellows AFTER movable aperture pipe
+//   bellowE->setFront(preFC,preSideIndex);
+//   bellowE->setBack(*aperturePipe,1);
+//   bellowE->createAll(System,preFC,preSideIndex);
+
+//   ionPC->createAll(System,preFC,preSideIndex);
+
+//   // bellows AFTER aperature ionpump and ion pump
+//   bellowF->setFront(*aperturePipe,2);
+//   bellowF->setBack(*ionPC,1);
+//   bellowF->createAll(System,preFC,preSideIndex);
+
+//   // now do insert:
+//   outerCell=buildZone.createUnit(System,*bellowE,2);
+//   bellowE->insertAllInCell(System,outerCell);
+
+//   outerCell=buildZone.createUnit(System,*aperturePipe,2);
+//   aperturePipe->insertAllInCell(System,outerCell);
+
+//   outerCell=buildZone.createUnit(System,*bellowF,2);
+//   bellowF->insertAllInCell(System,outerCell);
+
+//   outerCell=buildZone.createUnit(System,*ionPC,2);
+//   ionPC->insertInCell(System,outerCell);
 
 
-  // now do insert:
-  outerCell=buildZone.createUnit(System,*bellowG,2);
-  bellowG->insertAllInCell(System,outerCell);
+//   // Next 4 objects need to be build before insertion
+//   aperturePipeB->createAll(System,*ionPC,2);
+//   moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
+//   moveCollB->createAll(System,*aperturePipeB,"midPoint");
 
-  outerCell=buildZone.createUnit(System,*aperturePipeB,2);
-  aperturePipeB->insertAllInCell(System,outerCell);
+//   // bellows AFTER movable aperture pipe
+//   bellowG->setFront(*ionPC,2);
+//   bellowG->setBack(*aperturePipeB,1);
+//   bellowG->createAll(System,*ionPC,2);
 
-  outerCell=buildZone.createUnit(System,*bellowH,2);
-  bellowH->insertAllInCell(System,outerCell);
+//   pipeC->createAll(System,*ionPC,2);
 
-  outerCell=buildZone.createUnit(System,*pipeC,2);
-  pipeC->insertAllInCell(System,outerCell);
+//   // bellows AFTER movable aperture pipe
+//   bellowH->setFront(*aperturePipeB,2);
+//   bellowH->setBack(*pipeC,1);
+//   bellowH->createAll(System,*ionPC,2);
 
 
-  return;
-}
+//   // now do insert:
+//   outerCell=buildZone.createUnit(System,*bellowG,2);
+//   bellowG->insertAllInCell(System,outerCell);
+
+//   outerCell=buildZone.createUnit(System,*aperturePipeB,2);
+//   aperturePipeB->insertAllInCell(System,outerCell);
+
+//   outerCell=buildZone.createUnit(System,*bellowH,2);
+//   bellowH->insertAllInCell(System,outerCell);
+
+//   outerCell=buildZone.createUnit(System,*pipeC,2);
+//   pipeC->insertAllInCell(System,outerCell);
+
+
+//   return;
+// }
 
 void
 R3FrontEndToyama::buildShutterTable(Simulation& System,
@@ -564,20 +561,14 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 	(System,buildZone,*collB,"back",*collC);
       linkFC=collC;
     }
-  if (msmActive)
-    {
-      constructSystem::constructUnit
-	(System,buildZone,*linkFC,"back",*msmEntrancePipe);
-      constructSystem::constructUnit
-	(System,buildZone,*msmEntrancePipe,"back",*msm);
-      linkFC=msm;
-    }
 
-  collExitPipe->setFront(*linkFC,2);
+  constructSystem::constructUnit(System,buildZone,*linkFC,"back",*msmEntrancePipe);
+  constructSystem::constructUnit(System,buildZone,*msmEntrancePipe,"back",*msm);
 
-  buildHeatTable(System);
-  buildApertureTable(System,*pipeB,2);
-  buildShutterTable(System,*pipeC,"back");
+  constructSystem::constructUnit(System,buildZone,*msm,"back",*bellowD);
+  constructSystem::constructUnit(System,buildZone,*bellowD,"back",*pipeB);
+  //  buildApertureTable(System,*pipeB,2); BellowE -> PipeC
+  buildShutterTable(System,*pipeB,"back");
 
   constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bremCollPipe);
   bremColl->addInsertCell(bremCollPipe->getCell("Void"));
