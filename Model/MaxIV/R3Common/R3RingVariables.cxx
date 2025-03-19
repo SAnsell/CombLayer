@@ -416,6 +416,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
   Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
+  Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window
