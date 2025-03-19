@@ -160,8 +160,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
     }),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe")),
-  collFM3Active(true),
-  msmActive(false)
+  collFM3Active(true)
 
   /*!
     Constructor

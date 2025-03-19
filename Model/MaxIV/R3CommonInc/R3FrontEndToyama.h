@@ -243,7 +243,6 @@ class R3FrontEndToyama :
 
   /// remove FM3
   void deactivateFM3() { collFM3Active=false; }
-  void activateMSM() { msmActive=true; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,

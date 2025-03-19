@@ -201,7 +201,6 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   bool collFM3Active;   ///< Coll C active
-  bool msmActive;       ///< Movable safety mask active
   double outerRadius;   ///< radius of tube for divisions
   double frontOffset;   ///< Distance to move start point from origin
 
@@ -238,7 +237,6 @@ class R3FrontEnd :
 
   /// remove FM3
   void deactivateFM3() { collFM3Active=false; }
-  void activateMSM() { msmActive=true; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
