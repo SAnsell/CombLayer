@@ -91,7 +91,6 @@
 #include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
-#include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
 
 #include "R3FrontEnd.h"
@@ -129,8 +128,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   collB(new xraySystem::SquareFMask(newName+"CollB")),
   collC(new xraySystem::SquareFMask(newName+"CollC")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
-  msm(new xraySystem::MovableSafetyMask(newName+"MSM")),
-  msmEntrancePipe(new constructSystem::VacuumPipe(newName+"MSMEntrancePipe")),
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   haToyama(new xraySystem::HeatAbsorberToyama(newName+"HAToyama")),
@@ -191,8 +188,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(collB);
   OR.addObject(collC);
-  OR.addObject(msmEntrancePipe);
-  OR.addObject(msm);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
   OR.addObject(collExitPipe);

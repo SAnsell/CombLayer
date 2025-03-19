@@ -141,9 +141,6 @@ class R3FrontEnd :
   std::shared_ptr<xraySystem::SquareFMask> collC;
   /// Pipe from collimator B to heat dump or MSM
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
-  /// Movable Safety Mask (e.g. for the two insertion device beamlines like TomoWISE)
-  std::shared_ptr<xraySystem::MovableSafetyMask> msm;
-  std::shared_ptr<constructSystem::VacuumPipe> msmEntrancePipe;
 
   /// head dump port
   std::shared_ptr<constructSystem::PipeTube> heatBox;

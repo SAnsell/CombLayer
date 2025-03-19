@@ -96,6 +96,7 @@
 #include "BremBlock.h"
 #include "LObjectSupport.h"
 #include "ProximityShielding.h"
+#include "MovableSafetyMask.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
 
@@ -106,6 +107,8 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  msm1(new xraySystem::MovableSafetyMask(newName+"MSM1")),
+  msm2(new xraySystem::MovableSafetyMask(newName+"MSM2")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
   proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
@@ -122,6 +125,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(msm1);
+  OR.addObject(msm2);
   OR.addObject(proxiShieldA);
   OR.addObject(proxiShieldAPipe);
   OR.addObject(bremCollPipe);
@@ -562,10 +567,9 @@ R3FrontEndToyama::buildObjects(Simulation& System)
       linkFC=collC;
     }
 
-  constructSystem::constructUnit(System,buildZone,*linkFC,"back",*msmEntrancePipe);
-  constructSystem::constructUnit(System,buildZone,*msmEntrancePipe,"back",*msm);
+  constructSystem::constructUnit(System,buildZone,*linkFC,"back",*msm2);
 
-  constructSystem::constructUnit(System,buildZone,*msm,"back",*bellowD);
+  constructSystem::constructUnit(System,buildZone,*msm2,"back",*bellowD);
   constructSystem::constructUnit(System,buildZone,*bellowD,"back",*pipeB);
   //  buildApertureTable(System,*pipeB,2); BellowE -> PipeC
   buildShutterTable(System,*pipeB,"back");

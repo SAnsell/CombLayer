@@ -222,8 +222,8 @@ frontMaskVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy
 
   MovableSafetyMaskGenerator MSMGen;
-  MSMGen.generate(Control,preName+"MSM",40.0);
-  Control.addVariable(preName+"MSMIDType","wiggler");
+  MSMGen.generate(Control,preName+"MSM2",40.0);
+  Control.addVariable(preName+"MSM2IDType","wiggler");
 
   return;
 }

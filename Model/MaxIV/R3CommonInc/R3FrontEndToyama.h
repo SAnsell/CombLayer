@@ -78,6 +78,10 @@ class R3FrontEndToyama :
 {
  protected:
 
+  /// Movable Safety Mask for the two insertion device beamlines like TomoWISE
+  std::shared_ptr<xraySystem::MovableSafetyMask> msm1;
+  std::shared_ptr<xraySystem::MovableSafetyMask> msm2;
+
   std::shared_ptr<xraySystem::ProximityShielding> proxiShieldA; // proximity shielding
   std::shared_ptr<constructSystem::VacuumPipe> proxiShieldAPipe; // pipe inside proxiShieldA
   // Bremsstrahlung collimator
