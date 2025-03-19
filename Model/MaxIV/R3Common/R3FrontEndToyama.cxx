@@ -559,15 +559,15 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*collB,2);
   collB->insertInCell(System,outerCell);
 
-  std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
-  if (collFM3Active)
-    {
-      constructSystem::constructUnit
-	(System,buildZone,*collB,"back",*collC);
-      linkFC=collC;
-    }
+  // std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
+  // if (collFM3Active)
+  //   {
+  //     constructSystem::constructUnit
+  // 	(System,buildZone,*collB,"back",*collC);
+  //     linkFC=collC;
+  //   }
 
-  constructSystem::constructUnit(System,buildZone,*linkFC,"back",*msm2);
+  constructSystem::constructUnit(System,buildZone,*collB,"back",*msm2);
 
   constructSystem::constructUnit(System,buildZone,*msm2,"back",*bellowD);
   constructSystem::constructUnit(System,buildZone,*bellowD,"back",*pipeB);
