@@ -59,7 +59,7 @@ class MovableSafetyMaskGenerator
   MovableSafetyMaskGenerator& operator=(const MovableSafetyMaskGenerator&);
   virtual ~MovableSafetyMaskGenerator();
 
-  virtual void generate(FuncDataBase&,const std::string&,const double) const;
+  virtual void generate(FuncDataBase&,const std::string&,const double,const std::string&) const;
 
 };
 

@@ -68,11 +68,15 @@ MovableSafetyMaskGenerator::~MovableSafetyMaskGenerator()
 
 void
 MovableSafetyMaskGenerator::generate(FuncDataBase& Control,
-				     const std::string& keyName, const double length) const
+				     const std::string& keyName,
+				     const double length,
+				     const std::string& idType) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
+    \param length :: Total length
+    \param idType :: Insertion device type (either wiggler or undulator)
   */
 {
   ELog::RegMethod RegA("MovableSafetyMaskGenerator","generate");
