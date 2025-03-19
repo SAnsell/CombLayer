@@ -383,6 +383,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowPostMSM1",10.0);
   BellowGen.generateBellow(Control,frontKey+"BellowPreMSM2",10.0);
 
   SimpleTubeGen.setCF<CF63>();
