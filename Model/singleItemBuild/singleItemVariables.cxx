@@ -299,7 +299,7 @@ SingleItemVariables(FuncDataBase& Control)
   FMaskGen.generateColl(Control,"FMaskB",40.0,15.0);
 
   MovableSafetyMaskGenerator MSMGen;
-  MSMGen.generate(Control,"MSM",40.0);
+  MSMGen.generate(Control,"MSM",40.0, "wiggler");
 
   HeatAbsorberToyamaGenerator HAGen;
   HAGen.generate(Control,"HA",30.0);
