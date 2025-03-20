@@ -78,8 +78,10 @@ class R3FrontEndToyama :
 {
  protected:
 
-  /// Movable Safety Mask for the two insertion device beamlines like TomoWISE
+  // a dummy pipe replacing some components in order to speed up building geometry
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<constructSystem::Bellows> bellowPreMSM1;
+  /// Movable Safety Mask for the two insertion device beamlines like TomoWISE
   std::shared_ptr<xraySystem::MovableSafetyMask> msm1;
   std::shared_ptr<constructSystem::Bellows> bellowPostMSM1;
   std::shared_ptr<constructSystem::Bellows> bellowPreMSM2;

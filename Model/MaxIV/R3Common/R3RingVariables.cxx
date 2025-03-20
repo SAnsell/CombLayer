@@ -878,6 +878,10 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   // Create HEAT DUMP
   heatDumpTableToyama(Control,frontKey);
   moveApertureTableToyama(Control,frontKey);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,frontKey+"PipeA",100.0); // dummy pipe
+
   shutterTableToyama(Control,frontKey);
 
 
