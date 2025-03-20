@@ -70,6 +70,8 @@
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
 //     http://localhost:8080/maxiv/work-log/micromax/pictures/front-end/formax-and-micromax-frontend-technical-specification.pdf/view
+// [2] Toyama ForMAX Mechanical drawings
+//     http://localhost:8080/maxiv/work-log/tomowise/toyama_formax_fe_mechanical_drawings.pdf/view
 
 namespace setVariable
 {
@@ -383,7 +385,8 @@ shutterTableToyama(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",10.0);
-  BellowGen.generateBellow(Control,frontKey+"BellowPostMSM1",10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowPreMSM1",14.0); // [2]
+  BellowGen.generateBellow(Control,frontKey+"BellowPostMSM1",14.0); // [2]
   BellowGen.generateBellow(Control,frontKey+"BellowPreMSM2",10.0);
 
   SimpleTubeGen.setCF<CF63>();

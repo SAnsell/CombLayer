@@ -87,6 +87,9 @@
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 
+// References
+// see R3Common/R3RingVariables.cxx
+
 namespace setVariable
 {
 
@@ -222,7 +225,8 @@ frontMaskVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy
 
   MovableSafetyMaskGenerator MSMGen;
-  MSMGen.generate(Control,preName+"MSM2",40.0, "wiggler");
+  MSMGen.generate(Control,preName+"MSM1",30.0, "wiggler"); // [2], but CAD 236798.STEP length is 20 cm TODO
+  MSMGen.generate(Control,preName+"MSM2",30.0, "wiggler"); // [2], but CAD 236798.STEP length is 20 cm TODO
 
   return;
 }
