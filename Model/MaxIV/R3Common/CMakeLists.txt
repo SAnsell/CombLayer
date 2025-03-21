@@ -6,6 +6,7 @@ set (R3CommonSources
     R3ChokeInsert.cxx R3FrontEndCave.cxx R3FrontEnd.cxx
     R3FrontEndToyama.cxx R3FrontEndFMBB.cxx
     R3MagnetVariables.cxx R3Ring.cxx R3RingVariables.cxx
+    R3RingVariablesFMBB.cxx R3RingVariablesToyama.cxx
 )
 
 add_library (R3Common SHARED
@@ -46,6 +47,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/R3MagnetVariables.cxx
   ${tarDIR}/R3Ring.cxx
   ${tarDIR}/R3RingVariables.cxx
+  ${tarDIR}/R3RingVariablesFMBB.cxx
+  ${tarDIR}/R3RingVariablesToyama.cxx
   ${tarINC}/ElectrometerBox.h
   ${tarINC}/EntryPipe.h
   ${tarINC}/EPCombine.h

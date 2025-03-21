@@ -3,7 +3,7 @@
 
  * File:   R3CommonInc/R3FrontEndToyama.h
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,16 +43,22 @@ namespace constructSystem
   class VacuumPipe;
 }
 
+/*!
+  \namespace xraySystem
+  \brief General xray optics system
+  \version 1.0
+  \date January 2018
+  \author S. Ansell
+*/
+
 namespace xraySystem
 {
-  class BremBlock;
+
   class CylGateValve;
   class HeatDump;
   class LCollimator;
   class SqrCollimator;
   class SquareFMask;
-  class MovableSafetyMask;
-  class HeatAbsorberToyama;
   class BeamMount;
   class PreDipole;
   class MagnetM1;
@@ -63,14 +69,13 @@ namespace xraySystem
   class EPCombine;
   class R3ChokeChamber;
   class R3ChokeInsert;
-  class ProximityShielding;
 
   /*!
-    \class R3FrontEndToyama
-    \version 2.0
-    \author K. Batkov / S. Ansell
-    \date March 2025
-    \brief Toyama front-end beam components
+    \class balderFrontEnd
+    \version 1.0
+    \author S. Ansell
+    \date March 2018
+    \brief General constructor front end optics
   */
 
 class R3FrontEndToyama :
@@ -78,27 +83,10 @@ class R3FrontEndToyama :
 {
  protected:
 
-  // a dummy pipe replacing some components in order to speed up building geometry
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  std::shared_ptr<constructSystem::Bellows> bellowPreMSM1;
-  /// Movable Safety Mask for the two insertion device beamlines like TomoWISE
-  std::shared_ptr<xraySystem::MovableSafetyMask> msm1;
-  std::shared_ptr<constructSystem::Bellows> bellowPostMSM1;
-  std::shared_ptr<constructSystem::Bellows> bellowPreMSM2;
-  std::shared_ptr<xraySystem::MovableSafetyMask> msm2;
-
-  std::shared_ptr<xraySystem::ProximityShielding> proxiShieldA; // proximity shielding
-  std::shared_ptr<constructSystem::VacuumPipe> proxiShieldAPipe; // pipe inside proxiShieldA
-  // Bremsstrahlung collimator
-  std::shared_ptr<constructSystem::VacuumPipe> bremCollPipe;
-  std::shared_ptr<xraySystem::BremBlock> bremColl;
-  std::shared_ptr<xraySystem::ProximityShielding> proxiShieldB; // proximity shielding
-  std::shared_ptr<constructSystem::VacuumPipe> proxiShieldBPipe; // pipe inside proxiShieldA
-
-  // /// point to stop [normal none]
+  /// point to stop [normal none]
   // std::string stopPoint;
 
-  // /// Inner buildzone
+  /// Inner buildzone
   //  attachSystem::BlockZone buildZone;
 
   // /// Shared point to use for last component:
@@ -144,17 +132,13 @@ class R3FrontEndToyama :
   // std::shared_ptr<xraySystem::SquareFMask> collB;
   // /// collimator C
   // std::shared_ptr<xraySystem::SquareFMask> collC;
-  // /// Pipe from collimator B to heat dump or MSM
+  // /// Pipe from collimator B to heat dump
   // std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
-  // /// Movable Safety Mask (e.g. for the two insertion device beamlines like TomoWISE)
-  // std::shared_ptr<xraySystem::MovableSafetyMask> msm;
-  // std::shared_ptr<constructSystem::VacuumPipe> msmEntrancePipe;
 
   // /// head dump port
   // std::shared_ptr<constructSystem::PipeTube> heatBox;
   // /// Heat dump container
   // std::shared_ptr<xraySystem::HeatDump> heatDump;
-  // std::shared_ptr<xraySystem::HeatAbsorberToyama> haToyama;
   // /// bellow after HeatShield
   // std::shared_ptr<constructSystem::Bellows> bellowD;
   // /// Gate box
@@ -205,13 +189,12 @@ class R3FrontEndToyama :
   // std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
   // /// Back port connection for shutterbox
   // std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
-  // /// Front port connection for shutterbox exit
-  // std::shared_ptr<constructSystem::Bellows> bellowK;
+  /// Front port connection for shutterbox exit
+  std::shared_ptr<constructSystem::Bellows> bellowK;
 
   // std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   // bool collFM3Active;   ///< Coll C active
-  // bool msmActive;       ///< Movable safety mask active
   // double outerRadius;   ///< radius of tube for divisions
   // double frontOffset;   ///< Distance to move start point from origin
 
@@ -220,7 +203,7 @@ class R3FrontEndToyama :
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
-		   const long int) = 0;
+		   const long int) =0;
 
   /// Null op for extra components after build
   virtual void buildExtras(Simulation&) {}
@@ -247,7 +230,7 @@ class R3FrontEndToyama :
   ~R3FrontEndToyama() override;
 
   /// remove FM3
-  void deactivateFM3() { collFM3Active=false; }
+  void deactivateFM3() { collFM3Active=0; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
