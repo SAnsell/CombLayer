@@ -163,9 +163,6 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(proxiShieldBPipe);
   OR.addObject(bellowK);
 
-  // OR.addObject(exitPipe);
-
-
 }
 
 R3FrontEndToyama::~R3FrontEndToyama()
@@ -599,9 +596,6 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   constructSystem::pipeMagUnit(System,buildZone,proxiShieldBPipe,"#front","outerPipe",proxiShieldB);
   constructSystem::pipeTerminate(System,buildZone,proxiShieldBPipe);
 
-  constructSystem::constructUnit
-    (System,buildZone,*proxiShieldBPipe,"back",*exitPipe);
-
   if (ExternalCut::isActive("REWall"))
     {
       buildZone.setMaxExtent(getRule("REWall"));
@@ -612,7 +606,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   buildExtras(System);
   setCell("MasterVoid",outerCell);
-  lastComp=exitPipe;
+  lastComp=proxiShieldBPipe;
 
   return;
 }

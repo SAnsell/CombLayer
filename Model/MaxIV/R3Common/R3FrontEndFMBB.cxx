@@ -102,7 +102,8 @@ namespace xraySystem
 
 R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   R3FrontEnd(Key),
-  bellowK(new constructSystem::Bellows(newName+"BellowK"))
+  bellowK(new constructSystem::Bellows(newName+"BellowK")),
+  exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -129,7 +130,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(collC);
   // OR.addObject(eCutDisk);
   // OR.addObject(eCutMagDisk);
-  // OR.addObject(collExitPipe);
+  //  OR.addObject(collExitPipe);
   // OR.addObject(heatBox);
   // OR.addObject(heatDump);
 
@@ -157,7 +158,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(offPipeB);
   OR.addObject(bellowK);
 
-  // OR.addObject(exitPipe);
+  OR.addObject(exitPipe);
 
 
 }

@@ -198,8 +198,6 @@ class R3FrontEnd :
   /// Back port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
 
-  std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
-
   bool collFM3Active;   ///< Coll C active
   double outerRadius;   ///< radius of tube for divisions
   double frontOffset;   ///< Distance to move start point from origin

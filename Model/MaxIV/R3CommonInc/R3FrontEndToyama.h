@@ -193,8 +193,6 @@ protected:
   /// Front port connection for shutterbox exit
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
-  // std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
-
   // bool collFM3Active;   ///< Coll C active
   // double outerRadius;   ///< radius of tube for divisions
   // double frontOffset;   ///< Distance to move start point from origin

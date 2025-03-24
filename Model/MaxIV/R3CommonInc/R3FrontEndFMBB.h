@@ -192,7 +192,7 @@ class R3FrontEndFMBB :
   /// Front port connection for shutterbox exit
   std::shared_ptr<constructSystem::Bellows> bellowK;
 
-  // std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
+  std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   // bool collFM3Active;   ///< Coll C active
   // double outerRadius;   ///< radius of tube for divisions

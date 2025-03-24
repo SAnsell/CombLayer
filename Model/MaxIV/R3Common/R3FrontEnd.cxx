@@ -159,7 +159,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
       std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
     }),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
-  exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe")),
   collFM3Active(true)
 
   /*!
@@ -216,9 +215,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(shutters[0]);
   OR.addObject(shutters[1]);
   OR.addObject(offPipeB);
-
-  OR.addObject(exitPipe);
-
 
 }
 
