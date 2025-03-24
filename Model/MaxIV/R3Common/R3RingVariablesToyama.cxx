@@ -264,10 +264,6 @@ shutterTableToyama(FuncDataBase& Control,
   Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
   Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowK",11.05);
-
   return;
 }
 

@@ -107,8 +107,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
-  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe")),
-  bellowK(new constructSystem::Bellows(newName+"BellowK"))
+  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe"))
 
   /*!
     Constructor
@@ -166,8 +165,6 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(bremCollPipe);
   OR.addObject(proxiShieldB);
   OR.addObject(proxiShieldBPipe);
-  OR.addObject(bellowK);
-
 }
 
 R3FrontEndToyama::~R3FrontEndToyama()
@@ -451,10 +448,6 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*shutterBox,"back",*offPipeB);
-
-  // bellows
-  //  constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bellowK);
-
 
   return;
 }
