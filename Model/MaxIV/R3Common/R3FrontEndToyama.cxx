@@ -91,6 +91,7 @@
 #include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
+#include "BremBlock.h"
 #include "LObjectSupport.h"
 #include "ProximityShielding.h"
 #include "R3FrontEnd.h"
@@ -103,6 +104,8 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  bremColl(new xraySystem::BremBlock(newName+"BremColl")),
+  bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
   proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe")),
   bellowK(new constructSystem::Bellows(newName+"BellowK"))
@@ -159,6 +162,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(bremColl);
+  OR.addObject(bremCollPipe);
   OR.addObject(proxiShieldB);
   OR.addObject(proxiShieldBPipe);
   OR.addObject(bellowK);
@@ -448,8 +453,7 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
     (System,buildZone,*shutterBox,"back",*offPipeB);
 
   // bellows
-  constructSystem::constructUnit
-    (System,buildZone,*offPipeB,"back",*bellowK);
+  //  constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bellowK);
 
 
   return;
@@ -592,7 +596,15 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,"back");
 
-  proxiShieldBPipe->createAll(System,*bellowK,"back");
+  // Bremsstrahlung collimator
+  constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bremCollPipe);
+  bremColl->addInsertCell(bremCollPipe->getCell("Void"));
+  bremColl->addInsertCell(bremCollPipe->getCell("FlangeAInnerVoid"));
+  bremColl->addInsertCell(bremCollPipe->getCell("FlangeBInnerVoid"));
+  bremColl->createAll(System,*bremCollPipe,0);
+
+  // Broximity shielding B
+  proxiShieldBPipe->createAll(System,*bremCollPipe,"back");
   constructSystem::pipeMagUnit(System,buildZone,proxiShieldBPipe,"#front","outerPipe",proxiShieldB);
   constructSystem::pipeTerminate(System,buildZone,proxiShieldBPipe);
 

@@ -239,9 +239,10 @@ shutterTableToyama(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeB",20.0);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",2.6);
   Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeBType",0);
 
   Control.addVariable(frontKey+"BremBlockRadius",3.0);
   Control.addVariable(frontKey+"BremBlockLength",20.0);
@@ -262,8 +263,6 @@ shutterTableToyama(FuncDataBase& Control,
   Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
   Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
   Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
-
-
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
@@ -369,6 +368,8 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("R3RingVariables[F]","R3FrontEndToyamaVariables");
 
+  std::string name;
+
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::CornerPipeGenerator CPipeGen;
@@ -377,6 +378,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
+  setVariable::BremBlockGenerator BBGen;
 
   const std::string frontKey(beamlineKey+"FrontBeam");
   // Master off set from division --
@@ -452,8 +454,25 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   moveApertureTableToyama(Control,frontKey);
   shutterTableToyama(Control,frontKey);
 
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,frontKey+"ExitPipe",24.0);
+  // Bremsstrahulung collimator
+  name=frontKey+"BremCollPipe";
+  constexpr double bremCollLength(20.0); // CAD and [1, page 26]
+  constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,name,bremCollLength);
+  constexpr double bremCollPipeInnerRadius = 4.5; // CAD
+  Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
+  Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
+  Control.addVariable(name+"FlangeBRadius",7.5); // CAD
+  Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
+  Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
+
+  BBGen.centre();
+  BBGen.setMaterial("Tungsten", "Void");
+  BBGen.setRadius(bremCollRadius);
+  BBGen.setLength(bremCollLength);
+  BBGen.setAperature(-1.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7); // CAD and [1, page 26]
+  BBGen.generateBlock(Control,frontKey+"BremColl",0);
 
   wallVariables(Control,beamlineKey+"WallLead");
   return;
