@@ -104,6 +104,8 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
+  proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
@@ -161,6 +163,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(proxiShieldA);
+  OR.addObject(proxiShieldAPipe);
   OR.addObject(bremColl);
   OR.addObject(bremCollPipe);
   OR.addObject(proxiShieldB);
@@ -411,11 +415,14 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
 
   insertFlanges(System,*florTubeA,3);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowJ,"back",*gateTubeB);
+  constructSystem::constructUnit(System,buildZone,*bellowJ,"back",*gateTubeB);
 
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeB,"back",*offPipeA);
+  // Broximity shielding A
+  proxiShieldAPipe->createAll(System,*gateTubeB,"back");
+  constructSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
+  constructSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
+
+  constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);
 
   //  insertFlanges(System,*gateTubeB);
 
