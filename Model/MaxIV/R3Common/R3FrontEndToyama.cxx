@@ -153,7 +153,6 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(bellowH);
   // OR.addObject(pipeC);
 
-  // OR.addObject(gateA);
   // OR.addObject(bellowI);
   // OR.addObject(florTubeA);
   // OR.addObject(bellowJ);
@@ -389,16 +388,8 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
   ELog::RegMethod RegA("R3FrontEndToyama","buildShutterTable");
   int outerCell;
 
-  constructSystem::constructUnit
-    (System,buildZone,preFC,preSide,*gateA);
-
-  // gateA->createAll(System,preFC,preSideIndex);
-  // outerCell=buildZone.createUnit(System,*gateA,2);
-  // gateA->insertInCell(System,outerCell);
-
   // bellows
-  constructSystem::constructUnit
-    (System,buildZone,*gateA,"back",*bellowI);
+  constructSystem::constructUnit(System,buildZone,preFC,"back",*bellowI);
 
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
