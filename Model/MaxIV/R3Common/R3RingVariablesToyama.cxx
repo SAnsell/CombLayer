@@ -170,6 +170,7 @@ shutterTableToyama(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::BeamMountGenerator BeamMGen;
   setVariable::CylGateValveGenerator GVGen;
+  setVariable::ProximityShieldingGenerator PSGen;
 
   // joined and open
   GateGen.setLength(3.5);
@@ -247,6 +248,22 @@ shutterTableToyama(FuncDataBase& Control,
   Control.addVariable(frontKey+"BremBlockHoleWidth",2.0);
   Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
   Control.addVariable(frontKey+"BremBlockMainMat","Tungsten");
+
+  PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
+  Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
+  Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",21.5);
+  PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
+  Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
+  Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
+
+  Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
+  Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
+  Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
+
+
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();

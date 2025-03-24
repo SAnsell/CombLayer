@@ -91,7 +91,8 @@
 #include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
-
+#include "LObjectSupport.h"
+#include "ProximityShielding.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
 
@@ -102,7 +103,10 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
+  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe")),
   bellowK(new constructSystem::Bellows(newName+"BellowK"))
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -155,6 +159,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(proxiShieldB);
+  OR.addObject(proxiShieldBPipe);
   OR.addObject(bellowK);
 
   // OR.addObject(exitPipe);
@@ -589,8 +595,12 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   buildApertureTable(System,*pipeB,2);
   buildShutterTable(System,*pipeC,"back");
 
+  proxiShieldBPipe->createAll(System,*bellowK,"back");
+  constructSystem::pipeMagUnit(System,buildZone,proxiShieldBPipe,"#front","outerPipe",proxiShieldB);
+  constructSystem::pipeTerminate(System,buildZone,proxiShieldBPipe);
+
   constructSystem::constructUnit
-    (System,buildZone,*bellowK,"back",*exitPipe);
+    (System,buildZone,*proxiShieldBPipe,"back",*exitPipe);
 
   if (ExternalCut::isActive("REWall"))
     {

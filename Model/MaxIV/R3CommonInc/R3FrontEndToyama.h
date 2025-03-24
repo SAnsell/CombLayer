@@ -53,7 +53,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
-
+  class ProximityShielding;
   class CylGateValve;
   class HeatDump;
   class LCollimator;
@@ -81,8 +81,9 @@ namespace xraySystem
 class R3FrontEndToyama :
   public R3FrontEnd
 {
- protected:
-
+protected:
+  std::shared_ptr<xraySystem::ProximityShielding> proxiShieldB;
+  std::shared_ptr<constructSystem::VacuumPipe> proxiShieldBPipe;
   /// point to stop [normal none]
   // std::string stopPoint;
 
