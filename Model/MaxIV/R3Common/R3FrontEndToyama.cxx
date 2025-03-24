@@ -104,6 +104,7 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
   proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
@@ -162,6 +163,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(bellowDA);
   OR.addObject(proxiShieldA);
   OR.addObject(proxiShieldAPipe);
   OR.addObject(bremColl);
@@ -289,6 +291,8 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*ionPB,"back",*pipeB);
 
+  constructSystem::constructUnit(System,buildZone,*pipeB,"back",*bellowDA);
+
   return;
 
 }
@@ -309,7 +313,7 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
 
   int outerCell;
   // NOTE order for master cell [Next 4 objects]
-  aperturePipe->createAll(System,preFC,preSideIndex);  // pipeB
+  aperturePipe->createAll(System,preFC,preSideIndex);
   moveCollA->addInsertCell(aperturePipe->getCell("Void"));
   moveCollA->createAll(System,*aperturePipe,"midPoint");
 
@@ -584,7 +588,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   collExitPipe->setFront(*linkFC,2);
 
   buildHeatTable(System);
-  buildApertureTable(System,*pipeB,2);
+  buildApertureTable(System,*bellowDA,2);
   buildShutterTable(System,*pipeC,"back");
 
   // Bremsstrahlung collimator

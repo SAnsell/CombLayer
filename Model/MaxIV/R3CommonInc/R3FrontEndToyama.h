@@ -83,6 +83,7 @@ class R3FrontEndToyama :
   public R3FrontEnd
 {
 protected:
+  std::shared_ptr<constructSystem::Bellows> bellowDA;
   // Bremsstrahlung collimator
   std::shared_ptr<xraySystem::BremBlock> bremColl;
   std::shared_ptr<constructSystem::VacuumPipe> bremCollPipe;

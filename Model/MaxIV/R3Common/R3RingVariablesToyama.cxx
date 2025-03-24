@@ -108,6 +108,9 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowDA",10.0);
+
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowE",14.0);
 
@@ -145,7 +148,7 @@ moveApertureTableToyama(FuncDataBase& Control,
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",10.0);
+  PipeGen.generatePipe(Control,frontKey+"PipeC",32.5);
   Control.addVariable(frontKey+"PipeCYStep",52.0);
 
   return;
