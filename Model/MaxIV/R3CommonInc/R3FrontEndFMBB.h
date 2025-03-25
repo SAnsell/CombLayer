@@ -135,10 +135,10 @@ class R3FrontEndFMBB :
   // /// Pipe from collimator B to heat dump
   // std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
 
-  // /// head dump port
-  // std::shared_ptr<constructSystem::PipeTube> heatBox;
-  // /// Heat dump container
-  // std::shared_ptr<xraySystem::HeatDump> heatDump;
+  /// head dump port
+  std::shared_ptr<constructSystem::PipeTube> heatBox;
+  /// Heat dump container
+  std::shared_ptr<xraySystem::HeatDump> heatDump;
   // /// bellow after HeatShield
   // std::shared_ptr<constructSystem::Bellows> bellowD;
   // /// Gate box

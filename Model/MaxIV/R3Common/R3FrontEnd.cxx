@@ -128,9 +128,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   collB(new xraySystem::SquareFMask(newName+"CollB")),
   collC(new xraySystem::SquareFMask(newName+"CollC")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
-  heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
-  heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
-  haToyama(new xraySystem::HeatAbsorberToyama(newName+"HAToyama")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
@@ -188,9 +185,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
   OR.addObject(collExitPipe);
-  OR.addObject(heatBox);
-  OR.addObject(heatDump);
-  OR.addObject(haToyama);
 
   OR.addObject(pipeB);
   OR.addObject(bellowE);

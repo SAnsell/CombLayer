@@ -102,6 +102,8 @@ namespace xraySystem
 
 R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   R3FrontEnd(Key),
+  heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
+  heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe"))
@@ -132,8 +134,8 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(eCutDisk);
   // OR.addObject(eCutMagDisk);
   //  OR.addObject(collExitPipe);
-  // OR.addObject(heatBox);
-  // OR.addObject(heatDump);
+  OR.addObject(heatBox);
+  OR.addObject(heatDump);
 
   // OR.addObject(pipeB);
   // OR.addObject(bellowE);
