@@ -104,6 +104,8 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
+  bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
   proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
@@ -164,6 +166,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(bellowPreHA);
+  OR.addObject(bellowPostHA);
   OR.addObject(bellowDA);
   OR.addObject(proxiShieldA);
   OR.addObject(proxiShieldAPipe);
@@ -280,7 +284,9 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
   heatBox->insertAllInCell(System,outerCell);
   heatDump->insertInCell("Outer",System,outerCell);
 
-  constructSystem::constructUnit(System,buildZone,PIB,"OuterPlate",*bellowD);
+  constructSystem::constructUnit(System,buildZone,PIB,"OuterPlate",*bellowPreHA);
+  constructSystem::constructUnit(System,buildZone,*bellowPreHA,"back",*bellowPostHA);
+  constructSystem::constructUnit(System,buildZone,*bellowPostHA,"back",*bellowD);
 
   constructSystem::constructUnit(System,buildZone,*bellowD,"back",*gateA);
 

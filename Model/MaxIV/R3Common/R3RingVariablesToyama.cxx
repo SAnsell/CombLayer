@@ -319,6 +319,7 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
 {
   ELog::RegMethod RegA("R3RingVariables[F]","heatDumpVariablesToyama");
 
+  setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::HeatDumpGenerator HeatGen;
@@ -349,6 +350,12 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   HeatGen.setCF<CF100>();
   HeatGen.setTopCF<CF150>();
   HeatGen.generateHD(Control,hDump,1);
+
+  // new Toyama
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowPreHA",14.0); // [2]
+  BellowGen.generateBellow(Control,frontKey+"BellowPostHA",14.0); // [2]
+
 
   return;
 }
