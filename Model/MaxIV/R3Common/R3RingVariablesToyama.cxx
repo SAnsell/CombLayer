@@ -288,12 +288,7 @@ heatDumpTableToyama(FuncDataBase& Control,
   heatDumpVariablesToyama(Control,frontKey);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowD",10.0);
-
-  // will be rotated vertical
-  // length 8.1
-  CylGateValveGenerator CGTGen;
-  CGTGen.generateGate(Control,frontKey+"GateTubeA",0);
+  BellowGen.generateBellow(Control,frontKey+"BellowD",10.0); // [2]
 
   // Fast gate valve
   setVariable::GateValveGenerator GateGen;

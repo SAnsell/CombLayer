@@ -102,6 +102,7 @@ namespace xraySystem
 
 R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   R3FrontEnd(Key),
+  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe"))
   /*!
@@ -150,12 +151,12 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(bellowI);
   // OR.addObject(florTubeA);
   // OR.addObject(bellowJ);
-  // OR.addObject(gateTubeB);
   // OR.addObject(offPipeA);
   // OR.addObject(shutterBox);
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(gateTubeA);
   OR.addObject(bellowK);
 
   OR.addObject(exitPipe);
@@ -273,11 +274,9 @@ R3FrontEndFMBB::buildHeatTable(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,PIB,"OuterPlate",*bellowD);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowD,"back",*gateTubeA);
+  constructSystem::constructUnit(System,buildZone,*bellowD,"back",*gateTubeA);
 
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeA,"back",*ionPB);
+  constructSystem::constructUnit(System,buildZone,*gateTubeA,"back",*ionPB);
 
   constructSystem::constructUnit
     (System,buildZone,*ionPB,"back",*pipeB);

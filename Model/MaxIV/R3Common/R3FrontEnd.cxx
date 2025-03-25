@@ -132,7 +132,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   haToyama(new xraySystem::HeatAbsorberToyama(newName+"HAToyama")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
 

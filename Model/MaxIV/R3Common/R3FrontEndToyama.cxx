@@ -280,13 +280,9 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
   heatBox->insertAllInCell(System,outerCell);
   heatDump->insertInCell("Outer",System,outerCell);
 
-  constructSystem::constructUnit
-    (System,buildZone,PIB,"OuterPlate",*bellowD);
+  constructSystem::constructUnit(System,buildZone,PIB,"OuterPlate",*bellowD);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowD,"back",*gateTubeA);
-
-  constructSystem::constructUnit(System,buildZone,*gateTubeA,"back",*gateA);
+  constructSystem::constructUnit(System,buildZone,*bellowD,"back",*gateA);
 
   constructSystem::constructUnit(System,buildZone,*gateA,"back",*ionPB);
 
