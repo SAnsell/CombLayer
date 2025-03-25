@@ -106,6 +106,8 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
+  msmExitPipe(new constructSystem::VacuumPipe(newName+"MSMExitPipe")),
   bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
@@ -169,6 +171,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(msm);
+  OR.addObject(msmExitPipe);
   OR.addObject(bellowPreHA);
   OR.addObject(ha);
   OR.addObject(bellowPostHA);
@@ -272,11 +276,11 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
 
   bellowPreHA->createAll(System, *ha, "front");
 
-  collExitPipe->setBack(*bellowPreHA,"back");
+  msmExitPipe->setBack(*bellowPreHA,"back");
 
-  collExitPipe->createAll(System,*collB,2);
-  outerCell=buildZone.createUnit(System,*collExitPipe,2);
-  collExitPipe->insertAllInCell(System,outerCell);
+  msmExitPipe->createAll(System,*msm,"back");
+  outerCell=buildZone.createUnit(System,*msmExitPipe,"back");
+  msmExitPipe->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*ha,"#front");
   bellowPreHA->insertAllInCell(System,outerCell);
@@ -457,6 +461,34 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
 }
 
 void
+R3FrontEndToyama::buildMSM(Simulation& System,
+			   const attachSystem::FixedComp& preFC,
+			   const std::string& preSide)
+/*!
+  Build the Movable Safety Mask
+  \param System :: Simulation to use
+  \param preFC :: initial Fixedcomp
+  \param preSide :: link point on initial FC
+*/
+{
+  ELog::RegMethod RegA("R3FrontEndToyama","buildMSM");
+  int outerCell;
+
+  ELog::EM << "MSM is always built for Toyama front-ends" << ELog::endWarn;
+
+  msm->createAll(System, *this, 0);
+  collExitPipe->setBack(*msm,"front");
+
+  collExitPipe->createAll(System,*collB,2);
+  outerCell=buildZone.createUnit(System,*collExitPipe,2);
+  collExitPipe->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*msm,"back");
+  msm->insertInCell(System,outerCell);
+
+}
+
+void
 R3FrontEndToyama::buildObjects(Simulation& System)
   /*!
     Build all the objects relative to the main FC
@@ -589,6 +621,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   collExitPipe->setFront(*linkFC,2);
 
+  buildMSM(System,*collExitPipe,"back");
   buildHeatTable(System);
   buildApertureTable(System,*bellowDA,2);
   buildShutterTable(System,*pipeC,"back");

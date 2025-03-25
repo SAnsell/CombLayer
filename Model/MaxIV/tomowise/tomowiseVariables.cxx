@@ -181,9 +181,10 @@ frontMaskVariables(FuncDataBase& Control,
   const double FM2Length(34.2);
   const double FM3Length(17.0);
 
-  const double FM1dist(1172.60-100);
-  const double FM2dist(1624.2-100);
-  const double FM3dist(1624.2+FM2Length-100);
+  const double FM1dist(1172.60-100); // dummy
+  const double FM2dist(1624.2-100-100); // dummy
+  const double FM3dist(1624.2+FM2Length-100); // dummy
+  const double MSMdist(1624.2+FM2Length-150); // dummy
 
   FMaskGen.setCF<CF100>();
   // Approximated to get 1mrad x 1mrad
@@ -224,9 +225,14 @@ frontMaskVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>(); // dummy
   PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy
 
+  PipeGen.setMat("Stainless304L"); // dummy
+  PipeGen.generatePipe(Control,preName+"MSMExitPipe",100.0); // dummy
+
+
+  // Movable Safety Mask
   MovableSafetyMaskGenerator MSMGen;
-  MSMGen.generate(Control,preName+"MSM1",30.0, "wiggler"); // [2], but CAD 236798.STEP length is 20 cm TODO
-  MSMGen.generate(Control,preName+"MSM2",30.0, "wiggler"); // [2], but CAD 236798.STEP length is 20 cm TODO
+  MSMGen.generate(Control,preName+"MSM",30.0, "wiggler"); // [2]
+  Control.addVariable(preName+"MSMYStep",MSMdist);
 
   return;
 }

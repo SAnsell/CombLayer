@@ -84,6 +84,8 @@ class R3FrontEndToyama :
   public R3FrontEnd
 {
 protected:
+  std::shared_ptr<xraySystem::MovableSafetyMask> msm;
+  std::shared_ptr<constructSystem::VacuumPipe> msmExitPipe;
   std::shared_ptr<constructSystem::Bellows> bellowPreHA;
   std::shared_ptr<xraySystem::HeatAbsorberToyama> ha;
   std::shared_ptr<constructSystem::Bellows> bellowPostHA;
@@ -221,6 +223,9 @@ protected:
   void buildShutterTable(Simulation&,
 			 const attachSystem::FixedComp&,
 			 const std::string&);
+  void buildMSM(Simulation&,
+		const attachSystem::FixedComp&,
+		const std::string&);
 
 
   void populate(const FuncDataBase&) override;

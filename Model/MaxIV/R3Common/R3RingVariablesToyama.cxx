@@ -347,6 +347,8 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
 
 
   // new Toyama
+
+
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowPreHA",14.0); // [2]
 
