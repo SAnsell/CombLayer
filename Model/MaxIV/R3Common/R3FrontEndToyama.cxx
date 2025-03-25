@@ -107,6 +107,7 @@ namespace xraySystem
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
   msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
+  bellowPostMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPostMSM")),
   msmExitPipe(new constructSystem::VacuumPipe(newName+"MSMExitPipe")),
   bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
@@ -172,6 +173,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
   OR.addObject(msm);
+  OR.addObject(bellowPostMSM);
   OR.addObject(msmExitPipe);
   OR.addObject(bellowPreHA);
   OR.addObject(ha);
@@ -278,7 +280,7 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
 
   msmExitPipe->setBack(*bellowPreHA,"back");
 
-  msmExitPipe->createAll(System,*msm,"back");
+  msmExitPipe->createAll(System,*bellowPostMSM,"back");
   outerCell=buildZone.createUnit(System,*msmExitPipe,"back");
   msmExitPipe->insertAllInCell(System,outerCell);
 
@@ -485,6 +487,8 @@ R3FrontEndToyama::buildMSM(Simulation& System,
 
   outerCell=buildZone.createUnit(System,*msm,"back");
   msm->insertInCell(System,outerCell);
+
+  constructSystem::constructUnit(System,buildZone,*msm,"back",*bellowPostMSM);
 
 }
 

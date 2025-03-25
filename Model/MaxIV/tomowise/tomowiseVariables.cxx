@@ -176,6 +176,7 @@ frontMaskVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
   setVariable::SqrFMaskGenerator FMaskGen;
+  setVariable::BellowGenerator BellowGen;
 
   const double FM1Length(15.0);
   const double FM2Length(34.2);
@@ -225,14 +226,17 @@ frontMaskVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>(); // dummy
   PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy
 
-  PipeGen.setMat("Stainless304L"); // dummy
-  PipeGen.generatePipe(Control,preName+"MSMExitPipe",100.0); // dummy
-
 
   // Movable Safety Mask
   MovableSafetyMaskGenerator MSMGen;
   MSMGen.generate(Control,preName+"MSM",30.0, "wiggler"); // [2]
   Control.addVariable(preName+"MSMYStep",MSMdist);
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
+
+  PipeGen.setMat("Stainless304L"); // dummy
+  PipeGen.generatePipe(Control,preName+"MSMExitPipe",100.0); // dummy
 
   return;
 }
