@@ -286,8 +286,9 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*gateTubeA);
 
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeA,"back",*ionPB);
+  constructSystem::constructUnit(System,buildZone,*gateTubeA,"back",*gateA);
+
+  constructSystem::constructUnit(System,buildZone,*gateA,"back",*ionPB);
 
   constructSystem::constructUnit
     (System,buildZone,*ionPB,"back",*pipeB);
@@ -393,16 +394,8 @@ R3FrontEndToyama::buildShutterTable(Simulation& System,
   ELog::RegMethod RegA("R3FrontEndToyama","buildShutterTable");
   int outerCell;
 
-  constructSystem::constructUnit
-    (System,buildZone,preFC,preSide,*gateA);
-
-  // gateA->createAll(System,preFC,preSideIndex);
-  // outerCell=buildZone.createUnit(System,*gateA,2);
-  // gateA->insertInCell(System,outerCell);
-
   // bellows
-  constructSystem::constructUnit
-    (System,buildZone,*gateA,"back",*bellowI);
+  constructSystem::constructUnit(System,buildZone,preFC,preSide,*bellowI);
 
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);

@@ -167,18 +167,12 @@ shutterTableToyama(FuncDataBase& Control,
   ELog::RegMethod RegA("R3RingVariables[F]","shutterTableToyama");
 
   setVariable::BellowGenerator BellowGen;
-  setVariable::GateValveGenerator GateGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::BeamMountGenerator BeamMGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::ProximityShieldingGenerator PSGen;
-
-  // joined and open
-  GateGen.setLength(3.5);
-  GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",10.0); // [2]
@@ -301,12 +295,20 @@ heatDumpTableToyama(FuncDataBase& Control,
   CylGateValveGenerator CGTGen;
   CGTGen.generateGate(Control,frontKey+"GateTubeA",0);
 
+  // Fast gate valve
+  setVariable::GateValveGenerator GateGen;
+  GateGen.setLength(3.5);
+  GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
+  const double gateAYAngle(-30.0); // approx
+  Control.addVariable(frontKey+"GateAYAngle",gateAYAngle);
 
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPB",0.0,26.6,26.6);
+  Control.addVariable(frontKey+"IonPBYAngle",-gateAYAngle);
 
   return;
 }
