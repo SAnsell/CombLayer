@@ -109,19 +109,19 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowDA",10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowDA",10.0); // [2]
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowE",14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowE",14.0); // [2]
 
   // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipe",24.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipe",30.0); // [2]
   Control.addVariable(frontKey+"AperturePipeYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollA");
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowF",14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowF",14.0); // [2]
 
   // Stepped 420mm from pipeB so bellows/aperturePipe can move freely
   CrossGen.setMat("Stainless304");
@@ -132,23 +132,23 @@ moveApertureTableToyama(FuncDataBase& Control,
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowG",14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowG",14.0); // [2]
 
   // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",24.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",30.0); // [2]
   Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollB");
   Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowH",14.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowH",14.0); // [2]
 
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",32.5);
+  PipeGen.generatePipe(Control,frontKey+"PipeC",32.5); // [2]
   Control.addVariable(frontKey+"PipeCYStep",52.0);
 
   return;
@@ -175,7 +175,7 @@ shutterTableToyama(FuncDataBase& Control,
   setVariable::ProximityShieldingGenerator PSGen;
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowI",10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowI",10.0); // [2]
 
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();
@@ -195,7 +195,7 @@ shutterTableToyama(FuncDataBase& Control,
   PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
+  BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0); // [2]
 
   GVGen.generateGate(Control,frontKey+"GateTubeB",0);
 
@@ -252,7 +252,7 @@ shutterTableToyama(FuncDataBase& Control,
   Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",21.5);
+  PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",21.5); // [2]
   PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
   Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
   Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
