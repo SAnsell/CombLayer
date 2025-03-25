@@ -358,8 +358,6 @@ BlockZone::createUnit(Simulation& System,
 {
   ELog::RegMethod RegA("BlockZone","createUnit(System,FC,sideIndex)");
 
-  ELog::EM << "* cellIndex: " << cellIndex << ELog::endDiag;
-
   // alway outgoing [so use complement]
   const HeadRule newBackFC=FC.getFullRule(sideIndex);
   HeadRule Volume=surroundHR * backHR * newBackFC.complement();

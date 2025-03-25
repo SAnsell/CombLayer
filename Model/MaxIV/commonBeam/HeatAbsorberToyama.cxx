@@ -193,8 +193,6 @@ HeatAbsorberToyama::createSurfaces()
 
   double zoffset = closed ? (gapHeight+dumpHeight)/2.0 : 0.0;
 
-  ELog::EM << "zoffset: " << zoffset << ELog::endDiag;
-
   if (!frontActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));

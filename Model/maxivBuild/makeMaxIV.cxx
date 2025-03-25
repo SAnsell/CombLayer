@@ -491,10 +491,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	  BLPtr->setStopPoint(activeStop);
 	}
       BLPtr->setRing(r3Ring);
-      ELog::EM << "here" << ELog::endDiag;
       BLPtr->build(System,*r3Ring,
 		   r3Ring->getSideIndex(beamNAMES.at(BL)));
-      ELog::EM << "there" << ELog::endDiag;
     }
   return 1;    // R3 Built
 }
