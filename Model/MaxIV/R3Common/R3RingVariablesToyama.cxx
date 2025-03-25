@@ -326,14 +326,12 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   setVariable::PortItemGenerator PItemGen;
   setVariable::HeatDumpGenerator HeatGen;
 
-  const double heatDumpDist(1708.75);
+  const double heatDumpDist(1708.75-100); // centre
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(1,0);
   SimpleTubeGen.generateTube(Control,frontKey+"HeatBox",20.0);
-  Control.addVariable(frontKey+"HeatBoxYStep",heatDumpDist);
-  Control.addVariable(frontKey+"HeatBoxNPorts",2);
 
 
   // beam ports
@@ -348,17 +346,13 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
 
 
-  const std::string hDump(frontKey+"HeatDump");
-  HeatGen.setCF<CF100>();
-  HeatGen.setTopCF<CF150>();
-  HeatGen.generateHD(Control,hDump,1);
-
   // new Toyama
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowPreHA",14.0); // [2]
 
   HeatAbsorberToyamaGenerator HAGen;
   HAGen.generate(Control,frontKey+"HeatAbsorber",26.5); // [2]
+  Control.addVariable(frontKey+"HeatAbsorberYStep",heatDumpDist);
 
   BellowGen.generateBellow(Control,frontKey+"BellowPostHA",14.0); // [2]
 
