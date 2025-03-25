@@ -147,6 +147,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
 
+  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
@@ -204,6 +205,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(bellowH);
   OR.addObject(pipeC);
 
+  OR.addObject(gateA);
   OR.addObject(bellowI);
   OR.addObject(florTubeA);
   OR.addObject(bellowJ);

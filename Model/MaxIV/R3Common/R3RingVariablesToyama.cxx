@@ -167,12 +167,18 @@ shutterTableToyama(FuncDataBase& Control,
   ELog::RegMethod RegA("R3RingVariables[F]","shutterTableToyama");
 
   setVariable::BellowGenerator BellowGen;
+  setVariable::GateValveGenerator GateGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::BeamMountGenerator BeamMGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::ProximityShieldingGenerator PSGen;
+
+  // joined and open
+  GateGen.setLength(3.5);
+  GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",10.0); // [2]

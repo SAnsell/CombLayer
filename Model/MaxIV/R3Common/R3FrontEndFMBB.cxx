@@ -102,7 +102,6 @@ namespace xraySystem
 
 R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   R3FrontEnd(Key),
-  gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe"))
   /*!
@@ -147,7 +146,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(bellowH);
   // OR.addObject(pipeC);
 
-  OR.addObject(gateA);
+  // OR.addObject(gateA);
   // OR.addObject(bellowI);
   // OR.addObject(florTubeA);
   // OR.addObject(bellowJ);
