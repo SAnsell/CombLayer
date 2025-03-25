@@ -54,6 +54,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class BremBlock;
+  class HeatAbsorberToyama;
   class ProximityShielding;
   class CylGateValve;
   class HeatDump;
@@ -84,6 +85,7 @@ class R3FrontEndToyama :
 {
 protected:
   std::shared_ptr<constructSystem::Bellows> bellowPreHA;
+  std::shared_ptr<xraySystem::HeatAbsorberToyama> ha;
   std::shared_ptr<constructSystem::Bellows> bellowPostHA;
   std::shared_ptr<constructSystem::Bellows> bellowDA;
   // Bremsstrahlung collimator

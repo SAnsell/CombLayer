@@ -3,7 +3,7 @@
 
  * File:   R3Common/R3RingVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by  Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,8 @@
 #include "MagnetU1Generator.h"
 #include "HeatAbsorberToyamaGenerator.h"
 #include "BremBlockGenerator.h"
+#include "MovableSafetyMaskGenerator.h"
+#include "HeatAbsorberToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 
 #include "maxivVariables.h"
@@ -354,6 +356,10 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   // new Toyama
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowPreHA",14.0); // [2]
+
+  HeatAbsorberToyamaGenerator HAGen;
+  HAGen.generate(Control,frontKey+"HeatAbsorber",26.5); // [2]
+
   BellowGen.generateBellow(Control,frontKey+"BellowPostHA",14.0); // [2]
 
 

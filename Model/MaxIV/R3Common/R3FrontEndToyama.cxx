@@ -93,6 +93,8 @@
 #include "MagnetU1.h"
 #include "BremBlock.h"
 #include "LObjectSupport.h"
+#include "MovableSafetyMask.h"
+#include "HeatAbsorberToyama.h"
 #include "ProximityShielding.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
@@ -105,6 +107,7 @@ namespace xraySystem
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
   bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
+  ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
@@ -167,6 +170,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
   OR.addObject(bellowPreHA);
+  OR.addObject(ha);
   OR.addObject(bellowPostHA);
   OR.addObject(bellowDA);
   OR.addObject(proxiShieldA);
@@ -285,7 +289,8 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
   heatDump->insertInCell("Outer",System,outerCell);
 
   constructSystem::constructUnit(System,buildZone,PIB,"OuterPlate",*bellowPreHA);
-  constructSystem::constructUnit(System,buildZone,*bellowPreHA,"back",*bellowPostHA);
+  constructSystem::constructUnit(System,buildZone,*bellowPreHA,"back",*ha);
+  constructSystem::constructUnit(System,buildZone,*ha,"back",*bellowPostHA);
   constructSystem::constructUnit(System,buildZone,*bellowPostHA,"back",*bellowD);
 
   constructSystem::constructUnit(System,buildZone,*bellowD,"back",*gateA);
