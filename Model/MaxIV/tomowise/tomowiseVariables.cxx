@@ -228,11 +228,13 @@ frontMaskVariables(FuncDataBase& Control,
 
 
   // Movable Safety Mask
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
+
   MovableSafetyMaskGenerator MSMGen;
   MSMGen.generate(Control,preName+"MSM",30.0, "wiggler"); // [2]
   Control.addVariable(preName+"MSMYStep",MSMdist);
 
-  BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
 
   PipeGen.setMat("Stainless304L"); // dummy

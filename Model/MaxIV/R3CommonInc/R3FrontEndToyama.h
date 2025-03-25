@@ -84,6 +84,7 @@ class R3FrontEndToyama :
   public R3FrontEnd
 {
 protected:
+  std::shared_ptr<constructSystem::Bellows> bellowPreMSM;
   std::shared_ptr<xraySystem::MovableSafetyMask> msm;
   std::shared_ptr<constructSystem::Bellows> bellowPostMSM;
   std::shared_ptr<constructSystem::VacuumPipe> msmExitPipe;

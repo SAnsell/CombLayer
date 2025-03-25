@@ -3,7 +3,7 @@
 
  * File: R3Common/R3FrontEndToyama.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov / Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,6 +106,7 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
   msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
   bellowPostMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPostMSM")),
   msmExitPipe(new constructSystem::VacuumPipe(newName+"MSMExitPipe")),
@@ -172,6 +173,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(bellowPreMSM);
   OR.addObject(msm);
   OR.addObject(bellowPostMSM);
   OR.addObject(msmExitPipe);
@@ -479,11 +481,16 @@ R3FrontEndToyama::buildMSM(Simulation& System,
   ELog::EM << "MSM is always built for Toyama front-ends" << ELog::endWarn;
 
   msm->createAll(System, *this, 0);
-  collExitPipe->setBack(*msm,"front");
+  bellowPreMSM->createAll(System, *msm, "front");
 
-  collExitPipe->createAll(System,*collB,2);
-  outerCell=buildZone.createUnit(System,*collExitPipe,2);
+  collExitPipe->setBack(*bellowPreMSM,"back");
+
+  collExitPipe->createAll(System,*collB,"back");
+  outerCell=buildZone.createUnit(System,*collExitPipe,"back");
   collExitPipe->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*msm,"#front");
+  bellowPreMSM->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*msm,"back");
   msm->insertInCell(System,outerCell);
