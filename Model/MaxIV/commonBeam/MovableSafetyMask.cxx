@@ -89,6 +89,7 @@ MovableSafetyMask::MovableSafetyMask(const MovableSafetyMask& A) :
   uMaskHeight(A.uMaskHeight),
   wMaskWidth(A.wMaskWidth),
   wMaskHeight(A.wMaskHeight),
+  undZOffset(A.undZOffset),
   idType(A.idType),
   mainMat(A.mainMat),voidMat(A.voidMat)
   /*!
@@ -119,6 +120,7 @@ MovableSafetyMask::operator=(const MovableSafetyMask& A)
       uMaskHeight=A.uMaskHeight;
       wMaskWidth=A.wMaskWidth;
       wMaskHeight=A.wMaskHeight;
+      undZOffset=A.undZOffset;
       idType=A.idType;
       mainMat=A.mainMat;
       voidMat=A.voidMat;
@@ -160,6 +162,7 @@ MovableSafetyMask::populate(const FuncDataBase& Control)
   uMaskHeight=Control.EvalVar<double>(keyName+"UMaskHeight");
   wMaskWidth=Control.EvalVar<double>(keyName+"WMaskWidth");
   wMaskHeight=Control.EvalVar<double>(keyName+"WMaskHeight");
+  undZOffset=Control.EvalVar<double>(keyName+"UndulatorZOffset");
   idType=Control.EvalVar<std::string>(keyName+"IDType");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -183,7 +186,7 @@ MovableSafetyMask::createSurfaces()
   if (idType == "wiggler")
     zoffset = 0.0;
   else if (idType == "undulator")
-    zoffset = (wMaskHeight+uMaskHeight)/2.0;
+    zoffset = undZOffset;
   else throw ColErr::ExitAbort("Wrong IDType value: " + idType + ". Allowed are either 'wiggler' or 'undulator'.");
 
   if (!frontActive()) {

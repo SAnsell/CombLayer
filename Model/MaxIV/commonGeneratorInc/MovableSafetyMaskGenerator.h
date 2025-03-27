@@ -46,6 +46,7 @@ class MovableSafetyMaskGenerator
   // lower mask (wide)
   double wMaskWidth;            ///< Wiggler mask width
   double wMaskHeight;           ///< Wiggler mask height
+  double undZOffset;            ///< Z-offset in the undulator position
 
   std::string idType;           ///< Insertion device type (wiggler/undulator)
 

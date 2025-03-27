@@ -180,7 +180,7 @@ frontMaskVariables(FuncDataBase& Control,
 
   constexpr double FM1Length(40.0); // [3]
   constexpr double FM2Length(40.0); // [3]
-  constexpr double MSMLength(30.0); // [3]
+  constexpr double MSMLength(40.0); // [3]
 
   constexpr double tmp = 45.3516244323655;
   ELog::EM << "What is tmp?" << ELog::endWarn;
@@ -235,7 +235,7 @@ frontMaskVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
 
   MovableSafetyMaskGenerator MSMGen;
-  MSMGen.generate(Control,preName+"MSM",MSMLength, "wiggler"); // [2]
+  MSMGen.generate(Control,preName+"MSM",MSMLength, "undulator"); // [2]
   Control.addVariable(preName+"MSMYStep",MSMdist);
 
   BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
