@@ -44,9 +44,10 @@
     #declare cameraAngle = 40;
   #break
   #case (strcmp(ITEM,"CleaningMagnet"))
-    #declare cameraLocation = <50, 70, 50>;
-    #declare cameraLookAt   = <0, 20, -5>;
-    #declare cameraAngle = 35;
+    #declare cameraLocation = <50, 70, 30>;
+    #declare cameraLookAt   = <0, 5, -5>;
+    #declare cameraAngle = 30;
+    #declare quick=0;
   #break
   #case(strcmp(ITEM,"CorrectorMag"))
     #declare cameraLocation = <-30, -30.0, 20.0>;
