@@ -74,6 +74,7 @@
 //     http://localhost:8080/maxiv/work-log/micromax/pictures/front-end/formax-and-micromax-frontend-technical-specification.pdf/view
 // [2] Toyama ForMAX Mechanical drawings
 //     http://localhost:8080/maxiv/work-log/tomowise/toyama_formax_fe_mechanical_drawings.pdf/view
+// [3] 236798-Toyama-front-end.step
 
 namespace setVariable
 {
@@ -410,6 +411,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
   CCGen.generateInsert(Control,frontKey+"ChokeInsert");
+  Control.addVariable(frontKey+"ChokeInsertPlateGap",0.9); // [3]
 
   CPipeGen.setCF<CF40>();
   CPipeGen.setAFlangeCF<CF25>();
