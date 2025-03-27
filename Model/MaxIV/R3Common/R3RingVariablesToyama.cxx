@@ -328,7 +328,12 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   setVariable::PortItemGenerator PItemGen;
   setVariable::HeatDumpGenerator HeatGen;
 
-  const double heatDumpDist(1708.75-100); // centre
+  constexpr double tmp = 45.3516244323655;
+  ELog::EM << "What is tmp?" << ELog::endWarn;
+
+  constexpr double heatAbsorberLength = 26.5;  // [2]
+
+  const double heatAbsorberDist(1700.0-tmp); // centre
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
@@ -355,8 +360,8 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   BellowGen.generateBellow(Control,frontKey+"BellowPreHA",14.0); // [2]
 
   HeatAbsorberToyamaGenerator HAGen;
-  HAGen.generate(Control,frontKey+"HeatAbsorber",26.5); // [2]
-  Control.addVariable(frontKey+"HeatAbsorberYStep",heatDumpDist);
+  HAGen.generate(Control,frontKey+"HeatAbsorber",heatAbsorberLength);
+  Control.addVariable(frontKey+"HeatAbsorberYStep",heatAbsorberDist);
 
   BellowGen.generateBellow(Control,frontKey+"BellowPostHA",14.0); // [2]
 

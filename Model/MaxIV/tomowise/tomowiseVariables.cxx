@@ -178,21 +178,21 @@ frontMaskVariables(FuncDataBase& Control,
   setVariable::SqrFMaskGenerator FMaskGen;
   setVariable::BellowGenerator BellowGen;
 
-  const double FM1Length(40.0);
-  const double FM2Length(34.2);
-  const double FM3Length(17.0);
+  constexpr double FM1Length(40.0); // [3]
+  constexpr double FM2Length(40.0); // [3]
+  constexpr double MSMLength(30.0); // [3]
 
   constexpr double tmp = 45.3516244323655;
+  ELog::EM << "What is tmp?" << ELog::endWarn;
 
-  const double FM1dist(1150.0-tmp+FM1Length/2.0); //
-  const double FM2dist(1624.2-100-100); // dummy
-  const double FM3dist(1624.2+FM2Length-100); // dummy
-  const double MSMdist(1624.2+FM2Length-150); // dummy
+  const double FM1dist(1150.0-tmp+FM1Length/2.0); // [3]
+  const double FM2dist(1500.0-tmp+FM2Length/2.0); // [3]
+  const double MSMdist(1600.0-tmp+MSMLength/2.0); // [3]
 
   FMaskGen.setCF<CF100>();
-  FMaskGen.setFrontGap(2.53, 2.53);
-  constexpr double backWidth = 1.19;
-  constexpr double backHeight = backWidth;
+  FMaskGen.setFrontGap(2.53, 2.53); // [3]
+  double backWidth = 1.19; // [3]
+  double backHeight = backWidth;
   FMaskGen.setBackGap(backWidth, backHeight);
   FMaskGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
@@ -200,17 +200,15 @@ frontMaskVariables(FuncDataBase& Control,
 
 
 
-  // approx for 200uRad x 200uRad
-  FMaskGen.setFrontAngleSize(FM2dist,300.0,300.0);
-  FMaskGen.setMinAngleSize(32.0,FM2dist, 200.0, 200.0 );
-  FMaskGen.setBackAngleSize(FM2dist, 250.0,250.0 );
+  FMaskGen.setFrontGap(1.65, 1.65); // [3]
+  backWidth = 1.54; // [3]
+  backHeight = 0.154; // [3]
+  FMaskGen.setBackGap(backWidth, backHeight);
+  FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
+		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"CollB",FM2dist,FM2Length);
 
-  // approx for 100uRad x 100uRad
-  FMaskGen.setFrontAngleSize(FM3dist,150.0,150.0);
-  FMaskGen.setMinAngleSize(12.0,FM3dist, 100.0, 100.0 );
-  FMaskGen.setBackAngleSize(FM3dist, 160.0,160.0 );
-  FMaskGen.generateColl(Control,preName+"CollC",FM3Length/2.0,FM3Length);
+;
 
 
   // NOT PRESENT :::
@@ -237,7 +235,7 @@ frontMaskVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
 
   MovableSafetyMaskGenerator MSMGen;
-  MSMGen.generate(Control,preName+"MSM",30.0, "wiggler"); // [2]
+  MSMGen.generate(Control,preName+"MSM",MSMLength, "wiggler"); // [2]
   Control.addVariable(preName+"MSMYStep",MSMdist);
 
   BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess

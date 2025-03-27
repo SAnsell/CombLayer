@@ -72,6 +72,7 @@
 //     http://localhost:8080/maxiv/work-log/micromax/pictures/front-end/formax-and-micromax-frontend-technical-specification.pdf/view
 // [2] Toyama ForMAX Mechanical drawings
 //     http://localhost:8080/maxiv/work-log/tomowise/toyama_formax_fe_mechanical_drawings.pdf/view
+// [3] TomoWISE Mask Evaluation (email from PI 20 Feb 2025)
 
 namespace setVariable
 {
