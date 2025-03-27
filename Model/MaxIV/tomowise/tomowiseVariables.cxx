@@ -178,21 +178,26 @@ frontMaskVariables(FuncDataBase& Control,
   setVariable::SqrFMaskGenerator FMaskGen;
   setVariable::BellowGenerator BellowGen;
 
-  const double FM1Length(15.0);
+  const double FM1Length(40.0);
   const double FM2Length(34.2);
   const double FM3Length(17.0);
 
-  const double FM1dist(1172.60-100); // dummy
+  constexpr double tmp = 45.3516244323655;
+
+  const double FM1dist(1150.0-tmp+FM1Length/2.0); //
   const double FM2dist(1624.2-100-100); // dummy
   const double FM3dist(1624.2+FM2Length-100); // dummy
   const double MSMdist(1624.2+FM2Length-150); // dummy
 
   FMaskGen.setCF<CF100>();
-  // Approximated to get 1mrad x 1mrad
-  FMaskGen.setFrontAngleSize(FM1dist,1300.0,1300.0);
-  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0);
-  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0);
+  FMaskGen.setFrontGap(2.53, 2.53);
+  constexpr double backWidth = 1.19;
+  constexpr double backHeight = backWidth;
+  FMaskGen.setBackGap(backWidth, backHeight);
+  FMaskGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
+		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"CollA",FM1dist,FM1Length);
+
 
 
   // approx for 200uRad x 200uRad
