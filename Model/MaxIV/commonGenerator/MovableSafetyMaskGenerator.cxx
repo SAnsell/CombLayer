@@ -51,8 +51,8 @@ namespace setVariable
 
 MovableSafetyMaskGenerator::MovableSafetyMaskGenerator() :
   width(7.0),height(7.0),
-  uMaskWidth(0.16),uMaskHeight(0.9),
-  wMaskWidth(1.8),wMaskHeight(0.4),
+  uMaskWidth(0.164),uMaskHeight(1.0),
+  wMaskWidth(1.76),wMaskHeight(0.4),
   idType("wiggler"),
   mainMat("Stainless304"),voidMat("Void")
   /*!

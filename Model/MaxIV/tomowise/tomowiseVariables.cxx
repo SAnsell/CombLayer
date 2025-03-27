@@ -187,7 +187,7 @@ frontMaskVariables(FuncDataBase& Control,
 
   const double FM1dist(1150.0-tmp+FM1Length/2.0); // [3]
   const double FM2dist(1500.0-tmp+FM2Length/2.0); // [3]
-  const double MSMdist(1600.0-tmp+MSMLength/2.0); // [3]
+  const double MSMdist(1600.0-tmp); // [3]
 
   FMaskGen.setCF<CF100>();
   FMaskGen.setFrontGap(2.53, 2.53); // [3]
