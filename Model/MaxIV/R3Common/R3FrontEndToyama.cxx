@@ -91,6 +91,7 @@
 #include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
+#include "CleaningMagnet.h"
 #include "BremBlock.h"
 #include "LObjectSupport.h"
 #include "MovableSafetyMask.h"
@@ -114,10 +115,10 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
-  proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
-  proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
+  proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
+  proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
   proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe"))
 
@@ -613,8 +614,9 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   collABPipe->setFront(*bellowB,2);
   collABPipe->setBack(*bellowC,2);
   collABPipe->createAll(System,*bellowB,"back");
-  outerCell=buildZone.createUnit(System,*collABPipe,2);
-  collABPipe->insertAllInCell(System,outerCell);
+
+  constructSystem::pipeMagUnit(System,buildZone,collABPipe,"#front","outerPipe",pMag);
+  constructSystem::pipeTerminate(System,buildZone,collABPipe);
 
   outerCell=buildZone.createUnit(System,*bellowC,1);
   bellowC->insertAllInCell(System,outerCell);
@@ -644,7 +646,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeBInnerVoid"));
   bremColl->createAll(System,*bremCollPipe,0);
 
-  // Broximity shielding B
+  // Proximity shielding B
   proxiShieldBPipe->createAll(System,*bremCollPipe,"back");
   constructSystem::pipeMagUnit(System,buildZone,proxiShieldBPipe,"#front","outerPipe",proxiShieldB);
   constructSystem::pipeTerminate(System,buildZone,proxiShieldBPipe);

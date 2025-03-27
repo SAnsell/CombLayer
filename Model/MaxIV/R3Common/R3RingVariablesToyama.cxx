@@ -66,6 +66,7 @@
 #include "MovableSafetyMaskGenerator.h"
 #include "HeatAbsorberToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
+#include "CleaningMagnetGenerator.h"
 
 #include "maxivVariables.h"
 
@@ -434,6 +435,12 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setMat("Stainless304");
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0);
+
+  setVariable::CleaningMagnetGenerator CLGen;
+  CLGen.generate(Control,frontKey+"PermanentMagnet");
+  Control.addVariable(frontKey+"PermanentMagnetYStep",64.7); // [3]
+  Control.addVariable(frontKey+"PermanentMagnetYokeLength",31.4); // should be the same length as the magnet, but making it 1 mm shorter to avoid zero volume cells
+  Control.addVariable(frontKey+"PermanentMagnetGap",5.2); // [3]
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);

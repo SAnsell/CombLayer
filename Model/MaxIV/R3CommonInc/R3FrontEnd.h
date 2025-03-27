@@ -22,6 +22,12 @@
 #ifndef xraySystem_R3FrontEnd_h
 #define xraySystem_R3FrontEnd_h
 
+namespace tdcSystem
+{
+  class CleaningMagnet;
+}
+
+
 namespace insertSystem
 {
   class insertPlate;
@@ -133,6 +139,8 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Mask1:2 connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
+  // Permanent magnet
+  std::shared_ptr<tdcSystem::CleaningMagnet> pMag;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// collimator B

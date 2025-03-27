@@ -91,6 +91,7 @@
 #include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
+#include "CleaningMagnet.h"
 #include "HeatAbsorberToyama.h"
 
 #include "R3FrontEnd.h"
@@ -124,6 +125,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   collA(new xraySystem::SquareFMask(newName+"CollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
+  pMag(std::make_shared<tdcSystem::CleaningMagnet>(newName+"PermanentMagnet")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   collB(new xraySystem::SquareFMask(newName+"CollB")),
   collC(new xraySystem::SquareFMask(newName+"CollC")),
@@ -179,6 +181,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(collA);
   OR.addObject(bellowB);
   OR.addObject(collABPipe);
+  OR.addObject(pMag);
   OR.addObject(bellowC);
   OR.addObject(collB);
   OR.addObject(collC);
