@@ -184,9 +184,10 @@ shutterTableToyama(FuncDataBase& Control,
   ELog::EM << "What is tmp1?" << ELog::endDiag;
   Control.addVariable(frontKey+"BellowIYStep",1947.53-tmp1);
 
-  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCF<CF66_TDC>();
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
+  Control.addVariable(frontKey+"FlorTubeARadius",7.63/2-0.2);
 
   // beam ports
   const std::string florName(frontKey+"FlorTubeA");
@@ -196,10 +197,15 @@ shutterTableToyama(FuncDataBase& Control,
 
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
   PItemGen.setPlate(0.0,"Void");
+  PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
   PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);
   PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
+
+  Control.addVariable(florName+"Port0Length",6);
+  Control.addVariable(florName+"Port1Length",6);
+
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0); // [2]
@@ -266,6 +272,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
   Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
+  Control.addVariable(frontKey+"ProxiShieldBPipeLength",20.0); // [2]
   Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
 
   return;
@@ -478,10 +485,11 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   // Bremsstrahulung collimator
   name=frontKey+"BremCollPipe";
-  constexpr double bremCollLength(20.0); // CAD and [1, page 26]
+  constexpr double bremCollLength(20.0); // CAD and [1, page 26], [2]
+  constexpr double bremCollPipeLength(21.0); // [2]
   constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
   PipeGen.setCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,name,bremCollLength);
+  PipeGen.generatePipe(Control,name,bremCollPipeLength);
   constexpr double bremCollPipeInnerRadius = 4.5; // CAD
   Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
   Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
