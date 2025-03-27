@@ -390,21 +390,19 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
 }
 
 void
-R3FrontEndToyama::buildShutterTable(Simulation& System,
-			      const attachSystem::FixedComp& preFC,
-			      const std::string& preSide)
+R3FrontEndToyama::buildShutterTable(Simulation& System)
   /*!
-    Build the shutter block table
+    Build the shutter block table. BellowI y-offset is an external variable
+    (shutter table is fixed anc cant move)
     \param System :: Simulation to use
-    \param preFC :: initial Fixedcomp
-    \param preSide :: link point on initial FC
   */
 {
   ELog::RegMethod RegA("R3FrontEndToyama","buildShutterTable");
   int outerCell;
 
-  // bellows
-  constructSystem::constructUnit(System,buildZone,preFC,preSide,*bellowI);
+  bellowI->createAll(System,*this, 0);
+  outerCell=buildZone.createUnit(System,*bellowI,"back");
+  bellowI->insertAllInCell(System,outerCell);
 
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
@@ -638,7 +636,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   buildMSM(System,*collExitPipe,"back");
   buildHeatTable(System);
   buildApertureTable(System,*bellowDA,2);
-  buildShutterTable(System,*pipeC,"back");
+  buildShutterTable(System);
 
   // Bremsstrahlung collimator
   constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bremCollPipe);

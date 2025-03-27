@@ -152,7 +152,7 @@ moveApertureTableToyama(FuncDataBase& Control,
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",32.5); // [2]
+  PipeGen.generatePipe(Control,frontKey+"PipeC",32.5-11); // [2]
   Control.addVariable(frontKey+"PipeCYStep",52.0);
 
   return;
@@ -180,6 +180,9 @@ shutterTableToyama(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",10.0); // [2]
+  constexpr double tmp1 = 45.3516244323655;
+  ELog::EM << "What is tmp1?" << ELog::endDiag;
+  Control.addVariable(frontKey+"BellowIYStep",1947.53-tmp1);
 
   SimpleTubeGen.setCF<CF100>();
   SimpleTubeGen.setCap();

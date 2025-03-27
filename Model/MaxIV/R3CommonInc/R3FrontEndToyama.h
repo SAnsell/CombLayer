@@ -222,9 +222,7 @@ protected:
   void buildHeatTable(Simulation&);
   void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
-  void buildShutterTable(Simulation&,
-			 const attachSystem::FixedComp&,
-			 const std::string&);
+  void buildShutterTable(Simulation&);
   void buildMSM(Simulation&,
 		const attachSystem::FixedComp&,
 		const std::string&);
