@@ -625,12 +625,13 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   collB->insertInCell(System,outerCell);
 
   std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
-  if (collFM3Active)
-    {
-      constructSystem::constructUnit
-	(System,buildZone,*collB,"back",*collC);
-      linkFC=collC;
-    }
+  // We never have FM3 in Toyama front-ends
+  // if (collFM3Active)
+  //   {
+  //     constructSystem::constructUnit
+  // 	(System,buildZone,*collB,"back",*collC);
+  //     linkFC=collC;
+  //   }
 
   collExitPipe->setFront(*linkFC,2);
 
