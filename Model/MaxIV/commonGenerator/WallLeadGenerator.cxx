@@ -56,9 +56,12 @@ WallLeadGenerator::WallLeadGenerator() :
   steelOutWidth(145.0),steelRingWidth(140.0),
   steelHeight(70.0),
   steelDepth(40.0),
-  steelThick(5.0),steelXCut(90.0),steelZCut(70.0),
+  steelThick(5.0),steelXCut(60.0),steelZCut(80.0),
   extraLeadOutWidth(140.0),extraLeadRingWidth(140.0),
-  extraLeadHeight(72.0),extraLeadDepth(8.0),extraLeadXCut(50.0),
+  extraLeadHeight(27.0),
+  extraLeadDepth(25.0),
+  extraLeadThick(8.0),
+  extraLeadXCut(60.0),
   preLeadVoidThick(7.0),
   voidMat("Void"),midMat("Concrete"),wallMat("Lead"),
   steelMat("Stainless304")
@@ -131,6 +134,7 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtraLeadRingWidth",extraLeadRingWidth);
   Control.addVariable(keyName+"ExtraLeadHeight",extraLeadHeight);
   Control.addVariable(keyName+"ExtraLeadDepth",extraLeadDepth);
+  Control.addVariable(keyName+"ExtraLeadThick",extraLeadThick);
   Control.addVariable(keyName+"ExtraLeadXCut",extraLeadXCut);
   Control.addVariable(keyName+"PreLeadVoidThick",preLeadVoidThick);
   Control.addVariable(keyName+"VoidRadius",VR);

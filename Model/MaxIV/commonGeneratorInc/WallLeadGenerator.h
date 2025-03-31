@@ -62,6 +62,7 @@ class WallLeadGenerator
   double extraLeadRingWidth;  ///< Ring Width of lead
   double extraLeadHeight;     ///< Height of lead
   double extraLeadDepth;      ///< Depth of lead
+    double extraLeadThick;        ///< extra lead thickness
   double extraLeadXCut;       ///< Cut out
   double preLeadVoidThick;      ///< void tickness in front of lead layer
 

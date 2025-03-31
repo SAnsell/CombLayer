@@ -113,6 +113,7 @@ WallLead::populate(const FuncDataBase& Control)
   extraLeadRingWidth=Control.EvalVar<double>(keyName+"ExtraLeadRingWidth");
   extraLeadHeight=Control.EvalVar<double>(keyName+"ExtraLeadHeight");
   extraLeadDepth=Control.EvalVar<double>(keyName+"ExtraLeadDepth");
+    extraLeadThick=Control.EvalVar<double>(keyName+"ExtraLeadThick");
   extraLeadXCut=Control.EvalVar<double>(keyName+"ExtraLeadXCut");
   preLeadVoidThick=Control.EvalVar<double>(keyName+"PreLeadVoidThick");
   // Void
@@ -138,12 +139,12 @@ WallLead::createSurfaces()
   if (!frontActive() || !backActive())
     throw ColErr::EmptyContainer("back/front not set for:"+keyName);
 
-  FrontBackCut::getShiftedFront(SMap,buildIndex+11,Y,preLeadVoidThick+extraLeadDepth);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+11,Y,preLeadVoidThick+extraLeadThick);
 
   FrontBackCut::getShiftedFront(SMap,buildIndex+21,Y,
-				preLeadVoidThick+extraLeadDepth+steelThick);
+				preLeadVoidThick+extraLeadThick+steelThick);
   FrontBackCut::getShiftedFront(SMap,buildIndex+31,Y,
-				preLeadVoidThick+extraLeadDepth+steelThick+frontLength);
+				preLeadVoidThick+extraLeadThick+steelThick+frontLength);
 
   FrontBackCut::getShiftedFront(SMap,buildIndex+41,Y,preLeadVoidThick);
 
@@ -153,8 +154,8 @@ WallLead::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*extraLeadOutWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*extraLeadRingWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(extraLeadHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(extraLeadHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(extraLeadDepth),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(extraLeadHeight),Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(extraLeadXCut/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(extraLeadXCut/2.0),X);

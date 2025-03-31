@@ -67,6 +67,7 @@ class WallLead :
   double extraLeadRingWidth;  ///< Width of lead ring side
   double extraLeadHeight;     ///< Height of lead
   double extraLeadDepth;      ///< Depth of lead
+    double extraLeadThick;        ///< extra lead thickness
   double extraLeadXCut;       ///< Cut out
   double preLeadVoidThick;    ///< void tickness in front of lead layer
 
