@@ -156,7 +156,7 @@ R3RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
   Control.addVariable(preName+"IcosagonWallThick",90.0);
   Control.addVariable(preName+"OffsetCornerX",716.0);
-  Control.addVariable(preName+"OffsetCornerY",558.0);
+  Control.addVariable(preName+"OffsetCornerY",556.0);
   Control.addVariable(preName+"OuterWall",110.0);
   Control.addVariable(preName+"OuterWallCut",-40.0);
   // In reality, REW have different thickness, but we have the same for all.
