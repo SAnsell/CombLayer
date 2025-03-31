@@ -115,7 +115,7 @@ wallVariables(FuncDataBase& Control,const std::string& wallKey)
   ELog::RegMethod RegA("R3RingVariables[F]","wallVariables");
 
   WallLeadGenerator LGen;
-  LGen.setWidth(140.0,70.0);
+  LGen.setWidth(150.0,100.0);
   LGen.generateWall(Control,wallKey,3.0);
 
   return;
