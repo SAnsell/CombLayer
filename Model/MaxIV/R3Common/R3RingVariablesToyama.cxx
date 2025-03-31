@@ -121,18 +121,18 @@ moveApertureTableToyama(FuncDataBase& Control,
   // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"AperturePipeA",30.0); // [2]
-  Control.addVariable(frontKey+"AperturePipeAYStep",14.0);
+  //  Control.addVariable(frontKey+"AperturePipeAYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollA");
 
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowF",14.0); // [2]
+  BellowGen.generateBellow(Control,frontKey+"BellowF",8); //14.0); // [2]
 
   // Stepped 420mm from pipeB so bellows/aperturePipe can move freely
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
   CrossGen.setTotalPorts(7.5,7.5);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
-    (Control,frontKey+"IonPC",52.0,15.74,28.70);   // height/depth
+    (Control,frontKey+"IonPC",0.0,15.74,28.70);   // height/depth
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
@@ -141,13 +141,13 @@ moveApertureTableToyama(FuncDataBase& Control,
   // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"AperturePipeB",30.0); // [2]
-  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
+  //  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollB");
   Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowH",14.0); // [2]
+  BellowGen.generateBellow(Control,frontKey+"BellowH",8); //14.0); // [2]
 
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();

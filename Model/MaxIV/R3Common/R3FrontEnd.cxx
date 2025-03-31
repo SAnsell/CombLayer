@@ -144,7 +144,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-
+  // shutter table
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
