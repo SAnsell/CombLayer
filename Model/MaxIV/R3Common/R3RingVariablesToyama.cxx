@@ -514,7 +514,8 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   BBGen.setMaterial("Tungsten", "Void");
   BBGen.setRadius(bremCollRadius);
   BBGen.setLength(bremCollLength);
-  BBGen.setAperature(-1.0, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7); // CAD and [1, page 26]
+  // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
+  BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
   BBGen.generateBlock(Control,frontKey+"BremColl",0);
 
   wallVariables(Control,beamlineKey+"WallLead");
