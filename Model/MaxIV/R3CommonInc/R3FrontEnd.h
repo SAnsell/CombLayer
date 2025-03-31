@@ -160,8 +160,8 @@ class R3FrontEnd :
 
     /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowE;
-  /// Variable Apperature pipe
-  std::shared_ptr<constructSystem::VacuumPipe> aperturePipe;
+  /// Variable Apperature pipe A
+  std::shared_ptr<constructSystem::VacuumPipe> aperturePipeA;
   /// L collimator
   std::shared_ptr<xraySystem::LCollimator> moveCollA;
   /// bellows for third table

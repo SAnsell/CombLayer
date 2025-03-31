@@ -139,7 +139,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
 
   // OR.addObject(pipeB);
   // OR.addObject(bellowE);
-  // OR.addObject(aperturePipe);
+  // OR.addObject(aperturePipeA);
   // OR.addObject(moveCollA);
   // OR.addObject(bellowF);
   // OR.addObject(ionPC);
@@ -303,19 +303,19 @@ R3FrontEndFMBB::buildApertureTable(Simulation& System,
 
   int outerCell;
   // NOTE order for master cell [Next 4 objects]
-  aperturePipe->createAll(System,preFC,preSideIndex);  // pipeB
-  moveCollA->addInsertCell(aperturePipe->getCell("Void"));
-  moveCollA->createAll(System,*aperturePipe,"midPoint");
+  aperturePipeA->createAll(System,preFC,preSideIndex);  // pipeB
+  moveCollA->addInsertCell(aperturePipeA->getCell("Void"));
+  moveCollA->createAll(System,*aperturePipeA,"midPoint");
 
   // bellows AFTER movable aperture pipe
   bellowE->setFront(preFC,preSideIndex);
-  bellowE->setBack(*aperturePipe,1);
+  bellowE->setBack(*aperturePipeA,1);
   bellowE->createAll(System,preFC,preSideIndex);
 
   ionPC->createAll(System,preFC,preSideIndex);
 
   // bellows AFTER aperature ionpump and ion pump
-  bellowF->setFront(*aperturePipe,2);
+  bellowF->setFront(*aperturePipeA,2);
   bellowF->setBack(*ionPC,1);
   bellowF->createAll(System,preFC,preSideIndex);
 
@@ -323,8 +323,8 @@ R3FrontEndFMBB::buildApertureTable(Simulation& System,
   outerCell=buildZone.createUnit(System,*bellowE,2);
   bellowE->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*aperturePipe,2);
-  aperturePipe->insertAllInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*aperturePipeA,2);
+  aperturePipeA->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowF,2);
   bellowF->insertAllInCell(System,outerCell);

@@ -120,8 +120,8 @@ moveApertureTableToyama(FuncDataBase& Control,
 
   // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipe",30.0); // [2]
-  Control.addVariable(frontKey+"AperturePipeYStep",14.0);
+  PipeGen.generatePipe(Control,frontKey+"AperturePipeA",30.0); // [2]
+  Control.addVariable(frontKey+"AperturePipeAYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollA");
 
   BellowGen.setCF<setVariable::CF63>();
