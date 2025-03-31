@@ -159,7 +159,9 @@ R3RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OffsetCornerY",558.0);
   Control.addVariable(preName+"OuterWall",110.0);
   Control.addVariable(preName+"OuterWallCut",-40.0);
-  Control.addVariable(preName+"RatchetWall",120.0);
+  // In reality, REW have different thickness, but we have the same for all.
+  Control.addVariable(preName+"RatchetWall",160.0); // for TomoWISE (standard thickness) K_20-6_633
+  ELog::EM << "Bulk shielding thick depends on the beamline. Currently, the same for all" << ELog::endWarn;
 
   Control.addVariable(preName+"Insulation",10.0);
   Control.addVariable(preName+"InsulationCut",400.0);

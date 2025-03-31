@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3Common/R3Ring.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -57,7 +57,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
@@ -74,7 +74,7 @@
 namespace xraySystem
 {
 
-R3Ring::R3Ring(const std::string& Key) : 
+R3Ring::R3Ring(const std::string& Key) :
   attachSystem::FixedOffset(Key,12),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -87,7 +87,7 @@ R3Ring::R3Ring(const std::string& Key) :
 {
 }
 
-R3Ring::~R3Ring() 
+R3Ring::~R3Ring()
   /*!
     Destructor
   */
@@ -101,11 +101,11 @@ R3Ring::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("R3Ring","populate");
-  
+
   FixedOffset::populate(Control);
 
   fullOuterRadius=Control.EvalVar<double>(keyName+"FullOuterRadius");
-  
+
   icosagonRadius=Control.EvalVar<double>(keyName+"IcosagonRadius");
   icosagonWallThick=Control.EvalVar<double>(keyName+"IcosagonWallThick");
 
@@ -133,7 +133,7 @@ R3Ring::populate(const FuncDataBase& Control)
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
   return;
 }
- 
+
 void
 R3Ring::createSurfaces()
   /*!
@@ -143,7 +143,7 @@ R3Ring::createSurfaces()
   ELog::RegMethod RegA("R3Ring","createSurfaces");
 
   ModelSupport::buildCylinder(SMap,buildIndex+9007,Origin,Z,fullOuterRadius);
-  
+
   // quick way to rotate outgoing vector to
   // dividing vector
   double theta(0.0);
@@ -164,7 +164,7 @@ R3Ring::createSurfaces()
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
       surfN+=10;
     }
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
   SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
@@ -180,7 +180,7 @@ R3Ring::createSurfaces()
   // length of flat extent either side of mid point
   double LLength=(icosagonRadius+icosagonWallThick)*
     sin(M_PI/static_cast<double>(NInnerSurf));
-  
+
   std::vector<Geometry::Vec3D> outerPts;
   std::vector<Geometry::Vec3D> outerX;
   std::vector<Geometry::Vec3D> outerY;
@@ -226,7 +226,7 @@ R3Ring::createSurfaces()
 	 APt+YY*(insulationDepth+insulation),YY);
       surfN+=10;
     }
-  
+
   return;
 }
 
@@ -239,7 +239,7 @@ R3Ring::createFloor(Simulation& System)
 {
   ELog::RegMethod RegA("R3Ring","createFloor");
   HeadRule HR;
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 -5 15");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
   return;
@@ -280,9 +280,9 @@ R3Ring::createObjects(Simulation& System)
   // INNER VOID:
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,lineBuild);
-  
+
   const HeadRule IV(HR.complement());
-  
+
   makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*fullLayerHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex+1000,lineBuild);
@@ -308,7 +308,7 @@ R3Ring::createObjects(Simulation& System)
       makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofBaseHR);
       makeCell("Roof",System,cellIndex++,0,0.0,HR*roofInsulationHR);
       makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofTopHR);
-      
+
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 3M -1008M -1002 -1503M");
       makeCell("InnerFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
@@ -329,7 +329,7 @@ R3Ring::createObjects(Simulation& System)
 				   "1002 3M -1003M -1 -1503M");
       makeCell("OuterFlatEnd",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
-            
+
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,"1 -1001 -1003M  3");
       makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
@@ -342,10 +342,10 @@ R3Ring::createObjects(Simulation& System)
       INext+=10;
       BNext+=10;
     }
-  
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 15 -16");  
-  addOuterSurf(HR);    
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 15 -16");
+  addOuterSurf(HR);
 
   return;
 }
@@ -358,7 +358,7 @@ R3Ring::createDoor(Simulation& System)
   */
 {
   ELog::RegMethod RegA("R3Ring","createDoor");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -407,7 +407,7 @@ R3Ring::createLinks()
 	(SurfMap::getSurfPtr("BeamInner",i));
       const Geometry::Plane* BExit=dynamic_cast<const Geometry::Plane*>
 	(SurfMap::getSurfPtr("BeamOuter",i));
-      
+
       const Geometry::Vec3D Beam= BWall->getNormal();
 
       const Geometry::Vec3D beamOrigin=
@@ -419,11 +419,13 @@ R3Ring::createLinks()
       FixedComp::setLinkSurf(i,-BInner->getName());
       FixedComp::setConnect(i,beamOrigin,Beam);
 
+      //      ELog::EM << "OpticCentre"+std::to_string(i) << " Inner surf: " << -BInner->getName() << "; Exit surf: " << -BExit->getName() << "; Orig: " << beamOrigin << "; Dir: " << Beam << ELog::endDiag;
+
       FixedComp::nameSideIndex(i+NInnerSurf,"ExitCentre"+std::to_string(i));
       FixedComp::setLinkSurf(NInnerSurf+i,-BExit->getName());
       FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
 
-      
+
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
   return;
@@ -444,7 +446,7 @@ R3Ring::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
 
 
@@ -455,5 +457,5 @@ R3Ring::createAll(Simulation& System,
 
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
