@@ -181,7 +181,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",10.0); // [2]
-  constexpr double tmp1 = 45.3516244323655;
+  constexpr double tmp1 = 0*45.3516244323655;
   ELog::EM << "What is tmp1?" << ELog::endDiag;
   Control.addVariable(frontKey+"BellowIYStep",1947.53-tmp1);
 
@@ -351,7 +351,7 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   setVariable::PortItemGenerator PItemGen;
   setVariable::HeatDumpGenerator HeatGen;
 
-  constexpr double tmp = 45.3516244323655;
+  constexpr double tmp = 0*45.3516244323655;
   ELog::EM << "What is tmp?" << ELog::endWarn;
 
   constexpr double heatAbsorberLength = 26.5;  // [2]
@@ -417,7 +417,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   const std::string frontKey(beamlineKey+"FrontBeam");
   // Master off set from division --
-  Control.addVariable(frontKey+"YStep",524.4);
+  Control.addVariable(frontKey+"YStep",514.44228);
   Control.addVariable(frontKey+"XStep",0.0);
   Control.addVariable(frontKey+"OuterRadius",60.0);
 

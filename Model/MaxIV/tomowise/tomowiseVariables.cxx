@@ -182,7 +182,7 @@ frontMaskVariables(FuncDataBase& Control,
   constexpr double FM2Length(40.0); // [3]
   constexpr double MSMLength(40.0); // [3]
 
-  constexpr double tmp = 45.3516244323655;
+  constexpr double tmp = 0*45.3516244323655;
   ELog::EM << "What is tmp?" << ELog::endWarn;
 
   const double FM1dist(1150.0-tmp+FM1Length/2.0); // [3]
