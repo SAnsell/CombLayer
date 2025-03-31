@@ -152,7 +152,8 @@ moveApertureTableToyama(FuncDataBase& Control,
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"PipeC",32.5-11); // [2]
+  PipeGen.generatePipe(Control,frontKey+"PipeC",32.5-11-17); // [2]
+  ELog::EM << "PipeC length reduce by 17 cm to avoid geometric errors. Check abs placements / lengths of other components" << ELog::endWarn;
   Control.addVariable(frontKey+"PipeCYStep",52.0);
 
   return;
