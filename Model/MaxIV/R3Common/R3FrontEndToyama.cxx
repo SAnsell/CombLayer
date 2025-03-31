@@ -115,6 +115,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
+  gateTubePreMM1(std::make_shared<xraySystem::CylGateValve>(newName+"GateTubePreMM1")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
@@ -303,6 +304,8 @@ R3FrontEndToyama::buildHeatTable(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*ionPB,"back",*pipeB);
 
   constructSystem::constructUnit(System,buildZone,*pipeB,"back",*bellowDA);
+
+  constructSystem::constructUnit(System,buildZone,*bellowDA,"back",*gateTubePreMM1);
 
   return;
 
@@ -635,7 +638,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   buildMSM(System,*collExitPipe,"back");
   buildHeatTable(System);
-  buildApertureTable(System,*bellowDA,2);
+  buildApertureTable(System,*gateTubePreMM1,2);
   buildShutterTable(System);
 
   // Bremsstrahlung collimator

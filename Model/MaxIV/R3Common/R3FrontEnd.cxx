@@ -133,7 +133,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-
+  // aperture table
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   aperturePipeA(new constructSystem::VacuumPipe(newName+"AperturePipeA")),
   moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),
