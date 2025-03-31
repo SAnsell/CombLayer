@@ -54,7 +54,8 @@ WallLeadGenerator::WallLeadGenerator() :
   frontWidth(80.0),frontHeight(100.0),
   backWidth(40.0),backHeight(60.0),
   steelOutWidth(145.0),steelRingWidth(140.0),
-  steelHeight(70.0),steelDepth(60.0),
+  steelHeight(70.0),
+  steelDepth(40.0), // K_20-6_633
   steelThick(5.0),steelXCut(90.0),steelZCut(70.0),
   extraLeadOutWidth(140.0),extraLeadRingWidth(140.0),
   extraLeadHeight(72.0),extraLeadDepth(8.0),extraLeadXCut(50.0),
