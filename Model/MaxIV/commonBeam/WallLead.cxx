@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/WallLead.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -51,7 +51,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -75,8 +75,8 @@ WallLead::WallLead(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
-  
-WallLead::~WallLead() 
+
+WallLead::~WallLead()
   /*!
     Destructor
   */
@@ -90,12 +90,12 @@ WallLead::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("WallLead","populate");
-  
+
   FixedRotate::populate(Control);
 
   frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   frontWidth=Control.EvalVar<double>(keyName+"FrontWidth");
-  frontHeight=Control.EvalVar<double>(keyName+"FrontHeight");  
+  frontHeight=Control.EvalVar<double>(keyName+"FrontHeight");
   backWidth=Control.EvalVar<double>(keyName+"BackWidth");
   backHeight=Control.EvalVar<double>(keyName+"BackHeight");
 
@@ -114,7 +114,8 @@ WallLead::populate(const FuncDataBase& Control)
   extraLeadHeight=Control.EvalVar<double>(keyName+"ExtraLeadHeight");
   extraLeadDepth=Control.EvalVar<double>(keyName+"ExtraLeadDepth");
   extraLeadXCut=Control.EvalVar<double>(keyName+"ExtraLeadXCut");
-  // Void 
+  preLeadVoidThick=Control.EvalVar<double>(keyName+"PreLeadVoidThick");
+  // Void
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
@@ -137,12 +138,14 @@ WallLead::createSurfaces()
   if (!frontActive() || !backActive())
     throw ColErr::EmptyContainer("back/front not set for:"+keyName);
 
-  FrontBackCut::getShiftedFront(SMap,buildIndex+11,Y,extraLeadDepth);
+  FrontBackCut::getShiftedFront(SMap,buildIndex+11,Y,preLeadVoidThick+extraLeadDepth);
 
   FrontBackCut::getShiftedFront(SMap,buildIndex+21,Y,
-				extraLeadDepth+steelThick);
+				preLeadVoidThick+extraLeadDepth+steelThick);
   FrontBackCut::getShiftedFront(SMap,buildIndex+31,Y,
-				extraLeadDepth+steelThick+frontLength);
+				preLeadVoidThick+extraLeadDepth+steelThick+frontLength);
+
+  FrontBackCut::getShiftedFront(SMap,buildIndex+41,Y,preLeadVoidThick);
 
   if (backLength>Geometry::zeroTol)
     ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+12,Y,-backLength);
@@ -196,17 +199,20 @@ WallLead::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  // extra Lead
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 13 -14 5 -6 7");
-  makeCell("ExtraVoid",System,cellIndex++,0,0.0,HR*frontSurf);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 3 -4 105 -106 7");
+  makeCell("PreLeadVoid",System,cellIndex++,0,0.0,HR*frontSurf);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 3 -4 (-13 : 14) 5 -6");
-  makeCell("ExtraWall",System,cellIndex++,wallMat,0.0,HR*frontSurf);
+  // extra Lead
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -11 13 -14 5 -6 7");
+  makeCell("ExtraVoid",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -11 3 -4 (-13 : 14) 5 -6");
+  makeCell("ExtraWall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 "-11 103 -104 105 -106 (-3:4:-5:6)");
-  makeCell("ExtraOut",System,cellIndex++,0,0.0,HR*frontSurf);
-  
+				 "41 -11 103 -104 105 -106 (-3:4:-5:6)");
+  makeCell("ExtraOut",System,cellIndex++,0,0.0,HR);
+
   // steel wall
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 113 -114 115 -116 7");
   makeCell("SteelVoid",System,cellIndex++,0,0.0,HR);
@@ -221,13 +227,13 @@ WallLead::createObjects(Simulation& System)
     (SMap,buildIndex,"21 -31 203 -204 205 -206 7");
   makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR);
 
-  
+
   if (backLength>Geometry::zeroTol)
     {
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"31 -12 1003 -1004 1005 -1006 7");
       makeCell("MidWall",System,cellIndex++,midMat,0.0,HR);
-      
+
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"12 1003 -1004 1005 -1006 7");
       makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR*backSurf);
@@ -238,7 +244,7 @@ WallLead::createObjects(Simulation& System)
 	(SMap,buildIndex,"31 1003 -1004 1005 -1006 7");
       makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR*backSurf);
     }
-  
+
   HR=HeadRule(SMap,buildIndex,-7);
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontSurf*backSurf);
 
@@ -265,10 +271,10 @@ WallLead::createLinks()
   ELog::RegMethod RegA("WallLead","createLinks");
 
   // port centre
-  
-  FrontBackCut::createFrontLinks(*this,Origin,Y); 
-  FrontBackCut::createBackLinks(*this,Origin,Y);  
-  
+
+  FrontBackCut::createFrontLinks(*this,Origin,Y);
+  FrontBackCut::createBackLinks(*this,Origin,Y);
+
   return;
 }
 
@@ -287,13 +293,13 @@ WallLead::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
 
   return;
 }
-  
+
 }  // NAMESPACE xraySystem

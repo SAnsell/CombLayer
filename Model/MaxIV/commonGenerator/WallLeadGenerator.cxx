@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/WallLeadGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -58,6 +58,7 @@ WallLeadGenerator::WallLeadGenerator() :
   steelThick(5.0),steelXCut(90.0),steelZCut(70.0),
   extraLeadOutWidth(140.0),extraLeadRingWidth(140.0),
   extraLeadHeight(72.0),extraLeadDepth(8.0),extraLeadXCut(50.0),
+  preLeadVoidThick(7.0),
   voidMat("Void"),midMat("Concrete"),wallMat("Lead"),
   steelMat("Stainless304")
   /*!
@@ -65,7 +66,7 @@ WallLeadGenerator::WallLeadGenerator() :
   */
 {}
 
-WallLeadGenerator::~WallLeadGenerator() 
+WallLeadGenerator::~WallLeadGenerator()
  /*!
    Destructor
  */
@@ -74,14 +75,14 @@ WallLeadGenerator::~WallLeadGenerator()
 void
 WallLeadGenerator::setXOffset(const double XS)
   /*!
-    Set the wall offset 
+    Set the wall offset
     \param XS :: Wall step
    */
 {
   xStep=XS;
   return;
 }
-  
+
 void
 WallLeadGenerator::setWidth(const double OW,const double RW)
   /*!
@@ -97,20 +98,20 @@ WallLeadGenerator::setWidth(const double OW,const double RW)
   steelRingWidth=RW;
   return;
 }
-  
+
 void
 WallLeadGenerator::generateWall(FuncDataBase& Control,
 				const std::string& keyName,
 				const double VR) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param VR :: void radius 						
+    \param VR :: void radius
   */
 {
   ELog::RegMethod RegA("WallLeadGenerator","generateWall");
-  
+
   Control.addVariable(keyName+"XStep",xStep);
   Control.addVariable(keyName+"FrontLength",frontLength);
   Control.addVariable(keyName+"BackLength",backLength);
@@ -130,16 +131,17 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
   Control.addVariable(keyName+"ExtraLeadHeight",extraLeadHeight);
   Control.addVariable(keyName+"ExtraLeadDepth",extraLeadDepth);
   Control.addVariable(keyName+"ExtraLeadXCut",extraLeadXCut);
+  Control.addVariable(keyName+"PreLeadVoidThick",preLeadVoidThick);
   Control.addVariable(keyName+"VoidRadius",VR);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"MidMat",midMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"SteelMat",steelMat);
- 
+
   return;
 
 }
 
-  
+
 }  // NAMESPACE setVariable
