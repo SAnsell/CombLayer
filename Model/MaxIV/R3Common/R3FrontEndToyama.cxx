@@ -419,11 +419,8 @@ R3FrontEndToyama::buildShutterTable(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowI,"#front");
   pipeC->insertAllInCell(System,outerCell);
 
-
   outerCell=buildZone.createUnit(System,*bellowI,"back");
   bellowI->insertAllInCell(System,outerCell);
-
-
 
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
