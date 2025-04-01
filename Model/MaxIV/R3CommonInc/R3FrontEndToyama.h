@@ -250,6 +250,8 @@ protected:
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;
 
+  std::shared_ptr<constructSystem::VacuumPipe> getProxiShieldBPipe() const {return proxiShieldBPipe;}
+  std::shared_ptr<xraySystem::ProximityShielding> getProxiShieldB() const {return proxiShieldB;}
 };
 
 }

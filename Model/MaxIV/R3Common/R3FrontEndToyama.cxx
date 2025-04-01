@@ -657,7 +657,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   buildShutterTable(System);
 
   // Bremsstrahlung collimator
-  constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bremCollPipe);
+  outerCell = constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bremCollPipe);
   bremColl->addInsertCell(bremCollPipe->getCell("Void"));
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeAInnerVoid"));
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeBInnerVoid"));
@@ -667,8 +667,8 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   // Proximity shielding B
   proxiShieldBPipe->createAll(System,*bremCollPipe,"back");
-  constructSystem::pipeMagUnit(System,buildZone,proxiShieldBPipe,"#front","outerPipe",proxiShieldB);
-  constructSystem::pipeTerminate(System,buildZone,proxiShieldBPipe);
+  proxiShieldB->setCutSurf("Inner", *proxiShieldBPipe, "outerPipe");
+  proxiShieldB->createAll(System,*proxiShieldBPipe,"#front");
 
   if (ExternalCut::isActive("REWall"))
     {
@@ -677,10 +677,14 @@ R3FrontEndToyama::buildObjects(Simulation& System)
     }
 
   buildZone.rebuildInsertCells(System);
+  proxiShieldB->insertInCell(System,outerCell);
+  proxiShieldBPipe->insertInCell("FlangeA", System, outerCell);
+  proxiShieldBPipe->insertInCell("Main", System, outerCell);
 
   buildExtras(System);
   setCell("MasterVoid",outerCell);
-  lastComp=proxiShieldBPipe;
+  //  lastComp=proxiShieldBPipe;
+  lastComp=bremCollPipe;
 
   return;
 }

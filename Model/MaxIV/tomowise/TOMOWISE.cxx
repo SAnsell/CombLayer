@@ -63,6 +63,7 @@
 #include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
+#include "ProximityShielding.h"
 #include "WallLead.h"
 #include "R3Ring.h"
 #include "R3FrontEnd.h"
@@ -152,6 +153,14 @@ TOMOWISE::build(Simulation& System,
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
   wallLead->setCutSurf("Ring",r3Ring->getSurfRule("#FlatInner",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
+
+  frontBeam->getProxiShieldBPipe()->insertInCell("Main", System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldBPipe()->insertInCell("FlangeB", System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldBPipe()->insertInCell("FlangeB", System, wallLead->getCell("SteelVoid"));
+
+  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("PreLeadVoid"));
+  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("ExtraVoid"));
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole"
       || stopPoint=="FM1" || stopPoint=="FM2" || stopPoint=="FM3")
