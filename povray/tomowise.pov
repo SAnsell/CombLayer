@@ -21,7 +21,7 @@
 #declare projection = 1;
 #declare cameraAngle = 150;
 
-#declare quick=1; // 0=quick but low quality, 1=slow but somewhat better quality
+#declare quick=0; // 0=quick but low quality, 1=slow but somewhat better quality
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
@@ -95,7 +95,9 @@ global_settings {
     shadowless
   }
 #else
-  light_source{<-100,-300,120>,color C_Sun
+  light_source{
+    cameraLocation + <-100,-300,10>,
+    color C_Sun
     photons {
       refraction off
       reflection on
@@ -105,15 +107,15 @@ global_settings {
     #end
   }
 
-  light_source{<30,290,0>,color C_Sun
-    photons {
-      refraction off
-      reflection on
-    }
-    #if (AreaOK=1)
-      area_light 100*z,100*y,5,5 adaptive 1 jitter orient circular
-    #end
-  }
+  // light_source{<30,290,0>,color C_Sun
+  //   photons {
+  //     refraction off
+  //     reflection on
+  //   }
+  //   #if (AreaOK=1)
+  //     area_light 100*z,100*y,5,5 adaptive 1 jitter orient circular
+  //   #end
+  // }
 
 #end
 
