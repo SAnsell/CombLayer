@@ -53,11 +53,11 @@ WallLeadGenerator::WallLeadGenerator() :
   xStep(0.0),frontLength(10.0),backLength(10.0),
   frontWidth(80.0),frontHeight(80.0),
   backWidth(40.0),backHeight(40.0),
-  steelOutWidth(145.0),steelRingWidth(140.0),
+  steelOutWidth(145.0),
   steelHeight(70.0),
   steelDepth(40.0),
   steelThick(5.0),steelXCut(60.0),steelZCut(80.0),
-  extraLeadOutWidth(140.0),extraLeadRingWidth(140.0),
+  extraLeadOutWidth(140.0),
   extraLeadHeight(27.0),
   extraLeadDepth(25.0),
   extraLeadThick(8.0),
@@ -88,18 +88,15 @@ WallLeadGenerator::setXOffset(const double XS)
 }
 
 void
-WallLeadGenerator::setWidth(const double OW,const double RW)
+WallLeadGenerator::setWidth(const double OW)
   /*!
     Set the widths of the first two objects
     \param OW :: Outer Width
-    \param RW :: Ring Width
    */
 {
   extraLeadOutWidth=OW;
   steelOutWidth=OW;
 
-  extraLeadRingWidth=RW;
-  steelRingWidth=RW;
   return;
 }
 
@@ -124,14 +121,12 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
   Control.addVariable(keyName+"BackWidth",backWidth);
   Control.addVariable(keyName+"BackHeight",backHeight);
   Control.addVariable(keyName+"SteelOutWidth",steelOutWidth);
-  Control.addVariable(keyName+"SteelRingWidth",steelRingWidth);
   Control.addVariable(keyName+"SteelHeight",steelHeight);
   Control.addVariable(keyName+"SteelDepth",steelDepth);
   Control.addVariable(keyName+"SteelThick",steelThick);
   Control.addVariable(keyName+"SteelXCut",steelXCut);
   Control.addVariable(keyName+"SteelZCut",steelZCut);
   Control.addVariable(keyName+"ExtraLeadOutWidth",extraLeadOutWidth);
-  Control.addVariable(keyName+"ExtraLeadRingWidth",extraLeadRingWidth);
   Control.addVariable(keyName+"ExtraLeadHeight",extraLeadHeight);
   Control.addVariable(keyName+"ExtraLeadDepth",extraLeadDepth);
   Control.addVariable(keyName+"ExtraLeadThick",extraLeadThick);

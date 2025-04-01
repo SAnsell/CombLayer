@@ -3,7 +3,7 @@
 
  * File:   commonBeam/WallLead.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,6 @@ WallLead::populate(const FuncDataBase& Control)
   backLength=Control.EvalDefVar<double>(keyName+"BackLength",0.0);
 
   steelOutWidth=Control.EvalVar<double>(keyName+"SteelOutWidth");
-  steelRingWidth=Control.EvalVar<double>(keyName+"SteelRingWidth");
   steelHeight=Control.EvalVar<double>(keyName+"SteelHeight");
   steelDepth=Control.EvalVar<double>(keyName+"SteelDepth");
   steelThick=Control.EvalVar<double>(keyName+"SteelThick");
@@ -110,7 +109,6 @@ WallLead::populate(const FuncDataBase& Control)
   steelZCut=Control.EvalVar<double>(keyName+"SteelZCut");
 
   extraLeadOutWidth=Control.EvalVar<double>(keyName+"ExtraLeadOutWidth");
-  extraLeadRingWidth=Control.EvalVar<double>(keyName+"ExtraLeadRingWidth");
   extraLeadHeight=Control.EvalVar<double>(keyName+"ExtraLeadHeight");
   extraLeadDepth=Control.EvalVar<double>(keyName+"ExtraLeadDepth");
     extraLeadThick=Control.EvalVar<double>(keyName+"ExtraLeadThick");
@@ -153,7 +151,6 @@ WallLead::createSurfaces()
 
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*extraLeadOutWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*extraLeadRingWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(extraLeadDepth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(extraLeadHeight),Z);
 
@@ -162,7 +159,6 @@ WallLead::createSurfaces()
 
   // steel
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*steelOutWidth,X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*steelRingWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*steelDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*steelHeight,Z);
 
@@ -195,41 +191,41 @@ WallLead::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("WallLead","createObjects");
 
+  if (!ExternalCut::isActive("Ring"))
+    throw ColErr::ExitAbort(keyName+": the 'Ring' external cut must be set (expected R3Ring::#FlatInner)");
+
+  const HeadRule ring = getRule("Ring");
+
+
   const HeadRule frontSurf=getFrontRule();
   const HeadRule backSurf=getBackRule();
 
   HeadRule HR;
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 3 -4 5 -106 7");
-  makeCell("PreLeadVoid",System,cellIndex++,0,0.0,HR*frontSurf);
-
-
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-41 3 5 -106 7");
+  makeCell("PreLeadVoid",System,cellIndex++,0,0.0,HR*frontSurf*ring);
 
   // extra Lead
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -11 13 -14 5 -6 7");
   makeCell("ExtraVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -11 3 -4 (-13 : 14) 5 -6");
-  makeCell("ExtraWall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -11 3 (-13 : 14) 5 -6");
+  makeCell("ExtraWall",System,cellIndex++,wallMat,0.0,HR*ring);
 
   if (extraLeadDepth<steelDepth+Geometry::zeroTol) {
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 3 -13 105 -5 ");
     makeCell("ExtraOutLower",System,cellIndex++,midMat,0.0,HR*frontSurf);
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 13 -14 105 -5 ");
     makeCell("ExtraOutLower",System,cellIndex++,voidMat,0.0,HR*frontSurf);
-    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 14 -4 105 -5 ");
-    makeCell("ExtraOutLower",System,cellIndex++,midMat,0.0,HR*frontSurf);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 14 105 -5 ");
+    makeCell("ExtraOutLower",System,cellIndex++,midMat,0.0,HR*frontSurf*ring);
   }
 
   if (extraLeadHeight<steelHeight+Geometry::zeroTol) {
-    HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -11 3 -4 6 -106 ");
-    makeCell("ExtraOutUpper",System,cellIndex++,0,0.0,HR);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"41 -11 3 6 -106 ");
+    makeCell("ExtraOutUpper",System,cellIndex++,0,0.0,HR*ring);
   }
 
-  if (extraLeadRingWidth<steelRingWidth+Geometry::zeroTol) {
-    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 4 -104 115 -106");
-    makeCell("ExtraOutRing",System,cellIndex++,0,0.0,HR*frontSurf);
-  }
 
   if (extraLeadOutWidth<steelOutWidth+Geometry::zeroTol) {
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 103 -3  115 -106");
@@ -241,8 +237,8 @@ WallLead::createObjects(Simulation& System)
   makeCell("SteelVoid",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
-	 "11 -21 103 -104 105 -106 (-113 : 114 : -115 : 116)");
-  makeCell("SteelWall",System,cellIndex++,steelMat,0.0,HR);
+	 "11 -21 103 105 -106 (-113 : 114 : -115 : 116)");
+  makeCell("SteelWall",System,cellIndex++,steelMat,0.0,HR*ring);
 
   // front wall
 
@@ -272,8 +268,10 @@ WallLead::createObjects(Simulation& System)
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontSurf*backSurf);
 
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 103 -104  105 -106");
-  addOuterUnionSurf(HR);
+
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 103 105 -106");
+  addOuterUnionSurf(HR*ring);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 203 -204  205 -206");
   addOuterUnionSurf(HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 1003 -1004 1005 -1006 ");

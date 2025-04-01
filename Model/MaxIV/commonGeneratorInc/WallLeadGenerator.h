@@ -51,7 +51,6 @@ class WallLeadGenerator
   double backHeight;          ///< Front height of hole
 
   double steelOutWidth;       ///< Thickness of steel
-  double steelRingWidth;      ///< Thickness of steel
   double steelHeight;         ///< Height of steel [up]
   double steelDepth;          ///< Height of steel [down]
   double steelThick;          ///< Depth of steel
@@ -59,10 +58,9 @@ class WallLeadGenerator
   double steelZCut;           ///< Central hole size
 
   double extraLeadOutWidth;   ///< Width of lead
-  double extraLeadRingWidth;  ///< Ring Width of lead
   double extraLeadHeight;     ///< Height of lead
   double extraLeadDepth;      ///< Depth of lead
-    double extraLeadThick;        ///< extra lead thickness
+  double extraLeadThick;        ///< extra lead thickness
   double extraLeadXCut;       ///< Cut out
   double preLeadVoidThick;      ///< void tickness in front of lead layer
 
@@ -78,7 +76,7 @@ class WallLeadGenerator
   WallLeadGenerator& operator=(const WallLeadGenerator&);
   ~WallLeadGenerator();
 
-  void setWidth(const double,const double);
+  void setWidth(const double);
   void setXOffset(const double);
 
   void generateWall(FuncDataBase&,const std::string&,const double) const;
@@ -88,4 +86,3 @@ class WallLeadGenerator
 }
 
 #endif
-
