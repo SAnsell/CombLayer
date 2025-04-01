@@ -19,6 +19,6 @@ echo $void
 
 trap "rm -f /tmp/tomowise.txt" EXIT
 
-make -j$(nproc) maxiv && ./maxiv -defaultConfig Single TOMOWISE -v TomoWISEFrontBeamYStep 480 -povray $void a \
+make -j$(nproc) maxiv && ./maxiv -defaultConfig Single TOMOWISE  -povray $void a \
     && echo \"$ITEM\" > /tmp/tomowise.txt \
     && povray ${params} povray/tomowise.pov && exit 0
