@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <cassert>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -178,12 +179,36 @@ shutterTableToyama(FuncDataBase& Control,
   setVariable::BeamMountGenerator BeamMGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::ProximityShieldingGenerator PSGen;
+  setVariable::BremBlockGenerator BBGen;
+
+  // Lengths are based on [2]
+  constexpr double bellowILength = 10.0;
+  constexpr double florTubeALength = 12.0; //
+  constexpr double bellowJLength = 10.0;
+  constexpr double gateTubeBLength = 7.2; //
+  constexpr double proxiShieldAPipeLength = 21.5;
+  constexpr double proxiShieldBPipeLength = 20.0;
+  // safety shutter
+  constexpr double shutterLength = 57.8; // [2]
+  constexpr double offPipeALength = 6.8; // approx
+  constexpr double shutterBoxLength = shutterLength - offPipeALength;
+
+  constexpr double bremCollTotalLength = 21.0; //[2] (OffPipeB + BremCollPipe)
+  constexpr double offPipeBLength = 2.6; // as small as possible
+  constexpr double bremCollPipeLength = bremCollTotalLength - offPipeBLength;
+
+  constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [2, page1]
+  constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
+    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - gateTubeBLength -
+    bellowJLength - florTubeALength - bellowILength;
+  // same as counting from Movable Mask 2
+  // 18692.8 + 300 + 140 + 17.5 + 325
+
+  assert(std::abs(bellowIYstep - 1947.53)<Geometry::zeroTol && "Wrong shutter table length.");
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowI",10.0); // [2]
-  constexpr double tmp1 = 0*45.3516244323655;
-  ELog::EM << "What is tmp1?" << ELog::endDiag;
-  Control.addVariable(frontKey+"BellowIYStep",1947.53-tmp1);
+  BellowGen.generateBellow(Control,frontKey+"BellowI",bellowILength);
+  Control.addVariable(frontKey+"BellowIYStep",bellowIYstep);
 
   SimpleTubeGen.setCF<CF66_TDC>();
   SimpleTubeGen.setCap();
@@ -209,8 +234,9 @@ shutterTableToyama(FuncDataBase& Control,
 
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0); // [2]
+  BellowGen.generateBellow(Control,frontKey+"BellowJ",bellowJLength);
 
+  // V3 Valve
   GVGen.generateGate(Control,frontKey+"GateTubeB",0);
   Control.addVariable(frontKey+"GateTubeBRadius",3.25);
   Control.addVariable(frontKey+"GateTubeBWallThick",0.2);
@@ -220,15 +246,14 @@ shutterTableToyama(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeA",6.8);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeA",offPipeALength);
   Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
 
 
   const std::string shutterName=frontKey+"ShutterBox";
-  const double sBoxLen(51.0);
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(0,0);
-  SimpleTubeGen.generateTube(Control,shutterName,sBoxLen);
+  SimpleTubeGen.generateTube(Control,shutterName,shutterBoxLength);
   Control.addVariable(frontKey+"ShutterBoxNPorts",2);
 
   // 20cm above port tube
@@ -240,7 +265,7 @@ shutterTableToyama(FuncDataBase& Control,
   BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");
 
   // centre of mid point
-  Geometry::Vec3D CPos(0,-sBoxLen/4.0,0);
+  Geometry::Vec3D CPos(0,-shutterBoxLength/4.0,0);
   for(size_t i=0;i<2;i++)
     {
       const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
@@ -248,12 +273,12 @@ shutterTableToyama(FuncDataBase& Control,
 
       PItemGen.generatePort(Control,name,CPos,ZVec);
       BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
-      CPos+=Geometry::Vec3D(0,sBoxLen/2.0,0);
+      CPos+=Geometry::Vec3D(0,shutterBoxLength/2.0,0);
     }
 
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,frontKey+"OffPipeB",2.6);
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",offPipeBLength);
   Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
   Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
   Control.addVariable(frontKey+"OffPipeBFlangeBType",0);
@@ -269,15 +294,37 @@ shutterTableToyama(FuncDataBase& Control,
   Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",21.5); // [2]
+  PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",proxiShieldAPipeLength);
   PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
   Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
   Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
 
   Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
   Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
-  Control.addVariable(frontKey+"ProxiShieldBPipeLength",20.0); // [2]
+  Control.addVariable(frontKey+"ProxiShieldBPipeLength",proxiShieldBPipeLength);
   Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
+
+  // Bremsstrahulung collimator
+  std::string name;
+  name=frontKey+"BremCollPipe";
+  constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
+  constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,name,bremCollPipeLength);
+  constexpr double bremCollPipeInnerRadius = 4.5; // CAD
+  Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
+  Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
+  Control.addVariable(name+"FlangeBRadius",7.5); // CAD
+  Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
+  Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
+
+  BBGen.centre();
+  BBGen.setMaterial("Tungsten", "Void");
+  BBGen.setLength(bremCollLength);
+  BBGen.setRadius(bremCollRadius);
+  // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
+  BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
+  BBGen.generateBlock(Control,frontKey+"BremColl",0);
 
   return;
 }
@@ -413,11 +460,11 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
-  setVariable::BremBlockGenerator BBGen;
 
   const std::string frontKey(beamlineKey+"FrontBeam");
-  // Master off set from division --
-  Control.addVariable(frontKey+"YStep",-2287.074086084);
+  // So that we can assume it's the straight section centre [2, page 1]
+  // 160 is the REW thickness
+  Control.addVariable(frontKey+"YStep",-2110.0-160.0+20);
   Control.addVariable(frontKey+"XStep",0.0);
   Control.addVariable(frontKey+"OuterRadius",60.0);
 
@@ -496,29 +543,8 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   moveApertureTableToyama(Control,frontKey);
   shutterTableToyama(Control,frontKey);
 
-  // Bremsstrahulung collimator
-  name=frontKey+"BremCollPipe";
-  constexpr double bremCollLength(20.0); // CAD and [1, page 26], [2]
-  constexpr double bremCollPipeLength(21.0); // [2]
-  constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
-  PipeGen.setCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,name,bremCollPipeLength);
-  constexpr double bremCollPipeInnerRadius = 4.5; // CAD
-  Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
-  Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
-  Control.addVariable(name+"FlangeBRadius",7.5); // CAD
-  Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
-  Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
-
-  BBGen.centre();
-  BBGen.setMaterial("Tungsten", "Void");
-  BBGen.setRadius(bremCollRadius);
-  BBGen.setLength(bremCollLength);
-  // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
-  BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
-  BBGen.generateBlock(Control,frontKey+"BremColl",0);
-
   wallVariables(Control,beamlineKey+"WallLead");
+
   return;
 }
 
