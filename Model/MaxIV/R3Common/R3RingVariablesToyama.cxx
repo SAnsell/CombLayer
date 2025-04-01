@@ -417,7 +417,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   const std::string frontKey(beamlineKey+"FrontBeam");
   // Master off set from division --
-  Control.addVariable(frontKey+"YStep",514.44228);
+  Control.addVariable(frontKey+"YStep",-2287.074086084);
   Control.addVariable(frontKey+"XStep",0.0);
   Control.addVariable(frontKey+"OuterRadius",60.0);
 

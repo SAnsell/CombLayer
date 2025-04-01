@@ -421,6 +421,8 @@ R3Ring::createLinks()
 
       //      ELog::EM << "OpticCentre"+std::to_string(i) << " Inner surf: " << -BInner->getName() << "; Exit surf: " << -BExit->getName() << "; Orig: " << beamOrigin << "; Dir: " << Beam << ELog::endDiag;
 
+      //      ELog::EM << "ExitCentre"+std::to_string(i) << " Inner surf: " << -BInner->getName() << "; Exit surf: " << -BExit->getName() << "; Orig: " << exitCentre << "; Dir: " << Beam << ELog::endDiag;
+
       FixedComp::nameSideIndex(i+NInnerSurf,"ExitCentre"+std::to_string(i));
       FixedComp::setLinkSurf(NInnerSurf+i,-BExit->getName());
       FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);

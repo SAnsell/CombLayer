@@ -132,9 +132,9 @@ TOMOWISE::build(Simulation& System,
   ELog::RegMethod RControl("TOMOWISE","build");
 
   const size_t NS=r3Ring->getNInnerSurf();
-  const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
+  const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1)-NS;
   const size_t SIndex=(PIndex+1) % NS;
-  const size_t prevIndex=(NS+PIndex-1) % NS;
+  const size_t prevIndex=(2*NS+PIndex-1) % NS;
 
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 

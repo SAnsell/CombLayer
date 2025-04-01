@@ -417,12 +417,19 @@ makeMaxIV::buildR3Ring(Simulation& System,
   OR.addObject(r3Ring);
 
   static const std::map<std::string,std::string> beamNAMES
-    ({
+    ({ // Note that TOMOWISE is built vrt ExitCentre1 - it's more
+       // convenient to compare distances vrt mechanical drawings,
+       // where they cound from the straight section centre.
+      // To build other beamlines vrt ExitCentre, apply similar
+      // changes in PIndex and prevIndex as done in TOMOWISE::build()
       {"DANMAX","OpticCentre4"},
-      {"TOMOWISE","OpticCentre1"}, // should be 7. if not 1 then RingDoor is built in the wrong ring sector
+      {"TOMOWISE","ExitCentre1"}, // should be 7, but if not 1 then
+				  // RingDoor is built in the wrong
+				  // ring sector
       {"BALDER","OpticCentre8"},
       {"FORMAX","OpticCentre9"},
-      {"COSAXS","OpticCentre10"}, // if not 1 then RingDoor is built in the wrong ring sector
+      {"COSAXS","OpticCentre10"}, // if not 1, then RingDoor is built
+				  // in the wrong ring sector
       {"MICROMAX","OpticCentre12"},
       {"SOFTIMAX","OpticCentre18"}
     });
