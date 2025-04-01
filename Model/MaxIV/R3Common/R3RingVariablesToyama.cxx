@@ -302,12 +302,14 @@ shutterTableToyama(FuncDataBase& Control,
   Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
   Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
   Control.addVariable(frontKey+"ProxiShieldBPipeLength",proxiShieldBPipeLength);
+  Control.addVariable(frontKey+"ProxiShieldBPipeFlangeARadius",7.5);
   Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
 
   // Bremsstrahulung collimator
   std::string name;
   name=frontKey+"BremCollPipe";
   constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
+
   constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
   PipeGen.setCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,name,bremCollPipeLength);
@@ -325,6 +327,7 @@ shutterTableToyama(FuncDataBase& Control,
   // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
   BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
   BBGen.generateBlock(Control,frontKey+"BremColl",0);
+  Control.addVariable(frontKey+"BremCollYStep",(bremCollPipeLength-bremCollLength)/2.0);
 
   return;
 }

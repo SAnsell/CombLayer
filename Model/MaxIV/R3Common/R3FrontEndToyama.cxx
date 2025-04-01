@@ -661,7 +661,9 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   bremColl->addInsertCell(bremCollPipe->getCell("Void"));
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeAInnerVoid"));
   bremColl->addInsertCell(bremCollPipe->getCell("FlangeBInnerVoid"));
+  bremColl->addInsertCell(offPipeB->getCell("Void"));
   bremColl->createAll(System,*bremCollPipe,0);
+
 
   // Proximity shielding B
   proxiShieldBPipe->createAll(System,*bremCollPipe,"back");
