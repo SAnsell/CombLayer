@@ -89,44 +89,44 @@
     scale 1
   }}};
 
-#declare matCopper2 =
-//  https://www.povray.org/documentation/view/3.6.1/355/
-material {
-texture {
-     material_map {
-        png "povray/copper.png"
-        texture {  //used with index 0
-           pigment {color red 0.3 green 0.1 blue 1}
-           normal  {ripples 0.85 frequency 10 }
-           finish  {specular 0.75}
-           scale 5
-        }
-        texture {  //used with index 1
-           pigment {White}
-           finish {
-             ambient 0 diffuse 0
-             reflection 0.9 specular 0.75
-           }
-        }
-        // used with index 2
-        texture {pigment{NeonPink} finish{Luminous}}
-        texture {  //used with index 3
-           pigment {
-              gradient y
-              color_map {
-                 [0.00 rgb < 1 , 0 , 0>]
-                 [0.33 rgb < 0 , 0 , 1>]
-                 [0.66 rgb < 0 , 1 , 0>]
-                 [1.00 rgb < 1 , 0 , 0>]
-              }
-           }
-           finish{specular 0.75}
-           scale 8
-        }
-     }
-     scale 30
-     translate <-15, -15, 0>
-  }};
+// #declare matCopper2 =
+// //  https://www.povray.org/documentation/view/3.6.1/355/
+// material {
+// texture {
+//      material_map {
+//         png "povray/copper.png"
+//         texture {  //used with index 0
+//            pigment {color red 0.3 green 0.1 blue 1}
+//            normal  {ripples 0.85 frequency 10 }
+//            finish  {specular 0.75}
+//            scale 5
+//         }
+//         texture {  //used with index 1
+//            pigment {White}
+//            finish {
+//              ambient 0 diffuse 0
+//              reflection 0.9 specular 0.75
+//            }
+//         }
+//         // used with index 2
+//         texture {pigment{NeonPink} finish{Luminous}}
+//         texture {  //used with index 3
+//            pigment {
+//               gradient y
+//               color_map {
+//                  [0.00 rgb < 1 , 0 , 0>]
+//                  [0.33 rgb < 0 , 0 , 1>]
+//                  [0.66 rgb < 0 , 1 , 0>]
+//                  [1.00 rgb < 1 , 0 , 0>]
+//               }
+//            }
+//            finish{specular 0.75}
+//            scale 8
+//         }
+//      }
+//      scale 30
+//      translate <-15, -15, 0>
+//   }};
 
 #declare matCopper1 =
   material {
