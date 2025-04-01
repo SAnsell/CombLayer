@@ -2,12 +2,12 @@
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 [ITEM]"
-    echo "       ITEM is the value of ITEM in povray/tdc.pov"
+    echo "       ITEM is the value of ITEM in povray/gtf.pov"
     echo "       Example: povray/gtf.sh Gate"
     exit 1
 fi
 
-ITEM=${BASH_ARGV} # last argument is the view in povray/tdc.pov
+ITEM=${BASH_ARGV} # last argument is the view in povray/gtf.pov
 
 #params=" +A +W800 +H600 "
 params=" +A +Q11 +W1000 +H400 "
