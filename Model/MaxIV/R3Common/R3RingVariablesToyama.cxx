@@ -365,7 +365,7 @@ heatDumpTableToyama(FuncDataBase& Control,
   Control.addVariable(frontKey+"GateTubePreMM1PortRadius",1.9);
   Control.addVariable(frontKey+"GateTubePreMM1PortFlangeRadius",3.5);
   Control.addVariable(frontKey+"GateTubePreMM1Radius",5);
-  Control.addVariable(frontKey+"GateTubePreMM1TopRadius",9);
+  Control.addVariable(frontKey+"GateTubePreMM1TopRadius",10);
 
   // Fast gate valve
   setVariable::GateValveGenerator GateGen;
