@@ -17,7 +17,6 @@ $parallel ./maxiv -fluka infn -defaultConfig Linac -T '{=1 uq(); =}' $inp ::: \
  "myname surface electron InjectionHall back  -TMod energy myname 1e-11 3000 100" \
  "myname mesh dose-eq free 'Vec3D(-15.0,-400.0,-55.0)' 'Vec3D(15.0, 40.0,40.0)' 10 20 30 " \
  "myname mesh dose-eq free 'Vec3D(-15.0,-400.0,-55.0)' 'Vec3D(15.0, 40.0,40.0)' 10 20 30 -TMod doseType myname  all-part EWT74" \
- "-TMod help " \
  "help" "help resnuclei" "help surface"  || exit
 
 # MCNP tallies
