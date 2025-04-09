@@ -95,7 +95,8 @@ createExpand<Geometry::Cylinder>(const Geometry::Surface* SPtr,
     \return Point to new surface 
   */
 {				
-  ELog::RegMethod RegA("surfExpand","createExpand<Cylinder>");		
+  ELog::RegMethod RegA("surfExpand","createExpand<Cylinder>");
+  ELog::EM<<"HERE"<<ELog::endDiag;
   const Geometry::Cylinder* PPtr=
     dynamic_cast<const Geometry::Cylinder*>(SPtr);
   if (!PPtr)

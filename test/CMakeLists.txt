@@ -4,18 +4,21 @@ set (testSources
     testBoxLine.cxx testCone.cxx testContained.cxx 
     testConvex2D.cxx testConvex.cxx testCylinder.cxx 
     testDBMaterial.cxx testDoubleErr.cxx testElement.cxx 
-    testEllipsoid.cxx testEllipticCyl.cxx testExtControl.cxx 
+    testEllipsoid.cxx testEllipse.cxx testEllipticCyl.cxx
+    testExtControl.cxx 
     testFace.cxx testFortranWrite.cxx testFunc.cxx 
     testFunction.cxx testGenerateSurf.cxx testGeomSupport.cxx 
     testGroupRange.cxx testHeadRule.cxx testIndexCounter.cxx
     testInputParam.cxx testInsertComp.cxx testLine.cxx
-    testLineTrack.cxx testLog.cxx testM2.cxx testMapRange.cxx
-    testMapSupport.cxx testMasterRotate.cxx testMaterial.cxx
-    testMathSupport.cxx testMatrix.cxx testMD5.cxx testMesh3D.cxx 
-    testModelSupport.cxx testMultiData.cxx
-    testMultiString.cxx testNeutron.cxx testNList.cxx 
-    testNRange.cxx testObject.cxx testObjectRegister.cxx 
-    testObjectTrackAct.cxx testObjSurfMap.cxx testObjTrackItem.cxx 
+    testLineIntersect.cxx
+    testLineTrack.cxx testLog.cxx testM2.cxx testM3.cxx
+    testMapRange.cxx testMapSupport.cxx testMasterRotate.cxx
+    testMaterial.cxx testMathSupport.cxx testMatrix.cxx
+    testMD5.cxx testMesh3D.cxx testModelSupport.cxx
+    testMultiData.cxx testMultiString.cxx testNeutron.cxx
+    testNList.cxx testNRange.cxx testObject.cxx
+    testObjectRegister.cxx testObjectTrackAct.cxx
+    testObjSurfMap.cxx testObjTrackItem.cxx 
     testPipeLine.cxx testPipeUnit.cxx testPlane.cxx 
     testPoly.cxx testQuadratic.cxx testQuaternion.cxx 
     testRecTriangle.cxx testRules.cxx testSimpleObj.cxx
@@ -62,6 +65,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/testDBMaterial.cxx
   ${tarDIR}/testDoubleErr.cxx
   ${tarDIR}/testElement.cxx
+  ${tarDIR}/testEllipse.cxx
   ${tarDIR}/testEllipsoid.cxx
   ${tarDIR}/testEllipticCyl.cxx
   ${tarDIR}/testExtControl.cxx
@@ -77,9 +81,11 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/testInputParam.cxx
   ${tarDIR}/testInsertComp.cxx
   ${tarDIR}/testLine.cxx
+  ${tarDIR}/testLineIntersect.cxx
   ${tarDIR}/testLineTrack.cxx
   ${tarDIR}/testLog.cxx
   ${tarDIR}/testM2.cxx
+  ${tarDIR}/testM3.cxx
   ${tarDIR}/testMapRange.cxx
   ${tarDIR}/testMapSupport.cxx
   ${tarDIR}/testMasterRotate.cxx
@@ -146,6 +152,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/testDBMaterial.h
   ${tarINC}/testDoubleErr.h
   ${tarINC}/testElement.h
+  ${tarINC}/testEllipse.h
   ${tarINC}/testEllipsoid.h
   ${tarINC}/testEllipticCyl.h
   ${tarINC}/testExtControl.h
@@ -161,9 +168,11 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/testInputParam.h
   ${tarINC}/testInsertComp.h
   ${tarINC}/testLine.h
+  ${tarINC}/testLineIntersect.h
   ${tarINC}/testLineTrack.h
   ${tarINC}/testLog.h
   ${tarINC}/testM2.h
+  ${tarINC}/testM3.h
   ${tarINC}/testMapRange.h
   ${tarINC}/testMapSupport.h
   ${tarINC}/testMasterRotate.h

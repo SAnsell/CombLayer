@@ -3,7 +3,7 @@
  
  * File:   geometry/EllipticCyl.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,7 @@
 #include "support.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
+#include "M3.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
@@ -77,8 +76,8 @@ EllipticCyl::EllipticCyl() :
   EllipticCyl::setBaseEqn();
 }
 
-EllipticCyl::EllipticCyl(const int N,const int T) : 
-  Quadratic(N,T),Centre(),Normal(0,0,1),LAxis(1,0,0),
+EllipticCyl::EllipticCyl(const int N) : 
+  Quadratic(N),Centre(),Normal(0,0,1),LAxis(1,0,0),
   CAxis(0,1,0),ARadius(1.0),BRadius(1.0)
   /*!
     Standard Constructor creates a cylinder (radius 0)
@@ -290,7 +289,7 @@ EllipticCyl::onSurface(const Geometry::Vec3D& Pt) const
 
 
 void
-EllipticCyl::rotate(const Geometry::Matrix<double>& MA)
+EllipticCyl::rotate(const Geometry::M3<double>& MA)
 /*!
   Apply a rotation to the cylinder and re-check the
   status of the main axis.
@@ -397,7 +396,7 @@ EllipticCyl::setBaseEqn()
 {
   ELog::RegMethod RegA("EllipticCyl","setBaseEqn");
 
-  Geometry::Matrix<double> MA(3,3);
+  Geometry::M3<double> MA;
   for(size_t i=0;i<3;i++)
     {
       MA[i][0]=LAxis[i];
@@ -438,7 +437,7 @@ EllipticCyl::mirror(const Geometry::Plane& MP)
 double
 EllipticCyl::firstQuadrant(const double e[2],const double y[2])
   /*!
-    Internal function to work out distnace of a point from an ellipse
+    Internal function to work out distance of a point from an ellipse
     in the first quadrant by bisection.
     Note that this code can be used to compute the impact point
     \param e :: normalized radius 

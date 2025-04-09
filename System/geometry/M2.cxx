@@ -309,6 +309,25 @@ M2<T>::get(const size_t i,const size_t j) const
   return AData[i][j];
 }
 
+  
+template<typename T>
+void
+M2<T>::nameAssign(T& a,T& b,T& c,T& d) const
+ /*!
+   Assign the matrix to values for convience laster
+   \param a :: [0][0] values
+   \param b :: [0][1] values
+   \param c :: [1][0] values
+   \param d :: [1][1] values
+ */
+{
+  a=AData[0][0];
+  b=AData[0][1];
+  c=AData[1][0];
+  d=AData[1][1];
+  return;
+}
+
 template<typename T>
 T&
 M2<T>::get(const size_t i,const size_t j) 
@@ -382,6 +401,29 @@ M2<T>::constructSVD()
   return;
 }
   
+template<typename T>
+void
+M2<T>::invertSigma() 
+  /*!
+    Invert Sigma
+  */
+{
+  for(size_t i=0;i<2;i++)
+    Sigma[i]=T(1.0)/Sigma[i];
+  return;
+}
+
+template<typename T>
+void
+M2<T>::setMinimumSigma(const T& value) 
+  /*!
+    Ensure that all of sigmas are >= value 
+  */
+{
+  for(size_t i=0;i<2;i++)
+    Sigma[i]=std::max<T>(Sigma[i],value);
+  return;
+}
 
 template<typename T>
 T
@@ -425,7 +467,7 @@ M2<T>::transpose()
 
 template<typename T>
 M2<T>
-M2<T>::prime() const
+M2<T>::Tprime() const
 /*!
   Calcuate the transpose
  */
@@ -633,72 +675,6 @@ M2<T>::getEigVectors() const
    */
 {
   return M2<T>(R);
-}
-
-
-
-template<typename T>
-bool
-M2<T>::check() const
-  /*!
-    Ensures that the SVD system is correct
-    \return -1 on error
-  */
-{
-  /*
-  T Part[2][2];
-
-  // Multiply S*V
-  for(size_t i=0;i<2;i++)
-    for(size_t j=0;j<2;j++)
-      Part[i][j] = Sigma[i] * V[i][j];
-  
-  // Multiply U * Part ==> U*S*V
-  T BData[2][2];
-  for(size_t i=0;i<2;i++)
-    for(size_t j=0;j<2;j++)
-      {
-	BData[i][j]=0.0;
-	for(size_t k=0;k<2;k++)
-	  BData[i][j] += U[i][k] * Part[k][j];
-      }
-
-
-  T missMatch(0);
-  T normFactor(0);
-  for(size_t i=0;i<2;i++)
-    {
-      missMatch+=(AData[i][0]-BData[i][0])*(AData[i][0]-BData[i][0]);
-      missMatch+=(AData[i][1]-BData[i][1])*(AData[i][1]-BData[i][1]);
-      normFactor+=Sigma[i]*Sigma[i];
-
-    }
-  if (normFactor<1e-20 || missMatch/normFactor>1e-6)
-    {
-      for(size_t i=0;i<2;i++)
-	{
-	  const std::string Out=fmt::format
-	    ("M : [ {:8.5f}  {:8.5f} ] [{:8.5f}  {:8.5f} ] ",
-	     AData[i][0],AData[i][1],
-	     BData[i][0],BData[i][1]);
-	  ELog::EM<<Out<<ELog::endDiag;
-	}
-      ELog::EM<<"----------"<<ELog::endDiag;
-      for(size_t i=0;i<2;i++)
-	{
-	  const std::string OutB=fmt::format
-	    ("M : [ {:8.5f}  {:8.5f} ] [{:8.5f}  {:8.5f} ] [{:8.5f}  {:8.5f} ]",
-	     U[i][0],U[i][1],
-	     ((i==0) ? Sigma[i] : 0.0),
-	     ((i==0) ? 0.0 : Sigma[i]),
-	     V[i][0],V[i][1]);
-	  ELog::EM<<OutB<<ELog::endDiag;;
-	}
-      ELog::EM<<"mis == "<<missMatch<<" "<<normFactor<<" \n "<<ELog::endDiag;
-      return 1 ;
-    }
-  */
-  return 0;
 }
   
 /// \cond TEMPLATE 

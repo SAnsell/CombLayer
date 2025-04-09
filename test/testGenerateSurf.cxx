@@ -3,7 +3,7 @@
  
  * File:   test/testGenerateSurf.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,8 +144,8 @@ testGenerateSurf::testExpandedSurf()
   int surfN=2;
   for(const TTYPE& tc : Tests)
     {
-      Geometry::Plane* PX=new Geometry::Plane(1,0);
-      Geometry::Plane* AimX=new Geometry::Plane(surfN,0);
+      Geometry::Plane* PX=new Geometry::Plane(1);
+      Geometry::Plane* AimX=new Geometry::Plane(surfN);
       
       PX->setSurface(std::get<0>(tc));
       AimX->setSurface(std::get<1>(tc));
@@ -209,8 +209,8 @@ testGenerateSurf::testPlane()
   int surfN=2;
   for(const TTYPE& tc : Tests)
     {
-      Geometry::Plane* PX=new Geometry::Plane(1,0);
-      Geometry::Plane* AimX=new Geometry::Plane(surfN,0);
+      Geometry::Plane* PX=new Geometry::Plane(1);
+      Geometry::Plane* AimX=new Geometry::Plane(surfN);
       
       PX->setSurface(std::get<0>(tc));
       AimX->setSurface(std::get<1>(tc));
@@ -269,7 +269,6 @@ testGenerateSurf::testCylinder()
   surfRegister SMap;
 
   int surfN=2;
-
 
   for(const TTYPE& tc : Tests)
     {

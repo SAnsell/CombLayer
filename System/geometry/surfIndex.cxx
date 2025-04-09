@@ -3,7 +3,7 @@
  
  * File:   geometry/surfIndex.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -276,12 +276,12 @@ surfIndex::createSurf(const int surfN)
       if (outPtr)
 	return outPtr;
       delete mp->second;
-      outPtr=new T(surfN,0);
+      outPtr=new T(surfN);
       mp->second=outPtr;
       ELog::EM<<"Reasigned exiting surface"<<surfN<<ELog::endWarn;
       return outPtr;
     }
-  outPtr=new T(surfN,0);
+  outPtr=new T(surfN);
   SMap.insert(STYPE::value_type(surfN,outPtr));
   return outPtr;
 }
@@ -322,24 +322,12 @@ surfIndex::createNewSurf(int& surfN)
       surfN++;
       mp=SMap.find(surfN);
     }
-  T* outPtr=new T(surfN,0);
+  T* outPtr=new T(surfN);
   return outPtr;
 }
 
 void
 surfIndex::createSurface(const int SN,const std::string& SLine)
-  /*!
-    Given a surface adds the line
-    \param SN :: Surface Number
-    \param SLine :: Line to use.
-  */
-{
-  createSurface(SN,0,SLine);
-  return;
-}
-
-void
-surfIndex::createSurface(const int SN,const int TN,const std::string& SLine)
   /*!
     Given a surface adds the line
     \param SN :: Surface Number
@@ -352,7 +340,6 @@ surfIndex::createSurface(const int SN,const int TN,const std::string& SLine)
   Geometry::Surface* SPtr=
     Geometry::surfaceFactory::Instance().processLine(SLine);
   SPtr->setName(SN);
-  SPtr->setTrans(TN);
   STYPE::iterator mc=SMap.find(SN);
   if (mc!=SMap.end())
     throw ColErr::InContainerError<int>(SN,"Surface in use");

@@ -6,7 +6,7 @@ set (geometrySources
     EllipticCyl.cxx Face.cxx General.cxx 
     geomSupport.cxx interPoint.cxx Intersect.cxx
     Line.cxx localRotate.cxx M2.cxx M3.cxx
-    MBrect.cxx Mesh3D.cxx 
+    M3vec.cxx MBrect.cxx Mesh3D.cxx 
     MeshGrid.cxx NullSurface.cxx Plane.cxx 
     Pnt.cxx Quadratic.cxx Quadrilateral.cxx 
     Quaternion.cxx RecTriangle.cxx SglLine.cxx 
@@ -56,6 +56,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/localRotate.cxx
   ${tarDIR}/M2.cxx
   ${tarDIR}/M3.cxx
+  ${tarDIR}/M3vec.cxx
   ${tarDIR}/MBrect.cxx
   ${tarDIR}/Mesh3D.cxx
   ${tarDIR}/MeshGrid.cxx
@@ -103,6 +104,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/localRotate.h
   ${tarINC}/M2.h
   ${tarINC}/M3.h
+  ${tarINC}/M3vec.h
   ${tarINC}/MBrect.h
   ${tarINC}/Mesh3D.h
   ${tarINC}/MeshGrid.h

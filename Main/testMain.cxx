@@ -34,6 +34,7 @@
 #include <memory>
 #include <array>
 
+
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -106,9 +107,11 @@
 #include "testInputParam.h"
 #include "testInsertComp.h"
 #include "testLine.h"
+#include "testLineIntersect.h"
 #include "testLineTrack.h"
 #include "testLog.h"
 #include "testM2.h"
+#include "testM3.h"
 #include "testMapRange.h"
 #include "testMapSupport.h"
 #include "testMasterRotate.h"
@@ -546,7 +549,9 @@ geometryTest(const int type,const int extra)
       "testFace",
       "testGeomSupport",
       "testLine",
+      "testLineIntersect",
       "testM2",
+      "testM3",
       "testMasterRotate",
       "testMesh3D",
       "testQuaternion",
@@ -614,10 +619,19 @@ geometryTest(const int type,const int extra)
 	  testLine A;
 	  X=A.applyTest(extra);
 	}
-      
+      if(index==testNum++)
+	{
+	  testLineIntersect A;
+	  X=A.applyTest(extra);
+	}
       if(index==testNum++)
 	{
 	  testM2 A;
+	  X=A.applyTest(extra);
+	}
+      if(index==testNum++)
+	{
+	  testM3 A;
 	  X=A.applyTest(extra);
 	}
       

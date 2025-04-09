@@ -39,7 +39,7 @@ class DecFileMod : public Decoupled
 {
  private:
 
-  Geometry::Matrix<double> RBase;  ///< ReBase matrix
+  Geometry::M3<double> RBase;  ///< ReBase matrix
   
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,

@@ -3,7 +3,7 @@
  
  * File:   geomInc/EllipticCyl.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ class EllipticCyl : public Quadratic
  public:
 
   EllipticCyl();
-  EllipticCyl(const int,const int);
+  explicit EllipticCyl(const int);
   EllipticCyl(const EllipticCyl&);
   EllipticCyl* clone() const override;
   EllipticCyl& operator=(const EllipticCyl&);
@@ -105,7 +105,7 @@ class EllipticCyl : public Quadratic
   void setBaseEqn() override;
 
   void mirror(const Geometry::Plane&) override;
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void rotate(const Geometry::Quaternion&) override;
   void displace(const Geometry::Vec3D&) override;
 

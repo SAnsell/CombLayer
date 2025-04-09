@@ -320,7 +320,7 @@ MBrect::setSurface(const std::string& Pstr)
 }
 
 void
-MBrect::rotate(const Geometry::Matrix<double>& MA) 
+MBrect::rotate(const Geometry::M3<double>& MA) 
   /*!
     Rotate the plane about the origin by MA 
     \param MA direct rotation matrix (3x3)

@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3Ring.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -409,20 +409,21 @@ R3Ring::createLinks()
 	(SurfMap::getSurfPtr("BeamOuter",i));
       
       const Geometry::Vec3D Beam= BWall->getNormal();
-
-      const Geometry::Vec3D beamOrigin=
-	SurInter::getLinePoint(PtX,Beam,BInner);
-      const Geometry::Vec3D exitCentre=
-	SurInter::getLinePoint(PtX,Beam,BExit);
-
-      FixedComp::nameSideIndex(i,"OpticCentre"+std::to_string(i));
-      FixedComp::setLinkSurf(i,-BInner->getName());
-      FixedComp::setConnect(i,beamOrigin,Beam);
-
-      FixedComp::nameSideIndex(i+NInnerSurf,"ExitCentre"+std::to_string(i));
-      FixedComp::setLinkSurf(NInnerSurf+i,-BExit->getName());
-      FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
-
+      if (BInner && BExit)
+	{
+	  const Geometry::Vec3D beamOrigin=
+	    SurInter::getLinePoint(PtX,Beam,*BInner);
+	  const Geometry::Vec3D exitCentre=
+	    SurInter::getLinePoint(PtX,Beam,*BExit);
+	  
+	  FixedComp::nameSideIndex(i,"OpticCentre"+std::to_string(i));
+	  FixedComp::setLinkSurf(i,-BInner->getName());
+	  FixedComp::setConnect(i,beamOrigin,Beam);
+	  
+	  FixedComp::nameSideIndex(i+NInnerSurf,"ExitCentre"+std::to_string(i));
+	  FixedComp::setLinkSurf(NInnerSurf+i,-BExit->getName());
+	  FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
+	}
       
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }

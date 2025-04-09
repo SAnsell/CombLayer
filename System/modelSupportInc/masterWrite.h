@@ -3,7 +3,7 @@
  
  * File:   modelSupportInc/masterWrite.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,11 @@
  ****************************************************************************/
 #ifndef masterWrite_h
 #define masterWrite_h
+
+namespace Geometry
+{
+  class Vec3D;
+}
 
 /*!
   \class masterWrite

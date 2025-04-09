@@ -528,7 +528,7 @@ LineIntersectVisit::getPoint(const Geometry::Surface* SPtr,
   SPtr->acceptVisitor(*this);
 
   // pre-sorted:
-  const Geometry::interPoint* iPtr;
+  const Geometry::interPoint* iPtr(nullptr);
   double absD=std::numeric_limits<double>::max();
   for(const Geometry::interPoint& ipt : IPts)
     {

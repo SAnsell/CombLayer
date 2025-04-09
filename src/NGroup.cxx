@@ -784,19 +784,19 @@ NGroup<T>::condense(const double Tol,
 	  if (type[cnt]==3)  // log
 	    {
 	      OutList.push_back
-		(new RLog(AValue,Values[cnt+repCnt-1],
+		(new RLog<T>(AValue,Values[cnt+repCnt-1],
 			  static_cast<int>(repCnt)));
 	    }
 	  if (type[cnt]==2)  // interval
 	    {
 	      OutList.push_back
-		(new RInterval(AValue,Values[cnt+repCnt-1],
+		(new RInterval<T>(AValue,Values[cnt+repCnt-1],
 			       static_cast<int>(repCnt)));
 	    }
 	  if (type[cnt]==1)  // repeat
 	    {
 	      OutList.push_back
-		(new RRepeat(AValue,static_cast<int>(repCnt+1)));
+		(new RRepeat<T>(AValue,static_cast<int>(repCnt+1)));
 	    }
 	  AValue=Values[cnt+repCnt-1];
 	}

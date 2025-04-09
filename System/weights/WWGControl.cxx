@@ -3,7 +3,7 @@
  
  * File:   weights/WWGControl.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -302,7 +302,7 @@ WWGControl::procPlanePoint(const Simulation& System,
       const Geometry::Vec3D offset=
 	IParam.getDefCntVec3D(wKey,setIndex,itemCnt,Geometry::Vec3D(0,0,0));
 
-      planePt.emplace(planeName,Geometry::Plane(0,0,PPoint+offset,Norm));
+      planePt.emplace(planeName,Geometry::Plane(0,PPoint+offset,Norm));
       ELog::EM<<"PlanePoint "<<PPoint+offset<<" :: "<<Norm<<ELog::endDiag;
     }
 

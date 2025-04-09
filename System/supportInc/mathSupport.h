@@ -3,7 +3,7 @@
  
  * File:   supportInc/mathSupport.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,6 +94,10 @@ indexPos(const std::vector<T>&,const T&);
 template<typename T>
 size_t
 rangePos(const std::vector<T>&,const T&);
+
+template<typename T>
+size_t
+flaggedRangePos(const std::vector<T>&,const T&);
 
 /// Range and initialise polynominal calculation
 template<typename TX,typename TY>

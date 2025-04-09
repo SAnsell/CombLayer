@@ -120,6 +120,8 @@ class MatrixBase
   /// Size values
   std::pair<size_t,size_t> size() const 
     { return std::pair<size_t,size_t>(nx,ny); }
+  bool hasSize(const size_t A,const size_t B) const
+  { return ((nx>=A) && (ny>=B)); } 
   /// Smallest size
   size_t Ssize() const { return (nx>ny) ? ny : nx; }  
   /// Total size

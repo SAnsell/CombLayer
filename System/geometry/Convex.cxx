@@ -3,7 +3,7 @@
  
  * File:   geometry/Convex.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 #include "Edge.h"
 #include "Face.h"
 #include "Convex.h"
-
 
 namespace Geometry
 {
@@ -582,7 +581,7 @@ Convex::createSurfaces(int startNumber)
   FTYPE::const_iterator fc;
   for(fc=FList.begin();fc!=FList.end();fc++)
     {
-      SurfList.push_back(Plane(startNumber++,0));
+      SurfList.push_back(Plane(startNumber++));
       const Geometry::Vec3D& PtA=(*fc)->getVertex(0)->getV();
       const Geometry::Vec3D& PtB=(*fc)->getVertex(1)->getV();
       const Geometry::Vec3D& PtC=(*fc)->getVertex(2)->getV();
@@ -656,7 +655,7 @@ Convex::getNonMatch(std::vector<const Face*>& OFaces) const
 
   std::vector<const Face*>::iterator fc=OFaces.begin();
   std::vector<Plane>::const_iterator vc;
-  Plane AP(1,0);
+  Plane AP(1);
   std::vector<Plane> foundSet;
   while(fc!=OFaces.end())
     {

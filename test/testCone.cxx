@@ -131,7 +131,7 @@ testCone::testSideDirection()
   std::vector<Geometry::Cone> ConeUnits;
   std::vector<TTYPE> Tests;
   
-  ConeUnits.push_back(Geometry::Cone(1,0));
+  ConeUnits.push_back(Geometry::Cone(1));
   ConeUnits.back().setCone
     (Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),45.0);
   // OutWard
@@ -263,7 +263,7 @@ testCone::testDistance()
   */
 {
   ELog::RegMethod RegA("testCone","testDistance");
-  Geometry::Cone A(1,0);
+  Geometry::Cone A(1);
   if (A.setSurface("kx 0 1"))
     {
       ELog::EM<<"Cone not built"<<ELog::endErr;

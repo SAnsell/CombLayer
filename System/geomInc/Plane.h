@@ -3,7 +3,7 @@
  
  * File:   geomInc/Plane.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,8 +50,8 @@ class Plane : public Quadratic
  public:
 
   Plane();
-  Plane(const int,const int);
-  Plane(const int,const int,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  explicit Plane(const int);
+  Plane(const int,const Geometry::Vec3D&,const Geometry::Vec3D&);
   Plane(const Plane&);
   Plane* clone() const override;
   Plane& operator=(const Plane&);
@@ -65,6 +65,7 @@ class Plane : public Quadratic
   std::string className() const override { return "Plane"; }
   /// fast index accessor
   SurfKey classIndex() const override { return SurfKey::Plane; }
+
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override 
     {  A.Accept(*this); }
@@ -105,7 +106,7 @@ class Plane : public Quadratic
   void mirrorPt(Geometry::Vec3D&) const;
   void mirrorAxis(Geometry::Vec3D&) const;
 
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void rotate(const Geometry::Quaternion&) override;
   void mirror(const Geometry::Plane&) override;
   void mirrorSelf();

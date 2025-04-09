@@ -3,7 +3,7 @@
  
  * File:   geomInc/NullSurface.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class NullSurface : public Surface
  public:
 
   NullSurface();
-  NullSurface(const int,const int);
+  NullSurface(const int);
   NullSurface(const NullSurface&);
   NullSurface* clone() const override;
   NullSurface& operator=(const NullSurface&);
@@ -67,7 +67,7 @@ class NullSurface : public Surface
   int onSurface(const Geometry::Vec3D&) const override;
   double distance(const Geometry::Vec3D&) const override;
 
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void displace(const Geometry::Vec3D&) override;
   /// Null op mirror
   void mirror(const Geometry::Plane&) override { }

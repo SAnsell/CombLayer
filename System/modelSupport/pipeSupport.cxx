@@ -69,8 +69,6 @@ calcLineTrack(Simulation& System,
 {
   ELog::RegMethod RegA("pipeSupport[F]","calcLineTrack");
   
-  typedef std::map<int,MonteCarlo::Object*> MTYPE;
-  
   LineTrack LT(XP,YP);
   LT.calculate(System);
   LT.populateObjMap(OMap);

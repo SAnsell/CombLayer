@@ -3,7 +3,7 @@
  
  * File:   geomInc/Ellipsoid.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ class Ellipsoid : public Quadratic
  public:
 
   Ellipsoid();
-  Ellipsoid(const int,const int);
+  explicit Ellipsoid(const int);
   Ellipsoid(const Ellipsoid&);
   Ellipsoid* clone() const override;
   Ellipsoid& operator=(const Ellipsoid&);
@@ -108,7 +108,7 @@ class Ellipsoid : public Quadratic
   void setBaseEqn() override;
 
   void mirror(const Geometry::Plane&) override;
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void rotate(const Geometry::Quaternion&) override;
   void displace(const Geometry::Vec3D&) override;
 

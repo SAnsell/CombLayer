@@ -131,7 +131,7 @@ public:
 };
 
 template<typename T>
-class  RLog : public RUnit<T>
+class RLog : public RUnit<T>
 {
 private:
   

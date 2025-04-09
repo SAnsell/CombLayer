@@ -74,6 +74,8 @@ BellowGenerator::setCF()
   bellowThick=CF::bellowThick;
 
   // this sets to 10% the materials fraction based on a 50/50 split
+  ELog::EM<<"CF::wallThick == "<<20.0*CF::wallThick/CF::bellowThick
+	  <<ELog::endDiag;
   setMat(PipeGenerator::getPipeMat(),
 	 20.0*CF::wallThick/CF::bellowThick);
   return;
@@ -108,6 +110,7 @@ BellowGenerator::setMat(const std::string& M,const double T)
 {
   PipeGenerator::setMat(M);
   bellowMat=M+"%Void%"+std::to_string(T);
+
   return;
 }
 
@@ -123,6 +126,7 @@ BellowGenerator::setMat(const std::string& PMat,
 {
   PipeGenerator::setMat(PMat);
   bellowMat=CMat;
+
   return;
 }
 

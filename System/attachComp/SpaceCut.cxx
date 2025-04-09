@@ -372,7 +372,7 @@ SpaceCut::testPlaneDivider
 	  if (1.0-(std::abs(DProd))<0.5)
 	    {
 	      Geometry::Vec3D Impact =
-		SurInter::getLinePoint(impactPt,axis,TPtr);
+		SurInter::getLinePoint(impactPt,axis,*TPtr);
 	      if (SPtr->side(Impact)<0)
 		return (DProd<0.0) ? -TUnit.first : TUnit.first;
 	    }

@@ -3,7 +3,7 @@
  
  * File:   test/testEllipsoid.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,8 +84,7 @@ testEllipsoid::applyTest(const int extra)
       &testEllipsoid::testDistance,
       &testEllipsoid::testGeneral,
       &testEllipsoid::testMirror,
-      &testEllipsoid::testSet,
-      &testEllipsoid::testTransform
+      &testEllipsoid::testSet
     };
 
   const std::string TestName[]=
@@ -93,8 +92,7 @@ testEllipsoid::applyTest(const int extra)
       "Distance",
       "General",
       "Mirror",
-      "Set",
-      "Transform"
+      "Set"
     };
 
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -198,8 +196,8 @@ testEllipsoid::testGeneral()
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
-      Ellipsoid A(54,0);
-      Ellipsoid B(54,0);
+      Ellipsoid A(54);
+      Ellipsoid B(54);
 
       // TESTS:
       A.setEllipsoid(std::get<0>(tc),std::get<1>(tc),std::get<2>(tc),
@@ -234,13 +232,13 @@ testEllipsoid::testMirror()
   ELog::RegMethod RegA("testEllipsoid","testMirror");
   
 
-  Geometry::Plane P(111,0);
+  Geometry::Plane P(111);
   P.setSurface("px 1");
 
   
   Geometry::Vec3D Axis(0,0,-1);
   Geometry::Vec3D Point(6,2,18);  
-  Cylinder A(201,0);  
+  Cylinder A(201);  
   A.setCylinder(Point,Axis,4.0);
   Cylinder Atest(A);
 
@@ -291,9 +289,9 @@ testEllipsoid::testSet()
 
   for(const TTYPE& tc : Tests)
     {
-      Ellipsoid A(54,0);
-      Cylinder C(54,0);
-      General G(54,0);
+      Ellipsoid A(54);
+      Cylinder C(54);
+      General G(54);
       C.setSurface(std::get<6>(tc));
       C.normalizeGEQ(9);
       G.setSurface(std::get<6>(tc));
@@ -334,7 +332,7 @@ testEllipsoid::testTransform()
   */
 {
   ELog::RegMethod RegA("testEllipsoid","testTransform");
-
+  /*
   // Tr / surf / Point / dist / dist+Trans
   typedef std::tuple<std::string,std::string,
 		       Vec3D,double,double> TTYPE;
@@ -383,6 +381,7 @@ testEllipsoid::testTransform()
 	}
       cnt++;
     }
+  */
   return 0;
 }
    

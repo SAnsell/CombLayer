@@ -287,7 +287,7 @@ surfaceFactory::processLine(const std::string& Line) const
 
     }
   delete X;  
-  X=new Geometry::NullSurface(id,0);
+  X=new Geometry::NullSurface(id);
   return X;
 }
 

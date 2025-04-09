@@ -97,6 +97,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/surfDBase.h
   ${tarINC}/surfDIter.h
   ${tarINC}/surfEqual.h
+  ${tarINC}/surfExpand.h
   ${tarINC}/surfRegister.h
   ${tarINC}/vertexCalc.h
   ${tarINC}/Volumes.h

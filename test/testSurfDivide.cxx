@@ -3,7 +3,7 @@
  
  * File:   test/testSurfDivide.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ testSurfDivide::createSurfaces()
   SurI.createSurface(14,"py 1");
   SurI.createSurface(15,"pz -1");
   SurI.createSurface(16,"pz 1");
-  Geometry::Plane Pn(17,0);
+  Geometry::Plane Pn(17);
   Pn.setPlane(Geometry::Vec3D(-0.5,1,0),Geometry::Vec3D(-1,0.5,0),
 	      Geometry::Vec3D(-0.5,1,1),Geometry::Vec3D(0,1,0));
   SurI.insertSurface(Pn.clone());
@@ -123,7 +123,7 @@ testSurfDivide::createSurfaces()
   SurI.createSurface(24,"py 3");
   SurI.createSurface(25,"pz -3");
   SurI.createSurface(26,"pz 3");
-  Geometry::Plane PnX(27,0);
+  Geometry::Plane PnX(27);
   PnX.setPlane(Geometry::Vec3D(-3,2,0),Geometry::Vec3D(-2,3,0),
 	      Geometry::Vec3D(-3,2,1));
   SurI.insertSurface(PnX.clone());
@@ -146,23 +146,23 @@ testSurfDivide::createObjects()
 {
   ELog::RegMethod RegA("testSurfDivide","createObjects");
 
-  std::string Out;
+  HeadRule HR;
   int cellIndex(2);
   const int surIndex(0);
-  Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,0,0.0,Out));   // Outside void Void
+  HR=HeadRule(surIndex+100);
+  ASim.addCell(cellIndex++,0,0.0,HR);   // Outside void Void
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
+  HR=ModelSupport::getHeadRule(surIndex,"11 -12 13 -14 15 -16");
+  ASim.addCell(cellIndex++,3,0.0,HR);      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"21 -22 23 -24 25 -26 -27");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
+  HR=ModelSupport::getHeadRule(surIndex,"21 -22 23 -24 25 -26 -27");
+  ASim.addCell(cellIndex++,3,0.0,HR);      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16 -17");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // steel object
+  HR=ModelSupport::getHeadRule(surIndex,"11 -12 13 -14 15 -16 -17");
+  ASim.addCell(cellIndex++,3,0.0,HR);      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"21 -22 23 -24 25 -26 (-13:14:-15:16)");
-  ASim.addCell(MonteCarlo::Object(cellIndex++,3,0.0,Out));      // # 5
+  HR=ModelSupport::getHeadRule(surIndex,"21 -22 23 -24 25 -26 (-13:14:-15:16)");
+  ASim.addCell(cellIndex++,3,0.0,HR);      // # 5
   
   return;
 }
@@ -273,7 +273,7 @@ testSurfDivide::testMultiOuter()
   // surfaces : py -3 : py 3 
   // 17: p -3,2  -2 3  (xy)
 
-  Geometry::Plane Pn(8002,0);
+  Geometry::Plane Pn(8002);
   Pn.setPlane(Geometry::Vec3D(-3,0,0),Geometry::Vec3D(-0.42426,0.82426,0));
 
   // sqrt(2)*0.8 sqrt

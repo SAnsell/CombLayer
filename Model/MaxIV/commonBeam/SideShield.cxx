@@ -3,7 +3,7 @@
  
  * File:   commonBeam/SideShield.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,7 +140,7 @@ SideShield::createUnitVector(const attachSystem::FixedComp& FC,
       if (Y.dotProd(PAxis)*SN < -Geometry::zeroTol)
 	PAxis*=-1;
       FixedComp::reOrientate(1,PAxis);
-      Origin=SurInter::getLinePoint(Origin,Y,PPtr);
+      Origin=SurInter::getLinePoint(Origin,Y,*PPtr);
     }
   applyOffset();
   return;

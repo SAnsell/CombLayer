@@ -52,8 +52,8 @@ class Cylinder : public Quadratic
  public:
 
   Cylinder();
-  Cylinder(const int,const int);
-  Cylinder(const int,Geometry::Vec3D ,
+  explicit Cylinder(const int);
+  Cylinder(const int,Geometry::Vec3D,
 	   const Geometry::Vec3D&,const double);
   Cylinder(const Cylinder&);
   Cylinder* clone() const override;
@@ -70,6 +70,7 @@ class Cylinder : public Quadratic
   std::string className() const override { return "Cylinder"; }
   /// fast index accessor
   SurfKey classIndex() const override { return SurfKey::Cylinder; }
+
   /// Visitor acceptance
   void acceptVisitor(Global::BaseVisit& A) const override
     {  A.Accept(*this); }
@@ -96,7 +97,7 @@ class Cylinder : public Quadratic
   void setBaseEqn() override;
 
   void mirror(const Geometry::Plane&) override;
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void rotate(const Geometry::Quaternion&) override;
   void displace(const Geometry::Vec3D&) override;
 

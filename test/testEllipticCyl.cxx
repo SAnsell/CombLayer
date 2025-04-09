@@ -3,7 +3,7 @@
  
  * File:   test/testEllipticCyl.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,8 +84,7 @@ testEllipticCyl::applyTest(const int extra)
       &testEllipticCyl::testDistance,
       &testEllipticCyl::testGeneral,
       &testEllipticCyl::testMirror,
-      &testEllipticCyl::testSet,
-      &testEllipticCyl::testTransform
+      &testEllipticCyl::testSet
     };
 
   const std::string TestName[]=
@@ -93,8 +92,7 @@ testEllipticCyl::applyTest(const int extra)
       "Distance",
       "General",
       "Mirror",
-      "Set",
-      "Transform"
+      "Set"
     };
 
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -194,8 +192,8 @@ testEllipticCyl::testGeneral()
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
-      EllipticCyl A(54,0);
-      EllipticCyl B(54,0);
+      EllipticCyl A(54);
+      EllipticCyl B(54);
 
       // TESTS:
       A.setEllipticCyl(std::get<0>(tc),std::get<1>(tc),std::get<2>(tc),
@@ -230,13 +228,13 @@ testEllipticCyl::testMirror()
   ELog::RegMethod RegA("testEllipticCyl","testMirror");
   
 
-  Geometry::Plane P(111,0);
+  Geometry::Plane P(111);
   P.setSurface("px 1");
 
   
   Geometry::Vec3D Axis(0,0,-1);
   Geometry::Vec3D Point(6,2,18);  
-  Cylinder A(201,0);  
+  Cylinder A(201);  
   A.setCylinder(Point,Axis,4.0);
   Cylinder Atest(A);
 
@@ -287,10 +285,10 @@ testEllipticCyl::testSet()
 
   for(const TTYPE& tc : Tests)
     {
-      EllipticCyl A(54,0);
+      EllipticCyl A(54);
 
-      Cylinder C(54,0);
-      General G(54,0);
+      Cylinder C(54);
+      General G(54);
       C.setSurface(std::get<5>(tc));
       C.normalizeGEQ(9);
       G.setSurface(std::get<5>(tc));
@@ -331,7 +329,7 @@ testEllipticCyl::testTransform()
   */
 {
   ELog::RegMethod RegA("testEllipticCyl","testTransform");
-
+  /*
   // Tr / surf / Point / dist / dist+Trans
   typedef std::tuple<std::string,std::string,
 		       Vec3D,double,double> TTYPE;
@@ -381,6 +379,7 @@ testEllipticCyl::testTransform()
 	}
       cnt++;
     }
+  */
   return 0;
 }
    

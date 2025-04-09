@@ -366,10 +366,10 @@ testLine::testInterDistance()
 
   std::vector<std::shared_ptr<Geometry::Surface> > SurList;
   SurList.push_back(std::shared_ptr<Geometry::Surface>
-		    (new Geometry::Plane(1,0)));
+		    (new Geometry::Plane(1)));
   SurList.back()->setSurface("px 80");
   SurList.push_back(std::shared_ptr<Geometry::Surface>
-		    (new Geometry::Cylinder(2,0)));
+		    (new Geometry::Cylinder(2)));
   SurList.back()->setSurface("c/z 3 5 50");
 
   // surfN : Origin : Axis : results 

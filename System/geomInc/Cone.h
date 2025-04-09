@@ -50,7 +50,7 @@ class Cone : public Quadratic
  public:
 
   Cone();
-  Cone(const int,const int);
+  explicit Cone(const int);
   Cone(const int,Geometry::Vec3D,
        const Geometry::Vec3D&,const double);
   Cone(const Cone&);
@@ -87,7 +87,7 @@ class Cone : public Quadratic
   double getAlpha() const { return alpha; } 
 
   double distance(const Geometry::Vec3D&) const override;   
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void rotate(const Geometry::Quaternion&) override;
   void displace(const Geometry::Vec3D&) override;
 

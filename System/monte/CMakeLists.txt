@@ -61,7 +61,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/RuleCheck.cxx
   ${tarDIR}/RuleItems.cxx
   ${tarDIR}/Rules.cxx
-  ${tarDIR}/RuleSupport.cxx
   ${tarDIR}/SurfPoint.cxx
   ${tarDIR}/SurfVertex.cxx
   ${tarDIR}/Token.cxx

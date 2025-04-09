@@ -34,7 +34,6 @@
 #include <utility>
 #include <vector>
 
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -188,7 +187,6 @@ Line::midPoint(const Line& A) const
     \returns Point between lines
   */
 {
-  
   const std::pair<Geometry::Vec3D,Geometry::Vec3D>
     Pts=closestPoints(A);
   return (Pts.first+Pts.second)/2.0;
@@ -249,7 +247,7 @@ Line::setDirect(const Geometry::Vec3D& Pt)
 }
 
 void
-Line::rotate(const Geometry::Matrix<double>& MA) 
+Line::rotate(const Geometry::M3<double>& MA) 
   /*!
     Applies the rotation matrix to the 
     object.
@@ -406,8 +404,31 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   return 1;
 }
 
+Geometry::Vec3D
+Line::planeIntersect(const Plane& Pln) const
+  /*! 
+    For the line that intersects the plane generate 
+    add the point to the VecOut, return number of points
+    added. It does not check the points for validity. 
+    
+    \param PntOut :: Vector of points found by the line/plane intersection
+    \param Pln :: Plane for intersect
+    \return Point [throw on parallel]
+  */
+{
+  const double OdotN=Origin.dotProd(Pln.getNormal());
+  const double DdotN=Direct.dotProd(Pln.getNormal());
+  if (std::abs(DdotN)<Geometry::parallelTol)        // Plane and line parallel
+    throw ColErr::NumericalAbort
+      ("Line::PlaneIntersect:: Line parallel to plane");
+
+  const double u=(Pln.getDistance()-OdotN)/DdotN;
+  return getPoint(u);
+}
+
 size_t 
-Line::intersect(std::vector<Geometry::Vec3D>& PntOut,const ArbPoly& APoly) const
+Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
+		const ArbPoly& APoly) const
  /*!
    Calculate all the intersections in the surfaces of the 
    general polyhedron
@@ -441,7 +462,7 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
 
      This follows the Intersection-cone from geometrymagic
 
-     \param PntOut :: Vector of points found by the line/cylinder intersection
+     \param PntOut :: Vector of points found by the line/cone intersection
      \param CObj :: Cone to intersect line with
      \return Number of points found by intersection
   */
@@ -744,7 +765,7 @@ size_t
 Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
 		const HeadRule& HR) const
   /*! 
-    For the line that intersects the sphere generate 
+    For the line that intersects the object generate 
     add the point to the PntOut, return number of points
     added. It does not check the points for validity. 
     

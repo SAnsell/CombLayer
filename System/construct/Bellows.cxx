@@ -3,7 +3,7 @@
  
  * File:   construct/Bellows.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,7 +125,9 @@ Bellows::populate(const FuncDataBase& Control)
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
   bellowStep=Control.EvalDefVar<double>(keyName+"BellowStep",0.0);
 
-  bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat",pipeMat);
+  bellowMat=
+    ModelSupport::EvalDefMat(Control,keyName+"BellowMat",pipeMat);
+
   outerVoid=1;  // no options:
   return;
 }

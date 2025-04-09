@@ -60,7 +60,7 @@ Cone::Cone() : Quadratic(),
   Cone::setBaseEqn();
 }
 
-Cone::Cone(const int N,const int T) : Quadratic(N,T),
+Cone::Cone(const int N) : Quadratic(N),
   Centre(),Normal(1,0,0),alpha(0.0),cangle(1.0),cutFlag(0)
   /*!
     Constructor with centre line along X axis 
@@ -74,7 +74,7 @@ Cone::Cone(const int N,const int T) : Quadratic(N,T),
   
 Cone::Cone(const int N,Geometry::Vec3D Org,
 	   const Geometry::Vec3D& A,const double theta) : 
-  Quadratic(N,0),
+  Quadratic(N),
   Centre(std::move(Org)),
   Normal(A.unit()),
   alpha(theta),
@@ -258,7 +258,7 @@ Cone::setBaseEqn()
 }
 
 void
-Cone::rotate(const Geometry::Matrix<double>& R)
+Cone::rotate(const Geometry::M3<double>& R)
   /*!
     Rotate both the centre and the normal direction 
     \param R :: Matrix for rotation. 

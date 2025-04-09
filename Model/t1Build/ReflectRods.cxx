@@ -3,7 +3,7 @@
  
  * File:   t1Build/ReflectRods.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -336,11 +336,13 @@ ReflectRods::calcCentre()
       return;
     }
   topCentre/=cntA;
-  baseCentre=SurInter::getLinePoint(topCentre,Z,baseSurf);
-  
-  ELog::EM<<"Centre[T/B] == "<<topCentre<<" : " 
-	  <<baseCentre<<ELog::endDiag;
-
+  if (baseSurf)
+    {
+      baseCentre=SurInter::getLinePoint(topCentre,Z,*baseSurf);
+      
+      ELog::EM<<"Centre[T/B] == "<<topCentre<<" : " 
+	      <<baseCentre<<ELog::endDiag;
+    }
   return;
 }
 

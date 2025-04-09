@@ -3,7 +3,7 @@
  
  * File:   geometry/Plane.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ Plane::Plane() : Quadratic(),
   Plane::setBaseEqn();
 }
 
-Plane::Plane(const int N,const int T) : Quadratic(N,T),
+Plane::Plane(const int N) : Quadratic(N),
   NormV(1.0,0.0,0.0),Dist(0.0)
   /*!
     Constructor: sets plane in y-z plane and throught origin
@@ -82,13 +82,12 @@ Plane::Plane(const int N,const int T) : Quadratic(N,T),
   Plane::setBaseEqn();
 }
 
-Plane::Plane(const int N,const int T,
+Plane::Plane(const int N,
 	     const Geometry::Vec3D& P,
-	     const Geometry::Vec3D& NVec) : Quadratic(N,T)
+	     const Geometry::Vec3D& NVec) : Quadratic(N)
   /*!
     Constructor: sets plane at a point and direction
     \param N :: Name
-    \param T :: Transform number
     \param P :: Point for plane to pass thought
     \param NVec :: Normal for the plane
   */
@@ -149,7 +148,7 @@ Plane::operator==(const Plane& A) const
 {
   if (&A==this) return 1;
 
-  if (std::abs(A.Dist-Dist)<=Geometry::zeroTol)
+  if (fabs(A.Dist-Dist)<=Geometry::zeroTol)
     return (A.NormV!=NormV) ? 0 : 1;
 
   return 0;
@@ -441,7 +440,7 @@ Plane::mirrorSelf()
 }
 
 void
-Plane::rotate(const Geometry::Matrix<double>& MA) 
+Plane::rotate(const Geometry::M3<double>& MA) 
   /*!
     Rotate the plane about the origin by MA 
     \param MA :: direct rotation matrix (3x3)

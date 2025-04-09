@@ -30,6 +30,7 @@ namespace Geometry
 {
 
 template<typename T> class Matrix;
+template<typename T> class M3;
 
 const double zeroTol(1e-8);       ///< Zero occured
 const double shiftTol(1e-5);      ///< Shift a point to change state
@@ -84,6 +85,7 @@ class Vec3D
   
   Vec3D& operator*=(const Vec3D&);
   template<typename T> Vec3D& operator*=(const Matrix<T>&);
+  template<typename T> Vec3D& operator*=(const M3<T>&);
   Vec3D& operator*=(const double);
   Vec3D& operator/=(const double);
   Vec3D& operator+=(const Vec3D&);
@@ -91,6 +93,7 @@ class Vec3D
 
   Vec3D operator*(const Vec3D&) const;
   template<typename T> Vec3D operator*(const Matrix<T>&) const;
+  template<typename T> Vec3D operator*(const M3<T>&) const;
 
   Vec3D operator*(const double) const;     // Scale factor
   Vec3D operator/(const double) const;     // Scale factor
@@ -113,11 +116,13 @@ class Vec3D
   /// Calculate the volmue of a cube X*Y*Z
   double volume() const { return std::abs(x*y*z); }      
 
-  Matrix<double> outerProd(const Vec3D&) const;
+  M3<double> outerProd(const Vec3D&) const;
   double dotProd(const Vec3D&) const;
-  double abs() const;    
+  double abs() const;
+  double absFlat(const size_t) const;    
   template<typename T> void rotate(const Matrix<T>&); 
-
+  template<typename T> void rotate(const M3<T>&);
+  
   Vec3D& boundaryCube(const Vec3D&,const Vec3D&);
 
   int forwardBase(const Vec3D&,const Vec3D&,const Vec3D&);
@@ -133,6 +138,7 @@ class Vec3D
   void write(std::ostream&) const;
 };
 
+Vec3D angleVec(const double,const double);
 
 std::ostream& operator<<(std::ostream&,const Vec3D&);
 std::istream& operator>>(std::istream&,Vec3D&);
