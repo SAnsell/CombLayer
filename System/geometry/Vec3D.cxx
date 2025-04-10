@@ -3,7 +3,7 @@
  
  * File:   geometry/Vec3D.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -278,7 +278,6 @@ Vec3D::operator*(const Matrix<T>& A) const
     \param A :: Matrix to rotate by
     \returns Vec3D rotated by Matrix
   */
-  
 {
   Vec3D X(*this);
   X.rotate(A);
@@ -298,7 +297,7 @@ Vec3D::operator*(const M3<T>& A) const
   X.rotate(A);
   return X;
 }
-
+  
 Vec3D
 Vec3D::operator*(const double V) const
   /*!
@@ -401,7 +400,7 @@ Vec3D::operator*=(const M3<T>& A)
   rotate(A);
   return *this;
 }
-  
+
 Vec3D&
 Vec3D::operator*=(const double V)
   /*!
@@ -571,6 +570,34 @@ Vec3D::unit() const
   return Out;
 }
 
+double
+Vec3D::getComponent(const Geometry::Vec3D& A) const
+  /*!
+    Make a component vector along the direction
+    of units +/-
+    \param A :: Vector to give principle direction (assume unitable)
+    \return length +/- in direction of A 
+  */
+{
+  const Geometry::Vec3D N=A.unit();    // Need to use A in unit form
+  return N.dotProd(*this);
+}
+
+double
+Vec3D::getScalant(const Geometry::Vec3D& A) const
+  /*!
+    Make a component vector along the direction
+    of units +/-
+    \param A :: Vector to give principle direction (assume unitable)
+    \return length +/- in direction of A 
+  */
+{
+  Geometry::Vec3D N(A);    // Need to use A in unit form
+  const double nScale=N.makeUnit();
+  return N.dotProd(*this)/nScale;
+}
+
+
 Geometry::Vec3D
 Vec3D::component(const Geometry::Vec3D& A) const
   /*!
@@ -608,7 +635,7 @@ Vec3D::outerProd(const Vec3D& A) const
   */
 {
   return
-    Matrix<double>({
+    M3<double>({
 	{x*A.x,x*A.y,x*A.z},
 	{y*A.x,y*A.y,y*A.z},
 	{z*A.x,z*A.y,z*A.z}
@@ -689,11 +716,10 @@ Vec3D::rotate(const M3<T>& A)
   return;
 }
 
-  
 void
 Vec3D::rotate(const Vec3D& Origin,const Vec3D& Axis,const double theta)
   /*!
-    Executes an arbitory rotation about an Axis, Origin and 
+    Executes an arbitrary rotation about an Axis, Origin and 
     for an angle
     \param Origin :: Origin point to do rotation
     \param Axis :: Axis value to rotate around [needs to be unit]
@@ -713,7 +739,7 @@ Vec3D::rotate(const Vec3D& Origin,const Vec3D& Axis,const double theta)
 void
 Vec3D::rotate(const Vec3D& Axis,const double theta)
   /*!
-    Executes an arbitory rotation about an Axis and 
+    Executes an arbitrary rotation about an Axis and 
     for an angle
     \param Axis :: Axis value to rotate around [needs to be unit]
     \param theta :: Angle in radians

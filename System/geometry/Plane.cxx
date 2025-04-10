@@ -3,7 +3,7 @@
  
  * File:   geometry/Plane.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
-#include <list>
+#include <set>
 #include <vector>
 #include <map>
 #include <stack>

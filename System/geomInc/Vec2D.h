@@ -3,7 +3,7 @@
  
  * File:   geomInc/Vec2D.h
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ class Vec2D
   explicit Vec2D(const double*);
   Vec2D(const Matrix<double>&);
   Vec2D(const Vec2D&);
+  Vec2D(Vec2D&&) =default;
   virtual ~Vec2D();
 
   const double& X() const { return x; }   ///< Accessor function (X)

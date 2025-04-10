@@ -3,7 +3,7 @@
  
  * File:   geometry/M2.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,7 +147,8 @@ template<typename T>
 bool
 M2<T>::operator!=(const M2<T>& M) const
   /*!
-    Checkf if two M2 items are not itentical
+    Check if two M2 items are not identical
+    \param M :: Matrix to compare
   */
 {
   return (operator==(M)) ? 0 : 1;
@@ -157,7 +158,8 @@ template<typename T>
 bool
 M2<T>::operator==(const M2<T>& M) const
   /*!
-    Checkf if two M2 items are itentical
+    Check if two M2 items are identical
+    \param M :: Matrix to compare
   */
 {
   for(size_t i=0;i<2;i++)
@@ -219,7 +221,7 @@ template<typename T>
 M2<T>
 M2<T>::operator-() const
   /*!
-    SCale by -1 e.g -M
+    Scale by -1 e.g -M
   */
 {
   M2<T> M(*this);

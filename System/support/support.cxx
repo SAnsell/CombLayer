@@ -484,6 +484,17 @@ getDelimUnit(const std::string& A,
 }
 
 bool
+hasStringEnd(const std::string& mainStr,
+	       const std::string& endStr)
+  /*!
+    Check if a string ends the string
+   */
+{
+  if (endStr.size() > mainStr.size()) return false;
+  return std::equal(endStr.rbegin(),endStr.rend(),mainStr.rbegin());
+}
+
+bool
 splitUnit(const std::string& Item,
 	  std::string& A,
 	  std::string& B,
@@ -742,8 +753,12 @@ sectionRange(std::string& A,std::vector<T>& out)
 	  pos=Unit.find(':');
 	  if (!StrFunc::convert(Unit.substr(0,pos),Val[i]))
 	    {
-	      out.clear();
-	      return 0;
+	      pos=Unit.find('-');
+	      if (!StrFunc::convert(Unit.substr(0,pos),Val[i]))
+		{
+		  out.clear();
+		  return 0;
+		}
 	    }
 	  Unit.erase(0,pos+1);
 	}
@@ -763,6 +778,52 @@ sectionRange(std::string& A,std::vector<T>& out)
 	}
     }
   return 1;
+}
+
+template<typename T>
+std::set<T>
+getRangedSet(std::string& line)
+  /*!
+    Assuming line is of the form 1,2,3,4 or 1-3 etc
+    \param line :: line to process (and remove components)
+    \return set of items
+  */
+{
+  std::set<T> out;
+
+  int preNumber(0);
+  int number(0);
+  bool preFlag(0);
+  while(!StrFunc::isEmpty(line))
+    {
+      if (StrFunc::section(line,number) ||
+	  (StrFunc::sectPartNum(line,number) && 
+	   !line.empty() && line[0]=='-'))
+	{
+	  if (number<0 && number<preNumber)
+	    {
+	      number*=-1;
+	      preFlag=1;
+	    }
+	  out.emplace(static_cast<T>(number));
+	  if (preFlag && number-preNumber<1000)
+	    {
+	      for(int i=preNumber+1;i<number;i++)
+		out.emplace(i);
+	    }
+	  preFlag=0;\
+	}
+      else if (!preFlag && line[0]=='-')
+	{
+	  preFlag=1;
+	  line[0]=' ';
+	}
+      else
+	{
+	  throw ColErr::InvalidLine("Line invalid",line,out.size());
+	}
+    }
+  return out;
 }
 
 template<typename T>
@@ -1316,10 +1377,105 @@ splitPair(const std::string& Line,const char delim)
   return Out;
 }
 
+size_t
+countUnits(const std::string& Line,const char delim)
+  /*!
+    Split a string based on a a delimiter and avoiding quotes
+    and count parts
+    \param Line :: Line to split 
+    \param delim :: deliminator
+  */
+{
+  size_t cnt(0);
+  int hardQuote(0);
+  int softQuote(0);
+  std::string Unit;
+
+  for(size_t index=0;index<Line.length();index++)
+    {
+      if (Line[index]=='\'' && index &&
+	  Line[index]!='\\')
+        {
+	  hardQuote=1-hardQuote;
+	}
+      else if (!hardQuote && Line[index]=='\"' &&
+	       index && Line[index]!='\\')
+        {
+	  softQuote=1-softQuote;
+	}
+
+      if ((!softQuote || !hardQuote) && Line[index]==delim)
+	{
+	  if (!Unit.empty())
+	    {
+	      cnt++;
+	      Unit="";
+	    }
+	}
+      else if (hardQuote || softQuote || !isspace(Line[index]))
+	Unit+=Line[index];
+    }
+
+  if (!Unit.empty())
+    cnt++;
+	      
+  return cnt;
+}
+
+std::string
+splitFront(const std::string& Line,const char delim)
+  /*!
+    Splits a string to get the part before the delimiter
+    \param Line :: line/string to process
+    \param delim :: delimination character (not returned)
+   */
+{
+  std::string::size_type pos=Line.find(delim);
+  if (pos!=std::string::npos)
+    return Line.substr(0,pos);
+  return "";
+}
+
+std::string
+splitBack(const std::string& Line,const char delim)
+  /*!
+    Splits a string to get the part before the delimiter
+    \param Line :: line/string to process
+    \param delim :: delimination character (not returned)
+   */
+{
+  std::string::size_type pos=Line.find(delim);
+  if (pos!=std::string::npos)
+    return Line.substr(pos+1);
+  return "";
+}
+
+std::string
+cutFront(std::string& Line,const char delim)
+  /*!
+    Split out the front of the object (if it exists before)
+    the deliminator
+    \param Line :: string to cut
+    \param delim :: deliminter character
+    \return Part at front (if delim found)
+  */
+{
+  std::string out;
+  std::string::size_type pos=Line.find(delim);
+  if (pos!=std::string::npos)
+    {
+      out=Line.substr(0,pos);
+      Line.erase(0,pos+1);
+    }
+  return out;
+}
+      
+  
 std::vector<std::string>
 splitParts(const std::string& Line,const char delim)
   /*!
     Split a string based on a a delimiter and avoiding quotes
+    all parts both 
     \param Line :: Line to split 
     \param delim :: deliminator
   */
@@ -1351,6 +1507,63 @@ splitParts(const std::string& Line,const char delim)
 	    }
 	}
       else if (hardQuote || softQuote || !isspace(Line[index]))
+	Unit+=Line[index];
+    }
+
+  if (!Unit.empty())
+    Out.push_back(Unit);
+	      
+  return Out;
+
+}
+
+std::vector<std::string>
+splitNSParts(const std::string& Line,
+	     const char delim)
+  /*!
+    Split a string based on a a delimiter and avoiding quotes
+    and not space split
+    \param Line :: Line to split 
+    \param delim :: deliminator
+  */
+{
+  std::vector<std::string> Out;
+  int hardQuote(0);
+  int softQuote(0);
+  int roundBracket(0);
+  int squareBracket(0);
+  std::string Unit;
+
+  for(size_t index=0;index<Line.length();index++)
+    {
+      if (Line[index]=='\'' && index &&
+	  Line[index]!='\\')
+        {
+	  hardQuote=1-hardQuote;
+	}
+      else if (!hardQuote && Line[index]=='\"' &&
+	       index && Line[index]!='\\')
+        {
+	  softQuote=1-softQuote;
+	}
+      else if (!softQuote && !hardQuote)
+	{
+	  if (Line[index]=='(') roundBracket++;
+	  if (roundBracket && Line[index]==')') roundBracket--;
+	  if (Line[index]=='[') squareBracket++;
+	  if (squareBracket && Line[index]==']') squareBracket--;
+	}
+      
+      if ((!softQuote && !hardQuote && !roundBracket && !squareBracket)
+	  && Line[index]==delim)
+	{
+	  if (!Unit.empty())
+	    {
+	      Out.push_back(Unit);
+	      Unit="";
+	    }
+	}
+      else 
 	Unit+=Line[index];
     }
 
@@ -1455,6 +1668,7 @@ template int convert(const std::string&,double&);
 template int convert(const std::string&,float&);
 template int convert(const std::string&,std::string&);
 template int convert(const std::string&,int&);
+template int convert(const std::string&,bool&);
 template int convert(const std::string&,long int&);
 template int convert(const std::string&,Geometry::Vec3D&);
 template int convert(const std::string&,Geometry::Quaternion&);

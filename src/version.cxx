@@ -3,7 +3,7 @@
  
  * File:   src/version.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <complex>
 #include <fstream>
 #include <vector>
+#include <set>
 #include <array>
 #include <string>
 
