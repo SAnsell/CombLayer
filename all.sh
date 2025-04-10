@@ -1,44 +1,50 @@
+#!/usr/bin/env bash
 
-
+exec >/dev/null
 
 nValid=1000
+opts="--validAll --validCheck $nValid"
+parallel="parallel -u --bar --halt now,fail=1"
+inp="/tmp/AA"
 
-#./maxiv --defaultConfig Single SOFTIMAX AA 
-#./maxiv --defaultConfig Single SOFTIMAX --validRandom 190  --validCheck $nValid AA || exit
-# exit
-#segments=$(for i in {40..49}; do echo -n "Segment$i "; done)
-segments=All
-./singleItem --singleItem UTubePipe --validAll --validCheck $nValid AA 
-#exit
+# FLUKA estimators
+# the uq is a perl replacement string to unquote the argument
+$parallel ./maxiv -fluka infn -defaultConfig Linac -T '{=1 uq(); =}' $inp ::: \
+ "myname resnuclei InjectionHall:Floor Concrete" \
+ "myname resnuclei InjectionHall:Floor" \
+ "myname surface electron InjectionHall back" \
+ "myname surface 'e+&e-'  InjectionHall back 1e-11 3000 100 0 6.28318 3" \
+ "myname surface electron InjectionHall back  -TMod energy myname 1e-11 3000 100" \
+ "myname mesh dose-eq free 'Vec3D(-15.0,-400.0,-55.0)' 'Vec3D(15.0, 40.0,40.0)' 10 20 30 " \
+ "myname mesh dose-eq free 'Vec3D(-15.0,-400.0,-55.0)' 'Vec3D(15.0, 40.0,40.0)' 10 20 30 -TMod doseType myname  all-part EWT74" \
+ "help" "help resnuclei" "help surface"  || exit
 
+# MCNP tallies
+$parallel ./maxiv -defaultConfig Linac -T myname '{=1 uq(); =}' $inp ::: \
+	 " surface e object     InjectionHall back" \
+	 " surface e surfMap    InjectionHall InnerBack  1" \
+	 " surface e surfMap    InjectionHall InnerBack -1" \
+	 " surface e viewObject InjectionHall front BackWallFront \#BackWallBack '#SPFMazeIn'" \
+	 " flux e InjectionHall:Floor Concrete" \
+	 " flux e InjectionHall:Floor All" || exit
 
-# ./ess --defaultConfig Single VESPA --validAll --validCheck $nValid AA  || exit
-# ./ess --defaultConfig Single HEIMDAL --validAll --validCheck $nValid AA  || exit
+# GEOMETRY
+$parallel {} $inp ::: "./maxiv --noLengthCheck --defaultConfig Linac All $opts" \
+	  "./ess --bunkerPillars ABunker $opts" \
+	  "./ess --topModType Butterfly $opts" \
+	  "./ess --topModType Pancake   $opts" || exit
 
-## SOFTIMAX removed because making the new M1 mirror
-parallel --halt now,fail=1 "./maxiv --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
+$parallel "./maxiv --defaultConfig Single {} $opts $inp " ::: \
    SOFTIMAX BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
 
-## SOFTIMAX 
+$parallel "./{} $opts $inp" ::: t1Real reactor saxsSim || exit
 
-
-./maxiv --noLengthCheck --defaultConfig Linac ${segments} --validAll --validCheck $nValid AA || exit 
-
-
-./t1Real -validAll --validCheck ${nValid} AA || exit
-./reactor -validAll --validCheck ${nValid} AA || exit
-## ./saxs -validAll --validCheck ${nValid} AA || exit
-
-parallel --halt now,fail=1 "./ess --topModType {} --validAll --validCheck $nValid AA" ::: \
-     Butterfly Pancake 
-./ess --bunkerPillars ABunker --validAll --validCheck $nValid AA  || exit
-
-parallel --halt now,fail=1 "./ess --defaultConfig Single {} --validAll --validCheck $nValid AA" ::: \
- ESTIA CSPEC  ODIN MAGIC BIFROST LOKI NMX  NNBAR  DREAM  BEER   \
- FREIA SKADI MIRACLES TESTBEAM TREX VESPA VOR    || exit
+$parallel "./ess --defaultConfig Single {} $opts $inp" ::: \
+ VESPA ESTIA CSPEC  ODIN MAGIC BIFROST LOKI NMX  NNBAR  DREAM  BEER   \
+ FREIA SKADI MIRACLES TESTBEAM TREX VOR    || exit
 # HEIMDAL :: Not currently correct -- update underway
 
-parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck $nValid AA" ::: \
+$parallel "./singleItem --singleItem {} $opts $inp" ::: \
  BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
  BremBlock BremTube  ButtonBPM CRLTube  CeramicGap CleaningMagnet  \
  CollTube ConnectorTube CooledScreen CooledUnit CornerPipe \
@@ -52,10 +58,10 @@ parallel --halt now,fail=1 "./singleItem --singleItem {} --validAll --validCheck
  PortTube PrismaChamber Quadrupole  \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SixPort StriplineBPM \
  TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac  || exit
+ UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac || exit
 
 exit
 
 ## Need to fix the cooling pads on the reflector
-./fullBuild -validAll --validCheck ${nValid} AA || exit
+./fullBuild $opts $inp || exit
 exit

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/userBdx.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -59,7 +59,7 @@ userBdx::userBdx(const std::string& KN,const int ID,const int outID) :
   */
 {}
 
-userBdx::userBdx(const userBdx& A) : 
+userBdx::userBdx(const userBdx& A) :
   flukaTally(A),
   particle(A.particle),eLogFlag(A.eLogFlag),aLogFlag(A.aLogFlag),
   fluenceFlag(A.fluenceFlag),oneDirFlag(A.oneDirFlag),
@@ -99,7 +99,7 @@ userBdx::operator=(const userBdx& A)
     }
   return *this;
 }
-  
+
 userBdx*
 userBdx::clone() const
   /*!
@@ -126,7 +126,7 @@ userBdx::getLogType() const
   const int signV((eLogFlag) ? -1 : 1);
   return (aLogFlag) ?  2*signV : signV;
 }
-  
+
 void
 userBdx::setParticle(const std::string& P)
   /*!
@@ -142,7 +142,7 @@ void
 userBdx::setAngle(const bool aFlag,const double aMin,
 		  const double aMax,const size_t NA)
   /*!
-    Set the angles 
+    Set the angles
     \param aFlag :: log flag [if true]
     \param aMin :: Min angle [min 0.001 if log]
     \param aMax :: Max angle [4pi]
@@ -160,6 +160,9 @@ userBdx::setAngle(const bool aFlag,const double aMin,
     throw ColErr::RangeError<double>(aMin,minV,4*M_PI,"aMin out of range");
   if (NA<minN)
     throw ColErr::SizeError<size_t>(NA,minN,"NA to small");
+  if (aMin>=aMax)
+    throw ColErr::OrderError<double>(aMin,aMax,"aMin >= aMax");
+
 
   aLogFlag=aFlag;
   angleA=aMin;
@@ -167,34 +170,36 @@ userBdx::setAngle(const bool aFlag,const double aMin,
   nA=NA;
   return;
 }
-  
+
 void
 userBdx::setEnergy(const bool eFlag,const double eMin,
 		   const double eMax,const size_t NE)
   /*!
-    Set the energys 
+    Set the energys
     \perem eFleg :: log fleg [if true]
-    \perem eMin :: Min energy [min 0.001MeV if log]
+    \perem eMin :: Min energy [MeV]
     \perem eMax :: Max energy [MeV]
     \perem NE :: Number of points [min 3 if log]
   */
 {
   ELog::RegMethod RegE("userBdx","setEnergy");
 
-  const double minV((eFlag) ? 1e-9 : 0.0);
+  const double minV((eFlag) ? 1e-11 : 0.0);
   const size_t minN((eFlag) ? 3 : 1);
 
-  if (eMax>1e6)
-    throw ColErr::RangeError<double>(eMax,minV,1e6,"eMax out of range");
+  if (eMax>1e7)
+    throw ColErr::RangeError<double>(eMax,minV,1e7,"eMax out of range");
   if (eMin<minV)
-    throw ColErr::RangeError<double>(eMin,minV,1e6,"eMin out of range");
+    throw ColErr::RangeError<double>(eMin,minV,1e7,"eMin out of range");
   if (NE<minN)
     throw ColErr::SizeError<size_t>(NE,minN,"NE to small");
+  if (eMin>=eMax)
+    throw ColErr::OrderError<double>(eMin,eMax,"eMin >= eMax");
 
   eLogFlag=eFlag;
   energyA=eMin*1e-3;
   energyB=eMax*1e-3;
-    
+
   nE=NE;
   return;
 }
@@ -211,7 +216,7 @@ userBdx::setCell(const int RA,const int RB)
   cellB=RB;
   return;
 }
-  
+
 void
 userBdx::write(std::ostream& OX) const
   /*!
@@ -223,16 +228,15 @@ userBdx::write(std::ostream& OX) const
 
   cx<<"USRBDX "<<getLogType()<<" "<<
     StrFunc::toUpperString(particle)<<" ";
-  cx<<getOutUnit()<<" R"<<cellA<<" R"<<cellB<<" 1.0 ";
+  cx<<getOutUnit()<<" R"<<cellA<<" R"<<cellB<<" 1 ";
   cx<<keyName;
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
   cx<<"USRBDX "<<energyB<<" "<<energyA<<" "<<nE<<" ";
   cx<<angleB<<" "<<angleA<<" "<<nA<<" &";
-  StrFunc::writeFLUKA(cx.str(),OX);  
+  StrFunc::writeFLUKA(cx.str(),OX);
   return;
 }
 
 }  // NAMESPACE flukaSystem
-

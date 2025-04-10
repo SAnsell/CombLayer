@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   tally/surfaceTally.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -87,7 +87,7 @@ surfaceTally::clone() const
 }
 
 surfaceTally&
-surfaceTally::operator=(const surfaceTally& A) 
+surfaceTally::operator=(const surfaceTally& A)
   /*!
     Assignment operator =
     \param A :: surfaceTally object to copy
@@ -134,7 +134,7 @@ surfaceTally::addLine(const std::string& LX)
   if (!StrFunc::section(Line,Tag))
     return -1;
 
-  // get tag+ number 
+  // get tag+ number
   std::pair<std::string,int> FUnit=Tally::getElm(Tag);
   if (FUnit.second<0)
     return -2;
@@ -155,7 +155,7 @@ surfaceTally::addLine(const std::string& LX)
 
   if (FUnit.first=="fs")             /// field seperator
     {
-      int SN;	  
+      int SN;
       FSfield.clear();
       while(StrFunc::section(Line,SN))
 	FSfield.push_back(SN);
@@ -169,7 +169,7 @@ surfaceTally::addLine(const std::string& LX)
 
   if (FUnit.first=="sf")             /// Segment divisor
     return SurfFlag.processString(Line);
-  
+
   return Tally::addLine(LX);
 }
 
@@ -212,7 +212,7 @@ surfaceTally::setSurfFlag(const std::vector<int>& SF)
 void
 surfaceTally::setSurfDivider(const std::vector<int>& TS)
   /*!
-    Set the surface division 
+    Set the surface division
     \param TS :: Surface numbers
    */
 {
@@ -245,7 +245,7 @@ surfaceTally::renumberSurf(const int oldN,const int newN)
   ELog::RegMethod RegA("surfaceTally","renumberCell");
 
   SurfFlag.changeItem(oldN,newN);
-  
+
   std::replace_if(SurfList.begin(),SurfList.end(),
 		  [&oldN](const int& x) { return (x==oldN); },
 		  newN);
@@ -261,21 +261,21 @@ surfaceTally::renumberSurf(const int oldN,const int newN)
 		  -newN);
   return;
 }
-  
+
 
 void
 surfaceTally::write(std::ostream& OX) const
   /*!
-    Writes out the surface tally depending on the 
+    Writes out the surface tally depending on the
     fields that have been set.
     \param OX :: Output Stream
   */
 {
   if (!isActive())
     return;
-  
+
   std::stringstream cx;
-  if (IDnum)  // maybe default 
+  if (IDnum)  // maybe default
     {
       cx<<"f"<<IDnum;
       if (!Particles.empty())

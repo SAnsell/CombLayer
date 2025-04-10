@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   Main/maxiv.cxx
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -60,7 +60,7 @@
 
 ///\cond STATIC
 
-namespace ELog 
+namespace ELog
 {
   ELog::OutputLog<EReport> EM;
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
@@ -68,7 +68,7 @@ namespace ELog
 }
 ///\endcond STATIC
 
-int 
+int
 main(int argc,char* argv[])
 {
   int exitFlag(0);                // Value on exit
@@ -76,7 +76,7 @@ main(int argc,char* argv[])
   mainSystem::activateLogging(RControl);
 
   std::string Oname;
-  std::vector<std::string> Names;  
+  std::vector<std::string> Names;
 
   Simulation* SimPtr(0);
   try
@@ -114,17 +114,16 @@ main(int argc,char* argv[])
       SimPtr->objectGroups::write("ObjectRegister.txt",
 				  IParam.flag("fullOR"));
     }
-  
+
   catch (ColErr::ExitAbort& EA)
     {
       if (!EA.pathFlag())
-	ELog::EM<<"Exiting from "<<EA.what()<<ELog::endCrit;
+	ELog::EM<<"Exiting from: "<<EA.what()<<ELog::endCrit;
       exitFlag=-2;
     }
   catch (ColErr::ExBase& A)
     {
-      ELog::EM<<"EXCEPTION FAILURE :: "
-	      <<A.what()<<ELog::endCrit;
+      ELog::EM<<"EXCEPTION FAILURE: "<<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
   catch (...)

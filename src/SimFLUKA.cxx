@@ -3,7 +3,7 @@
 
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2024 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -304,7 +304,7 @@ SimFLUKA::addUserFlags(const std::string& Key,const std::string& Extra)
 void
 SimFLUKA::writeTally(std::ostream& OX) const
   /*!
-    Writes out the tallies 
+    Writes out the tallies
     \param OX :: Output stream
    */
 {
@@ -403,7 +403,7 @@ SimFLUKA::writeMagField(std::ostream& OX) const
       for(const OTYPE::value_type& mp : OList)
 	{
 	  const int magType=mp.second->hasMagField(); // 1:normal 2:sync
-	  if (magType)  
+	  if (magType)
 	    {
 	      const std::pair<double,double> magStep=
 		mp.second->getMagStep();
@@ -559,20 +559,20 @@ SimFLUKA::writeElements(std::ostream& OX) const
     {
       if (!za.getZaid().empty())
 	{
-	  cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
-	    <<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
+	  cx<<"MATERIAL "<<za.getZ()<<" - "<<" 1 "
+	    <<" - - "<<za.getIso()<<" "<<za.getFlukaName()<<" ";
 	  lowmat<<lowMatFunc(za.getZ(),za.getIso(),za.getFlukaName());
 	}
     }
 
-  
 
-	  
-  
+
+
+
   StrFunc::writeFLUKA(cx.str(),OX);
   if (lowEnergyNeutron)
     StrFunc::writeFLUKA(lowmat.str(),OX);
-  
+
   OX<<alignment<<std::endl;
 
   return;
@@ -686,7 +686,7 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   cx<<"START "<<static_cast<double>(nps);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
-  cx<<"RANDOMIZE 1.0 "<<std::to_string(rndSeed % 1000000);
+  cx<<"RANDOMIZE 1 "<<std::to_string(rndSeed % 1000000);
   StrFunc::writeFLUKA(cx.str(),OX);
   // Remaining Physics cards
   PhysPtr->writeFLUKA(OX);
@@ -784,7 +784,7 @@ SimFLUKA::write(const std::string& Fname) const
     }
 
   // cell/names(not numbers)/free geometry
-  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells)+" - 1.0 1.0",OX);
+  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells)+" - 1 1",OX);
   OX<<"TITLE"<<std::endl;
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"
     <<std::endl;
@@ -803,7 +803,7 @@ SimFLUKA::write(const std::string& Fname) const
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
   std::ostringstream cx;
   cx<<"GEOBEGIN";
-  cx<<((basicGeom) ? " - " : " 1.0 ");
+  cx<<((basicGeom) ? " - " : " 1 ");
   cx<<geomPrecision<<" - - - - COMBNAME";
   StrFunc::writeFLUKA(cx.str(),OX);
 

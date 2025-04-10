@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   tally/TallyBuilder.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -70,22 +70,20 @@ tallySelection(SimMCNP& System,
 {
   ELog::RegMethod RegA("TallyBuilder","tallySelection(basic)");
 
-
-  for(size_t i=0;i<IParam.setCnt("tally");i++)
+  const size_t ntallies = IParam.setCnt("tally");
+  for(size_t i=0;i<ntallies;i++)
     {
-      const std::string TType=
-	IParam.getValue<std::string>("tally",i,0);
-      
       const size_t NItems=IParam.itemCnt("tally",i);
-      const std::string HType=(NItems>1) ?
-	IParam.getValue<std::string>("tally",i,1) : "help";
-      
-      if (TType=="help" || TType=="?")
-	helpTallyType(HType);
-      else if (HType=="help" || HType=="?")
-	helpTallyType(TType);
+      if (NItems==0)
+	ELog::EM << "-T needs arguments. Call '-T help' for help." << ELog::endErr;
 
-      else if (TType=="grid") 
+      const std::string tallyName=IParam.getValue<std::string>("tally",i,0);
+      const std::string TType = NItems > 1 ?  IParam.getValue<std::string>("tally",i,1) : "";
+      const std::string HType=(NItems==1) ? tallyName : TType;
+
+      if (tallyName=="help")
+	helpTallyType(HType);
+      else if (TType=="grid")
 	gridConstruct::processGrid(System,IParam,i);
       else if (TType=="point")
 	pointConstruct::processPoint(System,IParam,i);
@@ -108,17 +106,18 @@ tallySelection(SimMCNP& System,
       else if (TType=="SSW" || TType=="ssw")
 	sswConstruct::processSSW(System,IParam,i);
       else
-	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
+	ELog::EM<<"Unable to understand tally type: "<<TType<<
+	  ". Call '-T help' for help." << ELog::endErr;
     }
 
   //if (IParam.flag("Txml"))
     //   tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
-      
+
   return;
 }
 
-void  
-helpTallyType(const std::string& HType) 
+void
+helpTallyType(const std::string& HType)
   /*!
     Simple help for types
     \param HType :: specialization if present that help is required for
@@ -146,18 +145,21 @@ helpTallyType(const std::string& HType)
     sswConstruct::writeHelp(ELog::EM.Estream());
   else
     {
-      ELog::EM<<"Tally Types:\n\n";
-      ELog::EM<<"-- grid : \n";
-      ELog::EM<<"-- mesh : \n";
-      ELog::EM<<"-- point : \n";
-      ELog::EM<<"-- surface : \n";
-      ELog::EM<<"-- flux : \n";
-      ELog::EM<<"-- heat : \n";
-      ELog::EM<<"-- fission : \n";
-      ELog::EM<<"-- SSW : \n";
+      ELog::EM<<"The '-T' flag adds a tally into the model.\n"
+	"Usage: -T tallyName tallyType parameters\n"
+	"       run '-T help tallyType' to display type-based help.\n\n"
+	"List of supported MCNP tallies:\n\n"
+	"* grid\n"
+	"* mesh (tmesh)\n"
+	"* point (f5)\n"
+	"* surface (f1)\n"
+	"* flux (f4)\n"
+	"* heat (f6)\n"
+	"* fission\n"
+	"* ssw\n";
     }
-  
   ELog::EM<<ELog::endBasic;
+
   return;
 }
 

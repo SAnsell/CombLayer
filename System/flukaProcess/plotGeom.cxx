@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaProcess/plotGeom.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -42,7 +42,7 @@
 
 namespace flukaSystem
 {
-  
+
 plotGeom::plotGeom() :
   title("Basic plot"),matRegion(1)
   /*!
@@ -50,7 +50,7 @@ plotGeom::plotGeom() :
   */
 {}
 
-plotGeom::plotGeom(const plotGeom& A) : 
+plotGeom::plotGeom(const plotGeom& A) :
   title(A.title),APoint(A.APoint),BPoint(A.BPoint),
   xUnit(A.xUnit),yUnit(A.yUnit),matRegion(A.matRegion)
   /*!
@@ -86,7 +86,7 @@ plotGeom::~plotGeom()
 {}
 
 
-void 
+void
 plotGeom::setBox(const Geometry::Vec3D& APt,
 		 const Geometry::Vec3D& BPt)
   /*!
@@ -143,7 +143,7 @@ plotGeom::write(std::ostream& OX) const
 {
   std::ostringstream cx;
 
-  cx<<"PLOTGEOM 0.0 "<<matRegion<<" 0.0 0.0 79.0 0.0";
+  cx<<"PLOTGEOM 0 "<<matRegion<<" 0 0 79.0 0";
   StrFunc::writeFLUKA(cx.str(),OX);
   OX<<" "<<title.substr(0,78)<<"\n";
 
@@ -153,7 +153,7 @@ plotGeom::write(std::ostream& OX) const
   cx.str("");
   cx<<xUnit<<" "<<yUnit;
   StrFunc::writeFLUKA(cx.str(),OX);
-  StrFunc::writeFLUKA("1.0 1.0 0.0",OX); 
+  StrFunc::writeFLUKA("1 1 0",OX);
   return;
 }
 

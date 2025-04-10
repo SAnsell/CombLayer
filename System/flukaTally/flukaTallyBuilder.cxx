@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/flukaTallyBuilder.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -71,22 +71,23 @@ tallySelection(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("flukaTallyBuilder[F]","tallySelection(basic)");
-  
+
   System.populateCells();
   System.createObjSurfMap();
-  
-  for(size_t i=0;i<IParam.setCnt("tally");i++)
-    {
-      const std::string TType=
-	IParam.getValue<std::string>("tally",i,0);
-      
-      const size_t NItems=IParam.itemCnt("tally",i);
-      const std::string HType=(NItems>1) ?
-	IParam.getValue<std::string>("tally",i,1) : "help";
 
-      if (TType=="help" || TType=="?")
+  const size_t ntallies = IParam.setCnt("tally");
+  for(size_t i=0;i<ntallies;i++)
+    {
+      const size_t NItems=IParam.itemCnt("tally",i);
+      if (NItems==0)
+	ELog::EM << "-T needs arguments. Call '-T help' for help." << ELog::endErr;
+
+      const std::string tallyName=IParam.getValue<std::string>("tally",i,0);
+      const std::string TType = NItems > 1 ?  IParam.getValue<std::string>("tally",i,1) : "";
+      const std::string HType=(NItems==1) ? tallyName : TType;
+
+      if (tallyName=="help")
 	helpTallyType(HType);
-      
       else if (TType=="mesh")
 	userBinConstruct::processMesh(System,IParam,i);
       else if (TType=="dump")
@@ -97,7 +98,7 @@ tallySelection(SimFLUKA& System,
 	userBdxConstruct::processBDX(System,IParam,i);
       else if (TType=="track" || TType=="cell")
 	userTrackConstruct::processTrack(System,IParam,i);
-      else if (TType=="resnuc")
+      else if (TType=="resnuclei")
 	resnucConstruct::processResNuc(System,IParam,i);
       else if (TType=="yield")
 	userYieldConstruct::processYield(System,IParam,i);
@@ -107,12 +108,12 @@ tallySelection(SimFLUKA& System,
     }
   //if (IParam.flag("Txml"))
     //   tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
-      
+
   return;
 }
 
-void  
-helpTallyType(const std::string& HType) 
+void
+helpTallyType(const std::string& HType)
   /*!
     Simple help for types
     \param HType :: specialization if present that help is required for
@@ -120,22 +121,26 @@ helpTallyType(const std::string& HType)
 {
   ELog::RegMethod("flukaTallBuilder[F]","helpTallyType");
 
-  if (HType=="mesh")
-    {}
+  if (HType=="surface")
+    userBdxConstruct::writeHelp(ELog::EM.Estream());
+  else if (HType=="resnuclei")
+    resnucConstruct::writeHelp(ELog::EM.Estream());
   else
     {
-      ELog::EM<<"Tally Types:\n\n"
-	      <<"-- mesh : \n"
-	      <<"-- dump : \n"
-	      <<"-- surface : \n"
-	      <<"-- cell :  particle FC index eMin eMax NE \n"
-	      <<"-- raddecay : \n"
-	      <<"-- resnuc : \n"
-	      <<"-- track :  particle FC index eMin eMax NE \n";
-
+      ELog::EM << "The '-T' flag adds an estimator into the model.\n"
+	"Usage: -T estimatorName estimatorType parameters\n"
+	"       run '-T help estimatorType to display type-based help.\n\n"
+	"List of supported FLUKA estimators:\n\n"
+	"* mesh (USRBIN)\n"
+	"* dump (USERDUMP)\n"
+	"* raddecay\n"
+	"* surface (USRBDX)\n"
+	"* track (USRTRACK)\n"
+	"* resnuclei (RESNUCLEI)\n"
+	"* yield (USRYIELD)\n";
     }
-  
   ELog::EM<<ELog::endBasic;
+
   return;
 }
 
