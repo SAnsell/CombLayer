@@ -3,7 +3,7 @@
  
  * File:   logInc/OutputLog.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ class OutputLog
   
   std::ostringstream cx;            ///< Stream for processing
 
+  int highlightFlag;                ///< highlight colour
   int colourFlag;                   ///< Activate colour
   size_t activeBits;                ///< Activity bits
   size_t actionBits;                ///< Action bits [exit on text]
@@ -92,12 +93,8 @@ class OutputLog
   size_t getIndentLength() const;
 
  public:
-
-  /// basic constructor
-  constexpr OutputLog() :
-    colourFlag(0),activeBits(255),actionBits(0),
-      debugBits(0),typeFlag(1),locFlag(1),
-      storeFlag(0),NBasePtr(0) {}
+ 
+  OutputLog();
   OutputLog(const std::string&);
   OutputLog(const OutputLog<RepClass>&);
   OutputLog<RepClass>& operator=(const OutputLog<RepClass>&);
@@ -134,6 +131,8 @@ class OutputLog
       return manip(*this);
     }
 
+  /// Set highlight
+  void setHighlight() { highlightFlag=1; }
   /// Set Colour
   void setColour() { colourFlag=1; }
   /// set the active bits:
@@ -194,6 +193,27 @@ OutputLog<RepClass>& endCrit(OutputLog<RepClass>&);
 
 template<typename RepClass>
 OutputLog<RepClass>& endTrace(OutputLog<RepClass>&);
+
+template<typename RepClass>
+OutputLog<RepClass>& endDIAG(OutputLog<RepClass>&);
+
+template<typename RepClass>
+OutputLog<RepClass>& endBASIC(OutputLog<RepClass>&);
+
+template<typename RepClass>
+OutputLog<RepClass>& endERR(OutputLog<RepClass>&);
+
+template<typename RepClass>
+OutputLog<RepClass>& endWARN(OutputLog<RepClass>&);
+
+template<typename RepClass>
+OutputLog<RepClass>& endDEBUG(OutputLog<RepClass>&);
+
+template<typename RepClass>
+OutputLog<RepClass>& endCRIT(OutputLog<RepClass>&);
+
+template<typename RepClass>
+OutputLog<RepClass>& endTRACE(OutputLog<RepClass>&);
 
 
 

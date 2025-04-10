@@ -3,7 +3,7 @@
  
  * File:   log/OutputLog.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <sstream>
 #include <map>
 #include <vector>
-#include <fmt/core.h>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -36,6 +36,16 @@
 
 namespace ELog
 {
+
+template<typename RepClass>
+OutputLog<RepClass>::OutputLog() :
+  highlightFlag(0),colourFlag(0),activeBits(255),
+  actionBits(0),debugBits(0),
+  typeFlag(1),locFlag(1),storeFlag(0),NBasePtr(0)
+  /*!
+    Constructor with string
+  */
+{}
 
 template<typename RepClass>
 OutputLog<RepClass>::OutputLog(const std::string&) :
@@ -153,8 +163,6 @@ OutputLog<EReport>::getColour(const int Flag) const
   //
   //  1 : bold :2 underline etc
   // 
-	  
-
   if (colourFlag) 
     {
       const unsigned int part=(Flag<=0) ? 1 : 
@@ -219,6 +227,12 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
   std::string cxItem=M;
   std::string::size_type pos;
 
+  boost::format FMTbPart("%1$s%2$s");
+  boost::format FMTStr80("%1$s%|80t|");
+  boost::format FMTStr120("%1$s%|120t|");
+  boost::format FMTStr160("%1$s%|160t|");
+
+//  boost::format FMTStrL80("%3$s%|80t|[ %2$s% ] ");
   std::string Item;
   std::string colour;
   std::string colourReset;
@@ -228,36 +242,37 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
       colourReset="\033[0m";
       //      colourReset="\033[22;37m";
     }
-
+  
   if (isActive(T))
     {
-      const std::string Tag=colour+eType(T)+locString()+
+      const std::string Tag=colour+
+	(FMTbPart % eType(T) % locString()).str()+
 	colourReset;
+      const std::string preTag=(highlightFlag) ? colour : "";
       do
         {
 	  pos=cxItem.find_first_of("\n\r");
+	  Item=preTag;
 	  const size_t TL=cxItem.length()+getIndentLength();
 	  if (!length && (pos<80 || (pos==std::string::npos && TL<80)))
 	    {
-	      Item=fmt::format("{:<80}",
-		(indent()+cxItem.substr(0,pos)))+Tag;
+	      Item+=
+		(FMTStr80 % (indent()+cxItem.substr(0,pos))).str()+Tag;
 	    }
 	  else if (length<2 && (pos<120 || (pos==std::string::npos && TL<120)))
 	    {
-	      Item=fmt::format("{:<120}",
-		(indent()+cxItem.substr(0,pos)))+Tag;
+	      Item+=(FMTStr120 % (indent()+cxItem.substr(0,pos))).str()+Tag;
 	      length=1;
 	    }
 	  // This is always the default test:
 	  else if (pos<160 || (pos==std::string::npos && TL<160))    
 	    {
-	      Item=fmt::format("{:<160}",
-		(indent()+cxItem.substr(0,pos)))+Tag;
+	      Item+=(FMTStr160 % (indent()+cxItem.substr(0,pos))).str()+Tag;
 	      length=2;
 	    }
 	  else  // Overflow on this one line 
 	    {
-	      Item=indent()+cxItem.substr(0,pos)+"\n"+Tag;
+	      Item+=indent()+cxItem.substr(0,pos)+"\n"+Tag;
 	    }
 
 	  if (!storeFlag)
@@ -272,6 +287,7 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
 	  cxItem.erase(0,pos+1);
 	} while(pos!=std::string::npos);
     }
+  highlightFlag=0;
   return;
 }
 
@@ -584,6 +600,105 @@ endTrace(OutputLog<RepClass>& OLX)
   return OLX;
 }
 
+template<typename RepClass>
+OutputLog<RepClass>& 
+endBASIC(OutputLog<RepClass>& OLX)
+  /*!
+    Dispatch an endl of basic
+    \param OLX :: Output stream
+    \return Stream
+  */
+{
+  OLX.setHighlight();
+  OLX.basic();
+  return OLX;
+}
+
+template<typename RepClass>
+OutputLog<RepClass>& 
+endERR(OutputLog<RepClass>& OLX)
+  /*!
+    Dispatch an endl of error
+    \param OLX :: Output stream
+    \return Stream
+  */
+{
+  OLX.setHighlight();
+  OLX.error();
+  return OLX;
+}
+
+template<typename RepClass>
+OutputLog<RepClass>& 
+endWARN(OutputLog<RepClass>& OLX)
+  /*!
+    Dispatch an endl of warning
+    \param OLX :: Output stream
+    \return Stream
+  */
+{
+  OLX.setHighlight();
+  OLX.warning();
+  return OLX;
+}
+
+template<typename RepClass>
+OutputLog<RepClass>& 
+endDEBUG(OutputLog<RepClass>& OLX)
+  /*!
+    Dispatch an endl of a debug
+    \param OLX :: Output stream
+    \return Stream
+  */
+{
+  OLX.setHighlight();
+  OLX.debug();
+  return OLX;
+}
+
+template<typename RepClass>
+OutputLog<RepClass>& 
+endDIAG(OutputLog<RepClass>& OLX)
+  /*!
+    Dispatch an endl of a dialog
+    \param OLX :: Output stream
+    \return Stream
+  */
+{
+  OLX.setHighlight();
+  OLX.diagnostic();
+  return OLX;
+}
+
+
+template<typename RepClass>
+OutputLog<RepClass>& 
+endCRIT(OutputLog<RepClass>& OLX)
+  /*!
+    Dispatch an endl of a critical 
+    \param OLX :: Output stream
+    \return Stream
+  */
+{
+  OLX.setHighlight();
+  OLX.critical();
+  return OLX;
+}
+
+template<typename RepClass>
+OutputLog<RepClass>& 
+endTRACE(OutputLog<RepClass>& OLX)
+  /*!
+    Dispatch an endl of trace 
+    \param OLX :: Output stream
+    \return Stream
+  */
+{
+  OLX.setHighlight();
+  OLX.trace();
+  return OLX;
+}
+
 ///\cond TEMPLATE 
 
 template class OutputLog<EReport>;
@@ -597,6 +712,15 @@ template OutputLog<EReport>& endWarn(OutputLog<EReport>&);
 template OutputLog<EReport>& endDebug(OutputLog<EReport>&);
 template OutputLog<EReport>& endCrit(OutputLog<EReport>&);
 template OutputLog<EReport>& endTrace(OutputLog<EReport>&);
+
+
+template OutputLog<EReport>& endDIAG(OutputLog<EReport>&);
+template OutputLog<EReport>& endBASIC(OutputLog<EReport>&);
+template OutputLog<EReport>& endERR(OutputLog<EReport>&);
+template OutputLog<EReport>& endWARN(OutputLog<EReport>&);
+template OutputLog<EReport>& endDEBUG(OutputLog<EReport>&);
+template OutputLog<EReport>& endCRIT(OutputLog<EReport>&);
+template OutputLog<EReport>& endTRACE(OutputLog<EReport>&);
 
 template OutputLog<FileReport>& endDiag(OutputLog<FileReport>&);
 template OutputLog<FileReport>& endBasic(OutputLog<FileReport>&);

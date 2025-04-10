@@ -212,6 +212,29 @@ class FileError : public ExBase
 };
 
 /*!
+  \class UninitializedValue
+  \brief Exception for an object in a void state
+  \author Stuart Ansell
+  \date April 2025
+  \version 1.0
+*/
+
+class UninitializedValue : public ExBase
+{
+ private:
+
+  void setOutLine(const std::string&);
+
+ public:
+
+  UninitializedValue(const std::string&,const std::string&);
+  UninitializedValue(const UninitializedValue&);
+  UninitializedValue& operator=(const UninitializedValue&);
+  ~UninitializedValue() throw() override {}   ///< Destructor 
+
+};
+
+/*!
   \class EmptyValue
   \brief Exception for an object in a void state
   \author Stuart Ansell
