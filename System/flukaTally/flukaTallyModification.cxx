@@ -3,7 +3,7 @@
  
  * File:   flukaTally/flukaTallyModification.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
+#include "support.h"
 
 #include "Code.h"
 #include "varList.h"
@@ -79,13 +80,35 @@ getTallyType(const SimFLUKA& Sim)
     }
   return Out;
 }
+
+bool
+checkLimitedName(const std::string& tName,std::string checkName)
+  /*!
+    Checks if a wild-harded tName is part of checkName
+    \return true if matches
+   */
+{
+  if (!tName.empty() && !checkName.empty())
+    {
+      const size_t aSize(tName.size());
+      if (tName.back()=='*')
+	{
+	  if (checkName.size()>aSize)
+	    checkName.erase(aSize-1,std::string::npos);
+	  checkName+='*';
+	}
+      if (checkName==tName)
+	return 1;
+    }
+  return 0;
+}
   
 std::set<flukaTally*>
 getActiveTally(const SimFLUKA& Sim,const std::string& tName)
   /*!
     Get a set of points to matching tallys
     \param Sim :: Fluka simulation
-    \param tName :: tally name [or wild card component]
+    \param tName :: tally name [or wild card component] or typename
     \return Set of tally pointer
    */
 {
@@ -96,18 +119,18 @@ getActiveTally(const SimFLUKA& Sim,const std::string& tName)
 
   for(flukaSystem::flukaTally* fPtr : tmap)
     {
-      std::string KN=fPtr->getKeyName();
-      const size_t knSize(KN.size());
-
-      if (!tName.empty() && tName.size()<knSize &&
-	  tName.back()=='*')
-	{
-	  KN.erase(tName.size(),std::string::npos);
-	  KN.back()='*';
-	}
-      if (KN==tName)
+      const std::string KN=fPtr->getKeyName();
+      if (checkLimitedName(tName,KN))
 	Out.insert(fPtr);
+      else  
+	{
+	  const std::string TN=fPtr->getType();
+	  if (checkLimitedName(StrFunc::toUpperString(tName),TN))
+	    Out.insert(fPtr);
+	}
     }
+
+  
   if (Out.empty())
     throw ColErr::InContainerError<std::string>
       (tName,"Tally modification type not present:");

@@ -3,7 +3,7 @@
 
  * File:   constructVar/BellowGenerator.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,8 +74,6 @@ BellowGenerator::setCF()
   bellowThick=CF::bellowThick;
 
   // this sets to 10% the materials fraction based on a 50/50 split
-  ELog::EM<<"CF::wallThick == "<<20.0*CF::wallThick/CF::bellowThick
-	  <<ELog::endDiag;
   setMat(PipeGenerator::getPipeMat(),
 	 20.0*CF::wallThick/CF::bellowThick);
   return;

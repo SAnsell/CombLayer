@@ -3,7 +3,7 @@
 
  * File:   flukaTally/userBdxConstruct.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ namespace flukaSystem
 
 void
 userBdxConstruct::createTally(SimFLUKA& System,
-			      const std::string& name,
+			      const std::string& tallyName,
 			      const std::string& PType,
 			      const int fortranTape,
 			      const int cellA,const int cellB,
@@ -74,7 +74,7 @@ userBdxConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
-    \param PType :: estimator name
+    \param tallyName :: estimator name
     \param PType :: particle name
     \param fortranTape :: output stream
     \param CellA :: initial region
@@ -95,7 +95,7 @@ userBdxConstruct::createTally(SimFLUKA& System,
 
   userBdx UD("surf",fortranTape,fortranTape);
   UD.setParticle(FG.nameToFLUKA(PType));
-  UD.setKeyName(name);
+  UD.setKeyName(tallyName);
   UD.setCell(cellA,cellB);
   UD.setEnergy(eLog,Emin,Emax,nE);
   UD.setAngle(aLog,Amin,Amax,nA);
@@ -139,6 +139,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   size_t itemIndex(5);
   int cellA(0);
   int cellB(0);
+
   if (
       (!StrFunc::convert(FCname,cellA) ||
        !StrFunc::convert(FCindex,cellB) ||
@@ -146,14 +147,15 @@ userBdxConstruct::processBDX(SimFLUKA& System,
       !constructCellMapPair(System,FCname,FCindex,cellA,cellB) &&
       !constructLinkRegion(System,FCname,FCindex,cellA,cellB) &&
       !constructSurfRegion(System,FCname,FCindex,cellA,cellB)
-      ) {
-    // Important because we need to correct itemIndex
-    if (constructSurfRegion(System,FCname,cellA,cellB))
-      itemIndex--;
-    else
-      throw ColErr::CommandError(tallyName+": "+FCname+" "+FCindex,"Surface tally conversion");
-  }
-  //  ELog::EM<< tallyName << ": regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;
+      )
+    {
+      // Important because we need to correct itemIndex
+      if (constructSurfRegion(System,FCname,cellA,cellB))
+	itemIndex--;
+      else
+	throw ColErr::CommandError(tallyName+": "+FCname+" "+FCindex,
+				   "Surface tally conversion -- check that FComp point is on boundary");
+    }
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();

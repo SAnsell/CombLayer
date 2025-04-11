@@ -3,7 +3,7 @@
  
  * File:   essBuild/BulkModule.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,7 @@ BulkModule::BulkModule(const std::string& Key)  :
 BulkModule::BulkModule(const BulkModule& A) : 
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
   nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),

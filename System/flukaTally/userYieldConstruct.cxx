@@ -3,7 +3,7 @@
 
  * File:   flukaTally/userYieldConstruct.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,20 +130,22 @@ userYieldConstruct::processYield(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userYieldConstruct","processYield");
 
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
   const std::string particleType=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
+    IParam.getValueError<std::string>("tally",Index,2,"tally:ParticleType");
   const std::string yieldTypeA=
-    IParam.getValueError<std::string>("tally",Index,2,"tally:YieldType");
-  const std::string yieldTypeB=
     IParam.getValueError<std::string>("tally",Index,3,"tally:YieldType");
+  const std::string yieldTypeB=
+    IParam.getValueError<std::string>("tally",Index,4,"tally:YieldType");
   const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,4,"tally:Object/Cell");
+    IParam.getValueError<std::string>("tally",Index,5,"tally:Object/Cell");
   const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,5,"tally:linkPt/Cell");
+    IParam.getValueError<std::string>("tally",Index,6,"tally:linkPt/Cell");
 
   bool logFlag(1);
 
-  size_t itemIndex(6);
+  size_t itemIndex(7);
   int cellA(0);
   int cellB(0);
   if (
@@ -158,8 +160,8 @@ userYieldConstruct::processYield(SimFLUKA& System,
       // special class because must give regions
       itemIndex+=2;
 
-      const size_t regionIndexA=IParam.getDefValue<size_t>(0,"tally",Index,4);
-      const size_t regionIndexB=IParam.getDefValue<size_t>(0,"tally",Index,5);
+      const size_t regionIndexA=IParam.getDefValue<size_t>(0,"tally",Index,5);
+      const size_t regionIndexB=IParam.getDefValue<size_t>(0,"tally",Index,6);
 
       if (!constructSurfRegion(System,FCname,FCindex,
 			       regionIndexA,regionIndexB,cellA,cellB))
@@ -181,8 +183,7 @@ userYieldConstruct::processYield(SimFLUKA& System,
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
 
 
-  const std::string tally_name = "myname";
-  userYieldConstruct::createTally(System,tally_name,particleType,
+  userYieldConstruct::createTally(System,tallyName,particleType,
 				  logFlag,yieldTypeA,yieldTypeB,
 				  -nextId,
 				  cellA,cellB,
@@ -200,9 +201,15 @@ userYieldConstruct::writeHelp(std::ostream& OX)
   */
 {
   OX<<
+    "Yield calclulate a double differential -- it needs \n"
+    " a particle type and TWO yield types e.g. for dSigma/(d Omega dE) \n"
+    " the yields are KE (kenetic energy) and weightAngle. \n \n"
+    " The supported yield calculate is for region-region (similar to MCNP\n"
+    "surface crossing tallies)\n\n"
     " particle yieldTypeA yieldTypeB Object linkPt \n"
     "   EnergyStart EnergyEnd NPTS \n"
     "   AngleStart AngleEnd NPTS \n";
+    
   return;
 }
 

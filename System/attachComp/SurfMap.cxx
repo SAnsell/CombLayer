@@ -3,7 +3,7 @@
  
  * File:   attachComp/SurfMap.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,9 +101,13 @@ SurfMap::getSignedSurf(const std::string& Key,
 
   if (Key.empty()) return 0;
 
-  return (Key[0]=='-' || Key[0]=='#' || 
-	  Key[0]=='*' || Key[0]=='%') ?
-    -getItem(Key.substr(1),Index) : getItem(Key,Index);
+  if (Key[0]=='-' || Key[0]=='#' || 
+      Key[0]=='*' || Key[0]=='%')
+    {
+      const std::string subStr=Key.substr(1);
+      return (!hasItem(subStr)) ? 0 :  -getItem(subStr,Index);
+    }
+  return (!hasItem(Key)) ? 0 :  getItem(Key,Index);
 }
   
 HeadRule

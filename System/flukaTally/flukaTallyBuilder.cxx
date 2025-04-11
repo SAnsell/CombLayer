@@ -3,7 +3,7 @@
 
  * File:   flukaTally/flukaTallyBuilder.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,10 +84,9 @@ tallySelection(SimFLUKA& System,
 
       const std::string tallyName=IParam.getValue<std::string>("tally",i,0);
       const std::string TType = NItems > 1 ?  IParam.getValue<std::string>("tally",i,1) : "";
-      const std::string HType=(NItems==1) ? tallyName : TType;
 
       if (tallyName=="help")
-	helpTallyType(HType);
+	helpTallyType(TType);
       else if (TType=="mesh")
 	userBinConstruct::processMesh(System,IParam,i);
       else if (TType=="dump")

@@ -1211,7 +1211,6 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
   const ModelSupport::ObjSurfMap::STYPE& negType=OSMPtr->getObjects(-SN);
   const ModelSupport::ObjSurfMap::STYPE& plusType=OSMPtr->getObjects(SN);
 
-
   for(const MonteCarlo::Object* OPtr : negType)
     {
       if (OPtr->isValid(Pt,-SN))
@@ -1220,7 +1219,6 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
 	  break;
 	}
     }
-
   for(const MonteCarlo::Object* OPtr : plusType)
     {
       if (OPtr->isValid(Pt,SN))
@@ -1230,7 +1228,6 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
 	}
     }
   return Out;
-
 }
 
 int

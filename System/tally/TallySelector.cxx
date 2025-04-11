@@ -80,13 +80,12 @@ constructLinkRegion(const Simulation& System,
   const attachSystem::FixedComp* FCPtr=
     System.getObject<attachSystem::FixedComp>(FCname);
 
-
   if (!FCPtr) return 0;
 
   if (!FCPtr->hasSideIndex(FCindex)) return 0;
-      
+
   const long int FCI=FCPtr->getSideIndex(FCindex);
-  const int surfN=FCPtr->getLinkSurf(FCI);    
+  const int surfN=FCPtr->getLinkSurf(FCI);
   if (!surfN) return 0;
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
@@ -211,7 +210,6 @@ constructSurfRegion(const Simulation& System,
   if (!SMPtr || surfName.empty()) return 0;
   
   const int surfN=SMPtr->getSignedSurf(surfName);
-  ELog::EM<<"Joining surface "<<surfN<<ELog::endDiag;
   if (!surfN) return 0;
   // throws on error [unlikely because SurfMap is good]
   const groupRange& activeGrp=System.getGroup(FCname);
