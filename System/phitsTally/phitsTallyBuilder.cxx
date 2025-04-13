@@ -3,7 +3,7 @@
  
  * File:   phitsTally/phitsTallyBuilder.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,28 +72,26 @@ tallySelection(SimPHITS& System,
   System.createObjSurfMap();
 
   for(size_t i=0;i<IParam.setCnt("tally");i++)
-    {
-      const std::string TType=
-	IParam.getValue<std::string>("tally",i,0);
-      
+    {      
       const size_t NItems=IParam.itemCnt("tally",i);
-      const std::string HType=(NItems>1) ?
-	IParam.getValue<std::string>("tally",i,1) : "help";
+      if (NItems==0)
+	ELog::EM<<"-T needs arguments. Call '-T help' for help."
+		<< ELog::endErr;
 
-      if (TType=="help" || TType=="?")
-	helpTallyType(HType);
-      
+      const std::string tallyName=IParam.getValue<std::string>("tally",i,0);
+      const std::string TType = (NItems > 1) ?
+	IParam.getValue<std::string>("tally",i,1) : "";
+
+      if (tallyName=="help" || tallyName=="?")
+	helpTallyType(TType);
       else if (TType=="gshow")
 	tgshowConstruct::processMesh(System,IParam,i);
-
       else if (TType=="surface")
 	tcrossConstruct::processSurface(System,IParam,i);
-
       else if (TType=="mesh")
 	ttrackMeshConstruct::processMesh(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
-
     }
 
   //if (IParam.flag("Txml"))

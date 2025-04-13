@@ -3,7 +3,7 @@
  
  * File:   phitsTallyInc/TMesh.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ class TMesh : public phitsTally
     
  public:
 
-  explicit TMesh(const int);
+  TMesh(const std::string&,const int);
   TMesh(const TMesh&);
   TMesh* clone() const override;  
   TMesh& operator=(const TMesh&);

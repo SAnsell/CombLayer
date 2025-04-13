@@ -3,7 +3,7 @@
  
  * File:   phitsTally/ttrackMeshConstruct.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@ namespace phitsSystem
 
 void 
 ttrackMeshConstruct::createTally(SimPHITS& System,
+				 const std::string& tallyName,
 				 const std::string& PType,
 				 const int ID,
 				 const Geometry::Vec3D& APt,
@@ -71,6 +72,7 @@ ttrackMeshConstruct::createTally(SimPHITS& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
+    \param tallyName :: tally name
     \param PType :: processed particle type
     \param fortranTape :: output stream
     \param APt :: Lower point 
@@ -80,7 +82,7 @@ ttrackMeshConstruct::createTally(SimPHITS& System,
 {
   ELog::RegMethod RegA("ttrackMeshConstruct","createTally");
 
-  TMesh TM(ID);
+  TMesh TM(tallyName,ID);
   TM.setParticle(PType);
   TM.setCoordinates(APt,BPt);
   TM.setIndex(MPts);
@@ -89,8 +91,6 @@ ttrackMeshConstruct::createTally(SimPHITS& System,
   return;
 }
 
-  
- 
 void
 ttrackMeshConstruct::processMesh(SimPHITS& System,
 			    const mainSystem::inputParam& IParam,
@@ -104,10 +104,13 @@ ttrackMeshConstruct::processMesh(SimPHITS& System,
 {
   ELog::RegMethod RegA("ttrackMeshConstruct","processMesh");
 
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
+
   const int nextID=System.getNextTallyID();
   
   const std::string particleType=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
+    IParam.getValueError<std::string>("tally",Index,2,"tally:ParticleType");
   if (particleType=="help")
     {
       ELog::EM<<writeHelp()<<ELog::endDiag;
@@ -117,19 +120,20 @@ ttrackMeshConstruct::processMesh(SimPHITS& System,
     convertTallyParticle(particleType);
 
   const std::string PType=
-    IParam.getValueError<std::string>("tally",Index,2,"object/free"); 
+    IParam.getValueError<std::string>("tally",Index,3,"object/free"); 
   Geometry::Vec3D APt,BPt;
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
     mainSystem::meshConstruct::getObjectMesh
-      (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
+      (System,IParam,"tally",Index,4,APt,BPt,Nxyz);
 
   else if (PType=="free")
     mainSystem::meshConstruct::getFreeMesh
-      (IParam,"tally",Index,3,APt,BPt,Nxyz);
+      (IParam,"tally",Index,4,APt,BPt,Nxyz);
 
-  ttrackMeshConstruct::createTally(System,tallyParticle,nextID,APt,BPt,Nxyz);
+  ttrackMeshConstruct::createTally
+    (System,tallyName,tallyParticle,nextID,APt,BPt,Nxyz);
   
   return;      
 }
@@ -142,7 +146,7 @@ ttrackMeshConstruct::writeHelp()
   */
 {
   return 
-    "-T mesh \n"
+    "-T tallyName mesh \n"
     "  particleType : name of particle / energy to tally\n"
     "  Option A : \n"
     "     free free Vec3D Vec3D Nx Ny Nz \n"    

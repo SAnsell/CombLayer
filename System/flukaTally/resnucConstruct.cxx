@@ -67,7 +67,7 @@ namespace flukaSystem
 
 void
 resnucConstruct::createTally(SimFLUKA& System,
-			     const std::string& name,
+			     const std::string& tallyName,
 			     const int ID,
 			     const int fortranTape,
 			     const int cellA)
@@ -107,7 +107,7 @@ resnucConstruct::createTally(SimFLUKA& System,
     }
   if (ZMax>0)
     {
-      resnuclei UD(name,ID,fortranTape);
+      resnuclei UD(tallyName,ID,fortranTape);
       UD.setCell(cellA);
       UD.setZaid(ZMax,AMax);
       System.addTally(UD);

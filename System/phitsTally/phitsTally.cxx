@@ -3,7 +3,7 @@
  
  * File:   phitsTally/phitsTally.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,9 @@
 namespace phitsSystem
 {
 
-phitsTally::phitsTally(const int ID)  :
+phitsTally::phitsTally(const std::string& tName,const int ID)  :
   keyName(std::to_string(ID)),
+  tallyName(tName),
   idNumber(ID),particle("all"),
   epsFlag(0),vtkout(0),vtkBinary(0)
   /*!
@@ -51,8 +52,11 @@ phitsTally::phitsTally(const int ID)  :
   */
 {}
 
-phitsTally::phitsTally(const std::string& KName,const int ID)  :
-  keyName(KName+std::to_string(ID)),idNumber(ID),
+phitsTally::phitsTally(const std::string& KName,
+		       const std::string& TName,
+		       const int ID)  :
+  keyName(KName+std::to_string(ID)),
+  tallyName(TName),idNumber(ID),
   particle("all"),
   epsFlag(0),vtkout(0),vtkBinary(0)
   /*!
@@ -63,7 +67,8 @@ phitsTally::phitsTally(const std::string& KName,const int ID)  :
 {}
 
 phitsTally::phitsTally(const phitsTally& A) : 
-  keyName(A.keyName),idNumber(A.idNumber),
+  keyName(A.keyName),tallyName(A.tallyName),
+  idNumber(A.idNumber),
   comments(A.comments),particle(A.particle),
   title(A.title),xTxt(A.xTxt),
   yTxt(A.yTxt),epsFlag(A.epsFlag),
