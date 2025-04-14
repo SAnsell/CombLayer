@@ -369,6 +369,29 @@ multiData<T>::throwMatchCheck(const multiData<T>& A,
   return;
 }
 
+template<typename T>
+void
+multiData<T>::setStrides(std::vector<size_t> newIndex)
+ /*!
+   Internal function to set the index/stride without changing
+   anything
+ */
+{
+  if (!newIndex.empty())
+    {
+      index=std::move(newIndex);
+      strides.resize(index.size()+1);
+      strides[index.size()]=0;   // always valid
+      size_t prod=1;
+      for(size_t i=index.size();i>0;i--)
+	{
+	  strides[i-1]=prod;
+	  prod*=index[i-1];
+	}
+    }
+  return;
+}
+
 template<typename T> 
 void
 multiData<T>::clear()
@@ -469,7 +492,7 @@ multiData<T>::operator/=(const multiData<T>& A)
     \param A :: Dataset to subtract from this
   */
 {
-  if constexpr (std::is_arithmetic<T>::value)
+  if constexpr (std::is_floating_point<T>::value)
     {
       throwMatchCheck(A,"operator/=");
       
@@ -477,6 +500,16 @@ multiData<T>::operator/=(const multiData<T>& A)
 		     A.flatData.begin(),flatData.begin(),
 		     [](const T& a,const T& b) ->T
 		     { return (std::abs(b)>1e-38) ? a/b : a; }
+		     );
+    }
+  else if constexpr (std::is_arithmetic<T>::value)
+    {
+      throwMatchCheck(A,"operator/=");
+      
+      std::transform(flatData.begin(),flatData.end(),
+		     A.flatData.begin(),flatData.begin(),
+		     [](const T& a,const T& b) ->T
+		     { return (b!=0) ? a/b : a; }
 		     );
     }
   return *this;
@@ -545,10 +578,18 @@ multiData<T>::operator/=(const T& V)
     \param V :: Value to divide
   */
 {
-  if constexpr (std::is_arithmetic<T>::value)
+  if constexpr (std::is_floating_point<T>::value)
     {
-      if (std::abs(V)<1e-38)
+      if (std::abs<T>(V)<1e-38)
 	throw ColErr::NumericalAbort("multiData: Division value approx zero");
+      
+      for(T& vItem : flatData)
+	vItem/=V;
+    }
+  else if constexpr (std::is_arithmetic<T>::value)
+    {
+      if (V!=0)
+	throw ColErr::NumericalAbort("multiData: Division value zero");
       
       for(T& vItem : flatData)
 	vItem/=V;
@@ -557,8 +598,33 @@ multiData<T>::operator/=(const T& V)
   return *this;
 }
 
+template<typename T>
+multiData<T>
+multiData<T>::operator+(const multiData<T>& A) const
+  /*!
+    Addition of other multiData
+    \param A :: Dataset to subtract from this
+    \return datedataset
+  */
+{
+  multiData<T> out(*this);
+  out+=A;
+  return out;
+}
 
-
+template<typename T>
+multiData<T>
+multiData<T>::operator-(const multiData<T>& A) const
+  /*!
+    Subtraction of other multiData
+    \param A :: Dataset to subtract from this
+    \return datedataset
+  */
+{
+  multiData<T> out(*this);
+  out-=A;
+  return out;
+}
 
 template<typename T>
 void
@@ -762,6 +828,117 @@ multiData<T>::exchange(size_t aIndex,size_t bIndex) const
       orgCNT++;
     }
   return Out;
+}
+
+template<typename T>
+multiData<T>&
+multiData<T>::exchangeIndex(const size_t indexA,const size_t indexB) 
+ /*!
+   Horrible function that transposes the index without
+   changing the data 
+  */
+{
+  if (indexA!=indexB && indexA<index.size() &&
+      indexB<index.size())
+    {
+      std::vector<size_t> newIndex(index);
+      std::swap(newIndex[indexA],newIndex[indexB]);
+      setStrides(newIndex);
+    }
+  return *this;
+}
+      
+template<typename T>
+multiData<T>&
+multiData<T>::transpose() 
+ /*!
+   Transpose the matrix so that [A][B][C]...
+   goes to ..[C][B[A]
+  */
+{
+  const size_t nDim(getDim());
+  if (nDim>1)
+    {
+      std::vector<size_t> revIndex(index);
+      IndexCounter<size_t> normCnt(revIndex.cbegin(),revIndex.cend());
+      std::reverse(revIndex.begin(),revIndex.end());
+      setStrides(revIndex);
+
+      // copy as we are going to change current flat data
+      const std::vector<T> oldData(flatData);
+      const T* ptr=oldData.data();
+      
+      const std::vector<size_t>& RC=normCnt.getVector();
+      do
+	{
+	  T* dataPtr=flatData.data();
+	  for(size_t i=0; i<nDim;i++)
+	    dataPtr+=RC[i]*strides[nDim-(i+1)];
+	  *dataPtr= *ptr;
+	  ptr++;
+	} while(!normCnt++);
+
+    }
+  return *this;
+}
+
+
+template<typename T>
+multiData<T>&
+multiData<T>::transposeAxis(const size_t axisID) 
+ /*!
+   Transpose one axit of the matrix so that
+   for Data[A][B][C]... and axisID=1
+   and B of length N.
+   
+      Data[A][N-i][C]..
+      \param azisID :: axis to use
+  */
+{
+  if (axisID >= index.size())
+    throw ColErr::IndexError<size_t>
+      (axisID,index.size(),"transposeAxis index out of range");
+  
+  const size_t nDim(getDim());
+  if (nDim==1)
+    {
+      std::reverse(flatData.begin(),flatData.end());
+      return *this;
+    }
+
+  const size_t N=index[axisID];
+  const size_t N2=N/2;
+
+  std::vector<size_t> modIndex(index);
+  modIndex[axisID]=1;
+  IndexCounter<size_t> normCnt(modIndex.cbegin(),modIndex.cend());
+  
+  // copy as we are going to change current flat data
+
+  const size_t axisStride=strides[axisID];
+  const std::vector<size_t>& RC=normCnt.getVector();
+  do 
+    {
+      T* dataPtrA=flatData.data();
+      T* dataPtrB=flatData.data();
+      for(size_t i=0; i<nDim;i++)
+	{
+	  if (i!=axisID)
+	    {
+	      dataPtrA+=RC[i]*strides[i];
+	      dataPtrB+=RC[i]*strides[i];
+	    }
+	}
+      dataPtrB+=(N-1)*axisStride;
+
+      for(size_t j=0;j<N2;j++)
+	{
+	  std::swap(*dataPtrA,*dataPtrB);
+	  dataPtrA+=axisStride;
+	  dataPtrB-=axisStride;
+	}
+    } while(!normCnt++);
+  return *this;
 }
 
 template<typename T>
@@ -1065,6 +1242,31 @@ multiData<T>::reduceAxis(const size_t axisIndex) const
 
 template<typename T>
 multiData<T>&
+multiData<T>::increaseAxis(const size_t axisIndex) 
+  /*!
+    Increase the axis at the point index.
+    i.e. [3][4][5] at index == 1 becomes
+    [3][1][4][5]
+    \param axisIndex :: insertion point of new axis
+    \return size increased data
+  */
+{
+  std::vector<size_t> newIndex;
+  for(size_t i=0;i<index.size();i++)
+    {
+      if (i==axisIndex)
+	newIndex.push_back(1);
+      newIndex.push_back(index[i]);
+    }
+  if (newIndex.size()==index.size())
+    newIndex.push_back(1);
+
+  resize(newIndex);
+  return *this;
+}
+
+template<typename T>
+multiData<T>&
 multiData<T>::reduce() 
   /*!
     Reduce out any size 1 dimentions
@@ -1074,7 +1276,6 @@ multiData<T>::reduce()
   for(const size_t i : index)
     if (i!=1)
       newIndex.push_back(i);
-
 
   if (newIndex.size()!=index.size())
     resize(newIndex);
@@ -1371,9 +1572,7 @@ multiData<T>::write(std::ostream& OX) const
 	OX<<" "<<i;
       OX<<"\n";
       const size_t nDim=index.size();
-      
-
-      
+     
       if (nDim>1)
 	{
 	  typename std::vector<T>::const_iterator vc(flatData.begin());
@@ -1414,6 +1613,7 @@ template class multiData<DError::doubleErr>;
 template class multiData<float>;
 template class multiData<std::string>;
 template class multiData<int>;
+template class multiData<size_t>;
 template class multiData<std::shared_ptr<delftSystem::RElement>>;
 
 template multiData<double>::multiData(const multiData<float>&);
@@ -1424,5 +1624,6 @@ template multiData<double>::multiData(const size_t,const std::vector<float>&);
 template std::ostream& operator<<(std::ostream&,const multiData<int>&);
 template std::ostream& operator<<(std::ostream&,const multiData<float>&);
 template std::ostream& operator<<(std::ostream&,const multiData<std::string>&);
+template std::ostream& operator<<(std::ostream&,const multiData<size_t>&);
 
 ///\endcond TEMPLATE

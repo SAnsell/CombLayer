@@ -61,6 +61,8 @@ class multiData
 		    const size_t,const size_t) const; 
 
   void throwMatchCheck(const multiData<T>&,const std::string&) const;
+
+  void setStrides(std::vector<size_t>);
   
  public:
 
@@ -91,7 +93,10 @@ class multiData
   ~multiData();
 
   void clear(); 
-  
+
+  multiData<T> operator+(const multiData<T>&) const;
+  multiData<T> operator-(const multiData<T>&) const;
+
   multiData<T>& operator+=(const T&);
   multiData<T>& operator-=(const T&);
   multiData<T>& operator*=(const T&);
@@ -118,8 +123,12 @@ class multiData
   // special resize for 1D
   void resize(const size_t);
 
+  multiData<T>& increaseAxis(const size_t);
   multiData<T>& reduce();
   multiData<T>& cut(const size_t,const size_t);
+  multiData<T>& exchangeIndex(const size_t,const size_t);
+  multiData<T>& transpose();
+  multiData<T>& transposeAxis(const size_t);
   
   void combine(const size_t,const size_t);
   
@@ -160,6 +169,7 @@ class multiData
      { return flatData; }
   /// accessor to vector
   std::vector<T>& getVector() { return flatData; }
+
 
   const std::vector<size_t>& shape() const
     { return index; }

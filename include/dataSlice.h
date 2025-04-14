@@ -58,8 +58,8 @@ struct sliceUnit
 
   /// reference () operator (to get data member)
   operator const T& () const { return *dataPtr; }
-  operator T& () { return *dataPtr; }   ///< data member (non-const)
-
+  /// data member (non-const)
+  operator T& () { return *dataPtr; }   
   /// point operator
   T operator->() const { return *dataPtr; }
 
@@ -91,7 +91,7 @@ struct sliceUnit
     return *this;
   }
   
-  // assignment system for values
+  /// assignment system for values
   T& operator=(typename std::remove_const<T>::type in) const
     {
       *dataPtr = std::move(in);

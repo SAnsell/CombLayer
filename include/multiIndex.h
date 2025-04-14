@@ -3,7 +3,7 @@
  
  * File:   include/multiIndex.h
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,11 @@
   \version 1.0
   \date September 2005
   \author S. Ansell
-  \brief Fixed component counter for indexgroups
+  \brief Fixed component counter for index groups
 
   Objective is a rolling integer 
 
 */
-
 class multiIndex
 {
  private:
@@ -66,7 +65,7 @@ class multiIndex
   size_t operator++();
   size_t operator++(const int);
 
-
+  /// accessor to current value
   size_t get() const { return currentIndex; }
   
   void write(std::ostream&) const;
