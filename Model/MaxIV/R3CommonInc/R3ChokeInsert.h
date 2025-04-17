@@ -50,7 +50,8 @@ class R3ChokeInsert :
   double plateLength;           ///< gap between plates
 
   int plateMat;                 ///< material for plates
-  
+  int voidMat;                  ///< void material
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);

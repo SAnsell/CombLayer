@@ -101,6 +101,7 @@ R3ChokeInsert::populate(const FuncDataBase& Control)
   plateLength=Control.EvalVar<double>(keyName+"PlateLength");
 
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat", 0);
 
   return;
 }
@@ -152,14 +153,14 @@ R3ChokeInsert::createObjects(Simulation& System)
   const HeadRule frontHR=ExternalCut::getRule("front");
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
-  makeCell("Gap",System,cellIndex++,0,0.0,HR*frontHR);
+  makeCell("Gap",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 -5 15");
   makeCell("TopPlate",System,cellIndex++,plateMat,0.0,HR*frontHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 6 -16");
   makeCell("BasePlate",System,cellIndex++,plateMat,0.0,HR*frontHR);
-  
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 15 -16");
   addOuterSurf(HR);
