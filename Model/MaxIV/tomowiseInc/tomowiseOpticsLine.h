@@ -3,7 +3,7 @@
 
  * File:   tomowiseInc/tomowiseOpticsLine.h
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,24 +50,18 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class BeamScrapper;
+  class CylGateValve;
   class BremColl;
   class BremBlock;
   class BeamPair;
   class BremMonoColl;
-  class CollTube;
-  class CollUnit;
-  class CooledScreen;
-  class CRLTube;
-  class CylGateValve;
   class DCMTank;
-  class FourPortTube;
   class FlangeMount;
   class GaugeTube;
   class Mirror;
   class MLMono;
+  class MLMonoDetail;
   class MonoBlockXstals;
-  class RoundMonoShutter;
   class ShutterUnit;
   class SquareFMask;
   class IonGauge;
@@ -75,16 +69,17 @@ namespace xraySystem
   class HPJaws;
   class BremTube;
   class ViewScreenTube;
+  class MonoShutter;
+  class RoundMonoShutter;
   class PipeShield;
-  class Table;
 
 
   /*!
     \class tomowiseOpticsLine
     \version 1.0
-    \author K. Batkov
-    \date February 2025
-    \brief TomoWISE optics beamline
+    \author S. Ansell
+    \date January 2019
+    \brief Constructor for the tomowise optics components
   */
 
 class tomowiseOpticsLine :
@@ -96,7 +91,7 @@ class tomowiseOpticsLine :
 {
  private:
 
-  /// string for pre-insertion into mastercell:0
+  /// Items pre-insertion into mastercell:0
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::BlockZone buildZone;
@@ -117,124 +112,131 @@ class tomowiseOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Brem for collimator
   std::shared_ptr<xraySystem::SquareFMask> whiteCollA;
+  /// Ion Gauge
+  std::shared_ptr<xraySystem::IonGauge> bremHolderA;
+  /// Brem collimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
-  /// Brem block tube
-  std::shared_ptr<xraySystem::IonGauge> bremHolderA;
-  /// first BremCollimator
-  std::shared_ptr<xraySystem::BremBlock> bremCollA;
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// View Tube
-  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeA;
-  /// view screen
-  std::shared_ptr<xraySystem::CooledScreen> cooledScreenA;
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowD;
-  /// Attn Tube
-  std::shared_ptr<xraySystem::CollTube> attnTube;
-  /// Attn Unit [internal]
-  std::shared_ptr<xraySystem::CollUnit> attnUnit;
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowE;
-  /// Table for diag table
-  std::shared_ptr<xraySystem::Table> tableA;
+  /// mini-Brem Collimator
+  std::shared_ptr<constructSystem::VacuumPipe> bremPipeB;
 
-  /// H-res DMM mono vessel
-  std::shared_ptr<xraySystem::DCMTank> dmmVessel;
-  /// Mirror mono
-  std::shared_ptr<xraySystem::MLMono> mlm;
+  /// Diagnostic unit 3:
+  std::shared_ptr<constructSystem::PortTube> diagBoxA;
+  /// Jaws for the slit tube (x/z pair)
+  std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
 
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowF;
-  /// Gate valve between monos
+  /// mini pipe out of diag box
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  /// gate valve
   std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowG;
+  /// bellow to to mono
+  std::shared_ptr<constructSystem::Bellows> bellowC;
 
+  // PART 4: [MML]
+  /// MirrorMonoBox
+  std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
+  /// Mirror-Mono system
+  std::shared_ptr<xraySystem::MLMonoDetail> MLM;
 
-  /// H-res DCM mono vessel
-  std::shared_ptr<xraySystem::DCMTank> dcmVessel;
+  // PART 5: [connection pipe]
+
+  /// bellow from MLM
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  /// gate valve
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeC;
+  /// bellow to DCM
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+
+  /// H-res mono vessel
+  std::shared_ptr<xraySystem::DCMTank> monoVessel;
   /// Crystal pair
   std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
 
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowH;
-  /// Brem block tube
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-  /// Gate valve between mono/diag2
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeC;
-
-
-  /// BremTube (with heat trapping)
-  std::shared_ptr<xraySystem::BremTube> monoBremTube;
-  /// Pre-brem scrapper
-  std::shared_ptr<xraySystem::BeamScrapper> bremScrapper;
-  /// BremBlock
-  std::shared_ptr<xraySystem::BremBlock> bremCollB;
-  /// jaws
-  std::shared_ptr<xraySystem::HPJaws> hpJawsA;
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowI;
-  /// view screen tube
-  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
-  /// view screen
-  std::shared_ptr<xraySystem::CooledScreen> cooledScreenB;
-  /// Gate valve between diag2/CRL
+    /// bellow to diag
+  std::shared_ptr<constructSystem::Bellows> bellowF;
+  /// pipe to gate valve
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+  /// gate valve
   std::shared_ptr<xraySystem::CylGateValve> gateTubeD;
-  /// Addaptor to CRL tube
-  std::shared_ptr<constructSystem::VacuumPipe> crlPipeA;
-  /// First CRL System
-  std::shared_ptr<xraySystem::CRLTube> crlTubeA;
-  /// Mid  CRL pipe
-  std::shared_ptr<constructSystem::VacuumPipe> crlPipeB;
-  /// Mid  CRL pipe
-  std::shared_ptr<constructSystem::VacuumPipe> crlPipeC;
-  /// Second CRL System
-  std::shared_ptr<xraySystem::CRLTube> crlTubeB;
-  /// End  CRL pipe
-  std::shared_ptr<constructSystem::VacuumPipe> crlPipeD;
-  /// Really long pipe
-  std::shared_ptr<constructSystem::VacuumPipe> longPipeA;
-  /// Really long pipe
-  std::shared_ptr<constructSystem::VacuumPipe> longPipeB;
-  /// Gate valve at end of really long pipe
+
+  /// Diag unit two contains Brem block
+  std::shared_ptr<xraySystem::BremTube> bremTubeA;
+  /// Brem collimator
+  std::shared_ptr<xraySystem::BremBlock> bremCollB;
+  /// Jaws
+  std::shared_ptr<xraySystem::HPJaws> hpJawsA;
+
+  /// Mirror box
+  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
+  /// Mirror front
+  std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
+  /// Mirror back
+  std::shared_ptr<xraySystem::Mirror> mirrorBackA;
+
+  /// bellow from Mirror to Diag3
+  std::shared_ptr<constructSystem::Bellows> bellowG;
+  /// gate valve infront of diag3
   std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowJ;
-  /// view screen tube
-  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeC;
   /// view screen
-  std::shared_ptr<xraySystem::CooledScreen> cooledScreenC;
-  /// Bellow exit
-  std::shared_ptr<constructSystem::Bellows> bellowK;
-  /// jaws
-  std::shared_ptr<xraySystem::HPJaws> hpJawsB;
-  /// BremTube (with heat trapping)
-  std::shared_ptr<xraySystem::FourPortTube> crlBremTube;
-  /// BremBlock
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTube;
+  /// yag screen in view screen tube
+  std::shared_ptr<tdcSystem::YagScreen> yagScreen;
+
+  /// Diag unit two contains Brem block
+  std::shared_ptr<constructSystem::PipeTube> bremTubeB;
+  /// Brem collimator
   std::shared_ptr<xraySystem::BremBlock> bremCollC;
-  /// BremBlock
-  std::shared_ptr<constructSystem::Bellows> bellowL;
+ /// Jaws
+  std::shared_ptr<xraySystem::HPJaws> hpJawsB;
+
+  /// bellow out of diag 3 [close]
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+  /// pipe to exit bellow of diag 3
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  /// bellow out of diag 3 [long/final]
+  std::shared_ptr<constructSystem::Bellows> bellowI;
+
+  /// gate valve infront of diag3
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeF;
+  /// view screen
+  std::shared_ptr<xraySystem::ViewScreenTube> viewTubeB;
+  /// bellow out of diag 3 [long/final]
+  std::shared_ptr<constructSystem::Bellows> bellowJ;
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
   /// The main mono shutter
   std::shared_ptr<xraySystem::RoundMonoShutter> monoShutter;
+  /// adaptor plate from CF63->CF40
+  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
+  /// Last gate valve:
+  std::shared_ptr<xraySystem::CylGateValve> gateTubeG;
+  /// last pipe
+  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
-  void constructHDMM(Simulation&,const attachSystem::FixedComp&,
-		     const std::string&);
+  void constructMirrorMono(Simulation&,const attachSystem::FixedComp&,
+			   const std::string&);
+
   void constructHDCM(Simulation&,const attachSystem::FixedComp&,
 		     const std::string&);
+
   void constructDiag2(Simulation&,const attachSystem::FixedComp&,
 		      const std::string&);
-  void constructCRL(Simulation&,const attachSystem::FixedComp&,
-		      const std::string&);
+
   void constructDiag3(Simulation&,const attachSystem::FixedComp&,
 		      const std::string&);
-  void constructMonoShutter(Simulation&,const attachSystem::FixedComp&,
-			    const std::string&);
+
+  void constructDiag4(Simulation&,const attachSystem::FixedComp&,
+		      const std::string&);
+
+  void constructMonoShutter
+  (Simulation&,const attachSystem::FixedComp&,const std::string&);
 
   void populate(const FuncDataBase&) override;
   void createSurfaces();

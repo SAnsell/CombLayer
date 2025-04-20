@@ -176,15 +176,15 @@ TOMOWISE::build(Simulation& System,
   joinPipe->addInsertCell("FlangeA",wallLead->getCell("SteelVoid"));
   joinPipe->createAll(System,*frontBeam,2);
 
-  // opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
-  // opticsBeam->addInsertCell(opticsHut->getCell("Void"));
-  // opticsBeam->setCutSurf("front",*opticsHut,
-  // 			 opticsHut->getSideIndex("innerFront"));
-  // opticsBeam->setCutSurf("back",*opticsHut,
-  // 			 opticsHut->getSideIndex("innerBack"));
-  // opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
-  // opticsBeam->setPreInsert(joinPipe);
-  // opticsBeam->createAll(System,*joinPipe,2);
+  opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
+  opticsBeam->addInsertCell(opticsHut->getCell("Void"));
+  opticsBeam->setCutSurf("front",*opticsHut,
+			 opticsHut->getSideIndex("innerFront"));
+  opticsBeam->setCutSurf("back",*opticsHut,
+			 opticsHut->getSideIndex("innerBack"));
+  opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setPreInsert(joinPipe);
+  opticsBeam->createAll(System,*joinPipe,2);
 
   exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
