@@ -595,6 +595,9 @@ exptHutVariables(FuncDataBase& Control,
   EGen.setCorner(45.0,120.0);   // step-y back
   EGen.generateHut(Control,hutName,0.0,901.0);
 
+  Control.addVariable(hutName+"FrontVoid",0.0);
+
+
   // lead shield on pipe
   Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
   Control.addVariable(hutName+"PShieldYStep",0.3);
