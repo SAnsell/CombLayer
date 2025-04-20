@@ -533,7 +533,7 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("tomowiseVariables","opticsHutVariables");
 
-  const double beamMirrorShift(-1.0);
+  const double beamMirrorShift(4.3); //-1.0);
 
   OpticsHutGenerator OGen;
   PortChicaneGenerator PGen;
@@ -545,7 +545,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   OGen.generateHut(Control,hutName,1256.0);
 
-  OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
+  OGen.addHole(Geometry::Vec3D(beamMirrorShift, 0.0, 3.5), 3.0); // last number is radius
   OGen.generateHut(Control,hutName,1256.0);
 
   Control.addVariable(hutName+"RingStepLength",992.0);
