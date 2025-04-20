@@ -3,7 +3,7 @@
 
  * File: tomowise/tomowiseExptLine.cxx
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,16 +33,14 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "Exception.h"
 #include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Code.h"
@@ -54,6 +52,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -73,18 +72,21 @@
 
 #include "GeneralPipe.h"
 #include "Bellows.h"
-#include "FlangePlate.h"
+#include "GateValveCylinder.h"
+#include "VirtualTube.h"
+#include "PipeTube.h"
+#include "portItem.h"
 
+#include "GeneralPipe.h"
 #include "VacuumPipe.h"
-#include "VacuumBox.h"
-#include "Mirror.h"
-#include "CylGateValve.h"
+#include "MonoBox.h"
+#include "BoxJaws.h"
+#include "ConnectorTube.h"
 #include "CRLTube.h"
-#include "HPJaws.h"
-#include "ViewScreenTube.h"
-#include "CooledScreen.h"
-#include "RoundMonoShutter.h"
+#include "FourPortTube.h"
+#include "SixPortTube.h"
 
+//#include "formaxDetectorTube.h"
 
 #include "tomowiseExptLine.h"
 
@@ -101,38 +103,38 @@ tomowiseExptLine::tomowiseExptLine(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(Key+"BuildZone"),
-  outerMat(0),exptType("Sample"),
+  outerMat(0),
 
-  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  viewTube(new xraySystem::ViewScreenTube(newName+"ViewTube")),
-  cooledScreen(new xraySystem::CooledScreen(newName+"CooledScreen")),
+  filterBoxA(new xraySystem::MonoBox(newName+"FilterBoxA")),
+  bellowB(new constructSystem::Bellows(newName+"BellowB")),
+  crossA(new xraySystem::FourPortTube(newName+"CrossA")),
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  jawBox(new xraySystem::BoxJaws(newName+"JawBox")),
+  connectA(new xraySystem::ConnectorTube(newName+"ConnectA")),
+  clrTubeA(new xraySystem::CRLTube(newName+"CRLTubeA")),
+  connectB(new xraySystem::ConnectorTube(newName+"ConnectB")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
-  hpJaws(new xraySystem::HPJaws(newName+"HPJaws")),
+  sixPortA(new tdcSystem::SixPortTube(newName+"SixPortA")),
+  cylGateA(new constructSystem::GateValveCylinder(newName+"CylGateA")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
+  bellowD(new constructSystem::Bellows(newName+"BellowD")),
+  sixPortB(new tdcSystem::SixPortTube(newName+"SixPortB")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-
-  crlPipeA(new constructSystem::VacuumPipe(newName+"CRLPipeA")),
-  crlTubeA(new xraySystem::CRLTube(newName+"CRLTubeA")),
-  crlPipeB(new constructSystem::VacuumPipe(newName+"CRLPipeB")),
-  crlTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
-  crlPipeD(new constructSystem::VacuumPipe(newName+"CRLPipeD")),
-
+  cylGateB(new constructSystem::GateValveCylinder(newName+"CylGateB")),
+  sixPortC(new tdcSystem::SixPortTube(newName+"SixPortC")),
+  pipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  connectC(new xraySystem::ConnectorTube(newName+"ConnectC")),
+  clrTubeB(new xraySystem::CRLTube(newName+"CRLTubeB")),
+  connectD(new xraySystem::ConnectorTube(newName+"ConnectD")),
+  viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
+  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  crossB(new xraySystem::FourPortTube(newName+"CrossB")),
+  adjustPipe(new constructSystem::VacuumPipe(newName+"AdjustPipe")),
+  pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  jawBoxB(new xraySystem::BoxJaws(newName+"JawBoxB")),
+  connectE(new xraySystem::ConnectorTube(newName+"ConnectE")),
   endPipe(new constructSystem::VacuumPipe(newName+"EndPipe")),
-
-  mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
-  mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
-  mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
-
-  monoShutterB(new xraySystem::RoundMonoShutter(newName+"RMonoShutterB")),
-
-  diffractTube(new constructSystem::VacuumPipe(newName+"DiffractTube")),
-
-  byPassTube(new constructSystem::VacuumPipe(newName+"ByPassTube")),
-
-  endWindow(new constructSystem::FlangePlate(newName+"EndWindow")),
-  sampleTube(new constructSystem::VacuumPipe(newName+"SampleTube")),
   sample(new insertSystem::insertSphere(newName+"Sample"))
   /*!
     Constructor
@@ -142,32 +144,37 @@ tomowiseExptLine::tomowiseExptLine(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(gateTubeA);
   OR.addObject(bellowA);
-  OR.addObject(viewTube);
-  OR.addObject(cooledScreen);
+  OR.addObject(filterBoxA);
+  OR.addObject(bellowB);
+  OR.addObject(crossA);
+  OR.addObject(bellowC);
+  OR.addObject(jawBox);
+  OR.addObject(connectA);
+  OR.addObject(clrTubeA);
+  OR.addObject(connectB);
   OR.addObject(pipeA);
-  OR.addObject(hpJaws);
+  OR.addObject(sixPortA);
+  OR.addObject(cylGateA);
   OR.addObject(pipeB);
-  OR.addObject(gateTubeB);
+  OR.addObject(bellowD);
+  OR.addObject(sixPortB);
   OR.addObject(pipeC);
-
-  OR.addObject(crlPipeA);
-  OR.addObject(crlTubeA);
-  OR.addObject(crlPipeB);
-  OR.addObject(crlTubeB);
-  OR.addObject(crlPipeD);
-
+  OR.addObject(cylGateB);
+  OR.addObject(sixPortC);
+  OR.addObject(pipeD);
+  OR.addObject(connectC);
+  OR.addObject(clrTubeB);
+  OR.addObject(connectD);
+  OR.addObject(viewTube);
+  OR.addObject(bellowE);
+  OR.addObject(crossB);
+  OR.addObject(adjustPipe);
+  OR.addObject(pipeE);
+  OR.addObject(jawBoxB);
+  OR.addObject(connectE);
   OR.addObject(endPipe);
-  OR.addObject(mirrorBoxA);
-  OR.addObject(mirrorFrontA);
-  OR.addObject(mirrorBackA);
   OR.addObject(sample);
-  OR.addObject(endWindow);
-
-  OR.addObject(diffractTube);
-
-  OR.addObject(monoShutterB);
 }
 
 tomowiseExptLine::~tomowiseExptLine()
@@ -191,8 +198,7 @@ tomowiseExptLine::populate(const FuncDataBase& Control)
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
 
-  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",outerMat);
-  exptType=Control.EvalDefVar<std::string>(keyName+"ExptType","Sample");
+  outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",0);
 
   return;
 }
@@ -225,139 +231,36 @@ tomowiseExptLine::createSurfaces()
 }
 
 void
-tomowiseExptLine::constructCRL(Simulation& System,
-			       const attachSystem::FixedComp& initFC,
-			       const std::string& sideName)
- /*!
-    Sub build of the post first mono system.
-    \param System :: Simulation to use
-    \param initFC :: Start point
-    \param sideName :: start link point
-  */
-{
-  ELog::RegMethod RegA("tomowiseOpticsLine","constructCRL");
-
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*crlPipeA);
-
-  constructSystem::constructUnit
-    (System,buildZone,*crlPipeA,"back",*crlTubeA);
-
-  constructSystem::constructUnit
-    (System,buildZone,*crlTubeA,"back",*crlPipeB);
-
-  constructSystem::constructUnit
-    (System,buildZone,*crlPipeB,"back",*crlTubeB);
-
-  constructSystem::constructUnit
-    (System,buildZone,*crlTubeB,"back",*crlPipeD);
-
-  return;
-}
-
-void
-tomowiseExptLine::constructSampleStage(Simulation& System,
-				       const attachSystem::FixedComp& initFC,
-				       const std::string& sideName)
- /*!
-    Sub build of the sample in direct line geometry
-    \param System :: Simulation to use
-    \param initFC :: Start point
-    \param sideName :: start link point
-  */
-{
-  ELog::RegMethod RegA("tomowiseExptLine","constructSampleStage");
-
-  int outerCell;
-
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*endWindow);
-
-  // both build absolute
-  sample->setNoInsert();
-  sample->createAll(System,initFC,sideName);
-
-  monoShutterB->createAll(System,*endPipe,"back");
-
-  outerCell=buildZone.createUnit(System,*monoShutterB,"#front");
-  sample->insertInCell(System,outerCell);
-  outerCell=buildZone.createUnit(System,*monoShutterB,"back");
-
-  monoShutterB->insertAllInCell(System,outerCell);
-  monoShutterB->splitObject(System,"-TopPlate",outerCell);
-  monoShutterB->splitObject(System,"MidCutB",outerCell);
-
-  return;
-}
-
-void
-tomowiseExptLine::constructByPassStage(Simulation& System)
+tomowiseExptLine::constructViewScreen(Simulation& System,
+				    const attachSystem::FixedComp& initFC,
+				    const std::string& sideName)
   /*!
-    Sub build of the bypass geometry (beam to expthut-2)
-    \param System :: Simulation to use
-  */
-{
-  ELog::RegMethod RegA("tomowiseExptLine","constructByPassStage");
-
-  int outerCell,outerCellA;
-  // First place mirrors into beam
-
-  monoShutterB->createAll(System,*endPipe,"back");
-  outerCellA=buildZone.createUnit(System,*monoShutterB,"#front");
-  sample->insertInCell(System,outerCellA);
-  outerCell=buildZone.createUnit(System,*monoShutterB,"back");
-
-  monoShutterB->insertAllInCell(System,outerCell);
-  monoShutterB->splitObject(System,"-TopPlate",outerCell);
-  monoShutterB->splitObject(System,"MidCutB",outerCell);
-
-  byPassTube->setFront(*mirrorBoxA,"back");
-  byPassTube->setBack(*monoShutterB,"front");
-  byPassTube->createAll(System,*endPipe,"back");
-  byPassTube->insertAllInCell(System,outerCellA);
-
-  return;
-}
-
-void
-tomowiseExptLine::constructDiffractionStage
-    (Simulation& System,
-     const attachSystem::FixedComp& initFC,
-     const std::string& sideName)
- /*!
-    Sub build of the diffractoin in out-line line geometry
+    Sub build of the first viewing package unit
     \param System :: Simulation to use
     \param initFC :: Start point
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("tomowiseExptLine","constructDiffractionStage");
+  ELog::RegMethod RegA("tomowiseOpticsLine","constructViewScreen");
 
-  int outerCell;
-  // First place mirrors into beam
-  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
-  mirrorFrontA->createAll(System,*mirrorBoxA,0);
+  // FAKE insertcell: required
 
-  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
-  mirrorBackA->createAll(System,*mirrorBoxA,0);
+  int prevCell(buildZone.getLastCell("Unit"));
+
+  viewTube->setOuterVoid();
+
 
   constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*diffractTube);
+    (System,buildZone,initFC,sideName,*viewTube);
+  viewTube->intersectPorts(System,0,2);
+  viewTube->intersectPorts(System,1,2);
+  viewTube->intersectPorts(System,0,3);
+  viewTube->intersectPorts(System,1,3);
 
-  // both build absolute
-  sample->setNoInsert();
-  sample->createAll(System,initFC,sideName);
-
-  monoShutterB->createAll(System,*endPipe,"back");
-  outerCell=buildZone.createUnit(System,*monoShutterB,"#front");
-  sample->insertInCell(System,outerCell);
-  outerCell=buildZone.createUnit(System,*monoShutterB,"back");
-
-  monoShutterB->insertAllInCell(System,outerCell);
-  monoShutterB->splitObject(System,"-TopPlate",outerCell);
-  monoShutterB->splitObject(System,"MidCutB",outerCell);
-
+  const constructSystem::portItem& VPA=viewTube->getPort(2);
+  VPA.insertInCell(System,prevCell);
   return;
+
 }
 
 void
@@ -377,68 +280,104 @@ tomowiseExptLine::buildObjects(Simulation& System)
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
-  gateTubeA->createAll(System,*this,0);
-  outerCell=buildZone.createUnit(System,*gateTubeA,2);
-  gateTubeA->insertInCell(System,outerCell);
+  bellowA->createAll(System,*this,0);
+  outerCell=buildZone.createUnit(System,*bellowA,2);
+  bellowA->insertAllInCell(System,outerCell);
 
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,buildZone,*gateTubeA,"back",*bellowA);
-
-  outerCell=constructSystem::constructUnit
-    (System,buildZone,*bellowA,"back",*viewTube);
-
-  cooledScreen->setBeamAxis(*viewTube,1);
-  cooledScreen->createAll(System,*viewTube,4);
-  cooledScreen->insertInCell("Outer",System,outerCell);
-  cooledScreen->insertInCell("Connect",System,viewTube->getCell("Plate"));
-  cooledScreen->insertInCell("Connect",System,viewTube->getCell("Void"));
-  cooledScreen->insertInCell("Payload",System,viewTube->getCell("Void"));
+    (System,buildZone,*bellowA,"back",*filterBoxA);
 
   constructSystem::constructUnit
-    (System,buildZone,*viewTube,"back",*pipeA);
+    (System,buildZone,*filterBoxA,"back",*bellowB);
 
   constructSystem::constructUnit
-    (System,buildZone,*pipeA,"back",*hpJaws);
+    (System,buildZone,*bellowB,"back",*crossA);
 
   constructSystem::constructUnit
-    (System,buildZone,*hpJaws,"back",*pipeB);
+    (System,buildZone,*crossA,"back",*bellowC);
 
   constructSystem::constructUnit
-    (System,buildZone,*pipeB,"back",*gateTubeB);
+    (System,buildZone,*bellowC,"back",*jawBox);
 
   constructSystem::constructUnit
-    (System,buildZone,*gateTubeB,"back",*pipeC);
-
-  constructCRL(System,*pipeC,"back");
+    (System,buildZone,*jawBox,"back",*connectA);
 
   constructSystem::constructUnit
-    (System,buildZone,*crlPipeD,"back",*endPipe);
+    (System,buildZone,*connectA,"back",*clrTubeA);
 
   constructSystem::constructUnit
-    (System,buildZone,*endPipe,"back",*mirrorBoxA);
+    (System,buildZone,*clrTubeA,"back",*connectB);
 
-  mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
-			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+  constructSystem::constructUnit
+    (System,buildZone,*connectB,"back",*pipeA);
 
+  constructSystem::constructUnit
+    (System,buildZone,*pipeA,"back",*sixPortA);
 
-  // main exits built
+  constructSystem::constructUnit
+    (System,buildZone,*sixPortA,"back",*cylGateA);
 
-  if (exptType=="Sample")
-    constructSampleStage(System,*mirrorBoxA,"back");
-  else if (exptType=="Diffraction")
-    constructDiffractionStage(System,*mirrorBoxA,"back");
-  else if (exptType=="ByPass")
-    constructByPassStage(System);
-  else
-    throw ColErr::InContainerError<std::string>(exptType,"exptType");
+  constructSystem::constructUnit
+    (System,buildZone,*cylGateA,"back",*pipeB);
 
-  buildZone.createUnit(System);
+  constructSystem::constructUnit
+    (System,buildZone,*pipeB,"back",*bellowD);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowD,"back",*sixPortB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*sixPortB,"back",*pipeC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*pipeC,"back",*cylGateB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*cylGateB,"back",*sixPortC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*sixPortC,"back",*pipeD);
+
+  constructSystem::constructUnit
+    (System,buildZone,*pipeD,"back",*connectC);
+
+  constructSystem::constructUnit
+    (System,buildZone,*connectC,"back",*clrTubeB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*clrTubeB,"back",*connectD);
+
+  constructViewScreen(System,*connectD,"back");
+
+  constructSystem::constructUnit
+    (System,buildZone,*viewTube,"back",*bellowE);
+
+  constructSystem::constructUnit
+    (System,buildZone,*bellowE,"back",*crossB);
+
+  constructSystem::constructUnit
+    (System,buildZone,*crossB,"back",*adjustPipe);
+
+  constructSystem::constructUnit
+    (System,buildZone,*adjustPipe,"back",*pipeE);
+
+  constructSystem::constructUnit
+    (System,buildZone,*pipeE,"back",*connectE);
+
+  constructSystem::constructUnit
+    (System,buildZone,*connectE,"back",*endPipe);
+
+  //  buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
+
+  sample->setNoInsert();
+  sample->createAll(System,*endPipe,"back");
+
   setCell("LastVoid",buildZone.getLastCell("Unit"));
-  lastComp=monoShutterB;
+  lastComp=endPipe;
 
   return;
 }

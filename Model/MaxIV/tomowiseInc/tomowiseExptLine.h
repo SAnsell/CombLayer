@@ -3,7 +3,7 @@
 
  * File:   tomowiseInc/tomowiseExptLine.h
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,12 @@ namespace insertSystem
   class insertSphere;
 }
 
+namespace tdcSystem
+{
+  class SixPortTube;
+  class YagScreen;
+}
+
 namespace constructSystem
 {
   class VacuumPipe;
@@ -36,19 +42,18 @@ namespace constructSystem
   class PortTube;
   class PipeTube;
   class GateValveCylinder;
-  class FlangePlate;
 }
 
 namespace xraySystem
 {
   class CylGateValve;
   class MonoBox;
+  class FourPortTube;
   class BoxJaws;
   class ViewScreenTube;
   class CRLTube;
   class ConnectorTube;
-  class RoundMonoShutter;
-
+  class tomowiseDetectorTube;
 
 
 
@@ -75,84 +80,80 @@ class tomowiseExptLine :
   attachSystem::BlockZone buildZone;
   int outerMat;                         ///< outermaterial if used
 
-  std::string exptType;        ///< experiment type [bypass/diffract/sample]
-
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
-  /// first gate valve
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// view screen tube
-  std::shared_ptr<xraySystem::ViewScreenTube> viewTube;
-  /// view screen
-  std::shared_ptr<xraySystem::CooledScreen> cooledScreen;
-  /// connector to collimator
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  /// filterbox
+  std::shared_ptr<xraySystem::MonoBox> filterBoxA;
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowB;
+  /// cross way
+  std::shared_ptr<xraySystem::FourPortTube> crossA;
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowC;
   /// jaws
-  std::shared_ptr<xraySystem::HPJaws> hpJaws;
-  /// connector from collimator
+  std::shared_ptr<xraySystem::BoxJaws> jawBox;
+  /// Pipe from jaws
+  std::shared_ptr<xraySystem::ConnectorTube> connectA;
+  // diff pump
+  std::shared_ptr<xraySystem::CRLTube> clrTubeA;
+  /// Pipe from diff
+  std::shared_ptr<xraySystem::ConnectorTube> connectB;
+  /// Pipe to gauge system [segment 12]
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  /// Six port gauget etc port
+  std::shared_ptr<tdcSystem::SixPortTube> sixPortA;
+  /// Cylinder gate valve [with square top]
+  std::shared_ptr<constructSystem::GateValveCylinder> cylGateA;
+  /// Pipe from gauge system
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-  /// second gate valve
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
-  /// connector to CRL
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowD;
+  /// Six port gauget etc port
+  std::shared_ptr<tdcSystem::SixPortTube> sixPortB;
+  /// Pipe from gauge system
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
-  /// Addaptor to CRL tube
-  std::shared_ptr<constructSystem::VacuumPipe> crlPipeA;
-  /// First CRL System
-  std::shared_ptr<xraySystem::CRLTube> crlTubeA;
-  /// Mid  CRL pipe
-  std::shared_ptr<constructSystem::VacuumPipe> crlPipeB;
-  /// Second CRL System
-  std::shared_ptr<xraySystem::CRLTube> crlTubeB;
-  /// End  CRL pipe [note skip C as not in expt design]
-  std::shared_ptr<constructSystem::VacuumPipe> crlPipeD;
+  /// Cylinder gate valve [with square top]
+  std::shared_ptr<constructSystem::GateValveCylinder> cylGateB;
+  /// Six port gauget etc port
+  std::shared_ptr<tdcSystem::SixPortTube> sixPortC;
+  /// Short Pipe from gauge system
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+  // Segment 13 :
+  /// Pipe from gate value
+  std::shared_ptr<xraySystem::ConnectorTube> connectC;
+  // second CRL tube
+  std::shared_ptr<xraySystem::CRLTube> clrTubeB;
+  /// Pipe from diff
+  std::shared_ptr<xraySystem::ConnectorTube> connectD;
+  /// view screen
+  std::shared_ptr<constructSystem::PipeTube> viewTube;
+  /// bellow to collimator
+  std::shared_ptr<constructSystem::Bellows> bellowE;
+  /// cross way
+  std::shared_ptr<xraySystem::FourPortTube> crossB;
+  /// Adjustable pipe
+  std::shared_ptr<constructSystem::VacuumPipe> adjustPipe;
+  /// End pipe on adjustable
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+  /// sample jaws
+  std::shared_ptr<xraySystem::BoxJaws> jawBoxB;
+  /// Pipe to short nose
+  std::shared_ptr<xraySystem::ConnectorTube> connectE;
   /// Narrow end pipe
   std::shared_ptr<constructSystem::VacuumPipe> endPipe;
-  /// Mirror box
-  std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
-  /// Mirror front
-  std::shared_ptr<xraySystem::Mirror> mirrorFrontA;
-  /// Mirror back
-  std::shared_ptr<xraySystem::Mirror> mirrorBackA;
-
-  /// The main mono shutter
-  std::shared_ptr<xraySystem::RoundMonoShutter> monoShutterB;
-
-  //DIFFRACT:
-  /// Tube to diffraction
-  std::shared_ptr<constructSystem::VacuumPipe> diffractTube;
-
-  //BYPASS:
-  /// Tube to diffraction
-  std::shared_ptr<constructSystem::VacuumPipe> byPassTube;
-
-  /// SAMPLE
-  /// End point on mirror box
-  std::shared_ptr<constructSystem::FlangePlate> endWindow;
-  /// Tube
-  std::shared_ptr<constructSystem::VacuumPipe> sampleTube;
   /// Narrow end pipe
   std::shared_ptr<insertSystem::insertSphere> sample;
-
-
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
-  void constructCRL(Simulation&,
-		    const attachSystem::FixedComp&,
-		    const std::string&);
-  void constructSampleStage(Simulation&,
-			    const attachSystem::FixedComp&,
-			    const std::string&);
-  void constructDiffractionStage(Simulation&,
-				 const attachSystem::FixedComp&,
-				 const std::string&);
-  void constructByPassStage(Simulation&);
-
+  void constructViewScreen(Simulation&,
+			   const attachSystem::FixedComp&,
+			   const std::string&);
 
   void populate(const FuncDataBase&) override;
   void createSurfaces();

@@ -88,6 +88,8 @@
 #include "MovableSafetyMaskGenerator.h"
 #include "MLMDetailGenerator.h"
 #include "YagScreenGenerator.h"
+#include "ConnectorGenerator.h"
+#include "BoxJawsGenerator.h"
 
 // References
 // see R3Common/R3RingVariables.cxx
@@ -116,7 +118,7 @@ void opticsHutVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&,const double);
 void opticsVariables(FuncDataBase&,const std::string&);
 void exptLineVariables(FuncDataBase&,const std::string&);
-void exptLineBVariables(FuncDataBase&,const std::string&);
+  //void exptLineBVariables(FuncDataBase&,const std::string&);
 void shieldVariables(FuncDataBase&,const std::string&);
 void monoShutterBVariables(FuncDataBase&,const std::string&);
 
@@ -1145,24 +1147,24 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 
 
 void
-exptLineVariables(FuncDataBase& Control,
+exptVariables(FuncDataBase& Control,
 	      const std::string& beamName)
-  /*
-    Components in the first experimental hutch
+/*
+    Vacuum expt components in the optics hutch
     \param Control :: Function data base
     \param beamName :: Name of beamline
   */
 {
-  ELog::RegMethod RegA("tomowiseVariables[F]","exptVariables");
+  ELog::RegMethod RegA("formaxVariables[F]","exptVariables");
 
-  setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::SixPortGenerator CrossGen;
+  setVariable::MonoBoxGenerator VBoxGen;
+  setVariable::BoxJawsGenerator BJGen;
+  setVariable::ConnectorGenerator CTGen;
   setVariable::CRLTubeGenerator DPGen;
-  setVariable::ViewScreenGenerator VTGen;
-  setVariable::CooledScreenGenerator CoolGen;
-  setVariable::CylGateValveGenerator GVGen;
-  setVariable::HPJawsGenerator HPGen;
-  setVariable::FlangePlateGenerator FPGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::SixPortGenerator SixGen;
 
   PipeGen.setNoWindow();
   PipeGen.setMat("Stainless304");
@@ -1170,117 +1172,103 @@ exptLineVariables(FuncDataBase& Control,
 
   const std::string preName(beamName+"ExptLine");
 
-  GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
-
-  // ByPass / Sample / Diffraction [options]
-  Control.addVariable(preName+"ExptType","ByPass");
   Control.addVariable(preName+"OuterLeft",50.0);
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);
+  Control.addVariable(preName+"OuterMat","Void");
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowA",7.5);
 
-  VTGen.setPortBCF<setVariable::CF40>();
-  VTGen.setPortBLen(22.5);
-  VTGen.generateView(Control,preName+"ViewTube");
+  BellowGen.generateBellow(Control,preName+"BellowA",15.0);
 
-  CoolGen.generateScreen(Control,preName+"CooledScreen",1);  // in beam
-  Control.addVariable(preName+"CooledScreenYAngle",-90.0);
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setCF<CF40>();
+  VBoxGen.setPortLength(3.5,3.5); // La/Lb
+  VBoxGen.setLids(3.5,1.5,1.5); // over/base/roof - all values are measured
+  VBoxGen.generateBox(Control,preName+"FilterBoxA",5.8,4.5,4.5,20.0);
 
-  PipeGen.generatePipe(Control,preName+"PipeA",7.5);
+  BellowGen.generateBellow(Control,preName+"BellowB",7.5);
 
-  HPGen.setMain(24.0);
-  HPGen.generateJaws(Control,preName+"HPJaws",0.3,0.3);
+  CrossGen.setCF<setVariable::CF40>();
+  CrossGen.setLength(7.0,7.0);
+  CrossGen.setXSideLength(6.5,6.5);
+  CrossGen.setZSideLength(6.5,6.5);
+  CrossGen.generateSixPort(Control,preName+"CrossA");
 
-  PipeGen.generatePipe(Control,preName+"PipeB",7.5);
-  GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
-  PipeGen.generatePipe(Control,preName+"PipeC",15.0);
+  BellowGen.generateBellow(Control,preName+"BellowC",7.5);
 
-  crlPackage(Control,preName);
+  BJGen.generateJaws(Control,preName+"JawBox",0.8,0.8);
 
-  PipeGen.generatePipe(Control,preName+"EndPipe",15.0);
-  tomowiseVar::mirrorBox(Control,preName,"A",-0.146,0.146);
+  CTGen.generatePipe(Control,preName+"ConnectA",20.0);
 
-  FPGen.setCF<setVariable::CF63>(1.0);
-  FPGen.setWindow(2.0,0.05,"Diamond");
-  FPGen.generateFlangePlate(Control,preName+"EndWindow");
+  DPGen.generateLens(Control,preName+"CRLTubeA",1);
 
-  Control.addVariable(preName+"SampleYStep", 185.0); // [2]
+  CTGen.generatePipe(Control,preName+"ConnectB",20.0);
+
+  PipeGen.generatePipe(Control,preName+"PipeA",12.5);
+
+  SixGen.setCF<CF40>();
+  SixGen.setLength(6.0,6.0);
+  SixGen.setXSideLength(5.0,5.0);
+  SixGen.setZSideLength(5.0,5.0);
+  SixGen.generateSixPort(Control,preName+"SixPortA");
+
+
+  setVariable::GateValveGenerator CGateGen;
+  CGateGen.setBladeMat("Aluminium");
+  CGateGen.setBladeThick(0.8);
+  CGateGen.setLength(1.2);
+  CGateGen.setCylCF<CF40>();
+  CGateGen.generateValve(Control,preName+"CylGateA",0.0,0);
+
+  PipeGen.generatePipe(Control,preName+"PipeB",118.0-15);
+
+  BellowGen.generateBellow(Control,preName+"BellowD",15.0);
+
+  SixGen.generateSixPort(Control,preName+"SixPortB");
+
+  PipeGen.generatePipe(Control,preName+"PipeC",118.0-15);
+
+  CGateGen.generateValve(Control,preName+"CylGateB",0.0,0);
+
+  SixGen.generateSixPort(Control,preName+"SixPortC");
+
+  PipeGen.generatePipe(Control,preName+"PipeD",12.5);
+
+  CTGen.generatePipe(Control,preName+"ConnectC",20.0);
+
+  DPGen.generateLens(Control,preName+"CRLTubeB",1);
+
+  CTGen.generatePipe(Control,preName+"ConnectD",20.0);
+
+  viewPackage(Control,preName);
+
+  BellowGen.generateBellow(Control,preName+"BellowE",15.0);
+
+  CrossGen.generateSixPort(Control,preName+"CrossB");
+
+  PipeGen.generatePipe(Control,preName+"AdjustPipe",33.0);
+
+  PipeGen.generatePipe(Control,preName+"PipeE",7.5);
+
+  BJGen.generateJaws(Control,preName+"JawBoxB",0.8,0.8);
+
+  CTGen.setOuter(2.5,0.5);
+  CTGen.setPort(CF40::flangeRadius,0.5*CF40::flangeLength);
+  CTGen.generatePipe(Control,preName+"ConnectE",5.0);
+
+  PipeGen.setCF<CF16>();
+  PipeGen.setAFlangeCF<CF40>();
+  PipeGen.setBFlange(1.1,0.1);
+  PipeGen.generatePipe(Control,preName+"EndPipe",41.0);
+
+  Control.addVariable(preName+"SampleYStep", 25.0); // [2]
   Control.addVariable(preName+"SampleRadius", 5.0); // [2]
   Control.addVariable(preName+"SampleMat", "Stainless304");
 
-  monoShutterBVariables(Control,preName);
-  PipeGen.generatePipe(Control,preName+"ExitPipe",35.0);
-
-
-  // Diffraciton stage
-  PipeGen.setAFlangeCF<CF63>();
-  PipeGen.generatePipe(Control,preName+"DiffractTube",125.0);
-  // bypass stage
-
-  PipeGen.generatePipe(Control,preName+"ByPassTube",435.0);
-  return;
-}
-
-void
-exptLineBVariables(FuncDataBase& Control,
-		   const std::string& beamName)
-  /*
-    Components in the second experimental hutch
-    \param Control :: Function data base
-    \param beamName :: Name of beamline
-  */
-{
-  ELog::RegMethod RegA("tomowiseVariables[F]","exptLineBVariables");
-
-  setVariable::PipeGenerator PipeGen;
-  setVariable::BellowGenerator BellowGen;
-  setVariable::ViewScreenGenerator VTGen;
-  setVariable::CooledScreenGenerator CoolGen;
-  setVariable::CylGateValveGenerator GVGen;
-  setVariable::HPJawsGenerator HPGen;
-
-  PipeGen.setNoWindow();
-  PipeGen.setMat("Stainless304");
-  PipeGen.setCF<CF40>();
-
-  const std::string exptName(beamName+"ExptLineB");
-  Control.addVariable(exptName+"OuterLeft",50.0);
-  Control.addVariable(exptName+"OuterRight",50.0);
-  Control.addVariable(exptName+"OuterTop",60.0);
-
-  GVGen.generateGate(Control,exptName+"GateTubeA",0);  // open
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,exptName+"BellowA",7.5);
-
-  VTGen.setPortBCF<setVariable::CF40>();
-  VTGen.setPortBLen(22.5);
-  VTGen.generateView(Control,exptName+"ViewTube");
-
-  CoolGen.generateScreen(Control,exptName+"CooledScreen",1);  // in beam
-  Control.addVariable(exptName+"CooledScreenYAngle",-90.0);
-
-  PipeGen.generatePipe(Control,exptName+"PipeA",7.5);
-
-  HPGen.setMain(24.0);
-  HPGen.generateJaws(Control,exptName+"HPJaws",0.3,0.3);
-
-  PipeGen.generatePipe(Control,exptName+"PipeB",7.5);
-
-  Control.addVariable(exptName+"SampleYStep", 185.0); // [2]
-  Control.addVariable(exptName+"SampleRadius", 5.0); // [2]
-  Control.addVariable(exptName+"SampleMat", "Stainless304");
-
-  Control.addVariable(exptName+"BeamStopYStep",475.7-12.5);
-  Control.addVariable(exptName+"BeamStopRadius",10.0);
-  Control.addVariable(exptName+"BeamStopThick",3.0);
-  Control.addVariable(exptName+"BeamStopMat","Stainless304");
 
   return;
 }
-
 
 }  // NAMESPACE tomowiseVar
 
@@ -1323,8 +1311,8 @@ TOMOWISEvariables(FuncDataBase& Control)
   tomowiseVar::shieldVariables(Control,"TomoWISE");
 
   tomowiseVar::exptHutVariables(Control,"TomoWISE",0.0);
-  tomowiseVar::exptLineVariables(Control,"TomoWISE");
-  tomowiseVar::exptLineBVariables(Control,"TomoWISE");
+  tomowiseVar::exptVariables(Control,"TomoWISE");
+  //  tomowiseVar::exptLineBVariables(Control,"TomoWISE");
   //  tomowiseVar::detectorTubePackage(Control,"TomoWISE");
 
   return;
