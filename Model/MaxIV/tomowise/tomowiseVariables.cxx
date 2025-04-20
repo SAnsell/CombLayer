@@ -1148,7 +1148,7 @@ TOMOWISEvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"TomoWISEJoinPipe",130.0);
+  PipeGen.generatePipe(Control,"TomoWISEJoinPipe",145.0);
   Control.addVariable("TomoWISEJoinPipeFlipX",1);
 
   tomowiseVar::opticsHutVariables(Control,"TomoWISEOpticsHut");

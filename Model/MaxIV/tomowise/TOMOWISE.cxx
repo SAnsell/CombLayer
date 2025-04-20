@@ -170,9 +170,11 @@ TOMOWISE::build(Simulation& System,
 
   if (stopPoint=="opticsHut") return;
 
-  // joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
-  // joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
-  // joinPipe->createAll(System,*frontBeam,2);
+  joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
+  joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addInsertCell("FlangeA",wallLead->getCell("Void"));
+  joinPipe->addInsertCell("FlangeA",wallLead->getCell("SteelVoid"));
+  joinPipe->createAll(System,*frontBeam,2);
 
   // opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
   // opticsBeam->addInsertCell(opticsHut->getCell("Void"));
