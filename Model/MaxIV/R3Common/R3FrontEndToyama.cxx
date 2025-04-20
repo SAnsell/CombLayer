@@ -683,8 +683,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   buildExtras(System);
   setCell("MasterVoid",outerCell);
-  //  lastComp=proxiShieldBPipe;
-  lastComp=bremCollPipe;
+  lastComp=proxiShieldBPipe;
 
   return;
 }
