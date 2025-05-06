@@ -153,6 +153,7 @@ DANMAX::build(Simulation& System,
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
+  wallLead->setCutSurf("Ring",r3Ring->getSurfRule("#FlatInner",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
 
