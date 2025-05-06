@@ -308,7 +308,7 @@ hdcmPackage(FuncDataBase& Control,
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
   MBoxGen.setBPortOffset(1.0,0.0);    // note -1mm from crystal offset
   // radius : Height / depth  [need height = 0]
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",30.0,0.0,16.0);
+  MBoxGen.generateBox(Control,monoKey+"DCMVessel",30.0,0.0,16.0);
 
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
@@ -1077,10 +1077,10 @@ opticsVariables(FuncDataBase& Control,
 
   mirrorMonoPackage(Control,preName);
 
-  BellowGen.generateBellow(Control,preName+"BellowD",15.0);
-  PipeGen.generatePipe(Control,preName+"PipeC",50.0);
+  BellowGen.generateBellow(Control,preName+"BellowD",10.0);
+  PipeGen.generatePipe(Control,preName+"PipeC",50.0+10-56.073014);
   GVGen.generateGate(Control,preName+"GateTubeC",0);  // open
-  BellowGen.generateBellow(Control,preName+"BellowE",15.0);
+  BellowGen.generateBellow(Control,preName+"BellowE",10.0);
 
   hdcmPackage(Control,preName);
 

@@ -136,7 +136,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   gateTubeC(new xraySystem::CylGateValve(newName+"GateTubeC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
 
-  monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
+  monoVessel(new xraySystem::DCMTank(newName+"DCMVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
 
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
