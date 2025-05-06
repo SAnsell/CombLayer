@@ -132,6 +132,7 @@ class tomowiseOpticsLine :
   std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
   /// bellow to to mono
   std::shared_ptr<constructSystem::Bellows> bellowC;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeBA; // a dummy pipe before power filter
 
   // PART 4: [MML]
   /// MirrorMonoBox

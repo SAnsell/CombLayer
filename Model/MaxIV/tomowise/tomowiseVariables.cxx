@@ -1073,6 +1073,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"PipeB",7.5);
   GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
   BellowGen.generateBellow(Control,preName+"BellowC",15.0);
+  PipeGen.generatePipe(Control,preName+"PipeBA",7.5 + 36.723014); // dummy length to place the first mirror correctly (TomoWISEOpticsLineMLMXstalA) at 2590 cm
 
   mirrorMonoPackage(Control,preName);
 
