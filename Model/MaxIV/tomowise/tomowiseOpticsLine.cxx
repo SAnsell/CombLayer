@@ -114,7 +114,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  whiteCollA(new xraySystem::SquareFMask(newName+"WhiteCollA")),
+  fm1(new xraySystem::SquareFMask(newName+"FM1")),
   bremHolderA(new xraySystem::IonGauge(newName+"BremHolderA")),
   bremCollA(new xraySystem::BremBlock(newName+"BremCollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
@@ -186,7 +186,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeA);
   OR.addObject(pipeA);
   OR.addObject(bellowA);
-  OR.addObject(whiteCollA);
+  OR.addObject(fm1);
   OR.addObject(bellowB);
   OR.addObject(bremHolderA);
   OR.addObject(bremCollA);
@@ -504,7 +504,7 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
     preInsert->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,buildZone,*pipeInit,"back",*triggerPipe);
+    (System,buildZone,*pipeInit,"back",*triggerPipe); // The trigger unit measures the pressure. If elevated - closes the fast closing valve in the front-end.
 
   constructSystem::constructUnit
     (System,buildZone,*triggerPipe,"back",*gateTubeA);
@@ -516,10 +516,10 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*pipeA,"back",*bellowA);
 
   constructSystem::constructUnit
-    (System,buildZone,*bellowA,"back",*whiteCollA);
+    (System,buildZone,*bellowA,"back",*fm1);
 
   constructSystem::constructUnit
-    (System,buildZone,*whiteCollA,"back",*bremHolderA);
+    (System,buildZone,*fm1,"back",*bremHolderA);
 
   bremCollA->addInsertCell(bremHolderA->getCell("Void"));
   bremCollA->createAll(System,*bremHolderA,0);

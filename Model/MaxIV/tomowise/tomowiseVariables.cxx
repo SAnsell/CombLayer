@@ -1034,7 +1034,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,preName+"PipeA",20.0);
+  PipeGen.generatePipe(Control,preName+"PipeA",24.4); // to put FM1 at its correct place
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowA",12.6);
@@ -1046,14 +1046,21 @@ opticsVariables(FuncDataBase& Control,
   //  FMaskGen.setMinAngleSize(6.6,FM2dist, 100.0,100.0 );
   FMaskGen.setMinSize(6.6,0.1,0.1);
   // step to +7.5 to make join with fixedComp:linkpt
-  FMaskGen.generateColl(Control,preName+"WhiteCollA",7.5,10.0);
+  FMaskGen.generateColl(Control,preName+"FM1",7.5,12.0);
 
   IGGen.setCF<CF150>();
-  IGGen.setMainLength(12.0,8.0);
+  IGGen.setMainLength(12.0-1.65,8.0);
   IGGen.generateTube(Control,preName+"BremHolderA");
 
-  MaskGen.setAperatureAngle(7.0,0.2,0.2,5.0,5.0);
+  constexpr double bcAlength = 8.0;
+  MaskGen.setLength(bcAlength);
+  // x-gap size: 1 mrad (2.386 cm)    + 0.2 cm (safety margin) \approx 2.6
+  //          we will vary the safety margin
+  // y-gap size: 0.1 mrad (0.2386 cm) + 0.1 cm (safety margin) \approx 0.35
+  MaskGen.setAperatureAngle(bcAlength*2./3.,  2.6, 0.35, 2*1.5, 2*2.5);
   MaskGen.generateBlock(Control,preName+"BremCollA",-4.0);
+  Control.addVariable(preName+"BremCollAHeight",10.0);
+  Control.addVariable(preName+"BremCollAWidth",10.0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowB",7.50);
@@ -1300,7 +1307,7 @@ TOMOWISEvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"TomoWISEJoinPipe",145.0);
+  PipeGen.generatePipe(Control,"TomoWISEJoinPipe",145.0+31.97);
   Control.addVariable("TomoWISEJoinPipeFlipX",1);
 
   tomowiseVar::opticsHutVariables(Control,"TomoWISEOpticsHut");

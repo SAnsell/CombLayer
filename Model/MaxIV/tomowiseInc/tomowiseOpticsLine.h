@@ -111,7 +111,7 @@ class tomowiseOpticsLine :
   /// bellow to collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Brem for collimator
-  std::shared_ptr<xraySystem::SquareFMask> whiteCollA;
+  std::shared_ptr<xraySystem::SquareFMask> fm1;
   /// Ion Gauge
   std::shared_ptr<xraySystem::IonGauge> bremHolderA;
   /// Brem collimator
