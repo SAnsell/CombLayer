@@ -371,6 +371,36 @@ diag2Package(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,diagKey+"BellowFA",10.0);
 
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+
+  const std::string viewName=diagKey+"ViewTubeA";
+  SimpleTubeGen.setCF<CF40>();
+  SimpleTubeGen.setCap(0,0);
+  //  SimpleTubeGen.setBFlangeCF<CF150>();
+  SimpleTubeGen.generateTube(Control,viewName,25.0);
+  Control.addVariable(viewName+"NPorts",4);   // beam ports
+
+  PItemGen.setPlate(4.0,"Stainless304");
+
+  PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+5.0);
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,viewName+"Port0",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+
+  PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+10.0);
+  PItemGen.generatePort(Control,viewName+"Port1",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,-1));
+
+  PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+10.0);
+  PItemGen.generatePort(Control,viewName+"Port2",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(-1,-1,0));
+
+  PItemGen.setCF<setVariable::CF40>(CF40::outerRadius+10.0);
+  PItemGen.generatePort(Control,viewName+"Port3",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
+
+
+
   return;
 }
 

@@ -147,6 +147,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
   hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
   bellowFA(new constructSystem::Bellows(newName+"BellowFA")),
+  viewTubeA(new constructSystem::PipeTube(newName+"ViewTubeA")),
 
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
   mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
@@ -220,6 +221,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(bremCollB);
   OR.addObject(hpJawsA);
   OR.addObject(bellowFA);
+  OR.addObject(viewTubeA);
 
   OR.addObject(mirrorBoxA);
   OR.addObject(mirrorFrontA);
@@ -301,6 +303,36 @@ tomowiseOpticsLine::createSurfaces()
 }
 
 void
+tomowiseOpticsLine::constructViewScreen(Simulation& System,
+				    const attachSystem::FixedComp& initFC,
+				    const std::string& sideName)
+  /*!
+    Sub build of the first viewing package unit
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("tomowiseOpticsLine","constructViewScreen");
+
+  viewTubeA->setOuterVoid();
+
+  constructSystem::constructUnit(System,buildZone,initFC,sideName,*viewTubeA);
+  viewTubeA->intersectPorts(System,0,2);
+  viewTubeA->intersectPorts(System,1,2);
+  viewTubeA->intersectPorts(System,0,3);
+  viewTubeA->intersectPorts(System,1,3);
+
+  // FAKE insertcell: required
+  //  int prevCell(buildZone.getLastCell("Unit"));
+  // const constructSystem::portItem& VPA=viewTubeA->getPort(2);
+  // VPA.insertInCell(System,prevCell);
+  return;
+
+}
+
+
+void
 tomowiseOpticsLine::constructMirrorMono(Simulation& System,
 				      const attachSystem::FixedComp& initFC,
 				      const std::string& sideName)
@@ -370,6 +402,7 @@ tomowiseOpticsLine::constructDiag2(Simulation& System,
   hpJawsA->setFlangeJoin();
   constructSystem::constructUnit(System,buildZone,*bremTubeA,"back",*hpJawsA);
   constructSystem::constructUnit(System,buildZone,*hpJawsA,"back",*bellowFA);
+  constructViewScreen(System,*bellowFA,"back");
 
 
   return;
@@ -605,8 +638,7 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   constructDiag2(System,*gateTubeD,"back");
 
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowFA,"back",*mirrorBoxA);
+  constructSystem::constructUnit(System,buildZone,*viewTubeA,"back",*mirrorBoxA);
 
   mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));

@@ -171,6 +171,8 @@ class tomowiseOpticsLine :
   std::shared_ptr<xraySystem::HPJaws> hpJawsA;
   std::shared_ptr<constructSystem::Bellows> bellowFA;
 
+  std::shared_ptr<constructSystem::PipeTube> viewTubeA;
+
   /// Mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;
   /// Mirror front
@@ -221,6 +223,11 @@ class tomowiseOpticsLine :
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
+
+  void constructViewScreen(Simulation&,
+			   const attachSystem::FixedComp&,
+			   const std::string&);
+
 
   void constructMirrorMono(Simulation&,const attachSystem::FixedComp&,
 			   const std::string&);
