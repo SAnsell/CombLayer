@@ -351,8 +351,16 @@ diag2Package(FuncDataBase& Control,
 
   BTGen.generateTube(Control,diagKey+"BremTubeA");
 
-  MaskGen.setAperature(-1,0.5,0.5,0.5,0.5,0.5,0.5);
+  MaskGen.setLength(8.0);
+  // x-gap size: 1 mrad (2.806 cm)    + 0.2 cm (safety margin) \approx 3.0
+  //          we will vary the safety margin
+  constexpr double xgap = 3.0;
+  // y-gap size: 0.1 mrad (0.2806 cm) + 0.2 cm (safety margin) \approx 0.5
+  constexpr double ygap = 0.5;
+  MaskGen.setAperature(-1,xgap,ygap,xgap,ygap,xgap,ygap);
   MaskGen.generateBlock(Control,diagKey+"BremCollB",-4.0);
+  Control.addVariable(diagKey+"BremCollBHeight",10.0);
+  Control.addVariable(diagKey+"BremCollBWidth",10.0);
 
   HPGen.generateJaws(Control,diagKey+"HPJawsA",0.3,0.3);
 
@@ -1084,8 +1092,8 @@ opticsVariables(FuncDataBase& Control,
 
   hdcmPackage(Control,preName);
 
-  BellowGen.generateBellow(Control,preName+"BellowF",15.0);
-  PipeGen.generatePipe(Control,preName+"PipeD",12.5);
+  BellowGen.generateBellow(Control,preName+"BellowF",15.0-5-4); // length adjusted to place BremCollB
+  PipeGen.generatePipe(Control,preName+"PipeD",12.5+5-14.45);// length adjusted to place BremCollB
   GVGen.generateGate(Control,preName+"GateTubeD",0);  // open
 
   diag2Package(Control,preName);
