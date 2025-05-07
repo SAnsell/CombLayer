@@ -306,7 +306,7 @@ hdcmPackage(FuncDataBase& Control,
   //
   MBoxGen.setCF<CF40>();   // set ports
   MBoxGen.setPortLength(7.5,7.5); // La/Lb
-  MBoxGen.setBPortOffset(1.0,0.0);    // note -1mm from crystal offset
+  MBoxGen.setBPortOffset(0.0,0.0);    // Both ports without offset to allow two operation modes in TomoWISE (whte beam and mono beam)
   // radius : Height / depth  [need height = 0]
   MBoxGen.generateBox(Control,monoKey+"DCMVessel",30.0,0.0,16.0);
 
@@ -315,7 +315,7 @@ hdcmPackage(FuncDataBase& Control,
   //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
 
   const double outerRadius(30.5);
-  const std::string portName=monoKey+"MonoVessel";
+  const std::string portName=monoKey+"DCMVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",1);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(outerRadius+5.0);
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
@@ -396,6 +396,7 @@ diag3Package(FuncDataBase& Control,
   BellowGen.generateBellow(Control,diagKey+"BellowG",15.0);
 
   GVGen.generateGate(Control,diagKey+"GateTubeE",0);  // open
+  Control.addVariable(diagKey+"GateTubeEPortRadius", 1.9);
 
   VSGen.generateView(Control,diagKey+"ViewTube");
   YagGen.generateScreen(Control,diagKey+"YagScreen",1);  // in beam
@@ -455,6 +456,7 @@ diag4Package(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
 
   GVGen.generateGate(Control,diagKey+"GateTubeF",0);
+  Control.addVariable(diagKey+"GateTubeFPortRadius", 1.9);
 
   VSGen.setPortBCF<CF40>();
   VSGen.generateView(Control,diagKey+"ViewTubeB");
@@ -1038,7 +1040,9 @@ opticsVariables(FuncDataBase& Control,
   TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
   TGen.generateTube(Control,preName+"TriggerUnit");
 
+  constexpr double gateTubePortRadius = 1.9;
   GVGen.generateGate(Control,preName+"GateTubeA",0);  // open
+  Control.addVariable(preName+"GateTubeAPortRadius", gateTubePortRadius);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
@@ -1080,6 +1084,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,preName+"PipeB",7.5);
   GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
+  Control.addVariable(preName+"GateTubeBPortRadius", gateTubePortRadius);
   BellowGen.generateBellow(Control,preName+"BellowC",15.0);
   PipeGen.generatePipe(Control,preName+"PipeBA",7.5 + 36.723014); // dummy length to place the first mirror correctly (TomoWISEOpticsLineMLMXstalA) at 2590 cm
 
@@ -1088,13 +1093,16 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowD",10.0);
   PipeGen.generatePipe(Control,preName+"PipeC",50.0+10-56.073014);
   GVGen.generateGate(Control,preName+"GateTubeC",0);  // open
+  Control.addVariable(preName+"GateTubeCPortRadius", gateTubePortRadius);
   BellowGen.generateBellow(Control,preName+"BellowE",10.0);
 
   hdcmPackage(Control,preName);
 
   BellowGen.generateBellow(Control,preName+"BellowF",15.0-5-4); // length adjusted to place BremCollB
   PipeGen.generatePipe(Control,preName+"PipeD",12.5+5-14.45);// length adjusted to place BremCollB
+
   GVGen.generateGate(Control,preName+"GateTubeD",0);  // open
+  Control.addVariable(preName+"GateTubeDPortRadius", gateTubePortRadius);
 
   diag2Package(Control,preName);
 
