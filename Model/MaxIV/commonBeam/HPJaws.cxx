@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/HPJaws.cxx.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -49,15 +49,15 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h" 
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
 #include "HPJaws.h"
 
@@ -78,7 +78,7 @@ HPJaws::HPJaws(const std::string& Key) :
 {}
 
 
-HPJaws::~HPJaws() 
+HPJaws::~HPJaws()
   /*!
     Destructor
   */
@@ -118,7 +118,7 @@ HPJaws::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   jawMat=ModelSupport::EvalMat<int>(Control,keyName+"JawMat");
-  
+
   return;
 }
 
@@ -127,7 +127,7 @@ void
 HPJaws::createSurfaces()
   /*!
     Create All the surfaces
-    Note: If BOTH front and Flange surfaces are given in 
+    Note: If BOTH front and Flange surfaces are given in
     ExternalCut. Then the frount is built AROUND the
   */
 {
@@ -137,7 +137,7 @@ HPJaws::createSurfaces()
   // main volume
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0),Y);
-  
+
   // Option A : Front defined
   if (!isActive("front"))
     {
@@ -159,11 +159,11 @@ HPJaws::createSurfaces()
 	(SMap,buildIndex+2,Origin+Y*(flangeLength+length/2.0),Y);
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
-  
+
   // flange
   ModelSupport::buildCylinder
     (SMap,buildIndex+107,Origin,Y,flangeInnerRadius);
-  
+
   // flange both sides:
   ModelSupport::buildCylinder
     (SMap,buildIndex+207,Origin,Y,flangeRadius);
@@ -177,10 +177,10 @@ HPJaws::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+sideThick);
 
-  // Jaw/MidWall 
+  // Jaw/MidWall
   ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*(dividerThick/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*(dividerThick/2.0),Y);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*(dividerGap/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*(dividerGap/2.0),X);
 
@@ -215,8 +215,8 @@ HPJaws::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+515,Origin-Z*(jawCornerEdge/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+516,Origin+Z*(jawCornerEdge/2.0),Z);
 
-  const Geometry::Vec3D POrg(Origin+X*jawZGap);
-  const Geometry::Vec3D MOrg(Origin-X*jawZGap);
+  const Geometry::Vec3D POrg(Origin+X*jawXGap);
+  const Geometry::Vec3D MOrg(Origin-X*jawXGap);
   ModelSupport::buildPlane(SMap,buildIndex+503,MOrg,X);
   ModelSupport::buildPlane(SMap,buildIndex+513,MOrg-X*jawCornerFar,X);
   ModelSupport::buildPlane(SMap,buildIndex+523,MOrg-X*jawFarLen,X);
@@ -250,7 +250,7 @@ HPJaws::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-207 107 -11");
       makeCell("FrontFlange",System,cellIndex++,wallMat,0.0,HR*frontHR);
-      
+
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 207 -11");
       makeCell("FrontOuter",System,cellIndex++,0,0.0,HR*frontHR);
 
@@ -262,7 +262,7 @@ HPJaws::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -22 402");
       makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
-      
+
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 21 -22");
       makeCell("Main",System,cellIndex++,wallMat,0.0,HR);
     }
@@ -273,12 +273,12 @@ HPJaws::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -22 402");
       makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
-      
+
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 7 -22");
       makeCell("Main",System,cellIndex++,wallMat,0.0,HR*frontHR);
     }
 
-  
+
   // back wall
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 207 22 -12");
   makeCell("BackWall",System,cellIndex++,wallMat,0.0,HR);
@@ -320,7 +320,7 @@ HPJaws::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"401 -301 -404 414 425 -415");
   makeCell("JawZLowVB",System,cellIndex++,voidMat,0.0,HR);
 
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"401 -301 403 -413 -426 416");
   makeCell("JawZHighVA",System,cellIndex++,voidMat,0.0,HR);
 
@@ -353,7 +353,7 @@ HPJaws::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"302 -402 -506 516 523 -513");
   makeCell("JawXLowVB",System,cellIndex++,voidMat,0.0,HR);
 
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"302 -402 505 -515 -524 514");
   makeCell("JawXHighVA",System,cellIndex++,voidMat,0.0,HR);
 
@@ -365,7 +365,7 @@ HPJaws::createObjects(Simulation& System)
   makeCell("JawXVoid",System,cellIndex++,voidMat,0.0,HR);
 
 
-  
+
   // outer void box:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-17 ");
   addOuterSurf(HR*frontHR*backHR);
@@ -373,7 +373,7 @@ HPJaws::createObjects(Simulation& System)
   return;
 }
 
-void 
+void
 HPJaws::createLinks()
   /*!
     Create the linked units
@@ -394,12 +394,12 @@ HPJaws::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("HPJaws","createAll");
-  
+
   populate(System.getDataBase());
 
   if (flangeJoin)
@@ -411,9 +411,9 @@ HPJaws::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
