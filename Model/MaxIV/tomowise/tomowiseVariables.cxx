@@ -364,6 +364,8 @@ diag2Package(FuncDataBase& Control,
 
   // Monochromatic beam slits
   HPGen.generateJaws(Control,diagKey+"HPJawsA",xgap,ygap);
+  // just a big gap to avoid cutting the beam. It does not exist in the CAD drawing
+  Control.addVariable(diagKey+"HPJawsADividerGap",12);
 
   return;
 }
