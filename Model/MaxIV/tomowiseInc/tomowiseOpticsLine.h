@@ -169,6 +169,7 @@ class tomowiseOpticsLine :
   std::shared_ptr<xraySystem::BremBlock> bremCollB;
   /// Jaws
   std::shared_ptr<xraySystem::HPJaws> hpJawsA;
+  std::shared_ptr<constructSystem::Bellows> bellowFA;
 
   /// Mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;

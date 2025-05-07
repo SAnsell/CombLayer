@@ -367,6 +367,10 @@ diag2Package(FuncDataBase& Control,
   // just a big gap to avoid cutting the beam. It does not exist in the CAD drawing
   Control.addVariable(diagKey+"HPJawsADividerGap",12);
 
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,diagKey+"BellowFA",10.0);
+
   return;
 }
 
