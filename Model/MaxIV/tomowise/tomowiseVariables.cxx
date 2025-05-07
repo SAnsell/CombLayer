@@ -362,7 +362,8 @@ diag2Package(FuncDataBase& Control,
   Control.addVariable(diagKey+"BremCollBHeight",10.0);
   Control.addVariable(diagKey+"BremCollBWidth",10.0);
 
-  HPGen.generateJaws(Control,diagKey+"HPJawsA",0.3,0.3);
+  // Monochromatic beam slits
+  HPGen.generateJaws(Control,diagKey+"HPJawsA",xgap,ygap);
 
   return;
 }
@@ -424,7 +425,7 @@ diag3Package(FuncDataBase& Control,
   MaskGen.setAperature(-1,0.5,0.5,0.5,0.5,0.5,0.5);
   MaskGen.generateBlock(Control,diagKey+"BremCollC",-4.0);
   Control.addVariable(diagKey+"BremCollCPreXAngle",90);
-  HPGen.generateJaws(Control,diagKey+"HPJawsB",0.3,0.3);
+  HPGen.generateJaws(Control,diagKey+"HPJawsB",0.6,0.6);
 
 
   BellowGen.setCF<setVariable::CF40>();
@@ -1222,7 +1223,7 @@ exptVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,preName+"BellowC",7.5);
 
-  BJGen.generateJaws(Control,preName+"JawBox",0.8,0.8);
+  BJGen.generateJaws(Control,preName+"JawBox",1.6,1.6);
 
   CTGen.generatePipe(Control,preName+"ConnectA",20.0);
 
@@ -1276,7 +1277,7 @@ exptVariables(FuncDataBase& Control,
 
   PipeGen.generatePipe(Control,preName+"PipeE",7.5);
 
-  BJGen.generateJaws(Control,preName+"JawBoxB",0.8,0.8);
+  BJGen.generateJaws(Control,preName+"JawBoxB",1.6,1.6);
 
   CTGen.setOuter(2.5,0.5);
   CTGen.setPort(CF40::flangeRadius,0.5*CF40::flangeLength);

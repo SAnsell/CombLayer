@@ -377,13 +377,13 @@ SingleItemVariables(FuncDataBase& Control)
   BTGen.generateTube(Control,"BremTube");
 
   setVariable::HPJawsGenerator HPGen;
-  HPGen.generateJaws(Control,"HPJaws",0.3,0.3);
+  HPGen.generateJaws(Control,"HPJaws",0.6,0.6);
 
   setVariable::ConnectorGenerator CPGen;
   CPGen.generatePipe(Control,"ConnectorTube",20.0);
 
   setVariable::BoxJawsGenerator BJGen;
-  BJGen.generateJaws(Control,"BoxJaws",0.3,0.3);
+  BJGen.generateJaws(Control,"BoxJaws",0.6,0.6);
 
   setVariable::DiffXIADP03Generator DPXGen;
   DPXGen.generatePump(Control,"DiffXIA",54.4);

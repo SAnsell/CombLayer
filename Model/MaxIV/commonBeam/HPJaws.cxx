@@ -196,8 +196,8 @@ HPJaws::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+413,Origin-X*(jawCornerEdge/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+414,Origin+X*(jawCornerEdge/2.0),X);
 
-  const Geometry::Vec3D HOrg(Origin+Z*jawZGap);
-  const Geometry::Vec3D LOrg(Origin-Z*jawZGap);
+  const Geometry::Vec3D HOrg(Origin+Z*jawZGap/2.0);
+  const Geometry::Vec3D LOrg(Origin-Z*jawZGap/2.0);
   ModelSupport::buildPlane(SMap,buildIndex+405,LOrg,Z);
   ModelSupport::buildPlane(SMap,buildIndex+415,LOrg-Z*jawCornerFar,Z);
   ModelSupport::buildPlane(SMap,buildIndex+425,LOrg-Z*jawFarLen,Z);
@@ -215,8 +215,8 @@ HPJaws::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+515,Origin-Z*(jawCornerEdge/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+516,Origin+Z*(jawCornerEdge/2.0),Z);
 
-  const Geometry::Vec3D POrg(Origin+X*jawXGap);
-  const Geometry::Vec3D MOrg(Origin-X*jawXGap);
+  const Geometry::Vec3D POrg(Origin+X*jawXGap/2.0);
+  const Geometry::Vec3D MOrg(Origin-X*jawXGap/2.0);
   ModelSupport::buildPlane(SMap,buildIndex+503,MOrg,X);
   ModelSupport::buildPlane(SMap,buildIndex+513,MOrg-X*jawCornerFar,X);
   ModelSupport::buildPlane(SMap,buildIndex+523,MOrg-X*jawFarLen,X);
