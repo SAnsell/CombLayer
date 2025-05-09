@@ -127,7 +127,11 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
+
   pipeBA(new constructSystem::VacuumPipe(newName+"PipeBA")),
+  powerFilterVessel(new constructSystem::PipeTube(newName+"PowerFilterVessel")),
+  pipeBB(new constructSystem::VacuumPipe(newName+"PipeBB")),
+
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
   MLM(new xraySystem::MLMonoDetail(newName+"MLM")),
 
@@ -202,6 +206,8 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(bellowC);
   OR.addObject(pipeBA);
+  OR.addObject(powerFilterVessel);
+  OR.addObject(pipeBB);
   OR.addObject(MLMVessel);
   OR.addObject(MLM);
 
@@ -611,9 +617,12 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*diagBoxA,"back",*pipeB);
   constructSystem::constructUnit(System,buildZone,*pipeB,"back",*gateTubeB);
   constructSystem::constructUnit(System,buildZone,*gateTubeB,"back",*bellowC);
-  constructSystem::constructUnit(System,buildZone,*bellowC,"back",*pipeBA);
 
-  constructMirrorMono(System,*pipeBA,"back");
+  constructSystem::constructUnit(System,buildZone,*bellowC,"back",*pipeBA);
+  constructSystem::constructUnit(System,buildZone,*pipeBA,"back",*powerFilterVessel);
+  constructSystem::constructUnit(System,buildZone,*powerFilterVessel,"back",*pipeBB);
+
+  constructMirrorMono(System,*pipeBB,"back");
 
 
   constructSystem::constructUnit

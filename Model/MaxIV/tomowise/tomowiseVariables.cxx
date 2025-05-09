@@ -1123,7 +1123,32 @@ opticsVariables(FuncDataBase& Control,
   GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
   Control.addVariable(preName+"GateTubeBPortRadius", gateTubePortRadius);
   BellowGen.generateBellow(Control,preName+"BellowC",15.0);
-  PipeGen.generatePipe(Control,preName+"PipeBA",7.5 + 36.723014); // dummy length to place the first mirror correctly (TomoWISEOpticsLineMLMXstalA) at 2590 cm
+
+  const std::string name=preName+"PowerFilterVessel";
+  constexpr double pfLength = 44.223014; // dummy total power filter vessel length to place the first mirror correctly (TomoWISEOpticsLineMLMXstalA) at 2590 cm
+  PipeGen.generatePipe(Control,preName+"PipeBA",5.0);
+  Control.addVariable(preName+"PipeBAFlangeBRadius", CF200::outerRadius);
+  PipeGen.generatePipe(Control,preName+"PipeBB",5.0);
+  Control.addVariable(preName+"PipeBBFlangeARadius", CF200::outerRadius);
+  SimpleTubeGen.setCF<CF200>();
+  // actually, there are no flanges, but PipeTube doesn't support that -> make them small
+  SimpleTubeGen.setAFlange(CF200::outerRadius+0.5, CF200::flangeLength);
+  SimpleTubeGen.setBFlange(CF200::outerRadius+0.5, CF200::flangeLength);
+  SimpleTubeGen.generateTube(Control,name,pfLength-5.0*2);
+  Control.addVariable(name+"NPorts",1);
+
+  PItemGen.setCF<setVariable::CF150>(CF200::outerRadius+14.5); // measured
+  PItemGen.setPlate(2.0,"Stainless304"); // dummy - another component above the port (TODO)
+  PItemGen.generatePort(Control,name+"Port0",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(Control,name+"Port1",
+			Geometry::Vec3D(0,0,0),
+			Geometry::Vec3D(0,0,-1));
+
+
+
+
 
   mirrorMonoPackage(Control,preName);
 
