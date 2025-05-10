@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: micromax/micromaxExptLineB.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -87,6 +87,7 @@
 #include "FourPortTube.h"
 #include "SixPortTube.h"
 #include "ViewScreenTube.h"
+#include "BeamAxis.h"
 #include "CooledScreen.h"
 #include "RoundMonoShutter.h"
 
@@ -96,7 +97,7 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 micromaxExptLineB::micromaxExptLineB(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
@@ -126,14 +127,14 @@ micromaxExptLineB::micromaxExptLineB(const std::string& Key) :
 
   OR.addObject(gateTubeA);
   OR.addObject(bellowA);
-  OR.addObject(viewTube); 
+  OR.addObject(viewTube);
   OR.addObject(cooledScreen);
   OR.addObject(pipeA);
   OR.addObject(hpJaws);
   OR.addObject(pipeB);
   OR.addObject(sample);
 }
-  
+
 micromaxExptLineB::~micromaxExptLineB()
   /*!
     Destructor
@@ -144,11 +145,11 @@ void
 micromaxExptLineB::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
-    \param Control :: Database 
+    \param Control :: Database
    */
 {
   ELog::RegMethod RegA("micromaxExptLineB","populate");
-  
+
   attachSystem::FixedRotate::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
@@ -197,8 +198,8 @@ micromaxExptLineB::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+102,Origin+Y*(beamStopYStep+beamStopThick/2.0),Y);
 
-  
-  
+
+
   return;
 }
 
@@ -213,16 +214,16 @@ micromaxExptLineB::buildObjects(Simulation& System)
   ELog::RegMethod RegA("micromaxExptLineB","buildObjects");
 
   int outerCell;
-  
+
   buildZone.addInsertCells(this->getInsertCells());
-  
+
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
   gateTubeA->createAll(System,*this,0);
   outerCell=buildZone.createUnit(System,*gateTubeA,2);
   gateTubeA->insertInCell(System,outerCell);
-  
+
   if (preInsert)
     preInsert->insertAllInCell(System,outerCell);
 
@@ -272,7 +273,7 @@ micromaxExptLineB::createLinks()
    */
 {
   ELog::RegMethod RControl("micromaxExptLineB","createLinks");
-  
+
   setLinkCopy(0,*bellowA,1);
   setLinkCopy(1,*lastComp,2);
   return;
@@ -292,8 +293,8 @@ micromaxExptLineB::insertSample(Simulation& System,
   return;
 }
 
-  
-void 
+
+void
 micromaxExptLineB::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
@@ -317,4 +318,3 @@ micromaxExptLineB::createAll(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

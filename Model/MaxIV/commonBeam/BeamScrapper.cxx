@@ -61,7 +61,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Quaternion.h"
-
+#include "BeamAxis.h"
 #include "Surface.h"
 
 #include "BeamScrapper.h"
@@ -73,7 +73,8 @@ BeamScrapper::BeamScrapper(const std::string& Key)  :
   attachSystem::ContainedGroup("Payload","Connect","Outer"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  constructSystem::BeamAxis()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,9 +92,9 @@ void
 BeamScrapper::calcImpactVector()
   /*!
     Calculate the impact points of the main beam  on the screen surface:
-    We have the beamAxis this must intersect the screen and mirror closest to 
+    We have the beamAxis this must intersect the screen and mirror closest to
     their centre points. It DOES NOT need to hit the centre points as the mirror
-    system is confined to moving down the Y axis of the object. 
+    system is confined to moving down the Y axis of the object.
     [-ve Y from flange  to beam centre]
   */
 {
@@ -104,7 +105,7 @@ BeamScrapper::calcImpactVector()
   // This point is the beam centre point between the main axis:
 
   std::tie(std::ignore,beamCentre)=
-    beamAxis.closestPoints(Geometry::Line(Origin,Y));
+    beamAxis->closestPoints(Geometry::Line(Origin,Y));
 
   ELog::EM<<"PlateCentre == "<<Origin<<" : "<<X<<" : "
 	  <<Y<<" : "<<Z<<ELog::endDiag;
@@ -170,7 +171,7 @@ BeamScrapper::createSurfaces()
   const Geometry::Vec3D PX=QP.makeRotate(X);
   const Geometry::Vec3D PY=QP.makeRotate(Y);
   const Geometry::Vec3D PZ=QP.makeRotate(Z);
-  
+
   if (!isActive("FlangePlate"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
@@ -178,7 +179,7 @@ BeamScrapper::createSurfaces()
     }
 
   const Geometry::Vec3D inletCentre=beamCentre+Z*inletZOffset;
-  
+
   ModelSupport::buildCylinder
     (SMap,buildIndex+7,inletCentre-X*tubeOffset,Y,tubeRadius);
   ModelSupport::buildCylinder
@@ -192,7 +193,7 @@ BeamScrapper::createSurfaces()
   // container cylinder
   ModelSupport::buildCylinder
     (SMap,buildIndex+107,inletCentre,Y,tubeOffset+outerTube);
-  
+
   // screen+mirror thread
   ModelSupport::buildPlane(SMap,buildIndex+201,plateCentre,PY);
 
@@ -208,8 +209,8 @@ BeamScrapper::createSurfaces()
 
   ELog::EM<<"Main == "<<Origin<<":"<<X<<":"<<Y<<":"<<Z<<ELog::endDiag;
   ELog::EM<<"Main == "<<beamCentre-Origin<<":"<<PX<<":"<<PY<<":"<<PZ<<ELog::endDiag;
-  
-  // 45 centre bend 
+
+  // 45 centre bend
   const Geometry::Vec3D inletA=inletCentreA+
     PZ*(tubeHeight-tubeOffset/sqrt(2.0));
   const Geometry::Vec3D inletB=inletCentreB+
@@ -245,11 +246,11 @@ BeamScrapper::createSurfaces()
 	    (SMap,BI+8,chain[i],bAxis,tubeRadius+tubeWall);
 	}
       BI+=10;
-    }  
-  
+    }
+
   // main plate
   const Geometry::Vec3D mainC=plateCentre+PY*(plateYStep+plateThick/2.0);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+2001,mainC-PY*(plateThick/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+2002,mainC+PY*(plateThick/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+2003,mainC-PX*(plateLength/2.0),PX);
@@ -362,42 +363,6 @@ BeamScrapper::createLinks()
 {
   ELog::RegMethod RegA("BeamScrapper","createLinks");
 
-  return;
-}
-
-void
-BeamScrapper::setBeamAxis(const attachSystem::FixedComp& FC,
-			    const long int sIndex)
-  /*!
-    Set the screen centre
-    \param FC :: FixedComp to use
-    \param sIndex :: Link point index
-  */
-{
-  ELog::RegMethod RegA("BeamScrapper","setBeamAxis(FC)");
-
-  beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
-			  -FC.getLinkAxis(sIndex));
-
-
-  ELog::EM<<"Set beamAxis:"<<beamAxis<<ELog::endDiag;
-
-  return;
-}
-
-void
-BeamScrapper::setBeamAxis(const Geometry::Vec3D& Org,
-		       const Geometry::Vec3D& Axis)
-  /*!
-    Set the screen centre
-    \param Org :: Origin point for line
-    \param Axis :: Axis of line
-  */
-{
-  ELog::RegMethod RegA("BeamScrapper","setBeamAxis(Vec3D)");
-
-  ELog::EM<<"Set beamAxis:"<<Org<<" : "<<Axis<<ELog::endDiag;
-  beamAxis=Geometry::Line(Org,Axis);
   return;
 }
 

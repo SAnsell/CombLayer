@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -49,7 +48,6 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
-#include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
@@ -57,6 +55,10 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Line.h"
+#include "BeamAxis.h"
 
 #include "PowerFilter.h"
 
@@ -67,7 +69,8 @@ PowerFilter::PowerFilter(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
-  attachSystem::SurfMap()
+  attachSystem::SurfMap(),
+  constructSystem::BeamAxis()
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -79,9 +82,10 @@ PowerFilter::PowerFilter(const PowerFilter& A) :
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
+  constructSystem::BeamAxis(A),
   maxLength(A.maxLength),width(A.width),height(A.height),
-    baseLength(A.baseLength),
-    wedgeAngle(A.wedgeAngle),
+  baseLength(A.baseLength),
+  wedgeAngle(A.wedgeAngle),
   mat(A.mat)
   /*!
     Copy constructor
@@ -102,9 +106,10 @@ PowerFilter::operator=(const PowerFilter& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
+      constructSystem::BeamAxis::operator=(A);
       maxLength=A.maxLength;
-        baseLength=A.baseLength;
-        wedgeAngle=A.wedgeAngle;
+      baseLength=A.baseLength;
+      wedgeAngle=A.wedgeAngle;
       width=A.width;
       height=A.height;
       mat=A.mat;

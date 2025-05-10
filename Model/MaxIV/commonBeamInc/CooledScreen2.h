@@ -39,7 +39,8 @@ class CooledScreen2 :
     public attachSystem::ContainedGroup,
     public attachSystem::FixedRotate,
     public attachSystem::ExternalCut,
-    public attachSystem::CellMap
+    public attachSystem::CellMap,
+    public constructSystem::BeamAxis
 {
  private:
 
@@ -56,12 +57,12 @@ class CooledScreen2 :
 
   double screenAngle;           ///< Y rotation of screen
   double copperWidth;           ///< in-beam copper block width
-  double copperHeight;          ///< in-beam copper block height 
+  double copperHeight;          ///< in-beam copper block height
   double copperThick;           ///< Thickness of in-beam cooper
 
   double tubeRadius;            ///< radius of tubing
   double tubeWall;              ///< wall thickness of tubing
-  
+
   double tubeYStep;             ///< y-forward step
   double tubeTopGap;            ///< Gap at the top (free area)
   double tubeMainGap;           ///< Gap in the plate area
@@ -70,27 +71,25 @@ class CooledScreen2 :
 
   double innerRadius;           ///< circle radius of beam
   double screenThick;           ///< screen thickness
-  
+
   int voidMat;                  ///< void material
 
   /// electronics junction box cable/inside material
-  int juncBoxMat;                
+  int juncBoxMat;
   int juncBoxWallMat;        ///< electronics junction box wall material
-                            
+
   int copperMat;            ///< screen holder material
   int screenMat;            ///< screen  material
 
-  int feedWallMat;          ///< Feedthrough wall material  
+  int feedWallMat;          ///< Feedthrough wall material
 
   // Geometry points for object / surface building :
-  
+
   Geometry::Vec3D screenCentre;        ///< central axis with beam point
 
   bool inBeam;                ///< screen and mirror are in the beam
 
-  /// Norminal line to get screen centre 
-  Geometry::Line beamAxis;
-
+  /// Norminal line to get screen centre
   void calcImpactVector();
 
   void populate(const FuncDataBase&) override;
@@ -104,9 +103,6 @@ class CooledScreen2 :
   CooledScreen2(const CooledScreen2&);
   CooledScreen2& operator=(const CooledScreen2&);
   ~CooledScreen2() override;
-
-  void setBeamAxis(const attachSystem::FixedComp&,const long int);
-  void setBeamAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

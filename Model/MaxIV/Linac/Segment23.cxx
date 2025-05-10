@@ -73,6 +73,7 @@
 #include "RegMethod.h"
 
 #include "ContainedGroup.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 
 #include "CylGateValve.h"

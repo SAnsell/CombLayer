@@ -61,7 +61,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Quaternion.h"
-
+#include "BeamAxis.h"
 #include "CooledScreen2.h"
 
 namespace xraySystem
@@ -72,6 +72,7 @@ CooledScreen2::CooledScreen2(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
+  constructSystem::BeamAxis(),
   inBeam(false)
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -90,9 +91,9 @@ void
 CooledScreen2::calcImpactVector()
   /*!
     Calculate the impact points of the main beam  on the screen surface:
-    We have the beamAxis this must intersect the screen and mirror closest to 
+    We have the beamAxis this must intersect the screen and mirror closest to
     their centre points. It DOES NOT need to hit the centre points as the mirror
-    system is confined to moving down the Y axis of the object. 
+    system is confined to moving down the Y axis of the object.
     [-ve Y from flange  to beam centre]
   */
 {
@@ -103,7 +104,7 @@ CooledScreen2::calcImpactVector()
   // This point is the beam centre point between the main axis:
 
   std::tie(std::ignore,screenCentre)=
-    beamAxis.closestPoints(Geometry::Line(Origin,Y));
+    beamAxis->closestPoints(Geometry::Line(Origin,Y));
 
   return;
 }
@@ -125,12 +126,12 @@ CooledScreen2::populate(const FuncDataBase& Control)
   juncBoxHeight=Control.EvalVar<double>(keyName+"JuncBoxHeight");
   juncBoxWallThick=Control.EvalVar<double>(keyName+"JuncBoxWallThick");
   feedLength=Control.EvalVar<double>(keyName+"FeedLength");
-  
+
   feedInnerRadius=Control.EvalVar<double>(keyName+"FeedInnerRadius");
   feedWallThick=Control.EvalVar<double>(keyName+"FeedWallThick");
   feedFlangeLen=Control.EvalVar<double>(keyName+"FeedFlangeLen");
   feedFlangeRadius=Control.EvalVar<double>(keyName+"FeedFlangeRadius");
-  
+
 
   screenAngle=Control.EvalVar<double>(keyName+"ScreenAngle");
   copperWidth=Control.EvalVar<double>(keyName+"CopperWidth");
@@ -138,7 +139,7 @@ CooledScreen2::populate(const FuncDataBase& Control)
   copperThick=Control.EvalVar<double>(keyName+"CopperThick");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   screenThick=Control.EvalVar<double>(keyName+"ScreenThick");
-  
+
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   juncBoxMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxMat");
@@ -210,14 +211,14 @@ CooledScreen2::createSurfaces()
 
   const Geometry::Quaternion QW =
       Geometry::Quaternion::calcQRotDeg(-screenAngle,Y);
-  
+
   // holder cut plane normal
   // NOTE : Y is in Z direction
   const Geometry::Vec3D SX=QW.makeRotate(X);
   const Geometry::Vec3D SY=QW.makeRotate(Z);
   const Geometry::Vec3D SZ=Y;
 
-  
+
   ModelSupport::buildPlane
     (SMap,buildIndex+2001,screenCentre-SY*(copperThick/2.0),SY);
   ModelSupport::buildPlane
@@ -307,10 +308,10 @@ CooledScreen2::createObjects(Simulation& System)
 	(SMap,buildIndex,"2001 -2002 2003 -2004 2005 -2006");
 	makeCell("YagHolder",System,cellIndex++,copperMat,0.0,HR);
 
-      addOuterSurf("Payload",HR);      
-      
+      addOuterSurf("Payload",HR);
+
     }
-      
+
   return;
 }
 
@@ -323,39 +324,6 @@ CooledScreen2::createLinks()
 {
   ELog::RegMethod RegA("CooledScreen2","createLinks");
 
-  return;
-}
-
-void
-CooledScreen2::setBeamAxis(const attachSystem::FixedComp& FC,
-			    const long int sIndex)
-  /*!
-    Set the screen centre
-    \param FC :: FixedComp to use
-    \param sIndex :: Link point index
-  */
-{
-  ELog::RegMethod RegA("CooledScreen2","setBeamAxis(FC)");
-
-  beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
-			  FC.getLinkAxis(sIndex));
-
-
-  return;
-}
-
-void
-CooledScreen2::setBeamAxis(const Geometry::Vec3D& Org,
-		       const Geometry::Vec3D& Axis)
-  /*!
-    Set the screen centre
-    \param Org :: Origin point for line
-    \param Axis :: Axis of line
-  */
-{
-  ELog::RegMethod RegA("CooledScreen2","setBeamAxis(Vec3D)");
-
-  beamAxis=Geometry::Line(Org,Axis);
   return;
 }
 

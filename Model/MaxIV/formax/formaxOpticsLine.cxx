@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: formax/formaxOpticsLine.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -115,6 +115,7 @@
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 
 #include "formaxOpticsLine.h"
@@ -123,7 +124,7 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
@@ -132,7 +133,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(Key+"BuildZone"),
-  
+
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
@@ -153,7 +154,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
   MLM(new xraySystem::MLMonoDetail(newName+"MLM")),
-  
+
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   gateTubeC(new xraySystem::CylGateValve(newName+"GateTubeC")),
@@ -180,9 +181,9 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   yagScreen(new tdcSystem::YagScreen(newName+"YagScreen")),
 
   bremTubeB(new constructSystem::PipeTube(newName+"BremTubeB")),
-  bremCollC(new xraySystem::BremBlock(newName+"BremCollC")),  
+  bremCollC(new xraySystem::BremBlock(newName+"BremCollC")),
   hpJawsB(new xraySystem::HPJaws(newName+"HPJawsB")),
-  
+
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
@@ -195,7 +196,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   monoShutter(new xraySystem::RoundMonoShutter(newName+"RMonoShutter")),
   monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
   pipeF(new constructSystem::VacuumPipe(newName+"PipeF"))
-  
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -203,7 +204,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
 
@@ -252,7 +253,7 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(bremTubeB);
   OR.addObject(bremCollC);
   OR.addObject(hpJawsB);
-  
+
   OR.addObject(bellowH);
   OR.addObject(pipeE);
   OR.addObject(bellowI);
@@ -265,9 +266,9 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   OR.addObject(monoShutter);
   OR.addObject(monoAdaptorB);
   OR.addObject(pipeF);
-  
+
 }
-  
+
 formaxOpticsLine::~formaxOpticsLine()
   /*!
     Destructor
@@ -278,17 +279,17 @@ void
 formaxOpticsLine::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
-    \param Control :: Database 
+    \param Control :: Database
    */
 {
   ELog::RegMethod RegA("formaxOpticsLine","populate");
-  
+
   FixedOffset::populate(Control);
 
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
-  
+
   return;
 }
 
@@ -322,7 +323,7 @@ formaxOpticsLine::createSurfaces()
 
 void
 formaxOpticsLine::constructMirrorMono(Simulation& System,
-				      const attachSystem::FixedComp& initFC, 
+				      const attachSystem::FixedComp& initFC,
 				      const std::string& sideName)
 /*!
     Sub build of the slit package unit
@@ -338,7 +339,7 @@ formaxOpticsLine::constructMirrorMono(Simulation& System,
   MLMVessel->createAll(System,initFC,sideName);
   outerCell=buildZone.createUnit(System,*MLMVessel,2);
   MLMVessel->insertInCell(System,outerCell);
-  
+
   MLM->addInsertCell(MLMVessel->getCell("Void"));
   MLM->createAll(System,*MLMVessel,0);
 
@@ -347,7 +348,7 @@ formaxOpticsLine::constructMirrorMono(Simulation& System,
 
 void
 formaxOpticsLine::constructHDCM(Simulation& System,
-				const attachSystem::FixedComp& initFC, 
+				const attachSystem::FixedComp& initFC,
 				const std::string& sideName)
 /*!
     Sub build of the slit package unit
@@ -360,7 +361,7 @@ formaxOpticsLine::constructHDCM(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*monoVessel);
-  
+
   mbXstals->addInsertCell(monoVessel->getCell("Void"));
   mbXstals->createAll(System,*monoVessel,0);
 
@@ -369,7 +370,7 @@ formaxOpticsLine::constructHDCM(Simulation& System,
 
 void
 formaxOpticsLine::constructDiag2(Simulation& System,
-				 const attachSystem::FixedComp& initFC, 
+				 const attachSystem::FixedComp& initFC,
 				 const std::string& sideName)
   /*!
     Sub build of the slit package unit
@@ -396,7 +397,7 @@ formaxOpticsLine::constructDiag2(Simulation& System,
 
 void
 formaxOpticsLine::constructDiag3(Simulation& System,
-				 const attachSystem::FixedComp& initFC, 
+				 const attachSystem::FixedComp& initFC,
 				 const std::string& sideName)
   /*!
     Sub build of the slit package unit
@@ -446,7 +447,7 @@ formaxOpticsLine::constructDiag3(Simulation& System,
 
 void
 formaxOpticsLine::constructDiag4(Simulation& System,
-				 const attachSystem::FixedComp& initFC, 
+				 const attachSystem::FixedComp& initFC,
 				 const std::string& sideName)
   /*!
     Sub build of the slit package unit
@@ -463,7 +464,7 @@ formaxOpticsLine::constructDiag4(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*gateTubeF,"back",*viewTubeB);
-  
+
 }
 
 void
@@ -499,7 +500,7 @@ formaxOpticsLine::constructMonoShutter(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*monoAdaptorB,"back",*pipeF);
-  
+
   return;
 }
 
@@ -515,9 +516,9 @@ formaxOpticsLine::buildObjects(Simulation& System)
   ELog::RegMethod RegA("formaxOpticsLine","buildObjects");
 
   int outerCell;
-  
+
   buildZone.addInsertCells(this->getInsertCells());
-  
+
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
@@ -538,7 +539,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*pipeA,"back",*bellowA);
-  
+
   constructSystem::constructUnit
     (System,buildZone,*bellowA,"back",*whiteCollA);
 
@@ -573,7 +574,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
       jaws[i]->insertInCell("SupportB",System,PI.getCell("Void"));
       cellIndex++;
     }
-  
+
   jaws[0]->insertInCell("SupportB",System,diagBoxA->getCell("Void",0));
   jaws[0]->insertInCell("SupportA",System,diagBoxA->getCell("Void",1));
   jaws[0]->insertInCell("BlockB",System,diagBoxA->getCell("Void",0));
@@ -621,7 +622,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*bellowF,"back",*pipeD);
   constructSystem::constructUnit
     (System,buildZone,*pipeD,"back",*gateTubeD);
-  
+
 
   constructDiag2(System,*gateTubeD,"back");
 
@@ -631,7 +632,7 @@ formaxOpticsLine::buildObjects(Simulation& System)
 
   mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-  
+
   mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
   mirrorFrontA->createAll(System,*mirrorBoxA,0);
 
@@ -663,14 +664,14 @@ formaxOpticsLine::createLinks()
    */
 {
   ELog::RegMethod RControl("formaxOpticsLine","createLinks");
-  
+
   setLinkCopy(0,*pipeInit,1);
   setLinkCopy(1,*lastComp,2);
   return;
 }
-  
-  
-void 
+
+
+void
 formaxOpticsLine::createAll(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
@@ -694,4 +695,3 @@ formaxOpticsLine::createAll(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

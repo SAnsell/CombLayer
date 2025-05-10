@@ -39,7 +39,8 @@ class BeamScrapper :
   public attachSystem::ContainedGroup,
   public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public constructSystem::BeamAxis
 {
  private:
 
@@ -53,27 +54,25 @@ class BeamScrapper :
   double plateLength;       ///< Length along beam (angled)
   double plateHeight;       ///< Height of plate
   double plateThick;        ///< Thickness of plate
-  
+
   double tubeWidth;         ///< in-beam copper block width
-  double tubeHeight;        ///< in-beam copper block height 
+  double tubeHeight;        ///< in-beam copper block height
 
   double inletZOffset;      ///< Variable for Z displacement of pipe inlet
-  
+
   int voidMat;              ///< void material
 
   int waterMat;             ///< water material
   int copperMat;            ///< pipe outer material
 
-  
-  
+
+
   // Geometry points for object / surface building :
-  
+
   Geometry::Vec3D beamCentre;        ///< central axis with beam point
   Geometry::Vec3D plateCentre;       ///< central point of plate
 
-  /// Norminal line to get screen centre 
-  Geometry::Line beamAxis;
-
+  /// Norminal line to get screen centre
   void calcImpactVector();
 
   void populate(const FuncDataBase&) override;
@@ -87,9 +86,6 @@ class BeamScrapper :
   BeamScrapper(const BeamScrapper&);
   BeamScrapper& operator=(const BeamScrapper&);
   ~BeamScrapper() override;
-
-  void setBeamAxis(const attachSystem::FixedComp&,const long int);
-  void setBeamAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

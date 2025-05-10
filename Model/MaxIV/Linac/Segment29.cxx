@@ -70,6 +70,7 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "YagUnit.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "VoidUnit.h"
 #include "TDCBeamDump.h"

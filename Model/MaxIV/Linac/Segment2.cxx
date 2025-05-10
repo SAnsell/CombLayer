@@ -69,6 +69,7 @@
 #include "CylGateValve.h"
 #include "EArrivalMon.h"
 #include "YagUnit.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "LocalShielding.h"
 

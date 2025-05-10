@@ -71,7 +71,7 @@
 #include "LObjectSupport.h"
 #include "CorrectorMag.h"
 #include "YagUnit.h"
-
+#include "BeamAxis.h"
 #include "YagScreen.h"
 
 #include "TDCsegment.h"

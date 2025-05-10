@@ -61,6 +61,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Quaternion.h"
+#include "BeamAxis.h"
 
 #include "YagScreen.h"
 
@@ -72,8 +73,8 @@ YagScreen::YagScreen(const std::string& Key)  :
   attachSystem::ContainedGroup("Payload","Connect","Outer"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
-  inBeam(false),
-  beamAxis(std::make_unique<Geometry::Line>())
+  constructSystem::BeamAxis(),
+  inBeam(false)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,11 +91,11 @@ YagScreen::~YagScreen()
 void
 YagScreen::calcImpactVector()
   /*!
-    Calculate the impact points of the main beam 
+    Calculate the impact points of the main beam
     on the mirror surfaces:
-    We have the beamAxis this must intersect the screen and mirror closest to 
+    We have the beamAxis this must intersect the screen and mirror closest to
     their centre points. It DOES NOT need to hit the centre points as the mirror
-    system is confined to moving down the Y axis of the object. [-ve Y from flange 
+    system is confined to moving down the Y axis of the object. [-ve Y from flange
     to beam centre]
   */
 {
@@ -110,19 +111,19 @@ YagScreen::calcImpactVector()
   // Beam Centre point projected along -X hits the mirror at half way
   // between the short and long length [holderShortLen/holderLongLen]
   // mirror start above mirrorCentre (+Y)
-  
-  const double LHalf=(holderLongLen-holderShortLen)/2.0; 
+
+  const double LHalf=(holderLongLen-holderShortLen)/2.0;
   mirrorStart=mirrorCentre+Y*LHalf-X*(holderDepth/2.0);
 
-  // projection from mirrorStart along axis 
-  mirrorImpact=mirrorStart-X*(LHalf*tan(mirrorAngle*M_PI/180.0))-Y*LHalf;  
+  // projection from mirrorStart along axis
+  mirrorImpact=mirrorStart-X*(LHalf*tan(mirrorAngle*M_PI/180.0))-Y*LHalf;
 
   // screen from screen start [SDist = full distance to centre]
-  const double SDist=screenVOffset+(holderLongLen-holderShortLen)/2.0; 
+  const double SDist=screenVOffset+(holderLongLen-holderShortLen)/2.0;
   const Geometry::Vec3D screenStart=mirrorStart+Y*screenVOffset;
 
   // angle points outwards:
-  screenImpact=screenStart-X*(SDist*tan(screenAngle*M_PI/180.0))-Y*SDist;  
+  screenImpact=screenStart-X*(SDist*tan(screenAngle*M_PI/180.0))-Y*SDist;
 
   // Thread point
   threadEnd=mirrorCentre+Y*(holderLongLen-LHalf);
@@ -147,32 +148,32 @@ YagScreen::populate(const FuncDataBase& Control)
   juncBoxHeight=Control.EvalVar<double>(keyName+"JuncBoxHeight");
   juncBoxWallThick=Control.EvalVar<double>(keyName+"JuncBoxWallThick");
   feedLength=Control.EvalVar<double>(keyName+"FeedLength");
-  
+
   feedInnerRadius=Control.EvalVar<double>(keyName+"FeedInnerRadius");
   feedWallThick=Control.EvalVar<double>(keyName+"FeedWallThick");
   feedFlangeLen=Control.EvalVar<double>(keyName+"FeedFlangeLen");
   feedFlangeRadius=Control.EvalVar<double>(keyName+"FeedFlangeRadius");
-  
+
   threadLift=Control.EvalVar<double>(keyName+"ThreadLift");
   threadRadius=Control.EvalVar<double>(keyName+"ThreadRadius");
   holderWidth=Control.EvalVar<double>(keyName+"HolderWidth");
   holderDepth=Control.EvalVar<double>(keyName+"HolderDepth");
   holderShortLen=Control.EvalVar<double>(keyName+"HolderShortLen");
   holderLongLen=Control.EvalVar<double>(keyName+"HolderLongLen");
-  
+
   mirrorAngle=Control.EvalVar<double>(keyName+"MirrorAngle");
   mirrorRadius=Control.EvalVar<double>(keyName+"MirrorRadius");
   mirrorThick=Control.EvalVar<double>(keyName+"MirrorThick");
-  
+
   screenAngle=Control.EvalVar<double>(keyName+"ScreenAngle");
   screenVOffset=Control.EvalVar<double>(keyName+"ScreenVOffset");
   screenRadius=Control.EvalVar<double>(keyName+"ScreenRadius");
   screenThick=Control.EvalVar<double>(keyName+"ScreenThick");
-  
+
   screenHolderRadius=Control.EvalVar<double>(keyName+"ScreenHolderRadius");
   screenHolderThick=Control.EvalVar<double>(keyName+"ScreenHolderThick");
 
-  
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   juncBoxMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxMat");
   juncBoxWallMat=ModelSupport::EvalMat<int>(Control,keyName+"JuncBoxWallMat");
@@ -251,7 +252,7 @@ YagScreen::createSurfaces()
 
   // holder cut plane normal
   const Geometry::Vec3D MX=QV.makeRotate(X);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1003,threadEnd-X*(holderDepth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1004,threadEnd+X*(holderDepth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+1005,threadEnd-Z*(holderWidth/2.0),Z);
@@ -390,13 +391,13 @@ YagScreen::createObjects(Simulation& System)
 	(SMap,buildIndex,"1005 -1006 1002 2001 -2002 2017 2000");
        makeCell("YagVoid",System,cellIndex++,voidMat,0.0,HR);
 
-      
+
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"1002 (2001:1003) -1004 1005 -1006 -201");
-      addOuterSurf("Payload",HR);      
-      
+      addOuterSurf("Payload",HR);
+
     }
-      
+
   return;
 }
 
@@ -409,38 +410,6 @@ YagScreen::createLinks()
 {
   ELog::RegMethod RegA("YagScreen","createLinks");
 
-  return;
-}
-
-void
-YagScreen::setBeamAxis(const attachSystem::FixedComp& FC,
-		       const long int sIndex)
-  /*!
-    Set the screen centre
-    \param FC :: FixedComp to use
-    \param sIndex :: Link point index
-  */
-{
-  ELog::RegMethod RegA("YagScreen","setBeamAxis(FC)");
-
-  *beamAxis=Geometry::Line(FC.getLinkPt(sIndex),
-			  FC.getLinkAxis(sIndex));
-
-  return;
-}
-
-void
-YagScreen::setBeamAxis(const Geometry::Vec3D& Org,
-		       const Geometry::Vec3D& Axis)
-  /*!
-    Set the screen centre
-    \param Org :: Origin point for line
-    \param Axis :: Axis of line
-  */
-{
-  ELog::RegMethod RegA("YagScreen","setBeamAxis(Vec3D)");
-
-  *beamAxis=Geometry::Line(Org,Axis);
   return;
 }
 

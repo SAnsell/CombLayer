@@ -1,6 +1,6 @@
 set (commonBeamSources
     AreaDetector.cxx BeamMount.cxx BeamPair.cxx
-    BeamScrapper.cxx BlockStand.cxx BoxJaws.cxx
+    BeamScrapper.cxx BeamAxis.cxx BlockStand.cxx BoxJaws.cxx
     BremBlock.cxx BremColl.cxx BremMonoColl.cxx
     BremTube.cxx CollTube.cxx CollUnit.cxx
     ConnectorTube.cxx CooledScreen2.cxx CooledScreen.cxx
@@ -46,6 +46,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/BeamMount.cxx
   ${tarDIR}/BeamPair.cxx
   ${tarDIR}/BeamScrapper.cxx
+  ${tarDIR}/BeamAxis.cxx
   ${tarDIR}/BlockStand.cxx
   ${tarDIR}/BoxJaws.cxx
   ${tarDIR}/BremBlock.cxx
@@ -119,6 +120,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/BeamMount.h
   ${tarINC}/BeamPair.h
   ${tarINC}/BeamScrapper.h
+  ${tarINC}/BeamAxis.h
   ${tarINC}/BlockStand.h
   ${tarINC}/BoxJaws.h
   ${tarINC}/BremBlock.h

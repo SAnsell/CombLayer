@@ -44,7 +44,8 @@ class YagScreen :
     public attachSystem::FixedRotate,
     public attachSystem::ContainedGroup,
     public attachSystem::ExternalCut,
-    public attachSystem::CellMap
+    public attachSystem::CellMap,
+    public constructSystem::BeamAxis
 {
  private:
 
@@ -85,30 +86,28 @@ class YagScreen :
   int voidMat;                  ///< void material
 
   /// electronics junction box cable/inside material
-  int juncBoxMat;                
+  int juncBoxMat;
   int juncBoxWallMat;        ///< electronics junction box wall material
   int threadMat;             ///< screen thread material
-                            
+
   int holderMat;            ///< screen holder material
   int mirrorMat;            ///< mirror  material
   int screenMat;            ///< screen  material
   int screenHolderMat;      ///< screen holder  material
-  int feedWallMat;          ///< Feedthrough wall material  
+  int feedWallMat;          ///< Feedthrough wall material
 
   // Geometry points for object / surface building :
-  
+
   Geometry::Vec3D mirrorCentre;        ///< central axis with beam point
-  Geometry::Vec3D mirrorStart;         ///< Cut start point 
-  Geometry::Vec3D mirrorImpact;        ///< Mirror-beam impact point  
+  Geometry::Vec3D mirrorStart;         ///< Cut start point
+  Geometry::Vec3D mirrorImpact;        ///< Mirror-beam impact point
   Geometry::Vec3D screenImpact;        ///< Screen-beam impact point
   Geometry::Vec3D threadEnd;           ///< Thread end point
 
 
   bool inBeam;                ///< screen and mirror are in the beam
 
-  /// Norminal line to get screen centre 
-  std::unique_ptr<Geometry::Line> beamAxis;
-
+  /// Norminal line to get screen centre
   void calcImpactVector();
 
   void populate(const FuncDataBase&) override;
@@ -122,9 +121,6 @@ class YagScreen :
   YagScreen(const YagScreen&);
   YagScreen& operator=(const YagScreen&);
   ~YagScreen() override;
-
-  void setBeamAxis(const attachSystem::FixedComp&,const long int);
-  void setBeamAxis(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

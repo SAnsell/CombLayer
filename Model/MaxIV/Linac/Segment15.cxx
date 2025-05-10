@@ -64,6 +64,7 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "YagUnit.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "CrossWayBlank.h"
 #include "LocalShielding.h"

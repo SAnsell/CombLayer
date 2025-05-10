@@ -66,6 +66,7 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "YagUnitBig.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "CeramicGap.h"
 #include "FlangePlate.h"

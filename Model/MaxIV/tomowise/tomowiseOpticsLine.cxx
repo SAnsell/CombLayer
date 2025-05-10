@@ -91,6 +91,7 @@
 #include "BremTube.h"
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "PowerFilter.h"
 
@@ -623,6 +624,7 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*bellowC,"back",*pipeBA);
   constructSystem::constructUnit(System,buildZone,*pipeBA,"back",*powerFilterVessel);
 
+  powerFilter->setBeamAxis(*powerFilterVessel, 1);
   powerFilter->createAll(System, *powerFilterVessel, 0);
   powerFilter->insertInCell(System,powerFilterVessel->getCell("Void"));
 

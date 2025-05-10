@@ -66,6 +66,7 @@
 #include "LQuadF.h"
 #include "CorrectorMag.h"
 #include "YagUnitBig.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "Bellows.h"
 #include "ButtonBPM.h"
@@ -173,7 +174,7 @@ Segment35::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeC,"back",*bellow);
-  
+
   return;
 }
 

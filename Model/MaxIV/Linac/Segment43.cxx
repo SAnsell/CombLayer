@@ -67,6 +67,7 @@
 #include "VacuumPipe.h"
 #include "StriplineBPM.h"
 #include "YagUnitBig.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "CylGateValve.h"
 #include "ButtonBPM.h"

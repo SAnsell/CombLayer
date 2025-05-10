@@ -71,6 +71,7 @@
 #include "Bellows.h"
 #include "VacuumPipe.h"
 #include "YagUnit.h"
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "SlitsMask.h"
 #include "GTFGateValve.h"

@@ -124,6 +124,7 @@
 #include "TriGroup.h"
 #include "CurveMagnet.h"
 #include "MultiPipe.h"
+#include "BeamAxis.h"
 #include "CooledScreen.h"
 #include "YagScreen.h"
 #include "YagUnit.h"

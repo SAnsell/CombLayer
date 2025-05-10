@@ -69,7 +69,7 @@
 #include "VacuumPipe.h"
 #include "FixedGroup.h"
 #include "FixedRotateGroup.h"
-
+#include "BeamAxis.h"
 #include "YagScreen.h"
 #include "YagUnit.h"
 #include "TDCBeamDump.h"
@@ -236,7 +236,7 @@ Segment27::buildObjects(Simulation& System)
       bellowCA->setFront(joinItems[2].display());
     }
 
-  
+
   bellowAA->createAll(System,*this,0);
   bellowBA->createAll(System,*this,0);
   bellowCA->createAll(System,*this,0);
@@ -301,7 +301,7 @@ Segment27::buildObjects(Simulation& System)
     (System,*IZFlat,*yagUnitB,"back",*bellowBC);
   beamStopC->setCutSurf("base",ExternalCut::getRule("Floor"));
 
-  
+
   beamStopC->secondaryUnitVector(*yagUnitC,"back");
   beamStopC->createAll(System,*yagUnitC,"back");
   const int outerCell = IZLower->createUnit(System,beamStopC->getKey("Main"),2);
@@ -346,7 +346,7 @@ Segment27::buildFrontSpacer(Simulation& System)
 void
 Segment27::buildSpaceFiller(Simulation& System)
   /*!
-    Build the back spacer if needed. Note that 
+    Build the back spacer if needed. Note that
     cells marked as "SpceFiller" are removed if the
     next segment (28) is built.
     \param System :: Simulation to use
@@ -427,7 +427,7 @@ Segment27::createAll(Simulation& System,
   buildFrontSpacer(System);
   createLinks();
     buildSpaceFiller(System);
-    
+
   return;
 }
 
