@@ -50,8 +50,11 @@ namespace setVariable
 {
 
 PowerFilterGenerator::PowerFilterGenerator() :
-  length(10.0),width(5.0),height(15.0),wallThick(1.0),
-  mainMat("Void"),wallMat("Stainless316L")
+  maxLength(0.6), // all dimensions: TDR, page 39 and table 8.1
+  baseLength(0.7),
+  wedgeAngle(3), // TDR, caption of fig 8.2 on page 39
+  width(0.3),height(12.0),baseHeight(1.0),
+  mat("Silicon300K"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
   */
@@ -74,11 +77,13 @@ PowerFilterGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("PowerFilterGenerator","generate");
 
-  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"MaxLength",maxLength);
+  Control.addVariable(keyName+"BaseLength",baseLength);
+  Control.addVariable(keyName+"WedgeAngle",wedgeAngle);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MainMat",mainMat);
+  Control.addVariable(keyName+"BaseHeight",baseHeight);
+  Control.addVariable(keyName+"Mat",mat);
   Control.addVariable(keyName+"WallMat",wallMat);
 
   return;

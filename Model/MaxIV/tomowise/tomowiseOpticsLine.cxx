@@ -3,7 +3,7 @@
 
  * File: tomowise/tomowiseOpticsLine.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Konstantin Batkov and Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,7 @@
 #include "HPJaws.h"
 #include "ViewScreenTube.h"
 #include "YagScreen.h"
+#include "PowerFilter.h"
 
 #include "tomowiseOpticsLine.h"
 
@@ -130,6 +131,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
 
   pipeBA(new constructSystem::VacuumPipe(newName+"PipeBA")),
   powerFilterVessel(new constructSystem::PipeTube(newName+"PowerFilterVessel")),
+  powerFilter(new xraySystem::PowerFilter(newName+"PowerFilter")),
   pipeBB(new constructSystem::VacuumPipe(newName+"PipeBB")),
 
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
@@ -620,6 +622,10 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*bellowC,"back",*pipeBA);
   constructSystem::constructUnit(System,buildZone,*pipeBA,"back",*powerFilterVessel);
+
+  powerFilter->createAll(System, *powerFilterVessel, 0);
+  powerFilter->insertInCell(System,powerFilterVessel->getCell("Void"));
+
   constructSystem::constructUnit(System,buildZone,*powerFilterVessel,"back",*pipeBB);
 
   constructMirrorMono(System,*pipeBB,"back");

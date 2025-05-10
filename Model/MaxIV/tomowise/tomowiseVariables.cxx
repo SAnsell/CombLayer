@@ -88,6 +88,7 @@
 #include "YagScreenGenerator.h"
 #include "ConnectorGenerator.h"
 #include "BoxJawsGenerator.h"
+#include "PowerFilterGenerator.h"
 
 // References
 // see R3Common/R3RingVariables.cxx
@@ -1149,6 +1150,8 @@ opticsVariables(FuncDataBase& Control,
 
 
 
+  PowerFilterGenerator PFGen;
+  PFGen.generate(Control,preName+"PowerFilter");
 
 
   mirrorMonoPackage(Control,preName);

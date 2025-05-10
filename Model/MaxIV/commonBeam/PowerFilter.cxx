@@ -79,8 +79,10 @@ PowerFilter::PowerFilter(const PowerFilter& A) :
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
-  length(A.length),width(A.width),height(A.height),
-  mainMat(A.mainMat)
+  maxLength(A.maxLength),width(A.width),height(A.height),
+    baseLength(A.baseLength),
+    wedgeAngle(A.wedgeAngle),
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: PowerFilter to copy
@@ -100,10 +102,12 @@ PowerFilter::operator=(const PowerFilter& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
-      length=A.length;
+      maxLength=A.maxLength;
+        baseLength=A.baseLength;
+        wedgeAngle=A.wedgeAngle;
       width=A.width;
       height=A.height;
-      mainMat=A.mainMat;
+      mat=A.mat;
     }
   return *this;
 }
@@ -135,11 +139,14 @@ PowerFilter::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  maxLength=Control.EvalVar<double>(keyName+"MaxLength");
+  baseLength=Control.EvalVar<double>(keyName+"BaseLength");
+  wedgeAngle=Control.EvalVar<double>(keyName+"WedgeAngle");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  baseLength=Control.EvalVar<double>(keyName+"BaseLength");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
 }
@@ -152,8 +159,8 @@ PowerFilter::createSurfaces()
 {
   ELog::RegMethod RegA("PowerFilter","createSurfaces");
 
-  SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(maxLength/2.0),Y);
+  SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(maxLength/2.0),Y);
 
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -175,7 +182,7 @@ PowerFilter::createObjects(Simulation& System)
 
   HeadRule HR;
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  makeCell("MainCell",System,cellIndex++,mat,0.0,HR);
 
   addOuterSurf(HR);
 
@@ -191,12 +198,12 @@ PowerFilter::createLinks()
 {
   ELog::RegMethod RegA("PowerFilter","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(0,Origin-Y*(maxLength/2.0),-Y);
   FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
 
- TODO: Check and use names for the links below:
+  // TODO: Check and use names for the links below:
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect(1,Origin+Y*(maxLength/2.0),Y);
   FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);

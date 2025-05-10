@@ -42,11 +42,13 @@ class PowerFilter : public attachSystem::ContainedComp,
 {
  private:
 
-  double length;                ///< Total length including void
+  double maxLength;                ///< Total maxLength including void
+  double baseLength;            ///< length of base (parameter a)
+  double wedgeAngle;            ///< angle of the wedge
   double width;                 ///< Width
   double height;                ///< Height
 
-  int mainMat;                   ///< Main material
+  int mat;                   ///< Main material
 
   void populate(const FuncDataBase&);
   void createSurfaces();

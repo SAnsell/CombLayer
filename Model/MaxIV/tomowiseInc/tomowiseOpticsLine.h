@@ -72,13 +72,14 @@ namespace xraySystem
   class MonoShutter;
   class RoundMonoShutter;
   class PipeShield;
+  class PowerFilter;
 
 
   /*!
     \class tomowiseOpticsLine
     \version 1.0
-    \author S. Ansell
-    \date January 2019
+    \author K. Batkov and S. Ansell
+    \date May 2025
     \brief Constructor for the tomowise optics components
   */
 
@@ -133,6 +134,7 @@ class tomowiseOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowC;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBA;
   std::shared_ptr<constructSystem::PipeTube> powerFilterVessel;
+  std::shared_ptr<xraySystem::PowerFilter> powerFilter;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBB;
 
   // PART 4: [MML]

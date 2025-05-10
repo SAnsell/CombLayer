@@ -39,12 +39,14 @@ class PowerFilterGenerator
 {
  private:
 
-  double length;                ///< Total length including void
+  double maxLength;                ///< Total maxLength including void
+    double baseLength;            ///< length of base (parameter a)
+    double wedgeAngle;            ///< angle of the wedge
   double width;                 ///< Width
   double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double baseHeight;             ///< Wall thickness
 
-  std::string mainMat;          ///< Main material
+  std::string mat;          ///< Main material
   std::string wallMat;          ///< Wall material
 
  public:
