@@ -1131,9 +1131,10 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"PipeBB",5.0);
   Control.addVariable(preName+"PipeBBFlangeARadius", CF200::outerRadius);
   SimpleTubeGen.setCF<CF200>();
-  // actually, there are no flanges, but PipeTube doesn't support that -> make them small
-  SimpleTubeGen.setAFlange(CF200::outerRadius+0.5, CF200::flangeLength);
-  SimpleTubeGen.setBFlange(CF200::outerRadius+0.5, CF200::flangeLength);
+  // There are no flanges -> set their radii to be the same as the outer radius
+  // CL will not build their empty cells. The lenth parameter is irellevant.
+  SimpleTubeGen.setAFlange(CF200::outerRadius, CF200::flangeLength);
+  SimpleTubeGen.setBFlange(CF200::outerRadius, CF200::flangeLength);
   SimpleTubeGen.generateTube(Control,name,pfLength-5.0*2);
   Control.addVariable(name+"NPorts",1);
 
