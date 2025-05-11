@@ -195,18 +195,20 @@ PowerFilter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PowerFilter","createObjects");
 
+  const HeadRule lrHR = ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
+
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -4 16 -6 ");
-  makeCell("Base",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 16 -6 ");
+  makeCell("Base",System,cellIndex++,mat,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -4 5 -16 ");
-  makeCell("VoidBeforeBlade",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 5 -16 ");
+  makeCell("VoidBeforeBlade",System,cellIndex++,0,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("Blade",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 5 -6 ");
+  makeCell("Blade",System,cellIndex++,mat,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -2 3 -4 5 -6 ");
-  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -2 5 -6 ");
+  addOuterSurf(HR*lrHR);
 
   return;
 }
