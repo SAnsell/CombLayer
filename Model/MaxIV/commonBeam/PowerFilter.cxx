@@ -167,21 +167,24 @@ PowerFilter::createSurfaces()
 {
   ELog::RegMethod RegA("PowerFilter","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(filterGap/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(baseLength+filterGap/2.0),Y);
+  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
+
+  // upstream filter blade
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(filterGap/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin-Y*(baseLength+filterGap/2.0),Y);
 
   Geometry::Vec3D v(Y);
   const double totalHeight = height+baseHeight;
   Geometry::Quaternion::calcQRotDeg(-wedgeAngle,X).rotate(v);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(maxLength-filterGap/2.0)+Z*(totalHeight/2.0),v);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(maxLength-filterGap/2.0)+Z*(totalHeight/2.0),v);
 
-  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(totalHeight/2.0-filterZOffset),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(filterZOffset+totalHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(totalHeight/2.0-filterZOffset),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(filterZOffset+totalHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*(filterZOffset+totalHeight/2.0-baseHeight),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(filterZOffset+totalHeight/2.0-baseHeight),Z);
+  // downstream filter blade
 
   return;
 }
@@ -198,16 +201,16 @@ PowerFilter::createObjects(Simulation& System)
   const HeadRule lrHR = ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 16 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -101 116 -106 ");
   makeCell("Base",System,cellIndex++,mat,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 5 -16 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -101 105 -116 ");
   makeCell("VoidBeforeBlade",System,cellIndex++,0,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 105 -106 ");
   makeCell("Blade",System,cellIndex++,mat,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -2 5 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 105 -106 ");
   addOuterSurf(HR*lrHR);
 
   return;
@@ -228,7 +231,7 @@ PowerFilter::createLinks()
   // // TODO: Check and use names for the links below:
 
   // FixedComp::setConnect(1,Origin+Y*(maxLength/2.0),Y);
-  // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
+  // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+102));
 
   // FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
   // FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
@@ -237,10 +240,10 @@ PowerFilter::createLinks()
   // FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
 
   // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  // FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
+  // FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+105));
 
   // FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  // FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
+  // FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+106));
 
   return;
 }
