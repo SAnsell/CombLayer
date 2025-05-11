@@ -152,8 +152,8 @@ PowerFilter::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
-    filterZOffset=Control.EvalVar<double>(keyName+"FilterZOffset");
-    filterGap=Control.EvalVar<double>(keyName+"FilterGap");
+  filterZOffset=Control.EvalVar<double>(keyName+"FilterZOffset");
+  filterGap=Control.EvalVar<double>(keyName+"FilterGap");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
@@ -170,21 +170,36 @@ PowerFilter::createSurfaces()
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
+  const double totalHeight = height+baseHeight;
+  // thickness of the blade in the middle
+  const double b1 = maxLength - totalHeight*tan(wedgeAngle*M_PI/180.0)/2.0;
+
+  const double yshift = filterGap/2.0+b1;
+  const double dz = filterZOffset/2.0;
+
   // upstream filter blade
-  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(filterGap/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+111,Origin-Y*(baseLength+filterGap/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(yshift),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin-Y*(yshift+baseLength),Y);
 
   Geometry::Vec3D v(Y);
-  const double totalHeight = height+baseHeight;
   Geometry::Quaternion::calcQRotDeg(-wedgeAngle,X).rotate(v);
-  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(maxLength-filterGap/2.0)+Z*(totalHeight/2.0),v);
+  ModelSupport::buildPlane(SMap,buildIndex+102,Origin+Y*(maxLength-yshift)+Z*(totalHeight/2.0+dz),v);
 
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(totalHeight/2.0-filterZOffset),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(filterZOffset+totalHeight/2.0),Z);
-
-  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*(filterZOffset+totalHeight/2.0-baseHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(totalHeight/2.0-dz),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(dz+totalHeight/2.0-baseHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*(dz+totalHeight/2.0),Z);
 
   // downstream filter blade
+  ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*(yshift),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+211,Origin+Y*(yshift+baseLength),Y);
+
+  Geometry::Vec3D w(Y);
+  Geometry::Quaternion::calcQRotDeg(-wedgeAngle,X).rotate(w);
+  ModelSupport::buildPlane(SMap,buildIndex+202,Origin+Y*(-maxLength+yshift)-Z*(totalHeight/2.0+dz),w);
+
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(totalHeight/2.0+dz),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin-Z*(totalHeight/2.0-baseHeight+dz),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+216,Origin+Z*(totalHeight/2.0-dz),Z);
 
   return;
 }
@@ -201,17 +216,31 @@ PowerFilter::createObjects(Simulation& System)
   const HeadRule lrHR = ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -101 116 -106 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -101 106 -116 ");
   makeCell("Base",System,cellIndex++,mat,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -101 105 -116 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -101 105 -106 ");
   makeCell("VoidBeforeBlade",System,cellIndex++,0,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 105 -106 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 105 -116 ");
   makeCell("Blade",System,cellIndex++,mat,0.0,HR*lrHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 105 -106 ");
+  // downstream filter blade
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -211 205 -206 ");
+  makeCell("Base",System,cellIndex++,mat,0.0,HR*lrHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -211 206 -216 ");
+  makeCell("VoidBeforeBlade",System,cellIndex++,0,0.0,HR*lrHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -201 205 -216 ");
+  makeCell("Blade",System,cellIndex++,mat,0.0,HR*lrHR);
+
+
+  //
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 105 -116 ");
   addOuterSurf(HR*lrHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 205 -216 ");
+  addOuterUnionSurf(HR*lrHR);
 
   return;
 }
@@ -243,7 +272,7 @@ PowerFilter::createLinks()
   // FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+105));
 
   // FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  // FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+106));
+  // FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+116));
 
   return;
 }
