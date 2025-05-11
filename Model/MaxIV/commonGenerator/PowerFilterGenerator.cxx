@@ -55,7 +55,8 @@ PowerFilterGenerator::PowerFilterGenerator() :
   wedgeAngle(2.55), // TDR, caption of fig 8.2 on page 39: 3 deg but geometry error (TODO)
   width(0.3),
   height(12.0), // d
-  baseHeight(1.0), // c
+  baseHeight(1.0), // c,
+  filterZOffset(0.0),
   mat("Silicon300K"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
@@ -85,6 +86,7 @@ PowerFilterGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"BaseHeight",baseHeight);
+  Control.addVariable(keyName+"FilterZOffset",filterZOffset);
   Control.addVariable(keyName+"Mat",mat);
   Control.addVariable(keyName+"WallMat",wallMat);
 

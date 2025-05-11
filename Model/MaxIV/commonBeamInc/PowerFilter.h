@@ -49,6 +49,7 @@ namespace xraySystem
     double width;                 ///< Width
     double height;                ///< parameter d
     double baseHeight;            ///< parameter c
+    double filterZOffset;         ///< z-offset of the single filter blade
 
     int mat;                      ///< filter material
 

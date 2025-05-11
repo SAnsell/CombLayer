@@ -152,6 +152,7 @@ PowerFilter::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
+    filterZOffset=Control.EvalVar<double>(keyName+"FilterZOffset");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
@@ -176,10 +177,10 @@ PowerFilter::createSurfaces()
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*totalHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*totalHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(totalHeight/2.0-filterZOffset),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(filterZOffset+totalHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin+Z*(totalHeight/2.0-baseHeight),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(filterZOffset+totalHeight/2.0-baseHeight),Z);
 
   return;
 }
@@ -194,10 +195,10 @@ PowerFilter::createObjects(Simulation& System)
   ELog::RegMethod RegA("PowerFilter","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -4 15 -6 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -4 16 -6 ");
   makeCell("Base",System,cellIndex++,mat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -4 5 -15 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -4 5 -16 ");
   makeCell("VoidBeforeBlade",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
