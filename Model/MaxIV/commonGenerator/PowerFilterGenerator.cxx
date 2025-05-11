@@ -57,6 +57,7 @@ PowerFilterGenerator::PowerFilterGenerator() :
   height(12.0), // d
   baseHeight(1.0), // c,
   filterZOffset(0.0),
+  filterGap(4.0),
   mat("Silicon300K"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
@@ -87,6 +88,7 @@ PowerFilterGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"BaseHeight",baseHeight);
   Control.addVariable(keyName+"FilterZOffset",filterZOffset);
+  Control.addVariable(keyName+"FilterGap",filterGap);
   Control.addVariable(keyName+"Mat",mat);
   Control.addVariable(keyName+"WallMat",wallMat);
 

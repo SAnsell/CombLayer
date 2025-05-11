@@ -153,6 +153,7 @@ PowerFilter::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
     filterZOffset=Control.EvalVar<double>(keyName+"FilterZOffset");
+    filterGap=Control.EvalVar<double>(keyName+"FilterGap");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
@@ -166,13 +167,13 @@ PowerFilter::createSurfaces()
 {
   ELog::RegMethod RegA("PowerFilter","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*baseLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(filterGap/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(baseLength+filterGap/2.0),Y);
 
   Geometry::Vec3D v(Y);
   const double totalHeight = height+baseHeight;
   Geometry::Quaternion::calcQRotDeg(-wedgeAngle,X).rotate(v);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(maxLength)+Z*(totalHeight/2.0),v);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(maxLength-filterGap/2.0)+Z*(totalHeight/2.0),v);
 
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);

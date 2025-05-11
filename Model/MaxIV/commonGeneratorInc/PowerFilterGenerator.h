@@ -46,6 +46,7 @@ class PowerFilterGenerator
   double height;                ///< Height
   double baseHeight;             ///< Wall thickness
     double filterZOffset;         ///< z-offset of the single filter blade
+    double filterGap;             ///< y-gap between filter blades
 
   std::string mat;          ///< Main material
   std::string wallMat;          ///< Wall material

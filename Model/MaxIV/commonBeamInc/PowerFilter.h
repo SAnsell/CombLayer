@@ -50,6 +50,7 @@ namespace xraySystem
     double height;                ///< parameter d
     double baseHeight;            ///< parameter c
     double filterZOffset;         ///< z-offset of the single filter blade
+    double filterGap;             ///< y-gap between filter blades
 
     int mat;                      ///< filter material
 
