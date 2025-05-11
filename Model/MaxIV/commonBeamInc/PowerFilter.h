@@ -42,14 +42,15 @@ namespace xraySystem
 		      public constructSystem::BeamAxis
   {
   private:
-
-    double maxLength;                ///< Total maxLength including void
-    double baseLength;            ///< length of base (parameter a)
+    // TomoWISE TDR, figure 8.2
+    double maxLength;             ///< parameter b
+    double baseLength;            ///< parameter a
     double wedgeAngle;            ///< angle of the wedge
     double width;                 ///< Width
-    double height;                ///< Height
+    double height;                ///< parameter d
+    double baseHeight;            ///< parameter c
 
-    int mat;                   ///< Main material
+    int mat;                      ///< filter material
 
     void populate(const FuncDataBase&);
     void createSurfaces();

@@ -46,6 +46,7 @@
 #include "groupRange.h"
 #include "objectGroups.h"
 #include "Simulation.h"
+#include "generateSurf.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
@@ -57,6 +58,7 @@
 #include "SurfMap.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Quaternion.h"
 #include "Line.h"
 #include "BeamAxis.h"
 
@@ -149,8 +151,7 @@ PowerFilter::populate(const FuncDataBase& Control)
   wedgeAngle=Control.EvalVar<double>(keyName+"WedgeAngle");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  baseLength=Control.EvalVar<double>(keyName+"BaseLength");
-
+  baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
@@ -164,14 +165,21 @@ PowerFilter::createSurfaces()
 {
   ELog::RegMethod RegA("PowerFilter","createSurfaces");
 
-  SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(maxLength/2.0),Y);
-  SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(maxLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*baseLength,Y);
+
+  Geometry::Vec3D v(Y);
+  const double totalHeight = height+baseHeight;
+  Geometry::Quaternion::calcQRotDeg(-wedgeAngle,X).rotate(v);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(maxLength)+Z*(totalHeight/2.0),v);
 
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(width/2.0),X);
   SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width/2.0),X);
 
-  SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*totalHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*totalHeight/2.0,Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin+Z*(totalHeight/2.0-baseHeight),Z);
 
   return;
 }
@@ -186,9 +194,16 @@ PowerFilter::createObjects(Simulation& System)
   ELog::RegMethod RegA("PowerFilter","createObjects");
 
   HeadRule HR;
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -4 15 -6 ");
+  makeCell("Base",System,cellIndex++,mat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -1 3 -4 5 -15 ");
+  makeCell("VoidBeforeBlade",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
+  makeCell("Blade",System,cellIndex++,mat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -2 3 -4 5 -6 ");
   addOuterSurf(HR);
 
   return;
@@ -203,25 +218,25 @@ PowerFilter::createLinks()
 {
   ELog::RegMethod RegA("PowerFilter","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(maxLength/2.0),-Y);
-  FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
+  // FixedComp::setConnect(0,Origin-Y*(maxLength/2.0),-Y);
+  // FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
 
-  // TODO: Check and use names for the links below:
+  // // TODO: Check and use names for the links below:
 
-  FixedComp::setConnect(1,Origin+Y*(maxLength/2.0),Y);
-  FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
+  // FixedComp::setConnect(1,Origin+Y*(maxLength/2.0),Y);
+  // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
+  // FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  // FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
+  // FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  // FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
+  // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  // FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
+  // FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  // FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
 
   return;
 }

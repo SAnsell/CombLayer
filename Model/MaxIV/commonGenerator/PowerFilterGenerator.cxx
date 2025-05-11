@@ -50,10 +50,12 @@ namespace setVariable
 {
 
 PowerFilterGenerator::PowerFilterGenerator() :
-  maxLength(0.6), // all dimensions: TDR, page 39 and table 8.1
-  baseLength(0.7),
-  wedgeAngle(3), // TDR, caption of fig 8.2 on page 39
-  width(0.3),height(12.0),baseHeight(1.0),
+  maxLength(0.6), // b; all dimensions: TDR, page 39 and table 8.1
+  baseLength(0.7), // a
+  wedgeAngle(2.55), // TDR, caption of fig 8.2 on page 39: 3 deg but geometry error (TODO)
+  width(0.3),
+  height(12.0), // d
+  baseHeight(1.0), // c
   mat("Silicon300K"),wallMat("Stainless316L")
   /*!
     Constructor and defaults
