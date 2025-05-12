@@ -297,18 +297,46 @@ PowerFilter::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 211 -221 -235 -207 ");
   makeCell("DownstreamHolderGapCyl",System,cellIndex++,0,0.0,HR);
 
+  // aux voids
+  /// front
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 123 -124 125 -135 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 3 -4 135 -105 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  //
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 105 -116 ");
-  addOuterSurf(HR*lrHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 205 -216 ");
-  addOuterUnionSurf(HR*lrHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 4 -124 135 -116 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 123 -3 135 -116 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -111 123 -124 125 -126 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 123 -124 116 -126 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -102 123 -124 126 -226"); //
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+
+  /// back
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 123 -124 125 -205 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -221 3 -4 205 -135 ");
+  // makeCell("Void",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 4 -124 205 -216 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 123 -3 205 -216 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 123 -124 216 -226 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 211 -221 123 -124 125 -225 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+
+
+  /// two blades
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -102 123 -124 125 -226 ");
+  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -221 123 -124 125 -226 ");
   addOuterUnionSurf(HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 211 -221 123 -124 225 -226 ");
-  addOuterUnionSurf(HR);
 
   return;
 }
