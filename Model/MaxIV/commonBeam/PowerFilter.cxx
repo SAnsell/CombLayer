@@ -88,7 +88,8 @@ PowerFilter::PowerFilter(const PowerFilter& A) :
   maxLength(A.maxLength),width(A.width),height(A.height),
   baseLength(A.baseLength),
   wedgeAngle(A.wedgeAngle),
-  mat(A.mat)
+  mat(A.mat),
+    holderMat(A.holderMat)
   /*!
     Copy constructor
     \param A :: PowerFilter to copy
@@ -115,6 +116,7 @@ PowerFilter::operator=(const PowerFilter& A)
       width=A.width;
       height=A.height;
       mat=A.mat;
+        holderMat=A.holderMat;
     }
   return *this;
 }
@@ -154,7 +156,14 @@ PowerFilter::populate(const FuncDataBase& Control)
   baseHeight=Control.EvalVar<double>(keyName+"BaseHeight");
   filterZOffset=Control.EvalVar<double>(keyName+"FilterZOffset");
   filterGap=Control.EvalVar<double>(keyName+"FilterGap");
+    holderWidth=Control.EvalVar<double>(keyName+"HolderWidth");
+    holderLength=Control.EvalVar<double>(keyName+"HolderLength");
+    holderHeight=Control.EvalVar<double>(keyName+"HolderHeight");
+    holderDepth=Control.EvalVar<double>(keyName+"HolderDepth");
+    holderGapWidth=Control.EvalVar<double>(keyName+"HolderGapWidth");
+    holderGapHeight=Control.EvalVar<double>(keyName+"HolderGapHeight");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+    holderMat=ModelSupport::EvalMat<int>(Control,keyName+"HolderMat");
 
   return;
 }
@@ -177,7 +186,8 @@ PowerFilter::createSurfaces()
   const double yshift = filterGap/2.0+b1;
   const double dz = filterZOffset/2.0;
 
-  // upstream filter blade
+  // upstream filter
+  /// blade
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-Y*(yshift),Y);
   ModelSupport::buildPlane(SMap,buildIndex+111,Origin-Y*(yshift+baseLength),Y);
 
@@ -189,7 +199,21 @@ PowerFilter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(dz+totalHeight/2.0-baseHeight),Z);
   ModelSupport::buildPlane(SMap,buildIndex+116,Origin+Z*(dz+totalHeight/2.0),Z);
 
-  // downstream filter blade
+  /// holder
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+121,buildIndex+111,Y,-holderLength);
+  ModelSupport::buildPlane(SMap,buildIndex+123,Origin-X*(holderWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+124,Origin+X*(holderWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+125,Origin-Z*(holderDepth-dz),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+126,Origin+Z*(holderHeight+dz),Z);
+
+  const double R=holderGapWidth/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+143,Origin-X*(R),X);
+  ModelSupport::buildPlane(SMap,buildIndex+144,Origin+X*(R),X);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+135,buildIndex+126,Y,-holderGapHeight+R);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin+Z*(holderHeight-holderGapHeight+R+dz),Y,R);
+
+  // downstream filter
+  /// blade
   ModelSupport::buildPlane(SMap,buildIndex+201,Origin+Y*(yshift),Y);
   ModelSupport::buildPlane(SMap,buildIndex+211,Origin+Y*(yshift+baseLength),Y);
 
@@ -200,6 +224,9 @@ PowerFilter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(totalHeight/2.0+dz),Z);
   ModelSupport::buildPlane(SMap,buildIndex+206,Origin-Z*(totalHeight/2.0-baseHeight+dz),Z);
   ModelSupport::buildPlane(SMap,buildIndex+216,Origin+Z*(totalHeight/2.0-dz),Z);
+
+  /// holder
+
 
   return;
 }
@@ -216,6 +243,8 @@ PowerFilter::createObjects(Simulation& System)
   const HeadRule lrHR = ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
 
   HeadRule HR;
+  // upstream filter
+  /// blade
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -101 106 -116 ");
   makeCell("Base",System,cellIndex++,mat,0.0,HR*lrHR);
 
@@ -225,7 +254,23 @@ PowerFilter::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 105 -116 ");
   makeCell("Blade",System,cellIndex++,mat,0.0,HR*lrHR);
 
-  // downstream filter blade
+  /// holder
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -111 123 -143 135 -126");
+  makeCell("UpstreamHolder",System,cellIndex++,holderMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -111 144 -124 135 -126");
+  makeCell("UpstreamHolder",System,cellIndex++,holderMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -111 123 -124 125 -135 107");
+  makeCell("UpstreamHolder",System,cellIndex++,holderMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -111 143 -144 135 -126 ");
+  makeCell("UpstreamHolderGapRec",System,cellIndex++,0,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -111 -135 -107 ");
+  makeCell("UpstreamHolderGapCyl",System,cellIndex++,0,0.0,HR);
+
+
+  // downstream filter
+  /// blade
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 201 -211 205 -206 ");
   makeCell("Base",System,cellIndex++,mat,0.0,HR*lrHR);
 
@@ -235,12 +280,17 @@ PowerFilter::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -201 205 -216 ");
   makeCell("Blade",System,cellIndex++,mat,0.0,HR*lrHR);
 
+  /// holder
+
 
   //
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 105 -116 ");
   addOuterSurf(HR*lrHR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 205 -216 ");
   addOuterUnionSurf(HR*lrHR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -111 123 -124 125 -126 ");
+  addOuterUnionSurf(HR);
 
   return;
 }

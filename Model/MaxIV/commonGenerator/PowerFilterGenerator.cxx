@@ -53,12 +53,19 @@ PowerFilterGenerator::PowerFilterGenerator() :
   maxLength(0.6), // b; all dimensions: TDR, page 39 and table 8.1
   baseLength(0.7), // a
   wedgeAngle(2.55), // TDR, caption of fig 8.2 on page 39: 3 deg but geometry error (TODO)
-  width(0.3),
+  width(3.0),
   height(12.0), // d
   baseHeight(1.0), // c,
   filterZOffset(0.0),
   filterGap(4.0),
-  mat("Silicon300K"),wallMat("Stainless316L")
+  holderWidth(4.5),
+  holderLength(0.8),
+  holderHeight(7.7),
+  holderDepth(8.3),
+  holderGapWidth(1.0),
+  holderGapHeight(14.8),
+  mat("Silicon300K"),
+  holderMat("Stainless304L")
   /*!
     Constructor and defaults
   */
@@ -89,8 +96,14 @@ PowerFilterGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"BaseHeight",baseHeight);
   Control.addVariable(keyName+"FilterZOffset",filterZOffset);
   Control.addVariable(keyName+"FilterGap",filterGap);
+  Control.addVariable(keyName+"HolderWidth",holderWidth);
+  Control.addVariable(keyName+"HolderLength",holderLength);
+  Control.addVariable(keyName+"HolderHeight",holderHeight);
+  Control.addVariable(keyName+"HolderDepth",holderDepth);
+  Control.addVariable(keyName+"HolderGapWidth",holderGapWidth);
+  Control.addVariable(keyName+"HolderGapHeight",holderGapHeight);
   Control.addVariable(keyName+"Mat",mat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"HolderMat",holderMat);
 
   return;
 

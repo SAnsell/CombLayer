@@ -51,8 +51,15 @@ namespace xraySystem
     double baseHeight;            ///< parameter c
     double filterZOffset;         ///< z-offset of the single filter blade
     double filterGap;             ///< y-gap between filter blades
+    double holderWidth;           ///< holder width
+    double holderLength;          ///< holder length
+    double holderHeight;          ///< holder height
+    double holderDepth;           ///< holder depth
+    double holderGapWidth;        ///< holder gap width
+    double holderGapHeight;       ///< holder gap (full) height
 
     int mat;                      ///< filter material
+    int holderMat;                ///< holder material
 
     void populate(const FuncDataBase&);
     void createSurfaces();
