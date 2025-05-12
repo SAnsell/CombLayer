@@ -53,6 +53,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -68,7 +69,7 @@ namespace xraySystem
 {
 
 PowerFilter::PowerFilter(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Upstream", "Downstream"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -80,7 +81,7 @@ PowerFilter::PowerFilter(const std::string& Key)  :
 {}
 
 PowerFilter::PowerFilter(const PowerFilter& A) :
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
@@ -106,7 +107,7 @@ PowerFilter::operator=(const PowerFilter& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       constructSystem::BeamAxis::operator=(A);
@@ -333,9 +334,9 @@ PowerFilter::createObjects(Simulation& System)
 
   /// two blades
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -102 123 -124 125 -226 ");
-  addOuterSurf(HR);
+  addOuterSurf("Upstream",HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -221 123 -124 125 -226 ");
-  addOuterUnionSurf(HR);
+  addOuterSurf("Downstream",HR);
 
 
   return;

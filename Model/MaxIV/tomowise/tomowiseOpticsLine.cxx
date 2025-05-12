@@ -210,6 +210,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(bellowC);
   OR.addObject(pipeBA);
   OR.addObject(powerFilterVessel);
+  OR.addObject(powerFilter);
   OR.addObject(pipeBB);
   OR.addObject(MLMVessel);
   OR.addObject(MLM);
@@ -626,7 +627,8 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
 
   powerFilter->setBeamAxis(*powerFilterVessel, 1);
   powerFilter->createAll(System, *powerFilterVessel, 0);
-  powerFilter->insertInCell(System,powerFilterVessel->getCell("Void"));
+  powerFilter->insertInCell("Upstream",System,powerFilterVessel->getCell("Void"));
+  powerFilter->insertInCell("Downstream",System,powerFilterVessel->getCell("Void"));
 
   constructSystem::constructUnit(System,buildZone,*powerFilterVessel,"back",*pipeBB);
 

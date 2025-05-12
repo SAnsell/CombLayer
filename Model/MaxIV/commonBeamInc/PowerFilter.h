@@ -35,7 +35,7 @@ namespace xraySystem
     \brief Power filter
   */
 
-  class PowerFilter : public attachSystem::ContainedComp,
+  class PowerFilter : public attachSystem::ContainedGroup,
 		      public attachSystem::FixedRotate,
 		      public attachSystem::CellMap,
 		      public attachSystem::SurfMap,
