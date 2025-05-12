@@ -189,6 +189,7 @@
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
 #include "ProximityShielding.h"
+#include "PowerFilter.h"
 
 #include "makeSingleItem.h"
 
@@ -238,7 +239,7 @@ makeSingleItem::build(Simulation& System,
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
 	"HalfElectronPipe","HeimdalCave","LegoBrick",
-	"MultiPipe","PipeTube","PortTube", "ProximityShielding", "BlankTube","ButtonBPM",
+	"MultiPipe","PipeTube","PortTube", "PowerFilter", "ProximityShielding", "BlankTube","ButtonBPM",
 	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
 	"IonPTube","IonGauge","CollTube",
 	"NBeamStop","MagTube","TriggerTube",
@@ -1544,6 +1545,15 @@ makeSingleItem::build(Simulation& System,
 
 	return;
       }
+
+    if (item == "PowerFilter" ) {
+      const auto powerFilter(std::make_shared<xraySystem::PowerFilter>("PowerFilter"));
+      OR.addObject(powerFilter);
+      //      powerFilter->setBeamAxis(*powerFilterVessel, 1);
+      powerFilter->createAll(System, World::masterOrigin(), 0);
+      powerFilter->insertInCell("Upstream",System,voidCell);
+      powerFilter->insertInCell("Downstream",System,voidCell);
+    }
 
     if (item == "ProximityShielding" ) {
       std::shared_ptr<constructSystem::VacuumPipe>

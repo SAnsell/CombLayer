@@ -148,6 +148,7 @@
 #include "MovableSafetyMaskGenerator.h"
 #include "HeatAbsorberToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
+#include "PowerFilterGenerator.h"
 
 namespace setVariable
 {
@@ -916,6 +917,9 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("ProxiShieldYStep",-5.0);
   //  Optional: set BoreRadius to zero to avoid gap between the pipe
   //  Control.addVariable(frontKey+"ProxiShieldBoreRadius",0.0);
+
+  PowerFilterGenerator PFGen;
+  PFGen.generate(Control,"PowerFilter");
 
 
   return;
