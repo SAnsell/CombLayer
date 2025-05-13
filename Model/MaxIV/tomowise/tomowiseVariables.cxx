@@ -367,11 +367,11 @@ diag2Package(FuncDataBase& Control,
 
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,diagKey+"BellowFA",10.0);
+  BellowGen.generateBellow(Control,diagKey+"BellowFA",10.0+2.8);
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
 
-  const std::string viewName=diagKey+"ViewTubeA";
+  const std::string viewName=diagKey+"ViewTubeA"; // BPM screen
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setCap(0,0);
   //  SimpleTubeGen.setBFlangeCF<CF150>();
