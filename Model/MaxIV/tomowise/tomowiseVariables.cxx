@@ -1124,9 +1124,10 @@ opticsVariables(FuncDataBase& Control,
   GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
   Control.addVariable(preName+"GateTubeBPortRadius", gateTubePortRadius);
   BellowGen.generateBellow(Control,preName+"BellowC",15.0);
+  BellowGen.generateBellow(Control,preName+"BellowCA",15.0-1.1769860); // length adjusted to place (TomoWISEOpticsLineMLMXstalA) at 2590 cm
 
   const std::string name=preName+"PowerFilterVessel";
-  constexpr double pfLength = 44.223014; // dummy total power filter vessel length to place the first mirror correctly (TomoWISEOpticsLineMLMXstalA) at 2590 cm
+  //  constexpr double pfLength = 44.223014; // dummy total power filter vessel length to place the first mirror correctly
   PipeGen.generatePipe(Control,preName+"PipeBA",5.0);
   Control.addVariable(preName+"PipeBAFlangeBRadius", CF200::outerRadius);
   PipeGen.generatePipe(Control,preName+"PipeBB",5.0);
@@ -1136,7 +1137,7 @@ opticsVariables(FuncDataBase& Control,
   // CL will not build their empty cells. The lenth parameter is irellevant.
   SimpleTubeGen.setAFlange(CF200::outerRadius, CF200::flangeLength);
   SimpleTubeGen.setBFlange(CF200::outerRadius, CF200::flangeLength);
-  SimpleTubeGen.generateTube(Control,name,pfLength-5.0*2);
+  SimpleTubeGen.generateTube(Control,name,20.4);
   Control.addVariable(name+"NPorts",1);
 
   PItemGen.setCF<setVariable::CF150>(CF200::outerRadius+14.5); // measured

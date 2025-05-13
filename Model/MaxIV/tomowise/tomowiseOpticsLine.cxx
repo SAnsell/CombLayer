@@ -134,6 +134,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   powerFilterVessel(new constructSystem::PipeTube(newName+"PowerFilterVessel")),
   powerFilter(new xraySystem::PowerFilter(newName+"PowerFilter")),
   pipeBB(new constructSystem::VacuumPipe(newName+"PipeBB")),
+  bellowCA(new constructSystem::Bellows(newName+"BellowCA")),
 
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
   MLM(new xraySystem::MLMonoDetail(newName+"MLM")),
@@ -630,8 +631,9 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   powerFilter->insertInCell(System,powerFilterVessel->getCell("Void"));
 
   constructSystem::constructUnit(System,buildZone,*powerFilterVessel,"back",*pipeBB);
+  constructSystem::constructUnit(System,buildZone,*pipeBB,"back",*bellowCA);
 
-  constructMirrorMono(System,*pipeBB,"back");
+  constructMirrorMono(System,*bellowCA,"back");
 
 
   constructSystem::constructUnit

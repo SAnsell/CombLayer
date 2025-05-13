@@ -136,6 +136,7 @@ class tomowiseOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> powerFilterVessel;
   std::shared_ptr<xraySystem::PowerFilter> powerFilter;
   std::shared_ptr<constructSystem::VacuumPipe> pipeBB;
+  std::shared_ptr<constructSystem::Bellows> bellowCA;
 
   // PART 4: [MML]
   /// MirrorMonoBox
