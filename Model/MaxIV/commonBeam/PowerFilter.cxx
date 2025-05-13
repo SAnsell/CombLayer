@@ -325,7 +325,6 @@ PowerFilter::createObjects(Simulation& System)
 
   //
   bool A = holderDepth - holderHeight - filterZOffset > 0.0;
-  ELog::EM << "A: " << A << ELog::endDiag;
   const int nzmin = A ? 125 : 225;
   const int nzmax = A ? 226 : 126;
   HeadRule HRzmin = ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(nzmin));
@@ -334,11 +333,11 @@ PowerFilter::createObjects(Simulation& System)
   // void between the two blades
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 102 -202 123 -124 125 -226 ");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
-  if (!A) { // void below upstream blade
-    HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -202 123 -124 225 -125 ");
-    makeCell("Void",System,cellIndex++,0,0.0,HR);
-  } else { // void below downstream blade
+  if (A) { // void below downstream blade
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"  202 -221 123 -124 125 -225 ");
+    makeCell("Void",System,cellIndex++,0,0.0,HR);
+  } else { // void below upstream blade
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -202 123 -124 225 -125 ");
     makeCell("Void",System,cellIndex++,0,0.0,HR);
   }
 
@@ -367,25 +366,37 @@ PowerFilter::createLinks()
 {
   ELog::RegMethod RegA("PowerFilter","createLinks");
 
-  // FixedComp::setConnect(0,Origin-Y*(maxLength/2.0),-Y);
-  // FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
+  // same definition as createSurfaces
+  const double totalHeight = height+baseHeight;
+  const double b1 = maxLength - totalHeight*tan(wedgeAngle*M_PI/180.0)/2.0;
+  const double dz = filterZOffset/2.0;
+  const double yshift = filterGap/2.0+b1;
 
-  // // TODO: Check and use names for the links below:
+  FixedComp::setConnect(0,Origin-Y*(yshift+baseLength-holderLength),-Y);
+  FixedComp::setNamedLinkSurf(0,"Back",-SMap.realSurf(buildIndex+121));
 
-  // FixedComp::setConnect(1,Origin+Y*(maxLength/2.0),Y);
-  // FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+102));
+  FixedComp::setConnect(1,Origin+Y*(yshift+baseLength+holderLength),Y);
+  FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+221));
 
-  // FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  // FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect(2,Origin-X*(holderWidth/2.0),-X);
+  FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+123));
 
-  // FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  // FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect(3,Origin+X*(holderWidth/2.0),X);
+  FixedComp::setNamedLinkSurf(2,"Right",SMap.realSurf(buildIndex+124));
 
-  // FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  // FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+105));
+  // same code as in buildObjects
+  bool A = holderDepth - holderHeight - filterZOffset > 0.0;
+  const int nzmin = A ? 125 : 225;
+  const int nzmax = A ? 226 : 126;
 
-  // FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  // FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+116));
+  const double zmin = A ? holderDepth-dz : holderHeight+dz;
+  const double zmax = A ? holderDepth-dz : holderHeight+dz;
+
+  FixedComp::setConnect(4,Origin-Z*(zmin),-Z);
+  FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+nzmin));
+
+  FixedComp::setConnect(5,Origin+Z*(zmax),Z);
+  FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+nzmax));
 
   return;
 }
