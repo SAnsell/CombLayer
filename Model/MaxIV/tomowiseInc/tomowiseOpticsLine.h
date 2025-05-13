@@ -176,6 +176,7 @@ class tomowiseOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowFA;
 
   std::shared_ptr<constructSystem::PipeTube> viewTubeA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeDA;
 
   /// Mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBoxA;

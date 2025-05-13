@@ -156,6 +156,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
   bellowFA(new constructSystem::Bellows(newName+"BellowFA")),
   viewTubeA(new constructSystem::PipeTube(newName+"ViewTubeA")),
+  pipeDA(new constructSystem::VacuumPipe(newName+"PipeDA")),
 
   mirrorBoxA(new constructSystem::VacuumBox(newName+"MirrorBoxA")),
   mirrorFrontA(new xraySystem::Mirror(newName+"MirrorFrontA")),
@@ -233,6 +234,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(hpJawsA);
   OR.addObject(bellowFA);
   OR.addObject(viewTubeA);
+  OR.addObject(pipeDA);
 
   OR.addObject(mirrorBoxA);
   OR.addObject(mirrorFrontA);
@@ -657,8 +659,10 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
 
   constructDiag2(System,*gateTubeD,"back");
 
+  constructSystem::constructUnit(System,buildZone,*viewTubeA,"back",*pipeDA);
 
-  constructSystem::constructUnit(System,buildZone,*viewTubeA,"back",*mirrorBoxA);
+
+  constructSystem::constructUnit(System,buildZone,*pipeDA,"back",*mirrorBoxA);
 
   mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
