@@ -1120,8 +1120,8 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"PipeB",7.5);
   GVGen.generateGate(Control,preName+"GateTubeB",0);  // open
   Control.addVariable(preName+"GateTubeBPortRadius", gateTubePortRadius);
-  BellowGen.generateBellow(Control,preName+"BellowC",15.0);
-  BellowGen.generateBellow(Control,preName+"BellowCA",15.0-1.1769860); // length adjusted to place (TomoWISEOpticsLineMLMXstalA) at 2590 cm
+  BellowGen.generateBellow(Control,preName+"BellowC",15.0-0.45);
+  BellowGen.generateBellow(Control,preName+"BellowCA",15.0-1.1769860+0.45); // length adjusted to place (TomoWISEOpticsLineMLMXstalA) at 2590 cm
 
   const std::string name=preName+"PowerFilterVessel";
   //  constexpr double pfLength = 44.223014; // dummy total power filter vessel length to place the first mirror correctly
