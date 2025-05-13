@@ -184,12 +184,9 @@ frontMaskVariables(FuncDataBase& Control,
   constexpr double FM2Length(40.0); // [3]
   constexpr double MSMLength(40.0); // [3]
 
-  constexpr double tmp = 0*45.3516244323655;
-  ELog::EM << "What is tmp?" << ELog::endWarn;
-
-  const double FM1dist(1150.0-tmp+FM1Length/2.0); // [3]
-  const double FM2dist(1500.0-tmp+FM2Length/2.0); // [3]
-  const double MSMdist(1600.0-tmp); // [3]
+  const double FM1dist(1150.0+FM1Length/2.0); // [3]
+  const double FM2dist(1500.0+FM2Length/2.0); // [3]
+  const double MSMdist(1600.0); // [3]
 
   FMaskGen.setCF<CF100>();
   FMaskGen.setFrontGap(2.53, 2.53); // [3]
