@@ -1568,7 +1568,8 @@ makeSingleItem::build(Simulation& System,
       VC->createAll(System,World::masterOrigin(),0);
 
       proxiShield->setCutSurf("Inner",*VC,"outerPipe");
-      proxiShield->addInsertCell(voidCell);
+      //proxiShield->addInsertCell(voidCell);
+      proxiShield->insertInCell(System,voidCell);
       proxiShield->createAll(System,*VC,0);
 
     }
