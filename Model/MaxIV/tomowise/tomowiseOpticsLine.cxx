@@ -627,8 +627,7 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
 
   powerFilter->setBeamAxis(*powerFilterVessel, 1);
   powerFilter->createAll(System, *powerFilterVessel, 0);
-  powerFilter->insertInCell("Upstream",System,powerFilterVessel->getCell("Void"));
-  powerFilter->insertInCell("Downstream",System,powerFilterVessel->getCell("Void"));
+  powerFilter->insertInCell(System,powerFilterVessel->getCell("Void"));
 
   constructSystem::constructUnit(System,buildZone,*powerFilterVessel,"back",*pipeBB);
 

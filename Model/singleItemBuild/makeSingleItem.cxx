@@ -1551,8 +1551,8 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(powerFilter);
       //      powerFilter->setBeamAxis(*powerFilterVessel, 1);
       powerFilter->createAll(System, World::masterOrigin(), 0);
-      powerFilter->insertInCell("Upstream",System,voidCell);
-      powerFilter->insertInCell("Downstream",System,voidCell);
+      powerFilter->insertInCell(System,voidCell);
+      //    powerFilter->addInsertCell(voidCell);
     }
 
     if (item == "ProximityShielding" ) {

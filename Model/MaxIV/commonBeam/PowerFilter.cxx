@@ -53,7 +53,6 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -69,7 +68,7 @@ namespace xraySystem
 {
 
 PowerFilter::PowerFilter(const std::string& Key)  :
-  attachSystem::ContainedGroup("Upstream", "Downstream"),
+  attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -81,7 +80,7 @@ PowerFilter::PowerFilter(const std::string& Key)  :
 {}
 
 PowerFilter::PowerFilter(const PowerFilter& A) :
-  attachSystem::ContainedGroup(A),
+  attachSystem::ContainedComp(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
@@ -107,7 +106,7 @@ PowerFilter::operator=(const PowerFilter& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       constructSystem::BeamAxis::operator=(A);
@@ -312,14 +311,10 @@ PowerFilter::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -102 123 -124 116 -126 ");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -102 123 -124 126 -226"); //
-  makeCell("Void",System,cellIndex++,0,0.0,HR);
 
   /// back
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 123 -124 125 -205 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 123 -124 225 -205 ");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
-  // HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -221 3 -4 205 -135 ");
-  // makeCell("Void",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 4 -124 205 -216 ");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
@@ -328,15 +323,36 @@ PowerFilter::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -211 123 -124 216 -226 ");
   makeCell("Void",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 211 -221 123 -124 125 -225 ");
-  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  //
+  bool A = holderDepth - holderHeight - filterZOffset > 0.0;
+  ELog::EM << "A: " << A << ELog::endDiag;
+  const int nzmin = A ? 125 : 225;
+  const int nzmax = A ? 226 : 126;
+  HeadRule HRzmin = ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(nzmin));
+  HeadRule HRzmax = ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(-nzmax));
 
+  // void between the two blades
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 102 -202 123 -124 125 -226 ");
+  makeCell("Void",System,cellIndex++,0,0.0,HR);
+  if (!A) { // void below upstream blade
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -202 123 -124 225 -125 ");
+    makeCell("Void",System,cellIndex++,0,0.0,HR);
+  } else { // void below downstream blade
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"  202 -221 123 -124 125 -225 ");
+    makeCell("Void",System,cellIndex++,0,0.0,HR);
+  }
+
+  if (A) { // void above upstream blade
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -102 123 -124 126 -226 ");//
+    makeCell("Void",System,cellIndex++,0,0.0,HR);
+  } else { //void above downstream blade
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 102 -221 123 -124 226 -126");
+    makeCell("Void",System,cellIndex++,0,0.0,HR);
+  }
 
   /// two blades
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -102 123 -124 125 -226 ");
-  addOuterSurf("Upstream",HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 202 -221 123 -124 125 -226 ");
-  addOuterSurf("Downstream",HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 121 -221 123 -124 ");
+  addOuterSurf(HR*HRzmin*HRzmax);
 
 
   return;
