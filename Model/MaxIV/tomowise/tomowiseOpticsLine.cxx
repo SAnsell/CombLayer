@@ -662,18 +662,18 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*viewTubeA,"back",*pipeDA);
 
 
-  constructSystem::constructUnit(System,buildZone,*pipeDA,"back",*mirrorBoxA);
+  // constructSystem::constructUnit(System,buildZone,*pipeDA,"back",*mirrorBoxA);
 
-  mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
-			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
+  // mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
+  // 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
 
-  mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
-  mirrorFrontA->createAll(System,*mirrorBoxA,0);
+  // mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
+  // mirrorFrontA->createAll(System,*mirrorBoxA,0);
 
-  mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
-  mirrorBackA->createAll(System,*mirrorBoxA,0);
+  // mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
+  // mirrorBackA->createAll(System,*mirrorBoxA,0);
 
-  constructDiag3(System,*mirrorBoxA,"back");
+  constructDiag3(System,*pipeDA,"back");
 
 
   constructDiag4(System,*bellowI,"back");

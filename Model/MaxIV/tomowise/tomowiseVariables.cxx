@@ -1170,7 +1170,7 @@ opticsVariables(FuncDataBase& Control,
 
   diag2Package(Control,preName);
 
-  PipeGen.generatePipe(Control,preName+"PipeDA",12.5);// dummy length
+  PipeGen.generatePipe(Control,preName+"PipeDA",178.0);// dummy length
 
 
   // formaxVar::mirrorBox(Control,preName,"A",-0.17,0.17);
