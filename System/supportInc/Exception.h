@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   supportInc/Exception.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef ColErr_Exception_h
@@ -28,7 +28,7 @@
   \author S. Ansell
   \version 1.0
   \date February 2006
-  
+
 */
 
 namespace ColErr
@@ -41,10 +41,10 @@ namespace ColErr
   \date Sept 2005
 
   Base class of all exceptions. The main
-  virtual function is the getErrorStr 
+  virtual function is the getErrorStr
   which returns the reporting information.
 */
- 
+
 class ExBase : public std::exception
 {
  private:
@@ -63,18 +63,18 @@ class ExBase : public std::exception
   ExBase(const std::string&);
   ExBase(const ExBase&);
   ExBase& operator=(const ExBase&);
-  ~ExBase() throw() override {}  ///< Destructor 
+  ~ExBase() throw() override {}  ///< Destructor
 
   /// Main reporting method
   const char* what() const throw() override;
-  
-  /// Return the error number 
-  int getErrorNum() const { return state; }    
+
+  /// Return the error number
+  int getErrorNum() const { return state; }
   /// Get the error range
   const std::string& getErr() const { return ErrLn; }
 };
 
- 
+
 /*!
   \class EmptyContainer
   \brief Exception for a container in an empty state
@@ -94,7 +94,7 @@ class EmptyContainer : public ExBase
   EmptyContainer(const std::string&);
   EmptyContainer(const EmptyContainer&);
   EmptyContainer& operator=(const EmptyContainer&);
-  ~EmptyContainer() throw() override {}   ///< Destructor 
+  ~EmptyContainer() throw() override {}   ///< Destructor
 
 };
 
@@ -112,7 +112,7 @@ class IndexError : public ExBase
 {
  private:
 
-  const T Val;     ///< Actual value called 
+  const T Val;     ///< Actual value called
   const T maxVal;  ///< Maximum value
 
   void setOutLine();
@@ -122,7 +122,7 @@ class IndexError : public ExBase
   IndexError(T ,T ,const std::string&);
   IndexError(const IndexError& A);
   IndexError& operator=(const IndexError&);
-  ~IndexError() throw() override {}   ///< Destructor 
+  ~IndexError() throw() override {}   ///< Destructor
 
 };
 
@@ -142,7 +142,7 @@ class LinearError : public ExBase
 {
  private:
 
-  std::vector<T> Val;     ///< Actual value called 
+  std::vector<T> Val;     ///< Actual value called
   void setOutLine();
 
  public:
@@ -150,7 +150,7 @@ class LinearError : public ExBase
   LinearError(std::vector<T>,const std::string&);
   LinearError(const LinearError& A);
   LinearError& operator=(const LinearError&);
-  ~LinearError() throw() override {}   ///< Destructor 
+  ~LinearError() throw() override {}   ///< Destructor
 
 };
 
@@ -169,7 +169,7 @@ class SizeError : public ExBase
 {
  private:
 
-  const T Val;     ///< Actual value called 
+  const T Val;     ///< Actual value called
   const T minVal;  ///< Minimum value
 
   void setOutLine();
@@ -179,7 +179,7 @@ class SizeError : public ExBase
   SizeError(const T&,const T&,const std::string&);
   SizeError(const SizeError& A);
   SizeError& operator=(const SizeError&);
-  ~SizeError() throw() override {}   ///< Destructor 
+  ~SizeError() throw() override {}   ///< Destructor
 
 };
 
@@ -207,7 +207,7 @@ class FileError : public ExBase
   FileError(const int,std::string ,const std::string&);
   FileError(const FileError&);
   FileError& operator=(const FileError&);
-  ~FileError() throw() override {}   ///< Destructor 
+  ~FileError() throw() override {}   ///< Destructor
 
 };
 
@@ -231,7 +231,7 @@ class EmptyValue : public ExBase
   EmptyValue(const std::string&);
   EmptyValue(const EmptyValue&);
   EmptyValue<T>& operator=(const EmptyValue<T>&);
-  ~EmptyValue() throw() override {}   ///< Destructor 
+  ~EmptyValue() throw() override {}   ///< Destructor
 
 };
 
@@ -259,7 +259,7 @@ class InContainerError : public ExBase
   InContainerError(T ,const std::string&);
   InContainerError(const InContainerError&);
   InContainerError<T>& operator=(const InContainerError<T>&);
-  ~InContainerError() throw() override {}   ///< Destructor 
+  ~InContainerError() throw() override {}   ///< Destructor
 
   /// Accessor to search item
   const T& getItem() const { return SearchObj; }
@@ -291,8 +291,8 @@ class RangeError : public ExBase
   RangeError(const T&,const T&,const T&,const std::string&);
   RangeError(const RangeError<T>& A);
   RangeError<T>& operator=(const RangeError<T>&);
-  ~RangeError() throw() override {}   ///< Destructor 
- 
+  ~RangeError() throw() override {}   ///< Destructor
+
 };
 
 /*!
@@ -304,7 +304,7 @@ class RangeError : public ExBase
 
   Records the two items A should be <= B
 */
- 
+
 template<typename T>
 class OrderError : public ExBase
 {
@@ -320,8 +320,8 @@ class OrderError : public ExBase
   OrderError(const T&,const T&,const std::string&);
   OrderError(const OrderError<T>& A);
   OrderError<T>& operator=(const OrderError<T>&);
-  ~OrderError() throw() override {}   ///< Destructor 
- 
+  ~OrderError() throw() override {}   ///< Destructor
+
 };
 
 /*!
@@ -331,7 +331,7 @@ class OrderError : public ExBase
   \date October 2015
   \version 1.0
 
-  Records the sizes and accessed values for the array 
+  Records the sizes and accessed values for the array
 */
 template<typename T>
 class DimensionError : public ExBase
@@ -345,7 +345,7 @@ class DimensionError : public ExBase
 
  public:
 
-  DimensionError(std::vector<T>,std::vector<T>,const std::string&);  
+  DimensionError(std::vector<T>,std::vector<T>,const std::string&);
   DimensionError(const DimensionError<T>&);
   DimensionError<T>& operator=(const DimensionError<T>&);
   ~DimensionError() throw() override {}  ///< Destructor
@@ -397,11 +397,11 @@ class MisMatch : public ExBase
 {
  private:
 
-  const T Aval;        ///< Number A 
+  const T Aval;        ///< Number A
   const T Bval;        ///< container size
 
   void setOutLine();
- 
+
  public:
 
   MisMatch(const T&,const T&,const std::string&);
@@ -429,7 +429,7 @@ class TypeMatch : public ExBase
   const std::string BName;   ///< Second type
 
   void setOutLine();
- 
+
  public:
 
   TypeMatch(std::string ,std::string ,
@@ -449,14 +449,14 @@ class TypeMatch : public ExBase
   \date October 2005
   \version 1.0
 
-  Stores the position on the line that the error occured
+  Stores the position on the line that the error occurred
   as well as the line
 */
 
 class InvalidLine : public ExBase
 {
  private:
-  
+
   size_t pos;        ///< Position of error
   std::string Line;    ///< Error Line
 
@@ -485,7 +485,7 @@ template<typename Ptr>
 class CastError : public ExBase
 {
  private:
-  
+
   Ptr const* Base;     ///< Storage to base pointer
 
   void setOutLine();
@@ -543,7 +543,7 @@ class DynamicConv : public ExBase
 {
  private:
 
-  std::string Base;          ///< Base clase 
+  std::string Base;          ///< Base clase
   std::string Derived;       ///< New derived class
   void setOutLine();
 
@@ -627,7 +627,7 @@ class ConstructionError : public ExBase
 
 /*!
   \class AbsObjMethod
-  \brief Abstract base class method 
+  \brief Abstract base class method
   \author Stuart Ansell
   \date April 2008
   \version 1.0
@@ -672,13 +672,13 @@ class NumericalAbort : public ExBase
 };
 
 /*!
- \class ExitAbort 
+ \class ExitAbort
  \version 1.0
  \author S. Ansell
  \date January 2011
- \brief Allow an exit error all the way to the top level 
-*/				
-		
+ \brief Allow an exit error all the way to the top level
+*/
+
 class ExitAbort : public std::exception
 {
  private:

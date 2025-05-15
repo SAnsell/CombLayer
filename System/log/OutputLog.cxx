@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   log/OutputLog.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -52,8 +52,8 @@ OutputLog<ELog::FileReport>::OutputLog(const std::string& Fname) :
   locFlag(1),storeFlag(0),NBasePtr(0),
   FOut(Fname)
   /*!
-    Constructor 
-    \param Fname :: Name of the log-file to open 
+    Constructor
+    \param Fname :: Name of the log-file to open
     (old log files are deleted)
   */
 {}
@@ -77,7 +77,7 @@ template<typename RepClass>
 OutputLog<RepClass>&
 OutputLog<RepClass>::operator=(const OutputLog<RepClass>& A)
   /*!
-    Standard Assignment operator 
+    Standard Assignment operator
     \param A :: OutputLog to copy
     \returns *this
   */
@@ -100,7 +100,7 @@ OutputLog<RepClass>::operator=(const OutputLog<RepClass>& A)
 }
 
 template<typename RepClass>
-OutputLog<RepClass>::~OutputLog() 
+OutputLog<RepClass>::~OutputLog()
   /*!
     Destructor
   */
@@ -110,7 +110,7 @@ template<typename RepClass>
 bool
 OutputLog<RepClass>::isActive(const int Flag) const
   /*!
-    Check for activity. Note that 0 is considered 
+    Check for activity. Note that 0 is considered
     always to be written.
     \param Flag :: Thing to check
     \return true is flags has appropiate bit set
@@ -120,8 +120,8 @@ OutputLog<RepClass>::isActive(const int Flag) const
 
   const size_t part=
     (Flag<=0) ? 1 : 2*static_cast<size_t>(Flag);
-  
-  return ((part & activeBits) && 
+
+  return ((part & activeBits) &&
 	  (debugFlag || !(part & debugBits))) ? 1 : 0;
 }
 
@@ -132,7 +132,7 @@ OutputLog<RepClass>::getColour(const int) const
     Get the Colour string for termial output
     - Only for terminal output so this basic give nothing
     \param  :: placeholder for colour id
-    \return Colour string 
+    \return Colour string
   */
 {
   return std::string();
@@ -145,23 +145,23 @@ OutputLog<EReport>::getColour(const int Flag) const
     Get the Colour string for termial output
     - Only for terminal output so this basic give nothing
     \param Flag :: Thing to check
-    \return Colour string 
+    \return Colour string
   */
 {
 
   // Note on code:
   //
   //  1 : bold :2 underline etc
-  // 
-	  
+  //
 
-  if (colourFlag) 
+
+  if (colourFlag)
     {
-      const unsigned int part=(Flag<=0) ? 1 : 
+      const unsigned int part=(Flag<=0) ? 1 :
 	static_cast<unsigned int>(2*Flag);
       switch(part)
         {
-	case ELog::basic:     
+	case ELog::basic:
 	  return std::string("\e[1;30m");   // standard
 	case ELog::warn:
 	  return std::string("\e[1;36m");   // Yellow
@@ -190,11 +190,11 @@ OutputLog<RepClass>::makeAction(const int Flag)
     \return true is flags has appropiate bit set
   */
 {
-  const size_t part=(Flag<0) ? 
-    static_cast<size_t>(-Flag)*2+1 : 
+  const size_t part=(Flag<0) ?
+    static_cast<size_t>(-Flag)*2+1 :
     static_cast<size_t>(Flag)*2+1;
-  
-  if (part & actionBits) 
+
+  if (part & actionBits)
     {
       locFlag=2;
       std::string full=locString();
@@ -205,13 +205,13 @@ OutputLog<RepClass>::makeAction(const int Flag)
 }
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::report(const std::string& M,const int T)
   /*!
-    Adds a report to the error Log and 
+    Adds a report to the error Log and
     call the reporter (if one exists)
     \param M :: Message
-    \param T :: Type of error 
+    \param T :: Type of error
   */
 {
   static int length(0);
@@ -223,7 +223,7 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
   std::string colour;
   std::string colourReset;
   if (colourFlag)
-    { 
+    {
       colour=getColour(T);
       colourReset="\033[0m";
       //      colourReset="\033[22;37m";
@@ -249,13 +249,13 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
 	      length=1;
 	    }
 	  // This is always the default test:
-	  else if (pos<160 || (pos==std::string::npos && TL<160))    
+	  else if (pos<160 || (pos==std::string::npos && TL<160))
 	    {
 	      Item=fmt::format("{:<160}",
 		(indent()+cxItem.substr(0,pos)))+Tag;
 	      length=2;
 	    }
-	  else  // Overflow on this one line 
+	  else  // Overflow on this one line
 	    {
 	      Item=indent()+cxItem.substr(0,pos)+"\n"+Tag;
 	    }
@@ -276,13 +276,13 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
 }
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::report(const int T)
   /*!
     Adds a report to the error Log using
     and clearing the stream.
     call the reporter (if one exists)
-    \param T :: Type of error 
+    \param T :: Type of error
   */
 {
   report(cx.str(),T);
@@ -316,12 +316,12 @@ OutputLog<RepClass>::getIndentLength() const
 }
 
 template<typename RepClass>
-std::string 
+std::string
 OutputLog<RepClass>::eType(const int T) const
   /*!
     Returns the most server error status.
     [Note that we start from zero so offset by *2]
-    \param T :: report type		      
+    \param T :: report type
     \return string of error type
   */
 {
@@ -346,7 +346,7 @@ OutputLog<RepClass>::eType(const int T) const
 }
 
 template<typename RepClass>
-std::string 
+std::string
 OutputLog<RepClass>::locString() const
   /*!
     Returns the location string if flag set
@@ -368,7 +368,7 @@ OutputLog<RepClass>::locString() const
 
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::basic(const std::string& M)
   /*!
     Prints out the error message
@@ -380,7 +380,7 @@ OutputLog<RepClass>::basic(const std::string& M)
 }
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::warning(const std::string& M)
   /*!
     Prints out the warning
@@ -392,7 +392,7 @@ OutputLog<RepClass>::warning(const std::string& M)
 }
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::error(const std::string& M)
   /*!
     Prints out the error message
@@ -404,7 +404,7 @@ OutputLog<RepClass>::error(const std::string& M)
 }
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::debug(const std::string& M)
   /*!
     Prints out the debug message
@@ -417,7 +417,7 @@ OutputLog<RepClass>::debug(const std::string& M)
 
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::diagnostic(const std::string& M)
   /*!
     Prints out the diagnostic message
@@ -429,7 +429,7 @@ OutputLog<RepClass>::diagnostic(const std::string& M)
 }
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::critical(const std::string& M)
   /*!
     Prints out the diagnostic message
@@ -441,7 +441,7 @@ OutputLog<RepClass>::critical(const std::string& M)
 }
 
 template<typename RepClass>
-void 
+void
 OutputLog<RepClass>::trace(const std::string& M)
   /*!
     Prints out the diagnostic message
@@ -457,7 +457,7 @@ void
 OutputLog<RepClass>::dispatch(const int errFlag)
   /*!
     Clear and dispatch if necessary
-    \param errFlag :: IF an error occured output / else clear only
+    \param errFlag :: IF an error occurred output / else clear only
   */
 {
   if (errFlag) disLevel(0);
@@ -493,7 +493,7 @@ OutputLog<RepClass>::disLevel(const int levelFlag)
 // ENDL FUNCTION :
 
 template<typename RepClass>
-OutputLog<RepClass>& 
+OutputLog<RepClass>&
 endBasic(OutputLog<RepClass>& OLX)
   /*!
     Dispatch an endl of basic
@@ -506,7 +506,7 @@ endBasic(OutputLog<RepClass>& OLX)
 }
 
 template<typename RepClass>
-OutputLog<RepClass>& 
+OutputLog<RepClass>&
 endErr(OutputLog<RepClass>& OLX)
   /*!
     Dispatch an endl of error
@@ -519,7 +519,7 @@ endErr(OutputLog<RepClass>& OLX)
 }
 
 template<typename RepClass>
-OutputLog<RepClass>& 
+OutputLog<RepClass>&
 endWarn(OutputLog<RepClass>& OLX)
   /*!
     Dispatch an endl of warning
@@ -532,7 +532,7 @@ endWarn(OutputLog<RepClass>& OLX)
 }
 
 template<typename RepClass>
-OutputLog<RepClass>& 
+OutputLog<RepClass>&
 endDebug(OutputLog<RepClass>& OLX)
   /*!
     Dispatch an endl of a debug
@@ -545,7 +545,7 @@ endDebug(OutputLog<RepClass>& OLX)
 }
 
 template<typename RepClass>
-OutputLog<RepClass>& 
+OutputLog<RepClass>&
 endDiag(OutputLog<RepClass>& OLX)
   /*!
     Dispatch an endl of a dialog
@@ -559,10 +559,10 @@ endDiag(OutputLog<RepClass>& OLX)
 
 
 template<typename RepClass>
-OutputLog<RepClass>& 
+OutputLog<RepClass>&
 endCrit(OutputLog<RepClass>& OLX)
   /*!
-    Dispatch an endl of a critical 
+    Dispatch an endl of a critical
     \param OLX :: Output stream
     \return Stream
   */
@@ -572,10 +572,10 @@ endCrit(OutputLog<RepClass>& OLX)
 }
 
 template<typename RepClass>
-OutputLog<RepClass>& 
+OutputLog<RepClass>&
 endTrace(OutputLog<RepClass>& OLX)
   /*!
-    Dispatch an endl of trace 
+    Dispatch an endl of trace
     \param OLX :: Output stream
     \return Stream
   */
@@ -584,7 +584,7 @@ endTrace(OutputLog<RepClass>& OLX)
   return OLX;
 }
 
-///\cond TEMPLATE 
+///\cond TEMPLATE
 
 template class OutputLog<EReport>;
 template class OutputLog<FileReport>;
@@ -606,10 +606,6 @@ template OutputLog<FileReport>& endDebug(OutputLog<FileReport>&);
 template OutputLog<FileReport>& endCrit(OutputLog<FileReport>&);
 template OutputLog<FileReport>& endTrace(OutputLog<FileReport>&);
 
-///\endcond TEMPLATE 
+///\endcond TEMPLATE
 
 }  // NAMESPACE ELog
-
-
-
-

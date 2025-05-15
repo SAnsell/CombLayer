@@ -31,9 +31,9 @@ namespace Geometry
 
 template<typename T> class Matrix;
 
-const double zeroTol(1e-8);       ///< Zero occured
+const double zeroTol(1e-8);       ///< Zero occurred
 const double shiftTol(1e-5);      ///< Shift a point to change state
-const double parallelTol(1e-10);  ///< parallel occored
+const double parallelTol(1e-10);  ///< parallel occurred
 const int Nprecision(12);         ///< Precision of the output
 
 /*!

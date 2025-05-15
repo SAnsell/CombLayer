@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   test/testMathSupport.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -47,29 +47,29 @@
 #include "testMathSupport.h"
 
 
-testMathSupport::testMathSupport() 
+testMathSupport::testMathSupport()
   /*!
     Constructor
   */
 {}
 
-testMathSupport::~testMathSupport() 
+testMathSupport::~testMathSupport()
   /*!
     Destructor
   */
 {}
 
-int 
+int
 testMathSupport::applyTest(const int extra)
   /*!
-    Applies all the tests and returns 
+    Applies all the tests and returns
     the error number
     \param extra :: Test number to run
     \returns -ve on error 0 on success.
   */
 {
   ELog::RegMethod RegA("testMathSupport","applyTest");
-  
+
   TestFunc::regSector("testMathSupport");
 
   typedef int (testMathSupport::*testPtr)();
@@ -111,7 +111,7 @@ testMathSupport::applyTest(const int extra)
       "Quadratic",
       "RangePos"
     };
-  
+
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
     {
@@ -142,7 +142,7 @@ testMathSupport::validCubic(const double* Coef,
   /*!
     Tests the validity of a cubic equation
     \param Coef :: Coefficients
-    \param Ans :: Answer 
+    \param Ans :: Answer
     \retval 0 :: failure
     \retval 1 :: success
   */
@@ -173,7 +173,7 @@ testMathSupport::testBinSearch()
   std::vector<double> XVal;
   for(int i=0;i<10;i++)
     XVal.push_back(i+3.3);
-  
+
   // Returns 0 at end of range:
   long int ox=mathFunc::binSearch(XVal.begin(),XVal.end(),-1.2);
   if (ox!=0)
@@ -201,7 +201,7 @@ testMathSupport::testBinSearch()
       return -1;
     }
 
-  return 0;  
+  return 0;
 }
 
 int
@@ -214,7 +214,7 @@ testMathSupport::testCountBits()
   */
 {
   ELog::RegMethod RegA("testMathSupport","testCountBits");
-  
+
   size_t A[]={7,16,140,160};
   size_t Res[]={3,1,3,2};
   for(size_t i=0;i<sizeof(A)/sizeof(size_t);i++)
@@ -240,7 +240,7 @@ testMathSupport::testCountBits()
 int
 testMathSupport::testDeriv()
   /*!
-    Applies a simple test to check the bit counting 
+    Applies a simple test to check the bit counting
     \retval -1 on failure
     \retval 0 on success
   */
@@ -262,7 +262,7 @@ testMathSupport::testDeriv()
       const double y2=std::get<2>(tc);
       const double value=
 	d2dxQuadratic<double>({x0,x1,x2},{y0,y1,y2});
-	
+
 
     }
   return 0;
@@ -271,13 +271,13 @@ testMathSupport::testDeriv()
 int
 testMathSupport::testLowBitIndex()
   /*!
-    Applies a simple test to check the bit counting 
+    Applies a simple test to check the bit counting
     \retval -1 on failure
     \retval 0 on success
   */
 {
   ELog::RegMethod RegA("testMathSupport","testLowBitIndex");
-  
+
   unsigned int A[]={7,16,140,160};
   unsigned int Res[]={1,5,3,6};
   for(unsigned int i=0;i<sizeof(A)/sizeof(unsigned int);i++)
@@ -302,13 +302,13 @@ testMathSupport::testQuadratic()
   */
 {
   ELog::RegMethod RegA("testMathSupport","testQuadratic");
-  
+
   typedef std::complex<double> CP ;
   std::pair<CP,CP > Ans;
   // (x-2)(2x+3)
   double CoefA[3]={2,-1,-6};
   // Note: this should order solutions :
-  size_t flag=solveQuadratic(CoefA,Ans); 
+  size_t flag=solveQuadratic(CoefA,Ans);
   if (flag!=2 || Ans.first!= CP(2,0) ||
       Ans.second!= CP(-1.5,0))
     {
@@ -377,7 +377,7 @@ testMathSupport::testCubic()
       return -1;
     }
 
-  // THREE REAL: [two identical] 
+  // THREE REAL: [two identical]
   // (x-2)(x+3)(x+3)
   const double CoefB[4]={1,0,-1,2/sqrt(27)};
   flag=solveCubic(CoefB,A,B,C);
@@ -416,14 +416,14 @@ int
 testMathSupport::testIndexSort()
   /*!
     Simple test of the indexSort system
-    \return -ve on error 
+    \return -ve on error
   */
 {
   ELog::RegMethod RegA("testMathSupport","testIndexSort");
-  
+
 
   std::vector<double> V(10);
-  
+
   std::generate(V.begin(),V.end(),[]{ return Random::rand(); });
 
   std::vector<size_t> Index(10);
@@ -441,14 +441,14 @@ testMathSupport::testIndexSort()
 	}
       sumI+=Index[i];
     }
-  sumI+=Index[0]; 
+  sumI+=Index[0];
   if (sumI!=45)
     {
       for(const size_t i : Index)
 	ELog::EM<<"Index == "<<i<<ELog::endDiag;
       ELog::EM<<"SumI == "<<sumI<<ELog::endDiag;
       return -2;
-    } 
+    }
 
   return 0;
 }
@@ -457,11 +457,11 @@ int
 testMathSupport::testPermSort()
   /*!
     Simple test of the indexSort system
-    \return -ve on error 
+    \return -ve on error
   */
 {
   ELog::RegMethod RegA("testMathSupport","testPermSort");
-  
+
   std::vector<double> V(30);
 
   std::generate(V.begin(),V.end(),[]{ return Random::rand(); });
@@ -498,7 +498,7 @@ testMathSupport::testOrder()
   mathFunc::Order(b,a);
   if (a!=3.2)
     return -2;
-  
+
   return 0;
 }
 
@@ -510,7 +510,7 @@ testMathSupport::testPairCombine()
     and the method crossSort
     \retval -1 on failure
     \retval 0 on success
-  */ 
+  */
 {
   ELog::RegMethod RegA("testMathSupport","testPairCombine");
 
@@ -533,7 +533,7 @@ testMathSupport::testPairCombine()
       bpart=B[i];
     }
 
-  if (flag)     // Error occured
+  if (flag)     // Error occurred
     {
       for(size_t i=0;i<A.size();i++)
 	ELog::EM<<"A == "<<A[i]<<" "<<B[i]<<ELog::endErr;
@@ -551,7 +551,7 @@ testMathSupport::testPolInterp()
   */
 {
   ELog::RegMethod RegA("testMathSupport","testPolInterp");
-  
+
   std::vector<double> X;
   std::vector<std::complex<double> > Y;
   for(int i=0;i<100;i++)
@@ -615,7 +615,7 @@ testMathSupport::testNormalDist()
       err2ND+=invErf(i/100.0)*invErf(i/100.0);
     }
   if (fabs(sumND)>1e-6 || fabs(sum2ND-91.2942)>1e-4 ||
-      fabs(errND-55.3039)>1e-4 || fabs(err2ND-47.5063)>1e-4)  
+      fabs(errND-55.3039)>1e-4 || fabs(err2ND-47.5063)>1e-4)
     {
       ELog::EM<<"norm Sum  == "<<sumND<<ELog::endTrace;
       ELog::EM<<"norm Sum2 == "<<sum2ND<<ELog::endTrace;
@@ -634,17 +634,17 @@ testMathSupport::testClebschGordan()
     [Example valus taken from WolframAlpha calculator]
     \return -ve on error
   */
-{ 
+{
   ELog::RegMethod RegA("testMathSupport","testClebschGordan");
 
   //                   j   j1   j2  m1 m2   res
   typedef std::tuple<int,int,int,int,int,double> TTYPE;
   std::vector<TTYPE> Tests;
-  
+
   Tests.push_back(TTYPE(2,2,2,0,0,-sqrt(2.0)/sqrt(7.0) ));
   Tests.push_back(TTYPE(1,5,4,0,0,sqrt(5.0/33.0) ));
   Tests.push_back(TTYPE(3,5,4,2,1,-5*sqrt(7.0/858.0) ));
-  
+
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
@@ -691,7 +691,7 @@ testMathSupport::testFibinacci()
       FNB+=FNA;
       FNA=tmp;
     }
-  return 0;  
+  return 0;
 }
 
 int
@@ -718,7 +718,7 @@ testMathSupport::testRangePos()
     {
       const double testValue(std::get<0>(tc));
       const size_t outIndex(std::get<1>(tc));
-      
+
       const size_t index=rangePos(V,testValue);
       if (index!=outIndex)
 	{
@@ -733,5 +733,5 @@ testMathSupport::testRangePos()
 	  return -1;
 	}
     }
-  return 0;  
+  return 0;
 }
