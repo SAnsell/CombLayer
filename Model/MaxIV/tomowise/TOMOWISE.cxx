@@ -87,7 +87,7 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   opticsBeam(new tomowiseOpticsLine(newName+"OpticsLine")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
-  pShield(new xraySystem::PipeShield(newName+"PShield")),
+  guillotine(new xraySystem::PipeShield(newName+"Guillotine")),
   exptBeam(new tomowiseExptLine(newName+"ExptLine")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC"))
   /*!
@@ -199,9 +199,9 @@ TOMOWISE::build(Simulation& System,
   joinPipeB->createAll(System,*opticsBeam,2);
 
   // pipe shield go around joinPipeB:
-  pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
-  pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
-  pShield->createAll(System,*opticsHut,"innerBack");
+  guillotine->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  guillotine->setCutSurf("inner",*joinPipeB,"outerPipe");
+  guillotine->createAll(System,*opticsHut,"innerBack");
 
   if (stopPoint=="exptHut") return;
 

@@ -89,7 +89,7 @@ MICROMAX::MICROMAX(const std::string& KN) :
   opticsBeam(new micromaxOpticsLine(newName+"OpticsLine")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
-  pShield(new xraySystem::PipeShield(newName+"PShield")),
+  guillotine(new xraySystem::PipeShield(newName+"Guillotine")),
   exptBeam(new micromaxExptLine(newName+"ExptLine")),
   exptHutB(new ExperimentalHutch(newName+"ExptHutB")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
@@ -195,9 +195,9 @@ MICROMAX::build(Simulation& System,
 
   // pipe shield goes around joinPipeB:
 
-  pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
-  pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
-  pShield->createAll(System,*opticsHut,"innerBack");
+  guillotine->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  guillotine->setCutSurf("inner",*joinPipeB,"outerPipe");
+  guillotine->createAll(System,*opticsHut,"innerBack");
 
   if (stopPoint=="exptHut") return;
 

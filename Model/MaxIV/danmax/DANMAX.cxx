@@ -92,7 +92,7 @@ DANMAX::DANMAX(const std::string& KN) :
   connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut(new xraySystem::ExperimentalHutch(newName+"ExptHut")),
-  pShield(new xraySystem::PipeShield(newName+"PShield")),
+  guillotine(new xraySystem::PipeShield(newName+"Guillotine")),
   exptBeam(new balderExptLine(newName+"ExptLine"))
   /*!
     Constructor
@@ -112,7 +112,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(connectUnit);
   OR.addObject(joinPipeC);
   OR.addObject(exptHut);
-  OR.addObject(pShield);
+  OR.addObject(guillotine);
 
 }
 
@@ -206,10 +206,10 @@ DANMAX::build(Simulation& System,
   joinPipeC->insertInCell("Main",System,exptHut->getCell("EntranceHole"));
 
   // pipe shield goes around joinPipeC:
-  pShield->addAllInsertCell(exptHut->getCell("Void"));
-  pShield->setCutSurf("inner",*joinPipeC,"outerPipe");
-  //  pShield->setCutSurf("front",*opticsHut,"innerBack");
-  pShield->createAll(System,*exptHut,"innerFront");
+  guillotine->addAllInsertCell(exptHut->getCell("Void"));
+  guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
+  //  guillotine->setCutSurf("front",*opticsHut,"innerBack");
+  guillotine->createAll(System,*exptHut,"innerFront");
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);

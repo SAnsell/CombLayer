@@ -84,8 +84,8 @@ class TOMOWISE : public R3Beamline
   /// Pipe joining frontend to Expt hutch
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
 
-  /// Shield at exit of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> pShield;
+  /// Shield at exit of optics hutch to remove gaps between joinPipeB and the wall to exp hutch
+  std::shared_ptr<xraySystem::PipeShield> guillotine;
 
   /// Beamline expt
   std::shared_ptr<tomowiseExptLine> exptBeam;

@@ -544,16 +544,16 @@ exptHutVariables(FuncDataBase& Control,
   EGen.setFrontExt(10.0);
   EGen.generateHut(Control,hutName,0.0,901.0);
 
-  // lead shield on pipe
-  Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
-  Control.addVariable(hutName+"PShieldYStep",0.3);
-  Control.addVariable(hutName+"PShieldLength",1.0);
-  Control.addVariable(hutName+"PShieldWidth",10.0);
-  Control.addVariable(hutName+"PShieldHeight",10.0);
-  Control.addVariable(hutName+"PShieldWallThick",0.2);
-  Control.addVariable(hutName+"PShieldClearGap",0.3);
-  Control.addVariable(hutName+"PShieldWallMat","Stainless304");
-  Control.addVariable(hutName+"PShieldMat","Lead");
+  // // lead shield on pipe
+  // Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
+  // Control.addVariable(hutName+"PShieldYStep",0.3);
+  // Control.addVariable(hutName+"PShieldLength",1.0);
+  // Control.addVariable(hutName+"PShieldWidth",10.0);
+  // Control.addVariable(hutName+"PShieldHeight",10.0);
+  // Control.addVariable(hutName+"PShieldWallThick",0.2);
+  // Control.addVariable(hutName+"PShieldClearGap",0.3);
+  // Control.addVariable(hutName+"PShieldWallMat","Stainless304");
+  // Control.addVariable(hutName+"PShieldMat","Lead");
 
   Control.addVariable(hutName+"NChicane",7);
   PortChicaneGenerator PGen;
@@ -607,15 +607,15 @@ exptHutBVariables(FuncDataBase& Control,
 
 
   // lead shield on pipe
-  Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
-  Control.addVariable(hutName+"PShieldYStep",0.3);
-  Control.addVariable(hutName+"PShieldLength",1.0);
-  Control.addVariable(hutName+"PShieldWidth",10.0);
-  Control.addVariable(hutName+"PShieldHeight",10.0);
-  Control.addVariable(hutName+"PShieldWallThick",0.2);
-  Control.addVariable(hutName+"PShieldClearGap",0.3);
-  Control.addVariable(hutName+"PShieldWallMat","Stainless304");
-  Control.addVariable(hutName+"PShieldMat","Lead");
+  Control.addVariable(hutName+"GuillotineXStep",beamXStep-beamOffset);
+  Control.addVariable(hutName+"GuillotineYStep",0.3);
+  Control.addVariable(hutName+"GuillotineLength",1.0);
+  Control.addVariable(hutName+"GuillotineWidth",10.0);
+  Control.addVariable(hutName+"GuillotineHeight",10.0);
+  Control.addVariable(hutName+"GuillotineWallThick",0.2);
+  Control.addVariable(hutName+"GuillotineClearGap",0.3);
+  Control.addVariable(hutName+"GuillotineWallMat","Stainless304");
+  Control.addVariable(hutName+"GuillotineMat","Lead");
 
   Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
@@ -650,13 +650,13 @@ shieldVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("micromaxVariables","shieldVariables");
 
-  Control.addVariable(preName+"PShieldLength",5.0);
-  Control.addVariable(preName+"PShieldWidth",60.0);
-  Control.addVariable(preName+"PShieldHeight",60.0);
-  Control.addVariable(preName+"PShieldWallThick",0.5);
-  Control.addVariable(preName+"PShieldClearGap",0.3);
-  Control.addVariable(preName+"PShieldWallMat","Stainless304");
-  Control.addVariable(preName+"PShieldMat","Lead");
+  Control.addVariable(preName+"GuillotineLength",5.0);
+  Control.addVariable(preName+"GuillotineWidth",60.0);
+  Control.addVariable(preName+"GuillotineHeight",60.0);
+  Control.addVariable(preName+"GuillotineWallThick",0.5);
+  Control.addVariable(preName+"GuillotineClearGap",0.3);
+  Control.addVariable(preName+"GuillotineWallMat","Stainless304");
+  Control.addVariable(preName+"GuillotineMat","Lead");
 
   return;
 }
