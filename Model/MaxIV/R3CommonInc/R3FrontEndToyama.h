@@ -225,6 +225,7 @@ protected:
   void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&);
+  void buildProxiAndShutter(Simulation&,const attachSystem::FixedComp&,const std::string&);
   void buildMSM(Simulation&,
 		const attachSystem::FixedComp&,
 		const std::string&);
