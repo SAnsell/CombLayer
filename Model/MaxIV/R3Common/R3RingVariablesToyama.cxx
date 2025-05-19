@@ -62,7 +62,6 @@
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
 #include "MagnetU1Generator.h"
-#include "HeatAbsorberToyamaGenerator.h"
 #include "BremBlockGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 #include "HeatAbsorberToyamaGenerator.h"
@@ -401,12 +400,9 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   setVariable::PortItemGenerator PItemGen;
   setVariable::HeatDumpGenerator HeatGen;
 
-  constexpr double tmp = 0*45.3516244323655;
-  ELog::EM << "What is tmp?" << ELog::endWarn;
-
   constexpr double heatAbsorberLength = 26.5;  // [2]
 
-  const double heatAbsorberDist(1700.0-tmp); // centre
+  const double heatAbsorberDist(1700.0); // centre
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();

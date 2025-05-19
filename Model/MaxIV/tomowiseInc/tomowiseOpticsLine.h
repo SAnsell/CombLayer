@@ -73,6 +73,7 @@ namespace xraySystem
   class RoundMonoShutter;
   class PipeShield;
   class PowerFilter;
+  class HeatAbsorberToyama;
 
 
   /*!
@@ -187,6 +188,17 @@ class tomowiseOpticsLine :
 
   /// bellow from Mirror to Diag3
   std::shared_ptr<constructSystem::Bellows> bellowG;
+
+  std::shared_ptr<xraySystem::HeatAbsorberToyama> ha;
+
+  std::shared_ptr<constructSystem::Bellows> bellowH;
+
+
+
+
+
+
+
   /// gate valve infront of diag3
   std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
   /// view screen
@@ -202,7 +214,6 @@ class tomowiseOpticsLine :
   std::shared_ptr<xraySystem::HPJaws> hpJawsB;
 
   /// bellow out of diag 3 [close]
-  std::shared_ptr<constructSystem::Bellows> bellowH;
   /// pipe to exit bellow of diag 3
   std::shared_ptr<constructSystem::VacuumPipe> pipeE;
   /// bellow out of diag 3 [long/final]
@@ -243,7 +254,7 @@ class tomowiseOpticsLine :
   void constructDiag2(Simulation&,const attachSystem::FixedComp&,
 		      const std::string&);
 
-  void constructDiag3(Simulation&,const attachSystem::FixedComp&,
+  void constructSafetyUnit(Simulation&,const attachSystem::FixedComp&,
 		      const std::string&);
 
   void constructDiag4(Simulation&,const attachSystem::FixedComp&,

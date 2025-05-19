@@ -94,6 +94,7 @@
 #include "BeamAxis.h"
 #include "YagScreen.h"
 #include "PowerFilter.h"
+#include "HeatAbsorberToyama.h"
 
 #include "tomowiseOpticsLine.h"
 
@@ -163,6 +164,8 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
 
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
+  bellowH(new constructSystem::Bellows(newName+"BellowH")),
 
 
 
@@ -175,7 +178,6 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   bremCollC(new xraySystem::BremBlock(newName+"BremCollC")),
   hpJawsB(new xraySystem::HPJaws(newName+"HPJawsB")),
 
-  bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
 
@@ -245,6 +247,10 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(mirrorBackA);
 
   OR.addObject(bellowG);
+  OR.addObject(ha);
+  OR.addObject(bellowH);
+
+
   OR.addObject(gateTubeE);
   OR.addObject(viewTube);
   OR.addObject(yagScreen);
@@ -252,7 +258,6 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(bremCollC);
   OR.addObject(hpJawsB);
 
-  OR.addObject(bellowH);
   OR.addObject(pipeE);
   OR.addObject(bellowI);
 
@@ -426,7 +431,7 @@ tomowiseOpticsLine::constructDiag2(Simulation& System,
 }
 
 void
-tomowiseOpticsLine::constructDiag3(Simulation& System,
+tomowiseOpticsLine::constructSafetyUnit(Simulation& System,
 				 const attachSystem::FixedComp& initFC,
 				 const std::string& sideName)
   /*!
@@ -436,41 +441,27 @@ tomowiseOpticsLine::constructDiag3(Simulation& System,
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("tomowiseOpticsLine","constructDiag3");
+  ELog::RegMethod RegA("tomowiseOpticsLine","constructSafetyUnit");
 
+  const std::string fname = "TomoWISEFrontBeam";
+  const attachSystem::FixedComp* front=
+    System.getObjectThrow<attachSystem::FixedComp>(fname, "Can't find "+fname);
 
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*bellowG);
+  ha->createAll(System, *front, 0);
+  bellowG->createAll(System, *ha, "front");
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowG,"back",*gateTubeE);
+  pipeDA->setBack(*bellowG, "back");
+  pipeDA->createAll(System, *viewTubeA, "back");
+  int outerCell=buildZone.createUnit(System,*pipeDA,"back");
+  pipeDA->insertAllInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,buildZone,*gateTubeE,"back",*viewTube);
+  outerCell=buildZone.createUnit(System,*ha,"#front");
+  bellowG->insertAllInCell(System,outerCell);
 
-  bremTubeB->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  bremTubeB->setOuterVoid();
-  bremTubeB->createAll(System,*viewTube,"back");
+  outerCell=buildZone.createUnit(System,*ha,"back");
+  ha->insertInCell(System,outerCell);
 
-  const constructSystem::portItem& VPB=bremTubeB->getPort(1);
-  int outerCell=buildZone.createUnit(System,VPB,"OuterPlate");
-  bremTubeB->insertAllInCell(System,outerCell);
-
-  bremCollC->addInsertCell(bremTubeB->getCell("Void"));
-  bremCollC->createAll(System,*bremTubeB,0);
-
-  hpJawsB->setFlangeJoin();
-  constructSystem::constructUnit
-    (System,buildZone,VPB,"OuterPlate",*hpJawsB);
-
-  constructSystem::constructUnit
-    (System,buildZone,*hpJawsB,"back",*bellowH);
-
-  constructSystem::constructUnit
-    (System,buildZone,*bellowH,"back",*pipeE);
-
-  constructSystem::constructUnit
-    (System,buildZone,*pipeE,"back",*bellowI);
+  constructSystem::constructUnit(System,buildZone,*ha,"back",*bellowH);
 
   return;
 }
@@ -662,38 +653,14 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
 
 
   constructDiag2(System,*gateTubeD,"back");
-
-  constructSystem::constructUnit(System,buildZone,*viewTubeA,"back",*pipeDA);
-
-
-  // constructSystem::constructUnit(System,buildZone,*pipeDA,"back",*mirrorBoxA);
-
-  // mirrorBoxA->splitObject(System,3001,mirrorBoxA->getCell("Void"),
-  // 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-
-  // mirrorFrontA->addInsertCell(mirrorBoxA->getCell("Void",0));
-  // mirrorFrontA->createAll(System,*mirrorBoxA,0);
-
-  // mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
-  // mirrorBackA->createAll(System,*mirrorBoxA,0);
-
-  constructSystem::constructUnit(System,buildZone,*pipeDA,"back",*bellowG);
-
-
-  //  constructDiag3(System,*pipeDA,"back");
-
-
-  //  constructDiag4(System,*bellowI,"back");
-
-  //  constructMonoShutter(System,*viewTubeB,"back");
-
+  constructSafetyUnit(System,*pipeDA,"back");
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=bellowG;
+  lastComp=bellowH;
 
   return;
 }
