@@ -325,6 +325,8 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
 {
   ELog::RegMethod RegA("R3FrontEndToyama","buildApertureTable");
 
+  int outerCell;
+
   constructSystem::constructUnit(System,buildZone,preFC,"back",*bellowE);
   constructSystem::constructUnit(System,buildZone,*bellowE,"back",*aperturePipeA);
   moveCollA->addInsertCell(aperturePipeA->getCell("Void"));
@@ -399,58 +401,6 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
 }
 
 void
-R3FrontEndToyama::buildProxiAndShutter(Simulation& System,
-				       const attachSystem::FixedComp& preFC,
-				       const std::string& side)
-/*!
-  Build the end of the shutter table (reused in other models)
- */
-{
-  int outerCell;
-
-    // Broximity shielding A
-  proxiShieldAPipe->createAll(System,preFC,side);
-  constructSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
-  constructSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
-
-  constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);
-
-  //  insertFlanges(System,*gateTubeB);
-
-  shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
-  outerCell=buildZone.createUnit(System,*shutterBox,"back");
-
-  shutterBox->splitVoidPorts
-    (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
-
-
-  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
-			       outerCell,{0,1});
-  shutterBox->insertMainInCell(System,shutterBox->getCells("SplitOuter"));
-  shutterBox->insertPortInCell(System,0,shutterBox->getCell("SplitOuter",0));
-  shutterBox->insertPortInCell(System,1,shutterBox->getCell("SplitOuter",1));
-
-
-
-  for(size_t i=0;i<shutters.size();i++)
-    {
-      const constructSystem::portItem& PI=shutterBox->getPort(i);
-      shutters[i]->addInsertCell("Support",PI.getCell("Void"));
-      shutters[i]->addInsertCell("Support",shutterBox->getCell("SplitVoid",i));
-      shutters[i]->addInsertCell("Block",shutterBox->getCell("SplitVoid",i));
-
-      shutters[i]->createAll(System,*offPipeA,
-			     offPipeA->getSideIndex("FlangeACentre"),
-			     PI,PI.getSideIndex("InnerPlate"));
-    }
-
-  constructSystem::constructUnit
-    (System,buildZone,*shutterBox,"back",*offPipeB);
-
-  return;
-}
-
-void
 R3FrontEndToyama::buildShutterTable(Simulation& System)
   /*!
     Build the shutter block table. BellowI y-offset is an external variable
@@ -489,7 +439,44 @@ R3FrontEndToyama::buildShutterTable(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*bellowJ,"back",*gateTubeB);
 
-  buildProxiAndShutter(System,*gateTubeB, "back");
+  // Broximity shielding A
+  proxiShieldAPipe->createAll(System,*gateTubeB,"back");
+  constructSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
+  constructSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
+
+  constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);
+
+  //  insertFlanges(System,*gateTubeB);
+
+  shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
+  outerCell=buildZone.createUnit(System,*shutterBox,"back");
+
+  shutterBox->splitVoidPorts
+    (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
+
+
+  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+			       outerCell,{0,1});
+  shutterBox->insertMainInCell(System,shutterBox->getCells("SplitOuter"));
+  shutterBox->insertPortInCell(System,0,shutterBox->getCell("SplitOuter",0));
+  shutterBox->insertPortInCell(System,1,shutterBox->getCell("SplitOuter",1));
+
+
+
+  for(size_t i=0;i<shutters.size();i++)
+    {
+      const constructSystem::portItem& PI=shutterBox->getPort(i);
+      shutters[i]->addInsertCell("Support",PI.getCell("Void"));
+      shutters[i]->addInsertCell("Support",shutterBox->getCell("SplitVoid",i));
+      shutters[i]->addInsertCell("Block",shutterBox->getCell("SplitVoid",i));
+
+      shutters[i]->createAll(System,*offPipeA,
+			     offPipeA->getSideIndex("FlangeACentre"),
+			     PI,PI.getSideIndex("InnerPlate"));
+    }
+
+  constructSystem::constructUnit
+    (System,buildZone,*shutterBox,"back",*offPipeB);
 
   return;
 }
