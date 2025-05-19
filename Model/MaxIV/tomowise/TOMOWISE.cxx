@@ -198,8 +198,7 @@ TOMOWISE::build(Simulation& System,
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
-  // pipe shield goes around joinPipeB:
-
+  // pipe shield go around joinPipeB:
   pShield->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   pShield->setCutSurf("inner",*joinPipeB,"outerPipe");
   pShield->createAll(System,*opticsHut,"innerBack");

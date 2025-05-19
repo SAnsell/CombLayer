@@ -163,6 +163,10 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   mirrorBackA(new xraySystem::Mirror(newName+"MirrorBackA")),
 
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
+
+
+
+
   gateTubeE(new xraySystem::CylGateValve(newName+"GateTubeE")),
   viewTube(new xraySystem::ViewScreenTube(newName+"ViewTube")),
   yagScreen(new tdcSystem::YagScreen(newName+"YagScreen")),
@@ -673,12 +677,15 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   // mirrorBackA->addInsertCell(mirrorBoxA->getCell("Void",1));
   // mirrorBackA->createAll(System,*mirrorBoxA,0);
 
-  constructDiag3(System,*pipeDA,"back");
+  constructSystem::constructUnit(System,buildZone,*pipeDA,"back",*bellowG);
 
 
-  constructDiag4(System,*bellowI,"back");
+  //  constructDiag3(System,*pipeDA,"back");
 
-  constructMonoShutter(System,*viewTubeB,"back");
+
+  //  constructDiag4(System,*bellowI,"back");
+
+  //  constructMonoShutter(System,*viewTubeB,"back");
 
 
   buildZone.createUnit(System);
@@ -686,7 +693,7 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=pipeF;
+  lastComp=bellowG;
 
   return;
 }
