@@ -438,8 +438,8 @@ safetyUnit(FuncDataBase& Control,
   Control.addVariable(preName+"HeatAbsorberYStep",3075.1); // Excel table TomoWISE_components_feb25
 
 
-  // GVGen.generateGate(Control,preName+"GateTubeE",0);  // open
-  // Control.addVariable(preName+"GateTubeEPortRadius", 1.9);
+  GVGen.generateGate(Control,preName+"GateTubeE",0);  // open
+  Control.addVariable(preName+"GateTubeEPortRadius", 1.9);
 
   // VSGen.generateView(Control,preName+"ViewTube");
   // YagGen.generateScreen(Control,preName+"YagScreen",1);  // in beam

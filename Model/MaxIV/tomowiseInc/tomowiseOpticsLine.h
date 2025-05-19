@@ -192,15 +192,14 @@ class tomowiseOpticsLine :
   std::shared_ptr<xraySystem::HeatAbsorberToyama> ha;
 
   std::shared_ptr<constructSystem::Bellows> bellowH;
-
-
-
-
-
-
-
-  /// gate valve infront of diag3
   std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
+
+
+
+
+
+
+
   /// view screen
   std::shared_ptr<xraySystem::ViewScreenTube> viewTube;
   /// yag screen in view screen tube

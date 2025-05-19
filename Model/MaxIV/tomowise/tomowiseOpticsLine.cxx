@@ -166,11 +166,11 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
-
-
-
-
   gateTubeE(new xraySystem::CylGateValve(newName+"GateTubeE")),
+
+
+
+
   viewTube(new xraySystem::ViewScreenTube(newName+"ViewTube")),
   yagScreen(new tdcSystem::YagScreen(newName+"YagScreen")),
 
@@ -249,9 +249,11 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(bellowG);
   OR.addObject(ha);
   OR.addObject(bellowH);
-
-
   OR.addObject(gateTubeE);
+
+
+
+
   OR.addObject(viewTube);
   OR.addObject(yagScreen);
   OR.addObject(bremTubeB);
@@ -462,6 +464,7 @@ tomowiseOpticsLine::constructSafetyUnit(Simulation& System,
   ha->insertInCell(System,outerCell);
 
   constructSystem::constructUnit(System,buildZone,*ha,"back",*bellowH);
+  constructSystem::constructUnit(System,buildZone,*bellowH,"back",*gateTubeE);
 
   return;
 }
@@ -660,7 +663,7 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=bellowH;
+  lastComp=gateTubeE;
 
   return;
 }
