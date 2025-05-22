@@ -24,7 +24,6 @@
 
 namespace insertSystem
 {
-  class insertPlate;
 }
 
 namespace tdcSystem
@@ -34,46 +33,23 @@ namespace tdcSystem
 
 namespace constructSystem
 {
-  class SupplyPipe;
-  class CrossPipe;
-  class VacuumPipe;
-  class Bellows;
-  class VacuumBox;
-  class portItem;
-  class PortTube;
-  class PipeTube;
-  class GateValveCube;
-  class JawValveCube;
-  class JawFlange;
-  class DiffPumpXIADP03;
 }
 
 namespace xraySystem
 {
-  class CylGateValve;
-  class BremColl;
-  class BremBlock;
   class BeamPair;
-  class BremMonoColl;
   class DCMTank;
-  class FlangeMount;
-  class GaugeTube;
   class Mirror;
-  class MLMono;
   class MLMonoDetail;
   class MonoBlockXstals;
-  class ShutterUnit;
-  class SquareFMask;
   class IonGauge;
   class TriggerTube;
   class HPJaws;
   class BremTube;
   class ViewScreenTube;
-  class MonoShutter;
   class RoundMonoShutter;
-  class PipeShield;
   class PowerFilter;
-  class HeatAbsorberToyama;
+
 
 
   /*!
@@ -193,6 +169,24 @@ class tomowiseOpticsLine :
 
   std::shared_ptr<constructSystem::Bellows> bellowH;
   std::shared_ptr<xraySystem::CylGateValve> gateTubeE;
+
+  std::shared_ptr<xraySystem::ProximityShielding> proxiShieldA; // proximity shielding
+  std::shared_ptr<constructSystem::VacuumPipe> proxiShieldAPipe; // pipe inside proxiShieldA
+
+  /// Front port connection for shutterbox
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
+  /// Main shutters
+  std::shared_ptr<constructSystem::PipeTube> shutterBox;
+  /// Shutters
+  std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
+  /// Back port connection for shutterbox
+  std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
+
+  std::shared_ptr<xraySystem::BremBlock> bremColl;
+
+  std::shared_ptr<constructSystem::VacuumPipe> bremCollPipe;
+  std::shared_ptr<xraySystem::ProximityShielding> proxiShieldB; // proximity shielding
+  std::shared_ptr<constructSystem::VacuumPipe> proxiShieldBPipe; // pipe inside proxiShieldA
 
 
 

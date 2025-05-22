@@ -46,7 +46,6 @@
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
 #include "BellowGenerator.h"
-#include "BremBlockGenerator.h"
 #include "LeadPipeGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
@@ -90,6 +89,9 @@
 #include "BoxJawsGenerator.h"
 #include "PowerFilterGenerator.h"
 #include "HeatAbsorberToyamaGenerator.h"
+#include "ProximityShieldingGenerator.h"
+#include "BeamMountGenerator.h"
+#include "BremBlockGenerator.h"
 
 // References
 // see R3Common/R3RingVariables.cxx
@@ -419,11 +421,12 @@ safetyUnit(FuncDataBase& Control,
   setVariable::CylGateValveGenerator GVGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::ViewScreenGenerator VSGen;
-  setVariable::YagScreenGenerator YagGen;
   setVariable::BremTubeGenerator BTGen;
   setVariable::HPJawsGenerator HPGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::BremBlockGenerator MaskGen;
+  setVariable::ProximityShieldingGenerator PSGen;
+  setVariable::BeamMountGenerator BeamMGen;
 
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
@@ -440,6 +443,118 @@ safetyUnit(FuncDataBase& Control,
 
   GVGen.generateGate(Control,preName+"GateTubeE",0);  // open
   Control.addVariable(preName+"GateTubeEPortRadius", 1.9);
+
+
+  constexpr double proxiShieldAPipeLength = 21.5;
+  constexpr double proxiShieldBPipeLength = 20.0;
+  constexpr double shutterLength = 57.8;
+  constexpr double offPipeALength = 6.8;
+  constexpr double shutterBoxLength = shutterLength - offPipeALength;
+  constexpr double bremCollTotalLength = 21.0; //[2] (OffPipeB + BremCollPipe)
+  constexpr double offPipeBLength = 2.6; // as small as possible
+  constexpr double bremCollPipeLength = bremCollTotalLength - offPipeBLength;
+
+  constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [2, page1]
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setBFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,preName+"OffPipeA",offPipeALength);
+  Control.addVariable(preName+"OffPipeAFlangeBZStep",3.0);
+
+  const std::string shutterName=preName+"ShutterBox";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(0,0);
+  SimpleTubeGen.generateTube(Control,shutterName,shutterBoxLength);
+  Control.addVariable(shutterName+"NPorts",2);
+
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+
+
+   // 20cm above port tube
+  PItemGen.setCF<setVariable::CF50>(14.0);
+  PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
+  // lift is actually 60mm [check]
+  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setLift(5.0,0.0);
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");
+
+  // centre of mid point
+  Geometry::Vec3D CPos(0,-shutterBoxLength/4.0,0);
+  for(size_t i=0;i<2;i++)
+    {
+      const std::string name=preName+"ShutterBoxPort"+std::to_string(i);
+      const std::string fname=preName+"Shutter"+std::to_string(i);
+
+      PItemGen.generatePort(Control,name,CPos,ZVec);
+      BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
+      CPos+=Geometry::Vec3D(0,shutterBoxLength/2.0,0);
+    }
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,preName+"OffPipeB",offPipeBLength);
+  Control.addVariable(preName+"OffPipeBFlangeAZStep",3.0);
+  Control.addVariable(preName+"OffPipeBZStep",-3.0);
+  Control.addVariable(preName+"OffPipeBFlangeBType",0);
+
+
+  // Bremsstrahulung collimator
+  setVariable::BremBlockGenerator BBGen;
+  std::string name;
+  name=preName+"BremCollPipe";
+  constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
+
+  constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,name,bremCollPipeLength);
+  constexpr double bremCollPipeInnerRadius = 4.5; // CAD
+  Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
+  Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
+  Control.addVariable(name+"FlangeBRadius",7.5); // CAD
+  Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
+  Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
+
+  BBGen.centre();
+  BBGen.setMaterial("Tungsten", "Void");
+  BBGen.setLength(bremCollLength);
+  BBGen.setRadius(bremCollRadius);
+  // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
+  BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
+  BBGen.generateBlock(Control,preName+"BremColl",0);
+  Control.addVariable(preName+"BremCollYStep",(bremCollPipeLength-bremCollLength)/2.0);
+
+
+
+
+  Control.addVariable(preName+"BremBlockRadius",3.0);
+  Control.addVariable(preName+"BremBlockLength",20.0);
+  Control.addVariable(preName+"BremBlockHoleWidth",2.0);
+  Control.addVariable(preName+"BremBlockHoleHeight",2.0);
+  Control.addVariable(preName+"BremBlockMainMat","Tungsten");
+
+
+
+  PSGen.generate(Control,preName+"ProxiShieldA", 15.0); // CAD
+  Control.addVariable(preName+"ProxiShieldAYStep",3.53); // CAD
+  Control.addVariable(preName+"ProxiShieldABoreRadius",0.0);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,preName+"ProxiShieldAPipe",proxiShieldAPipeLength);
+  PSGen.generate(Control,preName+"ProxiShieldA", 15.0); // CAD
+  Control.addVariable(preName+"ProxiShieldAYStep",3.53); // CAD
+  Control.addVariable(preName+"ProxiShieldABoreRadius",0.0);
+
+  Control.copyVarSet(preName+"ProxiShieldAPipe", preName+"ProxiShieldBPipe");
+  Control.copyVarSet(preName+"ProxiShieldA", preName+"ProxiShieldB");
+  Control.addVariable(preName+"ProxiShieldBPipeLength",proxiShieldBPipeLength);
+  Control.addVariable(preName+"ProxiShieldBPipeFlangeARadius",7.5);
+  Control.addVariable(preName+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
+
+
+
 
   // VSGen.generateView(Control,preName+"ViewTube");
   // YagGen.generateScreen(Control,preName+"YagScreen",1);  // in beam
@@ -522,7 +637,6 @@ monoShutterVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("tomowiseVariables","monoShutterVariables");
 
-  setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::RoundShutterGenerator RShutterGen;
   setVariable::CylGateValveGenerator GVGen;
@@ -617,6 +731,12 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"ForkZStep0",-115.0);
   Control.addVariable(hutName+"ForkZStep1",0.0);
   Control.addVariable(hutName+"ForkZStep2",80.0);
+
+  //  Control.addVariable(hutName+"Hole0Offset",Geometry::Vec3D(23.0,0,4));
+  Control.addVariable(hutName+"Hole0XStep",0.0);
+  Control.addVariable(hutName+"Hole0ZStep",0.0);
+  Control.addVariable(hutName+"Hole0Radius",5.0);
+
 
   return;
 }
@@ -820,7 +940,6 @@ diagPackage(FuncDataBase& Control,const std::string& Name)
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::JawValveGenerator JawGen;
   setVariable::BeamPairGenerator BeamMGen;
   setVariable::TableGenerator TableGen;
   setVariable::BremBlockGenerator MaskGen;
@@ -939,7 +1058,6 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
   const double DLength(65.0);         // diag length [checked]
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::JawValveGenerator JawGen;
   setVariable::BeamPairGenerator BeamMGen;
 
   PTubeGen.setMat("Stainless304");
@@ -1059,13 +1177,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::GateValveGenerator GateGen;
-  setVariable::VacBoxGenerator VBoxGen;
   setVariable::FlangeMountGenerator FlangeGen;
-  setVariable::BremCollGenerator BremGen;
-  setVariable::BremMonoCollGenerator BremMonoGen;
-  setVariable::JawFlangeGenerator JawFlangeGen;
-  setVariable::CRLTubeGenerator DiffGen;
   setVariable::TriggerGenerator TGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::SqrFMaskGenerator FMaskGen;
@@ -1207,7 +1319,6 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::GateValveGenerator GateGen;
   setVariable::FlangeMountGenerator FlangeGen;
 
   // will be rotated vertical
@@ -1385,7 +1496,6 @@ TOMOWISEvariables(FuncDataBase& Control)
   Control.addVariable("sdefType","Wiggler");
 
   setVariable::PipeGenerator PipeGen;
-  setVariable::LeadPipeGenerator LeadPipeGen;
   PipeGen.setNoWindow();
   PipeGen.setMat("Aluminium");
 
@@ -1406,7 +1516,7 @@ TOMOWISEvariables(FuncDataBase& Control)
   tomowiseVar::opticsVariables(Control,"TomoWISE");
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"TomoWISEJoinPipeB",70.0);
+  PipeGen.generatePipe(Control,"TomoWISEJoinPipeB",300.0);
 
   tomowiseVar::shieldVariables(Control,"TomoWISE");
 

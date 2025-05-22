@@ -195,6 +195,7 @@ TOMOWISE::build(Simulation& System,
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
+  //  joinPipeB->addAllInsertCell(r3Ring->getCell("OuterSegment", PIndex));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
@@ -203,11 +204,16 @@ TOMOWISE::build(Simulation& System,
   guillotine->setCutSurf("inner",*joinPipeB,"outerPipe");
   guillotine->createAll(System,*opticsHut,"innerBack");
 
-  if (stopPoint=="exptHut") return;
+  if (stopPoint=="exptHut")
+    {
+      joinPipeB->insertAllInCell(System,exptHut->getCell("Void"));
+      return;
+    }
+
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->setCutSurf("front",*exptHut,
-			 exptHut->getSideIndex("innerFront"));
+		       exptHut->getSideIndex("innerFront"));
   exptBeam->setCutSurf("back",*exptHut,
 			 exptHut->getSideIndex("innerBack"));
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));

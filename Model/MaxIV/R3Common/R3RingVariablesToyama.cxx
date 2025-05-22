@@ -43,7 +43,6 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "RingDoorGenerator.h"
 
 #include "PipeGenerator.h"
 #include "CornerPipeGenerator.h"
@@ -56,19 +55,16 @@
 #include "GateValveGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "BeamMountGenerator.h"
-#include "WallLeadGenerator.h"
 
 #include "EPSeparatorGenerator.h"
 #include "R3ChokeChamberGenerator.h"
 #include "MagnetM1Generator.h"
 #include "MagnetU1Generator.h"
 #include "BremBlockGenerator.h"
-#include "MovableSafetyMaskGenerator.h"
 #include "HeatAbsorberToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 #include "CleaningMagnetGenerator.h"
 
-#include "maxivVariables.h"
 
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
@@ -253,7 +249,7 @@ shutterTableToyama(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF150>();
   SimpleTubeGen.setCap(0,0);
   SimpleTubeGen.generateTube(Control,shutterName,shutterBoxLength);
-  Control.addVariable(frontKey+"ShutterBoxNPorts",2);
+  Control.addVariable(shutterName+"NPorts",2);
 
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
@@ -398,7 +394,6 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::HeatDumpGenerator HeatGen;
 
   constexpr double heatAbsorberLength = 26.5;  // [2]
 
@@ -455,7 +450,6 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::CornerPipeGenerator CPipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::VacBoxGenerator VBoxGen;
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;

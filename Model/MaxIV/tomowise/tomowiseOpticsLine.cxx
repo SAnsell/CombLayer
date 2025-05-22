@@ -36,6 +36,45 @@
 #include <array>
 
 #include "FileReport.h"
+#include "OutputLog.h"
+#include "Vec3D.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedRotate.h"
+#include "FixedGroup.h"
+#include "FixedRotateGroup.h"
+#include "ContainedComp.h"
+#include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
+#include "ModelSupport.h"
+
+#include "VacuumBox.h"
+#include "VirtualTube.h"
+#include "PipeTube.h"
+#include "PortTube.h"
+
+#include "Mirror.h"
+#include "RoundMonoShutter.h"
+#include "TriggerTube.h"
+#include "IonGauge.h"
+#include "BeamPair.h"
+#include "MonoBlockXstals.h"
+#include "MLMonoDetail.h"
+#include "DCMTank.h"
+#include "BremTube.h"
+#include "HPJaws.h"
+#include "ViewScreenTube.h"
+#include "BeamAxis.h"
+#include "YagScreen.h"
+#include "PowerFilter.h"
+
+#include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -51,9 +90,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
-#include "FixedGroup.h"
 #include "FixedRotateGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -61,40 +100,26 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "BlockZone.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
-#include "ModelSupport.h"
+#include "BlockZone.h"
 #include "generateSurf.h"
 #include "generalConstruct.h"
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bellows.h"
-#include "VacuumBox.h"
+#include "CylGateValve.h"
+#include "OffsetFlangePipe.h"
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
-#include "PortTube.h"
-
-#include "BremBlock.h"
-#include "Mirror.h"
-#include "RoundMonoShutter.h"
-#include "TriggerTube.h"
-#include "CylGateValve.h"
 #include "SquareFMask.h"
-#include "IonGauge.h"
-#include "BeamPair.h"
-#include "MonoBlockXstals.h"
-#include "MLMonoDetail.h"
-#include "DCMTank.h"
-#include "BremTube.h"
-#include "HPJaws.h"
-#include "ViewScreenTube.h"
-#include "BeamAxis.h"
-#include "YagScreen.h"
-#include "PowerFilter.h"
+#include "BeamMount.h"
+#include "LObjectSupport.h"
 #include "HeatAbsorberToyama.h"
+#include "ProximityShielding.h"
+#include "BremBlock.h"
 
 #include "tomowiseOpticsLine.h"
 
@@ -167,9 +192,26 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   gateTubeE(new xraySystem::CylGateValve(newName+"GateTubeE")),
+  proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
+  proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
+
+  offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
+  shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
+  shutters({
+      std::make_shared<xraySystem::BeamMount>(newName+"Shutter0"),
+      std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
+    }),
+  offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
+
+  bremColl(std::make_shared<xraySystem::BremBlock>(newName+"BremColl")),
+  bremCollPipe(std::make_shared<constructSystem::VacuumPipe>(newName+"BremCollPipe")),
 
 
+  proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
+  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe")),
 
+
+  // TODO: delete components below (legacy from ForMAX)
 
   viewTube(new xraySystem::ViewScreenTube(newName+"ViewTube")),
   yagScreen(new tdcSystem::YagScreen(newName+"YagScreen")),
@@ -250,6 +292,17 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(ha);
   OR.addObject(bellowH);
   OR.addObject(gateTubeE);
+  OR.addObject(proxiShieldA);
+  OR.addObject(proxiShieldAPipe);
+  OR.addObject(offPipeA);
+  OR.addObject(shutterBox);
+  OR.addObject(shutters[0]);
+  OR.addObject(shutters[1]);
+  OR.addObject(offPipeB);
+  OR.addObject(bremColl);
+  OR.addObject(bremCollPipe);
+  OR.addObject(proxiShieldB);
+  OR.addObject(proxiShieldBPipe);
 
 
 
@@ -466,6 +519,62 @@ tomowiseOpticsLine::constructSafetyUnit(Simulation& System,
   constructSystem::constructUnit(System,buildZone,*ha,"back",*bellowH);
   constructSystem::constructUnit(System,buildZone,*bellowH,"back",*gateTubeE);
 
+
+    // Broximity shielding A
+  proxiShieldAPipe->createAll(System,*gateTubeE,"back");
+  constructSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
+  constructSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
+
+  constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);
+
+  //  insertFlanges(System,*gateTubeB);
+
+  shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
+  outerCell=buildZone.createUnit(System,*shutterBox,"back");
+
+  shutterBox->splitVoidPorts
+    (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
+
+
+  shutterBox->splitVoidPorts(System,"SplitOuter",2001,
+			       outerCell,{0,1});
+  shutterBox->insertMainInCell(System,shutterBox->getCells("SplitOuter"));
+  shutterBox->insertPortInCell(System,0,shutterBox->getCell("SplitOuter",0));
+  shutterBox->insertPortInCell(System,1,shutterBox->getCell("SplitOuter",1));
+
+
+
+  for(size_t i=0;i<shutters.size();i++)
+    {
+      const constructSystem::portItem& PI=shutterBox->getPort(i);
+      shutters[i]->addInsertCell("Support",PI.getCell("Void"));
+      shutters[i]->addInsertCell("Support",shutterBox->getCell("SplitVoid",i));
+      shutters[i]->addInsertCell("Block",shutterBox->getCell("SplitVoid",i));
+
+      shutters[i]->createAll(System,*offPipeA,
+			     offPipeA->getSideIndex("FlangeACentre"),
+			     PI,PI.getSideIndex("InnerPlate"));
+    }
+
+  constructSystem::constructUnit
+    (System,buildZone,*shutterBox,"back",*offPipeB);
+
+
+    // Bremsstrahlung collimator
+  outerCell = constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bremCollPipe);
+
+  bremColl->addInsertCell(bremCollPipe->getCell("Void"));
+  bremColl->addInsertCell(bremCollPipe->getCell("FlangeAInnerVoid"));
+  bremColl->addInsertCell(bremCollPipe->getCell("FlangeBInnerVoid"));
+  bremColl->addInsertCell(offPipeB->getCell("Void"));
+  bremColl->createAll(System,*bremCollPipe,0);
+
+  //return;
+  // Proximity shielding B
+  proxiShieldBPipe->createAll(System,*bremCollPipe,"back");
+  constructSystem::pipeMagUnit(System,buildZone,proxiShieldBPipe,"#front","outerPipe",proxiShieldB);
+  constructSystem::pipeTerminate(System,buildZone,proxiShieldBPipe);
+
   return;
 }
 
@@ -656,14 +765,14 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
 
 
   constructDiag2(System,*gateTubeD,"back");
-  constructSafetyUnit(System,*pipeDA,"back");
+  constructSafetyUnit(System,*viewTubeA,"back");
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
 
   setCells("InnerVoid",buildZone.getCells("Unit"));
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=gateTubeE;
+  lastComp=proxiShieldBPipe;
 
   return;
 }
