@@ -26,7 +26,7 @@
 #include <sstream>
 #include <map>
 #include <vector>
-#include <boost/format.hpp>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -80,7 +80,6 @@ OutputLog<RepClass>::OutputLog(const OutputLog<RepClass>& A)  :
     \param A :: OutputLog object to copy
     \return *this
   */
-
 {}
 
 template<typename RepClass>
@@ -227,12 +226,6 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
   std::string cxItem=M;
   std::string::size_type pos;
 
-  boost::format FMTbPart("%1$s%2$s");
-  boost::format FMTStr80("%1$s%|80t|");
-  boost::format FMTStr120("%1$s%|120t|");
-  boost::format FMTStr160("%1$s%|160t|");
-
-//  boost::format FMTStrL80("%3$s%|80t|[ %2$s% ] ");
   std::string Item;
   std::string colour;
   std::string colourReset;
@@ -242,11 +235,10 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
       colourReset="\033[0m";
       //      colourReset="\033[22;37m";
     }
-  
+
   if (isActive(T))
     {
-      const std::string Tag=colour+
-	(FMTbPart % eType(T) % locString()).str()+
+      const std::string Tag=colour+eType(T)+locString()+
 	colourReset;
       const std::string preTag=(highlightFlag) ? colour : "";
       do
@@ -256,23 +248,25 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
 	  const size_t TL=cxItem.length()+getIndentLength();
 	  if (!length && (pos<80 || (pos==std::string::npos && TL<80)))
 	    {
-	      Item+=
-		(FMTStr80 % (indent()+cxItem.substr(0,pos))).str()+Tag;
+	      Item=fmt::format("{:<80}",
+		(indent()+cxItem.substr(0,pos)))+Tag;
 	    }
 	  else if (length<2 && (pos<120 || (pos==std::string::npos && TL<120)))
 	    {
-	      Item+=(FMTStr120 % (indent()+cxItem.substr(0,pos))).str()+Tag;
+	      Item=fmt::format("{:<120}",
+		(indent()+cxItem.substr(0,pos)))+Tag;
 	      length=1;
 	    }
 	  // This is always the default test:
 	  else if (pos<160 || (pos==std::string::npos && TL<160))    
 	    {
-	      Item+=(FMTStr160 % (indent()+cxItem.substr(0,pos))).str()+Tag;
+	      Item=fmt::format("{:<160}",
+		(indent()+cxItem.substr(0,pos)))+Tag;
 	      length=2;
 	    }
 	  else  // Overflow on this one line 
 	    {
-	      Item+=indent()+cxItem.substr(0,pos)+"\n"+Tag;
+	      Item=indent()+cxItem.substr(0,pos)+"\n"+Tag;
 	    }
 
 	  if (!storeFlag)
@@ -599,7 +593,6 @@ endTrace(OutputLog<RepClass>& OLX)
   OLX.trace();
   return OLX;
 }
-
 template<typename RepClass>
 OutputLog<RepClass>& 
 endBASIC(OutputLog<RepClass>& OLX)
