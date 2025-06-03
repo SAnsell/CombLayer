@@ -248,25 +248,25 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
 	  const size_t TL=cxItem.length()+getIndentLength();
 	  if (!length && (pos<80 || (pos==std::string::npos && TL<80)))
 	    {
-	      Item=fmt::format("{:<80}",
+	      Item+=fmt::format("{:<80}",
 		(indent()+cxItem.substr(0,pos)))+Tag;
 	    }
 	  else if (length<2 && (pos<120 || (pos==std::string::npos && TL<120)))
 	    {
-	      Item=fmt::format("{:<120}",
+	      Item+=fmt::format("{:<120}",
 		(indent()+cxItem.substr(0,pos)))+Tag;
 	      length=1;
 	    }
 	  // This is always the default test:
 	  else if (pos<160 || (pos==std::string::npos && TL<160))    
 	    {
-	      Item=fmt::format("{:<160}",
+	      Item+=fmt::format("{:<160}",
 		(indent()+cxItem.substr(0,pos)))+Tag;
 	      length=2;
 	    }
 	  else  // Overflow on this one line 
 	    {
-	      Item=indent()+cxItem.substr(0,pos)+"\n"+Tag;
+	      Item+=indent()+cxItem.substr(0,pos)+"\n"+Tag;
 	    }
 
 	  if (!storeFlag)
