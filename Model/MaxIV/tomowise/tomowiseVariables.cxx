@@ -439,6 +439,11 @@ safetyUnit(FuncDataBase& Control,
   HeatAbsorberToyamaGenerator HAGen;
   HAGen.generate(Control,preName+"HeatAbsorber",30.0); // length: CAD 255589
   Control.addVariable(preName+"HeatAbsorberYStep",3075.1); // Excel table TomoWISE_components_feb25
+  // 1 mrad + 0.2 cm safety margin
+  // (1 mrad is same as the upstream FMs)
+  Control.addVariable(preName+"HeatAbsorberGapWidth",3.3);
+  Control.addVariable(preName+"HeatAbsorberGapHeight",0.6);
+
 
 
   GVGen.generateGate(Control,preName+"GateTubeE",0);  // open
@@ -521,8 +526,8 @@ safetyUnit(FuncDataBase& Control,
   BBGen.setMaterial("Tungsten", "Void");
   BBGen.setLength(bremCollLength);
   BBGen.setRadius(bremCollRadius);
-  // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
-  BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
+  // 1 mrad -> 2.2 + 0.6 cm safety margin
+  BBGen.setAperature(-1.0, 3.8, 0.7,  3.8, 0.7,   3.8, 0.7);
   BBGen.generateBlock(Control,preName+"BremColl",0);
   Control.addVariable(preName+"BremCollYStep",(bremCollPipeLength-bremCollLength)/2.0);
 
