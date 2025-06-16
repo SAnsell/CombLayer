@@ -454,7 +454,7 @@ safetyUnit(FuncDataBase& Control,
   constexpr double offPipeBLength = 2.6; // as small as possible
   constexpr double bremCollPipeLength = bremCollTotalLength - offPipeBLength;
 
-  constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [2, page1]
+  //  constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [2, page1]
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window
@@ -1207,11 +1207,11 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowA",12.6);
 
 
+  constexpr double FM1dist = 2360.0;
   FMaskGen.setCF<CF63>();
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
-  //  FMaskGen.setMinAngleSize(6.6,FM2dist, 100.0,100.0 );
-  FMaskGen.setMinSize(5.6,0.5,0.5);
+  FMaskGen.setMinAngleSize(5.6,FM1dist, 60.0, 60.0);
   // step to +7.5 to make join with fixedComp:linkpt
   FMaskGen.generateColl(Control,preName+"FM1",7.5,12.0);
 
