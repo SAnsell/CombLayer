@@ -105,6 +105,11 @@ class R3FrontEnd :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
+  // pipe before undulator (to place the straight section centre in
+  // the undulator centre) the length of this pipe is adjusted to make
+  // straight section length correct (6.81 m for TomoWISE)
+  std::shared_ptr<constructSystem::VacuumPipe> prePipe;
+
   /// transfer pipe from undulator/wiggler
   std::shared_ptr<constructSystem::VacuumPipe> transPipe;
 

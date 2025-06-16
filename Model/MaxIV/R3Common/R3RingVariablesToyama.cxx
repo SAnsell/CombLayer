@@ -468,6 +468,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.setMat("Copper");
   // placeholder length (100.0)
+  PipeGen.generatePipe(Control,frontKey+"PrePipe",197.4); // to make straight section length 6.81 m
   PipeGen.generatePipe(Control,frontKey+"TransPipe",100.0);
 
   setVariable::MagnetM1Generator M1Gen;

@@ -111,6 +111,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   buildZone(Key+"R3FrontEnd"),
 
+  prePipe(new constructSystem::VacuumPipe(newName+"PrePipe")),
   transPipe(new constructSystem::VacuumPipe(newName+"TransPipe")),
   magBlockM1(new xraySystem::MagnetM1(newName+"M1Block")),
   magBlockU1(new xraySystem::MagnetU1(newName+"U1Block")),
@@ -168,6 +169,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(prePipe);
   OR.addObject(transPipe);
   OR.addObject(magBlockM1);
   OR.addObject(magBlockU1);

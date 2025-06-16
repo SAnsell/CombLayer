@@ -58,6 +58,7 @@
 
 #include "GeneralPipe.h"
 #include "UTubePipe.h"
+#include "VacuumPipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
@@ -120,11 +121,14 @@ tomowiseFrontEnd::buildUndulator(Simulation& System,
 
 
   int outerCell;
+
   undulatorPipe->createAll(System,preFC,preSideIndex);
   outerCell=buildZone.createUnit(System,*undulatorPipe,2);
-
   CellMap::addCell("UndulatorOuter",outerCell);
   undulatorPipe->insertAllInCell(System,outerCell);
+
+  prePipe->createAll(System,*undulatorPipe,"front");
+  prePipe->insertAllInCell(System,outerCell);
 
   undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
