@@ -437,8 +437,9 @@ safetyUnit(FuncDataBase& Control,
 
 
   HeatAbsorberToyamaGenerator HAGen;
-  HAGen.generate(Control,preName+"HeatAbsorber",30.0); // length: CAD 255589
-  Control.addVariable(preName+"HeatAbsorberYStep",3075.1); // Excel table TomoWISE_components_feb25
+  constexpr double haLength = 30.0; // length: CAD 255589
+  HAGen.generate(Control,preName+"HeatAbsorber",haLength);
+  Control.addVariable(preName+"HeatAbsorberYStep",3075.1-haLength/2.0); // Excel table TomoWISE_components_feb25
   // 1 mrad + 0.2 cm safety margin
   // (1 mrad is same as the upstream FMs)
   Control.addVariable(preName+"HeatAbsorberGapWidth",3.3);
