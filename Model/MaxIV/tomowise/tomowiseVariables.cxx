@@ -714,10 +714,12 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setWallLead(2.0);
   OGen.setRoofLead(2.0);
 
-  OGen.generateHut(Control,hutName,1256.0);
-
   OGen.addHole(Geometry::Vec3D(beamMirrorShift, 0.0, 3.5), 3.0); // last number is radius
-  OGen.generateHut(Control,hutName,1256.0);
+  // Optics hutch length:
+  // 250214-TomoWISE-hutch-255596.step: 995.0
+  // if set to 995, then the Guillotine cuts ProxiShieldB, therefore
+  // add 10 cm to avoid geometry errors
+  OGen.generateHut(Control,hutName,1005.0);
 
   Control.addVariable(hutName+"RingStepLength",992.0);
   Control.addVariable(hutName+"RingStepWidth",200.0);
