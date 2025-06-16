@@ -433,7 +433,7 @@ safetyUnit(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowG",15.0);
-  BellowGen.generateBellow(Control,preName+"BellowH",15.0);
+  BellowGen.generateBellow(Control,preName+"BellowH",13.97); // length adjusted to correctly place ProxiShieldA
 
 
   HeatAbsorberToyamaGenerator HAGen;
