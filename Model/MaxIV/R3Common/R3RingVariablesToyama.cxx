@@ -477,7 +477,10 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   setVariable::MagnetU1Generator U1Gen;
   U1Gen.generateBlock(Control,frontKey+"U1Block");
 
-  ESGen.generatePipe(Control,frontKey+"EPSeparator");
+  name=frontKey+"EPSeparator";
+  ESGen.generatePipe(Control,name);
+  Control.addVariable(name+"Length",63.33); // to place Crotch absorber at 5.3243 m (Nils)
+  Control.addVariable(name+"WallWidth",6.25+1); // added 1 to avoid geometric error
 
   CCGen.generateChamber(Control,frontKey+"ChokeChamber");
   CCGen.generateInsert(Control,frontKey+"ChokeInsert");
