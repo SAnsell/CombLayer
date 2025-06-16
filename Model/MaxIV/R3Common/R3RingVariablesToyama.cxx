@@ -475,7 +475,9 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   M1Gen.generateBlock(Control,frontKey+"M1Block");
 
   setVariable::MagnetU1Generator U1Gen;
-  U1Gen.generateBlock(Control,frontKey+"U1Block");
+  name=frontKey+"U1Block";
+  U1Gen.generateBlock(Control,name);
+  Control.addVariable(name+"YStep",119.7-60.4); // 60.4 to start U1Block according to mechanical drawings
 
   name=frontKey+"EPSeparator";
   ESGen.generatePipe(Control,name);
