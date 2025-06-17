@@ -519,7 +519,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
   Control.addVariable(frontKey+"ECutDiskRadius",1.0);
-  Control.addVariable(frontKey+"ECutDiskMat","H2Gas#0.1");
+  Control.addVariable(frontKey+"ECutDiskMat","Void"); // H2Gas#0.1
 
   Control.addVariable(frontKey+"ECutMagDiskYStep",2.0);
   Control.addVariable(frontKey+"ECutMagDiskLength",0.1);
