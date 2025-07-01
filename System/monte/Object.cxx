@@ -1479,7 +1479,7 @@ Object::writeFLUKAmat(std::ostream& OX) const
 
   cx<<" R"+std::to_string(ObjName);
   if (activeMag && !imp.isZero())
-    cx<<" - - 1 - SYNCRON";
+    cx<<" - - 1 ";
 
 
   StrFunc::writeFLUKA(cx.str(),OX);
