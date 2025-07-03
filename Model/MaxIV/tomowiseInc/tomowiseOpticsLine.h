@@ -135,7 +135,8 @@ class tomowiseOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowE;
 
   /// H-res mono vessel
-  std::shared_ptr<xraySystem::DCMTank> monoVessel;
+  std::shared_ptr<xraySystem::DCMTank> dcmVessel;
+  std::shared_ptr<constructSystem::VacuumPipe> dcmPipe;
   /// Crystal pair
   std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
 
@@ -236,6 +237,7 @@ class tomowiseOpticsLine :
   double outerTop;     ///< Top lift for cut rectangle
 
   bool fm1Active; ///< FM1 active flag (replaced with pipe if false)
+  bool dcmActive; ///< DCM active flag (replaced with pipe if false)
 
   void constructViewScreen(Simulation&,
 			   const attachSystem::FixedComp&,

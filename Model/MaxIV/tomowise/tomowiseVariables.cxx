@@ -329,6 +329,12 @@ hdcmPackage(FuncDataBase& Control,
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
   Control.addVariable(monoKey+"MBXstalsYAngle",180.0);
 
+  // pipe alternative to DCM
+  setVariable::PipeGenerator PipeGen;
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,monoKey+"DCMReplacementPipe",77.0);
+
   return;
 }
 
@@ -1182,6 +1188,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(preName+"OuterTop",60.0);
 
   Control.addVariable(preName+"FM1Active",1);
+  Control.addVariable(preName+"DCMActive",1);
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;

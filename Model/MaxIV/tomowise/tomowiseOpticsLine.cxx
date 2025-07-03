@@ -171,7 +171,8 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   gateTubeC(new xraySystem::CylGateValve(newName+"GateTubeC")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
 
-  monoVessel(new xraySystem::DCMTank(newName+"DCMVessel")),
+  dcmVessel(new xraySystem::DCMTank(newName+"DCMVessel")),
+  dcmPipe(std::make_shared<constructSystem::VacuumPipe>(newName+"DCMReplacementPipe")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
 
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
@@ -272,7 +273,8 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(gateTubeC);
   OR.addObject(bellowE);
 
-  OR.addObject(monoVessel);
+  OR.addObject(dcmVessel);
+  OR.addObject(dcmPipe);
   OR.addObject(mbXstals);
 
   OR.addObject(bellowF);
@@ -350,6 +352,7 @@ tomowiseOpticsLine::populate(const FuncDataBase& Control)
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
   fm1Active=static_cast<bool>(Control.EvalVar<int>(keyName+"FM1Active"));
+  dcmActive=static_cast<bool>(Control.EvalVar<int>(keyName+"DCMActive"));
 
   return;
 }
@@ -451,10 +454,10 @@ tomowiseOpticsLine::constructHDCM(Simulation& System,
   ELog::RegMethod RegA("tomowiseOpticsLine","constructHDCM");
 
   constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*monoVessel);
+    (System,buildZone,initFC,sideName,*dcmVessel);
 
-  mbXstals->addInsertCell(monoVessel->getCell("Void"));
-  mbXstals->createAll(System,*monoVessel,0);
+  mbXstals->addInsertCell(dcmVessel->getCell("Void"));
+  mbXstals->createAll(System,*dcmVessel,0);
 
   return;
 }
@@ -760,10 +763,14 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*gateTubeC,"back",*bellowE);
 
-  constructHDCM(System,*bellowE,"back");
+  if (dcmActive) {
+    constructHDCM(System,*bellowE,"back");
+    constructSystem::constructUnit(System,buildZone,*dcmVessel,"back",*bellowF);
+  } else {
+    constructSystem::constructUnit(System,buildZone,*bellowE,"back",*dcmPipe);
+    constructSystem::constructUnit(System,buildZone,*dcmPipe,"back",*bellowF);
+  }
 
-  constructSystem::constructUnit
-    (System,buildZone,*monoVessel,"back",*bellowF);
   constructSystem::constructUnit
     (System,buildZone,*bellowF,"back",*pipeD);
   constructSystem::constructUnit
