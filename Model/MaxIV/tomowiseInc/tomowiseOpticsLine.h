@@ -90,6 +90,8 @@ class tomowiseOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Brem for collimator
   std::shared_ptr<xraySystem::SquareFMask> fm1;
+  /// pipe that replaces fm1 if it is not active
+  std::shared_ptr<constructSystem::VacuumPipe> fm1Pipe;
   /// Ion Gauge
   std::shared_ptr<xraySystem::IonGauge> bremHolderA;
   /// Brem collimator
@@ -232,6 +234,8 @@ class tomowiseOpticsLine :
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
+
+  bool fm1Active; ///< FM1 active flag (replaced with pipe if false)
 
   void constructViewScreen(Simulation&,
 			   const attachSystem::FixedComp&,

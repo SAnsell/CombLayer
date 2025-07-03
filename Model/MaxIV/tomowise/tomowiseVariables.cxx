@@ -1181,6 +1181,8 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(preName+"OuterRight",50.0);
   Control.addVariable(preName+"OuterTop",60.0);
 
+  Control.addVariable(preName+"FM1Active",1);
+
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -1216,12 +1218,19 @@ opticsVariables(FuncDataBase& Control,
 
 
   constexpr double FM1dist = 2360.0;
+  constexpr double FM1length = 12.0;
   FMaskGen.setCF<CF63>();
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
   FMaskGen.setMinAngleSize(5.6,FM1dist, 60.0, 60.0);
   // step to +7.5 to make join with fixedComp:linkpt
-  FMaskGen.generateColl(Control,preName+"FM1",7.5,12.0);
+  FMaskGen.generateColl(Control,preName+"FM1",7.5,FM1length);
+
+  // pipe alternative to FM1
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,preName+"FM1ReplacementPipe",FM1length);
+
 
   IGGen.setCF<CF150>();
   IGGen.setMainLength(12.0-1.65,8.0);

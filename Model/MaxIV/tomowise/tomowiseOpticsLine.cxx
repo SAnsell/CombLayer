@@ -143,6 +143,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   fm1(new xraySystem::SquareFMask(newName+"FM1")),
+  fm1Pipe(std::make_shared<constructSystem::VacuumPipe>(newName+"FM1ReplacementPipe")),
   bremHolderA(new xraySystem::IonGauge(newName+"BremHolderA")),
   bremCollA(new xraySystem::BremBlock(newName+"BremCollA")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
@@ -247,6 +248,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(bellowA);
   OR.addObject(fm1);
+  OR.addObject(fm1Pipe);
   OR.addObject(bellowB);
   OR.addObject(bremHolderA);
   OR.addObject(bremCollA);
@@ -347,6 +349,7 @@ tomowiseOpticsLine::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
+  fm1Active=static_cast<bool>(Control.EvalVar<int>(keyName+"FM1Active"));
 
   return;
 }
@@ -673,11 +676,14 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*pipeA,"back",*bellowA);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowA,"back",*fm1);
-
-  constructSystem::constructUnit
-    (System,buildZone,*fm1,"back",*bremHolderA);
+  //  attachSystem::FixedComp& fm1fc = *fm1; //(fm1Active) ? *fm1 : *fm1Pipe;
+  if (fm1Active) {
+    constructSystem::constructUnit(System,buildZone,*bellowA,"back",*fm1);
+    constructSystem::constructUnit(System,buildZone,*fm1,"back",*bremHolderA);
+  } else {
+    constructSystem::constructUnit(System,buildZone,*bellowA,"back",*fm1Pipe);
+    constructSystem::constructUnit(System,buildZone,*fm1Pipe,"back",*bremHolderA);
+  }
 
   bremCollA->addInsertCell(bremHolderA->getCell("Void"));
   bremCollA->createAll(System,*bremHolderA,0);
