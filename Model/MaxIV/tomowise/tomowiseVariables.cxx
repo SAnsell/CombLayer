@@ -94,7 +94,9 @@
 #include "BremBlockGenerator.h"
 
 // References
-// see R3Common/R3RingVariables.cxx
+// see R3Common/R3RingVariables.cxx and:
+// [4] TomoWISE hutch walls
+//     http://localhost:8080/maxiv/work-log/tomowise/cad/250214-tomowise-hutch-255596-step.zst/view
 
 namespace setVariable
 {
@@ -734,7 +736,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   PGen.setSize(4.0,60.0,40.0);
   PGen.generatePortChicane(Control,hutName+"Chicane0","Right",-230.0,-15.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",500.0,-15.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Right",400.0,-15.0);
 
   // Forklift truck holesa
   Control.addVariable(hutName+"ForkNHoles",0);
@@ -760,7 +762,7 @@ exptHutVariables(FuncDataBase& Control,
 		 const std::string& beamName,
 		 const double beamXStep)
   /*!
-    Optics hut variables
+    Experimenta hutch variables
     \param Control :: DataBase to add
     \param beamName :: Beamline name
     \param bremXStep :: Offset of beam from main centre line
@@ -777,10 +779,11 @@ exptHutVariables(FuncDataBase& Control,
   EGen.addHole(Geometry::Vec3D(beamOffset,0,0),3.5);
   EGen.setBackExt(10.0);
   EGen.setFrontExt(10.0);
-  EGen.setCorner(45.0,120.0);   // step-y back
-  EGen.generateHut(Control,hutName,0.0,901.0);
+  EGen.setCorner(30.0, 346.0);   // angle, step-y back [4]
+  EGen.generateHut(Control,hutName,0.0,2014.0); // [4]
 
   Control.addVariable(hutName+"FrontVoid",0.0);
+  Control.addVariable(hutName+"RingWidth",179.0); // [4]
 
 
   // // lead shield on pipe
