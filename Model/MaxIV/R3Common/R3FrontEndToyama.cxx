@@ -133,6 +133,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
 
   // OR.addObject(transPipe);
   // OR.addObject(magBlockM1);
+  // OR.addObject(magBlockU1);
   // OR.addObject(epSeparator);
   // OR.addObject(chokeChamber);
   // OR.addObject(chokeInsert);
@@ -581,19 +582,19 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   dipolePipe->insertAllInCell(System,outerCell);
   buildZone.addCell("dipoleUnit",outerCell);
 
-  // magBlockU1->createAll(System,*epSeparator,"Electron");
-  // magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
-  // magBlockU1->insertDipolePipe(System,*dipolePipe);
+  magBlockU1->createAll(System,*epSeparator,"Electron");
+  magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
+  magBlockU1->insertDipolePipe(System,*dipolePipe);
 
-  // const xraySystem::EntryPipe& entryPipe=
-  //   magBlockU1->getEntryPipe();
-  // eCutMagDisk->setNoInsert();
-  // eCutMagDisk->addInsertCell(entryPipe.getCell("Void"));
-  // eCutMagDisk->addInsertCell(entryPipe.getCell("Wall"));
-  // eCutMagDisk->createAll(System,entryPipe,"-back");
+  const xraySystem::EntryPipe& entryPipe=
+    magBlockU1->getEntryPipe();
+  eCutMagDisk->setNoInsert();
+  eCutMagDisk->addInsertCell(entryPipe.getCell("Void"));
+  eCutMagDisk->addInsertCell(entryPipe.getCell("Wall"));
+  eCutMagDisk->createAll(System,entryPipe,"-back");
 
   eTransPipe->setFront(*chokeChamber,"electron");
-  //  eTransPipe->setBack(*magBlockU1,"voidFront");
+  eTransPipe->setBack(*magBlockU1,"voidFront");
   eTransPipe->createAll(System,*chokeChamber,"electron");
   eTransPipe->insertInCell("FlangeA",System,
 			   chokeChamber->getCell("PhotonOuterVoid"));
@@ -603,13 +604,6 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 			   chokeChamber->getCell("BlockOuter"));
   eTransPipe->insertInCell("Main",System,outerCell);
   eTransPipe->insertInCell("FlangeB",System,outerCell);
-
-  // tmp while magBlockU1 is not built
-  eCutMagDisk->setNoInsert();
-  eCutMagDisk->addInsertCell(eTransPipe->getCell("Void"));
-  //  eCutMagDisk->addInsertCell(eTransPipe->getCell("Wall"));
-  eCutMagDisk->createAll(System,*eTransPipe,"-back");
-
 
   outerCell=buildZone.createUnit(System,*bellowA,1);
   bellowA->insertAllInCell(System,outerCell);

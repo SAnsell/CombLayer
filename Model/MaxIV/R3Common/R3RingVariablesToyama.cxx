@@ -495,7 +495,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   PipeGen.setCF<CF25>();
   PipeGen.setMat("Stainless304");
-  PipeGen.generatePipe(Control,frontKey+"ETransPipe",100.0);
+  PipeGen.generatePipe(Control,frontKey+"ETransPipe",800.0);
 
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
