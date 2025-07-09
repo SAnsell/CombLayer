@@ -776,7 +776,7 @@ exptHutVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHut");
 
   EGen.setFrontHole(beamXStep-beamOffset,0.0,3.0);
-  EGen.addHole(Geometry::Vec3D(beamOffset,0,0),3.5);
+  //  EGen.addHole(Geometry::Vec3D(beamOffset,0,0),3.5);
   EGen.setBackExt(10.0);
   EGen.setFrontExt(10.0);
   EGen.setCorner(30.0, 346.0);   // angle, step-y back [4]
