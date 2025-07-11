@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3Common/MagnetU1.cxx
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
@@ -51,14 +50,13 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
-#include "FixedRotateUnit.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
-#include "FrontBackCut.h" 
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -77,7 +75,7 @@
 namespace xraySystem
 {
 
-MagnetU1::MagnetU1(const std::string& Key) : 
+MagnetU1::MagnetU1(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedGroup("Main"),
   attachSystem::ExternalCut(),
@@ -117,7 +115,7 @@ MagnetU1::MagnetU1(const std::string& Key) :
 }
 
 
-MagnetU1::~MagnetU1() 
+MagnetU1::~MagnetU1()
   /*!
     Destructor
   */
@@ -148,7 +146,7 @@ MagnetU1::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-    
+
   return;
 }
 
@@ -179,7 +177,7 @@ MagnetU1::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(baseVoid+baseThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(topVoid+baseThick),Z);
 
-  
+
   return;
 }
 
@@ -203,7 +201,7 @@ MagnetU1::createUnit(Simulation& System,
   const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 5 -6");
 
   frontHR=preUnit.getFullRule("back");
-  backHR=mainUnit.getFullRule("front");  
+  backHR=mainUnit.getFullRule("front");
   makeCell("Seg"+std::to_string(index++),
 	   System,cellIndex++,wallMat,0.0,HR*frontHR*backHR);
 
@@ -214,7 +212,7 @@ MagnetU1::createUnit(Simulation& System,
 
   return;
 }
-  
+
 
 void
 MagnetU1::createObjects(Simulation& System)
@@ -243,15 +241,15 @@ MagnetU1::createObjects(Simulation& System)
   // this is same as electron incoming
 
   DIPm->createAll(System,*this,0);
-  
+
   entryPipe->setFront(SMap.realSurf(buildIndex+11));
   entryPipe->setBack(*DIPm,"front");
-  entryPipe->createAll(System,*this,0);  
+  entryPipe->createAll(System,*this,0);
   entryPipe->insertInCell("Flange",System,getCell("FrontVoid"));
   entryPipe->insertInCell("Pipe",System,getCell("FrontVoid"));
-  
+
   exitPipe->setFront(*DIPm,"back");
-  exitPipe->setBack(-SMap.realSurf(buildIndex+12));  
+  exitPipe->setBack(-SMap.realSurf(buildIndex+12));
   exitPipe->createAll(System,*DIPm,"back");
   exitPipe->insertInCell("Flange",System,getCell("BackVoid"));
   exitPipe->insertInCell("Pipe",System,getCell("BackVoid"));
@@ -275,10 +273,10 @@ MagnetU1::createObjects(Simulation& System)
   SD2->setCutSurf("Inner",exitPipe->getSurfRule("OuterRadius"));
   SD2->createAll(System,*DIPm,"back");
 
-  
+
   backHR=QFm1->getFullRule(1);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1  3 -4 5 -6");
-  makeCell("Seg1",System,cellIndex++,wallMat,0.0,HR*backHR);  
+  makeCell("Seg1",System,cellIndex++,wallMat,0.0,HR*backHR);
   entryPipe->insertInCell("Pipe",System,getCell("Seg1"));
 
   frontHR=backHR.complement();
@@ -292,10 +290,10 @@ MagnetU1::createObjects(Simulation& System)
   createUnit(System,segIndex,*QFm1,*SFm);
   SFm->insertInCell(System,getCell("Seg4"));
   entryPipe->insertInCell("Pipe",System,getCell("Seg3"));
-  
+
   createUnit(System,segIndex,*SFm,*QFm2);
   QFm2->insertInCell(System,getCell("Seg6"));
-  entryPipe->insertInCell("Pipe",System,getCell("Seg5"));  
+  entryPipe->insertInCell("Pipe",System,getCell("Seg5"));
 
   createUnit(System,segIndex,*QFm2,*cMagVA);
   cMagVA->insertInCell(System,getCell("Seg8"));
@@ -312,23 +310,23 @@ MagnetU1::createObjects(Simulation& System)
   createUnit(System,segIndex,*SD1,*DIPm);
   DIPm->insertInCell(System,getCell("Seg14"));
   entryPipe->insertInCell("Pipe",System,getCell("Seg13"));
-  
+
   createUnit(System,segIndex,*DIPm,*SD2);
   SD2->insertInCell(System,getCell("Seg16"));
   exitPipe->insertInCell("Pipe",System,getCell("Seg15"));
-  
+
   backHR=SD2->getFullRule(2);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 3 -4 5 -6");
-  makeCell("Seg17",System,cellIndex++,wallMat,0.0,HR*backHR);  
+  makeCell("Seg17",System,cellIndex++,wallMat,0.0,HR*backHR);
   exitPipe->insertInCell("Pipe",System,getCell("Seg17"));
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16 ");
   addOuterSurf("Main",HR);
-  
+
   return;
 }
 
-void 
+void
 MagnetU1::createLinks()
   /*!
     Create the linked units
@@ -367,16 +365,16 @@ MagnetU1::insertDipolePipe(Simulation& System,
 
   const HeadRule pipeHR=
     dipolePipe.getCC("Tube").getOuterSurf().complement();
-  
+
   // get corners
   std::vector<Geometry::Vec3D> Pts;
   const Geometry::Vec3D Axis(dipolePipe.getLinkAxis("cornerA"));
-			     
+
   Pts.push_back(dipolePipe.getLinkPt("cornerA"));
   Pts.push_back(dipolePipe.getLinkPt("cornerB"));
   Pts.push_back(dipolePipe.getLinkPt("cornerC"));
   Pts.push_back(dipolePipe.getLinkPt("cornerD"));
-  
+
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -392,7 +390,7 @@ MagnetU1::insertDipolePipe(Simulation& System,
       const std::set<int> PSet=System.getObjectRange(keyName+objName);
       CSet.insert(PSet.begin(),PSet.end());
     }
-  
+
   for(const int CN : CSet)
     {
       MonteCarlo::Object* OPtr=
@@ -419,7 +417,7 @@ MagnetU1::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
@@ -435,9 +433,9 @@ MagnetU1::createAll(Simulation& System,
 
 
   // creation of links
-  
+
   createLinks();
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
