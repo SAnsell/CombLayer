@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/Sexupole.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <algorithm>
@@ -50,14 +50,14 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ExternalCut.h" 
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
-#include "CellMap.h" 
+#include "CellMap.h"
 
 #include "Sexupole.h"
 
@@ -79,7 +79,7 @@ Sexupole::Sexupole(const std::string& Key) :
 {}
 
 Sexupole::Sexupole(std::string  Base,
-		   const std::string& Key) : 
+		   const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -95,7 +95,7 @@ Sexupole::Sexupole(std::string  Base,
 {}
 
 
-Sexupole::~Sexupole() 
+Sexupole::~Sexupole()
   /*!
     Destructor
   */
@@ -111,7 +111,7 @@ Sexupole::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Sexupole","populate");
 
   FixedRotate::populate(Control);
-  
+
   length=Control.EvalTail<double>(keyName,baseName,"Length");
 
   frameRadius=Control.EvalTail<double>(keyName,baseName,"FrameRadius");
@@ -123,7 +123,7 @@ Sexupole::populate(const FuncDataBase& Control)
 
   coilRadius=Control.EvalTail<double>(keyName,baseName,"CoilRadius");
   coilWidth=Control.EvalTail<double>(keyName,baseName,"CoilWidth");
-  
+
   poleMat=ModelSupport::EvalMat<int>(Control,keyName+"PoleMat",
 				       baseName+"PoleMat");
   coilMat=ModelSupport::EvalMat<int>(Control,keyName+"CoilMat",
@@ -146,9 +146,11 @@ Sexupole::createSurfaces()
   // mid line
   ModelSupport::buildPlane(SMap,buildIndex+100,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+200,Origin,Z);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+
+  const double da = M_PI/static_cast<double>(NPole);
 
   int CN(buildIndex+1000);
   // Note there are 16 surfaces on the inner part of the pole peice
@@ -162,7 +164,7 @@ Sexupole::createSurfaces()
       ModelSupport::buildPlane(SMap,CN+1,Origin+QR*frameRadius,QR);
       ModelSupport::buildPlane
 	(SMap,CN+51,Origin+QR*(frameRadius+frameThick),QR);
-      angle+=M_PI/static_cast<double>(NPole);
+      angle+=da;
       CN++;
     }
 
@@ -173,9 +175,9 @@ Sexupole::createSurfaces()
     {
       const Geometry::Vec3D QX=X*cos(M_PI/2.0+angle)+Z*sin(M_PI/2.0+angle);
       ModelSupport::buildPlane(SMap,CN+1,Origin,QX);
-      angle+=2.0*M_PI/static_cast<double>(NPole);
+      angle+=2.0*da;
       CN++;
-    }  
+    }
 
   // MAIN POLE PIECES:
   angle=M_PI*poleYAngle/180.0;
@@ -198,15 +200,27 @@ Sexupole::createSurfaces()
       ModelSupport::buildCylinder(SMap,CN+107,CPt,Y,poleRadius);
 
       ModelSupport::buildPlane(SMap,CN+101,CPt,QR);
-      
-      angle+=2.0*M_PI/static_cast<double>(NPole);
+
+      angle+=2.0*da;
       CN+=10;
     }
+
+  // Divider cylinders for the pole separator planes
+  CN=buildIndex;
+  angle=M_PI*poleYAngle/180.0 + da;
+  const double scale = cos(angle);
+  for(size_t i=0;i<NPole;i++) {
+    const Geometry::Vec3D QR=X*cos(angle)+Z*sin(angle);
+    ModelSupport::buildCylinder(SMap,CN+7,Origin+QR*(coilRadius/scale),Y,poleGap/100.0);
+    angle+=2.0*da;
+    CN+=10;
+  }
+
 
   // Inner
   if (!isActive("Inner"))
     ModelSupport::buildCylinder(SMap,buildIndex+5007,Origin,Y,poleGap/10.0);
-    
+
   return;
 }
 
@@ -220,7 +234,7 @@ Sexupole::createObjects(Simulation& System)
   ELog::RegMethod RegA("Sexupole","createObjects");
 
   HeadRule HR;
-  
+
   std::string unitStr="1M -2M ";
   unitStr+=ModelSupport::getSeqIntersection
     (-51,  -(50+2*static_cast<int>(NPole)),1);
@@ -239,17 +253,21 @@ Sexupole::createObjects(Simulation& System)
       HR=HeadRule(SMap,buildIndex,-5007);
       makeCell("Inner",System,cellIndex++,0,0.0,HR*fbHR);
     }
-      
+
   const HeadRule ICellHR=getRule("Inner");
   /// create triangles
 
   std::vector<HeadRule> CoilExclude;
-  std::vector<HeadRule> PoleExclude; 
+  std::vector<HeadRule> PoleExclude;
   int BN(buildIndex); // base
   int PN(buildIndex);
   for(size_t i=0; i<NPole;i++)
     {
       const HeadRule outerCutHR(SMap,BN,-1001);
+
+      // Divider cylinders for the pole separator planes
+      HR=ModelSupport::getHeadRule(SMap,PN,"-7");
+      makeCell("DivCyl",System,cellIndex++,0,0.0,HR*fbHR);
 
       // Note a : is needed if poleRadius small (-2107 : 2101)");
       HR=ModelSupport::getHeadRule(SMap,PN,"2103 -2104 -2107");
@@ -264,6 +282,7 @@ Sexupole::createObjects(Simulation& System)
       CoilExclude.push_back(HR);
       BN+=2;
       PN+=10;
+
     }
 
 
@@ -274,17 +293,22 @@ Sexupole::createObjects(Simulation& System)
   for(size_t i=0;i<NPole;i++)
     {
       const HeadRule triCutHR=ModelSupport::getHeadRule(SMap,PN,"2001");
+      // Divider cylinders for the pole separator planes
+      const HeadRule divCylHR=
+	ModelSupport::getHeadRule(SMap,PN, (i==0) ?
+				  buildIndex+(static_cast<int>(NPole)-1)*10 : PN-10, "7 7M");
 
       HRA=ModelSupport::getRangeHeadRule
 	(SMap,501,506,bOffset,buildIndex,"501R -502R");
       HRB=ModelSupport::getRangeHeadRule
 	(SMap,1001,1012,aOffset,buildIndex,"-1001R -1002R -1003R");
 
+      // outer triangle
       makeCell("Triangle",System,cellIndex++,0,0.0,HRA*HRB*fbHR*
-	       triCutHR*CoilExclude[i].complement());
+	       triCutHR*CoilExclude[i].complement()*divCylHR);
       makeCell("InnerTri",System,cellIndex++,0,0.0,
 	       HRA*fbHR*triCutHR.complement()*
-	       PoleExclude[i].complement()*ICellHR);
+	       PoleExclude[i].complement()*ICellHR*divCylHR);
 
       aOffset+=2;
       bOffset+=1;
@@ -293,7 +317,7 @@ Sexupole::createObjects(Simulation& System)
   return;
 }
 
-void 
+void
 Sexupole::createLinks()
   /*!
     Create the linked units
@@ -301,8 +325,8 @@ Sexupole::createLinks()
 {
   ELog::RegMethod RegA("Sexupole","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);     
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
@@ -317,20 +341,20 @@ Sexupole::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed point track 
+    \param FC :: Fixed point track
     \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("Sexupole","createAll");
-  
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
