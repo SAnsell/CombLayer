@@ -218,10 +218,18 @@ CornerPipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 5 -6");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 15 (-107:3) (-137:-4)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 -3 -107");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 15 3 -4");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 4 -137");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -16 (-117:3) (-127:-4)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -16 3 -4");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -3 -117");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 4 -127");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR*backHR);
 
 
@@ -245,31 +253,47 @@ CornerPipe::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"4 -5 137 -237 101 -102 -24 25");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
-
-  // FLANGE
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-1007 -101 (-15:-3:4) 107 137 -5");
+  // Flange A lower part
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -3 -5 107 -1007");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 3 -4 -15 -1007");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 4 -5 137 -1007");
   makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-1007 -101 (16:-3:4) 117 127 6");
+  // Flange A mid part
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1007 -101 (-13:14) 5 -6 ");
   makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-1007 -101 (-13:14) 5 -6 ");
+  // Flange A upper part
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -3 6 117 -1007");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 3 -4 16 -1007");
+  makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 4 6 127 -1007");
   makeCell("FlangeA",System,cellIndex++,wallMat,0.0,HR*frontHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-2007 102 (-15:-3:4) 107 137 -5");
+  // Flange B lower part
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -3 -5 107 -2007 ");
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 3 -4 -15 -2007 ");
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 4 -5 137 -2007 ");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-2007 102 (16:-3:4) 117 127 6");
+  // Flange B mid part
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2007 102 (-13:14) 5 -6 ");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-2007 102 (-13:14) 5 -6 ");
+  // Flange B lower part
+  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2007 102 (16:-3:4) 117 127 6");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -3 6 117 -2007");
   makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 3 -4 16 -2007");
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 4 6 127 -2007");
+  makeCell("FlangeB",System,cellIndex++,wallMat,0.0,HR*backHR);
+
 
 
   // outer void corners:
