@@ -470,6 +470,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   // placeholder length (100.0)
   PipeGen.generatePipe(Control,frontKey+"PrePipe",197.4); // to make straight section length 6.81 m
   PipeGen.generatePipe(Control,frontKey+"TransPipe",100.0);
+  Control.addVariable(frontKey+"TransPipeOuterVoid",1);
 
   setVariable::MagnetM1Generator M1Gen;
   M1Gen.generateBlock(Control,frontKey+"M1Block");
@@ -496,6 +497,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   PipeGen.setCF<CF25>();
   PipeGen.setMat("Stainless304");
   PipeGen.generatePipe(Control,frontKey+"ETransPipe",800.0);
+  Control.addVariable(frontKey+"ETransPipeOuterVoid",1);
 
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
