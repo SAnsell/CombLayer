@@ -3,7 +3,7 @@
  
  * File:   geomInc/Surface.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ namespace Geometry
   class Vec3D;
   class Plane;
   class Quaternion;
-  class Transform;
-
+  template<typename T> class M3;
+  
   enum class SurfKey
     {
       Surface = -1,
@@ -45,6 +45,7 @@ namespace Geometry
       MBrect = 9,
       Torus= 10,        
     };
+
 /*!
   \class  Surface
   \brief Fundermental Surface object
@@ -60,7 +61,6 @@ class Surface
  private:
   
   int Name;        ///< Surface number (MCNP identifier)
-  int TransN;      ///< Transform number (-ve means applied)
 
  protected:
   
@@ -69,7 +69,7 @@ class Surface
  public:
 
   Surface();
-  Surface(const int,const int);
+  explicit Surface(const int);
   Surface(const Surface&);
   virtual Surface* clone() const =0;   ///< Abstract clone function
   Surface& operator=(const Surface&);
@@ -91,14 +91,11 @@ class Surface
 
   void setName(const int N) { Name=N; }            ///< Set Name
   int getName() const { return Name; }             ///< Get Name
-  void setTrans(const int N) { TransN=N; }         ///< Set Transform number
-  int getTrans() const { return TransN; }          ///< Get Transform number
 
   // Processes Name/TransNumber
   std::string stripID(const std::string&);
   /// All surfraces are not-null except nullsurf
   virtual int isNull() { return 0; } 
-  int applyTransform(const std::map<int,Transform>&);
   int sideDirection(const Geometry::Vec3D&,
 		    const Geometry::Vec3D&) const;
 
@@ -110,7 +107,7 @@ class Surface
   virtual Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const =0;
   
   virtual void displace(const Geometry::Vec3D&)  =0;
-  virtual void rotate(const Geometry::Matrix<double>&) =0;
+  virtual void rotate(const Geometry::M3<double>&) =0;
   virtual void mirror(const Geometry::Plane&) =0; 
 
   

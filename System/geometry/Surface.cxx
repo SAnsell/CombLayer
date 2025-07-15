@@ -3,7 +3,7 @@
  
  * File:   geometry/Surface.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <complex>
 #include <cmath>
 #include <vector>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -35,13 +36,11 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
+#include "M3.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Transform.h"
 #include "Surface.h"
 
 namespace Geometry
@@ -61,23 +60,22 @@ operator<<(std::ostream& OX,const Surface& A)
 }
 
 Surface::Surface() : 
-  Name(-1),TransN(0)
+  Name(-1)
   /*!
     Constructor
   */
 {}
 
-Surface::Surface(const int N,const int T) : 
-  Name(N),TransN(T)
+Surface::Surface(const int N) : 
+  Name(N)
   /*!
     Constructor
     \param N :: Name 
-    \param T :: Transform
   */
 {}
 
 Surface::Surface(const Surface& A) : 
-  Name(A.Name),TransN(A.TransN)
+  Name(A.Name)
   /*!
     Copy constructor
     \param A :: Surface to copy
@@ -96,7 +94,6 @@ Surface::operator=(const Surface& A)
   if (this!=&A)
     {
       Name=A.Name;
-      TransN=A.TransN;
     }
   return *this;
 }
@@ -122,7 +119,7 @@ Surface::processSetHead(std::string& Line)
         {
 	  setName(cellN);
 	  if (StrFunc::section(Line,cellN) && cellN>=0)
-	    setTrans(cellN);
+	    ELog::EM<<"Transform number NON-ZERO:"<<cellN<<ELog::endErr;
 	}
     }
   return;
@@ -134,7 +131,7 @@ Surface::print() const
     Simple print out function for surface header 
   */
 {
-  std::cout<<"Surf (name,trans) == "<<Name<<" : "<<TransN<<" ";
+  std::cout<<"Surf (name) == "<<Name<<" ";
   return;
 }
 
@@ -147,8 +144,6 @@ Surface::writeHeader(std::ostream& OX) const
   */
 {
   OX<<Name<<" ";
-  if (TransN>0)
-    OX<<TransN<<" ";
   return;
 }
 
@@ -167,35 +162,10 @@ Surface::stripID(const std::string& Line)
     {
       Name=nx;
       if (StrFunc::section(LOut,nx))
-	TransN=nx;
+	if (nx>0)
+	  ELog::EM<<"Error with transform number non-zero"<<nx<<ELog::endErr;
     }
   return LOut;
-}
-
-int
-Surface::applyTransform(const std::map<int,Transform>& TMap)
-  /*! 
-     Applies the appropiate transform from the system to the surface.
-     \param TMap - list of known transforms
-     \retval 0 :: No transform needs appling
-     \retval 1 :: Tranform successfully applied
-     \retval -1 :: Transform could not be found in TMap
-  */
-{
-  ELog::RegMethod RegA("Surface","applyTransform");
-  if (TransN<=0) return 0;
-
-  std::map<int,Transform>::const_iterator sm=TMap.find(TransN);
-  if (sm==TMap.end())
-    {
-      ELog::EM<<"Out of range (cell="<<Name<<
-	", Tr="<<TransN<<ELog::endErr;
-      return -1;
-    }
-  this->rotate(sm->second.rotMat());
-  this->displace(sm->second.shift());
-  TransN*=-1;
-  return 1;
 }
 
 int

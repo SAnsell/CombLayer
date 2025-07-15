@@ -27,6 +27,7 @@ namespace Geometry
 {
   struct interPoint;
   class Plane;
+  template<typename T> class M3;
 }
  
 
@@ -77,8 +78,6 @@ class Object
   /// Calc in/out 
   int calcInOut(const int,const int) const;
   void clearValid();
-
-  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
   
  protected:
   
@@ -216,7 +215,7 @@ class Object
   
   ///\cond ABSTRACT
   virtual void displace(const Geometry::Vec3D&) {}
-  virtual void rotate(const Geometry::Matrix<double>&) {}
+  virtual void rotate(const Geometry::M3<double>&) {}
   virtual void mirror(const Geometry::Plane&) {}
   ///\endcond ABSTRACT
 

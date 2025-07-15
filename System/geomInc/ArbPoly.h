@@ -3,7 +3,7 @@
  
  * File:   geomInc/ArbPoly.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,9 +41,9 @@ class ArbPoly : public Surface
 {
  private:
   
-  size_t nSurface;                    ///< Number of surfaces
+  size_t nSurface;                          ///< Number of surfaces
   std::vector<Vec3D> CVec;                  ///< Corner Vector
-  std::vector<std::vector<size_t> > CIndex;    ///< Corner Index
+  std::vector<std::vector<size_t> > CIndex; ///< Corner Index
   std::vector<Plane> Sides;                 ///< Sides (only created if needed)
 
   void makeSides();
@@ -87,7 +87,7 @@ class ArbPoly : public Surface
   double distance(const Geometry::Vec3D&) const override;     
   Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;
   
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void displace(const Geometry::Vec3D&) override;
   void mirror(const Geometry::Plane&) override;
 

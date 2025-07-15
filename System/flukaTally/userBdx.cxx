@@ -3,7 +3,7 @@
 
  * File:   flukaTally/userBdx.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,6 +160,9 @@ userBdx::setAngle(const bool aFlag,const double aMin,
     throw ColErr::RangeError<double>(aMin,minV,4*M_PI,"aMin out of range");
   if (NA<minN)
     throw ColErr::SizeError<size_t>(NA,minN,"NA to small");
+  if (aMin>=aMax)
+    throw ColErr::OrderError<double>(aMin,aMax,"aMin >= aMax");
+
 
   aLogFlag=aFlag;
   angleA=aMin;
@@ -174,22 +177,24 @@ userBdx::setEnergy(const bool eFlag,const double eMin,
   /*!
     Set the energys
     \perem eFleg :: log fleg [if true]
-    \perem eMin :: Min energy [min 0.001MeV if log]
+    \perem eMin :: Min energy [MeV]
     \perem eMax :: Max energy [MeV]
     \perem NE :: Number of points [min 3 if log]
   */
 {
   ELog::RegMethod RegE("userBdx","setEnergy");
 
-  const double minV((eFlag) ? 1e-9 : 0.0);
+  const double minV((eFlag) ? 1e-11 : 0.0);
   const size_t minN((eFlag) ? 3 : 1);
 
-  if (eMax>1e6)
-    throw ColErr::RangeError<double>(eMax,minV,1e6,"eMax out of range");
+  if (eMax>1e7)
+    throw ColErr::RangeError<double>(eMax,minV,1e7,"eMax out of range");
   if (eMin<minV)
-    throw ColErr::RangeError<double>(eMin,minV,1e6,"eMin out of range");
+    throw ColErr::RangeError<double>(eMin,minV,1e7,"eMin out of range");
   if (NE<minN)
     throw ColErr::SizeError<size_t>(NE,minN,"NE to small");
+  if (eMin>=eMax)
+    throw ColErr::OrderError<double>(eMin,eMax,"eMin >= eMax");
 
   eLogFlag=eFlag;
   energyA=eMin*1e-3;

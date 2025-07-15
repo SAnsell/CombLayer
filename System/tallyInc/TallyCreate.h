@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   tallyInc/TallyCreate.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tallySystem_TallyCreate_h
@@ -28,26 +28,26 @@ class SimMCNP;
 namespace tallySystem
 {
   class sswTally;
-  
+
   void setComment(SimMCNP&,const int,const std::string&);
   void cutTallyEnergy(SimMCNP&,const double);
   void setTallyTime(SimMCNP&,const int,const std::string&);
 
-  void addFullHeatBlock(SimMCNP&);             
-  void addHeatBlock(SimMCNP&,const std::vector<int>&);             
+  void addFullHeatBlock(SimMCNP&);
+  void addHeatBlock(SimMCNP&,const std::vector<int>&);
 
   int getLastTallyNumber(const SimMCNP&,const int);
 
   sswTally* addSSWTally(SimMCNP&);
-  
-  void addF1Tally(SimMCNP&,const int,const int);  //
+
+  void addF1Tally(SimMCNP&,const int,const int,const std::string&);
   void addF1Tally(SimMCNP&,const int,
-		  const int,const std::vector<int>&);  
+		  const int,const std::vector<int>&,const std::string&);
 
   void addF4Tally(SimMCNP&,const int,const std::string&,
-		  const std::set<int>&);    
+		  const std::set<int>&);
 
-  void addF7Tally(SimMCNP&,const int,const std::vector<int>&);    
+  void addF7Tally(SimMCNP&,const int,const std::vector<int>&);
 
   void addF5Tally(SimMCNP&,const int);
   void addF5Tally(SimMCNP&,const int,const Geometry::Vec3D&,
@@ -55,7 +55,7 @@ namespace tallySystem
   void setF5Position(SimMCNP&,const int,const Geometry::Vec3D&,
 		     const Geometry::Vec3D&,const double,const double);
   void setF5Position(SimMCNP&,const int,const Geometry::Vec3D&);
-  void setF5Angle(SimMCNP&,const int,const Geometry::Vec3D&,   
+  void setF5Angle(SimMCNP&,const int,const Geometry::Vec3D&,
 		  const double,const double);
   void modF5TallyCells(SimMCNP&,const int,const std::vector<int>&);
   void moveF5Tally(SimMCNP&,const int,const Geometry::Vec3D&);
@@ -81,7 +81,7 @@ namespace tallySystem
   int setSDField(SimMCNP&,const int,const std::string&);
   int setSingle(SimMCNP&,const int);
   int setFormat(SimMCNP&,const int,const std::string&);
-  
+
   void mergeTally(SimMCNP&,const int,const int);
   void deleteTallyType(SimMCNP&,const int);
   void deleteTally(SimMCNP&,const int);
@@ -93,6 +93,6 @@ namespace tallySystem
   // WRONG PLACE
   void addXMLtally(Simulation&,const std::string&);
 
-}  // namespace tallySystem 
+}  // namespace tallySystem
 
 #endif

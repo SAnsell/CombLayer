@@ -3,7 +3,7 @@
  
  * File:   geomInc/Line.h
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ class Line
   Geometry::Vec3D midPoint(const Line&) const; 
   int isValid(const Geometry::Vec3D&) const;     ///< Is the point on the line
 
-  void rotate(const Geometry::Matrix<double>&);
+  void rotate(const Geometry::M3<double>&);
   void displace(const Geometry::Vec3D&);
 
   int setLine(const Geometry::Vec3D&,const Geometry::Vec3D&); 
@@ -116,7 +116,8 @@ class Line
 
   //  int intersect(std::vector<Geometry::Vec3D>&,const Line*) const;
   //  int intersect(std::vector<Geometry::Vec3D>&,const Circle*) const;
-
+  Geometry::Vec3D planeIntersect(const Plane&) const;
+  
   void print() const;
   void write(std::ostream&) const;
 

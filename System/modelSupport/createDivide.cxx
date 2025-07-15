@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/createDivide.cxx
+ * File:   modelSupport/createDivide.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ createDividerSurf(const int N,const Geometry::Vec3D& Z,
       throw ColErr::ExBase(0,RegA.getFull());
     }
   // Create Null Plane
-  const Geometry::Plane ZPlane(1,0,Geometry::Vec3D(0,0,0),Z);
+  const Geometry::Plane ZPlane(1,Geometry::Vec3D(0,0,0),Z);
   std::vector<Geometry::Vec3D> PtA=SurInter::makePoint(&ZPlane,APn,BPn);
   if (PtA.size()!=1)
     {

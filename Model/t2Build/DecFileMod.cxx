@@ -3,7 +3,7 @@
  
  * File:   moderator/DecFileMod.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,7 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
+#include "M3.h"
 #include "Vec3D.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -71,7 +70,7 @@ namespace moderatorSystem
 {
 
 DecFileMod::DecFileMod(const std::string& Key)  :
-  Decoupled(Key),RBase(3,3)
+  Decoupled(Key),RBase()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for base decoupled object

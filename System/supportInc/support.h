@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,7 +101,8 @@ void upperString(std::string&);
 void lowerString(std::string&);
 std::string toUpperString(const std::string&);
 std::string toLowerString(const std::string&);
-/// Determines if a string is only spaces
+
+bool hasStringEnd(const std::string&,const std::string&);
 int isEmpty(const std::string&);
 /// Get a line 
 std::string getAllLine(std::istream&,const int= 256);
@@ -142,12 +143,23 @@ template<typename T> void writeLine(std::ostream&,const T&,
 
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
 bool removeItem(V<T,Alloc>&,const T&);
- 
+
+size_t countUnits(const std::string&,const char =' ');
 std::vector<std::string> StrParts(std::string);
+
+std::string
+splitFront(const std::string&,const char delim);
+std::string
+splitBack(const std::string&,const char delim);
+std::string
+cutFront(std::string&,const char delim);
 std::pair<std::string,std::string>
 splitPair(const std::string&,const char delim);
 std::vector<std::string>
 splitParts(const std::string&,const char delim);
+
+std::vector<std::string>
+splitNSParts(const std::string&,const char delim);
 
 std::vector<std::string>
 StrSeparate(const std::string&,const std::string&);
@@ -157,7 +169,13 @@ int sliceVector(V<T,Alloc>&,const T&,const T&);
 
 template<typename T>
 int sectionRange(std::string&,std::vector<T>&);
+template<typename T>
+int sectionCount(const size_t,std::string&,std::vector<T>&);
 
+template<typename T>
+std::set<T> getRangedSet(std::string&);
+
+  
 /// Convert a VAX number to x86 little eindien
 float getVAXnum(const float);
 

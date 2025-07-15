@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/M1DetailGenerator.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -312,7 +312,7 @@ M1DetailGenerator::makeRingSupport(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("M1DetailGenerator","makeRingSupport");
 
-  for(const std::string& key : {"A","B"})
+  for(const std::string key : {"A","B"})
     {
       const std::string kName=keyName+key;
       Control.addVariable(kName+"YStep",bRingYStep);

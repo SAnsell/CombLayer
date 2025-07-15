@@ -4,27 +4,47 @@ exec >/dev/null
 
 nValid=1000
 opts="--validAll --validCheck $nValid"
-# parallel options
-popts="-u --bar --halt now,fail=1"
+parallel="parallel -u --bar --halt now,fail=1"
+inp="/tmp/AA"
 
-parallel $popts ::: \
-	 "./maxiv --noLengthCheck --defaultConfig Linac All $opts AA" \
-	 "./ess --bunkerPillars ABunker $opts AA" \
-	 "./ess --topModType Butterfly $opts AA" \
-	 "./ess --topModType Pancake   $opts AA" \
-	 "./maxiv -defaultConfig Single GunTestFacility -offset object Gun $opts AA" || exit
+# FLUKA estimators
+# the uq is a perl replacement string to unquote the argument
+$parallel ./maxiv -fluka infn -defaultConfig Linac -T '{=1 uq(); =}' $inp ::: \
+ "myname resnuclei InjectionHall:Floor Concrete" \
+ "myname resnuclei InjectionHall:Floor" \
+ "myname surface electron InjectionHall back" \
+ "myname surface 'e+&e-'  InjectionHall back 1e-11 3000 100 0 6.28318 3" \
+ "myname surface electron InjectionHall back  -TMod energy myname 1e-11 3000 100" \
+ "myname mesh dose-eq free 'Vec3D(-15.0,-400.0,-55.0)' 'Vec3D(15.0, 40.0,40.0)' 10 20 30 " \
+ "myname mesh dose-eq free 'Vec3D(-15.0,-400.0,-55.0)' 'Vec3D(15.0, 40.0,40.0)' 10 20 30 -TMod doseType myname  all-part EWT74" \
+ "help" "help resnuclei" "help surface"  || exit
 
-parallel $popts "./maxiv --defaultConfig Single {} $opts AA " ::: \
+# MCNP tallies
+$parallel ./maxiv -defaultConfig Linac -T myname '{=1 uq(); =}' $inp ::: \
+	 " surface e object     InjectionHall back" \
+	 " surface e surfMap    InjectionHall InnerBack  1" \
+	 " surface e surfMap    InjectionHall InnerBack -1" \
+	 " surface e viewObject InjectionHall front BackWallFront \#BackWallBack '#SPFMazeIn'" \
+	 " flux e InjectionHall:Floor Concrete" \
+	 " flux e InjectionHall:Floor All" || exit
+
+# GEOMETRY
+$parallel {} $inp ::: "./maxiv --noLengthCheck --defaultConfig Linac All $opts" \
+	  "./ess --bunkerPillars ABunker $opts" \
+	  "./ess --topModType Butterfly $opts" \
+	  "./ess --topModType Pancake   $opts" || exit
+
+$parallel "./maxiv --defaultConfig Single {} $opts $inp " ::: \
    SOFTIMAX BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
 
-parallel $popts "./{} $opts AA" ::: t1Real reactor saxsSim || exit
+$parallel "./{} $opts $inp" ::: t1Real reactor saxsSim || exit
 
-parallel --bar $popts "./ess --defaultConfig Single {} $opts AA" ::: \
+$parallel "./ess --defaultConfig Single {} $opts $inp" ::: \
  VESPA ESTIA CSPEC  ODIN MAGIC BIFROST LOKI NMX  NNBAR  DREAM  BEER   \
  FREIA SKADI MIRACLES TESTBEAM TREX VOR    || exit
 # HEIMDAL :: Not currently correct -- update underway
 
-parallel $popts "./singleItem --singleItem {} $opts AA" ::: \
+$parallel "./singleItem --singleItem {} $opts $inp" ::: \
  BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
  BremBlock BremTube  ButtonBPM CRLTube  CeramicGap CleaningMagnet  \
  CollTube ConnectorTube CooledScreen CooledUnit CornerPipe \
@@ -43,5 +63,5 @@ parallel $popts "./singleItem --singleItem {} $opts AA" ::: \
 exit
 
 ## Need to fix the cooling pads on the reflector
-./fullBuild $opts AA || exit
+./fullBuild $opts $inp || exit
 exit

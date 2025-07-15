@@ -135,12 +135,12 @@ testSurIntersect::testMakePoint_Quad()
 {
   ELog::RegMethod RegA("testSurInterSect","testMakePoint_Quad");
 
-  Geometry::Plane TA(1,0),TB(3,0),TC(4,0);
-  Geometry::Plane TD(26,0),TE(501,0),TF(502,0);
-  Geometry::Cylinder CA(5,0);
-  Geometry::Cylinder CB(35,0);
-  Geometry::General GA(25,0);
-  Geometry::Sphere SA(11,0),SB(12,0),SC(13,0);
+  Geometry::Plane TA(1),TB(3),TC(4);
+  Geometry::Plane TD(26),TE(501),TF(502);
+  Geometry::Cylinder CA(5);
+  Geometry::Cylinder CB(35);
+  Geometry::General GA(25);
+  Geometry::Sphere SA(11),SB(12),SC(13);
 
   if (TA.setSurface("px 23") ||
       TB.setSurface("py 10") ||
@@ -329,7 +329,7 @@ testSurIntersect::testProcessPoint()
   std::vector<Geometry::Surface*> SList;
 
   // 5 PLANES:
-  Geometry::Plane TA(1,0),TB(3,0),TC(4,0),TD(33003,0),TE(145,0);
+  Geometry::Plane TA(1),TB(3),TC(4),TD(33003),TE(145);
   TA.setSurface("px 23");
   TB.setSurface("py 10");
   TC.setSurface("pz 30");
@@ -341,7 +341,7 @@ testSurIntersect::testProcessPoint()
   SList.push_back(&TD);
   SList.push_back(&TE);
   // 3 CYLINDER:  [8]
-  Geometry::Cylinder C(2,0),D(33005,0),CX(8,0);
+  Geometry::Cylinder C(2),D(33005),CX(8);
   C.setSurface("cz 30");
   CX.setSurface("c/y 1 1 30");
   D.setSurface("c/x -3.133492157 -3.78186718 7.25");
@@ -395,7 +395,7 @@ testSurIntersect::testConePlaneIntersect()
 {
   ELog::RegMethod RegA("testSurInterSect","testConePlaneIntersect");
 
-  Geometry::Plane PA(1,0,Geometry::Vec3D(0,0,20),
+  Geometry::Plane PA(1,Geometry::Vec3D(0,0,20),
 		     Geometry::Vec3D(-1.0,0,1.0));
   //  PA.setSurface("pz 20");
 
@@ -438,7 +438,7 @@ testSurIntersect::testCylPlaneIntersect()
 {
   ELog::RegMethod RegA("testSurInterSect","testCylPlaneIntersect");
 
-  Geometry::Plane TA(1,0),TB(2,0),TC(3,0),TD(4,0),TE(5,0);
+  Geometry::Plane TA(1),TB(2),TC(3),TD(4),TE(5);
   TA.setSurface("px 23");
   TB.setSurface("py 10");
   TC.setSurface("py 3");
@@ -447,7 +447,7 @@ testSurIntersect::testCylPlaneIntersect()
   TE.setPlane(Geometry::Vec3D(0,0,0),
 	      Geometry::Vec3D(0,cos(M_PI/6.0),sin(M_PI/6.0)));          
   // Cylinder
-  Geometry::Cylinder CA(11,0),CB(12,0);
+  Geometry::Cylinder CA(11),CB(12);
   CA.setSurface("cz 10");
   CB.setSurface("c/z 1 2 10");
   //  CX.setSurface("c/y 1 1 30");

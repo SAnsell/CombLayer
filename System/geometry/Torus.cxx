@@ -3,7 +3,7 @@
  
  * File:   geometry/Torus.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <cmath>
 #include <list>
 #include <vector>
+#include <set>
 #include <map>
 #include <stack>
 #include <algorithm>
@@ -47,15 +48,17 @@
 namespace Geometry
 {
 
-Torus::Torus() : Surface(),
-		 Normal(1,0,0),Iradius(0),Oradius(0)
+Torus::Torus() :
+  Surface(),
+  Normal(1,0,0),Iradius(0),Oradius(0)
   /*!
     Constructor with centre line along X axis 
     and centre on origin
   */
 {}
  
-Torus::Torus(const Torus& A) : Surface(A),
+Torus::Torus(const Torus& A) :
+  Surface(A),
   Centre(A.Centre), RotPhase(A.RotPhase),Normal(A.Normal), 
   Iradius(A.Iradius), Oradius(A.Oradius)
   /*!
@@ -238,7 +241,7 @@ Torus::setSurface(const std::string& Pstr)
 } 
 
 void
-Torus::rotate(const Geometry::Matrix<double>& R)
+Torus::rotate(const Geometry::M3<double>& R)
   /*!
     Rotate both the centre and the normal direction 
     \param R :: Matrix for rotation. 

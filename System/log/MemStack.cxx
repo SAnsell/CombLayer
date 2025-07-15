@@ -3,7 +3,7 @@
  
  * File:   log/MemStack.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,20 +26,22 @@
 #include <string>
 #include <cmath>
 #include <vector>
+#include <set>
 #include <map>
 
+#include "Exception.h"
 #include "FileReport.h"
+#include "GTKreport.h"
 #include "OutputLog.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "MemStack.h"
 
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
+#include "support.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
+#include "Quaternion.h"
 
 namespace ELog
 {
@@ -158,11 +160,7 @@ MemStack::write(std::ostream& OX) const
   for(mc=Key.begin();mc!=Key.end();mc++)
     {
       OX<<"Obj Ox"<<std::hex<<mc->first<<" :: "<<mc->second.first
-	<<" ++ "<<mc->second.second<<std::dec<<"\n";
-      
-      const Geometry::Plane* Ptr=
-	reinterpret_cast<const Geometry::Plane*>(mc->first);
-      ELog::EM<<"Name == "<<Ptr->getName()<<ELog::endWarn;
+	<<" ++ "<<mc->second.second<<std::dec<<"\n";      
     }
   return;
 }

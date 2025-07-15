@@ -3,7 +3,7 @@
  
  * File:   src/ReadFunctions.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,7 +176,7 @@ processSurface(const std::string& InputLine,const int offset)
   StrFunc::section(Line,transN);
 
   ModelSupport::surfIndex::Instance().
-    createSurface(name,transN,Line);
+    createSurface(name,Line);
   
   return 1;
 }

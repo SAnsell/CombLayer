@@ -3,7 +3,7 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,23 +61,26 @@ signSplit(const T& aNumber,T& aSign,U& aValue)
   return;
 }
 
-
-
 double
 mathFunc::logFromLinear(const double A,const double B,const size_t N,
                         const size_t index)
   /*!
     Calculate the log step in a range A-B
-    \param A :: Low range 
-    \param B :: High range 
-    \param N :: Number of steps [not checked]
-    \param index :: value at step size [index between 0 - N] 
-    \return value at log(Index)
+    Note if used in a differentual the step is:
+    log(b/a)/N or log [(b/a)^(1/N)]
+    
+    \param A :: Low range (or high)
+    \param B :: High range (or low)
+    \param N :: Number of steps 
+    \param index :: value at step size [index between 1 - N] 
+    \return value at a+exp((log(b)-log(a))*Index/n)
   */
 {
-  const double step(static_cast<double>(index)*
-		    log(std::abs((B-A)/A))/static_cast<double>(N));
-  return (A>B) ? B*exp(step) : A*exp(step);
+  if (A<1e-20 || B<1e-20 || !N) return 0.0;
+  const double eComp=static_cast<double>(index)*
+    std::log(B/A)/static_cast<double>(N);
+  return (A>B) ? std::exp(std::log(B)-eComp) :
+    std::exp(std::log(A)+eComp);
 }
   
 
@@ -136,7 +139,7 @@ countBits(const size_t& u)
   */
 {
   // This is a nice way of getting (a0+a1+a2) in little groups of three
-  size_t uCount = u
+  const size_t uCount = u
     - ((u >> 1) & 0333333333333333333333UL)
     - ((u >> 2) & 0111111111111111111111UL);
   return
@@ -153,6 +156,7 @@ getPowerTwo(const size_t N)
     \return number
   */
 {
+  // note template forms of pow are ONLY float
   return static_cast<size_t>(std::pow(2L,std::floor(std::log2(N))));
 }
 
@@ -361,8 +365,6 @@ indexSort(const std::vector<T>& pVec,std::vector<U>& Index)
   transform(pVec.begin(),pVec.end(),PartList.begin(),
 	    mathSupport::PIndex<T>());
   sort(PartList.begin(),PartList.end());
-
-  
   transform(PartList.begin(),PartList.end(),Index.begin(),
 	    mathSupport::PSep<T>());
   
@@ -404,6 +406,7 @@ inUnorderedRange(const std::vector<T>& VOffset,
 		 const T& Item)
   /*!
     Determine if the Item is in the range VOffset[] + VRange[]
+    Note that we don't assume that VOffset is ordered in any way
     \param VOffset :: start values						
     \param VRange :: range values
     \param Item :: test value
@@ -448,7 +451,7 @@ rangePos(const std::vector<T>& xArray,const T& Aim)
   This also gives 0 and size-1
   \param xArray :: Array to search
   \param Aim :: Aim Point
-  \return position in array  [ranged between: -1 and size-1  ] 
+  \return position in array  [ranged between: 0 and size-1  ] 
 */
 {
   if (xArray.empty() || Aim<=xArray.front())
@@ -460,6 +463,28 @@ rangePos(const std::vector<T>& xArray,const T& Aim)
     xV=lower_bound(xArray.begin(),xArray.end(),Aim);
   const size_t out=static_cast<size_t>(distance(xArray.begin(),xV));
   return (out) ? out-1 : 0;
+}
+
+template<typename T>
+size_t
+flaggedRangePos(const std::vector<T>& xArray,const T& Aim)
+/*!
+  Detemine the point that matches an array.
+  and return +1 that position 
+  Such that  \f$ xArray[index-1] > Aim> xArray[index] \f$
+  
+  \param xArray :: Array to search
+  \param Aim :: Aim Point
+  \retval position in array [ranged between: 1 and size  ]
+  \retval 0 point out of range 
+*/
+{
+  if (xArray.empty() || Aim<xArray.front() || Aim>xArray.back())
+    return 0;
+  
+  typename std::vector<T>::const_iterator 
+    xV=lower_bound(xArray.begin(),xArray.end(),Aim);
+  return static_cast<size_t>(distance(xArray.begin(),xV)+1);
 }
 
 template<typename T>
@@ -989,6 +1014,9 @@ template class mathSupport::PSep<double>;
 template size_t rangePos(const std::vector<float>&,const float&);
 template size_t rangePos(const std::vector<int>&,const int&);
 template size_t rangePos(const std::vector<double>&,const double&);
+template size_t flaggedRangePos(const std::vector<float>&,const float&);
+template size_t flaggedRangePos(const std::vector<double>&,const double&);
+
 template size_t rangePos(const std::vector<DError::doubleErr>&,
                            const DError::doubleErr&);
 template long int indexPos(const std::vector<double>&,const double&);
@@ -996,6 +1024,8 @@ template long int indexPos(const std::vector<DError::doubleErr>&,
                            const DError::doubleErr&);
 
 template void indexSort(const std::vector<double>&,std::vector<int>&);
+template void indexSort(const std::vector<long double>&,
+			std::vector<size_t>&);
 template void indexSort(const std::vector<int>&,std::vector<int>&);
 template void indexSort(const std::vector<std::string>&,std::vector<int>&);
 template void indexSort(const std::vector<double>&,std::vector<size_t>&);

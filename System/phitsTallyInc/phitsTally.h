@@ -3,7 +3,7 @@
  
  * File:   phitsTallyInc/phitsTally.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ class phitsTally
  protected:
 
   const std::string keyName;        ///< Master name
+  const std::string tallyName;        ///< Master name
   const int idNumber;               ///< iD number
   std::string comments;             ///< comment line
 
@@ -59,8 +60,8 @@ class phitsTally
   
  public:
   
-  explicit phitsTally(const int);
-  phitsTally(const std::string&,const int);
+  explicit phitsTally(const std::string&,const int);
+  phitsTally(const std::string&,const std::string&,const int);
   phitsTally(const phitsTally&);
   phitsTally& operator=(const phitsTally&);
   virtual phitsTally* clone() const; 

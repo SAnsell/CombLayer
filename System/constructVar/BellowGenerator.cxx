@@ -3,7 +3,7 @@
 
  * File:   constructVar/BellowGenerator.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,6 +114,7 @@ BellowGenerator::setMat(const std::string& M,const double T)
 {
   PipeGenerator::setMat(M);
   bellowMat=M+"%Void%"+std::to_string(T);
+
   return;
 }
 
@@ -129,6 +130,7 @@ BellowGenerator::setMat(const std::string& PMat,
 {
   PipeGenerator::setMat(PMat);
   bellowMat=CMat;
+
   return;
 }
 

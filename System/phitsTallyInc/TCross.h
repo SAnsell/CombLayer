@@ -3,7 +3,7 @@
  
  * File:   phitsTallyInc/TCross.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ class TCross : public phitsTally
     
  public:
 
-  explicit TCross(const int);
+  explicit TCross(const std::string&,const int);
   TCross(const TCross&);
   TCross* clone() const override;  
   TCross& operator=(const TCross&);

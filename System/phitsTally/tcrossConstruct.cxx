@@ -3,7 +3,7 @@
  
  * File:   phitsTally/tcrossConstruct.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@ namespace phitsSystem
 void 
 tcrossConstruct::createTally
 (SimPHITS& System,
+ const std::string& tName,
  const std::string& PType,const int ID,
  const int cellA,const int cellB,
  const size_t NE,const double eMin,const double eMax,
@@ -85,7 +86,7 @@ tcrossConstruct::createTally
 {
   ELog::RegMethod RegA("tcrossConstruct","createTally");
 
-  TCross CT(ID);
+  TCross CT(tName,ID);
 
   CT.setParticle(PType);
   CT.setRegions(cellA,cellB);
@@ -105,9 +106,6 @@ tcrossConstruct::createTally
   return;
 }
 
-  
-      
-
 void
 tcrossConstruct::processSurface(SimPHITS& System,
 				const mainSystem::inputParam& IParam,
@@ -122,15 +120,17 @@ tcrossConstruct::processSurface(SimPHITS& System,
   ELog::RegMethod RegA("tcrossConstruct","processSurface");
 
   const int nextID=System.getNextTallyID();
-  
-  const std::string particleType=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
-  const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
-  const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 
-  size_t itemIndex(4);
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
+  const std::string particleType=
+    IParam.getValueError<std::string>("tally",Index,2,"tally:ParticleType");
+  const std::string FCname=
+    IParam.getValueError<std::string>("tally",Index,3,"tally:Object/Cell");
+  const std::string FCindex=
+    IParam.getValueError<std::string>("tally",Index,4,"tally:linkPt/Cell");
+
+  size_t itemIndex(5);
   int cellA(0);
   int cellB(0);
   if (
@@ -153,7 +153,8 @@ tcrossConstruct::processSurface(SimPHITS& System,
   const double AB=IParam.getDefValue<double>(1.0,"tally",Index,itemIndex++);
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
 
-  createTally(System,particleType,nextID,cellA,cellB,NE,EA,EB,NA,AA,AB);
+  createTally(System,tallyName,particleType,nextID,
+	      cellA,cellB,NE,EA,EB,NA,AA,AB);
   
   return;      
 }

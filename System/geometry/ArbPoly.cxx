@@ -3,7 +3,7 @@
  
  * File:   geometry/ArbPoly.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,8 +42,6 @@
 #include "Triple.h"
 #include "support.h"
 #include "writeSupport.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
@@ -260,7 +258,7 @@ ArbPoly::setSurface(const std::string& Pstr)
 }
 
 void
-ArbPoly::rotate(const Geometry::Matrix<double>& MA) 
+ArbPoly::rotate(const Geometry::M3<double>& MA) 
   /*!
     Rotate the plane about the origin by MA 
     \param MA direct rotation matrix (3x3)

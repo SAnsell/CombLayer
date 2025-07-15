@@ -3,7 +3,7 @@
  
  * File:   geomInc/Quadratic.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class Quadratic : public Surface
  private:
   
   double eqnValue(const Geometry::Vec3D&) const;
-  void matrixForm(Geometry::Matrix<double>&,
+  void matrixForm(Geometry::M3<double>&,
 		  Geometry::Vec3D&,double&) const;          
 
  protected:
@@ -54,7 +54,7 @@ class Quadratic : public Surface
   static const int Nprecision=10;        ///< Precision of the output
 
   Quadratic();
-  Quadratic(const int,const int);
+  explicit Quadratic(const int);
   Quadratic(const Quadratic&);
   Quadratic* clone() const override;
   Quadratic& operator=(const Quadratic&);
@@ -67,8 +67,6 @@ class Quadratic : public Surface
   /// Effective typeid
   std::string className() const override 
     { return "Quadratic"; }
-  /// fast index accessor
-  SurfKey classIndex() const override { return SurfKey::Quadratic; }
 
   /// Accept visitor for line calculation
   void acceptVisitor(Global::BaseVisit& A) const override
@@ -92,7 +90,7 @@ class Quadratic : public Surface
   Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const override;    ///< Normal at surface
 
   void displace(const Geometry::Vec3D&) override;
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void rotate(const Geometry::Quaternion&) override;
   void mirror(const Geometry::Plane&) override;
 

@@ -3,7 +3,7 @@
 
  * File:   supportInc/Exception.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -212,6 +212,29 @@ class FileError : public ExBase
 };
 
 /*!
+  \class UninitializedValue
+  \brief Exception for an object in a void state
+  \author Stuart Ansell
+  \date April 2025
+  \version 1.0
+*/
+
+class UninitializedValue : public ExBase
+{
+ private:
+
+  void setOutLine(const std::string&);
+
+ public:
+
+  UninitializedValue(const std::string&,const std::string&);
+  UninitializedValue(const UninitializedValue&);
+  UninitializedValue& operator=(const UninitializedValue&);
+  ~UninitializedValue() throw() override {}   ///< Destructor 
+
+};
+
+/*!
   \class EmptyValue
   \brief Exception for an object in a void state
   \author Stuart Ansell
@@ -356,31 +379,31 @@ class DimensionError : public ExBase
   \class ArrayError
   \brief Error Range in an array/list etc
   \author Stuart Ansell
-  \date October 2005
+  \date October 2024
   \version 1.0
 
-  Records the object being looked for
-  and the range required.
+  Given an array , dimension requested in error
 */
-template<int ndim>
+
 class ArrayError : public ExBase
 {
  private:
 
-  int arraySize[ndim];         ///< Array components
-  int indexSize[ndim];         ///< Index search components
+  size_t axis;                 ///< Axis looked for 
+  size_t index;                ///< index aimed for
+  std::vector<size_t> indexSize;         ///< Index search components
 
   void setOutLine();
 
  public:
 
-  ArrayError(const int*,const int*,const std::string&);
-  ArrayError(const ArrayError<ndim>&);
-  ArrayError<ndim>& operator=(const ArrayError<ndim>&);
-  ~ArrayError() throw() override {}  ///< Destructor
-
+  ArrayError(const size_t,const size_t,
+	     std::vector<size_t>,
+	     const std::string&);
+  ArrayError(const ArrayError&) =default;
+  ArrayError& operator=(const ArrayError&) =default;
+  virtual ~ArrayError() throw() {}  ///< Destructor
 };
-
 
 /*!
   \class MisMatch

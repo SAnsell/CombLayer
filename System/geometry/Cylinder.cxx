@@ -3,7 +3,7 @@
  
  * File:   geometry/Cylinder.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
+#include <set>
 #include <map>
 #include <sstream>
 #include <stack>
@@ -64,8 +65,8 @@ Cylinder::Cylinder() : Quadratic(),
   Cylinder::setBaseEqn();
 }
 
-Cylinder::Cylinder(const int N,const int T) : 
-  Quadratic(N,T),
+Cylinder::Cylinder(const int N) : 
+  Quadratic(N),
   Centre(),Normal(1,0,0),Nvec(0),Radius(0.0)
   /*!
     Standard Constructor creates a cylinder (radius 0)
@@ -78,9 +79,9 @@ Cylinder::Cylinder(const int N,const int T) :
   Cylinder::setBaseEqn();
 }
 
-Cylinder::Cylinder(const int N,Geometry::Vec3D  Org,
+Cylinder::Cylinder(const int N,Geometry::Vec3D Org,
 		   const Geometry::Vec3D& A,const double R) : 
-  Quadratic(N,0),
+  Quadratic(N),
   Centre(std::move(Org)),Normal(A.unit()),Nvec(0),Radius(R)
   /*!
     Standard Constructor creates a cylinder 
@@ -344,7 +345,7 @@ Cylinder::setNvec()
 }
 
 void
-Cylinder::rotate(const Geometry::Matrix<double>& MA)
+Cylinder::rotate(const Geometry::M3<double>& MA)
 /*!
   Apply a rotation to the cylinder and re-check the
   status of the main axis.
@@ -422,7 +423,7 @@ Cylinder::setRadius(const double R)
     \param R :: New radius (forced +ve)
   */
 {
-  Radius=std::abs(R);
+  Radius=fabs(R);
   setBaseEqn();
   return;
 }

@@ -3,7 +3,7 @@
 
  * File:   commonBeam/DiffPumpXIADP03.cxx
  *
- * Copyright (c) 2019-2023 by Konstantin Batkov
+ * Copyright (c) 2019-2024 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -318,7 +318,7 @@ DiffPumpXIADP03::createLinks()
 
   FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+32));
   const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(buildIndex+32);
-  FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,PPtr),-Y);
+  FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,*PPtr),-Y);
 
   SurfMap::createLink("innerBack",*this, 7, Origin, -Y);
 

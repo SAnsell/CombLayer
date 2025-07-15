@@ -3,7 +3,7 @@
  
  * File:   poly/PolyVarOne.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <cmath>
 #include <complex>
 #include <vector>
+#include <set>
 #include <map>
 #include <algorithm>
 #include <iterator>
@@ -820,14 +821,14 @@ PolyVar<1>::realRoots(const double epsilon)
   ELog::RegMethod RegA("PolyVar<1>","realRoots");
 
   const double eps((epsilon>0.0) ? epsilon : Eaccuracy);
-  std::vector<std::complex<double> > Croots=calcDurandKernerRoots(epsilon);
+  const std::vector<std::complex<double> >
+    Croots=calcDurandKernerRoots(epsilon);
+
   std::vector<double> Out;
-  std::vector<std::complex<double> >::const_iterator vc;
-  for(vc=Croots.begin();vc!=Croots.end();vc++)
-    {
-      if (std::abs(vc->imag())<eps)
-	Out.push_back(vc->real());
-    }
+  for(const std::complex<double>& rr : Croots)
+    if (std::abs(rr.imag())<eps)
+      Out.push_back(rr.real());
+
   sort(Out.begin(),Out.end());
   Out.erase(
 	    std::unique(Out.begin(),Out.end(),mathSupport::tolEqual(eps)),

@@ -619,6 +619,7 @@ SingleItemVariables(FuncDataBase& Control)
   // Bellow
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
+  ELog::EM<<"HERE "<<ELog::endDiag;
   BellowGen.generateBellow(Control,"Bellow",7.5);
 
   // Lead Clad Pipe

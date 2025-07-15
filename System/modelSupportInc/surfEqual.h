@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/surfEqual.h
+ * File:   modelSupportInc/surfEqual.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2023 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 namespace ModelSupport
 {
 
+  
 const Geometry::Surface* equalSurface(const Geometry::Surface*);
 Geometry::Surface* equalSurface(Geometry::Surface*);
  

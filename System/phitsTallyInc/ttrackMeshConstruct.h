@@ -3,7 +3,7 @@
  
  * File:   phitsTallyInc/ttrackMeshConstruct.h
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ class ttrackMeshConstruct
   ttrackMeshConstruct() {}
 
   static void createTally(SimPHITS&,const std::string&,
+			  const std::string&,
 			  const int,
 			  const Geometry::Vec3D&,
 			  const Geometry::Vec3D&,

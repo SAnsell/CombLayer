@@ -3,7 +3,7 @@
 
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1182,20 +1182,6 @@ Object::trackSurfIntersect(const Geometry::Vec3D& Org,
   */
 {
   return HRule.trackSurfIntersect(Org,unitAxis);
-}
-
-int
-Object::trackSurf(const Geometry::Vec3D& Org,
-		  const Geometry::Vec3D& unitAxis) const
-  /*!
-    Transfer function to move Object into headrule
-    \param Org :: Origin of line
-    \param unitAxis :: track of line
-    \return Signed surf number
-  */
-{
-  return 0; //HRule.trackSurf(Org,unitAxis);
-
 }
 
 Geometry::Vec3D

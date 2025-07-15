@@ -3,7 +3,7 @@
  
  * File:   geomInc/surfIndex.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,6 @@ class surfIndex
 
   void reset();
   void createSurface(const int,const std::string&);  
-  void createSurface(const int,const int,const std::string&);
   int checkSurface(const int,const Geometry::Vec3D&) const; 
   void deleteSurface(const int);
   void renumber(const int,const int);

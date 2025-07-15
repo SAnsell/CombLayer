@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testMasterRotate.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ testMasterRotate::buildRotations(const int angleFlag)
 		 -90.0);
   
   MR.addMirror(Geometry::Plane
-	       (1,0,Geometry::Vec3D(0,0,0),
+	       (1,Geometry::Vec3D(0,0,0),
 		Geometry::Vec3D(1,0,0)));
   if (angleFlag)
     MR.addRotation(Geometry::Vec3D(0,0,1),

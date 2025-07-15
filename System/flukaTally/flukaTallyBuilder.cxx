@@ -3,7 +3,7 @@
 
  * File:   flukaTally/flukaTallyBuilder.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,18 +75,18 @@ tallySelection(SimFLUKA& System,
   System.populateCells();
   System.createObjSurfMap();
 
-  for(size_t i=0;i<IParam.setCnt("tally");i++)
+  const size_t ntallies = IParam.setCnt("tally");
+  for(size_t i=0;i<ntallies;i++)
     {
-      const std::string TType=
-	IParam.getValue<std::string>("tally",i,1);
-
       const size_t NItems=IParam.itemCnt("tally",i);
-      const std::string HType=(NItems>2) ?
-	IParam.getValue<std::string>("tally",i,2) : "help";
+      if (NItems==0)
+	ELog::EM << "-T needs arguments. Call '-T help' for help." << ELog::endErr;
 
-      if (TType=="help" || TType=="?")
-	helpTallyType(HType);
+      const std::string tallyName=IParam.getValue<std::string>("tally",i,0);
+      const std::string TType = NItems > 1 ?  IParam.getValue<std::string>("tally",i,1) : "";
 
+      if (tallyName=="help")
+	helpTallyType(TType);
       else if (TType=="mesh")
 	userBinConstruct::processMesh(System,IParam,i);
       else if (TType=="dump")
@@ -97,7 +97,7 @@ tallySelection(SimFLUKA& System,
 	userBdxConstruct::processBDX(System,IParam,i);
       else if (TType=="track" || TType=="cell")
 	userTrackConstruct::processTrack(System,IParam,i);
-      else if (TType=="resnuc")
+      else if (TType=="resnuclei")
 	resnucConstruct::processResNuc(System,IParam,i);
       else if (TType=="yield")
 	userYieldConstruct::processYield(System,IParam,i);
@@ -120,22 +120,26 @@ helpTallyType(const std::string& HType)
 {
   ELog::RegMethod("flukaTallBuilder[F]","helpTallyType");
 
-  if (HType=="mesh")
-    {}
+  if (HType=="surface")
+    userBdxConstruct::writeHelp(ELog::EM.Estream());
+  else if (HType=="resnuclei")
+    resnucConstruct::writeHelp(ELog::EM.Estream());
   else
     {
-      ELog::EM<<"Tally Types:\n\n"
-	      <<"-- mesh : \n"
-	      <<"-- dump : \n"
-	      <<"-- surface : \n"
-	      <<"-- cell :  particle FC index eMin eMax NE \n"
-	      <<"-- raddecay : \n"
-	      <<"-- resnuc : \n"
-	      <<"-- track :  particle FC index eMin eMax NE \n";
-
+      ELog::EM << "The '-T' flag adds an estimator into the model.\n"
+	"Usage: -T estimatorName estimatorType parameters\n"
+	"       run '-T help estimatorType to display type-based help.\n\n"
+	"List of supported FLUKA estimators:\n\n"
+	"* mesh (USRBIN)\n"
+	"* dump (USERDUMP)\n"
+	"* raddecay\n"
+	"* surface (USRBDX)\n"
+	"* track (USRTRACK)\n"
+	"* resnuclei (RESNUCLEI)\n"
+	"* yield (USRYIELD)\n";
     }
-
   ELog::EM<<ELog::endBasic;
+
   return;
 }
 

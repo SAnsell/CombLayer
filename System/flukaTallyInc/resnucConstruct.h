@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTallyInc/resnucConstruct.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef tallySystem_resnucConstruct_h
@@ -45,24 +45,23 @@ namespace flukaSystem
   \brief Constructs a surface tally for fluka
 */
 
-class resnucConstruct 
+class resnucConstruct
 {
   private:
-  
+
   /// Private constructor
   resnucConstruct() {}
 
-  static void createTally(SimFLUKA&,const int,const int,const int);
-  
+  static void createTally(SimFLUKA&,const std::string&,const int,const int,const int);
+
  public:
 
   static void processResNuc(SimFLUKA&,const mainSystem::inputParam&,
 			    const size_t);
-  
+
   static void writeHelp(std::ostream&);
 };
 
 }
 
 #endif
- 

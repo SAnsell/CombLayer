@@ -3,7 +3,7 @@
 
  * File:   geomInc/Vec3D.h
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ namespace Geometry
 {
 
 template<typename T> class Matrix;
+template<typename T> class M3;
 
 const double zeroTol(1e-8);       ///< Zero occurred
 const double shiftTol(1e-5);      ///< Shift a point to change state
@@ -54,9 +55,6 @@ class Vec3D
   double x;        ///< X-Coordinates
   double y;        ///< Y-Coordinates
   double z;        ///< Z-Coordinates
-
-  virtual void rotate(const Vec3D&,const double);
-
  public:
 
   Vec3D();
@@ -77,22 +75,27 @@ class Vec3D
   template<typename IT> double& operator[](const IT);
   template<typename IT> double operator[](const IT) const;
 
-  template<typename T> Vec3D operator()(const Matrix<T>&) const;  ///< Convert matrix to a point (3x1 or 1x3)
+  /// Convert matrix to a point (3x1 or 1x3)
+  template<typename T> Vec3D operator()
+     (const Matrix<T>&) const;
 
   bool operator<(const Vec3D&) const;
   bool operator>(const Vec3D&) const;
 
   Vec3D& operator*=(const Vec3D&);
   template<typename T> Vec3D& operator*=(const Matrix<T>&);
+  template<typename T> Vec3D& operator*=(const M3<T>&);
   Vec3D& operator*=(const double);
+
   Vec3D& operator/=(const double);
   Vec3D& operator+=(const Vec3D&);
   Vec3D& operator-=(const Vec3D&);
 
   Vec3D operator*(const Vec3D&) const;
-  template<typename T> Vec3D operator*(const Matrix<T>&) const;
-
   Vec3D operator*(const double) const;     // Scale factor
+  template<typename T> Vec3D operator*(const Matrix<T>&) const;
+  template<typename T> Vec3D operator*(const M3<T>&) const;
+
   Vec3D operator/(const double) const;     // Scale factor
   Vec3D operator+(const Vec3D&) const;
   Vec3D operator-(const Vec3D&) const;
@@ -101,22 +104,27 @@ class Vec3D
   bool operator==(const Vec3D&) const;
   bool operator!=(const Vec3D&) const;
   virtual void rotate(const Vec3D&,const Vec3D&,const double);
+  virtual void rotate(const Vec3D&,const double);
 
   double Distance(const Vec3D&) const;    ///< Calculate scale distance
   double makeUnit();                      ///< Convert into unit vector
   Geometry::Vec3D unit() const;
   Geometry::Vec3D component(const Geometry::Vec3D&) const;
   Geometry::Vec3D cutComponent(const Geometry::Vec3D&) const;
+  double getComponent(const Geometry::Vec3D&) const;
+  double getScalant(const Geometry::Vec3D&) const;
   void makePosCos(const Geometry::Vec3D&);
   void makePosPrinciple();
 
   /// Calculate the volmue of a cube X*Y*Z
   double volume() const { return std::abs(x*y*z); }
 
-  Matrix<double> outerProd(const Vec3D&) const;
+  M3<double> outerProd(const Vec3D&) const;
   double dotProd(const Vec3D&) const;
   double abs() const;
+  double absFlat(const size_t) const;
   template<typename T> void rotate(const Matrix<T>&);
+  template<typename T> void rotate(const M3<T>&);
 
   Vec3D& boundaryCube(const Vec3D&,const Vec3D&);
 
@@ -133,6 +141,7 @@ class Vec3D
   void write(std::ostream&) const;
 };
 
+Vec3D angleVec(const double,const double);
 
 std::ostream& operator<<(std::ostream&,const Vec3D&);
 std::istream& operator>>(std::istream&,Vec3D&);

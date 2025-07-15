@@ -3,7 +3,7 @@
  
  * File:   geomInc/Sphere.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,14 +44,14 @@ class Sphere : public Quadratic
   Geometry::Vec3D Centre;        ///< Point for centre
   double Radius;                 ///< Radius of sphere
   
-  void rotate(const Geometry::Matrix<double>&) override;
+  void rotate(const Geometry::M3<double>&) override;
   void displace(const Geometry::Vec3D&) override;
   void mirror(const Geometry::Plane&) override;
 
  public:
 
   Sphere();
-  Sphere(const int,const int);
+  explicit Sphere(const int);
   Sphere(const Sphere&);
   Sphere* clone() const override;
   Sphere& operator=(const Sphere&);
@@ -61,8 +61,7 @@ class Sphere : public Quadratic
   /// Effective TYPENAME 
   static std::string classType() { return "Sphere"; }
   /// Effective typeid
-  std::string className() const override 
-    { return "Sphere"; }
+  std::string className() const override { return "Sphere"; }
   /// fast index accessor
   SurfKey classIndex() const override { return SurfKey::Sphere; }
   /// Visitor acceptance

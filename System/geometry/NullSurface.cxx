@@ -3,7 +3,7 @@
  
  * File:   geometry/NullSurface.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,12 +51,11 @@ NullSurface::NullSurface() : Surface()
  */	     
 {}
 
-NullSurface::NullSurface(const int ID,const int TN) : 
-  Surface(ID,TN)
+NullSurface::NullSurface(const int ID) : 
+  Surface(ID)
  /*!
    Constructor sets void object
    \param ID :: Id number
-   \param TN :: Transform number
  */	     
 {}
 
@@ -119,7 +118,7 @@ NullSurface::setSurface(const std::string& Pstr)
 }
 
 void
-NullSurface::rotate(const Geometry::Matrix<double>&) 
+NullSurface::rotate(const Geometry::M3<double>&) 
   /*!
     Rotate the plane about the origin by MA 
   */

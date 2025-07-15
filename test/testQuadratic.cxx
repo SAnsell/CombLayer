@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   test/testQuadratic.cxx
-*
- * Copyright (c) 2004-2019 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,7 +160,7 @@ testQuadratic::testSet()
   Geometry::Vec3D Axis(0,0,-1);
   Geometry::Vec3D Point(1,2,18);
   
-  Cylinder A(54,0);
+  Cylinder A(54);
   A.setCylinder(Point,Axis,4.0);
   ELog::EM<<"Cylinder == "<<A<<ELog::endDiag;
 

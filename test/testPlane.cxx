@@ -3,7 +3,7 @@
  
  * File:   test/testPlane.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <cmath>
 #include <list>
 #include <vector>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -222,7 +223,7 @@ testPlane::testMirrorAxis()
   std::vector<Geometry::Vec3D> PtX;
   
   
-  Plane A(78,2);
+  Plane A(78);
   A.setSurface("px 1");
 
   Pt.push_back(Geometry::Vec3D(0,1,1));
@@ -273,7 +274,7 @@ testPlane::testSet()
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
-      Plane A(54,0);
+      Plane A(54);
       if (std::get<0>(tc)==2)
 	A.setPlane(std::get<1>(tc),std::get<2>(tc));
       else
@@ -301,7 +302,7 @@ testPlane::testTransform()
   */
 {
   ELog::RegMethod RegA("testPlane","testTransform");
-
+  /*
   typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -327,6 +328,7 @@ testPlane::testTransform()
 	  return -1;
 	}
     }
+  */
   return 0;
 }
    

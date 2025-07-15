@@ -3,7 +3,7 @@
  
  * File:   geomInc/Vec2D.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 namespace Geometry 
 {
 
-  
+template<typename T> class M2;
 template<typename T> class Matrix;
 
 /*!
@@ -53,6 +53,7 @@ class Vec2D
   explicit Vec2D(const double*);
   Vec2D(const Matrix<double>&);
   Vec2D(const Vec2D&);
+  Vec2D(Vec2D&&) =default;
   virtual ~Vec2D();
 
   const double& X() const { return x; }   ///< Accessor function (X)
@@ -84,7 +85,7 @@ class Vec2D
   bool operator!=(const Vec2D&) const;
   void rotate(const double);
   void rotate(const Vec2D&,const double);
-  void rotate(const Matrix<double>&);
+  void rotate(const M2<double>&);
 
   double Distance(const Vec2D&) const;    ///< Calculate scale distance
   double makeUnit();                      ///< Convert into unit vector

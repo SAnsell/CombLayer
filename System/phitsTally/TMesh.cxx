@@ -3,7 +3,7 @@
  
  * File:   phitsTally/TMesh.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@
 namespace phitsSystem
 {
 
-TMesh::TMesh(const int ID) :
-  phitsTally("TMesh",ID),
+TMesh::TMesh(const std::string& tName,const int ID) :
+  phitsTally("TMesh",tName,ID),
   energy(eType("Linear",1UL,0.0,5e3)),
   axis("xy"),unit(1)                  //1/MeV/cm^3
   /*!

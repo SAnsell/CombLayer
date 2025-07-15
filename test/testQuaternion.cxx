@@ -3,7 +3,7 @@
  
  * File:   test/testQuaternion.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "Vec3D.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "M3.h"
 #include "Quaternion.h"
 
 #include "testFunc.h"
@@ -185,6 +186,7 @@ testQuaternion::testMatrixRot()
 
   std::vector<TTYPE> Test({
       {0,0,0},
+      {0,90,0},
       {45,0,0},
       {60,0,0},
       {17,-32,92},     // elm 2
@@ -202,26 +204,25 @@ testQuaternion::testMatrixRot()
       const double beta=M_PI*std::get<1>(tc)/180.0;
       const double gamma=M_PI*std::get<2>(tc)/180.0;
       const std::vector<double> angle{alpha,beta,gamma};
-      Matrix<double> M(3,3);
-      M.identityMatrix();
-      Matrix<double> Rot(3,3);
+      M3<double> M;
+      M.identity();
+      M3<double> Rot;
       for(size_t i=0;i<3;i++)
 	{
-	  Rot.identityMatrix();
+	  Rot.identity();
 	  const size_t iA=(2-i);
 	  const size_t iAplus=(iA+1) % 3;
 	  Rot[iA][iA]=std::cos(angle[i]);
 	  Rot[iA][iAplus] = -std::sin(angle[i]);
 	  Rot[iAplus][iA] = std::sin(angle[i]);
 	  Rot[iAplus][iAplus]=std::cos(angle[i]);
-	  M*=Rot; // note this is non-standard way round
+	  M*=Rot;
 	}
-
       try
 	{
 	  const Quaternion QA=
 	    Quaternion::calcQRotMatrix(M);
-	  const Matrix<double> R=QA.rMatrix();
+	  const M3<double> R=QA.rMatrix();
 	  if (R!=M)
 	    {
 	      ELog::EM<<"Test "<<cnt<<ELog::endDiag;

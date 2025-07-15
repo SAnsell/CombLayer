@@ -3,7 +3,7 @@
  
  * File:   include/transComp.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,10 +78,10 @@ class transRot : public transComp
   double Angle;                 ///< Angle [deg]
   
   Geometry::Quaternion QVec;         ///< Quaternion of rotation
-  Geometry::Matrix<double> MRot;     ///< Matrix of rotation
+  Geometry::M3<double> MRot;         ///< Matrix of rotation
 
   Geometry::Quaternion QRev;         ///< Quaternion of reverse rotation
-  Geometry::Matrix<double> MRev;     ///< Matrix of reverse rotation
+  Geometry::M3<double> MRev;         ///< Matrix of reverse rotation
   
  public:
 

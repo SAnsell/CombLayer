@@ -3,7 +3,7 @@
  
  * File:   geometry/Ellipsoid.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <complex>
 #include <list>
 #include <vector>
+#include <set>
 #include <map>
 #include <stack>
 #include <string>
@@ -39,15 +40,13 @@
 #include "support.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
+#include "M3.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Ellipsoid.h"
-
 
 namespace Geometry
 {
@@ -78,8 +77,8 @@ Ellipsoid::Ellipsoid() :
 }
 
   
-Ellipsoid::Ellipsoid(const int N,const int T) : 
-  Quadratic(N,T),Centre(),AAxis(0,0,1),BAxis(1,0,0),
+Ellipsoid::Ellipsoid(const int N) : 
+  Quadratic(N),Centre(),AAxis(0,0,1),BAxis(1,0,0),
   CAxis(0,1,0),ARadius(1.0),BRadius(1.0),CRadius(1.0)
   /*!
     Standard Constructor creats a cylinder (radius 0)
@@ -317,7 +316,7 @@ Ellipsoid::onSurface(const Geometry::Vec3D& Pt) const
 
 
 void
-Ellipsoid::rotate(const Geometry::Matrix<double>& MA)
+Ellipsoid::rotate(const Geometry::M3<double>& MA)
 /*!
   Apply a rotation to the cylinder and re-check the
   status of the main axis.
@@ -402,7 +401,7 @@ Ellipsoid::setBaseEqn()
 {
   ELog::RegMethod RegA("Ellipsoid","setBaseEqn");
 
-  Geometry::Matrix<double> MA(3,3);
+  Geometry::M3<double> MA;
   for(size_t i=0;i<3;i++)
     {
       MA[i][0]=AAxis[i];
@@ -515,8 +514,6 @@ Ellipsoid::distance(const Geometry::Vec3D& A) const
   return firstOctant(e,y);
 }
 
-
-
 void
 Ellipsoid::writePOVRay(std::ostream& OX) const
   /*! 
@@ -527,8 +524,6 @@ Ellipsoid::writePOVRay(std::ostream& OX) const
   Quadratic::writePOVRay(OX);
   return;
 }
-
-  
   
 void
 Ellipsoid::write(std::ostream& OX) const

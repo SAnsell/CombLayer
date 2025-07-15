@@ -946,14 +946,16 @@ objectGroups::addObjectRange(std::set<int>& cellSet,
 			std::inserter(cellSet,cellSet.begin()));
 	      return 1; 
 	    }
-
 	  // case 2: CellMap : Name
-	  const std::vector<int> Out=CPtr->getCells(cellName);
-	  if (!Out.empty())
+	  if (CPtr->hasCell(cellName))
 	    {
-	      std::copy(Out.begin(),Out.end(),
+	      const std::vector<int> Out=CPtr->getCells(cellName);
+	      if (!Out.empty())
+		{
+		  std::copy(Out.begin(),Out.end(),
 			std::inserter(cellSet,cellSet.begin()));
-	      return 1;
+		  return 1;
+		}
 	    }
 	}
       

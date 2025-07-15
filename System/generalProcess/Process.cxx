@@ -201,7 +201,7 @@ setDefRotation(const objectGroups& OGrp,
 		     Geometry::Vec3D(0,0,0),
 		     -90.0);
       MR.addMirror(Geometry::Plane
-		   (1,0,Geometry::Vec3D(0,0,0),
+		   (1,Geometry::Vec3D(0,0,0),
 		    Geometry::Vec3D(1,0,0)));
     }
 

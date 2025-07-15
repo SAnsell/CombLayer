@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTallyInc/flukaTally.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef flukaSystem_flukaTally_h
@@ -26,24 +26,20 @@ namespace flukaSystem
 {
 
   class auxScore;
-  
+
 /*!
   \class flukaTally
   \version 1.0
   \author S. Ansell
   \date February 2018
   \brief Holds a fluka tally object as a base class
-  
+
 */
 
 class flukaTally
 {
- private:
-
-  static std::string idForm(const std::string&,const int);  
-
  protected:
-  
+
   std::string keyName;              ///< tally name
   int ID;                           ///< ID number
   int outputUnit;                   ///< Fortran output number
@@ -54,11 +50,11 @@ class flukaTally
   std::string userName;             ///< Selected for fluscw treatment
 
  public:
-  
+
   flukaTally(const std::string&,const int,const int);
   flukaTally(const flukaTally&);
   flukaTally& operator=(const flukaTally&);
-  virtual flukaTally* clone() const; 
+  virtual flukaTally* clone() const;
   virtual ~flukaTally();
 
   /// return fluka name
@@ -83,14 +79,14 @@ class flukaTally
   int getID() const { return ID; }
   /// access out unit
   int getOutUnit() const { return outputUnit; }
-  
+
   virtual void write(std::ostream&) const;
   virtual void writeAuxScore(std::ostream&) const;
 };
 
 std::ostream&
 operator<<(std::ostream&,const flukaTally&);
-  
+
 }  // NAMESPACE flukaSystem
 
 #endif

@@ -3,7 +3,7 @@
  
  * File:   test/testMultiData.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ testMultiData::applyTest(const int extra)
   typedef int (testMultiData::*testPtr)();
   testPtr TPtr[]=
     {
+      &testMultiData::testCut,
       &testMultiData::testExchange,
       &testMultiData::testGetAxisRange,
       &testMultiData::testIntegrateMap,
@@ -86,6 +87,7 @@ testMultiData::applyTest(const int extra)
     };
   const std::vector<std::string> TestName=
     {
+      "Cut",
       "Exchange",
       "getAxisRange",
       "IntegrateMap",
@@ -116,6 +118,55 @@ testMultiData::applyTest(const int extra)
   return 0;
 }
 
+
+int
+testMultiData::testCut()
+  /*!
+    Test the Cut of the data
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testMultiData","testCut");
+  // nA,nB,nC,nD,aIndex,bIndex
+  typedef std::tuple<size_t,size_t,size_t,int> TTYPE;
+
+  const std::vector<TTYPE> Tests={
+    { 2,1,2, 1012 }
+  };
+
+
+  multiData<int> A(4,5);
+  multiData<int> B(3,4,5);
+
+  for(size_t i=0;i<3;i++)
+    for(size_t j=0;j<4;j++)
+      for(size_t k=0;k<5;k++)
+	{
+	  A.get()[j][k]=static_cast<int>((j+1)*100+k+1);
+	  B.get()[i][j][k]=static_cast<int>((i+1)*10000+(j+1)*100+k+1);
+	}
+  
+  for(const TTYPE& tc : Tests)
+    {
+      const size_t dim=std::get<0>(tc);
+      const size_t axis=std::get<1>(tc);
+      const size_t index=std::get<2>(tc);
+      const int expectRes=std::get<3>(tc);
+      multiData<int> aPrime=(dim==2) ? A : B;
+      aPrime.cut(axis,index);
+      
+      const int result=aPrime.integrateValue({});
+      if (result!=expectRes)
+	{
+	  ELog::EM<<"A/B == "<<((dim==2) ? A : B)<<ELog::endDiag;
+	  ELog::EM<<"APrime == "<<aPrime<<ELog::endDiag;
+	  ELog::EM<<"Res == "<<result<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  return 0;
+}
 
 int
 testMultiData::testExchange()

@@ -3,7 +3,7 @@
 
  * File:   flukaTally/userYield.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -247,11 +247,15 @@ userYield::getScore(const std::string& A)
     get the score
    */
 {
-  ELog::RegMethod RegA("userYield","getScoreIndex");
+  ELog::RegMethod RegA("userYield","getScore");
 
   const std::map<std::string,int> nameMap({
       {"KE",1},
-	{"Monmentum",2}});
+      {"Momentum",2},
+      {"weightAngle",14},
+      {"weightAngleCMS",15},
+      {"time",33}
+    });
 
   int out;
   if (StrFunc::convert(A,out))
@@ -273,8 +277,7 @@ userYield::getScoreIndex() const
   ELog::RegMethod RegA("userYield","getScoreIndex");
 
   const int iE=getScore(scoreTypeA);
-  const int iA=getScore(scoreTypeA);
-
+  const int iA=getScore(scoreTypeB);
 
   return iE+iA*100;
 }

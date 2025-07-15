@@ -3,7 +3,7 @@
  
  * File:   src/NGroup.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 #include <list>
 #include <algorithm>
 #include <iterator>
@@ -784,19 +785,19 @@ NGroup<T>::condense(const double Tol,
 	  if (type[cnt]==3)  // log
 	    {
 	      OutList.push_back
-		(new RLog(AValue,Values[cnt+repCnt-1],
+		(new RLog<T>(AValue,Values[cnt+repCnt-1],
 			  static_cast<int>(repCnt)));
 	    }
 	  if (type[cnt]==2)  // interval
 	    {
 	      OutList.push_back
-		(new RInterval(AValue,Values[cnt+repCnt-1],
+		(new RInterval<T>(AValue,Values[cnt+repCnt-1],
 			       static_cast<int>(repCnt)));
 	    }
 	  if (type[cnt]==1)  // repeat
 	    {
 	      OutList.push_back
-		(new RRepeat(AValue,static_cast<int>(repCnt+1)));
+		(new RRepeat<T>(AValue,static_cast<int>(repCnt+1)));
 	    }
 	  AValue=Values[cnt+repCnt-1];
 	}

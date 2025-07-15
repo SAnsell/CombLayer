@@ -3,7 +3,7 @@
  
  * File:   geometry/Quaternion.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "Exception.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "M3.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
 
@@ -183,7 +184,7 @@ Quaternion::calcQRotDeg(const double Angle,Geometry::Vec3D Axis)
 }
 
 Quaternion
-Quaternion::calcQRotMatrix(const Geometry::Matrix<double>& M)
+Quaternion::calcQRotMatrix(const Geometry::M3<double>& M)
   /*!
     Calculate Quaternion value for a given matrix
     which is assumed to be a pure rotation matrix (no scaling)
@@ -196,54 +197,38 @@ Quaternion::calcQRotMatrix(const Geometry::Matrix<double>& M)
     eigenvalue is the quaternion required (* +/-1) and the remaining
     non-zero eigenvalues are the basis for the error in the original
     rotation matrix].
+
+    Improved from:: Converting a Rotation Matrix to a Quaternion
+    Mike Day, Insomniac Gam
     
     \param M :: Matrix to use
-    \return Q
+    \return Q 
   */
 {
-  const std::pair<size_t,size_t> mSize=M.size();
   
-  if (mSize.first!=3UL && mSize.second!=3UL)
-    throw ColErr::DimensionError<size_t>
-      ({3,3},{mSize.first,mSize.second},
-       "Matrix wrong size Quaternion::qRotMatrix");
-  
-  const double trace=M[0][0]+M[1][1]+M[2][2];
-  
-  const std::vector<double> extendTrace{M[0][0],M[1][1],M[2][2],trace};
-  
-  const size_t maxElem=static_cast<size_t>
-    (std::ranges::max_element(extendTrace)-extendTrace.begin());
-  const double q2=1.0-trace+2.0*extendTrace[maxElem];
-  if (q2<Geometry::zeroTol)
-    throw ColErr::NumericalAbort
-      ("Q2["+std::to_string(q2)+"] rotation matrix negative failure"
-       "Quaternion::qRotMatrix");
-  
-  // this can't be below zero (from above)
-  const double qMax=2.0*std::sqrt(q2);  
+  double m00,m01,m02,m10,m11,m12,m20,m21,m22;
+  M.nameAssign(m00,m01,m02,m10,m11,m12,m20,m21,m22);
 
-  if (maxElem==0)
-    return Quaternion((M[2][1]-M[1][2])/qMax,
-		      qMax/4.0,
-		      (M[0][1]+M[1][0])/qMax,
-		      (M[0][2]+M[2][0])/qMax );
-  if (maxElem==1)
-    return Quaternion((M[0][2]-M[2][0])/qMax,
-		      (M[0][1]+M[1][0])/qMax,
-		      qMax/4.0,
-		      (M[2][1]+M[1][2])/qMax );
-  if (maxElem==2)
-    return Quaternion((M[1][0]-M[0][1])/qMax,
-		      (M[0][2]+M[2][0])/qMax,
-		      (M[1][2]+M[2][1])/qMax,
-		      qMax/4.0);
-  // other 
-  return Quaternion(qMax/4.0,
-		    (M[2][1]-M[1][2])/qMax,
-		    (M[0][2]-M[2][0])/qMax,
-		     (M[1][0]-M[0][1])/qMax);
+  const double trace = m00+m11+m22+1.0;
+  
+  if (trace>0.0)
+    {
+      const double s= 0.5/std::sqrt(trace);
+      return Quaternion(0.25/s,(m21-m12)*s,(m02-m20)*s,(m10-m01)*s);
+    }
+  if ((m00>m11) & (m00>m22))
+    {
+      const double s= 2.0*std::sqrt(1.0+m00-m11-m22);
+      return Quaternion((m12-m21)/s,0.25*s,(m01+m10)/s,(m02+m20)/s);
+    }
+  else if (m11>m22)
+    {
+      const double s= 2.0*std::sqrt(1.0+m11-m00-m22);
+      return Quaternion((m02-m20)/s,(m01+m10)/s,0.25*s,(m12+m21)/s);
+    }
 
+  const double s= 2.0*std::sqrt(1.0+m22-m00-m11);
+  return Quaternion((m01-m10)/s,(m02+m20)/s,(m12+m21)/s,0.25*s);
 }
 
 Quaternion::Quaternion() :
@@ -501,6 +486,67 @@ Quaternion::operator*(const Quaternion& Q) const
   return Out*=Q;
 }
 
+Quaternion&
+Quaternion::operator*=(const double& V)
+  /*!
+    Standard Quarternion multiplication
+    based on scalar
+    \param V :: Value to scale quaternion by
+    \return Multiplied quaternion
+  */
+{
+  q0*=V;
+  Qvec*=V;
+  return *this;
+}
+
+
+Quaternion
+Quaternion::operator*(const double& V) const
+  /*!
+    Standard Quarternion multiplication
+    based on scalar
+    \param V :: Value to scale quaternion by
+    \return Multiplied quaternion
+  */
+{
+  Quaternion Out(*this);
+  Out*=V;
+  return Out;
+}
+
+Quaternion&
+Quaternion::operator/=(const double& V)
+  /*!
+    Standard Quarternion division
+    based on scalar
+    \param V :: Value to scale quaternion by
+    \return Multiplied quaternion
+  */
+{
+  if (std::abs(V)>1e-250)
+    {
+      q0/=V;
+      Qvec/=V;
+    }
+  return *this;
+}
+
+Quaternion
+Quaternion::operator/(const double& V) const
+  /*!
+    Standard Quarternion division
+    based on scalar
+    \param V :: Value to scale quaternion by
+    \return Divided quaternion
+  */
+{
+  Quaternion Out(*this);
+  Out/=V;
+  return Out;
+}
+
+
 double
 Quaternion::makeUnit()
   /*!
@@ -509,7 +555,7 @@ Quaternion::makeUnit()
    */
 {
   double UVal=modulus();
-  if (fabs(UVal)>1e-10)
+  if (std::abs(UVal)>1e-30)
     {
       q0/=UVal;
       Qvec/=UVal;
@@ -556,30 +602,31 @@ Quaternion::qMatrix() const
   return Out;    
 }
 
-Matrix<double>
+M3<double>
 Quaternion::rMatrix() const
   /*!
     Generate the 3x3 rotation R(q) matrix
     \return R(q)
   */
 {
-  Matrix<double> Out(3,3);
-  const double q1=Qvec[0];
-  const double q2=Qvec[1];
-  const double q3=Qvec[2];
+  M3<double> Out;
   
-  Out[0][0]=2.0*(q0*q0+q1*q1)-1.0;
-  Out[1][1]=2.0*(q0*q0+q2*q2)-1.0;
-  Out[2][2]=2.0*(q0*q0+q3*q3)-1.0;
-
-  Out[0][1]= 2.0*(q1*q2-q0*q3);
-  Out[0][2]= 2.0*(q1*q3+q0*q2);
+  const double qx=Qvec[0];
+  const double qy=Qvec[1];
+  const double qz=Qvec[2];
   
-  Out[1][0]= 2.0*(q1*q2+q0*q3);
-  Out[1][2]= 2.0*(q2*q3-q0*q1);
+  Out[0][0] = 1.0-2.0*(qy*qy+qz*qz);
+  Out[1][1] = 1.0-2.0*(qx*qx+qz*qz);
+  Out[2][2] = 1.0-2.0*(qx*qx+qy*qy);
   
-  Out[2][0]= 2.0*(q3*q1-q0*q2);
-  Out[2][1]= 2.0*(q3*q2+q0*q1);
+  Out[0][1]= 2.0*(qx*qy-qz*q0);
+  Out[0][2]= 2.0*(qx*qz+qy*q0);
+  
+  Out[1][0]= 2.0*(qx*qy+qz*q0);
+  Out[1][2]= 2.0*(qy*qz-qx*q0);
+  
+  Out[2][0]= 2.0*(qx*qz-qy*q0);
+  Out[2][1]= 2.0*(qy*qz+qx*q0);
 
   return Out;
 }
@@ -713,11 +760,11 @@ Quaternion::makeInvRotate(const Vec3D& V) const
     then \f$ q.v.q^{-1} \f$ is the rotated value.
   */
 {
-  Quaternion QI(*this);
-  Quaternion RV(0.0,V);
-  RV*=QI;
-  RV=QI.inverse()*RV;
-  return RV.getVec();
+   Quaternion QI(*this);
+   Quaternion RV(0.0,V);
+   RV*=QI;
+   RV=QI.inverse()*RV;
+   return RV.getVec();
 }
 
 Geometry::Vec3D
@@ -744,7 +791,7 @@ Quaternion::getTheta() const
   if (std::abs(q0)>1)
     throw ColErr::RangeError<double>(q0,-1,1,"Quaternion::getAngle");
   
-  return 2.0*std::acos(q0);
+  return 2.0*acos(q0);
 }
 
 

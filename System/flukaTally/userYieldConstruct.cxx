@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTally/userYieldConstruct.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -54,14 +54,15 @@
 #include "TallySelector.h"
 #include "flukaTally.h"
 #include "userYield.h"
-#include "userYieldConstruct.h" 
+#include "userYieldConstruct.h"
 
 
 namespace flukaSystem
 {
 
-void 
+void
 userYieldConstruct::createTally(SimFLUKA& System,
+				const std::string& name,
 				const std::string& PType,
 				const bool lFlag,
 				const std::string& AScore,
@@ -77,18 +78,18 @@ userYieldConstruct::createTally(SimFLUKA& System,
     in the system.
     \param System :: SimFLUKA to add tallies
     \param PType :: particle name
-    \param 
-    \param AScore :: score one 						
+    \param
+    \param AScore :: score one
     \param BScore :: score two
     \param fortranTape :: output stream
     \param CellA :: initial region
     \param CellB :: secondary region
     \param eLog :: energy in log bins
     \param aLog :: angle in log bins
-    \param Emin :: Min energy 
-    \param Emax :: Max energy 
-    \param Amin :: Min angle 
-    \param Amax :: Max angle 
+    \param Emin :: Min energy
+    \param Emax :: Max energy
+    \param Amin :: Min angle
+    \param Amax :: Max angle
     \param nE :: Number of energy bins
     \param nA :: Number of angle bins
   */
@@ -96,7 +97,7 @@ userYieldConstruct::createTally(SimFLUKA& System,
   ELog::RegMethod RegA("userYieldConstruct","createTally");
 
   const flukaGenParticle& FG=flukaGenParticle::Instance();
-    
+
   userYield UD(fortranTape,fortranTape);
 
   UD.setScoreType(lFlag,AScore,BScore);
@@ -105,7 +106,7 @@ userYieldConstruct::createTally(SimFLUKA& System,
   UD.setCell(cellA,cellB);
   UD.setEnergy(eLog,Emin,Emax,nE);
   UD.setAngle(aLog,Amin,Amax,nA);
-  
+
   System.addTally(UD);
 
   return;
@@ -115,9 +116,9 @@ userYieldConstruct::createTally(SimFLUKA& System,
 void
 userYieldConstruct::processYield(SimFLUKA& System,
 				 const mainSystem::inputParam& IParam,
-				 const size_t Index) 
+				 const size_t Index)
   /*!
-    Add BDX tally (s) as needed
+    Add USRYIELD estimator (s) as needed
     - Input:
     -- particle FixedComp index
     -- particle cellA  cellB
@@ -127,80 +128,88 @@ userYieldConstruct::processYield(SimFLUKA& System,
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("userYieldConstruct","processBdx");
-  
+  ELog::RegMethod RegA("userYieldConstruct","processYield");
+
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
   const std::string particleType=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
+    IParam.getValueError<std::string>("tally",Index,2,"tally:ParticleType");
   const std::string yieldTypeA=
-    IParam.getValueError<std::string>("tally",Index,2,"tally:YieldType");
-  const std::string yieldTypeB=
     IParam.getValueError<std::string>("tally",Index,3,"tally:YieldType");
+  const std::string yieldTypeB=
+    IParam.getValueError<std::string>("tally",Index,4,"tally:YieldType");
   const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,4,"tally:Object/Cell");
+    IParam.getValueError<std::string>("tally",Index,5,"tally:Object/Cell");
   const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,5,"tally:linkPt/Cell");
+    IParam.getValueError<std::string>("tally",Index,6,"tally:linkPt/Cell");
 
   bool logFlag(1);
-  
-  size_t itemIndex(6);
+
+  size_t itemIndex(7);
   int cellA(0);
   int cellB(0);
   if (
       (!StrFunc::convert(FCname,cellA) ||
        !StrFunc::convert(FCindex,cellB) ||
        !checkLinkCells(System,cellA,cellB) ) &&
-      
+
        !constructLinkRegion(System,FCname,FCindex,cellA,cellB)
       )
-    
+
     {
       // special class because must give regions
       itemIndex+=2;
 
-      const size_t regionIndexA=IParam.getDefValue<size_t>(0,"tally",Index,4);
-      const size_t regionIndexB=IParam.getDefValue<size_t>(0,"tally",Index,5);
+      const size_t regionIndexA=IParam.getDefValue<size_t>(0,"tally",Index,5);
+      const size_t regionIndexB=IParam.getDefValue<size_t>(0,"tally",Index,6);
 
       if (!constructSurfRegion(System,FCname,FCindex,
 			       regionIndexA,regionIndexB,cellA,cellB))
 	throw ColErr::InContainerError<std::string>
 	  (FCname+":"+FCindex,"No connecting surface on regions");
     }
-  
-  ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;  
+
+  ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
-  
+
   const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
   const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++); 
+  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++);
 
   const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
   const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
-  const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++); 
+  const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
 
-  
-  userYieldConstruct::createTally(System,particleType,
+
+  userYieldConstruct::createTally(System,tallyName,particleType,
 				  logFlag,yieldTypeA,yieldTypeB,
 				  -nextId,
 				  cellA,cellB,
 				  1,EA,EB,NE,
 				  0,AA,AB,NA);
-  
-  return;      
-}  
-  
+
+  return;
+}
+
 void
-userYieldConstruct::writeHelp(std::ostream& OX) 
+userYieldConstruct::writeHelp(std::ostream& OX)
   /*!
     Write out help
     \param OX :: Output stream
   */
 {
   OX<<
+    "Yield calclulate a double differential -- it needs \n"
+    " a particle type and TWO yield types e.g. for dSigma/(d Omega dE) \n"
+    " the yields are KE (kenetic energy) and weightAngle. \n \n"
+    " The supported yield calculate is for region-region (similar to MCNP\n"
+    "surface crossing tallies)\n\n"
     " particle yieldTypeA yieldTypeB Object linkPt \n"
     "   EnergyStart EnergyEnd NPTS \n"
     "   AngleStart AngleEnd NPTS \n";
+    
   return;
 }
 

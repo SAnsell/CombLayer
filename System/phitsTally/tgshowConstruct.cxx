@@ -3,7 +3,7 @@
  
  * File:   phitsTally/tgshowConstruct.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@ namespace phitsSystem
 
 void 
 tgshowConstruct::createTally(SimPHITS& System,
+			     const std::string& tallyName,
 			     const int ID,
 			     const Geometry::Vec3D& APt,
 			     const Geometry::Vec3D& BPt,
@@ -69,6 +70,7 @@ tgshowConstruct::createTally(SimPHITS& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimPHITS to add tallies
+    \param tallyName :: tally name
     \param ID :: output stream
     \param APt :: Lower point 
     \param BPt :: Upper point 
@@ -87,9 +89,6 @@ tgshowConstruct::createTally(SimPHITS& System,
   return;
 }
 
-  
-      
-
 void
 tgshowConstruct::processMesh(SimPHITS& System,
 			     const mainSystem::inputParam& IParam,
@@ -102,24 +101,27 @@ tgshowConstruct::processMesh(SimPHITS& System,
   */
 {
   ELog::RegMethod RegA("tgshowConstruct","processMesh");
-  
-  const int nextId=10; // System.getNextFTape();
-  
+
+  const int nextID=System.getNextTallyID();
+
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
+
   const std::string PType=
-    IParam.getValueError<std::string>("tally",Index,1,"object/free");
+    IParam.getValueError<std::string>("tally",Index,2,"object/free");
 
   Geometry::Vec3D APt,BPt;
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
     mainSystem::meshConstruct::getObjectMesh
-      (System,IParam,"tally",Index,2,APt,BPt,Nxyz);
+      (System,IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="free")
     mainSystem::meshConstruct::getFreeMesh
-      (IParam,"tally",Index,2,APt,BPt,Nxyz);
+      (IParam,"tally",Index,3,APt,BPt,Nxyz);
   else if (PType=="help")
     {
-      ELog::EM<<"Tally Type:"<<ELog::endDiag;
+      ELog::EM<<"Tally Name Type:"<<ELog::endDiag;
       ELog::EM<<" -- Free Vec3D() Vec3D() NX NY 1 "<<ELog::endDiag;
       ELog::EM<<" -- Object ObjectName Vec3d() Vec3D() NX NY 1 "<<ELog::endDiag;
       throw ColErr::ExitAbort("Help termianted");
@@ -127,7 +129,7 @@ tgshowConstruct::processMesh(SimPHITS& System,
   else
     throw ColErr::InContainerError<std::string>(PType,"TGShow tally type");
   
-  tgshowConstruct::createTally(System,nextId,APt,BPt,Nxyz);
+  tgshowConstruct::createTally(System,tallyName,nextID,APt,BPt,Nxyz);
   System.setICNTL("plot");  // all graphics output
   return;      
 }

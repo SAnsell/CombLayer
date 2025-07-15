@@ -3,7 +3,7 @@
  
  * File:   flukaTally/userDumpConstruct.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ namespace flukaSystem
 
 void 
 userDumpConstruct::createTally(SimFLUKA& System,
+			       const std::string& tallyName,
 			       const int dType,
 			       const int fortranTape,
 			       const std::string& outFile)
@@ -65,6 +66,7 @@ userDumpConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
+    \param tallyName :: Tally name
     \param dType :: dump type
     \param fortranTape :: output stream
   */
@@ -73,6 +75,7 @@ userDumpConstruct::createTally(SimFLUKA& System,
 
   userDump UD(fortranTape,fortranTape);
   UD.setDumpType(dType);
+  UD.setKeyName(tallyName);
   UD.setOutName(outFile);
   System.addTally(UD);
 
@@ -128,11 +131,13 @@ userDumpConstruct::processDump(SimFLUKA& System,
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
-  
+
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
   const std::string OutFile=
     IParam.getDefValue<std::string>("dump","tally",Index,2); 
 
-  userDumpConstruct::createTally(System,dumpIndex,nextId,OutFile);
+  userDumpConstruct::createTally(System,tallyName,dumpIndex,nextId,OutFile);
   
   return;      
 }

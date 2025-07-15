@@ -61,7 +61,6 @@ class BellowGenerator :
   void setMat(const std::string&,const double);
   void setMat(const std::string&,const std::string&);
 
-
   void generateBellow(FuncDataBase&,const std::string&,
 		      const double) const;
 

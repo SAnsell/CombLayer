@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   tally/fluxConstruct.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -59,8 +59,8 @@
 #include "SimMCNP.h"
 
 #include "inputParam.h"
-#include "objectSupport.h" 
-#include "fluxConstruct.h" 
+#include "objectSupport.h"
+#include "fluxConstruct.h"
 
 namespace tallySystem
 {
@@ -68,7 +68,7 @@ namespace tallySystem
 int
 fluxConstruct::processFlux(SimMCNP& System,
 			   const mainSystem::inputParam& IParam,
-			   const size_t Index) 
+			   const size_t Index)
   /*!
     Add flux tally (s) as needed
     \param System :: SimMCNP to add tallies
@@ -78,56 +78,44 @@ fluxConstruct::processFlux(SimMCNP& System,
 {
   ELog::RegMethod RegA("fluxConstruct","processFlux");
 
+  const std::string tallyName=
+    IParam.getValue<std::string>("tally",Index,0);
+
   const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<4)
-    throw ColErr::IndexError<size_t>(NItems,4,
+  if (NItems<5)
+    throw ColErr::IndexError<size_t>(NItems,5,
 				     "Insufficient items for tally");
-  // PARTICLE TYPE
-  const std::string PType(IParam.getValue<std::string>("tally",Index,1));
-  // Material TYPE
-  const std::string matType(IParam.getValue<std::string>("tally",Index,2));
-  // cellKey to extract
-  const std::string cellKey(IParam.getValue<std::string>("tally",Index,3));
+  const std::string PType(IParam.getValue<std::string>("tally",Index,2));
+  constexpr size_t cellIndex = 3;
+  const std::string cellKey(IParam.getValue<std::string>("tally",Index,cellIndex));
+  const std::string matType(IParam.getValue<std::string>("tally",Index,4));
 
   const std::set<int> cells=
     getNamedCellsWithMat(System,IParam,"tally",
-			Index,3,matType,
+			Index,cellIndex,matType,
 			"cellKey+"+matType+"cell/mat not present in model");
-  
-  
+
   const int nTally=System.nextTallyNum(4);
   tallySystem::addF4Tally(System,nTally,PType,cells);
-  tallySystem::Tally* TX=System.getTally(nTally); 
+  tallySystem::Tally* TX=System.getTally(nTally);
   TX->setPrintField("e f");
-  const std::string Comment=
-    "tally: "+std::to_string(nTally)+
-    " mat : "+matType+":"+
-    cellKey;
-  TX->setComment(Comment);
+  TX->setComment(tallyName);
   return 0;
 }
 
 
 void
-fluxConstruct::writeHelp(std::ostream& OX) 
+fluxConstruct::writeHelp(std::ostream& OX)
   /*!
     Write out help
     \param OX :: output stream
   */
 {
-  OX<<"Flux tally :\n"
-    "particles material(int) cells \n"
-    " -- material can be: \n"
-    "      zaid number \n"
-    "      material name \n"
-    "      material number \n"
-    "      -1 :: [all] \n"
-    "  -- cells can be \n"
-    "          objectName [cellOffset cellCount]\n"
-    "          objectName \n "
-    "          CellNumber-CellNumber\n";
+  OX<<"Flux tally options:\n"
+    "* particle objectName[:cellName] material\n"
+    "   set material to 'All' to tally all specified cells\n";
+
   return;
 }
-  
 
 }  // NAMESPACE tallySystem

@@ -3,7 +3,7 @@
 
  * File:   flukaTally/userTrackConstruct.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ namespace flukaSystem
 
 void
 userTrackConstruct::createTally(SimFLUKA& System,
-				const std::string& name,
+				const std::string& tallyName,
 				const std::string& PType,
 				const int fortranTape,
 				const int cellA,
@@ -82,7 +82,7 @@ userTrackConstruct::createTally(SimFLUKA& System,
 
   userTrack UD(fortranTape,fortranTape);
   UD.setParticle(PType);
-  UD.setKeyName(name);
+  UD.setKeyName(tallyName);
   UD.setCell(cellA);
   UD.setEnergy(eLog,Emin,Emax,nE);
 
@@ -129,7 +129,9 @@ userTrackConstruct::processTrack(SimFLUKA& System,
 
   for(const int cellA : cellList)
     {
+      ELog::EM<<"HERE "<<cellA<<ELog::endTRACE;
       const int nextId=System.getNextFTape();
+      ELog::EM<<"HERE "<<cellA<<ELog::endTRACE;
       userTrackConstruct::createTally(System,tallyName,particleType,-nextId,
 				      cellA,1,EA,EB,NE);
     }

@@ -3,7 +3,7 @@
 
  * File:   flukaTally/userBdxConstruct.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ namespace flukaSystem
 
 void
 userBdxConstruct::createTally(SimFLUKA& System,
-			      const std::string& name,
+			      const std::string& tallyName,
 			      const std::string& PType,
 			      const int fortranTape,
 			      const int cellA,const int cellB,
@@ -74,7 +74,7 @@ userBdxConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
-    \param PType :: estimator name
+    \param tallyName :: estimator name
     \param PType :: particle name
     \param fortranTape :: output stream
     \param CellA :: initial region
@@ -95,7 +95,7 @@ userBdxConstruct::createTally(SimFLUKA& System,
 
   userBdx UD("surf",fortranTape,fortranTape);
   UD.setParticle(FG.nameToFLUKA(PType));
-  UD.setKeyName(name);
+  UD.setKeyName(tallyName);
   UD.setCell(cellA,cellB);
   UD.setEnergy(eLog,Emin,Emax,nE);
   UD.setAngle(aLog,Amin,Amax,nA);
@@ -129,7 +129,6 @@ userBdxConstruct::processBDX(SimFLUKA& System,
 
   const std::string tallyName=
     IParam.getValue<std::string>("tally",Index,0);
-
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,2,"tally:ParticleType");
   const std::string FCname=
@@ -140,6 +139,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   size_t itemIndex(5);
   int cellA(0);
   int cellB(0);
+
   if (
       (!StrFunc::convert(FCname,cellA) ||
        !StrFunc::convert(FCindex,cellB) ||
@@ -153,22 +153,20 @@ userBdxConstruct::processBDX(SimFLUKA& System,
       if (constructSurfRegion(System,FCname,cellA,cellB))
 	itemIndex--;
       else
-	throw ColErr::CommandError(FCname+" "+FCindex,"Surf Tally conversion");
-
+	throw ColErr::CommandError(tallyName+": "+FCname+" "+FCindex,
+				   "Surface tally conversion -- check that FComp point is on boundary");
     }
-  ELog::EM<<"Regions connected from "<<cellA<<" to "<<cellB<<ELog::endDiag;
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
   // energy
-  const double EA=IParam.getDefValue<double>(1e-9,"tally",Index,itemIndex++);
-  const double EB=IParam.getDefValue<double>(1000.0,"tally",Index,itemIndex++);
-  const size_t NE=IParam.getDefValue<size_t>(200,"tally",Index,itemIndex++);
+  const double EA=IParam.getDefValue<double>(1e-11,"tally",Index,itemIndex++);
+  const double EB=IParam.getDefValue<double>(3000.0,"tally",Index,itemIndex++);
+  const size_t NE=IParam.getDefValue<size_t>(100,"tally",Index,itemIndex++);
   // angle
   const double AA=IParam.getDefValue<double>(0.0,"tally",Index,itemIndex++);
   const double AB=IParam.getDefValue<double>(2*M_PI,"tally",Index,itemIndex++);
   const size_t NA=IParam.getDefValue<size_t>(1,"tally",Index,itemIndex++);
-
 
   userBdxConstruct::createTally(System,tallyName,particleType,-nextId,
 				cellA,cellB,
@@ -185,15 +183,14 @@ userBdxConstruct::writeHelp(std::ostream& OX)
     \param OX :: Output stream
   */
 {
-  OX<<
-    "-T surface \n"
-    "  particleType : name of particle / energy to tally\n"
-    "  Option A : \n"
-    "       FixedComp + linkPoint (using % to mean -ve)\n"
-    "  Option B : \n"
-    "       FixedComp:CellMap:Index (index optional) \n"
-    "  Emin EMax NE \n"
-    "  AMin AngleMax NA (all optional) \n"
+  OX << "USRBDX estimator options:\n"
+    "* particle objectName linkName    [Emin Emax NE Amin Amax NA]\n"
+    "* particle objectName surfaceName [Emin Emax NE Amin Amax NA]\n"
+    "  Emin, Emax - energy range [MeV]\n"
+    "   NE - number of energy bins\n"
+    "  Amin Amax - angular range [sr]\n"
+    "   NA - number of angular bins\n"
+    "\n Example: -T myname surface 'e+&e-' MyObject \\#front 0.001 3000 100\n"
     <<std::endl;
   return;
 }
