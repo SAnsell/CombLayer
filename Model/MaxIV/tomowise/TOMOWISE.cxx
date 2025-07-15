@@ -162,9 +162,13 @@ TOMOWISE::build(Simulation& System,
   frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("Void"));
   frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("ExtraVoid"));
 
-  if (stopPoint=="frontEnd" || stopPoint=="Dipole"
-      || stopPoint=="FM1" || stopPoint=="FM2" || stopPoint=="FM3")
-    return;
+  // list of front-end stop points - no need to build geometry after them
+  constexpr std::array<std::string_view, 8> frontStopPoints = {
+        "frontEnd", "FM1", "FM2", "FM3", "TransPipe",
+        "ChokeChamber", "U1Block", "Dipole"
+    };
+   if (std::find(frontStopPoints.begin(), frontStopPoints.end(), stopPoint) != frontStopPoints.end())
+        return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
