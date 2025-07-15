@@ -163,9 +163,9 @@ TOMOWISE::build(Simulation& System,
   frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("ExtraVoid"));
 
   // list of front-end stop points - no need to build geometry after them
-  constexpr std::array<std::string_view, 8> frontStopPoints = {
+  constexpr std::array<std::string_view, 9> frontStopPoints = {
         "frontEnd", "FM1", "FM2", "FM3", "TransPipe",
-        "ChokeChamber", "U1Block", "Dipole"
+        "ChokeChamber", "U1Block", "Dipole", "HeatTable"
     };
    if (std::find(frontStopPoints.begin(), frontStopPoints.end(), stopPoint) != frontStopPoints.end())
         return;

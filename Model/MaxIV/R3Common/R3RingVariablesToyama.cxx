@@ -117,8 +117,10 @@ moveApertureTableToyama(FuncDataBase& Control,
   // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"AperturePipeA",30.0); // [2]
+  Control.addVariable(frontKey+"AperturePipeAOuterVoid",1);
   //  Control.addVariable(frontKey+"AperturePipeAYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollA");
+
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowF",8); //14.0); // [2]
@@ -137,6 +139,7 @@ moveApertureTableToyama(FuncDataBase& Control,
   // Aperture pipe is movable:
   PipeGen.setCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"AperturePipeB",30.0); // [2]
+  Control.addVariable(frontKey+"AperturePipeBOuterVoid",1);
   //  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
   collimatorVariables(Control,frontKey+"MoveCollB");
   Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
@@ -218,7 +221,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.setOuterVoid(0);
+  PItemGen.setOuterVoid(1);
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
   PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);

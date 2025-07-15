@@ -429,6 +429,11 @@ R3FrontEndToyama::buildShutterTable(Simulation& System)
 				 FPI,FPI.getSideIndex("OuterPlate"));
 
   florTubeA->insertAllInCell(System,outerCell);
+  florTubeA->intersectPorts(System,0,3);
+  florTubeA->intersectPorts(System,1,3);
+  florTubeA->intersectPorts(System,0,2);
+  florTubeA->intersectPorts(System,1,2);
+
 
   // bellows
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));
@@ -697,6 +702,15 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   buildMSM(System,*collExitPipe,"back");
   buildHeatTable(System);
+
+  if (stopPoint=="HeatTable")
+    {
+      buildZone.rebuildInsertCells(System);
+      setCell("MasterVoid",outerCell);
+      lastComp=gateTubePreMM1;
+      return;
+    }
+
   buildApertureTable(System,*gateTubePreMM1,2);
   buildShutterTable(System);
 

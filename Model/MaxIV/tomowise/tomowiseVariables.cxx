@@ -335,6 +335,7 @@ hdcmPackage(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
+  PipeGen.setOuterVoid(1);
   PipeGen.generatePipe(Control,monoKey+"DCMReplacementPipe",77.0);
 
   return;
@@ -392,7 +393,7 @@ diag2Package(FuncDataBase& Control,
   PItemGen.setPlate(4.0,"Stainless304");
 
   PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+5.0);
-  PItemGen.setOuterVoid(0);
+  PItemGen.setOuterVoid(1);
   PItemGen.generatePort(Control,viewName+"Port0",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
 
@@ -1221,6 +1222,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
+  PipeGen.setOuterVoid(1);
   PipeGen.generatePipe(Control,preName+"PipeA",24.4); // to put FM1 at its correct place
 
   BellowGen.setCF<setVariable::CF40>();
