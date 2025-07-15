@@ -545,6 +545,12 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*transPipe,2);
   transPipe->insertAllInCell(System,outerCell);
 
+  // if (stopPoint == "TransPipe") { // TODO: remove the downstream M1 from geometry (errors)
+  //   lastComp=transPipe;
+  //   setCell("MasterVoid", outerCell);
+  //   return;
+  // }
+
   outerCell=buildZone.createUnit(System,*magBlockM1,2);
   magBlockM1->insertAllInCell(System,outerCell);
 
@@ -566,6 +572,12 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   chokeInsert->addInsertCell(chokeChamber->getCell("SideVoid"));
   chokeInsert->createAll(System,*chokeChamber,"innerSide");
 
+  if (stopPoint=="ChokeChamber") {
+    lastComp=chokeChamber;
+    setCell("MasterVoid",outerCell);
+    return;
+  }
+
   eCutDisk->setNoInsert();
   eCutDisk->addInsertCell(chokeChamber->getCell("PhotonVoid"));
   eCutDisk->createAll(System,*chokeChamber,
@@ -585,6 +597,12 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   magBlockU1->createAll(System,*epSeparator,"Electron");
   magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
   magBlockU1->insertDipolePipe(System,*dipolePipe);
+
+  if (stopPoint=="U1Block") { // parentheses OK
+    lastComp=magBlockU1;
+    setCell("MasterVoid",buildZone.getCell("dipoleUnit"));
+    return;
+  }
 
   const xraySystem::EntryPipe& entryPipe=
     magBlockU1->getEntryPipe();
