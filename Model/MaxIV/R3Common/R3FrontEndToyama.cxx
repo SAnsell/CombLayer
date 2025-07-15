@@ -583,25 +583,39 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   eCutDisk->createAll(System,*chokeChamber,
 		      chokeChamber->getSideIndex("-photon"));
 
+  if (stopPoint != "U1Block") {
   // FM1 Built relateive to MASTER coordinate
-  collA->createAll(System,*this,0);
-  bellowA->createAll(System,*collA,1);
-
-  dipolePipe->setFront(*chokeChamber,"photon");
-  dipolePipe->setBack(*bellowA,"back");
-  dipolePipe->createAll(System,*chokeChamber,"photon");
-
-  outerCell=buildZone.createUnit(System,*dipolePipe,2);
-  dipolePipe->insertAllInCell(System,outerCell);
-  buildZone.addCell("dipoleUnit",outerCell);
+    collA->createAll(System,*this,0);
+    bellowA->createAll(System,*collA,1);
+  }
 
   magBlockU1->createAll(System,*epSeparator,"Electron");
-  magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
+
+  dipolePipe->setFront(*chokeChamber,"photon");
+  if (stopPoint != "U1Block")
+    dipolePipe->setBack(*bellowA,"back");
+  else {
+    dipolePipe->setBack(*magBlockU1,-4);
+    dipolePipe->insertInCell("FlangeB",System,magBlockU1->getCell("BackVoid"));
+  }
+
+  dipolePipe->createAll(System,*chokeChamber,"photon");
+
+  //  magBlockU1->insertAllInCell(System,buildZone.getCell("dipoleUnit"));
   magBlockU1->insertDipolePipe(System,*dipolePipe);
+
+  outerCell=buildZone.createUnit(System,*magBlockU1,-3);
+  buildZone.addCell("preM1",outerCell);
+  dipolePipe->insertInCell("FlangeA",System,outerCell);
+  dipolePipe->insertInCell("Main",System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*magBlockU1,4);
+  //  magBlockU1->insertAllInCell(System,outerCell); // TODO: simplify
+  magBlockU1->insertInCell("Main",System,outerCell);
 
   if (stopPoint=="U1Block") { // parentheses OK
     lastComp=magBlockU1;
-    setCell("MasterVoid",buildZone.getCell("dipoleUnit"));
+    setCell("MasterVoid",outerCell);
     return;
   }
 
@@ -620,7 +634,11 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   // eTransPipe->insertInCell("FlangeA",System,chokeChamber->getCell("BlockOuter"));
   // eTransPipe->insertInCell("FlangeB",System,outerCell);
   eTransPipe->insertInCell("Main",System,chokeChamber->getCell("BlockOuter"));
-  eTransPipe->insertInCell("Main",System,outerCell);
+  eTransPipe->insertInCell("Main",System,buildZone.getCell("preM1"));
+
+  outerCell=buildZone.createUnit(System,*bellowA,"#back");
+  dipolePipe->insertInCell("Main",System,outerCell);
+  dipolePipe->insertInCell("FlangeB",System,outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowA,1);
   bellowA->insertAllInCell(System,outerCell);
