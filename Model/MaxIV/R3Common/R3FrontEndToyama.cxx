@@ -613,9 +613,17 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   //  magBlockU1->insertAllInCell(System,outerCell); // TODO: simplify
   magBlockU1->insertInCell("Main",System,outerCell);
 
-  if (stopPoint=="U1Block") { // parentheses OK
-    lastComp=magBlockU1;
+  if (stopPoint=="U1Block") {
+    // optional, to simplify external void even further
+    // if (ExternalCut::isActive("REWall"))
+    //   {
+    // 	buildZone.setMaxExtent(getRule("REWall"));
+    // 	outerCell=buildZone.createUnit(System);
+    //   }
+    buildZone.rebuildInsertCells(System); // simplifies external void
+    buildExtras(System);
     setCell("MasterVoid",outerCell);
+    lastComp=magBlockU1;
     return;
   }
 
@@ -649,8 +657,9 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   if (stopPoint=="Dipole")
     {
-      lastComp=dipolePipe;
+      buildZone.rebuildInsertCells(System);
       setCell("MasterVoid",outerCell);
+      lastComp=dipolePipe;
       return;
     }
 
@@ -711,7 +720,8 @@ R3FrontEndToyama::buildObjects(Simulation& System)
       outerCell=buildZone.createUnit(System);
     }
 
-  buildZone.rebuildInsertCells(System);
+  buildZone.rebuildInsertCells(System); // simplifies buildZone outer void
+
   proxiShieldB->insertInCell(System,outerCell);
   proxiShieldBPipe->insertInCell("FlangeA", System, outerCell);
   proxiShieldBPipe->insertInCell("Main", System, outerCell);
