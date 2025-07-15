@@ -590,6 +590,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   dipolePipe->setFront(*chokeChamber,"photon");
   dipolePipe->setBack(*bellowA,"back");
   dipolePipe->createAll(System,*chokeChamber,"photon");
+
   outerCell=buildZone.createUnit(System,*dipolePipe,2);
   dipolePipe->insertAllInCell(System,outerCell);
   buildZone.addCell("dipoleUnit",outerCell);
@@ -614,14 +615,12 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   eTransPipe->setFront(*chokeChamber,"electron");
   eTransPipe->setBack(*magBlockU1,"voidFront");
   eTransPipe->createAll(System,*chokeChamber,"electron");
-  eTransPipe->insertInCell("FlangeA",System,
-			   chokeChamber->getCell("PhotonOuterVoid"));
-  eTransPipe->insertInCell("FlangeA",System,
-			   chokeChamber->getCell("BlockOuter"));
-  eTransPipe->insertInCell("Main",System,
-			   chokeChamber->getCell("BlockOuter"));
+  // can be commented out if ETransPipeOuterVoid is set
+  // eTransPipe->insertInCell("FlangeA",System,chokeChamber->getCell("PhotonOuterVoid"));
+  // eTransPipe->insertInCell("FlangeA",System,chokeChamber->getCell("BlockOuter"));
+  // eTransPipe->insertInCell("FlangeB",System,outerCell);
+  eTransPipe->insertInCell("Main",System,chokeChamber->getCell("BlockOuter"));
   eTransPipe->insertInCell("Main",System,outerCell);
-  eTransPipe->insertInCell("FlangeB",System,outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowA,1);
   bellowA->insertAllInCell(System,outerCell);
