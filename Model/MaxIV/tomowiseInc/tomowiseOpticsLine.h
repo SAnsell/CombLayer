@@ -122,6 +122,9 @@ class tomowiseOpticsLine :
   std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
   /// Mirror-Mono system
   std::shared_ptr<xraySystem::MLMonoDetail> MLM;
+  // MLM replacement pipe
+  std::shared_ptr<constructSystem::VacuumPipe> mlmPipe;
+
 
   // PART 5: [connection pipe]
 
@@ -238,6 +241,7 @@ class tomowiseOpticsLine :
 
   bool fm1Active; ///< FM1 active flag (replaced with pipe if false)
   bool dcmActive; ///< DCM active flag (replaced with pipe if false)
+  bool mlmActive; ///< MLM active flag (replaced with pipe if false) - tmp fix for too complex cells inside MLM vessel
 
   void constructViewScreen(Simulation&,
 			   const attachSystem::FixedComp&,

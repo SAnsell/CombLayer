@@ -1169,6 +1169,14 @@ mirrorMonoPackage(FuncDataBase& Control,
   //  MXtalGen.setGap(1.0);
   //  MXtalGen.generateMono(Control,monoKey+"MLM",-20.0,0.6,0.6);
   //  Control.addVariable(monoKey+"MLMYAngle",0.0);
+
+  // pipe alternative to MLM
+  setVariable::PipeGenerator PipeGen;
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<CF40>();
+  PipeGen.setOuterVoid(1);
+  PipeGen.generatePipe(Control,monoKey+"MLMReplacementPipe",109.7);
+
   return;
 }
 
@@ -1193,6 +1201,7 @@ opticsVariables(FuncDataBase& Control,
 
   Control.addVariable(preName+"FM1Active",1);
   Control.addVariable(preName+"DCMActive",1);
+  Control.addVariable(preName+"MLMActive",1);
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;

@@ -165,6 +165,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
 
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
   MLM(new xraySystem::MLMonoDetail(newName+"MLM")),
+  mlmPipe(std::make_shared<constructSystem::VacuumPipe>(newName+"MLMReplacementPipe")),
 
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
@@ -353,6 +354,7 @@ tomowiseOpticsLine::populate(const FuncDataBase& Control)
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
   fm1Active=static_cast<bool>(Control.EvalVar<int>(keyName+"FM1Active"));
   dcmActive=static_cast<bool>(Control.EvalVar<int>(keyName+"DCMActive"));
+  mlmActive=static_cast<bool>(Control.EvalVar<int>(keyName+"MLMActive"));
 
   return;
 }
@@ -751,11 +753,14 @@ tomowiseOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*powerFilterVessel,"back",*pipeBB);
   constructSystem::constructUnit(System,buildZone,*pipeBB,"back",*bellowCA);
 
-  constructMirrorMono(System,*bellowCA,"back");
+  if (mlmActive) {
+    constructMirrorMono(System,*bellowCA,"back");
+    constructSystem::constructUnit(System,buildZone,*MLMVessel,"back",*bellowD);
+  } else {
+    constructSystem::constructUnit(System,buildZone,*bellowCA,"back",*mlmPipe);
+    constructSystem::constructUnit(System,buildZone,*mlmPipe,"back",*bellowD);
+  }
 
-
-  constructSystem::constructUnit
-    (System,buildZone,*MLMVessel,"back",*bellowD);
   constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*pipeC);
   constructSystem::constructUnit
