@@ -514,7 +514,7 @@ tomowiseOpticsLine::constructSafetyUnit(Simulation& System,
   bellowG->createAll(System, *ha, "front");
 
   pipeDA->setBack(*bellowG, "back");
-  pipeDA->createAll(System, *viewTubeA, "back");
+  pipeDA->createAll(System, initFC, sideName);
   int outerCell=buildZone.createUnit(System,*pipeDA,"back");
   pipeDA->insertAllInCell(System,outerCell);
 
