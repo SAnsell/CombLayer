@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   insertUnit/insertCylinder.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -79,7 +79,7 @@ insertCylinder::insertCylinder(const std::string& Key)  :
   */
 {}
 
-insertCylinder::insertCylinder(const insertCylinder& A) : 
+insertCylinder::insertCylinder(const insertCylinder& A) :
   insertObject(A),
   radius(A.radius),length(A.length)
   /*!
@@ -105,7 +105,7 @@ insertCylinder::operator=(const insertCylinder& A)
   return *this;
 }
 
-insertCylinder::~insertCylinder() 
+insertCylinder::~insertCylinder()
   /*!
     Destructor
   */
@@ -119,7 +119,7 @@ insertCylinder::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("insertCylinder","populate");
-  
+
   if (!populated)
     {
       insertObject::populate(Control);
@@ -168,7 +168,7 @@ insertCylinder::createLinks()
 
   FixedComp::setNConnect(10);
   FrontBackCut::createLinks(*this,Origin,Y);
-  
+
   FixedComp::setConnect(2,Origin-X*radius,-X);
   FixedComp::setConnect(3,Origin+X*radius,X);
   FixedComp::setConnect(4,Origin-Z*radius,-Z);
@@ -207,9 +207,9 @@ insertCylinder::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("insertCylinder","createObjects");
-  
+
   HeadRule HR=
-    ModelSupport::getSetHeadRule(SMap,buildIndex,"1 -2 -7");
+    ModelSupport::getSetHeadRule(SMap,buildIndex,"-7");
   HR*=getFrontRule();
   HR*=getBackRule();
   makeCell("Main",System,cellIndex++,defMat,0.0,HR);
@@ -246,7 +246,7 @@ insertCylinder::setValues(const double R,const double L,
    */
 {
   ELog::RegMethod RegA("insertCylinder","setValues(string)");
-  
+
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
   setValues(R,L,DB.processMaterial(Mat));
   return;
@@ -257,15 +257,15 @@ insertCylinder::mainAll(Simulation& System)
   /*!
     Common part to createAll:
     Note: the strnage order -- create links and findObject
-    before createObjects. This allows findObjects not to 
+    before createObjects. This allows findObjects not to
     find ourselves (and correctly to find whatever this object
     is in).
-    
+
     \param System :: Simulation
    */
 {
   ELog::RegMethod RegA("insertCylinder","mainAll");
-  
+
   createSurfaces();
   createLinks();
 
@@ -285,13 +285,13 @@ insertCylinder::createAll(Simulation& System,
 /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param OG :: Offset origin							
+    \param OG :: Offset origin
     \param FC :: Linear component to set axis etc
   */
 {
   ELog::RegMethod RegA("insertCylinder","createAll(Vec,FC)");
-  if (!populated) 
-    populate(System.getDataBase());  
+  if (!populated)
+    populate(System.getDataBase());
   createUnitVector(FC,OG);
   mainAll(System);
   return;
@@ -309,12 +309,12 @@ insertCylinder::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("insertCylinder","createAll(FC,index)");
-  
-  if (!populated) 
-    populate(System.getDataBase());  
+
+  if (!populated)
+    populate(System.getDataBase());
   createUnitVector(FC,lIndex);
   mainAll(System);
-  
+
   return;
 }
 
@@ -325,17 +325,17 @@ insertCylinder::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param Orig :: Origin point 
+    \param Orig :: Origin point
     \param Axis :: Main axis
   */
 {
   ELog::RegMethod RegA("insertCylinder","createAll");
-  if (!populated) 
-    populate(System.getDataBase());  
+  if (!populated)
+    populate(System.getDataBase());
   insertObject::createUnitVector(Orig,Axis);
   mainAll(System);
-  
+
   return;
 }
-   
+
 }  // NAMESPACE insertSystem
