@@ -1243,7 +1243,7 @@ opticsVariables(FuncDataBase& Control,
   FMaskGen.setCF<CF63>();
   FMaskGen.setFrontGap(2.13,2.146);
   FMaskGen.setBackGap(0.756,0.432);
-  FMaskGen.setMinAngleSize(5.6,FM1dist, 60.0, 60.0);
+  FMaskGen.setMinAngleSize(5.6,FM1dist, 60.0, 60.0); // last two arguments: opening angles in urad
   // step to +7.5 to make join with fixedComp:linkpt
   FMaskGen.generateColl(Control,preName+"FM1",7.5,FM1length);
 
