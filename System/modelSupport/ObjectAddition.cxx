@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   modelSupport/ObjectAddition.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -71,7 +71,7 @@ getObjectAxis(const Simulation& System,
      Case 1 :  object
         -FixedComp linkPt
      Case 2 :  free
-        -Origin Y Z 
+        -Origin Y Z
 
     \param System :: Simulation
     \param IParam :: Input Parameters
@@ -146,16 +146,17 @@ objectAddition(Simulation& System,
       if(key=="help")
 	{
 	  ELog::EM<<"OAdd Help "<<ELog::endBasic;
-	  ELog::EM<<
-	    " -- cylinder object FixedComp linkPt +Vec3D(x,y,z) radius \n";
-	  ELog::EM<<
-	    " -- cylinder free Vec3D(x,y,z) Vec3D(nx,ny,nz) radius \n";
+	  ELog::EM<<" Adds a simple object that is typically used temporarily as a tally region or as a target."<<ELog::endBasic;
+	  ELog::EM<<" -- cylinder object FixedComp linkPt +Vec3D(x,y,z) radius length [material=Void]\n";
+	  ELog::EM<<" -- cylinder   free Vec3D(x,y,z)   Vec3D(nx,ny,nz) radius length [material=Void]\n";
+	  ELog::EM<<" -- pencil object FixedComp linkPt +Vec3D(x,y,z) radius length tip-full-angle [material=Void] [materialOutsideTip=Void]\n";
+	  ELog::EM<<" -- pencil   free Vec3D(x,y,z)   Vec3D(nx,ny,nz) radius length tip-full-angle [material=Void] [materialOutsideTip=Void]\n";
 	  ELog::EM<<
 	    " -- plate object fixedComp linkPt +Vec3D(x,y,z) "
-	    "xSize zSize {ySize=0.1} {mat=Void}\n";
+	    "xSize zSize [ySize=0.1] [material=Void]\n";
 	  ELog::EM<<
 	    " -- plate free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis) "
-	    "xSize zSize {ySize=0.1} {mat=Void}\n";
+	    "xSize zSize [ySize=0.1] [material=Void]\n";
 	  ELog::EM<<
 	    " -- sphere object FixedComp linkPt +Vec3D(x,y,z) radius \n";
 	  ELog::EM<<
@@ -195,7 +196,7 @@ objectAddition(Simulation& System,
 	    }
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"plate type");
-	  
+
 	  const double XW=
 	    IParam.getValueError<double>("OAdd",index,ptI,eMess);
 	  const double ZH=
@@ -204,7 +205,7 @@ objectAddition(Simulation& System,
 	    IParam.getDefValue<double>(0.1,"OAdd",index,ptI+2);
 	  const std::string mat=
             IParam.getDefValue<std::string>("Void","OAdd",index,ptI+3);
-	  
+
 	  if (PType=="object")
 	    {
 	      constructSystem::addInsertPlateCell
@@ -213,7 +214,7 @@ objectAddition(Simulation& System,
 	  else
 	    constructSystem::addInsertPlateCell
 	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);
-	  
+
 	}
       else if (key=="Grid" || key=="grid")
 	{
@@ -234,7 +235,7 @@ objectAddition(Simulation& System,
 	    }
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"plate type");
-	  
+
 	  const size_t NL=
 	    IParam.getValueError<size_t>("OAdd",index,ptI,eMess);
 	  const double length=
@@ -245,14 +246,14 @@ objectAddition(Simulation& System,
 	    IParam.getDefValue<double>(0.1,"OAdd",index,ptI+3);
 	  const std::string mat=
             IParam.getDefValue<std::string>("Void","OAdd",index,ptI+4);
-	  
+
 	  if (PType=="object")
 	    constructSystem::addInsertGridCell
 	      (System,PName,FName,LName,VPos,NL,length,thick,gap,mat);
 	  else
 	    constructSystem::addInsertGridCell
 	      (System,PName,VPos,YAxis,ZAxis,NL,length,thick,gap,mat);
-	  
+
 	}
       else if (key=="Sphere" || key=="sphere")
 	{
@@ -266,7 +267,7 @@ objectAddition(Simulation& System,
 	    }
 	  else
 	    ptI=2;
-	  
+
 	  VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess);
 	  const double radius=
 	    IParam.getValueError<double>("OAdd",index,ptI,eMess);
@@ -305,14 +306,14 @@ objectAddition(Simulation& System,
 	    }
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"cylinder type");
-	  
+
 	  const double radius=
 	    IParam.getValueError<double>("OAdd",index,ptI,eMess);
 	  const double length=
 	    IParam.getValueError<double>("OAdd",index,ptI+1,eMess);
 	  const std::string mat=
 	    IParam.getDefValue<std::string>("Void","OAdd",index,ptI+2);
-          
+
 	  if (PType=="object")
 	    constructSystem::addInsertCylinderCell
 	      (System,PName,FName,LName,VPos,radius,length,mat);
@@ -324,11 +325,48 @@ objectAddition(Simulation& System,
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
 	}
+      else if (key=="pencil")
+	{
+	  const std::string PName="insertPencil"+std::to_string(index);
+
+          size_t ptI;
+	  if (PType=="object")
+	    {
+	      ptI=4;
+	      FName=IParam.getValueError<std::string>("OAdd",index,2,eMess); // fixed component
+	      LName=IParam.getValueError<std::string>("OAdd",index,3,eMess); // its link point
+	      VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess); // offset vector
+	    }
+	  else if (PType=="free")
+	    {
+	      ptI=2;
+              VPos=IParam.getCntVec3D("OAdd",index,ptI,eMess); // location
+              YAxis=IParam.getCntVec3D("OAdd",index,ptI,eMess); // direction
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"pencil type");
+
+	  const double radius=IParam.getValueError<double>("OAdd",index,ptI,eMess);
+	  const double length=IParam.getValueError<double>("OAdd",index,ptI+1,eMess);
+	  const double angle=IParam.getValueError<double>("OAdd",index,ptI+2,eMess);
+	  const std::string mat=IParam.getDefValue<std::string>("Void","OAdd",index,ptI+3);
+	  const std::string voidMat=IParam.getDefValue<std::string>("Void","OAdd",index,ptI+4);
+
+	  if (PType=="object")
+	    constructSystem::addInsertPencilCell
+	      (System,PName,FName,LName,VPos,radius,length,angle,mat,voidMat);
+	  else if (PType=="free")
+	    {
+	      constructSystem::addInsertPencilCell
+		(System,PName,VPos,YAxis,radius,length,angle,mat,voidMat);
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
+	}
       else
-        throw ColErr::InContainerError<std::string>
-          (key,"key not known in OAdd");
+        throw ColErr::InContainerError<std::string>(key,"key not known in OAdd");
     }
-  
+
   return;
 }
 

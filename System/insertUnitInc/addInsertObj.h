@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/addInsertObj.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_addInsertObj_h
@@ -42,6 +42,15 @@ void
 addInsertCylinderCell(Simulation&,const std::string&,
 		      const Geometry::Vec3D&,const Geometry::Vec3D&,
 		      const double,const double,const std::string&);
+void
+addInsertPencilCell(Simulation&,const std::string&,
+		    const std::string&,const std::string&,
+		    const Geometry::Vec3D&,const double,
+		    const double,const double,const std::string&,const std::string&);
+void
+addInsertPencilCell(Simulation&,const std::string&,
+		    const Geometry::Vec3D&,const Geometry::Vec3D&,
+		    const double,const double,const double,const std::string&,const std::string&);
 void
 addInsertPlateCell(Simulation&,const std::string&,
 		   const std::string&,const std::string&,
@@ -78,8 +87,7 @@ addInsertGridCell(Simulation&,const std::string&,
 		  const double,const double,
 		  const std::string&);
 
- 
+
 }
 
 #endif
- 

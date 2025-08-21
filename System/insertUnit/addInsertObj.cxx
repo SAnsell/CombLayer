@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   insertUnit/addInsertObj.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -60,6 +60,7 @@
 #include "insertPlate.h"
 #include "insertSphere.h"
 #include "insertCylinder.h"
+#include "insertPencil.h"
 #include "insertGrid.h"
 #include "insertCurve.h"
 
@@ -82,9 +83,9 @@ addInsertCurveCell(Simulation& System,
 		   const std::string& mat)
   /*!
     Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
+    Note his normally leave a "hole" in the guide so
     it is ideally not used unless absolutely needed.
-    
+
     \param System :: Simulation to used
     \param objName :: object name
     \param APt :: Begin point
@@ -94,11 +95,11 @@ addInsertCurveCell(Simulation& System,
     \param radius :: radial size
     \param width :: Full gap
     \param height :: Full height
-    \param mat :: Material 
+    \param mat :: Material
   */
 {
   ELog::RegMethod RegA("addInsertObj","addInsertCurveCell(FC)");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -108,16 +109,16 @@ addInsertCurveCell(Simulation& System,
   std::shared_ptr<insertSystem::insertCurve>
     TCurve(new insertSystem::insertCurve(objName));
   OR.addObject(TCurve);
-  
+
   //  OR.addObject(TCurve);
- 
+
   // calc proper length
   const Geometry::Vec3D YDir((BPt-APt).unit());
   const Geometry::Vec3D XDir(ZAxis*YDir*yFlag);
   const double Dist=APt.Distance(BPt)/2.0;
   const double hplus=radius-sqrt(radius*radius-Dist*Dist);
   const Geometry::Vec3D CentPos=XDir*hplus+(BPt+APt)/2.0;
-  
+
   const double theta=asin(Dist/radius);
   const double length=2*radius*theta;
 
@@ -137,17 +138,17 @@ addInsertCylinderCell(Simulation& System,
                       const std::string& mat)
   /*!
     Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
+    Note his normally leave a "hole" in the guide so
     it is ideally not used unless absolutely needed.
-    
+
     \param System :: Simulation to used
     \param objName :: object name
     \param FCname :: FixedComp reference name
     \param linkName :: link direction
     \param XYZStep :: Step in xyz direction
     \param radius :: radial size
-    \param length :: full height
-    \param mat :: Material 
+    \param length :: full length
+    \param mat :: Material
   */
 {
   ELog::RegMethod RegA("addInsertObj","addInsertCylinderCell(FC)");
@@ -158,14 +159,14 @@ addInsertCylinderCell(Simulation& System,
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
   const long int linkIndex=mainFCPtr->getSideIndex(linkName);
-  
+
   System.populateCells();
   System.validateObjSurfMap();
 
   std::shared_ptr<insertSystem::insertCylinder>
     TCyl(new insertSystem::insertCylinder(objName));
   OR.addObject(TCyl);
-  
+
   //  OR.addObject(TCyl);
   TCyl->setStep(XYZStep);
   TCyl->setValues(radius,length,mat);
@@ -184,35 +185,127 @@ addInsertCylinderCell(Simulation& System,
                       const std::string& mat)
   /*!
     Adds a cylinder along an axis at an absolute position
-    
+
     \param System :: Simulation to used
     \param objName :: new plate name
     \param CentPos :: Central positoin
     \param YAxis :: Direction along Y
     \param radius :: radius
-    \param length :: length of cylinder
+    \param length :: full length
     \param mat :: material
   */
 {
   ELog::RegMethod RegA("addInsertObj[F]","addInsertCylinderCell");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   System.populateCells();
   System.validateObjSurfMap();
 
   std::shared_ptr<insertSystem::insertCylinder>
     TCyl(new insertSystem::insertCylinder(objName));
   OR.addObject(TCyl);
-  
+
   TCyl->setValues(radius,length,mat);
   TCyl->createAll(System,CentPos,YAxis);
 
   return;
 }
 
-  
+void
+addInsertPencilCell(Simulation& System,
+		    const std::string& objName,
+		    const std::string& FCname,
+		    const std::string& linkName,
+		    const Geometry::Vec3D& XYZStep,
+		    const double radius,const double length,
+		    const double angle,
+		    const std::string& mat,
+		    const std::string& voidMat)
+  /*!
+    Adds a pencil along an axis at a position relative to the given object
+
+    \param System :: Simulation to used
+    \param objName :: object name
+    \param FCname :: FixedComp reference name
+    \param linkName :: link direction
+    \param XYZStep :: Step in xyz direction
+    \param radius :: radial size
+    \param length :: full length
+    \param angle :: full tip opening angle
+    \param mat :: Material
+    \param voidMat :: material outside of the pencil tip
+  */
+{
+  ELog::RegMethod RegA("addInsertObj","addInsertPencilCell(FC)");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* mainFCPtr=
+    System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
+  const long int linkIndex=mainFCPtr->getSideIndex(linkName);
+
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<insertSystem::insertPencil>
+    TCyl(new insertSystem::insertPencil(objName));
+  OR.addObject(TCyl);
+
+  //  OR.addObject(TCyl);
+  TCyl->setStep(XYZStep);
+  TCyl->setValues(radius,length,angle,mat,voidMat);
+  TCyl->createAll(System,*mainFCPtr,linkIndex);
+  ELog::EM<<"Pencil["<<TCyl->getKeyName()<<"] at "<<
+    TCyl->getCentre()<<ELog::endDiag;
+  return;
+}
+
+void
+addInsertPencilCell(Simulation& System,
+		    const std::string& objName,
+		    const Geometry::Vec3D& CentPos,
+		    const Geometry::Vec3D& YAxis,
+		    const double radius,const double length,
+		    const double angle,
+		    const std::string& mat,
+		    const std::string& voidMat)
+  /*!
+    Adds a pencil along an axis at an absolute position
+
+    \param System :: Simulation to used
+    \param objName :: Pencil name
+    \param CentPos :: Central positoin
+    \param YAxis :: Direction along Y
+    \param radius :: Radius
+    \param length :: Full length
+    \param angle :: full tip opening angle
+    \param mat :: material
+    \param voidMat :: material outside of the pencil tip
+  */
+{
+  ELog::RegMethod RegA("addInsertObj[F]","addInsertPencilCell");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<insertSystem::insertPencil>
+    TPen(new insertSystem::insertPencil(objName));
+  OR.addObject(TPen);
+
+  TPen->setValues(radius,length,angle,mat,voidMat);
+  TPen->createAll(System,CentPos,YAxis);
+
+  return;
+}
+
+
+
 void
 addInsertPlateCell(Simulation& System,const std::string& objName,
 		   const std::string& FCname,
@@ -222,9 +315,9 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
 		   const double zSize,const std::string& mat)
   /*!
     Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
+    Note his normally leave a "hole" in the guide so
     it is ideally not used unless absolutely needed.
-    
+
     \param System :: Simulation to used
     \param objName :: object name
     \param FCname :: FixedComp reference name
@@ -233,11 +326,11 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
     \param xSize :: x-size
     \param ySize :: y-size
     \param zSize :: zSize
-    \param mat :: Material 
+    \param mat :: Material
   */
 {
   ELog::RegMethod RegA("addInsertObj","addInsertPlateCell(FC)");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -245,7 +338,7 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
   const long int linkIndex=mainFCPtr->getSideIndex(linkName);
-   
+
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -256,7 +349,7 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
   TPlate->setStep(XYZStep);
   TPlate->setValues(xSize,ySize,zSize,mat);
   TPlate->createAll(System,*mainFCPtr,linkIndex);
-   
+
   return;
 }
 
@@ -272,9 +365,9 @@ addInsertPlateCell(Simulation& System,
 		   const std::string& mat)
   /*!
     Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
+    Note his normally leave a "hole" in the guide so
     it is ideally not used unless absolutely needed.
-    
+
     \param System :: Simulation to used
     \param objName :: new plate name
     \param CentPos :: Central positoin
@@ -287,10 +380,10 @@ addInsertPlateCell(Simulation& System,
   */
 {
   ELog::RegMethod RegA("addInsertObj[F]","addInsertPlateCell");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
- 
+
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -319,9 +412,9 @@ addInsertGridCell(Simulation& System,
 		  const std::string& layerMat)
   /*!
     Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
+    Note his normally leave a "hole" in the guide so
     it is ideally not used unless absolutely needed.
-    
+
     \param System :: Simulation to used
     \param objName :: object name
     \param FCname :: FixedComp reference name
@@ -331,35 +424,35 @@ addInsertGridCell(Simulation& System,
     \param length :: primary length
     \param thick :: thickness of layer
     \param gap :: gap layer (and 2xmid)
-    \param layerMat :: Material 
+    \param layerMat :: Material
   */
 {
   ELog::RegMethod RegA("addInsertObj","addInsertGridCell(FC)");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
   const long int linkIndex=mainFCPtr->getSideIndex(linkName);
-  
+
   System.populateCells();
   System.validateObjSurfMap();
 
   std::shared_ptr<insertSystem::insertGrid>
     TGrid(new insertSystem::insertGrid(objName));
   OR.addObject(TGrid);
-  
+
   TGrid->setStep(XYZStep);
   TGrid->setValues(gap*2.0,length,gap*2.0,layerMat);
   for(size_t i=0;i<NL;i++)
     {
       if (i % 2)
-	TGrid->addLayer(gap,"Void");	  
+	TGrid->addLayer(gap,"Void");
       else
 	TGrid->addLayer(thick,layerMat);
     }
-  
+
   TGrid->createAll(System,*mainFCPtr,linkIndex);
 
   return;
@@ -378,9 +471,9 @@ addInsertGridCell(Simulation& System,
 		  const std::string& layerMat)
   /*!
     Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
+    Note his normally leave a "hole" in the guide so
     it is ideally not used unless absolutely needed.
-    
+
     \param System :: Simulation to used
     \param objName :: object name
     \param Origin :: Centre of grid
@@ -390,14 +483,14 @@ addInsertGridCell(Simulation& System,
     \param length :: primary length
     \param thick :: thickness of layer
     \param gap :: gap layer (and 2xmid)
-    \param layerMat :: Material 
+    \param layerMat :: Material
   */
 {
   ELog::RegMethod RegA("addInsertObj","addInsertGridCell(Vec)");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-    
+
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -405,21 +498,21 @@ addInsertGridCell(Simulation& System,
     TGrid(new insertSystem::insertGrid(objName));
 
   OR.addObject(TGrid);
-  
+
   TGrid->setValues(gap*2.0,length,gap*2.0,layerMat);
   for(size_t i=0;i<NL;i++)
     {
       if (i % 2)
-	TGrid->addLayer(gap,"Void");	  
+	TGrid->addLayer(gap,"Void");
       else
 	TGrid->addLayer(thick,layerMat);
     }
-  
+
   TGrid->createAll(System,Origin,YAxis,ZAxis);
 
   return;
 }
-  
+
 void
 addInsertSphereCell(Simulation& System,
 		    const std::string& objName,
@@ -428,9 +521,9 @@ addInsertSphereCell(Simulation& System,
 		    const std::string& mat)
   /*!
     Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
+    Note his normally leave a "hole" in the guide so
     it is ideally not used unless absolutely needed.
-    
+
     \param System :: Simulation to used
     \param objName :: new plate name
     \param CentPos :: Central Position
@@ -446,11 +539,11 @@ addInsertSphereCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  
+
   std::shared_ptr<insertSystem::insertSphere>
     TSphere(new insertSystem::insertSphere(objName));
   OR.addObject(TSphere);
-  
+
   TSphere->setValues(radius,mat);
   TSphere->createAll(System,CentPos);
 
@@ -468,9 +561,9 @@ addInsertSphereCell(Simulation& System,
 		    const std::string& mat)
   /*!
     Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
+    Note his normally leave a "hole" in the guide so
     it is ideally not used unless absolutely needed.
-    
+
     \param System :: Simulation to used
     \param objName :: new plate name
     \param FCname :: Fixedobject naem
@@ -481,21 +574,21 @@ addInsertSphereCell(Simulation& System,
   */
 {
   ELog::RegMethod RegA("addInsertObj[F]","addInsertSphereCell(FC)");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* mainFCPtr=
     System.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
   const long int linkIndex=mainFCPtr->getSideIndex(linkName);
-  
+
   System.populateCells();
   System.validateObjSurfMap();
 
   std::shared_ptr<insertSystem::insertSphere>
     TSphere(new insertSystem::insertSphere(objName));
   OR.addObject(TSphere);
-  
+
   TSphere->setStep(XYZStep);
   TSphere->setValues(radius,mat);
   TSphere->createAll(System,*mainFCPtr,linkIndex);
@@ -504,5 +597,5 @@ addInsertSphereCell(Simulation& System,
 }
 
 
-  
+
 }  // NAMESPACE insertSystem
