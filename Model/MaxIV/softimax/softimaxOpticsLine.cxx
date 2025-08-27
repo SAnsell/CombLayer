@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2024 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -354,18 +354,6 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*M1Tube,"back",*M1TubeBack,"port0");
 
-  // this is the box options
-  /*
-  outerCell=constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*M1Box);
-
-  
-  //  M1Box->splitObject(System,2001,outerCell,
-  //		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
-  //  cellIndex++;
-  M1Detail->addInsertCell(M1Box->getCell("Void"));
-  */
-
   M1Detail->addInsertCell(M1Tube->getCell("Void"));
 
   M1Detail->setCell("FrontVoid",M1TubeFront->getCell("Void",3));
@@ -374,12 +362,12 @@ softimaxOpticsLine::buildM1Mirror(Simulation& System,
   M1Detail->setCutSurf("TubeBack",*M1Tube,"#back");  
   M1Detail->createAll(System,*M1Tube,0);
 
-  /*  M1Stand->setCutSurf("floor",this->getRule("floor"));
+  M1Stand->setCutSurf("floor",this->getRule("floor"));
   M1Stand->setCutSurf("front",*M1Tube,-1);
   M1Stand->setCutSurf("back",*M1Tube,-2);
   M1Stand->addInsertCell(outerCell);
   M1Stand->createAll(System,*M1Tube,0);
-  */
+
   // M1TubeBack->setPortRotate(1);   // Back
   // constructSystem::constructUnit
   //   (System,buildZone,*M1Tube,"back",*M1TubeBack,"port0");
@@ -734,13 +722,6 @@ softimaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*M1TubeBack,"port0",*bellowC);
-
-  ELog::EM<<"Early return"<<ELog::endDiag;
-  //  System.removeCell(buildZone.getLastCell("Unit"));
-  buildZone.createUnit(System);  // build to end
-  buildZone.rebuildInsertCells(System);
-  lastComp=bellowC;  
-  return;
   
   pumpTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   pumpTubeA->createAll(System,*bellowC,2);
