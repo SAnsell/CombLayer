@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/Bellows.h
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_Bellows_h
@@ -40,11 +40,20 @@ class Bellows :
 {
  private:
 
-  double bellowThick; ///< Total thickness 
+  double bellowThick; ///< Total thickness
   double bellowStep;  ///< step from inner flange
+  double wallThick;   ///< wall thickness
+  int nFolds;         ///< number of foldings
+  int engActive;                ///< engineering active flag
 
   int bellowMat;      ///< Material for bellow (def main)
-  
+
+  double getBellowLength() const;
+  double getHalfFoldLength() const;
+  double getBellowThick() const;
+  double getBellowRadius() const;
+  double getDensityFraction() const;
+
   virtual void populate(const FuncDataBase&) override;
   void createSurfaces() override;
   void createObjects(Simulation&);
@@ -62,11 +71,8 @@ class Bellows :
   void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) override;
 
-
-  
 };
 
 }
 
 #endif
- 

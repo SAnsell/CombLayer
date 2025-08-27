@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedRotate.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -488,6 +488,7 @@ FixedRotate::applyOffset()
   FixedComp::reOrientate();      // this might still be active
 
   if (flipX) FixedComp::reverseX();
+
   return;
 }
 

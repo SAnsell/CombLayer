@@ -53,6 +53,8 @@ namespace setVariable
 BellowGenerator::BellowGenerator() :
   PipeGenerator(),
   bellowStep(1.0),bellowThick(1.0),
+  wallThick(0.03), nFolds(10),
+  engActive(0),
   bellowMat("Stainless304%Void%10.0")
   /*!
     Constructor and defaults
@@ -146,6 +148,10 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
   // VACUUM PIPES:
   Control.addVariable(keyName+"BellowThick",bellowThick);
   Control.addVariable(keyName+"BellowStep",bellowStep);
+  Control.addVariable(keyName+"WallThick",wallThick);
+  Control.addVariable(keyName+"NFolds",nFolds);
+  Control.addVariable(keyName+"EngineeringActive",engActive);
+
   Control.addVariable(keyName+"BellowMat",bellowMat);
 
   return;

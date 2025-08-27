@@ -3,7 +3,7 @@
  
  * File:   attachComp/BlockZone.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -302,7 +302,6 @@ BlockZone::rebuildInsertCells(Simulation& System)
       outerObj->populate();
     }
   return;
-  
 }
   
 int
@@ -340,6 +339,7 @@ BlockZone::createUnit(Simulation& System,
     \return cell nubmer
   */
 {
+  ELog::RegMethod RegA("BlockZone","createUnit(System,FC,linkName)");
   return createUnit(System,FC,FC.getSideIndex(linkName));
 }
   
@@ -355,7 +355,7 @@ BlockZone::createUnit(Simulation& System,
     \return cell nubmer
   */
 {
-  ELog::RegMethod RegA("BlockZone","createUnit");
+  ELog::RegMethod RegA("BlockZone","createUnit(System,FC,sideIndex)");
 
   // alway outgoing [so use complement]
   const HeadRule newBackFC=FC.getFullRule(sideIndex);
@@ -425,6 +425,5 @@ BlockZone::createAll(Simulation&,
   createUnitVector(FC,sideIndex);
   return;
 }
-  
   
 }  // NAMESPACE attachSystem
