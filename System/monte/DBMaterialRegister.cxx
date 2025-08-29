@@ -1068,10 +1068,21 @@ DBMaterial::initMaterial()
   // Total atom density 2.4305e-5 Mol/Angstrom -  300K R 100kPa
   // 80% H2  / 10% C / 10% O2
   // Mass density  2.4305e-5 Mol/Angstrom -  300K R 100kPa
-  createMaterial("VacuumResidual",
-		   "1001.70c 3.888e-5 "
-		   "6000.70c 2.43e-6 "
-		   "8016.70c 4.86e-6 ","",MLib);
+  createMaterial("VacuumResidualLegacy", // old "VacuumResidual" - now legacy as too concervative and not clear what is '10%C' in the composition
+		 "1001.70c 3.888e-5 "
+		 "6000.70c 2.43e-6 "
+		 "8016.70c 4.86e-6 ","",MLib);
+
+  // Material #141: Residual vacuum as measured at MAX IV
+  // 90% H2 and 10% CO
+  // see VacuumResidual.inp in MatMCNP
+  Mptr = &createMaterial("VacuumResidualMAXIV",
+			 " 01001.80c   0.899896 "
+			 " 01002.80c   0.000103 "
+			 " 06000.80c   0.050000 "
+			 " 08016.80c   0.049980 "
+			 " 08017.80c   0.000019 ","",MLib);
+  Mptr->setDensity(-1.8682e-04); // at 1 bar pressure, see ~/prog/gas-density.py
 
   // Material Lead glass:
   // PbO 24%  SiO2 64% Na2O 12%
