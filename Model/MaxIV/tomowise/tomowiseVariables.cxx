@@ -784,7 +784,8 @@ exptHutVariables(FuncDataBase& Control,
   EGen.generateHut(Control,hutName,0.0,2014.0); // [4]
 
   Control.addVariable(hutName+"FrontVoid",0.0);
-  Control.addVariable(hutName+"RingWidth",179.0); // [4]
+  Control.addVariable(hutName+"OutWidth",260.0); // discussion with AR 250829 (we define the width)
+  Control.addVariable(hutName+"RingWidth",260.0); // discussion with AR 250829 (we define the width)
 
 
   // // lead shield on pipe
