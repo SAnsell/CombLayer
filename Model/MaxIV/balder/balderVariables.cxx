@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   balder/balderVariables.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -76,7 +76,7 @@ void frontMaskVariables(FuncDataBase&,const std::string&);
 void wallVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void exptHutVariables(FuncDataBase&,const std::string&);
-  
+
 
 void
 wigglerVariables(FuncDataBase& Control,
@@ -90,7 +90,7 @@ wigglerVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("balderVariables[F]","wigglerVariables");
 
   setVariable::VacBoxGenerator VBoxGen;
-  
+
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF40>();
@@ -111,10 +111,10 @@ wigglerVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"WigglerBlockVCorner",1.0);
   Control.addVariable(frontKey+"WigglerBlockHCorner",2.0);
 
-  
+
   Control.addVariable(frontKey+"WigglerVoidMat",0);
   Control.addVariable(frontKey+"WigglerBlockMat","Iron_10H2O");
-    
+
   return;
 }
 
@@ -138,7 +138,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setCF<CF100>();
   FMaskGen.setFrontGap(2.62,1.86);       // 1033.8
   FMaskGen.setBackGap(1.54,1.42);
-  FMaskGen.setMinAngleSize(29.0,FM1dist,1000.0,1000.0);  // Approximated to get 1mrad 
+  FMaskGen.setMinAngleSize(29.0,FM1dist,1000.0,1000.0);  // Approximated to get 1mrad
   FMaskGen.generateColl(Control,preName+"CollA",FM1dist,35.0);
 
 
@@ -171,11 +171,10 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
 
-  OpticsHutGenerator OGen; 
+  OpticsHutGenerator OGen;
 
   OGen.addHole(Geometry::Vec3D(0,0,4.0),3.5);
   OGen.generateHut(Control,hutName,1034.0);
-
 
   Control.addVariable(hutName+"NChicane",4);
   PortChicaneGenerator PGen;
@@ -204,12 +203,16 @@ exptHutVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHut");
 
   setVariable::ExptHutGenerator EGen;
-  
+
   EGen.setFrontHole(0.0,beamOffset,7.0);
   EGen.setBackLead(0.5);
   EGen.setRoofLead(0.5);
-  EGen.setWallLead(0.5);   
-  EGen.generateHut(Control,hutName,1850.0,858.0);
+  EGen.setWallLead(0.5);
+  EGen.setCorner(45, 100000.7);
+  EGen.generateHut(Control,hutName,1850.0,858.7);
+  Control.addVariable(hutName+"RingWidth",200.7);
+  Control.addVariable(hutName+"OutWidth",260.3);
+  Control.addVariable(hutName+"Height",277.7);
   // inner/outer where 0.3 mm
 
   Control.addVariable(hutName+"NChicane",4);
@@ -223,7 +226,7 @@ exptHutVariables(FuncDataBase& Control,
 
   return;
 }
-  
+
 void
 monoShutterVariables(FuncDataBase& Control,
 		     const std::string& preName)
@@ -238,14 +241,14 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterGenerator MShutterGen;
-  
+
   // up / up (true)
-  MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);  
-  
+  MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
+
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowG",10.0);    
+  BellowGen.generateBellow(Control,preName+"BellowG",10.0);
 
     // joined and open
   GateGen.setCubeCF<setVariable::CF40>();
@@ -263,7 +266,7 @@ shieldVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("balderVariables","shieldVariables");
 
   const std::string preName("Balder");
-  
+
   Control.addVariable(preName+"GuillotineYStep",12.7);
   Control.addVariable(preName+"GuillotineLength",10.0);
   Control.addVariable(preName+"GuillotineWidth",80.0);
@@ -272,7 +275,7 @@ shieldVariables(FuncDataBase& Control)
   Control.addVariable(preName+"GuillotineClearGap",1.0);
   Control.addVariable(preName+"GuillotineWallMat","Stainless304");
   Control.addVariable(preName+"GuillotineMat","Lead");
-   
+
   Control.addVariable(preName+"NShieldYStep",0.2);
   Control.addVariable(preName+"NShieldLength",7.0);
   Control.addVariable(preName+"NShieldWidth",80.0);
@@ -292,7 +295,7 @@ shieldVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OuterShieldMat","Poly");
   return;
 }
-  
+
 void
 monoVariables(FuncDataBase& Control,const double YStep)
   /*!
@@ -303,7 +306,7 @@ monoVariables(FuncDataBase& Control,const double YStep)
 {
   ELog::RegMethod RegA("balderVariables[F]","monoVariables");
   setVariable::PortItemGenerator PItemGen;
-    
+
   const std::string preName("BalderOpticsLine");
 
   Control.addVariable(preName+"MonoVacYStep",YStep);
@@ -322,7 +325,7 @@ monoVariables(FuncDataBase& Control,const double YStep)
 
   Control.addVariable(preName+"MonoVacInPortZStep",-2.0);
   Control.addVariable(preName+"MonoVacOutPortZStep",2.0);
-  
+
   Control.addVariable(preName+"MonoVacPortRadius",5.0);
   Control.addVariable(preName+"MonoVacPortLen",4.65);
   Control.addVariable(preName+"MonoVacPortThick",0.3);
@@ -346,7 +349,7 @@ monoVariables(FuncDataBase& Control,const double YStep)
   Control.addVariable(preName+"MonoXtalBaseGap",0.3);
   Control.addVariable(preName+"MonoXtalBaseThick",1.0);
   Control.addVariable(preName+"MonoXtalBaseExtra",2.0);
-  
+
   Control.addVariable(preName+"MonoXtalMat","Silicon80K");
   Control.addVariable(preName+"MonoXtalBaseMat","Copper");
 
@@ -390,14 +393,14 @@ opticsVariables(FuncDataBase& Control,
   setVariable::MirrorGenerator MirrGen;
   setVariable::TriggerGenerator TGen;
   setVariable::CylGateValveGenerator GVGen;
-  
+
   PipeGen.setNoWindow();
 
   // addaptor flange at beginning: [check]
   PipeGen.setCF<CF40>();
-  PipeGen.setAFlangeCF<CF63>(); 
+  PipeGen.setAFlangeCF<CF63>();
   PipeGen.generatePipe(Control,opticsName+"InitPipe",10.0);
-  
+
     // will be rotated vertical
   TGen.setCF<CF100>();
   TGen.setVertical(15.0,25.0);
@@ -405,13 +408,13 @@ opticsVariables(FuncDataBase& Control,
   TGen.generateTube(Control,opticsName+"TriggerUnit");
 
   GVGen.generateGate(Control,opticsName+"GateTubeA",0);  // open
-  
+
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,opticsName+"BellowA",16.0);
 
   // ACTUAL ROUND PIPE + 4 filter tubles and 1 base tube [large]
-  
+
   PTubeGen.setMat("Stainless304");
   PTubeGen.setPipe(9.0,0.5);
   PTubeGen.setPortCF<CF63>();
@@ -421,10 +424,10 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(opticsName+"FilterBoxNPorts",4);
 
   PItemGen.setCF<setVariable::CF50>(20.0);
-  PItemGen.setPlate(CF50::flangeLength,"Stainless304");  
+  PItemGen.setPlate(CF50::flangeLength,"Stainless304");
 
   FlangeGen.setCF<setVariable::CF50>();
-  FlangeGen.setNoPlate();    
+  FlangeGen.setNoPlate();
   FlangeGen.setBlade(0.3,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
 
   const Geometry::Vec3D ZVec(0,0,1);
@@ -433,7 +436,7 @@ opticsVariables(FuncDataBase& Control,
   for(size_t i=0;i<4;i++)
     {
       const std::string name=opticsName+"FilterBoxPort"+std::to_string(i);
-      const std::string fname=opticsName+"Filter"+std::to_string(i);      
+      const std::string fname=opticsName+"Filter"+std::to_string(i);
       PItemGen.generatePort(Control,name,CPos,ZVec);
       CPos+=Geometry::Vec3D(0,11,0);
       const int upFlag((i) ? 0 : 1);
@@ -441,15 +444,15 @@ opticsVariables(FuncDataBase& Control,
     }
 
   // filters:
-  
+
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,opticsName+"BellowB",10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowB",10.0);
 
   GateGen.setLength(2.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.generateValve(Control,opticsName+"GateA",0.0,0);
-    
+
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF40>();
@@ -468,7 +471,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,opticsName+"BellowC",10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowC",10.0);
 
   PipeGen.setCF<setVariable::CF100>(); // was 2cm (why?)
   // [length is 38.3cm total]
@@ -476,25 +479,25 @@ opticsVariables(FuncDataBase& Control,
   // Length ignored  as joined front/back
 
   BellowGen.setCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,opticsName+"MonoBellowA",50.0);   
+  BellowGen.generateBellow(Control,opticsName+"MonoBellowA",50.0);
   BellowGen.generateBellow(Control,opticsName+"MonoBellowB",50.0);
-  
+
   // [length is 72.9cm total]
   // [offset after mono is 119.1cm ]
-  PipeGen.setCF<setVariable::CF100>();    
+  PipeGen.setCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,opticsName+"DriftB",62.5);
   Control.addVariable(opticsName+"DriftBYStep",119.1);
   Control.addVariable(opticsName+"DriftBZStep",4.0);
 
   monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
-  
+
   // joined and open
   GateGen.setCubeCF<setVariable::CF100>();
   GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
 
   // [length is 54.4cm total]
-  PipeGen.setCF<setVariable::CF100>();    
-  PipeGen.generatePipe(Control,opticsName+"DriftC",54.4); 
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,opticsName+"DriftC",54.4);
 
   Control.addVariable(opticsName+"BeamStopZStep",-2.0);
   Control.addVariable(opticsName+"BeamStopWidth",4.0);
@@ -502,7 +505,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(opticsName+"BeamStopDepth",6.0);
   Control.addVariable(opticsName+"BeamStopMat","Tungsten");
 
-  
+
   // SLITS
   JawGen.setCF<setVariable::CF100>();
   JawGen.setLength(4.0);
@@ -514,12 +517,12 @@ opticsVariables(FuncDataBase& Control,
   PTubeGen.setPortLength(2.0,2.0);
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,opticsName+"ShieldPipe",0.0,52.0);
-  
+
   Control.addVariable(opticsName+"ShieldPipeNPorts",4);
-  
-  // first Two ports are CF100 
+
+  // first Two ports are CF100
   PItemGen.setCF<setVariable::CF100>(CF100::outerRadius+20.0);
-  PItemGen.setPlate(0.0,"Void");  
+  PItemGen.setPlate(0.0,"Void");
   // centre of mid point
   CPos=Geometry::Vec3D(0,-15.0,0);
   const std::string nameShield=opticsName+"ShieldPipePort";
@@ -529,7 +532,7 @@ opticsVariables(FuncDataBase& Control,
 
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+10.0);
   PItemGen.setPlate(0.0,"Void");
-  
+
   PItemGen.generatePort(Control,nameShield+"2",
 			Geometry::Vec3D(0,10,0),Geometry::Vec3D(-1,0,0));
   PItemGen.generatePort(Control,nameShield+"3",
@@ -538,7 +541,7 @@ opticsVariables(FuncDataBase& Control,
   // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
-  BellowGen.generateBellow(Control,opticsName+"BellowD",10.0);    
+  BellowGen.generateBellow(Control,opticsName+"BellowD",10.0);
 
   // joined and open
   GateGen.setCubeCF<setVariable::CF40>();
@@ -550,8 +553,8 @@ opticsVariables(FuncDataBase& Control,
   VBoxGen.generateBox(Control,opticsName+"MirrorBoxB",54.0,15.3,31.3,178.0);
 
   // small flange bellows
-  BellowGen.setCF<setVariable::CF40>(); 
-  BellowGen.setBFlangeCF<setVariable::CF100>(); 
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,opticsName+"BellowE",10.0);
 
   // SLITS [second pair]
@@ -574,7 +577,7 @@ opticsVariables(FuncDataBase& Control,
   const Geometry::Vec3D YAxis(0,1,0);
   const Geometry::Vec3D ZAxis(0,0,1);
 
- 
+
   PItemGen.setCF<setVariable::CF40>(viewOuterRad+5.0);
   PItemGen.setPlate(CF40::flangeLength,"Copper");
 
@@ -591,14 +594,14 @@ opticsVariables(FuncDataBase& Control,
   const std::string fname=opticsName+"ViewMount"+std::to_string(0);
   FlangeGen.setBlade(2.2,5.0,0.5,22.0,"Graphite",1);  // 22 rotation
   FlangeGen.setCF<setVariable::CF40>();
-  FlangeGen.setNoPlate();    
+  FlangeGen.setNoPlate();
   FlangeGen.generateMount(Control,fname,0);    // out of  beam
 
-  
-  
+
+
   // small flange bellows
-  BellowGen.setCF<setVariable::CF63>(); 
-  BellowGen.setAFlangeCF<setVariable::CF100>(); 
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,opticsName+"BellowF",13.0);
 
   monoShutterVariables(Control,opticsName);
@@ -633,28 +636,28 @@ connectingVariables(FuncDataBase& Control)
   const std::string baseName="BalderConnect";
 
   Control.addVariable(baseName+"OuterRadius",60.0);
-  
+
   setVariable::BellowGenerator BellowGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::LeadBoxGenerator LBGen;
   setVariable::PipeShieldGenerator PSGen;
-  
-  
-  BellowGen.setCF<CF40>();  
+
+
+  BellowGen.setCF<CF40>();
   BellowGen.generateBellow(Control,baseName+"BellowA",8.0);
 
   LBGen.setPlate(15.0,15.0,0.6);
   LBGen.generateBox(Control,baseName+"LeadA",4.5,12.0);
-    
+
   LeadPipeGen.setCF<CF40>();
   LeadPipeGen.setFlangeLength(CF40::flangeLength*0.5,
 			      CF40::flangeLength*0.5);
   LeadPipeGen.setCladdingThick(0.5);
   LeadPipeGen.generatePipe(Control,baseName+"PipeA",150.6);
   Control.addVariable(baseName+"PipeAYStep",9.65);
-  
+
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF40>();
   SimpleTubeGen.setFlangeLength(CF40::flangeLength*0.5,CF40::flangeLength*0.5);
@@ -668,7 +671,7 @@ connectingVariables(FuncDataBase& Control)
   const Geometry::Vec3D OPos(0,4,0);
   const Geometry::Vec3D ZVec(0,0,-1);
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
-  
+
   // temp offset
   LBGen.setPlate(15.0,15.0,0.6);
   LBGen.generateBox(Control,baseName+"PumpBoxA",5.00,12.0);
@@ -676,32 +679,32 @@ connectingVariables(FuncDataBase& Control)
 
   LeadPipeGen.generatePipe(Control,baseName+"PipeB",188.0);
   Control.addVariable(baseName+"PipeBYStep",10.0);
-  
+
   BellowGen.generateBellow(Control,baseName+"BellowB",11.0);
   LBGen.generateBox(Control,baseName+"LeadB",4.9,12.0);
-  
+
   LeadPipeGen.generatePipe(Control,baseName+"PipeC",188.0);
   Control.addVariable(baseName+"PipeCYStep",10.0);
-  
+
   // ystep/width/height/depth/length
   SimpleTubeGen.generateTube(Control,baseName+"IonPumpB",2.8);
   LBGen.generateBox(Control,baseName+"PumpBoxB",4.9,12.0);
-  
+
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
-  
+
   LeadPipeGen.generatePipe(Control,baseName+"PipeD",172.0);
   Control.addVariable(baseName+"PipeDYStep",10.0);
   // PTubeGen.getTotalLength(0.5));
 
   BellowGen.generateBellow(Control,baseName+"BellowC",8.0);
   LBGen.generateBox(Control,baseName+"LeadC",4.9,12.0);
-  
+
   return;
 }
 
 }  // NAMESPACE balderVar
-  
+
 void
 BALDERvariables(FuncDataBase& Control)
   /*!
@@ -721,9 +724,9 @@ BALDERvariables(FuncDataBase& Control)
 
   balderVar::wigglerVariables(Control,"BalderFrontBeam");
   // ystep [0] / dipole pipe / exit pipe
-  setVariable::R3FrontEndFMBBVariables(Control,"Balder");  
-  balderVar::frontMaskVariables(Control,"BalderFrontBeam");  
-  
+  setVariable::R3FrontEndFMBBVariables(Control,"Balder");
+  balderVar::frontMaskVariables(Control,"BalderFrontBeam");
+
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
   ELog::EM<<"ASDFASF "<<ELog::endDiag;
@@ -746,12 +749,12 @@ BALDERvariables(FuncDataBase& Control)
   balderVar::exptHutVariables(Control,"Balder");
 
   const std::string exptName="BalderExptLine";
-  
+
   Control.addVariable(exptName+"BeamStopYStep",777.0);
   Control.addVariable(exptName+"BeamStopRadius",10.0);
   Control.addVariable(exptName+"BeamStopThick",5.0);
   Control.addVariable(exptName+"BeamStopMat","Stainless304");
-  
+
   Control.addVariable(exptName+"SampleYStep",406.0);
   Control.addVariable(exptName+"SampleRadius",10.0);
   Control.addVariable(exptName+"SampleMat","Copper");

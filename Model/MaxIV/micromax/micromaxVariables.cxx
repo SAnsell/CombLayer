@@ -542,7 +542,11 @@ exptHutVariables(FuncDataBase& Control,
   EGen.addHole(Geometry::Vec3D(beamOffset,0,0),3.5);
   EGen.setBackExt(10.0);
   EGen.setFrontExt(10.0);
-  EGen.generateHut(Control,hutName,0.0,901.0);
+  //  EGen.setCorner(45.0,0.0);
+  EGen.generateHut(Control,hutName,0.0,901.0+0.8);
+  Control.addVariable(hutName+"RingWidth",200+0.6);
+  Control.addVariable(hutName+"OutWidth",259.6+0.6);
+  Control.addVariable(hutName+"Height",277.6);
 
   // // lead shield on pipe
   // Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
@@ -603,8 +607,10 @@ exptHutBVariables(FuncDataBase& Control,
   EGen.setFrontExt(10.0);
   EGen.setOuterBackExt(10.0);
   EGen.setBackExt(10.0);
-  EGen.generateHut(Control,hutName,0.0,478.0);
-
+  EGen.generateHut(Control,hutName,0.0,478.2+0.4);
+  Control.addVariable(hutName+"RingWidth",200+0.6);
+  Control.addVariable(hutName+"OutWidth",259.6+0.6);
+  Control.addVariable(hutName+"Height",277.6);
 
   // lead shield on pipe
   Control.addVariable(hutName+"GuillotineXStep",beamXStep-beamOffset);

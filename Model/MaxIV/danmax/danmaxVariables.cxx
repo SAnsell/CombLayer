@@ -314,14 +314,16 @@ exptHutVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHut");
 
   EGen.setFrontHole(beamMirrorShift,0.0,4.0);
-  EGen.setCorner(45.0,138.0);
+  EGen.setCorner(45.0,138.0+0.7);
   EGen.setFrontLead(0.5);
   EGen.setBackLead(0.5);
   EGen.setRoofLead(0.6);
   EGen.setWallLead(0.4);
 
-  EGen.generateHut(Control,hutName,1845.0,858.4);
-  Control.addVariable(hutName+"RingWidth",248.6);
+  EGen.generateHut(Control,hutName,1845.0,858.4+0.7);
+  Control.addVariable(hutName+"RingWidth",248.6+0.6);
+  Control.addVariable(hutName+"OutWidth",259.6+0.6);
+  Control.addVariable(hutName+"Height",277.8);
 
   // // lead shield on pipe
   // Control.addVariable(beamName+"PShieldXStep",beamMirrorShift);

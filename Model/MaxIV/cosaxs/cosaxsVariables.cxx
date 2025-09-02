@@ -258,9 +258,13 @@ exptHutVariables(FuncDataBase& Control,
   EGen.setBackLead(0.4);
   EGen.setRoofLead(0.4);
   EGen.setWallLead(0.4);
+  EGen.setCorner(45, 100000.6);
   EGen.addHole(Geometry::Vec3D(beamOffset,0,0),53.0);
-  EGen.generateHut(Control,hutName,0.0,1858.4);
+  EGen.generateHut(Control,hutName,0.0,1859.0);
   // inner/outer where 0.2 mm
+  Control.addVariable(hutName+"RingWidth",200.6);
+  Control.addVariable(hutName+"OutWidth",260.2);
+  Control.addVariable(hutName+"Height",277.6);
 
   return;
 }
