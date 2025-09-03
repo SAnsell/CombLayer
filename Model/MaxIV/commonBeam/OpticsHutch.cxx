@@ -439,7 +439,7 @@ OpticsHutch::createLinks()
   setLinkSurf(11,ExternalCut::getValidRule("RingWall",Origin+Y*(length-backWallThick)));
 
   // use
-  setConnect(12,Origin+Y*(length-backWallThick-pbBackThick),-Y); // TODO: pbBackThick->backPlateThick
+  setConnect(12,Origin+Y*(length-backWallThick-backPlateThick),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+112));
 
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
