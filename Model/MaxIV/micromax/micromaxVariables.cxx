@@ -493,13 +493,13 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setWallLead(2.0);
   OGen.setRoofLead(2.0);
 
-  OGen.generateHut(Control,hutName,1256.0);
-
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
-  OGen.generateHut(Control,hutName,1256.0);
+  OGen.generateHut(Control,hutName,1256.0+7.4);
+  Control.addVariable(hutName+"OutWidth",262.0);
+  Control.addVariable(hutName+"Height",279.4);
 
-  Control.addVariable(hutName+"RingStepLength",992.0);
-  Control.addVariable(hutName+"RingStepWidth",200.0);
+  Control.addVariable(hutName+"RingStepLength",992.0+7.4);
+  Control.addVariable(hutName+"RingStepWidth",200.0+2.4);
 
   Control.addVariable(hutName+"NChicane",2);
 

@@ -214,10 +214,12 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setWallLead(2.0);
   OGen.setRoofLead(2.0);
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
-  OGen.generateHut(Control,hutName,999.6);
+  OGen.generateHut(Control,hutName,1010.0);
+  Control.addVariable(hutName+"OutWidth", 262.0);
+  Control.addVariable(hutName+"Height", 279.4);
 
-  Control.addVariable(hutName+"RingStepLength",840.0);
-  Control.addVariable(hutName+"RingStepWidth",133.0);
+  Control.addVariable(hutName+"RingStepLength",850.4);
+  Control.addVariable(hutName+"RingStepWidth",135.4);
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;

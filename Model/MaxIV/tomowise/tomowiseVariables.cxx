@@ -727,8 +727,10 @@ opticsHutVariables(FuncDataBase& Control,
   // Optics hutch length:
   // 250214-TomoWISE-hutch-255596.step: 995.0
   // if set to 995, then the Guillotine cuts ProxiShieldB, therefore
-  // add 10 cm to avoid geometry errors
-  OGen.generateHut(Control,hutName,1005.0);
+  // add ~10 cm to avoid geometry errors
+  OGen.generateHut(Control,hutName,1012.4);
+  Control.addVariable(hutName+"OutWidth",262.0);
+  Control.addVariable(hutName+"Height",279.4);
 
   Control.addVariable(hutName+"RingStepLength",992.0);
   Control.addVariable(hutName+"RingStepWidth",200.0);
@@ -783,6 +785,7 @@ exptHutVariables(FuncDataBase& Control,
   EGen.setCorner(30.0, 346.0);   // angle, step-y back [4]
   EGen.generateHut(Control,hutName,0.0,2014.0); // [4]
 
+  Control.addVariable(hutName+"Height",277.0);
   Control.addVariable(hutName+"FrontVoid",0.0);
   Control.addVariable(hutName+"OutWidth",260.0); // discussion with AR 250829 (we define the width)
   Control.addVariable(hutName+"RingWidth",260.0); // discussion with AR 250829 (we define the width)

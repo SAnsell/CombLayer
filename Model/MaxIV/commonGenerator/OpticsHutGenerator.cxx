@@ -52,7 +52,7 @@ namespace setVariable
 
 
 OpticsHutGenerator::OpticsHutGenerator() :
-  height(277.0),outWidth(259.6),
+  height(279.2),outWidth(261.8),
   innerThick(0.3),pbWallThick(1.6),
   pbBackThick(7.0),pbRoofThick(1.6),
   outerThick(0.3),backPlateThick(5.0),
@@ -83,7 +83,7 @@ OpticsHutGenerator::addHole(const Geometry::Vec3D& HO,
     }
   return;
 }
-  
+
 void
 OpticsHutGenerator::generateHut(FuncDataBase& Control,
 				const std::string& keyName,
@@ -98,7 +98,7 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   ELog::RegMethod RegA("OpticsHutGenerator","generateOpticsHut");
 
   Control.addVariable(keyName+"Length",length);
-  
+
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"OutWidth",outWidth);
   Control.addVariable(keyName+"InnerThick",innerThick);
@@ -115,10 +115,10 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"BackPlateThick",backPlateThick);
   Control.addVariable(keyName+"BackPlateWidth",backPlateWidth);
   Control.addVariable(keyName+"BackPlateHeight",backPlateHeight);
-    
+
   for(size_t i=0;i<holeRadius.size();i++)
     {
-      const std::string iStr("Hole"+std::to_string(i)); 
+      const std::string iStr("Hole"+std::to_string(i));
       Control.addVariable(keyName+iStr+"XStep",holeOffset[i].X());
       Control.addVariable(keyName+iStr+"ZStep",holeOffset[i].Z());
       Control.addVariable(keyName+iStr+"Radius",holeRadius[i]);
@@ -127,7 +127,7 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"SkinMat",skinMat);
   Control.addVariable(keyName+"PbMat",pbMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
-    
+
   return;
 
 }

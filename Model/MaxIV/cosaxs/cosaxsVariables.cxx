@@ -231,7 +231,7 @@ opticsHutVariables(FuncDataBase& Control,
   OpticsHutGenerator OGen;
 
   OGen.addHole(Geometry::Vec3D(3.2,0,0),3.5);
-  OGen.generateHut(Control,hutName,892.1);
+  OGen.generateHut(Control,hutName,892.1+7.6);
 
   Control.addVariable(hutName+"NChicane",1);
   PortChicaneGenerator PGen;

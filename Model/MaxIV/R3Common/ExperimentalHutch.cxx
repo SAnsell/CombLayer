@@ -284,7 +284,7 @@ ExperimentalHutch::createSurfaces()
 
       SurfMap::makePlane
 	("outerBackVoid",SMap,buildIndex+52,
-	 Origin+Y*(length+steelThick+pbBackThick+outerBackVoid),Y);
+	 Origin+Y*(length+outerBackVoid),Y);
     }
 
 
@@ -614,11 +614,11 @@ ExperimentalHutch::createLinks()
   nameSideIndex(12,"innerBack");
 
   // inner surf
-  setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*(length/2.0),X);
+  setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
   nameSideIndex(13,"innerLeftWall");
 
-  setConnect(14,Origin+X*(ringWidth-sideWallThick)+Y*(length/2.0),-X);
+  setConnect(14,Origin+X*(ringWidth-sideWallThick)+Y*((length-backWallThick)/2.0),-X);
   setLinkSurf(14,-SMap.realSurf(buildIndex+4));
   nameSideIndex(14,"innerRightWall");
 

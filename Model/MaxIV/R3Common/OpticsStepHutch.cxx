@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3common/OpticsStepHutch.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -52,7 +52,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -70,7 +70,7 @@
 namespace xraySystem
 {
 
-OpticsStepHutch::OpticsStepHutch(const std::string& Key) : 
+OpticsStepHutch::OpticsStepHutch(const std::string& Key) :
   OpticsHutch(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -78,7 +78,7 @@ OpticsStepHutch::OpticsStepHutch(const std::string& Key) :
   */
 {}
 
-OpticsStepHutch::~OpticsStepHutch() 
+OpticsStepHutch::~OpticsStepHutch()
   /*!
     Destructor
   */
@@ -92,7 +92,7 @@ OpticsStepHutch::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("OpticsStepHutch","populate");
-  
+
   OpticsHutch::populate(Control);
 
   ringStepLength=Control.EvalVar<double>(keyName+"RingStepLength");
@@ -111,7 +111,7 @@ OpticsStepHutch::createSurfaces()
 
   OpticsHutch::createSurfaces();
 
-  Geometry::Vec3D BPoint(Origin+Y*ringStepLength);
+  Geometry::Vec3D BPoint(Origin+Y*(ringStepLength-outerThick-pbBackThick-innerThick));
   ModelSupport::buildPlane(SMap,buildIndex+202,BPoint,Y);
   BPoint+=Y*innerThick;
   ModelSupport::buildPlane(SMap,buildIndex+212,BPoint,Y);
@@ -119,8 +119,8 @@ OpticsStepHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+222,BPoint,Y);
   BPoint+=Y*outerThick;
   ModelSupport::buildPlane(SMap,buildIndex+232,BPoint,Y);
-      
-  Geometry::Vec3D SPoint(Origin+X*ringStepWidth);
+
+  Geometry::Vec3D SPoint(Origin+X*(ringStepWidth-outerThick-pbWallThick-innerThick));
   ModelSupport::buildPlane(SMap,buildIndex+204,SPoint,X);
   SPoint+=X*innerThick;
   ModelSupport::buildPlane(SMap,buildIndex+214,SPoint,X);
@@ -129,7 +129,6 @@ OpticsStepHutch::createSurfaces()
   SPoint+=X*outerThick;
   ModelSupport::buildPlane(SMap,buildIndex+234,SPoint,X);
 
-  
   return;
 }
 
@@ -145,7 +144,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   // ring wall
   const HeadRule sideWall=ExternalCut::getValidRule("SideWall",Origin);
   const HeadRule sideCut=ExternalCut::getValidRule("SideWallCut",Origin);
-  
+
   const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
   const HeadRule frontWall=
     ExternalCut::getValidRule("RingWall",Origin+Y*length);
@@ -165,7 +164,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   HeadRule HR;
 
   if (innerOutVoid>Geometry::zeroTol)
-    {  
+    {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 -6 ");
       makeCell("WallVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 -6 (-204:-202)");
@@ -190,7 +189,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 -23 33 -26");
   makeCell("OuterWall",System,cellIndex++,skinMat,0.0,
 	   HR*floor*frontWall*forkWallOuter);
-  
+
   HR=ModelSupport::getSetHeadRule
     (SMap,buildIndex,"2 -12 13 -204 -6 (-103:104:-105:106)");
   makeCell("BackIWall",System,cellIndex++,skinMat,0.0,
@@ -235,12 +234,12 @@ OpticsStepHutch::createObjects(Simulation& System)
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
   makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
-  
+
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
 				  "112 -2 3 -204 -6 (-103:104:-105:106)");
   makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,HR*floor);
 
-  
+
   // Outer void for pipe(s)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
@@ -251,7 +250,7 @@ OpticsStepHutch::createObjects(Simulation& System)
     }
 
   OpticsHutch::createForkCut(System);
-  
+
   // EXCLUDE:
   if (outerOutVoid>Geometry::zeroTol)
     {
@@ -262,7 +261,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   else
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
 
-  
+
   addOuterSurf(HR*frontWall*sideCut);
 
   return;
@@ -277,7 +276,7 @@ OpticsStepHutch::createLinks()
 {
   ELog::RegMethod RegA("OpticsStepHutch","createLinks");
 
-  
+
   //  const double extraBack(innerThick+outerThick+pbBackThick);
   //  const double extraWall(innerThick+outerThick+pbWallThick);
 
@@ -285,5 +284,5 @@ OpticsStepHutch::createLinks()
 
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
