@@ -1083,7 +1083,91 @@ DBMaterial::initMaterial()
 			 " 06000.80c   0.050000 "
 			 " 08016.80c   0.049980 "
 			 " 08017.80c   0.000019 ","",MLib);
-  Mptr->setDensity(-1.89359-04); // at 1 bar pressure, see ~/figs/TOMOWISE/zeff.sh, commit 275fe4a
+  Mptr->setDensity(-1.89359-04); // at NTP, see ~/figs/TOMOWISE/zeff.sh, commit 275fe4a
+
+  // Residual vacuum "Paul MAX II"
+  // molar fractions: (H2)94.6 + (H2O)2.2 + (CO)2.6 + (CO2)0.6
+  // see VacuumResidualPaulMAXII.inp in MatMCNP
+  Mptr = &createMaterial("VacuumResidualPaulMAXII",
+			 " 01001.80c   0.954529 "
+			 " 01002.80c   0.000110 "
+			 " 08016.80c   0.029572 "
+			 " 08017.80c   0.000011 "
+			 " 06000.80c   0.015779 ",
+			 "",MLib);
+  Mptr->setDensity(-1.35218e-04); // at NTP
+
+  // Residual vacuum "Paul ESRF"
+  // Molar fractions: (H2)71(H2O)3(CO)20(CO2)4(CH4)2
+  // see VacuumResidualPaulESRF.inp in MatMCNP
+  Mptr = &createMaterial("VacuumResidualPaulESRF",
+			 " 01001.80c   0.732328 "
+			 " 01002.80c   0.000084 "
+			 " 08016.80c   0.145472 "
+			 " 08017.80c   0.000055 "
+			 " 06000.80c   0.122060 ",
+			 "",MLib);
+  Mptr->setDensity(-3.96123e-04); // at NTP
+
+  // Residual vacuum "Paul R1"
+  // Molar fractions: (H2)83(H2O)0.7(CO)13.7(CO2)1.7(CH4)0.9
+  // see VacuumResidualPaulR1.inp in MatMCNP
+  Mptr = &createMaterial("VacuumResidualPaulR1",
+			 " 01001.80c   0.833651 "
+			 " 01002.80c   0.000096 "
+			 " 08016.80c   0.086748 "
+			 " 08017.80c   0.000033 "
+			 " 06000.80c   0.079472 ",
+			 "",MLib);
+  Mptr->setDensity(-2.67881e-04); // at NTP
+
+  // Residual vacuum "R1 2018"
+  // Molar fractions: (H2)83.9(H2O)0.7(CO)12.8(CO2)1.7(CH4)0.9
+  // see VacuumResidualR12018.inp in MatMCNP
+  Mptr = &createMaterial("VacuumResidualR12018",
+			 " 01001.80c   0.842424 "
+			 " 01002.80c   0.000097 "
+			 " 08016.80c   0.082363 "
+			 " 08017.80c   0.000031 "
+			 " 06000.80c   0.075084 ",
+			 "",MLib);
+  Mptr->setDensity(-2.58283e-04); // at NTP
+
+  // Residual vacuum "R3 2017"
+  // Molar fractions: (H2)97.3(CO)2.1(CH4)0.6
+  // see VacuumResidualR32017.inp in MatMCNP
+  Mptr = &createMaterial("VacuumResidualR32017",
+			 " 01001.80c   0.976104 "
+			 " 01002.80c   0.000112 "
+			 " 06000.80c   0.013379 "
+			 " 08016.80c   0.010401 "
+			 " 08017.80c   0.000004 ",
+			 "",MLib);
+  Mptr->setDensity(-1.08560e-04); // at NTP
+
+  // Residual vacuum "R3 2018"
+  // Molar fractions: (H2)93.6(CO)5.7(CO2)0.1(CH4)0.6
+  // see VacuumResidualR32018.inp in MatMCNP
+  Mptr = &createMaterial("VacuumResidualR32018",
+			 " 01001.80c   0.938974 "
+			 " 01002.80c   0.000108 "
+			 " 06000.80c   0.031699 "
+			 " 08016.80c   0.029209 "
+			 " 08017.80c   0.000011 ",
+			 "",MLib);
+  Mptr->setDensity(-1.48676e-04); // at NTP
+
+  // Residual vacuum "R3 2024"
+  // Molar fractions: (H2)93.6(CO)5.2(CH4)1.2
+  // see VacuumResidualR32024.inp in MatMCNP
+  Mptr = &createMaterial("VacuumResidualR32024",
+			 " 01001.80c   0.942921 "
+			 " 01002.80c   0.000108 "
+			 " 06000.80c   0.031433 "
+			 " 08016.80c   0.025528 "
+			 " 08017.80c   0.000010 ",
+			 "",MLib);
+  Mptr->setDensity(-1.45074e-04); // at NTP
 
   // Material Lead glass:
   // PbO 24%  SiO2 64% Na2O 12%
