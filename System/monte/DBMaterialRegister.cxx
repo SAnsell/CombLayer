@@ -1073,11 +1073,11 @@ DBMaterial::initMaterial()
 		 "6000.70c 2.43e-6 "
 		 "8016.70c 4.86e-6 ","",MLib);
 
-  // Residual vacuum as measured at MAX IV
+  // Residual vacuum, conservative estimate used for the MAX IV 3 GeV ring
   // The "Konstantin Finished" column 250905
   // 90% H2 and 10% CO
   // see VacuumResidualMAXIV.inp in MatMCNP
-  Mptr = &createMaterial("VacuumResidualMAXIV",
+  Mptr = &createMaterial("VacuumResidualMAXIVR3",
 			 " 01001.80c   0.899896 "
 			 " 01002.80c   0.000103 "
 			 " 06000.80c   0.050000 "
