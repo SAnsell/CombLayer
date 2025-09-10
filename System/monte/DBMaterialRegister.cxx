@@ -1083,7 +1083,7 @@ DBMaterial::initMaterial()
 			 " 06000.80c   0.050000 "
 			 " 08016.80c   0.049980 "
 			 " 08017.80c   0.000019 ","",MLib);
-  Mptr->setDensity(-1.89359-04); // at NTP, see ~/figs/TOMOWISE/zeff.sh, commit 275fe4a
+  Mptr->setDensity(-1.89359e-04); // at NTP, see ~/figs/TOMOWISE/zeff.sh, commit 275fe4a
 
   // Residual vacuum "Paul MAX II"
   // molar fractions: (H2)94.6 + (H2O)2.2 + (CO)2.6 + (CO2)0.6
