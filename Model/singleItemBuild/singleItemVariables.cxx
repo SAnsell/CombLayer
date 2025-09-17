@@ -149,6 +149,7 @@
 #include "HeatAbsorberToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 #include "PowerFilterGenerator.h"
+#include "TDCBeamDumpGenerator.h"
 
 namespace setVariable
 {
@@ -977,6 +978,13 @@ m1chamberDetails(FuncDataBase& Control)
 			Geometry::Vec3D(-portXStep, 0.0, 0.0),
 			Geometry::Vec3D(0,-1,0));
 
+  setVariable::TDCBeamDumpGenerator BSGen;
+  std::string name="TDCBeamDump";
+  BSGen.generate(Control,name);
+  //  Control.addVariable(name+"YAngle",-90.0);
+  //  Control.addVariable(name+"YStep",3.0);
+  Control.addVariable(name+"BulkThickBack",60.0);
+  Control.addVariable(name+"PreCoreLength",65.0);
 }
 
 

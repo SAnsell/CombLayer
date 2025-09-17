@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell and Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,6 +190,7 @@
 #include "HeatAbsorberToyama.h"
 #include "ProximityShielding.h"
 #include "PowerFilter.h"
+#include "TDCBeamDump.h"
 
 #include "makeSingleItem.h"
 
@@ -246,7 +247,7 @@ makeSingleItem::build(Simulation& System,
 	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
 	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
-	"MonoShutter","RoundMonoShutter","TubeDetBox",
+	"MonoShutter","RoundMonoShutter","TubeDetBox", "TDCBeamDump",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama",
@@ -1737,6 +1738,19 @@ makeSingleItem::build(Simulation& System,
 
 	return;
       }
+
+    if (item == "TDCBeamDump")
+    {
+      const auto tdcBeamDump(std::make_shared<tdcSystem::TDCBeamDump>("TDCBeamDump"));
+      OR.addObject(tdcBeamDump);
+
+      tdcBeamDump->addInsertCell(voidCell);
+      tdcBeamDump->secondaryUnitVector(World::masterOrigin(), 0);
+      tdcBeamDump->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
 
     if (item == "TubeDetBox")
       {
