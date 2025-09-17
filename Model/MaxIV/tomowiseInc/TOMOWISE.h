@@ -22,6 +22,11 @@
 #ifndef xraySystem_TOMOWISE_h
 #define xraySystem_TOMOWISE_h
 
+namespace tdcSystem
+{
+  class MainBeamDump;
+}
+
 namespace constructSystem
 {
   class SupplyPipe;
@@ -83,6 +88,7 @@ class TOMOWISE : public R3Beamline
 
   /// Pipe joining frontend to Expt hutch
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+  std::shared_ptr<tdcSystem::MainBeamDump> beamStop;
 
   /// Shield at exit of optics hutch to remove gaps between joinPipeB and the wall to exp hutch
   std::shared_ptr<xraySystem::PipeShield> guillotine;

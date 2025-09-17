@@ -36,8 +36,6 @@
 #include <array>
 
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
@@ -71,6 +69,9 @@
 #include "tomowiseFrontEnd.h"
 #include "tomowiseOpticsLine.h"
 #include "tomowiseExptLine.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "MainBeamDump.h"
 
 #include "R3Beamline.h"
 #include "TOMOWISE.h"
@@ -87,6 +88,7 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   opticsBeam(new tomowiseOpticsLine(newName+"OpticsLine")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  beamStop(std::make_shared<tdcSystem::MainBeamDump>(newName+"BeamStop")),
   guillotine(new xraySystem::PipeShield(newName+"Guillotine")),
   exptBeam(new tomowiseExptLine(newName+"ExptLine")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC"))
@@ -108,6 +110,7 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
+  OR.addObject(beamStop);
   OR.addObject(exptHut);
   OR.addObject(exptBeam);
   OR.addObject(joinPipeC);
@@ -180,6 +183,8 @@ TOMOWISE::build(Simulation& System,
   joinPipe->addInsertCell("FlangeA",wallLead->getCell("SteelVoid"));
   joinPipe->createAll(System,*frontBeam,2);
 
+
+
   opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
@@ -203,6 +208,9 @@ TOMOWISE::build(Simulation& System,
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
+  beamStop->createAll(System,*exptHut,"#innerBack");
+
+
   // pipe shield go around joinPipeB:
   guillotine->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   guillotine->setCutSurf("inner",*joinPipeB,"outerPipe");
@@ -211,6 +219,7 @@ TOMOWISE::build(Simulation& System,
   if (stopPoint=="exptHut")
     {
       joinPipeB->insertAllInCell(System,exptHut->getCell("Void"));
+      beamStop->insertAllInCell(System,exptHut->getCell("Void"));
       return;
     }
 

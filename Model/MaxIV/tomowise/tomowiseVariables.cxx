@@ -92,6 +92,8 @@
 #include "ProximityShieldingGenerator.h"
 #include "BeamMountGenerator.h"
 #include "BremBlockGenerator.h"
+#include "MainBeamDumpGenerator.h"
+
 
 // References
 // see R3Common/R3RingVariables.cxx and:
@@ -1559,6 +1561,26 @@ TOMOWISEvariables(FuncDataBase& Control)
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,"TomoWISEJoinPipeB",300.0);
+
+  setVariable::MainBeamDumpGenerator MainBDGen;
+  std::string name="TomoWISEBeamStop";
+  MainBDGen.generate(Control,name);
+  const double beamStopCoreLength = 15.0;
+  const double beamStopWallThick = 10.0;
+  const double beamStopWallDistance = 100.0;
+  Control.addVariable(name+"Length",beamStopCoreLength);
+  Control.addVariable(name+"Height",5.0);
+  Control.addVariable(name+"Depth",5.0);
+  Control.addVariable(name+"Width",15.0);
+  Control.addVariable(name+"WallThick",beamStopWallThick);
+  Control.addVariable(name+"YStep",-beamStopWallDistance-beamStopCoreLength-beamStopWallThick);
+  Control.addVariable(name+"Mat","Tungsten");
+  Control.addVariable(name+"TargetHeight",5.0);
+  Control.addVariable(name+"TargetWidth",5.0);
+  Control.addVariable(name+"TargetMat","Tungsten");
+  Control.addVariable(name+"TargetLength",0.5);
+  Control.addVariable(name+"PortLength",15.0-3.9);
+  Control.addVariable(name+"PortRadius",4.9);
 
   tomowiseVar::shieldVariables(Control,"TomoWISE");
 
