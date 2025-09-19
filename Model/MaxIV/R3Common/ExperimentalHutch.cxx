@@ -397,9 +397,11 @@ ExperimentalHutch::createObjects(Simulation& System)
     }
 
   // Inner Wall
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 (-3:303) 13 -6 -313");
-  makeCell("InnerLeftWall",System,cellIndex++,
-	   skinMat,0.0,HR*floor*innerWall*forkWallOuter);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"13 -3  -313 -6");
+  makeCell("InnerLeftWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall*forkWallOuter);
+
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"3 -2 303 -313  -6");
+  makeCell("InnerTiltedWall",System,cellIndex++,skinMat,0.0,HR*floor);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 4 -14 -6");
   makeCell("InnerRingWall",System,cellIndex++,skinMat,0.0,
@@ -415,9 +417,11 @@ ExperimentalHutch::createObjects(Simulation& System)
   makeCell("InnerRoof",System,cellIndex++,skinMat,0.0,HR*innerWall);
 
   // Lead
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-12 (-13:313) 23 -6 -323");
-  makeCell("LeadLeftWall",System,cellIndex++,pbMat,0.0,
-	   HR*floor*innerWall*forkWallOuter);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"23 -13 -313 -6");
+  makeCell("LeadLeftWall",System,cellIndex++,pbMat,0.0,HR*floor*innerWall*forkWallOuter);
+
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"313 -323 23 -12 -6 ");
+  makeCell("LeadLeftWall",System,cellIndex++,pbMat,0.0,HR*floor);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-12 14 -24 -6");
   makeCell("LeadRingWall",System,cellIndex++,pbMat,0.0,
@@ -432,9 +436,11 @@ ExperimentalHutch::createObjects(Simulation& System)
   makeCell("LeadRoof",System,cellIndex++,pbMat,0.0,HR*innerWall);
 
   // Outer Wall
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-22 (-23:323) 33 -6 -333");
-  makeCell("OuterLeftWall",System,cellIndex++,skinMat,0.0,
-	   HR*floor*innerWall*forkWallOuter);
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"33 -23 -6 -333");
+  makeCell("OuterLeftWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall*forkWallOuter);
+
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"23 -22 323 -333 -6");
+  makeCell("OuterTiltedWall",System,cellIndex++,skinMat,0.0,HR*floor);
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-22 24 -34 -6");
   makeCell("OuterRingWall",System,cellIndex++,skinMat,0.0,
