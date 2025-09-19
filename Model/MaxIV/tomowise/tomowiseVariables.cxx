@@ -784,13 +784,15 @@ exptHutVariables(FuncDataBase& Control,
   //  EGen.addHole(Geometry::Vec3D(beamOffset,0,0),3.5);
   EGen.setBackExt(10.0);
   EGen.setFrontExt(10.0);
-  EGen.setCorner(30.0, 346.0);   // angle, step-y back [4]
-  EGen.generateHut(Control,hutName,0.0,2014.0); // [4]
+  EGen.setCorner(30.0, 210.0);   // angle, step-y back - hutch length discussion 250919
+  EGen.generateHut(Control,hutName,0.0,2037.6); // hutch length discussion 250919
 
   Control.addVariable(hutName+"Height",277.0);
   Control.addVariable(hutName+"FrontVoid",0.0);
   Control.addVariable(hutName+"OutWidth",260.0); // discussion with AR 250829 (we define the width)
   Control.addVariable(hutName+"RingWidth",260.0); // discussion with AR 250829 (we define the width)
+  Control.addVariable(hutName+"PbWallThick",3.0); // optimised to be good enough
+  Control.addVariable(hutName+"PbRoofThick",3.0); // same as the wall since at ~ the same distance to the beamline
 
 
   // // lead shield on pipe
@@ -1575,6 +1577,7 @@ TOMOWISEvariables(FuncDataBase& Control)
   Control.addVariable(name+"WallThick",beamStopWallThick);
   Control.addVariable(name+"YStep",-beamStopWallDistance-beamStopCoreLength-beamStopWallThick);
   Control.addVariable(name+"Mat","Tungsten");
+  Control.addVariable(name+"WallMat","Void"); // poly is not needed
   Control.addVariable(name+"TargetHeight",5.0);
   Control.addVariable(name+"TargetWidth",5.0);
   Control.addVariable(name+"TargetMat","Tungsten");

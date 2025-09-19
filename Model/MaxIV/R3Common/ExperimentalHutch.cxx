@@ -257,18 +257,16 @@ ExperimentalHutch::createSurfaces()
 	Geometry::Quaternion::calcQRotDeg(-cornerAngle,Z);
       const Geometry::Vec3D CX=Qxy.makeRotate(X);
       const Geometry::Vec3D CY=Qxy.makeRotate(Y);
-      Geometry::Vec3D cornerPt(Origin+Y*cornerLength-X*(outWidth-steelThick-pbWallThick));
-      ModelSupport::buildPlane(SMap,buildIndex+302,cornerPt,CY);
-      ModelSupport::buildPlane(SMap,buildIndex+303,cornerPt,-CX);
-      cornerPt-=CX*innerThick;
-      ModelSupport::buildPlane(SMap,buildIndex+313,cornerPt,-CX);
-      cornerPt-=CX*pbWallThick;
-      ModelSupport::buildPlane(SMap,buildIndex+323,cornerPt,-CX);
-      cornerPt-=CX*steelThick;
-      ModelSupport::buildPlane(SMap,buildIndex+333,cornerPt,-CX);
-      cornerPt-=CX*outerOutVoid;
+      Geometry::Vec3D cornerPt(Origin+Y*cornerLength-X*(outWidth));
       if (outerOutVoid>Geometry::zeroTol)
-	ModelSupport::buildPlane(SMap,buildIndex+1333,cornerPt,-CX);
+	ModelSupport::buildPlane(SMap,buildIndex+1333,cornerPt-CX*outerOutVoid,-CX);
+      ModelSupport::buildPlane(SMap,buildIndex+333,cornerPt,-CX);
+      cornerPt+=CX*outerThick;
+      ModelSupport::buildPlane(SMap,buildIndex+323,cornerPt,-CX);
+      cornerPt+=CX*pbBackThick;
+      ModelSupport::buildPlane(SMap,buildIndex+313,cornerPt,-CX);
+      cornerPt+=CX*innerThick;
+      ModelSupport::buildPlane(SMap,buildIndex+303,cornerPt,-CX);
     }
 
   // INNER / OUTER BACK VOID
