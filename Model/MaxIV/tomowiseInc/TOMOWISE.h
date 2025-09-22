@@ -24,6 +24,7 @@
 
 namespace tdcSystem
 {
+  class LocalShielding;
   class MainBeamDump;
 }
 
@@ -88,6 +89,7 @@ class TOMOWISE : public R3Beamline
 
   /// Pipe joining frontend to Expt hutch
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+  std::shared_ptr<tdcSystem::LocalShielding> collar; // collar around the beam stop
   std::shared_ptr<tdcSystem::MainBeamDump> beamStop;
 
   /// Shield at exit of optics hutch to remove gaps between joinPipeB and the wall to exp hutch

@@ -93,7 +93,7 @@
 #include "BeamMountGenerator.h"
 #include "BremBlockGenerator.h"
 #include "MainBeamDumpGenerator.h"
-
+#include "LocalShieldingGenerator.h"
 
 // References
 // see R3Common/R3RingVariables.cxx and:
@@ -1567,8 +1567,8 @@ TOMOWISEvariables(FuncDataBase& Control)
   setVariable::MainBeamDumpGenerator MainBDGen;
   std::string name="TomoWISEBeamStop";
   MainBDGen.generate(Control,name);
-  const double beamStopCoreLength = 15.0;
-  const double beamStopWallThick = 10.0;
+  const double beamStopWallThick = 0.01; //10.0;
+  const double beamStopCoreLength = 15;// beamStopWallThick+5.0;
   const double beamStopWallDistance = 100.0;
   Control.addVariable(name+"Length",beamStopCoreLength);
   Control.addVariable(name+"Height",5.0);
@@ -1581,9 +1581,16 @@ TOMOWISEvariables(FuncDataBase& Control)
   Control.addVariable(name+"TargetHeight",5.0);
   Control.addVariable(name+"TargetWidth",5.0);
   Control.addVariable(name+"TargetMat","Tungsten");
-  Control.addVariable(name+"TargetLength",0.5);
-  Control.addVariable(name+"PortLength",15.0-3.9);
+  Control.addVariable(name+"TargetLength",0.01);
+  Control.addVariable(name+"PortLength",1.25-0.94-0.18); // 15.0-3.9
   Control.addVariable(name+"PortRadius",4.9);
+
+  setVariable::LocalShieldingGenerator LSGen;
+  LSGen.setSize(12.0, 260.0, 260.0);
+  LSGen.setMidHole(0.0, 0.0);
+  LSGen.generate(Control,"TomoWISECollar");
+  Control.addVariable("TomoWISECollarOption","SideOnly");
+
 
   tomowiseVar::shieldVariables(Control,"TomoWISE");
 

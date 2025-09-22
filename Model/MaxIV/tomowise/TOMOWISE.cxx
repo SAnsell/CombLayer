@@ -72,6 +72,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "MainBeamDump.h"
+#include "LocalShielding.h"
 
 #include "R3Beamline.h"
 #include "TOMOWISE.h"
@@ -88,6 +89,7 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   opticsBeam(new tomowiseOpticsLine(newName+"OpticsLine")),
   exptHut(new ExperimentalHutch(newName+"ExptHut")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  collar(std::make_shared<tdcSystem::LocalShielding>(newName+"Collar")),
   beamStop(std::make_shared<tdcSystem::MainBeamDump>(newName+"BeamStop")),
   guillotine(new xraySystem::PipeShield(newName+"Guillotine")),
   exptBeam(new tomowiseExptLine(newName+"ExptLine")),
@@ -110,6 +112,7 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
+  OR.addObject(collar);
   OR.addObject(beamStop);
   OR.addObject(exptHut);
   OR.addObject(exptBeam);
@@ -210,6 +213,7 @@ TOMOWISE::build(Simulation& System,
 
   beamStop->createAll(System,*exptHut,"#innerBack");
 
+  collar->createAll(System, *beamStop, 0);
 
   // pipe shield go around joinPipeB:
   guillotine->addAllInsertCell(opticsBeam->getCell("LastVoid"));
@@ -220,6 +224,8 @@ TOMOWISE::build(Simulation& System,
     {
       joinPipeB->insertAllInCell(System,exptHut->getCell("Void"));
       beamStop->insertAllInCell(System,exptHut->getCell("Void"));
+      beamStop->insertAllInCell(System,collar->getCell("Wall"));
+      collar->insertInCell(System,exptHut->getCell("Void"));
       return;
     }
 
