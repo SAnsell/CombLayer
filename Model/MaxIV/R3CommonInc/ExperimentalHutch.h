@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3CommonInc/ExperimentalHutch.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_ExperimentalHutch_h
@@ -27,13 +27,13 @@ class Simulation;
 namespace xraySystem
 {
   class PortChicane;
-  
+
 /*!
   \class ExperimentalHutch
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief ExperimentalHutch unit  
+  \brief ExperimentalHutch unit
 
   Built around the central beam axis
 */
@@ -46,7 +46,7 @@ class ExperimentalHutch :
   public attachSystem::SurfMap
 {
  private:
-  
+
   double height;                ///< void height to roof (from origin)
   double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
@@ -59,6 +59,7 @@ class ExperimentalHutch :
   double pbWallThick;           ///< Thickness of lead in walls
   double pbFrontThick;          ///< Thickness of lead in front plate(if used)
   double pbBackThick;           ///< Thickness of lead in back plate
+  double pbTiltedThick;         ///< Thickness of lead in tilted wall
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
 
@@ -68,29 +69,29 @@ class ExperimentalHutch :
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
-  
+
   double innerOutVoid;          ///< Extension for inner void space (side)
   double outerOutVoid;          ///< Extension for outer void space (side)
   double frontVoid;             ///< Extension for inner front void space
   double backVoid;              ///< Extension for inner back void space
   double outerBackVoid;         ///< Extension for outer back void space
-  
+
   std::string forkWall;         ///< Wall for forklift [only one allowed]
   double forkXStep;             ///< Step across beamline for forklift hole
   double forkYStep;             ///< Step down beamline for forklift hole
   double forkLength;            ///< length of units
   double forkHeight;            ///< height of unit
   std::vector<double> fZStep;   ///< step of units
-  
+
   int voidMat;                  ///< Void material [air]
   int skinMat;                  ///< Fe layer material for walls
   int pbMat;                    ///< pb layer material for walls
 
-  /// Chicanes 
-  std::vector<std::shared_ptr<PortChicane>> PChicane;  
+  /// Chicanes
+  std::vector<std::shared_ptr<PortChicane>> PChicane;
 
   forkHoles forks;              ///< Forklift holes if made
-  
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
@@ -98,7 +99,7 @@ class ExperimentalHutch :
 
   void createChicane(Simulation&);
   void createForkCut(Simulation&);
-  
+
  public:
 
   ExperimentalHutch(const std::string&);
@@ -110,7 +111,7 @@ class ExperimentalHutch :
   int getInnerMat() const { return voidMat; }
 
   const PortChicane* getPortItem(const size_t) const;
-  
+
   void splitChicane(Simulation& System,const size_t,const size_t);
   using FixedComp::createAll;
   void createAll(Simulation&,
@@ -122,4 +123,3 @@ class ExperimentalHutch :
 }
 
 #endif
- 

@@ -3,7 +3,7 @@
 
  * File:   commonGenerator/ExptHutGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,12 +63,13 @@ ExptHutGenerator::ExptHutGenerator() :
   // MODIFIED VARIABLES
   innerThick=0.1;
   pbBackThick=0.6;
+  pbTiltedThick=pbBackThick;
   pbWallThick=0.4;
   pbRoofThick=0.4;
   outerThick=0.1;
 }
 
-  
+
 void
 ExptHutGenerator::setCorner(const double CA,const double CL)
   /*!
@@ -97,9 +98,9 @@ ExptHutGenerator::setFrontHole(const double XS,const double ZS,
   fHoleRadius=R;
   return;
 }
-  
-  
-  
+
+
+
 void
 ExptHutGenerator::generateHut(FuncDataBase& Control,
 			      const std::string& hutName,
@@ -109,7 +110,7 @@ ExptHutGenerator::generateHut(FuncDataBase& Control,
     Primary function for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: step distance 
+    \param yStep :: step distance
     \param length :: Full length of hut
   */
 {
@@ -120,15 +121,16 @@ ExptHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(hutName+"YStep",yStep);
   Control.addVariable(hutName+"RingWidth",ringWidth);
   Control.addVariable(hutName+"PbFrontThick",pbFrontThick);
+  Control.addVariable(hutName+"PbTiltedThick",pbTiltedThick);
 
   Control.addVariable(hutName+"CornerAngle",cornerAngle);
   Control.addVariable(hutName+"CornerLength",length-cornerYStep);
-    
+
   Control.addVariable(hutName+"FHoleXStep",fHoleXStep);
   Control.addVariable(hutName+"FHoleZStep",fHoleZStep);
   Control.addVariable(hutName+"FHoleRadius",fHoleRadius);
 
-  
+
   return;
 
 }
