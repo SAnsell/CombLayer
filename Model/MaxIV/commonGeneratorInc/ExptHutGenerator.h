@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/ExptHutGenerator.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_ExptHutGenerator_h
@@ -41,7 +41,9 @@ class ExptHutGenerator  :
  private:
 
   double ringWidth;     ///< Ring side width (interior)
-  double pbFrontThick;     ///< if front lead is needed (+ve)
+  double pbFrontThick;  ///< if front lead is needed (+ve)
+  double pbTiltedThick; ///< Thickness of lead in tilted wall
+
 
   double cornerAngle;   ///< Angle of corner
   double cornerYStep;   ///< Setp back for corner point
@@ -69,4 +71,3 @@ class ExptHutGenerator  :
 }
 
 #endif
- 

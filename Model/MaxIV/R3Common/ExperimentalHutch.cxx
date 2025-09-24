@@ -119,6 +119,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
   pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
+  pbTiltedThick=Control.EvalVar<double>(keyName+"PbTiltedThick");
   pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
 
@@ -263,7 +264,7 @@ ExperimentalHutch::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+333,cornerPt,-CX);
       cornerPt+=CX*outerThick;
       ModelSupport::buildPlane(SMap,buildIndex+323,cornerPt,-CX);
-      cornerPt+=CX*pbBackThick;
+      cornerPt+=CX*pbTiltedThick;
       ModelSupport::buildPlane(SMap,buildIndex+313,cornerPt,-CX);
       cornerPt+=CX*innerThick;
       ModelSupport::buildPlane(SMap,buildIndex+303,cornerPt,-CX);
