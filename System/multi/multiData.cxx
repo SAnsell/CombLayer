@@ -81,7 +81,8 @@ multiData<T>::multiData(std::vector<size_t> I,std::vector<T> D) :
 }
 
 template<typename T>
-multiData<T>::multiData()
+multiData<T>::multiData() :
+  strides({1})
   /*!
     Constructor with EMPTY
   */
@@ -407,6 +408,33 @@ multiData<T>::clear()
   return;
 }
 
+
+template<typename T> 
+void
+multiData<T>::zero()
+  /*!
+    Zero all the memory 
+  */
+{
+  if constexpr (std::is_arithmetic<T>::value)
+    {
+      std::fill(flatData.begin(),flatData.end(),T(0));
+    }
+  return;
+}
+
+template<> 
+void
+multiData<std::string>::zero()
+  /*!
+    Clears all the memory -- not 100% sure that
+    it works with zero points
+   */
+{
+  std::fill(flatData.begin(),flatData.end(),"");
+  return;
+}
+
 template<typename T>
 multiData<T>&
 multiData<T>::operator+=(const multiData<T>& A)
@@ -625,6 +653,86 @@ multiData<T>::operator-(const multiData<T>& A) const
   out-=A;
   return out;
 }
+template<typename T>
+bool
+multiData<T>::operator!=(const multiData<T>& A) const
+  /*!
+    Not-Equal (exact check)
+    \param A :: Dataset to check
+    \return a != b (within tolerance)
+  */
+{
+  return !(this->operator==(A));
+}
+
+template<typename T>
+bool
+multiData<T>::operator==(const multiData<T>& A) const
+  /*!
+    Equal (exact check)
+    \param A :: Dataset to subtract from this
+    \return a == b (within tolerance)
+  */
+{
+  if (index.size()!=A.index.size()) return 0;
+  if (A.index!=index) return 0;
+  
+  if constexpr (std::is_floating_point<T>::value)
+    {
+      for(size_t i=0;i<flatData.size();i++)
+	{
+	  if (std::abs(flatData[i]-A.flatData[i])>T(1e-12))
+	    return 0;
+	}
+    }
+  else
+    {
+      for(size_t i=0;i<flatData.size();i++)
+	if (flatData[i]!=A.flatData[i])
+	  return 0;
+    }
+
+  return 1;
+}
+
+
+template<typename T>
+template<typename U>
+void
+multiData<T>::normalize(const multiData<U>& A)
+  /*!
+    Normalize (avoiding zero) with A/
+    Expected input is likely to be integer.
+    Note that A is effectively private relative to
+    this because they are not the same class.
+    \param A :: Dataset to subtract from this
+    
+  */
+{
+  if constexpr (std::is_floating_point<U>::value)
+    {
+      throwMatchCheck(A,"normalize");
+      const std::vector<U>& aFlat=A.getVector();
+      std::transform(flatData.begin(),flatData.end(),
+		     aFlat.begin(),flatData.begin(),
+		     [](const T& a,const U& b) ->T
+		     { return (std::abs(b)>1e-38) ? a/static_cast<T>(b) :
+			 T(0); }
+		     );
+    }
+  else if constexpr (std::is_arithmetic<U>::value)
+    {
+      throwMatchCheck(A,"normalize");
+      const std::vector<U>& aFlat=A.getVector();
+      std::transform(flatData.begin(),flatData.end(),
+		     aFlat.begin(),flatData.begin(),
+		     [](const T& a,const U& b) ->T
+		     { return (b!=0) ? a/b : T(0); }
+		     );
+    }
+  return;
+}
+
 
 template<typename T>
 void
@@ -1195,13 +1303,73 @@ multiData<T>::setData(const size_t A,const size_t B,
 
 template<typename T>
 void
-multiData<T>::setSubMap(const size_t axisIndex,
-			const size_t unitIndex,
+multiData<T>::appendData(const std::vector<T>& Data)
+  /*!
+    Appends the vector to flatData and extends the
+    size of the array by 1.
+    \param Data :: Vector to set [length last index]
+
+    Note: Data must not be flatData itself.
+   */
+{
+  if (index.empty())
+    {
+      this->operator=(multiData<T>(Data.size(),Data));
+      return;
+    }
+  if (Data.size()==strides[0])
+    {
+      index[0]++;
+      setStrides(index);
+      flatData.insert(flatData.end(),Data.begin(),Data.end());
+    }
+  return;
+}
+
+template<typename T>
+void
+multiData<T>::setSubMap(const size_t unitIndex,
 			const multiData<T>& A)
-/*!
+  /*!
     Sets A to be in the map over the axisIndex at position
     unit index. A needs to be shape nDim-1 and have
     equal sizes to this.
+    \param axisIndex :: axis 
+    \param A :: incoming data
+  */
+{
+  if ((unitIndex>=index[0]) ||
+      (index.size()!=A.index.size()+1))
+    throw ColErr::DimensionError<size_t>
+      (index,A.index,"setSubMapA:: dimension["+
+       std::to_string(unitIndex)+"]");
+
+  for(size_t i=1;i<index.size();i++)
+    if (index[i]!=A.index[i-1])
+      throw ColErr::DimensionError<size_t>
+	(index,A.index,"setSubMap:: dimension["+
+	 std::to_string(unitIndex)+"]");
+
+  T* dPtr=flatData.data()+strides[0]*unitIndex;
+  const T* iPtr=A.flatData.data();
+  
+  for(size_t i=0;i<A.size();i++)
+    dPtr[i]=iPtr[i];
+
+  return;
+}
+
+template<typename T>
+void
+multiData<T>::setSubMap(const size_t axisIndex,
+			const size_t unitIndex,
+			const multiData<T>& A)
+  /*!
+    Sets A to be in the map over the axisIndex at position
+    unit index. A needs to be shape nDim-1 and have
+    equal sizes to this.
+    \param axisIndex :: axins 
+    \param A :: incoming data
   */
 {
   if (axisIndex>=index.size() ||
@@ -1211,6 +1379,8 @@ multiData<T>::setSubMap(const size_t axisIndex,
        std::to_string(axisIndex)+":"+
        std::to_string(unitIndex));
 
+  if (axisIndex==0)
+    setSubMap(unitIndex,A);
   // IndexCounter IC<size_t>(index);
   // IndexCounter JC<size_t>(A.index());  
 
@@ -1614,7 +1784,11 @@ template class multiData<float>;
 template class multiData<std::string>;
 template class multiData<int>;
 template class multiData<size_t>;
+template class multiData<std::complex<double>>;
 template class multiData<std::shared_ptr<delftSystem::RElement>>;
+
+template void multiData<double>::normalize(const multiData<int>&);
+template void multiData<double>::normalize(const multiData<double>&);
 
 template multiData<double>::multiData(const multiData<float>&);
 template multiData<float>::multiData(const multiData<double>&);
@@ -1625,5 +1799,7 @@ template std::ostream& operator<<(std::ostream&,const multiData<int>&);
 template std::ostream& operator<<(std::ostream&,const multiData<float>&);
 template std::ostream& operator<<(std::ostream&,const multiData<std::string>&);
 template std::ostream& operator<<(std::ostream&,const multiData<size_t>&);
+template std::ostream& operator<<
+(std::ostream&,const multiData<std::complex<double>>&);
 
 ///\endcond TEMPLATE

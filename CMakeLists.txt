@@ -10,7 +10,8 @@ find_package (fmt REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
+message("FMT INCLUDE:" ${fmt_INCLUDE_DIRS})
+message("FMT INCLUDE:" ${FMT_INCLUDE_DIRS})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_COMPILER g++)
@@ -50,6 +51,7 @@ set(SYSTEM_INCLUDE
   ${CMAKE_SOURCE_DIR}/System/md5Inc
   ${CMAKE_SOURCE_DIR}/System/modelSupportInc
   ${CMAKE_SOURCE_DIR}/System/monteInc
+  ${CMAKE_SOURCE_DIR}/System/multiInc
   ${CMAKE_SOURCE_DIR}/System/objectModInc
   ${CMAKE_SOURCE_DIR}/System/phitsPhysicsInc
   ${CMAKE_SOURCE_DIR}/System/phitsProcessInc
@@ -66,6 +68,7 @@ set(SYSTEM_INCLUDE
   ${CMAKE_SOURCE_DIR}/System/workInc
   ${CMAKE_SOURCE_DIR}/System/worldInc
   ${CMAKE_SOURCE_DIR}/System/xmlInc
+  ${fmt_INCLUDE_DIRS}
 )
 
 set(GENERAL_INCLUDE
@@ -190,8 +193,8 @@ set(SYSTEM_LIB
   attachComp compWeights construct constructVar
   crystal endf flukaPhysics flukaProcess flukaTally
   funcBase generalProcess geometry input insertUnit
-  instrument
-  log magnetic mcnpProcess md5 modelSupport monte
+  instrument log magnetic mcnpProcess md5 modelSupport
+  monte multi
   objectMod phitsPhysics phitsProcess phitsSupport
   phitsTally physics poly simMC source support
   tally visit weights work world xml

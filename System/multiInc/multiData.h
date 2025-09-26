@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  C++Azint : 2D-Detector to Q-Data processor
  
  * File:   include/multiDAta.h
  *
@@ -22,6 +22,7 @@
 #ifndef multiData_h
 #define multiData_h
 
+
 /*!
   \class multiData
    \version 2.0
@@ -42,6 +43,7 @@
    resizes to new number of axis e.g. going from A[][][] to A[][] and
    allows exchange of axis: e.g. A[i][j][k] -> exchange(0,1) -> A[j][i][k]
 */
+
 
 template<typename T>
 class multiData
@@ -92,7 +94,8 @@ class multiData
   template<typename U> multiData(const multiData<U>&);
   ~multiData();
 
-  void clear(); 
+  void clear();
+  void zero(); 
 
   multiData<T> operator+(const multiData<T>&) const;
   multiData<T> operator-(const multiData<T>&) const;
@@ -105,7 +108,13 @@ class multiData
   multiData<T>& operator-=(const multiData<T>&);
   multiData<T>& operator*=(const multiData<T>&);
   multiData<T>& operator/=(const multiData<T>&);
-
+  
+  bool operator==(const multiData<T>&) const;
+  bool operator!=(const multiData<T>&) const;
+  
+  template<typename U>
+  void normalize(const multiData<U>&);
+  
   bool isEmpty() const { return flatData.empty(); } 
   size_t getDim() const { return index.size(); }
   size_t size() const { return flatData.size(); }
@@ -136,6 +145,8 @@ class multiData
   void setData(const size_t,const size_t,std::vector<T>);
   void setData(const size_t,const size_t,const size_t,std::vector<T>);
 
+  void appendData(const std::vector<T>&);
+  
   std::vector<T> getFlatRange(std::vector<sRange>) const;
   T getFlatIntegration(std::vector<sRange>) const;
   std::vector<T> getAxisRange(const size_t,const size_t) const;
@@ -148,6 +159,7 @@ class multiData
   multiData<T> integrateMap(size_t,std::vector<sRange>) const;
   T integrateValue(std::vector<sRange>) const;
 
+  void setSubMap(const size_t,const multiData<T>&);
   void setSubMap(const size_t,const size_t,const multiData<T>&);
   
   void fill(const T&);
@@ -156,10 +168,10 @@ class multiData
   sliceUnit<T> get() { return sliceUnit<T>(flatData.data(), strides.data()); }
   sliceUnit<const T> get() const
     { return sliceUnit<const T>(flatData.data(), strides.data()); }
-
+  
   T& value(const std::vector<size_t>&);
   const T& value(const std::vector<size_t>&) const;
-  
+
   /// accessor to pointer
   T* getPtr() { return flatData.data(); }
   const T* getPtr() const { return flatData.data(); }
@@ -169,7 +181,6 @@ class multiData
      { return flatData; }
   /// accessor to vector
   std::vector<T>& getVector() { return flatData; }
-
 
   const std::vector<size_t>& shape() const
     { return index; }

@@ -779,7 +779,6 @@ sectionRange(std::string& A,std::vector<T>& out)
     }
   return 1;
 }
-
 template<typename T>
 std::set<T>
 getRangedSet(std::string& line)
@@ -790,41 +789,29 @@ getRangedSet(std::string& line)
   */
 {
   std::set<T> out;
-
-  int preNumber(0);
-  int number(0);
-  bool preFlag(0);
-  while(!StrFunc::isEmpty(line))
+  T a,b;
+  // has to start with a number 
+  while(sectPartNum(line,a))
     {
-      if (StrFunc::section(line,number) ||
-	  (StrFunc::sectPartNum(line,number) && 
-	   !line.empty() && line[0]=='-'))
+      size_t pos=0;
+      if (line[pos]=='-')   // 
 	{
-	  if (number<0 && number<preNumber)
+	  line[pos]=' ';
+	  if (!section(line,b) || (b-a)>1000 || b<a)
 	    {
-	      number*=-1;
-	      preFlag=1;
+	      line[pos]='-';
+	      return std::set<T>();
 	    }
-	  out.emplace(static_cast<T>(number));
-	  if (preFlag && number-preNumber<1000)
-	    {
-	      for(int i=preNumber+1;i<number;i++)
-		out.emplace(i);
-	    }
-	  preFlag=0;\
-	}
-      else if (!preFlag && line[0]=='-')
-	{
-	  preFlag=1;
-	  line[0]=' ';
+
+	  for(T item(a);item<=b;item++)
+	    out.emplace(item);
 	}
       else
-	{
-	  throw ColErr::InvalidLine("Line invalid",line,out.size());
-	}
+	out.emplace(a);
     }
-  return out;
+  return (isEmpty(line)) ? out : std::set<T>();
 }
+
 
 template<typename T>
 int 

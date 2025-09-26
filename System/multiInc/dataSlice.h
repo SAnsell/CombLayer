@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  C++Azint : 2D-Detector to Q-Data processor
  
  * File:   include/dataSlice.h
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
   \version 1.0
   \brief Holds a simple x - y range for an index
  */
-
 struct sRange
 {
   constexpr sRange() = default;
@@ -61,7 +60,7 @@ struct sliceUnit
   /// data member (non-const)
   operator T& () { return *dataPtr; }   
   /// point operator
-  T operator->() const { return *dataPtr; }
+  const T& operator->() const { return *dataPtr; }
 
   sliceUnit&
   operator=(const sliceUnit& A)
@@ -98,11 +97,11 @@ struct sliceUnit
       return *dataPtr;
     }
 
-  T get() { return *dataPtr; }
+  T& get() { return *dataPtr; }
   const T* pointer() const { return dataPtr; }
   T* assignPointer() const { return dataPtr; }
-
 };
+
 
 /*!
   Specialization for string

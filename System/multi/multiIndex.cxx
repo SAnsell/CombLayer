@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  C++Azint : 2D-Detector to Q-Data processor
  
   * File:   src/multiIndex.cxx
  *
