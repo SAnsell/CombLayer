@@ -3,7 +3,7 @@
 
  * File: Linac/Segment46.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -230,8 +230,9 @@ Segment46::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*this,0);
 
-  pipeMagUnit(System,*IZThin,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*IZThin,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*IZThin,pipeA,"#front","outerPipe",shieldA);
+  maxivConstruct::pipeTerminate(System,*IZThin,pipeA);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*gateA);
@@ -246,8 +247,9 @@ Segment46::buildObjects(Simulation& System)
     (System,*IZThin,*prismaChamber,"back",*mirrorChamberA);
 
   pipeB->createAll(System,*mirrorChamberA,"back");
-  pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
-  pipeTerminate(System,*IZThin,pipeB);
+  maxivConstruct::pipeMagUnit
+    (System,*IZThin,pipeB,"#front","outerPipe",cleaningMag);
+  maxivConstruct::pipeTerminate(System,*IZThin,pipeB);
 
   // Slit tube and jaws
 

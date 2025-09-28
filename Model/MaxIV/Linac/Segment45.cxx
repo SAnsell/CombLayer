@@ -3,7 +3,7 @@
 
  * File: Linac/Segment45.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -194,7 +194,7 @@ Segment45::buildObjects(Simulation& System)
   ceramic->createAll(System,*this,0);
   outerCell=buildZone->createUnit(System,*ceramic,2);
   ceramic->insertInCell(System,outerCell);
-  pipeTerminate(System,*buildZone,ceramic);
+  maxivConstruct::pipeTerminate(System,*buildZone,ceramic);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*ceramic,"back",*pipeA);

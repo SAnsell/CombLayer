@@ -52,9 +52,11 @@ namespace setVariable
 
 BellowGenerator::BellowGenerator() :
   PipeGenerator(),
-  bellowStep(1.0),bellowThick(1.0),
-  wallThick(0.03), nFolds(10),
+  bellowStep(1.0),
+  wallThick(0.03),
+  nFolds(10),
   engActive(0),
+  bellowThick(1.0),
   bellowMat("Stainless304%Void%10.0")
   /*!
     Constructor and defaults
@@ -83,18 +85,21 @@ BellowGenerator::setCF()
 
 void
 BellowGenerator::setPipe(const double R,const double T,
-			 const double S,const double BT)
+			 const double S,const double BT,
+			 const size_t n)
   /*!
     Set all the pipe values
     \param R :: radius of main pipe
     \param T :: Thickness
     \parma S :: Bellow step
     \param BT :: Bellow Thickness
+    \param n :: Number of folds
    */
 {
   PipeGenerator::setPipe(R,T);
   bellowStep=S;
   bellowThick=BT;
+  nFolds=n;
   return;
 }
 
@@ -151,26 +156,24 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"NFolds",nFolds);
   Control.addVariable(keyName+"EngineeringActive",engActive);
-
   Control.addVariable(keyName+"BellowMat",bellowMat);
 
   return;
-
 }
 
 ///\cond TEMPLATE
 
   template void BellowGenerator::setCF<CF18_TDC>();
   template void BellowGenerator::setCF<CF26_TDC>();
+  template void BellowGenerator::setCF<CF35_TDC>();
   template void BellowGenerator::setCF<CF37_TDC>();
   template void BellowGenerator::setCF<CF40_22>();
+  template void BellowGenerator::setCF<CF25>();
   template void BellowGenerator::setCF<CF40>();
   template void BellowGenerator::setCF<CF50>();
   template void BellowGenerator::setCF<CF63>();
   template void BellowGenerator::setCF<CF100>();
 
 ///\endcond TEMPLATE
-
-
 
 }  // NAMESPACE setVariable

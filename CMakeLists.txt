@@ -87,20 +87,22 @@ set(MAXIV_DIR ${CMAKE_SOURCE_DIR}/Model/MaxIV)
 
 set(MAXIV_INCLUDE
   ${MODEL_DIR}/maxivBuildInc
+  ${MAXIV_DIR}/GunTestFacilityInc
   ${MAXIV_DIR}/balderInc 
   ${MAXIV_DIR}/LinacInc
   ${MAXIV_DIR}/commonBeamInc
-  ${MAXIV_DIR}/maxpeemInc
   ${MAXIV_DIR}/commonGeneratorInc
-  ${MAXIV_DIR}/micromaxInc
   ${MAXIV_DIR}/cosaxsInc
-  ${MAXIV_DIR}/R1CommonInc
   ${MAXIV_DIR}/danmaxInc
-  ${MAXIV_DIR}/R3CommonInc
   ${MAXIV_DIR}/flexpesInc
-  ${MAXIV_DIR}/softimaxInc
   ${MAXIV_DIR}/formaxInc
+  ${MAXIV_DIR}/maxpeemInc
+  ${MAXIV_DIR}/micromaxInc
+  ${MAXIV_DIR}/R1CommonInc
+  ${MAXIV_DIR}/R3CommonInc
+  ${MAXIV_DIR}/softimaxInc
   ${MAXIV_DIR}/speciesInc
+  ${MAXIV_DIR}/tomowiseInc
 )
   
 set(ESS_INCLUDE
@@ -208,9 +210,9 @@ set(ESS_LIB
 )
 
 set(MAXIV_LIB
-  maxivBuild balder commonBeam commonGenerator cosaxs
+  maxivBuild GunTestFacility balder commonBeam commonGenerator cosaxs
   danmax flexpes formax Linac maxpeem micromax
-  R1Common R3Common softimax species
+  R1Common R3Common softimax species tomowise
 )
 
 target_link_libraries(ess

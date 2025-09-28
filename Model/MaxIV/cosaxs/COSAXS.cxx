@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: cosaxs/COSAXS.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -73,6 +73,7 @@
 #include "ExperimentalHutch.h"
 #include "JawFlange.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 #include "cosaxsFrontEnd.h"
 #include "cosaxsOpticsLine.h"
 #include "cosaxsExptLine.h"
@@ -103,11 +104,11 @@ COSAXS::COSAXS(const std::string& KN) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(joinPipe);
-  
+
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
@@ -121,8 +122,8 @@ COSAXS::~COSAXS()
    */
 {}
 
-  
-void 
+
+void
 COSAXS::build(Simulation& System,
 	      const attachSystem::FixedComp& FCOrigin,
 	      const long int sideIndex)
@@ -142,7 +143,7 @@ COSAXS::build(Simulation& System,
   const size_t prevIndex=(NS+PIndex-1) % NS;
 
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
-  
+
   frontBeam->setStopPoint(stopPoint);
   frontBeam->setCutSurf("REWall",-r3Ring->getSurf("BeamInner",PIndex));
   //  frontBeam->deactivateFM3();  ACTIVE on COSAXS
@@ -153,9 +154,10 @@ COSAXS::build(Simulation& System,
 
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
-  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));    
+  wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
+  wallLead->setCutSurf("Ring",r3Ring->getSurfRule("#FlatInner",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
-  
+
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);
@@ -203,7 +205,7 @@ COSAXS::build(Simulation& System,
       joinPipeB->insertAllInCell(System,exptHut->getCell("Void"));
       return;
     }
-  
+
   exptBeam->setStopPoint(stopPoint);
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->setCutSurf("front",*exptHut,
@@ -236,4 +238,3 @@ COSAXS::build(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

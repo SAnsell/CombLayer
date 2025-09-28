@@ -3,7 +3,7 @@
 
  * File: Linac/LObjectSupport.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,9 +60,12 @@
 #include "LSexupole.h"
 #include "DipoleDIBMag.h"
 #include "LocalShielding.h"
+#include "FrontBackCut.h"
+#include "Solenoid.h"
+#include "ProximityShielding.h"
 #include "LObjectSupport.h"
 
-namespace tdcSystem
+namespace maxivConstruct
 {
 
 int
@@ -346,6 +349,22 @@ int pipeMagUnit(Simulation&,
 		const std::string&,
 		const std::shared_ptr<tdcSystem::LocalShielding>&);
 template
+int pipeMagUnit(Simulation&,
+		attachSystem::BlockZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
+		const std::shared_ptr<xraySystem::Solenoid>&);
+
+  template
+int pipeMagUnit(Simulation&,
+		attachSystem::BlockZone&,
+		const std::shared_ptr<attachSystem::FixedComp>&,
+		const std::string&,
+		const std::string&,
+		const std::shared_ptr<xraySystem::ProximityShielding>&);
+
+  template
 int pipeMagGroup(Simulation&,
 		 attachSystem::BlockZone&,
 		 const std::shared_ptr<attachSystem::FixedComp>&,
@@ -374,4 +393,4 @@ int pipeMagGroup(Simulation&,
 
 ///\endcond TEMPLATE
 
-}   // NAMESPACE tdcSystem
+}   // NAMESPACE constructSystem

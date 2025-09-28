@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: cosaxs/cosaxsFrontEnd.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -61,6 +61,7 @@
 #include "UTubePipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 
 #include "cosaxsFrontEnd.h"
 
@@ -68,11 +69,11 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 cosaxsFrontEnd::cosaxsFrontEnd(const std::string& Key) :
-  R3FrontEnd(Key),
+  R3FrontEndFMBB(Key),
   undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
-  undulator(new xraySystem::Undulator(newName+"Undulator"))   
+  undulator(new xraySystem::Undulator(newName+"Undulator"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -85,7 +86,7 @@ cosaxsFrontEnd::cosaxsFrontEnd(const std::string& Key) :
   OR.addObject(undulatorPipe);
   OR.addObject(undulator);
 }
-  
+
 cosaxsFrontEnd::~cosaxsFrontEnd()
   /*!
     Destructor
@@ -114,7 +115,7 @@ cosaxsFrontEnd::buildUndulator(Simulation& System,
     \param System :: Simulation to use
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
-    \return link object 
+    \return link object
   */
 {
   ELog::RegMethod RegA("cosaxsFrontEnd","buildUndulator");
@@ -129,7 +130,7 @@ cosaxsFrontEnd::buildUndulator(Simulation& System,
   undulator->setCutSurf("back",*undulatorPipe,"-back");
   undulator->addInsertCell(outerCell);
   undulator->createAll(System,*undulatorPipe,0);
-  
+
   undulatorPipe->insertInCell("Main",System,undulator->getCell("Void"));
   undulatorPipe->insertInCell("FlangeA",System,undulator->getCell("FrontVoid"));
   undulatorPipe->insertInCell("Main",System,undulator->getCell("FrontVoid"));
@@ -140,6 +141,5 @@ cosaxsFrontEnd::buildUndulator(Simulation& System,
   return *undulatorPipe;
 }
 
-  
-}   // NAMESPACE xraySystem
 
+}   // NAMESPACE xraySystem

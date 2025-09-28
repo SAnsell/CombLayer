@@ -187,8 +187,9 @@ Segment30::buildObjects(Simulation& System)
   gauge->insertInCell(System,outerCell);
 
   pipeA->createAll(System,*gauge,"back");
-  pipeMagUnit(System,*IZThin,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*IZThin,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*IZThin,pipeA,"#front","outerPipe",shieldA);
+  maxivConstruct::pipeTerminate(System,*IZThin,pipeA);
 
   constructSystem::constructUnit
     (System,*IZThin,*pipeA,"back",*bellow);
@@ -198,8 +199,9 @@ Segment30::buildObjects(Simulation& System)
 
 
   pipeB->createAll(System,*ionPump,"back");
-  pipeMagUnit(System,*IZThin,pipeB,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*IZThin,pipeB);
+  maxivConstruct::pipeMagUnit
+    (System,*IZThin,pipeB,"#front","outerPipe",cMagVA);
+  maxivConstruct::pipeTerminate(System,*IZThin,pipeB);
 
   return;
 }

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment6.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,8 +153,9 @@ Segment6::buildObjects(Simulation& System)
 
   pipeD->setFront(*scrapper, "back");
   pipeD->createAll(System,*scrapper,"back");
-  pipeMagUnit(System,*buildZone,pipeD,"#front","outerPipe",shieldB);
-  pipeTerminate(System,*buildZone,pipeD);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeD,"#front","outerPipe",shieldB);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeD);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeD,"back",*ceramicA);

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment36.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,11 +149,15 @@ Segment36::buildObjects(Simulation& System)
   gauge->insertInCell(System,outerCell);
 
   pipeA->createAll(System,*gauge,"back");
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadB);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",quadA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",cMagVA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",quadB);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpmA);

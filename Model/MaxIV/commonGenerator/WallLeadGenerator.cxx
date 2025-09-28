@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/WallLeadGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -48,16 +48,21 @@
 
 namespace setVariable
 {
-
+  // Concrete dimensions: K_20-6_633
 WallLeadGenerator::WallLeadGenerator() :
   xStep(0.0),frontLength(10.0),backLength(10.0),
-  frontWidth(80.0),frontHeight(100.0),
-  backWidth(40.0),backHeight(60.0),
-  steelOutWidth(145.0),steelRingWidth(140.0),
-  steelHeight(70.0),steelDepth(60.0),
-  steelThick(5.0),steelXCut(90.0),steelZCut(70.0),
-  extraLeadOutWidth(140.0),extraLeadRingWidth(140.0),
-  extraLeadHeight(72.0),extraLeadDepth(8.0),extraLeadXCut(50.0),
+  frontWidth(80.0),frontHeight(80.0),
+  backWidth(40.0),backHeight(40.0),
+  steelOutWidth(145.0),
+  steelHeight(70.0),
+  steelDepth(40.0),
+  steelThick(5.0),steelXCut(60.0),steelZCut(80.0),
+  extraLeadOutWidth(140.0),
+  extraLeadHeight(27.0),
+  extraLeadDepth(25.0),
+  extraLeadThick(8.0),
+  extraLeadXCut(60.0),
+  preLeadVoidThick(7.0),
   voidMat("Void"),midMat("Concrete"),wallMat("Lead"),
   steelMat("Stainless304")
   /*!
@@ -65,7 +70,7 @@ WallLeadGenerator::WallLeadGenerator() :
   */
 {}
 
-WallLeadGenerator::~WallLeadGenerator() 
+WallLeadGenerator::~WallLeadGenerator()
  /*!
    Destructor
  */
@@ -74,43 +79,40 @@ WallLeadGenerator::~WallLeadGenerator()
 void
 WallLeadGenerator::setXOffset(const double XS)
   /*!
-    Set the wall offset 
+    Set the wall offset
     \param XS :: Wall step
    */
 {
   xStep=XS;
   return;
 }
-  
+
 void
-WallLeadGenerator::setWidth(const double OW,const double RW)
+WallLeadGenerator::setWidth(const double OW)
   /*!
     Set the widths of the first two objects
     \param OW :: Outer Width
-    \param RW :: Ring Width
    */
 {
   extraLeadOutWidth=OW;
   steelOutWidth=OW;
 
-  extraLeadRingWidth=RW;
-  steelRingWidth=RW;
   return;
 }
-  
+
 void
 WallLeadGenerator::generateWall(FuncDataBase& Control,
 				const std::string& keyName,
 				const double VR) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param VR :: void radius 						
+    \param VR :: void radius
   */
 {
   ELog::RegMethod RegA("WallLeadGenerator","generateWall");
-  
+
   Control.addVariable(keyName+"XStep",xStep);
   Control.addVariable(keyName+"FrontLength",frontLength);
   Control.addVariable(keyName+"BackLength",backLength);
@@ -119,27 +121,27 @@ WallLeadGenerator::generateWall(FuncDataBase& Control,
   Control.addVariable(keyName+"BackWidth",backWidth);
   Control.addVariable(keyName+"BackHeight",backHeight);
   Control.addVariable(keyName+"SteelOutWidth",steelOutWidth);
-  Control.addVariable(keyName+"SteelRingWidth",steelRingWidth);
   Control.addVariable(keyName+"SteelHeight",steelHeight);
   Control.addVariable(keyName+"SteelDepth",steelDepth);
   Control.addVariable(keyName+"SteelThick",steelThick);
   Control.addVariable(keyName+"SteelXCut",steelXCut);
   Control.addVariable(keyName+"SteelZCut",steelZCut);
   Control.addVariable(keyName+"ExtraLeadOutWidth",extraLeadOutWidth);
-  Control.addVariable(keyName+"ExtraLeadRingWidth",extraLeadRingWidth);
   Control.addVariable(keyName+"ExtraLeadHeight",extraLeadHeight);
   Control.addVariable(keyName+"ExtraLeadDepth",extraLeadDepth);
+  Control.addVariable(keyName+"ExtraLeadThick",extraLeadThick);
   Control.addVariable(keyName+"ExtraLeadXCut",extraLeadXCut);
+  Control.addVariable(keyName+"PreLeadVoidThick",preLeadVoidThick);
   Control.addVariable(keyName+"VoidRadius",VR);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"MidMat",midMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"SteelMat",steelMat);
- 
+
   return;
 
 }
 
-  
+
 }  // NAMESPACE setVariable

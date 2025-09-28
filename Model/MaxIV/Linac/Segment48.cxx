@@ -3,7 +3,7 @@
 
  * File: Linac/Segment48.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,8 +158,9 @@ Segment48::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*beamStopB,"back");
 
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   shieldB->createAll(System,*shieldA,"right");
   for (int i=2; i<=4; ++i)

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment49.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -206,8 +206,9 @@ Segment49::buildObjects(Simulation& System)
 
   pipeA->createAll(System,*gateA,2);
 
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   pipeB->createAll(System,*pipeA,"back");
   outerCell=buildZone->createUnit(System);
@@ -219,7 +220,7 @@ Segment49::buildObjects(Simulation& System)
   // this creates spfBehindBackWall zone
       outerCell=nextZone->createUnit(System,*pipeB,2);
       pipeB->insertAllInCell(System,outerCell);
-      pipeTerminate(System,*nextZone,pipeB);
+      maxivConstruct::pipeTerminate(System,*nextZone,pipeB);
       
       constructSystem::constructUnit
 	(System,*nextZone,*pipeB,"back",*gateB);

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   danmaxInc/danmaxFrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_danmaxFrontEnd_h
@@ -38,7 +38,7 @@ namespace constructSystem
   class PortTube;
   class SupplyPipe;
   class VacuumBox;
-  class VacuumPipe; 
+  class VacuumPipe;
 }
 
 namespace xraySystem
@@ -51,7 +51,7 @@ namespace xraySystem
   class UTubePipe;
   class Undulator;
   class Wiggler;
-    
+
   /*!
     \class danmaxFrontEnd
     \version 1.0
@@ -61,7 +61,7 @@ namespace xraySystem
   */
 
 class danmaxFrontEnd :
-  public R3FrontEnd
+  public R3FrontEndFMBB
 {
  private:
 
@@ -73,13 +73,12 @@ class danmaxFrontEnd :
   const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,const long int) override;
-			      
+
   void createSurfaces();
-  void buildObjects(Simulation&);
   void createLinks() override;
-  
+
  public:
-  
+
   danmaxFrontEnd(const std::string&);
   danmaxFrontEnd(const danmaxFrontEnd&);
   danmaxFrontEnd& operator=(const danmaxFrontEnd&);

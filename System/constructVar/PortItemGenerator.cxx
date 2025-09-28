@@ -238,7 +238,7 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   ELog::RegMethod RegA("PortItemGenerator","generatePort");
 
   Control.addVariable(keyName+"PortType","Standard");
-  
+
   const double WThick((windowThick < -Geometry::zeroTol) ?
 		      -windowThick*capThick : windowThick);
 
@@ -289,7 +289,7 @@ PortItemGenerator::generateAnglePort(FuncDataBase& Control,
 
   generatePort(Control,keyName,C,AAxis);
   Control.addVariable(keyName+"PortType","Angle");
-  
+
   Control.addVariable(keyName+"BAxis",BAxis.unit());
   Control.addVariable(keyName+"LengthB",length);
   Control.addVariable(keyName+"LengthB",bLength);
@@ -302,7 +302,7 @@ PortItemGenerator::generateDoublePort(FuncDataBase& Control,
 				      const std::string& keyName,
 				      const PortItemGenerator& extraPI,
 				      const Geometry::Vec3D& C,
-				      const Geometry::Vec3D& Axis) const 
+				      const Geometry::Vec3D& Axis) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
@@ -336,6 +336,7 @@ template void PortItemGenerator::setCF<Linac::CF40>(const double);
 template void PortItemGenerator::setCF<CF40_22>(const double);
 template void PortItemGenerator::setCF<CF50>(const double);
 template void PortItemGenerator::setCF<CF63>(const double);
+template void PortItemGenerator::setCF<CF66_TDC>(const double);
 template void PortItemGenerator::setCF<CF100>(const double);
 template void PortItemGenerator::setCF<CF120>(const double);
 template void PortItemGenerator::setCF<CF150>(const double);

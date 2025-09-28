@@ -84,7 +84,7 @@ class BALDER : public R3Beamline
 
 
   /// Pipe shield on inner of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> pShield;
+  std::shared_ptr<xraySystem::PipeShield> guillotine;
 
   /// Neutron shield on inner of optics hutch
   std::shared_ptr<xraySystem::PipeShield> nShield;

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment10.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -230,7 +230,7 @@ Segment10::buildObjects(Simulation& System)
 
   pipeA->insertInCell("Main",System,outerCell);
   pipeA->insertInCell("FlangeB",System,outerCell);
-  pipeTerminate(System,*nextZone,pipeA);
+  maxivConstruct::pipeTerminate(System,*nextZone,pipeA);
 
   constructSystem::constructUnit
     (System,*nextZone,*pipeA,"back",*bellowA);
@@ -250,9 +250,11 @@ Segment10::buildObjects(Simulation& System)
 
 
   pipeC->createAll(System,*bellowB,"back");
-  pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",QuadA);
-  pipeMagUnit(System,*nextZone,pipeC,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*nextZone,pipeC);
+  maxivConstruct::pipeMagUnit
+    (System,*nextZone,pipeC,"#front","outerPipe",QuadA);
+  maxivConstruct::pipeMagUnit
+    (System,*nextZone,pipeC,"#front","outerPipe",cMagVA);
+  maxivConstruct::pipeTerminate(System,*nextZone,pipeC);
 
   return;
 }

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   formaxInc/formaxFrontEnd.h
  *
  * Copyright (c) 2004-2019 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_formaxFrontEnd_h
@@ -38,7 +38,7 @@ namespace constructSystem
   class PortTube;
   class SupplyPipe;
   class VacuumBox;
-  class VacuumPipe; 
+  class VacuumPipe;
 }
 
 /*!
@@ -51,7 +51,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
-
+  class R3FrontEndFMBB;
   class HeatDump;
   class LCollimator;
   class SqrCollimator;
@@ -60,7 +60,7 @@ namespace xraySystem
   class Undulator;
   class ElectrometerBox;
 
-    
+
   /*!
     \class formaxFrontEnd
     \version 1.0
@@ -70,7 +70,7 @@ namespace xraySystem
   */
 
 class formaxFrontEnd :
-  public R3FrontEnd
+  public R3FrontEndFMBB
 {
  private:
 
@@ -89,9 +89,9 @@ class formaxFrontEnd :
 
   void buildExtras(Simulation&) override;
   void createLinks() override;
-  
+
  public:
-  
+
   formaxFrontEnd(const std::string&);
   formaxFrontEnd(const formaxFrontEnd&);
   formaxFrontEnd& operator=(const formaxFrontEnd&);

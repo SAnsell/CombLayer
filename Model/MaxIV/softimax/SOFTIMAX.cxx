@@ -3,7 +3,7 @@
 
   * File: softimax/SOFTIMAX.cxx
   *
-  * Copyright (c) 2004-2025 by Konstantin Batkov
+  * Copyright (c) 2004-2022 by Konstantin Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@
 #include "VacuumPipe.h"
 #include "JawFlange.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 #include "forkHoles.h"
 #include "OpticsHutch.h"
 #include "softimaxFrontEnd.h"
@@ -89,13 +90,13 @@ SOFTIMAX::SOFTIMAX(const std::string& KN) :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(opticsHut);
   OR.addObject(joinPipe);
   OR.addObject(opticsBeam);
-  
+
 }
 
 SOFTIMAX::~SOFTIMAX()
@@ -103,7 +104,7 @@ SOFTIMAX::~SOFTIMAX()
   Destructor
 */
 {}
-  
+
 void
 SOFTIMAX::build(Simulation& System,
 		const attachSystem::FixedComp& FCOrigin,
@@ -135,6 +136,7 @@ SOFTIMAX::build(Simulation& System,
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
+  wallLead->setCutSurf("Ring",r3Ring->getSurfRule("#FlatInner",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole"
@@ -166,7 +168,7 @@ SOFTIMAX::build(Simulation& System,
 
   //  joinPipeAB->insertInCell("Main",System,opticsHut->getCell("exitHole",0));
 
-  
+
   return;
 }
 

@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef tdcSystem_LObjectSupportB_h
-#define tdcSystem_LObjectSupportB_h
+#ifndef constructSystem_LObjectSupportB_h
+#define constructSystem_LObjectSupportB_h
 
 
 namespace constructSystem
@@ -41,12 +41,13 @@ namespace constructSystem
 }
 namespace xraySystem
 {
-    class CorrectorMag;
+  class CorrectorMag;
+  class ProximityShielding;
 }
 
-namespace tdcSystem
+namespace maxivConstruct
 {
-  
+
 int
 pipeTerminate(Simulation&,
 	      attachSystem::BlockZone&,

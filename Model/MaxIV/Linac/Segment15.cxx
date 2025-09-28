@@ -3,7 +3,7 @@
 
  * File: Linac/Segment15.cxx
  *
- * Copyright (c) 2004-2020 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,8 +126,9 @@ Segment15::buildObjects(Simulation& System)
     pipeA->copyCutSurf("front",*this,"front");
 
   pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*mirrorChamber);

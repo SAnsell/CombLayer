@@ -3,7 +3,7 @@
 
  * File: Linac/Segment14.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,18 +139,20 @@ Segment14::buildObjects(Simulation& System)
 
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
-  pipeMagGroup(System,*buildZone,flatA,
+  maxivConstruct::pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dm1);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  maxivConstruct::pipeTerminateGroup
+    (System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatA,"back",*pipeB);
 
   flatB->setFront(*pipeB,"back");
   flatB->createAll(System,*pipeB,"back");
-  pipeMagGroup(System,*buildZone,flatB,
+  maxivConstruct::pipeMagGroup(System,*buildZone,flatB,
      {"FlangeA","Pipe"},"Origin","outerPipe",dm2);
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  maxivConstruct::pipeTerminateGroup
+    (System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatB,"back",*gateA);

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment2.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,8 +157,9 @@ Segment2::buildObjects(Simulation& System)
   int outerCell;
 
   pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",QuadA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpmA);
@@ -167,8 +168,9 @@ Segment2::buildObjects(Simulation& System)
     (System,*buildZone,*bpmA,"back",*bellowA);
 
   pipeB->createAll(System,*bellowA,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",QuadB);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*gateTube);
@@ -189,10 +191,13 @@ Segment2::buildObjects(Simulation& System)
     (System,*buildZone,*bellowB,"back",*bpmB);
 
   pipeE->createAll(System,*bpmB,"back");
-  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadC);
-  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadD);
-  pipeMagUnit(System,*buildZone,pipeE,"#front","outerPipe",QuadE);
-  pipeTerminate(System,*buildZone,pipeE);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeE,"#front","outerPipe",QuadC);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeE,"#front","outerPipe",QuadD);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeE,"#front","outerPipe",QuadE);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeE);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeE,"back",*yagUnit);

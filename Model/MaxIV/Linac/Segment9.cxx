@@ -3,7 +3,7 @@
 
  * File: Linac/Segment9.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,9 +150,11 @@ Segment9::buildObjects(Simulation& System)
 
   
   pipeA->createAll(System,*pumpA,"back");
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagVA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",cMagVA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bellowB);
@@ -161,8 +163,9 @@ Segment9::buildObjects(Simulation& System)
     (System,*buildZone,*bellowB,"back",*bpm);
 
   pipeB->createAll(System,*bpm,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",QuadA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*bellowC);

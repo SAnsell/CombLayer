@@ -3,7 +3,7 @@
 
  * File: Linac/Segment3.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,15 +141,17 @@ Segment3::buildObjects(Simulation& System)
 
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
-  pipeMagGroup(System,*buildZone,flatA,
+  maxivConstruct::pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  maxivConstruct::pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   pipeA->setFront(*flatA,"back");
   pipeA->createAll(System,*flatA,"back");
-  correctorMagnetPair(System,*buildZone,pipeA,cMagHA,cMagVA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::correctorMagnetPair
+    (System,*buildZone,pipeA,cMagHA,cMagVA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   shieldB->createAll(System,*shieldA, "left");
   for (int i=2; i<=9; ++i)
@@ -158,9 +160,10 @@ Segment3::buildObjects(Simulation& System)
 
   flatB->setFront(*pipeA,"back");
   flatB->createAll(System,*pipeA,"back");
-  pipeMagGroup(System,*buildZone,flatB,
+  maxivConstruct::pipeMagGroup(System,*buildZone,flatB,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  maxivConstruct::pipeTerminateGroup
+    (System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatB,"back",*bellowB);

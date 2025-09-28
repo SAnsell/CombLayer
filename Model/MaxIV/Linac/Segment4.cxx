@@ -3,7 +3,7 @@
 
  * File: Linac/Segment4.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,10 +154,13 @@ Segment4::buildObjects(Simulation& System)
     (System,*buildZone,*pipeA,"back",*bpmA);
 
   pipeB->createAll(System,*bpmA,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",QuadA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",SexuA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",QuadB);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*yagUnit);
@@ -176,8 +179,9 @@ Segment4::buildObjects(Simulation& System)
     (System,*buildZone,*yagUnit,"back",*bellowA);
 
   pipeC->createAll(System,*bellowA,"back");
-  correctorMagnetPair(System,*buildZone,pipeC,cMagHA,cMagVA);
-  pipeTerminate(System,*buildZone,pipeC);
+  maxivConstruct::correctorMagnetPair
+    (System,*buildZone,pipeC,cMagHA,cMagVA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeC);
 
   return;
 }

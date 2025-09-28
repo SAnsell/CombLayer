@@ -3,7 +3,7 @@
 
  * File: Linac/Segment35.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,17 +154,21 @@ Segment35::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   pipeA->createAll(System,*yagUnit, "back");
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quadA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",quadA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpm);
 
   pipeB->createAll(System,*bpm,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",quadB);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",quadB);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*mirrorChamber);

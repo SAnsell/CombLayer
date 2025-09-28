@@ -3,7 +3,7 @@
 
  * File: Linac/Segment7.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,6 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-
 Segment7::Segment7(const std::string& Key) :
   TDCsegment(Key,2),
 
@@ -124,17 +123,17 @@ Segment7::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Segment7","buildObjects");
 
-
-
   int outerCell;
 
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
 
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
-  outerCell = pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",QuadA);
+  outerCell = maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   for (const TDCsegment* sideSegment : sideVec)
     {
@@ -167,8 +166,9 @@ Segment7::buildObjects(Simulation& System)
   //  pipeB->copyCutSurf("front",*bpm,"back");
   pipeB->createAll(System,*bpm,"back");
 
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",cMagVA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   setCutSurf("EndPipeFlange",pipeB->getExcludeSurf("FlangeB"));
   setCutSurf("EndPipeMain",pipeB->getExcludeSurf("Main"));

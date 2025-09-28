@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3CommonInc/R3FrontEnd.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell / K. Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_R3FrontEnd_h
 #define xraySystem_R3FrontEnd_h
+
+namespace tdcSystem
+{
+  class CleaningMagnet;
+}
+
 
 namespace insertSystem
 {
@@ -40,15 +46,15 @@ namespace constructSystem
   class PortTube;
   class SupplyPipe;
   class VacuumBox;
-  class VacuumPipe; 
+  class VacuumPipe;
 }
 
 /*!
   \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
+  \brief R3 front-end base class (for either Toyama or FMB/B)
+  \version 2.0
+  \date March 2025
+  \author S. Ansell / K. Batkov
 */
 
 namespace xraySystem
@@ -59,6 +65,8 @@ namespace xraySystem
   class LCollimator;
   class SqrCollimator;
   class SquareFMask;
+  class MovableSafetyMask;
+  class HeatAbsorberToyama;
   class BeamMount;
   class PreDipole;
   class MagnetM1;
@@ -69,7 +77,7 @@ namespace xraySystem
   class EPCombine;
   class R3ChokeChamber;
   class R3ChokeInsert;
-    
+
   /*!
     \class balderFrontEnd
     \version 1.0
@@ -89,26 +97,31 @@ class R3FrontEnd :
  protected:
 
   /// point to stop [normal none]
-  std::string stopPoint;          
+  std::string stopPoint;
 
   /// Inner buildzone
   attachSystem::BlockZone buildZone;
-  
+
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
+  // pipe before undulator (to place the straight section centre in
+  // the undulator centre) the length of this pipe is adjusted to make
+  // straight section length correct (6.81 m for TomoWISE)
+  std::shared_ptr<constructSystem::VacuumPipe> prePipe;
+
   /// transfer pipe from undulator/wiggler
   std::shared_ptr<constructSystem::VacuumPipe> transPipe;
-  
+
   /// First magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetM1> magBlockM1;
 
   /// Second magnetic block out of undulator
   std::shared_ptr<xraySystem::MagnetU1> magBlockU1;
 
-  
+
   std::shared_ptr<xraySystem::EPSeparator> epSeparator;
-  
+
   /// Electron/photon separator to choke 1
   std::shared_ptr<xraySystem::R3ChokeChamber> chokeChamber;
 
@@ -131,23 +144,19 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Mask1:2 connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
+  // Permanent magnet
+  std::shared_ptr<tdcSystem::CleaningMagnet> pMag;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// collimator B
   std::shared_ptr<xraySystem::SquareFMask> collB;
   /// collimator C
   std::shared_ptr<xraySystem::SquareFMask> collC;
-  /// Pipe from collimator B to heat dump
+  /// Pipe from collimator B to heat dump or MSM
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
 
-  /// head dump port
-  std::shared_ptr<constructSystem::PipeTube> heatBox;
-  /// Heat dump container
-  std::shared_ptr<xraySystem::HeatDump> heatDump;
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
-  /// Gate box
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPB;
   /// Pipe to third optic table
@@ -156,8 +165,8 @@ class R3FrontEnd :
 
     /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowE;
-  /// Variable Apperature pipe
-  std::shared_ptr<constructSystem::VacuumPipe> aperturePipe;
+  /// Variable Apperature pipe A
+  std::shared_ptr<constructSystem::VacuumPipe> aperturePipeA;
   /// L collimator
   std::shared_ptr<xraySystem::LCollimator> moveCollA;
   /// bellows for third table
@@ -175,7 +184,7 @@ class R3FrontEnd :
   /// Exit of movables
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 
-   
+
   /// Exit of movables [?]
   std::shared_ptr<constructSystem::GateValveCube> gateA;
   /// bellows for florescence system
@@ -194,21 +203,17 @@ class R3FrontEnd :
   std::array<std::shared_ptr<xraySystem::BeamMount>,2> shutters;
   /// Back port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeB;
-  /// Front port connection for shutterbox exit
-  std::shared_ptr<constructSystem::Bellows> bellowK;
-  
-  std::shared_ptr<constructSystem::VacuumPipe> exitPipe;
 
   bool collFM3Active;   ///< Coll C active
   double outerRadius;   ///< radius of tube for divisions
   double frontOffset;   ///< Distance to move start point from origin
 
-  void insertFlanges(Simulation&,const constructSystem::PipeTube&,
-		     const size_t);
+  void insertFlanges(Simulation&,const constructSystem::PipeTube&, const size_t);
+
   virtual const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,
-		   const long int) =0;
+		   const long int) = 0;
 
   /// Null op for extra components after build
   virtual void buildExtras(Simulation&) {}
@@ -218,28 +223,28 @@ class R3FrontEnd :
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&,
 			 const attachSystem::FixedComp&,
-			 const std::string&);  
+			 const std::string&);
 
-  
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   virtual void createLinks()=0;
 
-  void buildObjects(Simulation&);
-  
+  virtual void buildObjects(Simulation&) = 0;
+
  public:
-  
+
   R3FrontEnd(const std::string&);
   R3FrontEnd(const R3FrontEnd&);
   R3FrontEnd& operator=(const R3FrontEnd&);
   ~R3FrontEnd() override;
 
   /// remove FM3
-  void deactivateFM3() { collFM3Active=0; }
+  void deactivateFM3() { collFM3Active=false; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int) override;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

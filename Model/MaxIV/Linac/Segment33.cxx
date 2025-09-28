@@ -3,7 +3,7 @@
 
  * File: Linac/Segment33.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,19 +146,24 @@ Segment33::buildObjects(Simulation& System)
   if (isActive("front"))
     pipeA->copyCutSurf("front",*this,"front");
   pipeA->createAll(System,*this,0);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",shieldA);
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",shieldA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",cMagHA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*bpm);
 
   pipeB->createAll(System,*bpm,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",SexuA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",QuadB);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",QuadA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",SexuA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",QuadB);
 
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*yagUnit);
@@ -171,9 +176,11 @@ Segment33::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   pipeC->createAll(System,*yagUnit,"back");
-  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",cMagVA);
-  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",shieldB);
-  pipeTerminate(System,*buildZone,pipeC);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeC,"#front","outerPipe",cMagVA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeC,"#front","outerPipe",shieldB);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeC);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeC,"back",*bellow);

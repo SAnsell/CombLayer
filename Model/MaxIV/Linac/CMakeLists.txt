@@ -4,7 +4,7 @@ set (LinacSources
     CrossWayBlank.cxx CurveMagnet.cxx DipoleDIBMag.cxx 
     EArrivalMon.cxx EBeamStop.cxx FlatPipe.cxx 
     FMUndulator.cxx InjectionHall.cxx LBeamStop.cxx 
-    linacMagnetVariables.cxx linacVariables.cxx LObjectSupport.cxx 
+    linacMagnetVariables.cxx linacVariables.cxx 
     LocalShielding3.cxx LocalShielding.cxx LowBeamBox.cxx 
     LQuadF.cxx LQuadH.cxx LSexupole.cxx 
     magnetVar.cxx MainBeamDump.cxx MultiPipe.cxx 
@@ -67,7 +67,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/LBeamStop.cxx
   ${tarDIR}/linacMagnetVariables.cxx
   ${tarDIR}/linacVariables.cxx
-  ${tarDIR}/LObjectSupport.cxx
   ${tarDIR}/LocalShielding3.cxx
   ${tarDIR}/LocalShielding.cxx
   ${tarDIR}/LowBeamBox.cxx
@@ -157,7 +156,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/FMUndulator.h
   ${tarINC}/InjectionHall.h
   ${tarINC}/LBeamStop.h
-  ${tarINC}/LObjectSupport.h
   ${tarINC}/LocalShielding3.h
   ${tarINC}/LocalShielding.h
   ${tarINC}/LowBeamBox.h

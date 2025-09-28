@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/BremBlockGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -35,6 +35,7 @@
 #include <numeric>
 #include <memory>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -51,11 +52,12 @@ namespace setVariable
 
 BremBlockGenerator::BremBlockGenerator() :
   centFlag(0),length(8.0),width(7.2),height(7.2),
+  radius(0.0),
   holeXStep(0.0),holeZStep(0.0),
   holeAWidth(3.0),holeAHeight(1.5),
   holeMidDist(4.8),holeMidWidth(0.7),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
-  
+
   voidMat("Void"),mainMat("Tungsten")
 
   /*!
@@ -63,13 +65,13 @@ BremBlockGenerator::BremBlockGenerator() :
   */
 {}
 
-BremBlockGenerator::~BremBlockGenerator() 
+BremBlockGenerator::~BremBlockGenerator()
  /*!
    Destructor
  */
 {}
 
-  
+
 void
 BremBlockGenerator::setMaterial(const std::string& MMat,
 				const std::string& VMat)
@@ -99,15 +101,28 @@ BremBlockGenerator::setLength(const double L)
 void
 BremBlockGenerator::setCube(const double W,const double H)
   /*!
-    Make block blockshape
+    Make block shape rectangular
     \param W :: Width
     \param H :: Height
    */
 {
+  if (radius>Geometry::zeroTol) {
+    throw ColErr::ExitAbort("Can't set rectangular shape. Be sure that setRadius was not called before.");
+  }
   width=W;
   height=H;
-  return;
 }
+
+void
+BremBlockGenerator::setRadius(const double R)
+  /*!
+    Make block shape cylindrical
+    \param R :: Outer radius
+   */
+{
+  radius = R;
+}
+
 
 void
 BremBlockGenerator::setHoleXY(const double HX,const double HZ)
@@ -153,7 +168,7 @@ BremBlockGenerator::setAperatureAngle
   (const double MLength,
    const double midW,const double midH,
    const double frontAngle,const double backAngle)
-  
+
 /*!
     Set the widths
     \param MLength :: Aperature length
@@ -175,26 +190,27 @@ BremBlockGenerator::setAperatureAngle
   return;
 }
 
-				  
+
 void
 BremBlockGenerator::generateBlock(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const double yStep) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param yStep :: Forward step
     \param L :: length of W block
   */
 {
   ELog::RegMethod RegA("BremBlockGenerator","generatorColl");
-  
+
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"CentreFlag",static_cast<int>(centFlag));
-  
+
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Radius",radius);
 
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"HoleXStep",holeXStep);
@@ -206,13 +222,13 @@ BremBlockGenerator::generateBlock(FuncDataBase& Control,
   Control.addVariable(keyName+"HoleMidHeight",holeMidHeight);
   Control.addVariable(keyName+"HoleBWidth",holeBWidth);
   Control.addVariable(keyName+"HoleBHeight",holeBHeight);
-  
+
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"MainMat",mainMat);
-       
+
   return;
 
 }
 
-  
+
 }  // NAMESPACE setVariable

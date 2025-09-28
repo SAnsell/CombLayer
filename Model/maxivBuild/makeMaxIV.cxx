@@ -71,15 +71,17 @@
 #include "FORMAX.h"
 #include "MICROMAX.h"
 #include "SPECIES.h"
+#include "TOMOWISE.h"
 
 #include "TDC.h"
+#include "GunTestFacility.h"
 
 #include "makeMaxIV.h"
 
 namespace xraySystem
 {
 
-makeMaxIV::makeMaxIV() 
+makeMaxIV::makeMaxIV()
  /*!
     Constructor
  */
@@ -257,7 +259,7 @@ makeMaxIV::buildInjection(Simulation& System,
     });
 
   ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance(); 
+    ModelSupport::objectRegister::Instance();
 
   tdc=std::make_shared<tdcSystem::TDC>("TDC");
   OR.addObject(tdc);
@@ -327,8 +329,8 @@ makeMaxIV::buildR1Ring(Simulation& System,
     });
 
   ModelSupport::objectRegister& OR=
-     ModelSupport::objectRegister::Instance(); 
- 
+     ModelSupport::objectRegister::Instance();
+
   r1Ring=std::make_shared<R1Ring>("R1Ring");
   OR.addObject(r1Ring);
 
@@ -406,19 +408,30 @@ makeMaxIV::buildR3Ring(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeMaxIV","buildR3Ring");
+
+
   ModelSupport::objectRegister& OR=
      ModelSupport::objectRegister::Instance();
 
   r3Ring=std::make_shared<R3Ring>("R3Ring");
   OR.addObject(r3Ring);
-  
+
   static const std::map<std::string,std::string> beamNAMES
-    ({ {"BALDER","OpticCentre1"},
-       {"COSAXS","OpticCentre1"},
-       {"SOFTIMAX","OpticCentre1"},
-       {"DANMAX","OpticCentre1"},
-       {"FORMAX","OpticCentre1"},  // was 8
-       {"MICROMAX","OpticCentre1"}
+    ({ // Note that TOMOWISE is built vrt ExitCentre1 - it's more
+       // convenient to compare distances vrt mechanical drawings,
+       // where they cound from the straight section centre.
+      // To build other beamlines vrt ExitCentre, apply similar
+      // changes in PIndex and prevIndex as done in TOMOWISE::build()
+      {"DANMAX","OpticCentre4"},
+      {"TOMOWISE","ExitCentre1"}, // should be 7, but if not 1 then
+				  // RingDoor is built in the wrong
+				  // ring sector
+      {"BALDER","OpticCentre8"},
+      {"FORMAX","OpticCentre9"},
+      {"COSAXS","OpticCentre10"}, // if not 1, then RingDoor is built
+				  // in the wrong ring sector
+      {"MICROMAX","OpticCentre12"},
+      {"SOFTIMAX","OpticCentre18"}
     });
 
   // Determine if R1Ring/beamlines need to be built
@@ -445,6 +458,8 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	  index++;
 	}
     }
+
+
   if (!activeR3) return 0;
 
 
@@ -474,7 +489,9 @@ makeMaxIV::buildR3Ring(Simulation& System,
 	BLPtr.reset(new FORMAX("Formax"));
       else if (BL=="MICROMAX")
 	BLPtr.reset(new MICROMAX("MicroMax"));
-
+      else if (BL=="TOMOWISE") {
+	BLPtr.reset(new TOMOWISE("TomoWISE"));
+      }
       if (!activeStop.empty())
 	{
 	  ELog::EM<<"Stop Point:"<<activeStop<<ELog::endDiag;
@@ -486,6 +503,33 @@ makeMaxIV::buildR3Ring(Simulation& System,
     }
   return 1;    // R3 Built
 }
+
+
+bool
+makeMaxIV::buildGunTest(Simulation& System,
+			const mainSystem::inputParam& IParam)
+/*!
+  Build the Gun Test Facility
+  \param System :: Simulation
+  \param IParam :: Input paramters
+ */
+{
+  ELog::RegMethod RegA("makeMaxIV","buildGunTest");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  gtf = std::make_shared<MAXIV::GunTestFacility::GunTestFacility>("GTF");
+  OR.addObject(gtf);
+
+  // constexpr int voidCell(74123);
+  // gtf->addInsertCell(voidCell);
+  gtf->createAll(System,World::masterOrigin(),0);
+
+  return 1; // Gun Test Facility built \todo: why 1 but not 0???
+
+}
+
 
 void
 makeMaxIV::build(Simulation& System,
@@ -499,16 +543,20 @@ makeMaxIV::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeMaxIV","build");
 
+
   //  const FuncDataBase& Control=System.getDataBase();
 
   if (buildR3Ring(System,IParam))  // 3GeV Ring
     ELog::EM<<"=Finished 3.0GeV Ring="<<ELog::endDiag;
 
   else if(buildR1Ring(System,IParam))
-    ELog::EM<<"Finished 1.5GeV Ring"<<ELog::endDiag;
+    ELog::EM<<"=Finished 1.5GeV Ring="<<ELog::endDiag;
 
   else if (buildInjection(System,IParam))  // Injection Hall
     ELog::EM<<"=Finished Linac/SPF System="<<ELog::endDiag;
+
+  else if (buildGunTest(System,IParam)) // Gun test facility
+    ELog::EM<<"=Finished Gun TestFacility="<<ELog::endDiag;
 
   else
     ELog::EM<<"NO Linac/ SPF / R1 / R3 Ring built"<<ELog::endCrit;

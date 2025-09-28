@@ -4,7 +4,9 @@ set (R3CommonSources
     HalfElectronPipe.cxx MagnetM1.cxx MagnetU1.cxx 
     OpticsStepHutch.cxx R3Beamline.cxx R3ChokeChamber.cxx 
     R3ChokeInsert.cxx R3FrontEndCave.cxx R3FrontEnd.cxx 
-    R3MagnetVariables.cxx R3Ring.cxx R3RingVariables.cxx 
+    R3FrontEndFMBB.cxx R3FrontEndToyama.cxx R3MagnetVariables.cxx 
+    R3Ring.cxx R3RingVariables.cxx R3RingVariablesFMBB.cxx 
+    R3RingVariablesToyama.cxx 
 )
 
 add_library (R3Common SHARED
@@ -40,9 +42,13 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/R3ChokeInsert.cxx
   ${tarDIR}/R3FrontEndCave.cxx
   ${tarDIR}/R3FrontEnd.cxx
+  ${tarDIR}/R3FrontEndFMBB.cxx
+  ${tarDIR}/R3FrontEndToyama.cxx
   ${tarDIR}/R3MagnetVariables.cxx
   ${tarDIR}/R3Ring.cxx
   ${tarDIR}/R3RingVariables.cxx
+  ${tarDIR}/R3RingVariablesFMBB.cxx
+  ${tarDIR}/R3RingVariablesToyama.cxx
   ${tarINC}/ElectrometerBox.h
   ${tarINC}/EntryPipe.h
   ${tarINC}/EPCombine.h
@@ -57,7 +63,9 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/R3ChokeChamber.h
   ${tarINC}/R3ChokeInsert.h
   ${tarINC}/R3FrontEndCave.h
+  ${tarINC}/R3FrontEndFMBB.h
   ${tarINC}/R3FrontEnd.h
+  ${tarINC}/R3FrontEndToyama.h
   ${tarINC}/R3Ring.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
 

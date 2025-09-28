@@ -3,7 +3,7 @@
 
  * File: Linac/Segment18.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,12 +144,14 @@ Segment18::buildObjects(Simulation& System)
     (System,*buildZone,*bellowB,"back",*bpm);
 
   pipeA->createAll(System,*bpm, "back");
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",quad);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",quad);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   pipeB->createAll(System,*pipeA, "back");
-  correctorMagnetPair(System,*buildZone,pipeB,cMagHA,cMagVA);
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::correctorMagnetPair
+    (System,*buildZone,pipeB,cMagHA,cMagVA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   return;
 }

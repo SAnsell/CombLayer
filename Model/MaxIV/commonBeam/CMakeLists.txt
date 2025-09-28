@@ -1,27 +1,29 @@
 set (commonBeamSources
-    AreaDetector.cxx BeamMount.cxx BeamPair.cxx 
-    BeamScrapper.cxx BlockStand.cxx BoxJaws.cxx 
-    BremBlock.cxx BremColl.cxx BremMonoColl.cxx 
-    BremTube.cxx CollTube.cxx CollUnit.cxx 
-    ConnectorTube.cxx CooledScreen2.cxx CooledScreen.cxx 
-    CorrectorMag.cxx CRLTube.cxx CrossWayTube.cxx 
-    CylGateValve.cxx DCMTank.cxx DiffPumpXIADP03.cxx 
-    Dipole.cxx FilterHolder.cxx FlangeMount.cxx 
-    forkHoles.cxx FourPortTube.cxx GaugeTube.cxx 
-    GrateHolder.cxx GrateMonoBox.cxx GratingMono.cxx 
-    GratingUnit.cxx HeatDump.cxx HPJaws.cxx 
+    AreaDetector.cxx BeamAxis.cxx BeamMount.cxx 
+    BeamPair.cxx BeamScrapper.cxx BlockStand.cxx 
+    BoxJaws.cxx BremBlock.cxx BremColl.cxx 
+    BremMonoColl.cxx BremTube.cxx CollTube.cxx 
+    CollUnit.cxx ConnectorTube.cxx CooledScreen2.cxx 
+    CooledScreen.cxx CorrectorMag.cxx CRLTube.cxx 
+    CrossWayTube.cxx CylGateValve.cxx DCMTank.cxx 
+    DiffPumpXIADP03.cxx Dipole.cxx Duct.cxx 
+    FilterHolder.cxx FlangeMount.cxx forkHoles.cxx 
+    FourPortTube.cxx GaugeTube.cxx GrateHolder.cxx 
+    GrateMonoBox.cxx GratingMono.cxx GratingUnit.cxx 
+    HeatAbsorberToyama.cxx HeatDump.cxx HPJaws.cxx 
     IonGauge.cxx IonPumpTube.cxx LCollimator.cxx 
-    Maze.cxx Mirror.cxx MLMono.cxx 
-    MonoBeamStop.cxx MonoBlockXstals.cxx MonoBox.cxx 
-    MonoCrystals.cxx MonoShutter.cxx Octupole.cxx 
-    OpticsHutch.cxx PipeShield.cxx PortChicane.cxx 
-    Quadrupole.cxx RingDoor.cxx RoundMonoShutter.cxx 
-    Sexupole.cxx ShutterUnit.cxx SideShield.cxx 
-    SimpleChicane.cxx SixPortTube.cxx SqrCollimator.cxx 
-    SquareFMask.cxx Table.cxx TankMonoVessel.cxx 
-    TriggerTube.cxx TwinPipe.cxx Undulator.cxx 
-    UTubePipe.cxx ViewScreenTube.cxx WallLead.cxx 
-    XrayInputs.cxx 
+    LObjectSupport.cxx Maze.cxx Mirror.cxx 
+    MLMono.cxx MonoBeamStop.cxx MonoBlockXstals.cxx 
+    MonoBox.cxx MonoCrystals.cxx MonoShutter.cxx 
+    MovableSafetyMask.cxx Octupole.cxx OpticsHutch.cxx 
+    PipeShield.cxx PortChicane.cxx PowerFilter.cxx 
+    ProximityShielding.cxx Quadrupole.cxx RingDoor.cxx 
+    RoundMonoShutter.cxx Sexupole.cxx ShutterUnit.cxx 
+    SideShield.cxx SimpleChicane.cxx SixPortTube.cxx 
+    SqrCollimator.cxx SquareFMask.cxx Table.cxx 
+    TankMonoVessel.cxx TriggerTube.cxx TwinPipe.cxx 
+    Undulator.cxx UTubePipe.cxx ViewScreenTube.cxx 
+    WallLead.cxx XrayInputs.cxx 
 )
 
 add_library (commonBeam SHARED
@@ -43,6 +45,7 @@ file(RELATIVE_PATH tarINC
 
 set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/AreaDetector.cxx
+  ${tarDIR}/BeamAxis.cxx
   ${tarDIR}/BeamMount.cxx
   ${tarDIR}/BeamPair.cxx
   ${tarDIR}/BeamScrapper.cxx
@@ -64,6 +67,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/DCMTank.cxx
   ${tarDIR}/DiffPumpXIADP03.cxx
   ${tarDIR}/Dipole.cxx
+  ${tarDIR}/Duct.cxx
   ${tarDIR}/FilterHolder.cxx
   ${tarDIR}/FlangeMount.cxx
   ${tarDIR}/forkHoles.cxx
@@ -73,11 +77,13 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/GrateMonoBox.cxx
   ${tarDIR}/GratingMono.cxx
   ${tarDIR}/GratingUnit.cxx
+  ${tarDIR}/HeatAbsorberToyama.cxx
   ${tarDIR}/HeatDump.cxx
   ${tarDIR}/HPJaws.cxx
   ${tarDIR}/IonGauge.cxx
   ${tarDIR}/IonPumpTube.cxx
   ${tarDIR}/LCollimator.cxx
+  ${tarDIR}/LObjectSupport.cxx
   ${tarDIR}/Maze.cxx
   ${tarDIR}/Mirror.cxx
   ${tarDIR}/MLMono.cxx
@@ -86,10 +92,13 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MonoBox.cxx
   ${tarDIR}/MonoCrystals.cxx
   ${tarDIR}/MonoShutter.cxx
+  ${tarDIR}/MovableSafetyMask.cxx
   ${tarDIR}/Octupole.cxx
   ${tarDIR}/OpticsHutch.cxx
   ${tarDIR}/PipeShield.cxx
   ${tarDIR}/PortChicane.cxx
+  ${tarDIR}/PowerFilter.cxx
+  ${tarDIR}/ProximityShielding.cxx
   ${tarDIR}/Quadrupole.cxx
   ${tarDIR}/RingDoor.cxx
   ${tarDIR}/RoundMonoShutter.cxx
@@ -110,6 +119,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/WallLead.cxx
   ${tarDIR}/XrayInputs.cxx
   ${tarINC}/AreaDetector.h
+  ${tarINC}/BeamAxis.h
   ${tarINC}/BeamMount.h
   ${tarINC}/BeamPair.h
   ${tarINC}/BeamScrapper.h
@@ -131,6 +141,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/DCMTank.h
   ${tarINC}/DiffPumpXIADP03.h
   ${tarINC}/Dipole.h
+  ${tarINC}/Duct.h
   ${tarINC}/FilterHolder.h
   ${tarINC}/FlangeMount.h
   ${tarINC}/forkHoles.h
@@ -140,11 +151,13 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/GrateMonoBox.h
   ${tarINC}/GratingMono.h
   ${tarINC}/GratingUnit.h
+  ${tarINC}/HeatAbsorberToyama.h
   ${tarINC}/HeatDump.h
   ${tarINC}/HPJaws.h
   ${tarINC}/IonGauge.h
   ${tarINC}/IonPumpTube.h
   ${tarINC}/LCollimator.h
+  ${tarINC}/LObjectSupport.h
   ${tarINC}/Maze.h
   ${tarINC}/Mirror.h
   ${tarINC}/MLMono.h
@@ -153,10 +166,13 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/MonoBox.h
   ${tarINC}/MonoCrystals.h
   ${tarINC}/MonoShutter.h
+  ${tarINC}/MovableSafetyMask.h
   ${tarINC}/Octupole.h
   ${tarINC}/OpticsHutch.h
   ${tarINC}/PipeShield.h
   ${tarINC}/PortChicane.h
+  ${tarINC}/PowerFilter.h
+  ${tarINC}/ProximityShielding.h
   ${tarINC}/Quadrupole.h
   ${tarINC}/RingDoor.h
   ${tarINC}/RoundMonoShutter.h

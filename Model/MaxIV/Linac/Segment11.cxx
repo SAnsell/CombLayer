@@ -3,7 +3,7 @@
 
  * File: Linac/Segment11.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,8 +145,9 @@ Segment11::buildObjects(Simulation& System)
     (System,*buildZone,*bellowA,"back",*bpm);
 
   pipeA->createAll(System,*bpm,"back");
-  pipeMagUnit(System,*buildZone,pipeA,"#front","outerPipe",QuadA);
-  pipeTerminate(System,*buildZone,pipeA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeA,"#front","outerPipe",QuadA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeA);
 
   outerCell=constructSystem::constructUnit
     (System,*buildZone,*pipeA,"back",*yagUnit);
@@ -159,9 +160,11 @@ Segment11::buildObjects(Simulation& System)
   yagScreen->insertInCell("Payload",System,yagUnit->getCell("Void"));
 
   pipeB->createAll(System,*yagUnit,"back");
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
-  pipeMagUnit(System,*buildZone,pipeB,"#front","outerPipe",shieldA);
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",cMagHA);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeB,"#front","outerPipe",shieldA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   return;
 }

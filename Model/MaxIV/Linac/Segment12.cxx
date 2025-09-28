@@ -3,7 +3,7 @@
 
  * File: Linac/Segment12.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,9 +148,10 @@ Segment12::buildObjects(Simulation& System)
   flatA->setFront(*bellowA,"back");
   flatA->createAll(System,*bellowA,"back");
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatA,
+  maxivConstruct::pipeMagGroup(System,*buildZone,flatA,
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  maxivConstruct::pipeTerminateGroup
+    (System,*buildZone,flatA,{"FlangeB","Pipe"});
 
 
   beamA->setCutSurf("front",*flatA,"back");
@@ -167,14 +168,14 @@ Segment12::buildObjects(Simulation& System)
   outerCell=buildZone->createUnit(System,*shieldA,2);
   shieldA->insertInCell(System,outerCell);
 
-  pipeTerminateGroup(System,*buildZone,beamA,"exit",
-   		     {"Box","Main","Exit","FlangeE"});
+  maxivConstruct::pipeTerminateGroup(System,*buildZone,beamA,"exit",
+				     {"Box","Main","Exit","FlangeE"});
   buildZone->createUnit(System,*beamA,"exit");
   /////////////
 
   bellowLA->setCutSurf("front",*beamA,"exit");
   bellowLA->createAll(System,*beamA,"exit");
-  outerCell=pipeTerminate(System,*buildZone,bellowLA);
+  outerCell=maxivConstruct::pipeTerminate(System,*buildZone,bellowLA);
   beamA->insertInCell("Main",System,outerCell);
 
   outerCell=constructSystem::constructUnit
@@ -201,7 +202,8 @@ Segment12::buildObjects(Simulation& System)
   beamA->insertInCell("FlangeB",System,cellB);
 
 
-  cellC=pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  cellC=maxivConstruct::pipeTerminateGroup
+    (System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   flatB->insertInCell("FlangeA",System,cellB);
   flatB->insertInCell("Pipe",System,cellB);

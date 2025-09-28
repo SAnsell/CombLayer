@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: danmax/danmaxFrontEnd.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -62,6 +62,7 @@
 #include "PortTube.h"
 #include "Wiggler.h"
 #include "R3FrontEnd.h"
+#include "R3FrontEndFMBB.h"
 
 #include "danmaxFrontEnd.h"
 
@@ -69,9 +70,9 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 danmaxFrontEnd::danmaxFrontEnd(const std::string& Key) :
-  R3FrontEnd(Key),
+  R3FrontEndFMBB(Key),
   undulatorTube(new constructSystem::PortTube(newName+"UndulatorTube")),
   undulator(new Wiggler(newName+"Undulator"))
   /*!
@@ -86,7 +87,7 @@ danmaxFrontEnd::danmaxFrontEnd(const std::string& Key) :
   OR.addObject(undulatorTube);
   OR.addObject(undulator);
 }
-  
+
 danmaxFrontEnd::~danmaxFrontEnd()
   /*!
     Destructor
@@ -100,12 +101,12 @@ danmaxFrontEnd::createLinks()
    */
 {
   ELog::RegMethod RegA("danmaxFrontEnd","createLinks");
-  
+
   setLinkCopy(0,*undulatorTube,1);
   setLinkCopy(1,*lastComp,2);
   return;
 }
-  
+
 
 const attachSystem::FixedComp&
 danmaxFrontEnd::buildUndulator(Simulation& System,
@@ -117,7 +118,7 @@ danmaxFrontEnd::buildUndulator(Simulation& System,
     \param System :: Simulation to use
     \param preFC :: Initial cell
     \param preSideIndex :: Initial side index
-    \return link object 
+    \return link object
   */
 {
   ELog::RegMethod RegA("danmaxFrontEnd","buildUndulator");
@@ -126,7 +127,7 @@ danmaxFrontEnd::buildUndulator(Simulation& System,
 
   undulatorTube->createAll(System,preFC,preSideIndex);
   outerCell=buildZone.createUnit(System,*undulatorTube,2);
-  
+
   undulator->addInsertCell(undulatorTube->getCell("Void"));
   undulator->createAll(System,*undulatorTube,0);
 
@@ -136,6 +137,5 @@ danmaxFrontEnd::buildUndulator(Simulation& System,
 
 }
 
-  
-}   // NAMESPACE xraySystem
 
+}   // NAMESPACE xraySystem

@@ -130,7 +130,7 @@ undulatorVariables(FuncDataBase& Control,
   Control.addVariable(undKey+"UndulatorSupportMat","Copper");
   Control.addVariable(undKey+"UndulatorStandMat","Aluminium");
 
-  Control.addVariable(undKey+"UndulatorFlipX",1); 
+  Control.addVariable(undKey+"UndulatorFlipX",1);
   return;
 }
 
@@ -203,7 +203,7 @@ monoVariables(FuncDataBase& Control,
   MBoxGen.setBFlange(setVariable::CF63::flangeRadius,setVariable::CF63::flangeLength);
   MBoxGen.setPortLength(2.3,5.0);
   // R,height,depth
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",54.91,36.45,36.45); 
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",54.91,36.45,36.45);
   Control.addVariable(monoKey+"MonoVesselOuterSize",63);
   Control.addVariable(monoKey+"MonoVesselPortBZStep",zstep);      // from primary: 131.4-130.0
   Control.addVariable(monoKey+"MonoVesselWallMat", "Aluminium");
@@ -251,12 +251,12 @@ opticsHutVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","opticsHutVariables");
 
   const std::string hutName(preName+"OpticsHut");
-  OpticsHutGenerator OGen; 
+  OpticsHutGenerator OGen;
 
   OGen.setOuterBackExt(40.0);
   OGen.addHole(Geometry::Vec3D(22,0,0),5.0);
   OGen.addHole(Geometry::Vec3D(45,0,0),5.0);
-  OGen.generateHut(Control,hutName,1070.0);
+  OGen.generateHut(Control,hutName,1070.0+7.6);
 
   // chicane dimensions: http://localhost:8080/maxiv/work-log/softimax/drawings/06643-03-000-folio-1-2-ind-g.pdf/view
   Control.addVariable(hutName+"NChicane",4);
@@ -288,7 +288,7 @@ opticsHutVariables(FuncDataBase& Control,
   return;
 }
 
-  
+
 void
 m1DetailVariables(FuncDataBase& Control,
 		  const std::string& mirrorKey)
@@ -301,14 +301,14 @@ m1DetailVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","m1DetailVariables");
 
   const double mirrorFlag(1.0);  // this is zero for flat and 1.0 for normal
-    
+
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::M1DetailGenerator M1DGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::DomeConnectorGenerator DCGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::MonoBoxGenerator VBoxGen;
-      
+
   const std::string boxName(mirrorKey+"M1Box");
   const double monoBoxLen(62.0);
 
@@ -316,16 +316,16 @@ m1DetailVariables(FuncDataBase& Control,
   ELog::EM<<"NOTE THETA set to zero"<<ELog::endDiag;
   const double xPortStep=
     0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angle
-  
+
   VBoxGen.setMat("Titanium");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setCF<CF63>();
   VBoxGen.setPortLength(5.2,10.15); // La/Lb
-  // note overhang is from inner wall 
-  VBoxGen.setLids(3.0,3.5/2.0,3.5/2.0); // over/base/roof 
+  // note overhang is from inner wall
+  VBoxGen.setLids(3.0,3.5/2.0,3.5/2.0); // over/base/roof
 
   VBoxGen.setBPortOffset(xPortStep,0.0);
-  VBoxGen.setBPortAngle(2.0*theta,0.0);  
+  VBoxGen.setBPortAngle(2.0*theta,0.0);
   // width/height/depth/length
   VBoxGen.generateBox(Control,boxName, 35.0,6.95,14.6, 62.0);
 
@@ -355,7 +355,7 @@ m1DetailVariables(FuncDataBase& Control,
   SimpleTubeGen.generateTube(Control,mName,tubeLength);
   Control.addVariable(mName+"WallMat","Titanium");
   Control.addVariable(mName+"NPorts",0);   // beam ports
-  
+
   DCGen.generateDome(Control,backName,1);
   PItemGen.generatePort(Control,backName+"Port0",
 			Geometry::Vec3D(-portXStep, 0.0, 0.0),
@@ -372,7 +372,7 @@ m1DetailVariables(FuncDataBase& Control,
 
   // ONLY for tube version:
   //  Control.addVariable(mirrorKey+"M1XStep",);
-    
+
   Control.addVariable(mirrorKey+"M1StandHeight",110.0);
   Control.addVariable(mirrorKey+"M1StandWidth",30.0);
   Control.addVariable(mirrorKey+"M1StandLength",30.0);
@@ -386,7 +386,7 @@ m1DetailVariables(FuncDataBase& Control,
   return;
 }
 
-  
+
 
 void
 splitterVariables(FuncDataBase& Control,
@@ -435,7 +435,7 @@ splitterVariables(FuncDataBase& Control,
 
 
   const std::string m3PumpName=splitKey+"M3Pump";
-  
+
   ELog::EM << "M3Pump: Close the caps" << ELog::endWarn;
 
   BPGen.setCF<CF200>(36.0);
@@ -658,7 +658,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::JawValveGenerator JawGen;
   setVariable::CylGateValveGenerator GVGen;
   setVariable::TriggerGenerator TGen;
-  
+
   PipeGen.setNoWindow();   // no window
 
   BellowGen.setCF<setVariable::CF40>();
@@ -946,14 +946,14 @@ SOFTIMAXvariables(FuncDataBase& Control)
 
   softimaxVar::undulatorVariables(Control,"SoftiMAXFrontBeam");
 
-  setVariable::R3FrontEndVariables(Control,"SoftiMAX");
+  setVariable::R3FrontEndFMBBVariables(Control,"SoftiMAX");
   softimaxVar::frontMaskVariables(Control,"SoftiMAXFrontBeam");
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.3);
   // length adjusted to place M1 at 2400 from undulator centre
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",123.95); 
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",123.95);
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   Control.addVariable("SoftiMAXOpticsHutVoidMat", "Void");

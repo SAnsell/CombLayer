@@ -3,7 +3,7 @@
 
  * File: Linac/Segment24.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,16 +142,18 @@ Segment24::buildObjects(Simulation& System)
 
   pipeB->createAll(System,*bellow, "back");
 
-  correctorMagnetPair(System,*buildZone,pipeB,cMagHA,cMagVA);
-  pipeTerminate(System,*buildZone,pipeB);
+  maxivConstruct::correctorMagnetPair
+    (System,*buildZone,pipeB,cMagHA,cMagVA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeB);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipeB,"back",*bpm);
 
   pipeC->createAll(System,*bpm, "back");
 
-  pipeMagUnit(System,*buildZone,pipeC,"#front","outerPipe",quad);
-  pipeTerminate(System,*buildZone,pipeC);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipeC,"#front","outerPipe",quad);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipeC);
 
   return;
 }

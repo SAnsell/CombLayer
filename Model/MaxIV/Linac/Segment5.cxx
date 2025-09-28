@@ -3,7 +3,7 @@
 
  * File: Linac/Segment5.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,9 +125,10 @@ Segment5::buildObjects(Simulation& System)
   flatA->createAll(System,*this,0);
 
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatA,
+  maxivConstruct::pipeMagGroup(System,*buildZone,flatA,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,flatA,{"FlangeB","Pipe"});
+  maxivConstruct::pipeTerminateGroup
+    (System,*buildZone,flatA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatA,"back",*beamA);
@@ -135,9 +136,10 @@ Segment5::buildObjects(Simulation& System)
   flatB->setFront(*beamA,"back");
   flatB->createAll(System,*beamA,"back");
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,flatB,
+  maxivConstruct::pipeMagGroup(System,*buildZone,flatB,
      {"FlangeA","Pipe"},"Origin","outerPipe",dipoleB);
-  pipeTerminateGroup(System,*buildZone,flatB,{"FlangeB","Pipe"});
+  maxivConstruct::pipeTerminateGroup
+    (System,*buildZone,flatB,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*flatB,"back",*bellowA);

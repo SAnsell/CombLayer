@@ -1,6 +1,7 @@
 file(RELATIVE_PATH tarDIR "${CMAKE_BINARY_DIR}"
    "${CMAKE_CURRENT_SOURCE_DIR}")
    
+add_subdirectory(GunTestFacility)
 add_subdirectory(balder)
 add_subdirectory(commonBeam)
 add_subdirectory(commonGenerator)
@@ -15,6 +16,7 @@ add_subdirectory(R1Common)
 add_subdirectory(R3Common)
 add_subdirectory(softimax)
 add_subdirectory(species)
+add_subdirectory(tomowise)
 
 set(SRC_LIST ${SRC_LIST}
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)	

@@ -93,7 +93,7 @@ class FORMAX : public R3Beamline
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
 
   /// Shield at exit of optics hutch
-  std::shared_ptr<xraySystem::PipeShield> pShield;
+  std::shared_ptr<xraySystem::PipeShield> guillotine;
 
   /// Beamline expt
   std::shared_ptr<formaxExptLine> exptBeam;

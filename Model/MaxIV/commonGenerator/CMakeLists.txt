@@ -7,33 +7,37 @@ set (commonGeneratorSources
     CleaningMagnetGenerator.cxx CollGenerator.cxx CollTubeGenerator.cxx 
     CollUnitGenerator.cxx ConnectorGenerator.cxx CooledScreenGenerator.cxx 
     CorrectorMagGenerator.cxx CRLTubeGenerator.cxx CrossWayGenerator.cxx 
-    CurveMagGenerator.cxx CylGateValveGenerator.cxx DCMTankGenerator.cxx 
-    DiffXIADP03Generator.cxx DipoleChamberGenerator.cxx DipoleDIBMagGenerator.cxx 
-    DipoleExtractGenerator.cxx DipoleGenerator.cxx DipoleSndBendGenerator.cxx 
-    EArrivalMonGenerator.cxx EBeamStopGenerator.cxx ElectroBoxGenerator.cxx 
-    EPCombineGenerator.cxx EPContinueGenerator.cxx EPSeparaterGenerator.cxx 
-    ExptHutGenerator.cxx FlangeMountGenerator.cxx FlatPipeGenerator.cxx 
-    FMUndulatorGenerator.cxx GaugeGenerator.cxx GrateMonoBoxGenerator.cxx 
-    GratingMonoGenerator.cxx GratingUnitGenerator.cxx HeatDumpGenerator.cxx 
-    HPJawsGenerator.cxx IonGaugeGenerator.cxx IonPTubeGenerator.cxx 
-    LBeamStopGenerator.cxx LinacQuadGenerator.cxx LinacSexuGenerator.cxx 
-    LocalShieldingGenerator.cxx M1DetailGenerator.cxx  MagnetBlockGenerator.cxx 
-    MagnetGenerator.cxx MagnetM1Generator.cxx MagnetU1Generator.cxx 
-    MainBeamDumpGenerator.cxx MazeGenerator.cxx MirrorGenerator.cxx 
-    MLMDetailGenerator.cxx MLMonoGenerator.cxx MonoBlockXstalsGenerator.cxx 
-    MonoBoxGenerator.cxx MonoShutterGenerator.cxx MultiPipeGenerator.cxx 
+    CurrentTransformerGenerator.cxx CurveMagGenerator.cxx CylGateValveGenerator.cxx 
+    DCMTankGenerator.cxx DiffXIADP03Generator.cxx DipoleChamberGenerator.cxx 
+    DipoleDIBMagGenerator.cxx DipoleExtractGenerator.cxx DipoleGenerator.cxx 
+    DipoleSndBendGenerator.cxx DuctGenerator.cxx EArrivalMonGenerator.cxx 
+    EBeamStopGenerator.cxx ElectroBoxGenerator.cxx EPCombineGenerator.cxx 
+    EPContinueGenerator.cxx EPSeparaterGenerator.cxx ExptHutGenerator.cxx 
+    FlangeMountGenerator.cxx FlatPipeGenerator.cxx FMUndulatorGenerator.cxx 
+    GaugeGenerator.cxx GrateMonoBoxGenerator.cxx GratingMonoGenerator.cxx 
+    GratingUnitGenerator.cxx GTFBeamDumpGenerator.cxx GTFGateValveGenerator.cxx 
+    HeatAbsorberToyamaGenerator.cxx HeatDumpGenerator.cxx HPJawsGenerator.cxx 
+    IonGaugeGenerator.cxx IonPTubeGenerator.cxx LBeamStopGenerator.cxx 
+    LinacQuadGenerator.cxx LinacSexuGenerator.cxx LocalShieldingGenerator.cxx 
+    M1DetailGenerator.cxx MagnetBlockGenerator.cxx MagnetGenerator.cxx 
+    MagnetM1Generator.cxx MagnetU1Generator.cxx MainBeamDumpGenerator.cxx 
+    MazeGenerator.cxx MirrorGenerator.cxx MLMDetailGenerator.cxx 
+    MLMonoGenerator.cxx MonoBlockXstalsGenerator.cxx MonoBoxGenerator.cxx 
+    MonoShutterGenerator.cxx MovableSafetyMaskGenerator.cxx MultiPipeGenerator.cxx 
     NBeamStopGenerator.cxx OctupoleGenerator.cxx OpticsHutGenerator.cxx 
-    PipeShieldGenerator.cxx PortChicaneGenerator.cxx PreDipoleGenerator.cxx 
-    PrismaChamberGenerator.cxx QuadrupoleGenerator.cxx QuadUnitGenerator.cxx 
-    R3ChokeChamberGenerator.cxx RingDoorGenerator.cxx RoundShutterGenerator.cxx 
+    PipeShieldGenerator.cxx PortChicaneGenerator.cxx PowerFilterGenerator.cxx 
+    PreDipoleGenerator.cxx PrismaChamberGenerator.cxx ProximityShieldingGenerator.cxx 
+    QuadrupoleGenerator.cxx QuadUnitGenerator.cxx R3ChokeChamberGenerator.cxx 
+    RFGunGenerator.cxx RingDoorGenerator.cxx RoundShutterGenerator.cxx 
     ScrapperGenerator.cxx ScreenGenerator.cxx SexupoleGenerator.cxx 
     ShutterUnitGenerator.cxx SimpleChicaneGenerator.cxx SixPortGenerator.cxx 
-    SPFCameraShieldGenerator.cxx SqrFMaskGenerator.cxx StriplineBPMGenerator.cxx 
-    TableGenerator.cxx TankMonoVesselGenerator.cxx TDCBeamDumpGenerator.cxx 
-    TriggerGenerator.cxx TriGroupGenerator.cxx TriPipeGenerator.cxx 
-    TWCavityGenerator.cxx TwinPipeGenerator.cxx UndVacGenerator.cxx 
-    ViewScreenGenerator.cxx WallLeadGenerator.cxx YagScreenGenerator.cxx 
-    YagUnitBigGenerator.cxx YagUnitGenerator.cxx 
+    SlitsMaskGenerator.cxx SolenoidGenerator.cxx SPFCameraShieldGenerator.cxx 
+    SqrFMaskGenerator.cxx StriplineBPMGenerator.cxx TableGenerator.cxx 
+    TankMonoVesselGenerator.cxx TDCBeamDumpGenerator.cxx TriggerGenerator.cxx 
+    TriGroupGenerator.cxx TriPipeGenerator.cxx TWCavityGenerator.cxx 
+    TwinPipeGenerator.cxx UndVacGenerator.cxx ViewScreenGenerator.cxx 
+    WallLeadGenerator.cxx YagScreenGenerator.cxx YagUnitBigGenerator.cxx 
+    YagUnitGenerator.cxx 
 )
 
 add_library (commonGenerator SHARED
@@ -78,6 +82,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/CorrectorMagGenerator.cxx
   ${tarDIR}/CRLTubeGenerator.cxx
   ${tarDIR}/CrossWayGenerator.cxx
+  ${tarDIR}/CurrentTransformerGenerator.cxx
   ${tarDIR}/CurveMagGenerator.cxx
   ${tarDIR}/CylGateValveGenerator.cxx
   ${tarDIR}/DCMTankGenerator.cxx
@@ -87,6 +92,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/DipoleExtractGenerator.cxx
   ${tarDIR}/DipoleGenerator.cxx
   ${tarDIR}/DipoleSndBendGenerator.cxx
+  ${tarDIR}/DuctGenerator.cxx
   ${tarDIR}/EArrivalMonGenerator.cxx
   ${tarDIR}/EBeamStopGenerator.cxx
   ${tarDIR}/ElectroBoxGenerator.cxx
@@ -101,6 +107,9 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/GrateMonoBoxGenerator.cxx
   ${tarDIR}/GratingMonoGenerator.cxx
   ${tarDIR}/GratingUnitGenerator.cxx
+  ${tarDIR}/GTFBeamDumpGenerator.cxx
+  ${tarDIR}/GTFGateValveGenerator.cxx
+  ${tarDIR}/HeatAbsorberToyamaGenerator.cxx
   ${tarDIR}/HeatDumpGenerator.cxx
   ${tarDIR}/HPJawsGenerator.cxx
   ${tarDIR}/IonGaugeGenerator.cxx
@@ -122,17 +131,21 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MonoBlockXstalsGenerator.cxx
   ${tarDIR}/MonoBoxGenerator.cxx
   ${tarDIR}/MonoShutterGenerator.cxx
+  ${tarDIR}/MovableSafetyMaskGenerator.cxx
   ${tarDIR}/MultiPipeGenerator.cxx
   ${tarDIR}/NBeamStopGenerator.cxx
   ${tarDIR}/OctupoleGenerator.cxx
   ${tarDIR}/OpticsHutGenerator.cxx
   ${tarDIR}/PipeShieldGenerator.cxx
   ${tarDIR}/PortChicaneGenerator.cxx
+  ${tarDIR}/PowerFilterGenerator.cxx
   ${tarDIR}/PreDipoleGenerator.cxx
   ${tarDIR}/PrismaChamberGenerator.cxx
+  ${tarDIR}/ProximityShieldingGenerator.cxx
   ${tarDIR}/QuadrupoleGenerator.cxx
   ${tarDIR}/QuadUnitGenerator.cxx
   ${tarDIR}/R3ChokeChamberGenerator.cxx
+  ${tarDIR}/RFGunGenerator.cxx
   ${tarDIR}/RingDoorGenerator.cxx
   ${tarDIR}/RoundShutterGenerator.cxx
   ${tarDIR}/ScrapperGenerator.cxx
@@ -141,6 +154,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/ShutterUnitGenerator.cxx
   ${tarDIR}/SimpleChicaneGenerator.cxx
   ${tarDIR}/SixPortGenerator.cxx
+  ${tarDIR}/SlitsMaskGenerator.cxx
+  ${tarDIR}/SolenoidGenerator.cxx
   ${tarDIR}/SPFCameraShieldGenerator.cxx
   ${tarDIR}/SqrFMaskGenerator.cxx
   ${tarDIR}/StriplineBPMGenerator.cxx
@@ -182,6 +197,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/CorrectorMagGenerator.h
   ${tarINC}/CRLTubeGenerator.h
   ${tarINC}/CrossWayGenerator.h
+  ${tarINC}/CurrentTransformerGenerator.h
   ${tarINC}/CurveMagGenerator.h
   ${tarINC}/CylGateValveGenerator.h
   ${tarINC}/DCMTankGenerator.h
@@ -191,6 +207,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/DipoleExtractGenerator.h
   ${tarINC}/DipoleGenerator.h
   ${tarINC}/DipoleSndBendGenerator.h
+  ${tarINC}/DuctGenerator.h
   ${tarINC}/EArrivalMonGenerator.h
   ${tarINC}/EBeamStopGenerator.h
   ${tarINC}/ElectroBoxGenerator.h
@@ -205,6 +222,9 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/GrateMonoBoxGenerator.h
   ${tarINC}/GratingMonoGenerator.h
   ${tarINC}/GratingUnitGenerator.h
+  ${tarINC}/GTFBeamDumpGenerator.h
+  ${tarINC}/GTFGateValveGenerator.h
+  ${tarINC}/HeatAbsorberToyamaGenerator.h
   ${tarINC}/HeatDumpGenerator.h
   ${tarINC}/HPJawsGenerator.h
   ${tarINC}/IonGaugeGenerator.h
@@ -226,17 +246,21 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/MonoBlockXstalsGenerator.h
   ${tarINC}/MonoBoxGenerator.h
   ${tarINC}/MonoShutterGenerator.h
+  ${tarINC}/MovableSafetyMaskGenerator.h
   ${tarINC}/MultiPipeGenerator.h
   ${tarINC}/NBeamStopGenerator.h
   ${tarINC}/OctupoleGenerator.h
   ${tarINC}/OpticsHutGenerator.h
   ${tarINC}/PipeShieldGenerator.h
   ${tarINC}/PortChicaneGenerator.h
+  ${tarINC}/PowerFilterGenerator.h
   ${tarINC}/PreDipoleGenerator.h
   ${tarINC}/PrismaChamberGenerator.h
+  ${tarINC}/ProximityShieldingGenerator.h
   ${tarINC}/QuadrupoleGenerator.h
   ${tarINC}/QuadUnitGenerator.h
   ${tarINC}/R3ChokeChamberGenerator.h
+  ${tarINC}/RFGunGenerator.h
   ${tarINC}/RingDoorGenerator.h
   ${tarINC}/RoundShutterGenerator.h
   ${tarINC}/ScrapperGenerator.h
@@ -245,6 +269,8 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/ShutterUnitGenerator.h
   ${tarINC}/SimpleChicaneGenerator.h
   ${tarINC}/SixPortGenerator.h
+  ${tarINC}/SlitsMaskGenerator.h
+  ${tarINC}/SolenoidGenerator.h
   ${tarINC}/SPFCameraShieldGenerator.h
   ${tarINC}/SqrFMaskGenerator.h
   ${tarINC}/StriplineBPMGenerator.h

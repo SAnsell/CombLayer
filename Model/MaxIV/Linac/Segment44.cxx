@@ -3,7 +3,7 @@
 
  * File: Linac/Segment44.cxx
  *
- * Copyright (c) 2004-2020 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,6 @@
 
 namespace tdcSystem
 {
-
-// Note currently uncopied:
-
 
 Segment44::Segment44(const std::string& Key) :
   TDCsegment(Key,6),

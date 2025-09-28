@@ -3,7 +3,7 @@
 
  * File: Linac/Segment43.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,8 +153,9 @@ Segment43::buildObjects(Simulation& System)
     (System,*buildZone,*yagUnit,"back",*gate);
 
   pipe->createAll(System,*gate,"back");
-  pipeMagUnit(System,*buildZone,pipe,"#front","outerPipe",cMagHA);
-  pipeTerminate(System,*buildZone,pipe);
+  maxivConstruct::pipeMagUnit
+    (System,*buildZone,pipe,"#front","outerPipe",cMagHA);
+  maxivConstruct::pipeTerminate(System,*buildZone,pipe);
 
   constructSystem::constructUnit
     (System,*buildZone,*pipe,"back",*bpmB);

@@ -3,7 +3,7 @@
 
  * File: Linac/Segment25.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,9 +138,10 @@ Segment25::buildObjects(Simulation& System)
   triPipeA->createAll(System,*bellowA,"back");
 
   // insert-units : Origin : excludeSurf
-  pipeMagGroup(System,*buildZone,triPipeA,
+  maxivConstruct::pipeMagGroup(System,*buildZone,triPipeA,
 	       {"FlangeA","Pipe"},"Origin","outerPipe",dipoleA);
-  pipeTerminateGroup(System,*buildZone,triPipeA,{"FlangeB","Pipe"});
+  maxivConstruct::pipeTerminateGroup
+    (System,*buildZone,triPipeA,{"FlangeB","Pipe"});
 
   constructSystem::constructUnit
     (System,*buildZone,*triPipeA,"back",*pipeB);
