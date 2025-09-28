@@ -3,7 +3,7 @@
 
  * File: cosaxs/COSAXS.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ COSAXS::build(Simulation& System,
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
   wallLead->setCutSurf("Ring",r3Ring->getSurfRule("#FlatInner",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
-
+  return;
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);

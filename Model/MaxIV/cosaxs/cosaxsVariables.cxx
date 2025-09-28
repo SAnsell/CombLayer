@@ -3,7 +3,7 @@
 
  * File:   cosaxs/cosaxsVariables.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2025 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1074,7 +1074,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"CosaxsJoinPipe",124.5);
+  PipeGen.generatePipe(Control,"CosaxsJoinPipe",164.5);
 
   cosaxsVar::opticsHutVariables(Control,"CosaxsOpticsHut");
   cosaxsVar::opticsVariables(Control,"Cosaxs");
@@ -1085,7 +1085,7 @@ COSAXSvariables(FuncDataBase& Control)
 
   ShieldGen.setPlate(60.0,60.0,10.0);
   ShieldGen.generateShield(Control,"CosaxsScreenA",
-			   Geometry::Vec3D(0,2.8,0),0.0);
+			   Geometry::Vec3D(0,10.8,0),0.0);
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File: maxpeem/MAXPEEM.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,8 +131,9 @@ MAXPEEM::build(Simulation& System,
   frontBeam->addInsertCell(r1Ring->getCell("VoidTriangle",PIndex));
   
   frontBeam->createAll(System,FCOrigin,sideIndex);
-  
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
+  wallLead->setCutSurf("Ring",r1Ring->getSurfRule("#PointDivider",SIndex));
+
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);

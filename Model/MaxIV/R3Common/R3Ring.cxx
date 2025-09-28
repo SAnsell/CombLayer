@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3Ring.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,7 +207,6 @@ R3Ring::createSurfaces()
 
       SurfMap::makePlane("BeamInner",SMap,surfN+1,APt,XX);
       SurfMap::makePlane("#FlatInner",SMap,surfN+3,APt,YY);
-
       // outer wall
       SurfMap::makePlane("BeamOuter",SMap,surfN+1001,APt+XX*ratchetWall,XX);
       SurfMap::makePlane

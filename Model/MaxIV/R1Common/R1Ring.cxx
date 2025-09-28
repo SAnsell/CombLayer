@@ -3,7 +3,7 @@
  
  * File:   R1Common/R1Ring.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,7 +120,6 @@ R1Ring::populate(const FuncDataBase& Control)
   hexRadius=Control.EvalVar<double>(keyName+"HexRadius");
   hexWallThick=Control.EvalVar<double>(keyName+"HexWallThick");
 
-
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
@@ -154,7 +153,6 @@ R1Ring::populate(const FuncDataBase& Control)
 	concavePts.push_back(i);
     }
   concaveNPoints=concavePts.size();
-
   // SIDE 
   const size_t nSide=Control.EvalVar<size_t>(keyName+"NSideWall");
   for(size_t i=0;i<nSide;i++)
@@ -252,10 +250,14 @@ R1Ring::createSurfaces()
 			       Origin+AP,
 			       Origin+BP,
 			       Origin+BP+Z,NDir);
-
+      SurfMap::addSurf("InnerWall",SMap.realSurf(surfN+3));
       surfN+=10;
     }
-
+  for(size_t i : concavePts)
+    {
+      ELog::EM<<"I == "<<i<<" "<<SurfMap::getSurf("InnerWall",i)<<ELog::endTRACE;
+      SurfMap::addSurf("FlatInner",SurfMap::getSurf("InnerWall",i));
+    }
   size_t cIndex(0);
   surfN=buildIndex+2000;
   for(size_t i=0;i<NPoints;i++)
@@ -268,6 +270,7 @@ R1Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+3,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
+	      
       // trick to get exit walls [inner /outer]
       if (concavePts[cIndex]==i+1)
 	{
@@ -277,7 +280,9 @@ R1Ring::createSurfaces()
 	  if (cIndex)
 	    {
 	      SurfMap::addSurf("SideInner",-SMap.realSurf(surfN-1010+3));
+
 	      SurfMap::addSurf("SideOuter",-SMap.realSurf(surfN-10+3));
+		      
 
 	    }
 	  cIndex = (cIndex+1) % concaveNPoints;
@@ -302,11 +307,11 @@ R1Ring::createSurfaces()
       ModelSupport::buildPlane(SMap,surfN+1,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
+      SurfMap::addSurf("PointDivider",SMap.realSurf(surfN+1));
+
       // Joint Plane error cylinders:
       ModelSupport::buildCylinder(SMap,surfN+7,Origin+AP,Z,0.1);
       ModelSupport::buildCylinder(SMap,surfN+8,Origin+BP,Z,0.1);
-
-
       surfN+=10;
     } 
 

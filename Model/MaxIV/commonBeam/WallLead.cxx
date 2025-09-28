@@ -192,7 +192,9 @@ WallLead::createObjects(Simulation& System)
   ELog::RegMethod RegA("WallLead","createObjects");
 
   if (!ExternalCut::isActive("Ring"))
-    throw ColErr::ExitAbort(keyName+": the 'Ring' external cut must be set (expected R3Ring::#FlatInner)");
+    throw ColErr::ExitAbort
+      (keyName+": the 'Ring' external cut must be set "+
+       " (expected R3Ring::#FlatInner)");
 
   const HeadRule ring = getRule("Ring");
 

@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
     Constructor 
     \param KN :: KeyName
     \param NL :: Number of links
-    \param resSize :: Reserved size for indexes [normally 10000]
+    \param resSize :: Reserved size for indexes [default: 10000]
   */
 {}
 

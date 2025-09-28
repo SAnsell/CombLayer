@@ -312,8 +312,8 @@ m1DetailVariables(FuncDataBase& Control,
   const std::string boxName(mirrorKey+"M1Box");
   const double monoBoxLen(62.0);
 
-  const double theta(0.0);
-  ELog::EM<<"NOTE THETA set to zero"<<ELog::endDiag;
+  const double theta(1.0);
+  //  ELog::EM<<"NOTE THETA set to zero"<<ELog::endWARN;
   const double xPortStep=
     0.5*monoBoxLen*std::sin(M_PI*theta/180.0);   // Theta angle
 
@@ -348,6 +348,7 @@ m1DetailVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,frontName+"Port0",
 			Geometry::Vec3D(portXStep, 0.0, 0.0),
 			Geometry::Vec3D(0.0, -1.0, 0.0));
+  ELog::EM<<"DIAG == "<<theta*mirrorFlag<<ELog::endTRACE;
   Control.addVariable(frontName+"ZAngle",-theta*mirrorFlag);
   const std::string mName=mirrorKey+"M1Tube";
 
@@ -953,7 +954,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   PipeGen.setCF<setVariable::CF40>(); // CF40 was 2cm (why?)
   PipeGen.setBFlange(3.5,0.3);
   // length adjusted to place M1 at 2400 from undulator centre
-  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",123.95);
+  PipeGen.generatePipe(Control,"SoftiMAXJoinPipe",163.95);
 
   softimaxVar::opticsHutVariables(Control,"SoftiMAX");
   Control.addVariable("SoftiMAXOpticsHutVoidMat", "Void");

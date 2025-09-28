@@ -3,7 +3,7 @@
 
  * File:   micromax/micromaxVariables.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -467,7 +467,7 @@ monoShutterBVariables(FuncDataBase& Control,
   // up / up (true)
   RShutterGen.generateShutter(Control,preName+"RMonoShutterB",1,1);
   Control.addVariable(preName+"RMonoShutterBYAngle",270);
-  Control.addVariable(preName+"RMonoShutterBYStep",495);
+  Control.addVariable(preName+"RMonoShutterBYStep",500.0);
 
   return;
 }
@@ -1192,7 +1192,7 @@ MICROMAXvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"MicroMaxJoinPipe",130.0);
+  PipeGen.generatePipe(Control,"MicroMaxJoinPipe",165.0);
   Control.addVariable("MicroMaxJoinPipeFlipX",1);
 
   micromaxVar::opticsHutVariables(Control,"MicroMaxOpticsHut");

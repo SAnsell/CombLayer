@@ -132,12 +132,15 @@ SPECIES::build(Simulation& System,
 
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-  
+
   wallLead->addInsertCell(r1Ring->getCell("FrontWall",SIndex));
+  // innner wall
+  wallLead->setCutSurf("Ring",r1Ring->getSurfRule("#FlatInner",SIndex));      
+  wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setFront(-r1Ring->getSurf("BeamInner",SIndex));
   wallLead->setBack(r1Ring->getSurf("BeamOuter",SIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
-  
+
   if (!stopPoint.empty())
     ELog::EM<<"Stop Point == "<<stopPoint<<ELog::endDiag;
 
