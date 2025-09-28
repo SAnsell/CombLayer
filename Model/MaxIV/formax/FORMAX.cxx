@@ -175,6 +175,7 @@ FORMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+  
   exptHut->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut->setCutSurf("frontWall",*opticsHut,"back");
   exptHut->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
@@ -188,11 +189,12 @@ FORMAX::build(Simulation& System,
 
   // pipe shield goes around joinPipeB:
 
+  if (stopPoint=="exptHut") return;
   guillotine->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   guillotine->setCutSurf("inner",*joinPipeB,"outerPipe");
   guillotine->createAll(System,*opticsHut,"innerBack");
 
-  if (stopPoint=="exptHut") return;
+
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->setCutSurf("front",*exptHut,
 			 exptHut->getSideIndex("innerFront"));
@@ -201,7 +203,6 @@ FORMAX::build(Simulation& System,
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptBeam->setPreInsert(joinPipeB);
   exptBeam->createAll(System,*joinPipeB,2);
-
 
   detectorTube->addInsertCell(exptHut->getCell("Void"));
   detectorTube->setCutSurf("front",*exptBeam,"back");

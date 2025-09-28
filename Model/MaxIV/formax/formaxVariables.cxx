@@ -3,7 +3,7 @@
 
  * File:   formax/formaxVariables.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1160,19 +1160,22 @@ FORMAXvariables(FuncDataBase& Control)
   formaxVar::undulatorVariables(Control,frontKey);
   // exit pipe
   setVariable::R3FrontEndFMBBVariables(Control,"Formax");
+  //  Control.addVariable("FormaxFrontBeamJoinPipe",181.0);
+
+
   formaxVar::frontMaskVariables(Control,"FormaxFrontBeam");
   formaxVar::extraVariables(Control,frontKey);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"FormaxJoinPipe",150.0);
+  PipeGen.generatePipe(Control,"FormaxJoinPipe",165.0);
   Control.addVariable("FormaxJoinPipeFlipX",1);
 
   formaxVar::opticsHutVariables(Control,"FormaxOpticsHut");
   formaxVar::opticsVariables(Control,"Formax");
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"FormaxJoinPipeB",34.0);
+  PipeGen.generatePipe(Control,"FormaxJoinPipeB",70.0);
 
   formaxVar::shieldVariables(Control,"Formax");
 
