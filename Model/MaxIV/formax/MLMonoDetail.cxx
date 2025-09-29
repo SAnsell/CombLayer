@@ -138,7 +138,7 @@ MLMonoDetail::createObjects(Simulation& System)
   ELog::RegMethod RegA("MLMonoDetail","createObjects");
 
   xstalA->addInsertCell(getInsertCells());
-  xstalB->addInsertCell(getInsertCells());
+  //  xstalB->addInsertCell(getInsertCells());
 
   xstalA->createAll(System,*this,0);
   xstalB->createAll(System,*this,0);
@@ -146,12 +146,24 @@ MLMonoDetail::createObjects(Simulation& System)
   aRadial->addInsertCell(getInsertCells());
   aRadial->createAll(System,*xstalA,"BasePt");
 
+  ELog::EM<<"Surf == "<<xstalB->getSurfRule("#TopSurf")<<ELog::endDIAG;
+  ELog::EM<<"Surf == "<<xstalB->getSurfRule("TopSurf")<<ELog::endDIAG;
+
+  bWheel->setCutSurf("XstalTop",xstalB->getSurfRule("#TopSurf"));
+  bWheel->setCutSurf("XstalBase",xstalB->getSurf("BlockBase"));
+  bWheel->copyCutSurf("XstalSurround",*xstalB,"Surround");
   bWheel->addInsertCell(getInsertCells());
   bWheel->createAll(System,*xstalB,"BasePt");
 
   wheelPlate->addInsertCell(getInsertCells());
   wheelPlate->setCutSurf("TopSurf",*bWheel,"BasePt");
   wheelPlate->createAll(System,*bWheel,"BasePt");
+
+  // HR=ModelSupport::getHeadRule
+  //   (SMap,buildIndex,"(11:-17) (-12:-18) 13 -14 15 -6");  
+  // makeCell("TopSlot",System,cellIndex++,0,0.0,HR);
+
+  
   
   return; 
 }

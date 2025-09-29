@@ -53,6 +53,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -66,6 +67,7 @@ namespace xraySystem
 MLMCrystal::MLMCrystal(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -135,7 +137,7 @@ MLMCrystal::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width,X);    
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  SurfMap::makePlane("TopSurf",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   // top cut
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(topSlotLength/2.0),Y);
@@ -163,8 +165,7 @@ MLMCrystal::createSurfaces()
     (SMap,buildIndex+103,midPt-X*(baseWidth/2.0),X);
   ModelSupport::buildPlane
     (SMap,buildIndex+104,midPt+X*(baseWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,midPt-Z*baseDepth,Z);
-
+  SurfMap::makePlane("BlockBase",SMap,buildIndex+105,midPt-Z*baseDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+116,midPt+Z*baseFrontHeight,Z);
   ModelSupport::buildPlane(SMap,buildIndex+126,midPt+Z*baseBackHeight,Z);
 
@@ -286,11 +287,19 @@ MLMCrystal::createLinks()
   FixedComp::setConnect(6,Origin-Z*(height/2.0+baseDepth),Y);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+105));
 
+  HeadRule HR;
+
+  // slot:
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104");  
+  setCutSurf("Surround",HR);
+  
   // Points on base:
 
   nameSideIndex(2,"BeamCentre");
   nameSideIndex(4,"BaseRotPt");
   nameSideIndex(6,"BasePt");
+
+
   return;
 }
 

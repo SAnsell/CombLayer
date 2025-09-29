@@ -38,6 +38,7 @@ namespace xraySystem
 class MLMSupportWheel :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {

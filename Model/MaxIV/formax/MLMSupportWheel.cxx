@@ -3,7 +3,7 @@
  
  * File:   formax/MLMSupportWheel.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
+#include "ExternalCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -65,6 +66,7 @@ namespace xraySystem
 MLMSupportWheel::MLMSupportWheel(const std::string& Key) :
   attachSystem::FixedRotate(Key,8),
   attachSystem::ContainedComp(),
+  attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -73,8 +75,6 @@ MLMSupportWheel::MLMSupportWheel(const std::string& Key) :
     \param Index :: Index number
   */
 {}
-
-
 
 MLMSupportWheel::~MLMSupportWheel()
   /*!
@@ -178,6 +178,13 @@ MLMSupportWheel::createObjects(Simulation& System)
 
   HeadRule HR;
 
+  const HeadRule xSurround=getRule("XstalSurround");
+  const HeadRule xTop=getRule("XstalTop");
+  const HeadRule xBase=getRule("XstalBase");
+  ELog::EM<<"XSurrond == "<<xSurround<<ELog::endTRACE;
+  ELog::EM<<"xTop == "<<xTop<<ELog::endTRACE;
+  ELog::EM<<"xBase == "<<xBase<<ELog::endTRACE;
+  
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
   makeCell("Hub",System,cellIndex++,mat,0.0,HR);  
 
@@ -212,9 +219,13 @@ MLMSupportWheel::createObjects(Simulation& System)
       prevHR=HeadRule(SMap,BI,2);
       BI+=20;
     }
+  // External volume:
+  HR=HeadRule(SMap,buildIndex,-27);
+  makeCell("ExternalVoid",System,cellIndex++,voidMat,0.0,
+	   HR*xTop*xSurround.complement()*xBase);  
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27");
-  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -27");
+  addOuterSurf(HR*xTop);
 
   return; 
 }

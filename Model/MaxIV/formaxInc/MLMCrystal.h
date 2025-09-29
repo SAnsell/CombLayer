@@ -38,6 +38,7 @@ namespace xraySystem
 class MLMCrystal :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
+  public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
