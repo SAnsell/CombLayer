@@ -201,8 +201,8 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
   shutters({
-      std::make_shared<xraySystem::BeamMount>(newName+"Shutter0"),
-      std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
+      std::make_shared<xraySystem::BeamMount>(newName+"BS1"), // beam shutter 1
+      std::make_shared<xraySystem::BeamMount>(newName+"BS2")  // beam shutter 2
     }),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
 

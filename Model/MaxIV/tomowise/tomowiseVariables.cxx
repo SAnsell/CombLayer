@@ -503,7 +503,7 @@ safetyUnit(FuncDataBase& Control,
   for(size_t i=0;i<2;i++)
     {
       const std::string name=preName+"ShutterBoxPort"+std::to_string(i);
-      const std::string fname=preName+"Shutter"+std::to_string(i);
+      const std::string fname=preName+"BS"+std::to_string(i+1);
 
       PItemGen.generatePort(Control,name,CPos,ZVec);
       BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
