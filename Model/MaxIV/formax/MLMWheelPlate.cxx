@@ -3,7 +3,7 @@
  
  * File:   formax/MLMWheelPlate.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,6 @@
 #include "SurfMap.h"
 #include "ContainedComp.h"
 #include "MLMWheelPlate.h"
-
 
 namespace xraySystem
 {
@@ -305,6 +304,16 @@ MLMWheelPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-502 512 503 -504 505 -5");
   makeCell("DriveEdge",System,cellIndex++,plateMat,0.0,HR);
 
+  // external spacers
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1501 -1502 1503 -1504 1506 -506"
+     "(-501:502:-503:504) (-5:-3:4:-1:2)");
+  makeCell("EdgeVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule
+    (SMap,buildIndex,"1501 -1502 1503 -1504 506 (-1:2:-3:4)");
+  makeCell("EdgeVoid",System,cellIndex++,voidMat,0.0,HR*topHR);
+
   // BASE PLATE
 
   HR=ModelSupport::getHeadRule
@@ -330,19 +339,11 @@ MLMWheelPlate::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"1501 -1502 1543 -1544 1505 -1556 ");
   makeCell("RightVoid",System,cellIndex++,voidMat,0.0,HR);
-
-  
+     
   // VOID VOLUMES : OUTER
-  // tobe homongonized
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5");  
+    HR=ModelSupport::getHeadRule
+     (SMap,buildIndex,"1501 -1502 1503 -1504 1505");  
   addOuterSurf(HR*topHR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"501 -502 503 -504 -5 505");  
-  addOuterUnionSurf(HR);
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1501 -1502 1503 -1504 1505 -1506");  
-  addOuterUnionSurf(HR);
 
   return; 
 }
