@@ -147,9 +147,6 @@ MLMRadialSupport::createSurfaces()
   // Split
   Geometry::Vec3D pOrg(Origin-Z*(topGap+topThick));
   // support block
-  ELog::EM<<"Plate Length == "<<plateLength<<ELog::endDiag;
-
-  ELog::EM<<"P "<<pOrg-Y*(length/2.0-plateLength)<<":"<<Origin-Y*(length/2.0)<<ELog::endDiag;
   ModelSupport::buildPlane
     (SMap,buildIndex+201,pOrg-Y*(length/2.0-plateLength),Y);
   ModelSupport::buildPlane

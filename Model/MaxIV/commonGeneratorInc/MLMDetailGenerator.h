@@ -62,6 +62,7 @@ class MLMDetailGenerator
   // Support wheel
   double wheelRadius;          ///< main wheel radius
   double wheelOuterRadius;     ///< full outer reaius
+  double wheelVoidRadius;     ///< outer radius overlapping xstal
   double wheelHubRadius;       ///< Hub radius
   double wheelHeight;          ///< Thickness of wheel
   size_t nSpokes;              ///< nummber of slots

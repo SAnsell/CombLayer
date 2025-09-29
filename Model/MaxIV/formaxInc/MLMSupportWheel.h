@@ -46,6 +46,7 @@ class MLMSupportWheel :
 
   double wheelRadius;          ///< main wheel radius
   double wheelOuterRadius;     ///< full outer reaius
+  double wheelVoidRadius;      ///< radius overlapping crystal
   double wheelHubRadius;       ///< Hub radius
   double wheelHeight;          ///< Thickness of wheel
 

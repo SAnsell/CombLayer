@@ -95,6 +95,7 @@ MLMSupportWheel::populate(const FuncDataBase& Control)
 
   wheelRadius=Control.EvalVar<double>(keyName+"WheelRadius");
   wheelOuterRadius=Control.EvalVar<double>(keyName+"WheelOuterRadius");
+  wheelVoidRadius=Control.EvalVar<double>(keyName+"WheelVoidRadius");
   wheelHubRadius=Control.EvalVar<double>(keyName+"WheelHubRadius");
   wheelHeight=Control.EvalVar<double>(keyName+"WheelHeight");
 
@@ -127,6 +128,7 @@ MLMSupportWheel::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,wheelHubRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Z,wheelRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Z,wheelOuterRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Z,wheelVoidRadius);
 
   const double angleStep=(2.0*M_PI)/static_cast<double>(nSpokes);
   double angle(0.0);
@@ -181,15 +183,15 @@ MLMSupportWheel::createObjects(Simulation& System)
   const HeadRule xSurround=getRule("XstalSurround");
   const HeadRule xTop=getRule("XstalTop");
   const HeadRule xBase=getRule("XstalBase");
-  ELog::EM<<"XSurrond == "<<xSurround<<ELog::endTRACE;
-  ELog::EM<<"xTop == "<<xTop<<ELog::endTRACE;
-  ELog::EM<<"xBase == "<<xBase<<ELog::endTRACE;
   
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -7");
   makeCell("Hub",System,cellIndex++,mat,0.0,HR);  
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27 17");
   makeCell("Rim",System,cellIndex++,mat,0.0,HR);  
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -37 27");
+  makeCell("RimVoid",System,cellIndex++,voidMat,0.0,HR);  
 
   const HeadRule baseHR=
     ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 7 -17");
@@ -220,11 +222,11 @@ MLMSupportWheel::createObjects(Simulation& System)
       BI+=20;
     }
   // External volume:
-  HR=HeadRule(SMap,buildIndex,-27);
+  HR=HeadRule(SMap,buildIndex,-37);
   makeCell("ExternalVoid",System,cellIndex++,voidMat,0.0,
 	   HR*xTop*xSurround.complement()*xBase);  
   
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -27");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -37");
   addOuterSurf(HR*xTop);
 
   return; 

@@ -240,11 +240,9 @@ mirrorMonoPackage(FuncDataBase& Control,
 
   setVariable::MLMDetailGenerator MLGen;
 
-  MLGen.generateMono(Control,monoKey+"MLM",0.4,-0.4);
+  MLGen.generateMono(Control,monoKey+"MLM",-0.4,-0.4);
 
 
-  // ystep/width/height/depth/length
-  //
   MBoxGen.setCF<CF40>();   // set ports
   MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
   MBoxGen.setPortLength(7.5,7.5); // La/Lb

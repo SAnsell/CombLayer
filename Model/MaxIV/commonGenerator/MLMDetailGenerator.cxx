@@ -3,7 +3,7 @@
  
  * File:   commonGenerator/MLMDetailGenerator.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ MLMDetailGenerator::MLMDetailGenerator() :
   baseInnerWidth(4.6),baseInnerBeamFaceLen(0.7),
   baseInnerOutFaceLen(1.3),baseBackSlotLen(12.1),
   baseOutSlotLen(2.3),
-  wheelRadius(7.0),wheelOuterRadius(7.8),
+  wheelRadius(7.0),wheelOuterRadius(7.8),wheelVoidRadius(12.8),
   wheelHubRadius(2.5),wheelHeight(3.0),
   nSpokes(12),spokeThick(0.6),
   spokeCornerRadius(0.325),spokeCornerGap(0.1),
@@ -190,6 +190,7 @@ MLMDetailGenerator::makeSupportWheel(FuncDataBase& Control,
 
   Control.addVariable(wheelName+"WheelRadius",wheelRadius);
   Control.addVariable(wheelName+"WheelOuterRadius",wheelOuterRadius);
+  Control.addVariable(wheelName+"WheelVoidRadius",wheelVoidRadius);
   Control.addVariable(wheelName+"WheelHubRadius",wheelHubRadius);
   Control.addVariable(wheelName+"WheelHeight",wheelHeight);
 
@@ -332,6 +333,7 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MLMDetailGenerator","generateMono");
 
+  
   // guess of separation
   const double xstalYStep(gap/tan(2.0*M_PI*thetaA/180.0));
 

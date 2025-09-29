@@ -610,7 +610,6 @@ SingleItemVariables(FuncDataBase& Control)
   // Bellow
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
-  ELog::EM<<"HERE "<<ELog::endDiag;
   BellowGen.generateBellow(Control,"Bellow",7.5);
 
   // Lead Clad Pipe
@@ -825,7 +824,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("MLMVesselPortBXStep",0.0);   // from primary
 
   MLMDetailGenerator MLGen;
-  MLGen.generateMono(Control,"MLM",0.4,-0.4);
+  MLGen.generateMono(Control,"MLM",-0.4,-0.4);
 
 
   
