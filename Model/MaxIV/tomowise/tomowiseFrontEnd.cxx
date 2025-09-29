@@ -77,7 +77,6 @@ tomowiseFrontEnd::tomowiseFrontEnd(const std::string& Key) :
   /*!
     Constructor
     \param Key :: Name of construction key
-    \param Index :: Index number
   */
 {
   ModelSupport::objectRegister& OR=
@@ -106,9 +105,9 @@ tomowiseFrontEnd::createLinks()
 
 const attachSystem::FixedComp&
 tomowiseFrontEnd::buildUndulator(Simulation& System,
-			       const attachSystem::FixedComp& preFC,
-			       const long int preSideIndex)
-/*!
+				 const attachSystem::FixedComp& preFC,
+				 const long int preSideIndex)
+  /*!
     Build all the objects relative to the main FC
     point.
     \param System :: Simulation to use
@@ -118,7 +117,6 @@ tomowiseFrontEnd::buildUndulator(Simulation& System,
   */
 {
   ELog::RegMethod RegA("tomowiseFrontEnd","buildUndulator");
-
 
   int outerCell;
 

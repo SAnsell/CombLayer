@@ -3,7 +3,7 @@
 
  * File:   balder/balderVariables.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -732,8 +732,8 @@ BALDERvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
-  PipeGen.generatePipe(Control,"BalderJoinPipe",130.0);
+
+  PipeGen.generatePipe(Control,"BalderJoinPipe",165.0);
 
   balderVar::opticsHutVariables(Control,"BalderOpticsHut");
   balderVar::opticsVariables(Control,"Balder");

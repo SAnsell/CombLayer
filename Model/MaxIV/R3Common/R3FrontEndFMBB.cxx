@@ -3,7 +3,7 @@
 
  * File: R3Common/R3FrontEndFMBB.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,55 +115,12 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
 {
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
 
-  // OR.addObject(transPipe);
-  // OR.addObject(magBlockM1);
-  // OR.addObject(magBlockU1);
-  // OR.addObject(epSeparator);
-  // OR.addObject(chokeChamber);
-  // OR.addObject(chokeInsert);
-
-  // OR.addObject(dipolePipe);
-  // OR.addObject(eTransPipe);
-  // OR.addObject(bellowA);
-  // OR.addObject(collA);
-  // OR.addObject(bellowB);
-  // OR.addObject(collABPipe);
-  // OR.addObject(bellowC);
-  // OR.addObject(collB);
-  // OR.addObject(collC);
-  // OR.addObject(eCutDisk);
-  // OR.addObject(eCutMagDisk);
-  //  OR.addObject(collExitPipe);
   OR.addObject(heatBox);
   OR.addObject(heatDump);
-
-  // OR.addObject(pipeB);
-  // OR.addObject(bellowE);
-  // OR.addObject(aperturePipeA);
-  // OR.addObject(moveCollA);
-  // OR.addObject(bellowF);
-  // OR.addObject(ionPC);
-  // OR.addObject(bellowG);
-  // OR.addObject(aperturePipeB);
-  // OR.addObject(moveCollB);
-  // OR.addObject(bellowH);
-  // OR.addObject(pipeC);
-
-  // OR.addObject(gateA);
-  // OR.addObject(bellowI);
-  // OR.addObject(florTubeA);
-  // OR.addObject(bellowJ);
-  // OR.addObject(offPipeA);
-  // OR.addObject(shutterBox);
-  // OR.addObject(shutters[0]);
-  // OR.addObject(shutters[1]);
-  // OR.addObject(offPipeB);
   OR.addObject(gateTubeA);
   OR.addObject(bellowK);
 
   OR.addObject(exitPipe);
-
-
 }
 
 R3FrontEndFMBB::~R3FrontEndFMBB()
@@ -211,36 +168,6 @@ R3FrontEndFMBB::createSurfaces()
 
   return;
 }
-
-// void
-// R3FrontEndFMBB::insertFlanges(Simulation& System,
-// 			  const constructSystem::PipeTube& PT,
-// 			  const size_t offset)
-//   /*!
-//     Boilerplate function to insert the flanges from pipetubes
-//     that extend past the linkzone in to ther neighbouring regions.
-//     \param System :: Simulation to use
-//     \param PT :: PipeTube
-//    */
-// {
-//   ELog::RegMethod RegA("R3FrontEndFMBB","insertFlanges");
-
-//   size_t voidN=buildZone.getNItems("Unit");
-//   if (voidN<offset)
-//     throw ColErr::InContainerError<size_t>
-//       (offset, "Offset to large for buildZone cells:"+std::to_string(voidN));
-//   voidN-=offset;
-
-//   buildZone.insertComponent(System,"Unit",voidN,
-// 			PT.getFullRule("FlangeA"));
-//   buildZone.insertComponent(System,"Unit",voidN,
-// 			PT.getFullRule("FlangeB"));
-//   buildZone.insertComponent(System,"Unit",voidN+2,
-// 			PT.getFullRule("FlangeA"));
-//   buildZone.insertComponent(System,"Unit",voidN+2,
-// 			PT.getFullRule("FlangeB"));
-//   return;
-// }
 
 void
 R3FrontEndFMBB::buildHeatTable(Simulation& System)

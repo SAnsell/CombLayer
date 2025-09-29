@@ -102,7 +102,6 @@ TOMOWISE::TOMOWISE(const std::string& KN) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-
   OR.addObject(frontBeam);
   OR.addObject(wallLead);
   OR.addObject(joinPipe);
@@ -149,29 +148,35 @@ TOMOWISE::build(Simulation& System,
   frontBeam->setBack(-r3Ring->getSurf("BeamInner",PIndex));
   frontBeam->createAll(System,FCOrigin,sideIndex);
 
-  //  return;
-
   wallLead->addInsertCell(r3Ring->getCell("FrontWall",PIndex));
   wallLead->setFront(r3Ring->getSurf("BeamInner",PIndex));
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
   wallLead->setCutSurf("Ring",r3Ring->getSurfRule("#FlatInner",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
-  frontBeam->getProxiShieldBPipe()->insertInCell("Main", System, wallLead->getCell("Void"));
-  frontBeam->getProxiShieldBPipe()->insertInCell("FlangeB", System, wallLead->getCell("Void"));
-  frontBeam->getProxiShieldBPipe()->insertInCell("FlangeB", System, wallLead->getCell("SteelVoid"));
+  frontBeam->getProxiShieldBPipe()->insertInCell
+    ("Main", System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldBPipe()->insertInCell
+    ("FlangeB", System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldBPipe()->insertInCell
+    ("FlangeB", System, wallLead->getCell("SteelVoid"));
 
-  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("PreLeadVoid"));
-  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("Void"));
-  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("ExtraVoid"));
+  frontBeam->getProxiShieldB()->insertInCell
+    (System, wallLead->getCell("PreLeadVoid"));
+  frontBeam->getProxiShieldB()->insertInCell
+    (System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldB()->insertInCell
+    (System, wallLead->getCell("ExtraVoid"));
 
   // list of front-end stop points - no need to build geometry after them
   constexpr std::array<std::string_view, 9> frontStopPoints = {
         "frontEnd", "FM1", "FM2", "FM3", "TransPipe",
         "ChokeChamber", "U1Block", "Dipole", "HeatTable"
     };
-   if (std::find(frontStopPoints.begin(), frontStopPoints.end(), stopPoint) != frontStopPoints.end())
-        return;
+  
+  if (std::find(frontStopPoints.begin(), frontStopPoints.end(), stopPoint)
+      != frontStopPoints.end())
+    return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);
 
@@ -182,8 +187,6 @@ TOMOWISE::build(Simulation& System,
   joinPipe->addInsertCell("FlangeA",wallLead->getCell("Void"));
   joinPipe->addInsertCell("FlangeA",wallLead->getCell("SteelVoid"));
   joinPipe->createAll(System,*frontBeam,2);
-
-
 
   opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
@@ -222,7 +225,6 @@ TOMOWISE::build(Simulation& System,
       beamStop->insertAllInCell(System,exptHut->getCell("Void"));
       return;
     }
-
 
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->setCutSurf("front",*exptHut,

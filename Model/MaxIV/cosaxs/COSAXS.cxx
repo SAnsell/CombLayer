@@ -157,7 +157,7 @@ COSAXS::build(Simulation& System,
   wallLead->setBack(-r3Ring->getSurf("BeamOuter",PIndex));
   wallLead->setCutSurf("Ring",r3Ring->getSurfRule("#FlatInner",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
-  return;
+
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);

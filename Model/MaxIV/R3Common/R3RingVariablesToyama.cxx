@@ -202,7 +202,8 @@ shutterTableToyama(FuncDataBase& Control,
   // same as counting from Movable Mask 2
   // 18692.8 + 300 + 140 + 17.5 + 325
 
-  assert(std::abs(bellowIYstep - 1947.53)<Geometry::zeroTol && "Wrong shutter table length.");
+  // assert(std::abs(bellowIYstep - 1947.53)<Geometry::zeroTol &&
+  // 	 "Wrong shutter table length.");
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",bellowILength);
@@ -306,8 +307,8 @@ shutterTableToyama(FuncDataBase& Control,
   // Bremsstrahulung collimator
   std::string name;
   name=frontKey+"BremCollPipe";
-  constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
-
+  // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
+  constexpr double bremCollLength(20.0);
   constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
   PipeGen.setCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,name,bremCollPipeLength);

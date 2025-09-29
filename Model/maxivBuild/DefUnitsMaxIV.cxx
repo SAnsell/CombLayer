@@ -3,7 +3,7 @@
 
  * File:   maxviBuildInc/DefUnitsMaxIV.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,7 +119,10 @@ setMaxIVSingle(defaultConfig& A,
       { "RING1", "World 0"},
       { "RING3", "World 0"},
       { "R1RING", "World 0"},
-      { "R3RING", "World 0"}
+      { "R3RING", "World 0"},
+      { "GunTestFacility", "World 0"},
+      { "TOMOWISE", "World 0"}
+
     };
 
   size_t beamLineIndex(0);

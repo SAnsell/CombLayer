@@ -3,7 +3,7 @@
  
  * File:   essBuild/Wheel.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -455,11 +455,9 @@ Wheel::createLinks()
   FixedComp::setConnect(6, Origin-Y*voidRadius,Y);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+537));
 
-  ELog::EM<<"ASDFASF"<<ELog::endDiag;
   nameSideIndex(4,"VoidBase");
   nameSideIndex(5,"VoidTop");
   nameSideIndex(6,"VoidRadius");
-
   
   return;
 }

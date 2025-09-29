@@ -347,8 +347,21 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::BremBlockGenerator BBGen;
   BBGen.setAperature(-1,1.0,1.0,1.0,1.0,1.0,1.0);
+  BBGen.setCube(5.0,5.0);
   BBGen.generateBlock(Control,"BremBlock",0.0);
 
+  setVariable::PipeGenerator BPGen;
+
+  BPGen.setCF<setVariable::CF100>();
+  BPGen.generatePipe(Control,"BremCollPipe",20.0);
+  Control.addVariable("BremCollPipeRadius",4.5);
+  Control.addVariable("BremCollPipeFlangeARadius",
+		      4.5+CF100::wallThick);
+  Control.addVariable("BremCollPipeFlangeBRadius",7.5); 
+  Control.addVariable("BremCollPipeFlangeAInnerRadius",3.0);
+  Control.addVariable("BremCollPipeFlangeBInnerRadius",3.0);
+
+  
   setVariable::CrossWayGenerator CWBlankGen;
   CWBlankGen.setCF<CF63>();
   CWBlankGen.setMainLength(2.4,13.6);
@@ -473,6 +486,8 @@ SingleItemVariables(FuncDataBase& Control)
   PGen.generatePipe(Control,"CorrectorMagPipe",40.0);
   Control.addVariable("CorrectorMagPipe",-20.0);
 
+
+  
   LQGen.generateQuad(Control,"QF",20.0);
 
   PGen.setCF<setVariable::CF40_22>();

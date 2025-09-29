@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,6 +211,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
+	"BremColl",
 	"CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder","CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
@@ -1035,10 +1036,8 @@ makeSingleItem::build(Simulation& System,
       OR.addObject(TubeB);
       OR.addObject(Surround);
 
-      ELog::EM<<"ASDFASFDSAF "<<ELog::endDiag;
       TubeA->addInsertCell(voidCell);
       TubeA->createAll(System,World::masterOrigin(),0);
-      ELog::EM<<"ASDFASFDSAF "<<ELog::endDiag;
       TubeB->addInsertCell(voidCell);
       TubeB->createAll(System,*TubeA,2);
       return;
@@ -1113,6 +1112,22 @@ makeSingleItem::build(Simulation& System,
 
       BB->addInsertCell(voidCell);
       BB->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item=="BremColl")
+    {
+      std::shared_ptr<xraySystem::BremBlock>
+	BB(new xraySystem::BremBlock("BremBlock"));
+      std::shared_ptr<constructSystem::VacuumPipe>
+	BV(new constructSystem::VacuumPipe("BremCollPipe"));
+      
+      OR.addObject(BB);
+      OR.addObject(BV);
+      BV->addAllInsertCell(voidCell);
+      BV->createAll(System,World::masterOrigin(),0);
+      BB->createAll(System,*BV,0);
+      BB->insertInCell(System,BV->getCell("Void"));
 
       return;
     }
