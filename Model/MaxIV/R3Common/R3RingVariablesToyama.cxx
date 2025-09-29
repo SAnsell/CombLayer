@@ -270,7 +270,7 @@ shutterTableToyama(FuncDataBase& Control,
       const std::string fname=frontKey+"Shutter"+std::to_string(i);
 
       PItemGen.generatePort(Control,name,CPos,ZVec);
-      BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
+      BeamMGen.generateMount(Control,fname,0);      // out of beam
       CPos+=Geometry::Vec3D(0,shutterBoxLength/2.0,0);
     }
 

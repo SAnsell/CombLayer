@@ -506,7 +506,7 @@ safetyUnit(FuncDataBase& Control,
       const std::string fname=preName+"BS"+std::to_string(i+1);
 
       PItemGen.generatePort(Control,name,CPos,ZVec);
-      BeamMGen.generateMount(Control,fname,1);      // out of beam:upflag=1
+      BeamMGen.generateMount(Control,fname,0);      // out of beam
       CPos+=Geometry::Vec3D(0,shutterBoxLength/2.0,0);
     }
 
@@ -1127,7 +1127,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
     {
       const std::string fname=Name+jawKey[i];
       if (i) BeamMGen.setXYStep(-1.2,-2.5,1.2,2.5);
-      BeamMGen.generateMount(Control,fname,1);  // out of beam
+      BeamMGen.generateMount(Control,fname,0);  // out of beam
     }
 
   return;

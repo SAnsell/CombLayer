@@ -1,6 +1,6 @@
- /********************************************************************* 
+ /*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/BeamMount.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_BeamMount_h
@@ -42,21 +42,21 @@ class BeamMount :
   public attachSystem::CellMap
 {
  private:
-  
-  int blockFlag;           ///< build the block [1:centre / 2 low Edge]    
-  bool upFlag;             ///< Up/down
+
+  int blockFlag;           ///< build the block [1:centre / 2 low Edge]
+  bool closed;             ///< Up/down
 
   double outLift;         ///< Amount to lift [when raised]
   double beamLift;        ///< Amount to lift by in the beam
-  
-  double supportRadius;    ///< Radius of support  
+
+  double supportRadius;    ///< Radius of support
   int supportMat;          ///< support material
 
 
   double blockXYAngle;     ///< rotation
-  double height;           ///< height total 
+  double height;           ///< height total
   double width;            ///< width accross beam
-  double length;           ///< Thickness in normal direction to reflection  
+  double length;           ///< Thickness in normal direction to reflection
   int blockMat;            ///< Base material
 
   // Functions:
@@ -82,10 +82,9 @@ class BeamMount :
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int) override;
- 
+
 };
 
 }
 
 #endif
- 

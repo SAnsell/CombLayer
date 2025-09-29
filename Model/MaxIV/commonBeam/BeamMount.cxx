@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/BeamMount.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -94,8 +94,8 @@ BeamMount::populate(const FuncDataBase& Control)
   FixedRotateGroup::populate(Control);
 
   blockFlag=Control.EvalDefVar<int>(keyName+"BlockFlag",0);
-  
-  upFlag=Control.EvalDefVar<int>(keyName+"UpFlag",1);
+
+  closed=Control.EvalDefVar<int>(keyName+"Closed",0);
   outLift=Control.EvalVar<double>(keyName+"OutLift");
   beamLift=Control.EvalVar<double>(keyName+"BeamLift");
 
@@ -112,7 +112,7 @@ BeamMount::populate(const FuncDataBase& Control)
   supportRadius=Control.EvalVar<double>(keyName+"SupportRadius");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
 
-  
+
   return;
 }
 
@@ -125,7 +125,7 @@ BeamMount::createPairVector(const attachSystem::FixedComp& centreFC,
     Create the unit vectors.
     The first flangeFC is to set the X,Y,Z relative to the axis
     and the origin at the beam centre position.
-    
+
     The beamFC axis are set so (a) Y ==> cIndex axis
                                (b) Z ==> mount axis
                                (c) X ==> correct other
@@ -148,7 +148,7 @@ BeamMount::createPairVector(const attachSystem::FixedComp& centreFC,
   Geometry::Vec3D BC(mainFC.getCentre());
 
   // need to remove directoin in Y of flange
-  
+
   const double BY=BC.dotProd(ZBeam);
   const double MY=centreFC.getLinkPt(cIndex).dotProd(ZBeam);
   BC += ZBeam * (MY-BY);
@@ -163,7 +163,7 @@ BeamMount::createPairVector(const attachSystem::FixedComp& centreFC,
 
   applyOffset();
 
-  if (upFlag)
+  if (!closed)
     beamFC.applyShift(0,0,-outLift);  // only lift offset
   else
     beamFC.applyShift(0,0,-beamLift);  // only beam offset
@@ -206,7 +206,7 @@ BeamMount::createSurfaces()
 			       bOrigin-bX*(width/2.0),bX);
       ModelSupport::buildPlane(SMap,buildIndex+4,
 			       bOrigin+bX*(width/2.0),bX);
-      
+
       if (blockFlag==1)  // make centre
 	{
 	  ModelSupport::buildPlane(SMap,buildIndex+5,
@@ -222,7 +222,7 @@ BeamMount::createSurfaces()
 	  ModelSupport::buildPlane(SMap,buildIndex+6,bOrigin,bZ);
 	}
     }
-  return; 
+  return;
 }
 
 void
@@ -247,15 +247,15 @@ BeamMount::createObjects(Simulation& System)
       makeCell("Block",System,cellIndex++,blockMat,0.0,HR);
       addOuterSurf("Block",HR);
     }
-  
+
   // final exclude:
   //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 -6");
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -5");
   addOuterSurf("Support",HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf("Block",HR);
-  
-  return; 
+
+  return;
 }
 
 void
@@ -265,7 +265,7 @@ BeamMount::createLinks()
   */
 {
   ELog::RegMethod RegA("BeamMount","createLinks");
-  
+
   return;
 }
 
@@ -291,7 +291,7 @@ BeamMount::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);       
+  insertObjects(System);
 
   return;
 }

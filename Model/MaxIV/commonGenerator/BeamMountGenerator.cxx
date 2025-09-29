@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/BeamMountGenerator.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -58,7 +58,7 @@ BeamMountGenerator::BeamMountGenerator() :
   */
 {}
 
-BeamMountGenerator::~BeamMountGenerator() 
+BeamMountGenerator::~BeamMountGenerator()
  /*!
    Destructor
  */
@@ -70,7 +70,7 @@ void
 BeamMountGenerator::setLift(const double A,
 			    const double B)
   /*!
-    Set the thread 
+    Set the thread
     \param A :: beam/out lift
     \param B :: beam/out lift
    */
@@ -84,7 +84,7 @@ void
 BeamMountGenerator::setThread(const double R,
 			      const std::string& Mat)
   /*!
-    Set the thread 
+    Set the thread
     \param R :: Thread radius
     \param Mat :: Material of support
    */
@@ -138,16 +138,16 @@ BeamMountGenerator::setEdgeBlock(const double W,const double H,
 }
 
 
-				  
+
 void
 BeamMountGenerator::generateMount(FuncDataBase& Control,
 				  const std::string& keyName,
-				  const int upFlag) const
+				  const int closed) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param blockType :: Block position [0:None,1:Mid,2:lower edge]		    \param upFlag :: true if item open/withdrawn
+    \param closed :: false if item open/withdrawn
   */
 {
   ELog::RegMethod RegA("BeamMountGenerator","generatorMount");
@@ -155,26 +155,26 @@ BeamMountGenerator::generateMount(FuncDataBase& Control,
   Control.addVariable(keyName+"ZAngle",xyAngle);
 
   Control.addVariable(keyName+"BlockFlag",blockType);
-  Control.addVariable(keyName+"UpFlag",upFlag);
+  Control.addVariable(keyName+"Closed",closed);
 
   Control.addVariable(keyName+"BeamZStep",0.0);
 
   Control.addVariable(keyName+"OutLift",outLift);
   Control.addVariable(keyName+"BeamLift",beamLift);
-  
+
   Control.addVariable(keyName+"SupportRadius",supportRadius);
   Control.addVariable(keyName+"SupportMat",supportMat);
-  
+
   // always add even if not needed
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"Length",length);	
+  Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"BlockMat",blockMat);
 
-       
+
   return;
 
 }
 
-  
+
 }  // NAMESPACE setVariable
