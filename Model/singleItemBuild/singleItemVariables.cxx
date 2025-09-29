@@ -822,9 +822,23 @@ SingleItemVariables(FuncDataBase& Control)
      Geometry::Vec3D(0.0, -3.0, 0.0),
      Geometry::Vec3D(-1.0, 0.0, 0.0));
 
-  MLMDetailGenerator MLGen;
-  MLGen.generateMono(Control,"MLM",0.1,-0.1);
+  setVariable::VacBoxGenerator MBoxGen;
+  MBoxGen.setCF<CF40>();   // set ports
+  MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
+  MBoxGen.setPortLength(7.5,7.5); // La/Lb
+  MBoxGen.setBPortOffset(-0.4,0.0);    // note -1mm from crystal offset
+  // width / heigh / depth / length
+  MBoxGen.generateBox
+    (Control,"MLMVessel",54.7,12.5,31.0,92.7);  // 470mm height
+  Control.addVariable("MLMVesselNPorts",0);   // beam ports (lots!!)
+  
+  Control.addVariable("MLMVesselPortBXStep",0.0);   // from primary
 
+  MLMDetailGenerator MLGen;
+  MLGen.generateMono(Control,"MLM",0.4,-0.4);
+
+
+  
   m1chamberDetails(Control);
 
   TubeDetBoxGenerator TDBGen;

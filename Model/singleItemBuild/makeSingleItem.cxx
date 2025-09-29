@@ -73,6 +73,7 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "VacuumBox.h"
 #include "UTubePipe.h"
 #include "RectanglePipe.h"
 #include "OffsetFlangePipe.h"
@@ -345,13 +346,18 @@ makeSingleItem::build(Simulation& System,
     }
   if (item == "MLMdetail" )
     {
+      std::shared_ptr<constructSystem::VacuumBox>
+	MLMVessel(new constructSystem::VacuumBox("MLMVessel"));
       std::shared_ptr<xraySystem::MLMonoDetail>
-	MD(new xraySystem::MLMonoDetail("MLM"));
-      OR.addObject(MD);
+	MLM(new xraySystem::MLMonoDetail("MLM"));
+      OR.addObject(MLMVessel);
+      OR.addObject(MLM);
 
-      MD->addInsertCell(voidCell);
-      MD->createAll(System,World::masterOrigin(),0);
-
+      MLMVessel->createAll(System,World::masterOrigin(),0);
+      MLMVessel->insertInCell(System,voidCell);
+      
+      MLM->addInsertCell(MLMVessel->getCell("Void"));
+      MLM->createAll(System,*MLMVessel,0);
       return;
     }
   if (item == "M1detail" )
