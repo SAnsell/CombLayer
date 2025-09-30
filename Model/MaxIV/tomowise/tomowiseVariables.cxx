@@ -1292,18 +1292,18 @@ opticsVariables(FuncDataBase& Control,
   const std::string name=preName+"PowerFilterVessel";
   //  constexpr double pfLength = 44.223014; // dummy total power filter vessel length to place the first mirror correctly
   PipeGen.generatePipe(Control,preName+"PipeBA",5.0);
-  Control.addVariable(preName+"PipeBAFlangeBRadius", CF200::outerRadius);
+  Control.addVariable(preName+"PipeBAFlangeBRadius", CF300::outerRadius);
   PipeGen.generatePipe(Control,preName+"PipeBB",5.0);
-  Control.addVariable(preName+"PipeBBFlangeARadius", CF200::outerRadius);
-  SimpleTubeGen.setCF<CF200>();
+  Control.addVariable(preName+"PipeBBFlangeARadius", CF300::outerRadius);
+  SimpleTubeGen.setCF<CF300>();
   // There are no flanges -> set their radii to be the same as the outer radius
   // CL will not build their empty cells. The lenth parameter is irellevant.
-  SimpleTubeGen.setAFlange(CF200::outerRadius, CF200::flangeLength);
-  SimpleTubeGen.setBFlange(CF200::outerRadius, CF200::flangeLength);
+  SimpleTubeGen.setAFlange(CF300::outerRadius, CF300::flangeLength);
+  SimpleTubeGen.setBFlange(CF300::outerRadius, CF300::flangeLength);
   SimpleTubeGen.generateTube(Control,name,20.4);
   Control.addVariable(name+"NPorts",1);
 
-  PItemGen.setCF<setVariable::CF150>(CF200::outerRadius+14.5); // measured
+  PItemGen.setCF<setVariable::CF150>(CF300::outerRadius+14.5); // measured
   PItemGen.setPlate(2.0,"Stainless304"); // dummy - another component above the port (TODO)
   PItemGen.generatePort(Control,name+"Port0",
 			Geometry::Vec3D(0,0,0),
@@ -1311,6 +1311,8 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port1",
 			Geometry::Vec3D(0,0,0),
 			Geometry::Vec3D(0,0,-1));
+
+  Control.addVariable(name+"Radius", CF300::innerRadius); // must match PipeB[AB]Flange[BA]Radius (use the same CF)
 
 
 
