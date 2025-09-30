@@ -138,7 +138,7 @@ PipeTubeGenerator::setPipe(const double R,const double W,
   ACap=0.0;
   BCap=0.0;
   return;
-}  
+}
 
 template<typename CF>
 void
@@ -331,17 +331,20 @@ PipeTubeGenerator::generateBlank(FuncDataBase& Control,
   template void PipeTubeGenerator::setCF<CF120>();
   template void PipeTubeGenerator::setCF<CF150>();
   template void PipeTubeGenerator::setCF<CF200>();
+  template void PipeTubeGenerator::setCF<CF300>();
   template void PipeTubeGenerator::setCF<CF350>();
   template void PipeTubeGenerator::setAFlangeCF<CF40>();
   template void PipeTubeGenerator::setAFlangeCF<CF63>();
   template void PipeTubeGenerator::setAFlangeCF<CF100>();
   template void PipeTubeGenerator::setAFlangeCF<CF120>();
   template void PipeTubeGenerator::setAFlangeCF<CF150>();
+  template void PipeTubeGenerator::setAFlangeCF<CF300>();
   template void PipeTubeGenerator::setBFlangeCF<CF40>();
   template void PipeTubeGenerator::setBFlangeCF<CF63>();
   template void PipeTubeGenerator::setBFlangeCF<CF100>();
   template void PipeTubeGenerator::setBFlangeCF<CF120>();
   template void PipeTubeGenerator::setBFlangeCF<CF150>();
+  template void PipeTubeGenerator::setBFlangeCF<CF300>();
 
 ///\endcond TEMPLATE
 
