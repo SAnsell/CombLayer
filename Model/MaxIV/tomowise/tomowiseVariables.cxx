@@ -129,6 +129,9 @@ void shieldVariables(FuncDataBase&,const std::string&);
 void monoShutterBVariables(FuncDataBase&,const std::string&);
 
 
+  constexpr double hutchHeight(277.0);
+  constexpr double hutchOutWidth(260.0); // discussion with AR 250829 (we define the width)
+
 void
 undulatorVariables(FuncDataBase& Control,
 		   const std::string& undKey)
@@ -731,13 +734,13 @@ opticsHutVariables(FuncDataBase& Control,
   // if set to 995, then the Guillotine cuts ProxiShieldB, therefore
   // add ~10 cm to avoid geometry errors
   OGen.generateHut(Control,hutName,1012.4);
-  Control.addVariable(hutName+"OutWidth",262.0);
-  Control.addVariable(hutName+"Height",279.4);
+  Control.addVariable(hutName+"OutWidth",hutchOutWidth);
+  Control.addVariable(hutName+"Height",hutchHeight);
 
   Control.addVariable(hutName+"RingStepLength",992.0);
   Control.addVariable(hutName+"RingStepWidth",200.0);
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",0);
 
   PGen.setSize(4.0,60.0,40.0);
   PGen.generatePortChicane(Control,hutName+"Chicane0","Right",-230.0,-15.0);
@@ -787,10 +790,10 @@ exptHutVariables(FuncDataBase& Control,
   EGen.setCorner(30.0, 210.0);   // angle, step-y back - hutch length discussion 250919
   EGen.generateHut(Control,hutName,0.0,2037.6); // hutch length discussion 250919
 
-  Control.addVariable(hutName+"Height",277.0);
+  Control.addVariable(hutName+"Height",hutchHeight);
   Control.addVariable(hutName+"FrontVoid",0.0);
-  Control.addVariable(hutName+"OutWidth",260.0); // discussion with AR 250829 (we define the width)
-  Control.addVariable(hutName+"RingWidth",260.0); // discussion with AR 250829 (we define the width)
+  Control.addVariable(hutName+"OutWidth",hutchOutWidth);
+  Control.addVariable(hutName+"RingWidth",hutchOutWidth); // RingWidth is the same as OutWidth
   Control.addVariable(hutName+"PbWallThick",3.0); // optimised to be good enough
   Control.addVariable(hutName+"PbRoofThick",3.0); // same as the wall since at ~ the same distance to the beamline
 
