@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -824,9 +824,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("MLMVesselPortBXStep",0.0);   // from primary
 
   MLMDetailGenerator MLGen;
-  MLGen.generateMono(Control,"MLM",-0.4,-0.4);
-
-
+  MLGen.generateMono(Control,"MLM",0.4,0.4);
   
   m1chamberDetails(Control);
 
