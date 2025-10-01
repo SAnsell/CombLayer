@@ -378,9 +378,8 @@ diag2Package(FuncDataBase& Control,
   Control.addVariable(diagKey+"BremCollBWidth",10.0);
 
   // Monochromatic beam slits
-  HPGen.generateJaws(Control,diagKey+"HPJawsA",xgap,ygap);
-  // just a big gap to avoid cutting the beam. It does not exist in the CAD drawing
-  Control.addVariable(diagKey+"HPJawsADividerGap",12);
+  HPGen.generateJaws(Control,diagKey+"MonoBeamSlits",xgap,ygap);
+  Control.addVariable(diagKey+"MonoBeamSlitsDividerGap",12);
 
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();

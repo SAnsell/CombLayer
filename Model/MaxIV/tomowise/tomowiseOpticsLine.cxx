@@ -182,7 +182,7 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
 
   bremTubeA(new xraySystem::BremTube(newName+"BremTubeA")),
   bremCollB(new xraySystem::BremBlock(newName+"BremCollB")),
-  hpJawsA(new xraySystem::HPJaws(newName+"HPJawsA")),
+  hpJawsA(new xraySystem::HPJaws(newName+"MonoBeamSlits")),
   bellowFA(new constructSystem::Bellows(newName+"BellowFA")),
   viewTubeA(new constructSystem::PipeTube(newName+"ViewTubeA")),
   pipeDA(new constructSystem::VacuumPipe(newName+"PipeDA")),
