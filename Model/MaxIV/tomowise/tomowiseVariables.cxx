@@ -1150,7 +1150,7 @@ mirrorMonoPackage(FuncDataBase& Control,
 
   setVariable::MLMDetailGenerator MLGen;
 
-  MLGen.generateMono(Control,monoKey+"MLM",0.4,-0.4);
+  MLGen.generateMono(Control,monoKey+"MLM",0.4,0.4);
 
 
   // ystep/width/height/depth/length

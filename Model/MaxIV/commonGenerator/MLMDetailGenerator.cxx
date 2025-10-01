@@ -326,7 +326,7 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param thetaA ::  angle
     
   */
 {
@@ -335,15 +335,14 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
   // guess of separation
   const double xstalYStep(gap/tan(2.0*M_PI*thetaA/180.0));
 
-  makeCrystal(Control,keyName+"XstalA",1,0.0,-xstalYStep/2.0,thetaA);
-  makeCrystal(Control,keyName+"XstalB",0,gap,xstalYStep/2.0,thetaB); 
+  makeCrystal(Control,keyName+"XstalA",0,0.0,-xstalYStep/2.0,thetaA);
+  makeCrystal(Control,keyName+"XstalB",1,-gap,xstalYStep/2.0,thetaB); 
 
   makeSupportWheel(Control,keyName+"BWheel",0.0,0.0);
   makeRadialSupport(Control,keyName+"Radial",0.0,0.0);
   makeWheelPlate(Control,keyName+"WheelPlate",0.0,3.0);
   
   return;
-
 }
   
 }  // NAMESPACE setVariable

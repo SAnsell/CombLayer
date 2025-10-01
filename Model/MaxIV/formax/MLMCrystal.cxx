@@ -96,7 +96,6 @@ MLMCrystal::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
 
-
   topSlotXStep=Control.EvalVar<double>(keyName+"TopSlotXStep");
   topSlotLength=Control.EvalVar<double>(keyName+"TopSlotLength");
   topSlotWidth=Control.EvalVar<double>(keyName+"TopSlotWidth");

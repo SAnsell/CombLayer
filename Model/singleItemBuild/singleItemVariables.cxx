@@ -3,7 +3,7 @@
 
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -831,14 +831,12 @@ SingleItemVariables(FuncDataBase& Control)
   MBoxGen.generateBox
     (Control,"MLMVessel",54.7,12.5,31.0,92.7);  // 470mm height
   Control.addVariable("MLMVesselNPorts",0);   // beam ports (lots!!)
-  
+
   Control.addVariable("MLMVesselPortBXStep",0.0);   // from primary
 
   MLMDetailGenerator MLGen;
-  MLGen.generateMono(Control,"MLM",0.4,-0.4);
+  MLGen.generateMono(Control,"MLM",0.4,0.4);
 
-
-  
   m1chamberDetails(Control);
 
   TubeDetBoxGenerator TDBGen;
