@@ -150,8 +150,8 @@ tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   bremPipeB(new constructSystem::VacuumPipe(newName+"BremPipeB")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
   jaws({
-      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJawX"),
-      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJawZ")
+      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAWhiteBeamSlitsX"),
+      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAWhiteBeamSlitsZ")
     }),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),

@@ -1124,7 +1124,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
 
   //
 
-  const std::string jawKey[]={"JawX","JawZ"};
+  const std::string jawKey[]={"WhiteBeamSlitsX","WhiteBeamSlitsZ"};
   for(size_t i=0;i<2;i++)
     {
       const std::string fname=Name+jawKey[i];
