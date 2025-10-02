@@ -364,7 +364,17 @@ diag2Package(FuncDataBase& Control,
   setVariable::BremBlockGenerator MaskGen;
 
 
-  BTGen.generateTube(Control,diagKey+"BremTubeA");
+  std::string name=diagKey+"BremTubeA";
+  BTGen.generateTube(Control,name);
+  // Control.addVariable(name+"BackFlangeLength",2.5);
+  Control.addVariable(name+"BackFlangeRadius",4);//3.5);//10.15);
+  // Control.addVariable(name+"BackLength",12);
+  Control.addVariable(name+"BackRadius",1.9);//7.55);
+
+  Control.addVariable(name+"FrontFlangeLength",1.3);
+  Control.addVariable(name+"FrontFlangeRadius",3.5);
+  Control.addVariable(name+"FrontLength",4);
+  Control.addVariable(name+"FrontRadius",1.9);
 
   MaskGen.setLength(8.0);
   // x-gap size: 1 mrad (2.806 cm)    + 0.2 cm (safety margin) \approx 3.0

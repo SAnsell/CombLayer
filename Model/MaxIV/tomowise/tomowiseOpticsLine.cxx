@@ -478,15 +478,26 @@ tomowiseOpticsLine::constructDiag2(Simulation& System,
   ELog::RegMethod RegA("tomowiseOpticsLine","constructDiag2");
 
 
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*bremTubeA);
+  // constructSystem::constructUnit
+  //   (System,buildZone,initFC,sideName,*bremTubeA);
 
+  // bremCollB->addInsertCell(bremTubeA->getCell("Void"));
+  // bremCollB->createAll(System,*bremTubeA,0);
+
+  // hpJawsA->setFlangeJoin();
+  // constructSystem::constructUnit(System,buildZone,*bremTubeA,"back",*hpJawsA);
+  // constructSystem::constructUnit(System,buildZone,*hpJawsA,"back",*bellowFA);
+  // constructViewScreen(System,*bellowFA,"back");
+
+
+  hpJawsA->setFlangeJoin();
+  constructSystem::constructUnit(System,buildZone,initFC,sideName,*hpJawsA);
+
+  constructSystem::constructUnit(System,buildZone,*hpJawsA,"back",*bremTubeA);
   bremCollB->addInsertCell(bremTubeA->getCell("Void"));
   bremCollB->createAll(System,*bremTubeA,0);
 
-  hpJawsA->setFlangeJoin();
-  constructSystem::constructUnit(System,buildZone,*bremTubeA,"back",*hpJawsA);
-  constructSystem::constructUnit(System,buildZone,*hpJawsA,"back",*bellowFA);
+  constructSystem::constructUnit(System,buildZone,*bremTubeA,"back",*bellowFA);
   constructViewScreen(System,*bellowFA,"back");
 
 
