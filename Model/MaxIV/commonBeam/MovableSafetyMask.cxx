@@ -197,7 +197,7 @@ MovableSafetyMask::createSurfaces()
     APt=ExternalCut::interPoint("front",Origin,Y);
 
   if (!backActive()) {
-    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+uMaskWidth),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     BPt = Origin+Y*(length);
   } else
