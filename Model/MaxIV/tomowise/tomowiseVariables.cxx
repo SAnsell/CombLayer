@@ -205,7 +205,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setBackGap(backWidth, backHeight);
   FMaskGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
-  FMaskGen.generateColl(Control,preName+"CollA",FM1dist,FM1Length);
+  FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
 
 
 
@@ -215,7 +215,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setBackGap(backWidth, backHeight);
   FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
-  FMaskGen.generateColl(Control,preName+"CollB",FM2dist,FM2Length);
+  FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
 
 ;
 

@@ -107,7 +107,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   magnetBlock(new xraySystem::MagnetBlock(newName+"MagnetBlock")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collA(new xraySystem::SquareFMask(newName+"CollA")),
+  collA(new xraySystem::SquareFMask(newName+"FM1")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),

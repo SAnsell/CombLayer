@@ -164,10 +164,10 @@ frontMaskVariables(FuncDataBase& Control,
   CollGen.setFrontGap(3.99,1.97); // dy,dz
   CollGen.setBackGap(0.71,0.71); // dy,dz
   CollGen.setMinSize(10.0,0.71,0.71); // L,dy,dz
-  CollGen.generateColl(Control,preName+"CollA",FM1dist,15.0);
+  CollGen.generateColl(Control,preName+"FM1",FM1dist,15.0);
 
   CollGen.setMinSize(25.0,0.71,0.71); // L,dy,dz
-  CollGen.generateColl(Control,preName+"CollB",FM2dist,30.0);
+  CollGen.generateColl(Control,preName+"FM2",FM2dist,30.0);
 
   // move water pipes from centre because otherwise clip with aperature cone
   Control.addVariable(preName+"CollBPipeXWidth",5.0);

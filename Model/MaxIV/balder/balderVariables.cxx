@@ -139,7 +139,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setFrontGap(2.62,1.86);       // 1033.8
   FMaskGen.setBackGap(1.54,1.42);
   FMaskGen.setMinAngleSize(29.0,FM1dist,1000.0,1000.0);  // Approximated to get 1mrad
-  FMaskGen.generateColl(Control,preName+"CollA",FM1dist,35.0);
+  FMaskGen.generateColl(Control,preName+"FM1",FM1dist,35.0);
 
 
   FMaskGen.setFrontGap(2.13,2.146);
@@ -147,7 +147,7 @@ frontMaskVariables(FuncDataBase& Control,
   // approx for 800uRad x 200uRad
   FMaskGen.setMinSize(25.0,0.71,0.71); // L,dy,dz
   //  FMaskGen.setMinAngleSize(20.0,FM2dist,800.0,200.0);
-  FMaskGen.generateColl(Control,preName+"CollB",FM2dist,34.2);
+  FMaskGen.generateColl(Control,preName+"FM2",FM2dist,34.2);
 
   // FM 3:
   FMaskGen.setMain(1.20,"Copper","Void");
@@ -155,7 +155,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setBackGap(0.750,0.357);
   // approx for 100uRad x 100uRad
   FMaskGen.setMinAngleSize(12.0,FM2dist+34.2, 400.0, 100.0);
-  FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
+  FMaskGen.generateColl(Control,preName+"FM3",17.0/2.0,17.0);
 
   return;
 }
