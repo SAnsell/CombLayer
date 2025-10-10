@@ -267,7 +267,7 @@ shutterTableToyama(FuncDataBase& Control,
   for(size_t i=0;i<2;i++)
     {
       const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
-      const std::string fname=frontKey+"Shutter"+std::to_string(i);
+      const std::string fname=frontKey+"BS"+std::to_string(i+1);
 
       PItemGen.generatePort(Control,name,CPos,ZVec);
       BeamMGen.generateMount(Control,fname,0);      // out of beam

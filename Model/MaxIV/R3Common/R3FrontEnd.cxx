@@ -154,8 +154,8 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
   shutters({
-      std::make_shared<xraySystem::BeamMount>(newName+"Shutter0"),
-      std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
+      std::make_shared<xraySystem::BeamMount>(newName+"BS1"),
+      std::make_shared<xraySystem::BeamMount>(newName+"BS2")
     }),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
   collFM3Active(true)

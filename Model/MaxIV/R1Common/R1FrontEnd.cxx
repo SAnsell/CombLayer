@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: R1Common/R1FrontEnd.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -92,7 +92,7 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 R1FrontEnd::R1FrontEnd(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
@@ -120,12 +120,12 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   aperturePipe(new constructSystem::VacuumPipe(newName+"AperturePipe")),
-  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),  
+  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   ionPC(new constructSystem::CrossPipe(newName+"IonPC")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
-  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),  
+  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   gateA(new constructSystem::GateValveCube(newName+"GateA")),
@@ -136,12 +136,12 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
   shutters({
-      std::make_shared<xraySystem::BeamMount>(newName+"Shutter0"),
-	std::make_shared<xraySystem::BeamMount>(newName+"Shutter1")
+      std::make_shared<xraySystem::BeamMount>(newName+"BS1"),
+	std::make_shared<xraySystem::BeamMount>(newName+"BS2")
 	}),
   offPipeB(new constructSystem::OffsetFlangePipe(newName+"OffPipeB")),
-  bremBlock(new xraySystem::BremBlock(newName+"BremBlock")),  
-  bellowK(new constructSystem::Bellows(newName+"BellowK")) 
+  bremBlock(new xraySystem::BremBlock(newName+"BremBlock")),
+  bellowK(new constructSystem::Bellows(newName+"BellowK"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -189,7 +189,7 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
   OR.addObject(bellowK);
 
 }
-  
+
 R1FrontEnd::~R1FrontEnd()
   /*!
     Destructor
@@ -238,14 +238,14 @@ R1FrontEnd::createSurfaces()
     }
   else
     ELog::EM<<"Front == "<<getRule("front")<<ELog::endDiag;
-  
+
   buildZone.setFront(getRule("front"));
-  
+
   return;
 }
 
 
-   
+
 void
 R1FrontEnd::buildHeatTable(Simulation& System,
 			   const attachSystem::FixedComp& preFC,
@@ -268,10 +268,10 @@ R1FrontEnd::buildHeatTable(Simulation& System,
   const constructSystem::portItem& PIA=heatBox->getPort(1);
   outerCell=buildZone.createUnit(System,PIA,"OuterPlate");
   heatBox->insertAllInCell(System,outerCell);
-    
+
   // cant use heatbox here because of port rotation and
   // using PIA centre point
-  
+
   heatDump->addInsertCell("Inner",heatBox->getCell("Void"));
   heatDump->addInsertCell("Outer",outerCell);
   heatDump->createAll(System,PIA,0,*heatBox,2);
@@ -295,7 +295,7 @@ void
 R1FrontEnd::buildApertureTable(Simulation& System,
 			       const attachSystem::FixedComp& preFC,
 			       const std::string& preSide)
-  
+
   /*!
     Build the moveable aperature table
     \param System :: Simulation to use
@@ -309,10 +309,10 @@ R1FrontEnd::buildApertureTable(Simulation& System,
   int outerCell;
   // NOTE order for master cell [Next 4 object
   aperturePipe->createAll(System,preFC,preSide);
-  
+
   moveCollA->addInsertCell(aperturePipe->getCell("Void"));
   moveCollA->createAll(System,*aperturePipe,0);
-  
+
   // bellows AFTER movable aperture pipe
   bellowE->setFront(preFC,preSide);
   bellowE->setBack(*aperturePipe,1);
@@ -328,10 +328,10 @@ R1FrontEnd::buildApertureTable(Simulation& System,
   // now do insert:
   outerCell=buildZone.createUnit(System,*bellowE,"back");
   bellowE->insertAllInCell(System,outerCell);
-    
+
   outerCell=buildZone.createUnit(System,*aperturePipe,"back");
   aperturePipe->insertAllInCell(System,outerCell);
-  
+
   outerCell=buildZone.createUnit(System,*bellowF,"back");
   bellowF->insertAllInCell(System,outerCell);
 
@@ -359,10 +359,10 @@ R1FrontEnd::buildApertureTable(Simulation& System,
   // now do insert:
   outerCell=buildZone.createUnit(System,*bellowG,"back");
   bellowG->insertAllInCell(System,outerCell);
-    
+
   outerCell=buildZone.createUnit(System,*aperturePipeB,"back");
   aperturePipeB->insertAllInCell(System,outerCell);
-  
+
   outerCell=buildZone.createUnit(System,*bellowH,"back");
   bellowH->insertAllInCell(System,outerCell);
 
@@ -412,14 +412,14 @@ R1FrontEnd::buildShutterTable(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*gateTubeB,"back",*offPipeA);
 
- 
+
   shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
   outerCell=buildZone.createUnit(System,*shutterBox,"back");
 
   shutterBox->splitVoidPorts
     (System,"SplitVoid",1001,shutterBox->getCell("Void"),{0,1});
-  
-  
+
+
   shutterBox->splitVoidPorts(System,"SplitOuter",2001,
 			       outerCell,{0,1});
   shutterBox->insertMainInCell(System,shutterBox->getCells("SplitOuter"));
@@ -434,7 +434,7 @@ R1FrontEnd::buildShutterTable(Simulation& System,
       shutters[i]->addInsertCell("Support",PI.getCell("Void"));
       shutters[i]->addInsertCell("Support",shutterBox->getCell("SplitVoid",i));
       shutters[i]->addInsertCell("Block",shutterBox->getCell("SplitVoid",i));
-      
+
       shutters[i]->createAll(System,*offPipeA,
 			     offPipeA->getSideIndex("FlangeACentre"),
 			     PI,PI.getSideIndex("InnerPlate"));
@@ -442,7 +442,7 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 
   constructSystem::constructUnit
     (System,buildZone,*shutterBox,"back",*offPipeB);
-  
+
   bremBlock->addInsertCell(offPipeB->getCell("Void"));
   bremBlock->setFront(*offPipeB,-1);
   bremBlock->setBack(*offPipeB,-2);
@@ -453,7 +453,7 @@ R1FrontEnd::buildShutterTable(Simulation& System,
 
   return;
 }
-  
+
 void
 R1FrontEnd::buildObjects(Simulation& System)
   /*!
@@ -477,7 +477,7 @@ R1FrontEnd::buildObjects(Simulation& System)
 
   magnetBlock->setStopPoint(stopPoint);
   magnetBlock->createAll(System,*elecGateA,2);
-  
+
   outerCell=buildZone.createUnit(System,*magnetBlock,2);
 
   magnetBlock->insertInCell("Magnet",System,outerCell);
@@ -488,12 +488,12 @@ R1FrontEnd::buildObjects(Simulation& System)
       processEnd(System,magnetBlock);
       return;
     }
-  
+
   outerCell=buildZone.createUnit(System,*magnetBlock,3);
   magnetBlock->insertInCell("Magnet",System,outerCell);
   magnetBlock->insertInCell("Photon",System,outerCell);
 
-  
+
   if (stopPoint=="Dipole")
     {
       processEnd(System,magnetBlock);
@@ -509,14 +509,14 @@ R1FrontEnd::buildObjects(Simulation& System)
   dipolePipe->createAll(System,*magnetBlock,"Photon");
   outerCell=buildZone.createUnit(System,*dipolePipe,2);
 
-  magnetBlock->insertInCell("Magnet",System,outerCell);  
+  magnetBlock->insertInCell("Magnet",System,outerCell);
   dipolePipe->insertAllInCell(System,outerCell);
 
   // note : bellowA is reversed
   outerCell=buildZone.createUnit(System,*bellowA,1);
   bellowA->insertAllInCell(System,outerCell);
   magnetBlock->insertInCell("Magnet",System,outerCell);
-  
+
   outerCell=buildZone.createUnit(System,*collA,2);
   collA->insertInCell(System,outerCell);
 
@@ -539,9 +539,9 @@ R1FrontEnd::buildObjects(Simulation& System)
       return;
     }
 
-  buildHeatTable(System,*heatPipe,"back");  
+  buildHeatTable(System,*heatPipe,"back");
   buildApertureTable(System,*pipeB,"back");
-  buildShutterTable(System,*pipeC,"back");  
+  buildShutterTable(System,*pipeC,"back");
 
 
   processEnd(System,bellowK);
@@ -575,7 +575,7 @@ R1FrontEnd::processEnd(Simulation& System,
   return;
 }
 
-void 
+void
 R1FrontEnd::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
@@ -598,4 +598,3 @@ R1FrontEnd::createAll(Simulation& System,
 }
 
 }   // NAMESPACE xraySystem
-
