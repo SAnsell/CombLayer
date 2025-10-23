@@ -202,6 +202,7 @@ HeatAbsorberToyama::createSurfaces()
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+dumpWidth),Y);
+    ELog::EM << "Why + dumpWidth?" << ELog::endWarn;
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     BPt = Origin+Y*(length);
   } else
