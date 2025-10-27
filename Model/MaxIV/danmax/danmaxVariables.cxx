@@ -968,7 +968,7 @@ DANMAXvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"DanmaxJoinPipe",150.0);
+  PipeGen.generatePipe(Control,"DanmaxJoinPipe",200.0); // dummy
 
   danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut");
   danmaxVar::opticsVariables(Control,"Danmax");
