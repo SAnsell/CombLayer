@@ -46,7 +46,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "FixedOffsetUnit.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -65,9 +64,10 @@
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "OpticsStepHutch.h"
+#include "ProximityShielding.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
-#include "R3FrontEndFMBB.h"
+#include "R3FrontEndToyama.h"
 #include "danmaxFrontEnd.h"
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
@@ -136,9 +136,9 @@ DANMAX::build(Simulation& System,
   ELog::RegMethod RControl("DANMAX","build");
 
   const size_t NS=r3Ring->getNInnerSurf();
-  const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1);
+  const size_t PIndex=static_cast<size_t>(std::abs(sideIndex)-1)-NS;
   const size_t SIndex=(PIndex+1) % NS;
-  const size_t prevIndex=(NS+PIndex-1) % NS;
+  const size_t prevIndex=(2*NS+PIndex-1) % NS;
 
   const std::string exitLink="ExitCentre"+std::to_string(PIndex);
 
@@ -156,6 +156,15 @@ DANMAX::build(Simulation& System,
   wallLead->setCutSurf("Ring",r3Ring->getSurfRule("#FlatInner",PIndex));
   wallLead->createAll(System,FCOrigin,sideIndex);
 
+  frontBeam->getProxiShieldBPipe()->insertInCell("Main", System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldBPipe()->insertInCell("FlangeB", System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldBPipe()->insertInCell("FlangeB", System, wallLead->getCell("SteelVoid"));
+
+  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("PreLeadVoid"));
+  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("Void"));
+  frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("ExtraVoid"));
+
+
 
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
@@ -167,6 +176,8 @@ DANMAX::build(Simulation& System,
 
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
+  joinPipe->addInsertCell("FlangeA",wallLead->getCell("Void"));
+  joinPipe->addInsertCell("FlangeA",wallLead->getCell("SteelVoid"));
   joinPipe->createAll(System,*frontBeam,2);
 
     // new

@@ -3,7 +3,7 @@
 
  * File:   danmaxInc/danmaxFrontEnd.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,38 +43,36 @@ namespace constructSystem
 
 namespace xraySystem
 {
-
+  class R3FrontEndToyama;
   class HeatDump;
   class LCollimator;
   class SqrCollimator;
   class SquareFMask;
   class UTubePipe;
   class Undulator;
-  class Wiggler;
 
   /*!
     \class danmaxFrontEnd
-    \version 1.0
+    \version 1.1
     \author S. Ansell
     \date September 2019
     \brief General constructor front end optics
   */
 
 class danmaxFrontEnd :
-  public R3FrontEndFMBB
+  public R3FrontEndToyama
 {
  private:
 
   /// Pipe in undulator
-  std::shared_ptr<constructSystem::PortTube> undulatorTube;
-  /// Undulator in vacuum box [needs updating]
-  std::shared_ptr<xraySystem::Wiggler> undulator;
+  std::shared_ptr<xraySystem::UTubePipe> undulatorPipe;
+  /// Undulator in vacuum box
+  std::shared_ptr<xraySystem::Undulator> undulator;
 
   const attachSystem::FixedComp&
     buildUndulator(Simulation&,
 		   const attachSystem::FixedComp&,const long int) override;
 
-  void createSurfaces();
   void createLinks() override;
 
  public:
