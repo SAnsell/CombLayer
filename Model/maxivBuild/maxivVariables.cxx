@@ -110,7 +110,7 @@ maxivInstrumentVariables(const std::set<std::string>& BL,
       {"FORMAX","Formax"},
       {"COSAXS","Cosaxs"},
       {"SOFTIMAX","SoftiMAX"},
-      {"DANMAX", "Danmax"},
+      {"DANMAX", "DanMAX"},
       {"BALDER", "Balder"},
       {"MICROMAX","MicroMAX"},
       {"TOMOWISE","TomoWISE"}

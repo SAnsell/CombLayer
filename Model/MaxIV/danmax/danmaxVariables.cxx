@@ -754,7 +754,7 @@ shieldVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("danmaxVariables","shieldVariables");
 
-  const std::string preName("Danmax");
+  const std::string preName("DanMAX");
 
   Control.addVariable(preName+"GuillotineLength",10.0);
   Control.addVariable(preName+"GuillotineWidth",80.0);
@@ -977,7 +977,7 @@ DANMAXvariables(FuncDataBase& Control)
 
   PipeGen.setNoWindow();
 
-  const std::string beamLineName("Danmax");
+  const std::string beamLineName("DanMAX");
   const std::string frontKey(beamLineName+"FrontBeam");
 
   danmaxVar::undulatorVariables(Control,frontKey);
@@ -989,25 +989,25 @@ DANMAXvariables(FuncDataBase& Control)
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"DanmaxJoinPipe",190.0); // dummy
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipe",190.0); // dummy
 
-  danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut");
-  danmaxVar::opticsVariables(Control,"Danmax");
+  danmaxVar::opticsHutVariables(Control,beamLineName+"OpticsHut");
+  danmaxVar::opticsVariables(Control,beamLineName);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",49.3);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",49.3);
 
   danmaxVar::shieldVariables(Control);
-  danmaxVar::connectVariables(Control,"DanmaxConnectUnit");
+  danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setWindow(2.7, 0.005);
   PipeGen.setWindowMat("Diamond");
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",54.0);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeC",54.0);
 
-  danmaxVar::exptHutVariables(Control,"Danmax");
+  danmaxVar::exptHutVariables(Control,beamLineName);
 
-  const std::string exptName="DanmaxExptLine";
+  const std::string exptName=beamLineName+"ExptLine";
 
   Control.addVariable(exptName+"BeamStopYStep",806.0);
   Control.addVariable(exptName+"BeamStopRadius",10.0);

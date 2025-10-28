@@ -485,7 +485,7 @@ makeMaxIV::buildR3Ring(Simulation& System,
       else if (BL=="SOFTIMAX")
 	BLPtr.reset(new SOFTIMAX("SoftiMAX"));
       else if (BL=="DANMAX")
-	BLPtr.reset(new DANMAX("Danmax"));
+	BLPtr.reset(new DANMAX("DanMAX"));
       else if (BL=="FORMAX")
 	BLPtr.reset(new FORMAX("Formax"));
       else if (BL=="MICROMAX")
