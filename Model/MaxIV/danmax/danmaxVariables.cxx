@@ -71,6 +71,9 @@
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 
+// References
+// [1] CARATELLI Drawing 06769-01-000
+
 namespace setVariable
 {
 
@@ -230,16 +233,23 @@ opticsHutVariables(FuncDataBase& Control,
   OpticsHutGenerator OGen;
 
   OGen.setSkin(0.2);
-  OGen.setBackLead(10.0);
-  OGen.setWallLead(2.0);
-  OGen.setRoofLead(2.0);
+  OGen.setBackLead(5.0); // "Lead Thickness Back Wall" Section A-A [1]
+  OGen.setWallLead(1.2); // "Lead Thickness Side Wall", Section A-A [1]
+  OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
-  OGen.generateHut(Control,hutName,1010.0);
-  Control.addVariable(hutName+"OutWidth", 262.0);
-  Control.addVariable(hutName+"Height", 279.4);
+  const double opticsHutLength = 1010.0; // Section A-A in [1]
+  OGen.generateHut(Control,hutName, opticsHutLength); 
+  const double opticsHutOuterWidth = 259.7;
+  Control.addVariable(hutName+"OutWidth", opticsHutOuterWidth); // Section A-A [1]
+  Control.addVariable(hutName+"Height", 411.0-131.88); // Optics hutch height (Section B-B) - optical-axis height (back view) [1]
 
-  Control.addVariable(hutName+"RingStepLength",850.4);
-  Control.addVariable(hutName+"RingStepWidth",135.4);
+  Control.addVariable(hutName+"RingStepLength", opticsHutLength-155.2); // Section A-A [1]
+  Control.addVariable(hutName+"RingStepWidth",566.7-opticsHutOuterWidth-120.2); // Section A-A [1]
+
+  Control.addVariable(hutName+"BackPlateThick", 7.0); // "Lead Thickness", back view [1]
+  const double backPlateSideLength = 200.0; // back view [1]
+  Control.addVariable(hutName+"BackPlateWidth", backPlateSideLength); 
+  Control.addVariable(hutName+"BackPlateHeight", backPlateSideLength);
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
