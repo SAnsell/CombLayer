@@ -73,6 +73,7 @@
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
+// [2] CARATELLI Drawing 06769-03-000
 
 namespace setVariable
 {
@@ -346,16 +347,16 @@ exptHutVariables(FuncDataBase& Control,
   const std::string hutName(beamName+"ExptHut");
 
   EGen.setFrontHole(beamMirrorShift,0.0,4.0);
-  EGen.setCorner(45.0,138.0+0.7);
-  EGen.setFrontLead(0.5);
-  EGen.setBackLead(0.5);
-  EGen.setRoofLead(0.6);
-  EGen.setWallLead(0.4);
+  EGen.setCorner(atan(167.4/281.5)*180.0/M_PI,281.5); // Section A-A [2]
+  EGen.setFrontLead(0.4); // "Lead Thickness Upstream Wall", Section A-A [2]
+  EGen.setBackLead(0.6); // "Lead Thickness Downstream Wall", Section A-A [2]
+  EGen.setRoofLead(0.4); // "Roof Thk Pb", Section A-A [2]
+  EGen.setWallLead(0.4); // "Lead Thickness Side Wall", Section A-A [2]
 
-  EGen.generateHut(Control,hutName,1845.0,858.4+0.7);
-  Control.addVariable(hutName+"RingWidth",248.6+0.6);
-  Control.addVariable(hutName+"OutWidth",259.6+0.6);
-  Control.addVariable(hutName+"Height",277.8);
+  EGen.generateHut(Control,hutName,1845.0, 1401.3); // Hutch length: Section A-A [2]
+  Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
+  Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
+  Control.addVariable(hutName+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
 
   // // lead shield on pipe
   // Control.addVariable(beamName+"PShieldXStep",beamMirrorShift);
@@ -755,6 +756,7 @@ monoShutterVariables(FuncDataBase& Control,
   return;
 }
 
+template<typename JoinPipeCCF>
 void
 shieldVariables(FuncDataBase& Control)
   /*!
@@ -766,11 +768,11 @@ shieldVariables(FuncDataBase& Control)
 
   const std::string preName("DanMAX");
 
-  Control.addVariable(preName+"GuillotineLength",10.0);
-  Control.addVariable(preName+"GuillotineWidth",80.0);
-  Control.addVariable(preName+"GuillotineHeight",80.0);
-  Control.addVariable(preName+"GuillotineWallThick",0.5);
-  Control.addVariable(preName+"GuillotineClearGap",1.0);
+  Control.addVariable(preName+"GuillotineLength",0.6); // Coupe C-C [2]
+  Control.addVariable(preName+"GuillotineWidth",40.0); // Coupe C-C [2]
+  Control.addVariable(preName+"GuillotineHeight",40.0); // Coupe C-C [2]
+  Control.addVariable(preName+"GuillotineWallThick",0.0); // Coupe C-C [2], no guillotine wall shown
+  Control.addVariable(preName+"GuillotineClearGap",4.1-2.0*(JoinPipeCCF::innerRadius+JoinPipeCCF::wallThick)); // Coupe C-C [2]
   Control.addVariable(preName+"GuillotineWallMat","Stainless304");
   Control.addVariable(preName+"GuillotineMat","Lead");
 
@@ -1007,7 +1009,7 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",49.3);
 
-  danmaxVar::shieldVariables(Control);
+  danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
 
   PipeGen.setCF<setVariable::CF40>();
