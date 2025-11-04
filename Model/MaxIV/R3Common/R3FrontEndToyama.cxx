@@ -109,6 +109,7 @@ namespace xraySystem
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
   flangePlateA(std::make_shared<constructSystem::FlangePlate>("FlangePlateA")),
+  flangePlateB(std::make_shared<constructSystem::FlangePlate>("FlangePlateB")),
   bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
   msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
   bellowPostMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPostMSM")),
@@ -177,6 +178,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(flangePlateA);
+  OR.addObject(flangePlateB);
   OR.addObject(bellowPreMSM);
   OR.addObject(msm);
   OR.addObject(bellowPostMSM);
@@ -672,8 +675,8 @@ R3FrontEndToyama::buildObjects(Simulation& System)
       return;
     }
 
-  constructSystem::constructUnit
-    (System,buildZone,*fm1,"back",*bellowB);
+  constructSystem::constructUnit(System,buildZone,*fm1,"back",*flangePlateB);
+  constructSystem::constructUnit(System,buildZone,*flangePlateB,"back",*bellowB);
 
   // FM2 Built relateive to MASTER coordinate
 

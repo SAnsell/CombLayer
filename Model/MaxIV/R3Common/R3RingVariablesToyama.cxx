@@ -457,6 +457,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
+  setVariable::FlangePlateGenerator FPGen;
 
   const std::string frontKey(beamlineKey+"FrontBeam");
   // So that we can assume it's the straight section centre [2, page 1]
@@ -505,20 +506,16 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",16.0);
 
   name = "FlangePlateA";
-  setVariable::FlangePlateGenerator FPGen;
   FPGen.setFlange(CF100::flangeRadius, 1.75); // [4]
   FPGen.setWindow(0.0, 0.0, "Void"); // [4]
   FPGen.setMat("Stainless304"); // guess
+  FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
   FPGen.generateFlangePlate(Control,name);
-  Control.addVariable(name+"InnerRadius",1.9); // guess (same as BellowA)
 
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
+  FPGen.generateFlangePlate(Control,"FlangePlateB");
   BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
 
   PipeGen.setCF<CF40>();
