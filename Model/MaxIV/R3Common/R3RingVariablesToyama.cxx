@@ -513,9 +513,9 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   FPGen.setWindow(0.0, 0.0, "Void"); // [4]
   FPGen.setMat("Stainless304"); // guess
   FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
-  FPGen.generateFlangePlate(Control,name);
+  FPGen.generateFlangePlate(Control,frontKey+name);
 
-  FPGen.generateFlangePlate(Control,"FlangePlateB");
+  FPGen.generateFlangePlate(Control,frontKey+"FlangePlateB");
   BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
 
   PipeGen.setCF<CF40>();

@@ -108,8 +108,8 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
-  flangePlateA(std::make_shared<constructSystem::FlangePlate>("FlangePlateA")),
-  flangePlateB(std::make_shared<constructSystem::FlangePlate>("FlangePlateB")),
+  flangePlateA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateA")),
+  flangePlateB(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateB")),
   bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
   msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
   bellowPostMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPostMSM")),
