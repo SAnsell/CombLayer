@@ -41,6 +41,7 @@ namespace constructSystem
   class SupplyPipe;
   class VacuumBox;
   class VacuumPipe;
+  class FlangePlate;
 }
 
 /*!
@@ -84,6 +85,7 @@ class R3FrontEndToyama :
   public R3FrontEnd
 {
 protected:
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateA;
   std::shared_ptr<constructSystem::Bellows> bellowPreMSM;
   std::shared_ptr<xraySystem::MovableSafetyMask> msm;
   std::shared_ptr<constructSystem::Bellows> bellowPostMSM;

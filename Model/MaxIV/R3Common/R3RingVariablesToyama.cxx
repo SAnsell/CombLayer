@@ -64,7 +64,7 @@
 #include "HeatAbsorberToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 #include "CleaningMagnetGenerator.h"
-
+#include "FlangePlateGenerator.h"
 
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
@@ -72,6 +72,7 @@
 // [2] Toyama ForMAX Mechanical drawings
 //     http://localhost:8080/maxiv/work-log/tomowise/toyama_formax_fe_mechanical_drawings.pdf/view
 // [3] 236798-Toyama-front-end.step
+// [4] S0-2-0AB01088_DanMAX.pdf
 
 namespace setVariable
 {
@@ -506,6 +507,14 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",16.0);
+
+  name = "FlangePlateA";
+  setVariable::FlangePlateGenerator FPGen;
+  FPGen.setFlange(CF100::flangeRadius, 1.75); // [4]
+  FPGen.setMat("Stainless304"); // guess
+  FPGen.generateFlangePlate(Control,name);
+  Control.addVariable(name+"InnerRadius",1.9); // guess (same as BellowA)
+
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();

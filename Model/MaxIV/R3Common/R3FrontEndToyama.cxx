@@ -97,6 +97,7 @@
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
 #include "ProximityShielding.h"
+#include "FlangePlate.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
 
@@ -107,6 +108,7 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  flangePlateA(std::make_shared<constructSystem::FlangePlate>("FlangePlateA")),
   bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
   msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
   bellowPostMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPostMSM")),
@@ -324,8 +326,6 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
   */
 {
   ELog::RegMethod RegA("R3FrontEndToyama","buildApertureTable");
-
-  int outerCell;
 
   constructSystem::constructUnit(System,buildZone,preFC,"back",*bellowE);
   constructSystem::constructUnit(System,buildZone,*bellowE,"back",*aperturePipeA);
@@ -591,7 +591,8 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   if (stopPoint != "U1Block") {
   // FM1 Built relateive to MASTER coordinate
     fm1->createAll(System,*this,0);
-    bellowA->createAll(System,*fm1,1);
+    flangePlateA->createAll(System,*fm1,"front");
+    bellowA->createAll(System,*flangePlateA,"back");
   }
 
   magBlockU1->createAll(System,*epSeparator,"Electron");
@@ -653,10 +654,13 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   dipolePipe->insertInCell("Main",System,outerCell);
   dipolePipe->insertInCell("FlangeB",System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*bellowA,1);
+  outerCell=buildZone.createUnit(System,*bellowA,"front");
   bellowA->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*fm1,2);
+  outerCell=buildZone.createUnit(System,*flangePlateA,"front");
+  flangePlateA->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*fm1,"back");
   fm1->insertInCell(System,outerCell);
 
 
