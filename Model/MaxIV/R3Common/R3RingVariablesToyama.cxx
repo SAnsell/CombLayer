@@ -288,7 +288,7 @@ shutterTableToyama(FuncDataBase& Control,
   Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
   Control.addVariable(frontKey+"BremBlockMainMat","Tungsten");
 
-  PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
+  PSGen.generate(Control,frontKey+"ProxiShieldA", 10.0); // CAD
   Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
   Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
 
