@@ -992,6 +992,9 @@ DANMAXvariables(FuncDataBase& Control)
   //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
   danmaxVar::frontMaskVariables(Control,frontKey);
 
+  Control.addVariable(frontKey+"ProxiShieldAWallMat","Void"); // [AR 251104: checked by JR 251103]
+  Control.addVariable(frontKey+"ProxiShieldBWallMat","Void"); // [AR 251104: checked by JR 251103]
+
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,beamLineName+"JoinPipe",190.0); // dummy
