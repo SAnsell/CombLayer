@@ -129,7 +129,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(bellowB);
   // OR.addObject(collABPipe);
   // OR.addObject(bellowC);
-  // OR.addObject(collB);
+  // OR.addObject(fm2);
   // OR.addObject(collC);
   // OR.addObject(eCutDisk);
   // OR.addObject(eCutMagDisk);
@@ -265,7 +265,7 @@ R3FrontEndFMBB::buildHeatTable(Simulation& System)
 
   // Built after heatDump
   collExitPipe->setBack(PIA,"OuterPlate");
-  collExitPipe->createAll(System,*collB,2);
+  collExitPipe->createAll(System,*fm2,2);
   outerCell=buildZone.createUnit(System,*collExitPipe,2);
   collExitPipe->insertAllInCell(System,outerCell);
 
@@ -562,8 +562,8 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
 
   // FM2 Built relateive to MASTER coordinate
 
-  collB->createAll(System,*this,0);
-  bellowC->createAll(System,*collB,1);
+  fm2->createAll(System,*this,0);
+  bellowC->createAll(System,*fm2,1);
 
   collABPipe->setFront(*bellowB,2);
   collABPipe->setBack(*bellowC,2);
@@ -574,14 +574,14 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowC,1);
   bellowC->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*collB,2);
-  collB->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*fm2,2);
+  fm2->insertInCell(System,outerCell);
 
-  std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
+  std::shared_ptr<attachSystem::FixedComp> linkFC(fm2);
   if (collFM3Active)
     {
       constructSystem::constructUnit
-	(System,buildZone,*collB,"back",*collC);
+	(System,buildZone,*fm2,"back",*collC);
       linkFC=collC;
     }
 

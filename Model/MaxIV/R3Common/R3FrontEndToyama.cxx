@@ -145,7 +145,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(bellowB);
   // OR.addObject(collABPipe);
   // OR.addObject(bellowC);
-  // OR.addObject(collB);
+  // OR.addObject(fm2);
   // OR.addObject(collC);
   // OR.addObject(eCutDisk);
   // OR.addObject(eCutMagDisk);
@@ -507,7 +507,7 @@ R3FrontEndToyama::buildMSM(Simulation& System,
 
   collExitPipe->setBack(*bellowPreMSM,"back");
 
-  collExitPipe->createAll(System,*collB,"back");
+  collExitPipe->createAll(System,*fm2,"back");
   outerCell=buildZone.createUnit(System,*collExitPipe,"back");
   collExitPipe->insertAllInCell(System,outerCell);
 
@@ -673,8 +673,8 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   // FM2 Built relateive to MASTER coordinate
 
-  collB->createAll(System,*this,0);
-  bellowC->createAll(System,*collB,1);
+  fm2->createAll(System,*this,0);
+  bellowC->createAll(System,*fm2,1);
 
   collABPipe->setFront(*bellowB,2);
   collABPipe->setBack(*bellowC,2);
@@ -686,15 +686,15 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowC,1);
   bellowC->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*collB,2);
-  collB->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*fm2,2);
+  fm2->insertInCell(System,outerCell);
 
-  std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
+  std::shared_ptr<attachSystem::FixedComp> linkFC(fm2);
   // We never have FM3 in Toyama front-ends
   // if (collFM3Active)
   //   {
   //     constructSystem::constructUnit
-  // 	(System,buildZone,*collB,"back",*collC);
+  // 	(System,buildZone,*fm2,"back",*collC);
   //     linkFC=collC;
   //   }
 

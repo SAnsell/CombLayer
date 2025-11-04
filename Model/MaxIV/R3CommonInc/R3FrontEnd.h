@@ -148,8 +148,8 @@ class R3FrontEnd :
   std::shared_ptr<tdcSystem::CleaningMagnet> pMag;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// collimator B
-  std::shared_ptr<xraySystem::SquareFMask> collB;
+  /// FM2
+  std::shared_ptr<xraySystem::SquareFMask> fm2;
   /// collimator C
   std::shared_ptr<xraySystem::SquareFMask> collC;
   /// Pipe from collimator B to heat dump or MSM

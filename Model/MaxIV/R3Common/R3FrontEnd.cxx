@@ -128,7 +128,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
   pMag(std::make_shared<tdcSystem::CleaningMagnet>(newName+"PermanentMagnet")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  collB(new xraySystem::SquareFMask(newName+"FM2")),
+  fm2(new xraySystem::SquareFMask(newName+"FM2")),
   collC(new xraySystem::SquareFMask(newName+"FM3")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -185,7 +185,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(collABPipe);
   OR.addObject(pMag);
   OR.addObject(bellowC);
-  OR.addObject(collB);
+  OR.addObject(fm2);
   OR.addObject(collC);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
@@ -316,7 +316,7 @@ R3FrontEnd::buildHeatTable(Simulation& System)
 
   //   // Built after heatDump
   //   collExitPipe->setBack(PIA,"OuterPlate");
-  //   collExitPipe->createAll(System,*collB,2);
+  //   collExitPipe->createAll(System,*fm2,2);
   //   outerCell=buildZone.createUnit(System,*collExitPipe,2);
   //   collExitPipe->insertAllInCell(System,outerCell);
 
@@ -329,7 +329,7 @@ R3FrontEnd::buildHeatTable(Simulation& System)
   // } else {
   //   haToyama->createAll(System,*this,0);
   //   collExitPipe->setBack(*haToyama,"front");
-  //   collExitPipe->createAll(System,*collB,2);
+  //   collExitPipe->createAll(System,*fm2,2);
   //   outerCell=buildZone.createUnit(System,*collExitPipe,2);
   //   collExitPipe->insertAllInCell(System,outerCell);
 
