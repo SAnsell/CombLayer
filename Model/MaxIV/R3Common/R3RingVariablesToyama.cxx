@@ -294,9 +294,6 @@ shutterTableToyama(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",proxiShieldAPipeLength);
-  PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
-  Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
-  Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
 
   Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
   Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
