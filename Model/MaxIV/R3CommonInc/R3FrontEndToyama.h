@@ -217,9 +217,7 @@ protected:
   // void insertFlanges(Simulation&,const constructSystem::PipeTube&,
   // 		     const size_t);
   virtual const attachSystem::FixedComp&
-    buildUndulator(Simulation&,
-		   const attachSystem::FixedComp&,
-		   const long int) =0;
+    buildUndulator(Simulation&,const attachSystem::FixedComp&,const long int) = 0;
 
   /// Null op for extra components after build
   virtual void buildExtras(Simulation&) {}

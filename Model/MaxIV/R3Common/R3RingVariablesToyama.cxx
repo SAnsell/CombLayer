@@ -398,7 +398,7 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
 
   constexpr double heatAbsorberLength = 26.5;  // [2]
 
-  const double heatAbsorberDist(1700.0); // centre
+  const double heatAbsorberDist(1700.0);
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
