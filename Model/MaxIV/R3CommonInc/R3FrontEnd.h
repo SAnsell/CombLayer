@@ -138,8 +138,8 @@ class R3FrontEnd :
   std::shared_ptr<insertSystem::insertCylinder> eCutMagDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// collimator A
-  std::shared_ptr<xraySystem::SquareFMask> collA;
+  /// FM1
+  std::shared_ptr<xraySystem::SquareFMask> fm1;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Mask1:2 connection pipe

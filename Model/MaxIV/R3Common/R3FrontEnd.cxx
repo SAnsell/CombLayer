@@ -123,7 +123,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collA(new xraySystem::SquareFMask(newName+"FM1")),
+  fm1(new xraySystem::SquareFMask(newName+"FM1")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
   pMag(std::make_shared<tdcSystem::CleaningMagnet>(newName+"PermanentMagnet")),
@@ -180,7 +180,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(dipolePipe);
   OR.addObject(eTransPipe);
   OR.addObject(bellowA);
-  OR.addObject(collA);
+  OR.addObject(fm1);
   OR.addObject(bellowB);
   OR.addObject(collABPipe);
   OR.addObject(pMag);

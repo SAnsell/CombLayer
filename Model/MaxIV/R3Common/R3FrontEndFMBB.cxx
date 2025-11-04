@@ -125,7 +125,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(dipolePipe);
   // OR.addObject(eTransPipe);
   // OR.addObject(bellowA);
-  // OR.addObject(collA);
+  // OR.addObject(fm1);
   // OR.addObject(bellowB);
   // OR.addObject(collABPipe);
   // OR.addObject(bellowC);
@@ -510,8 +510,8 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
 		      chokeChamber->getSideIndex("-photon"));
 
   // FM1 Built relateive to MASTER coordinate
-  collA->createAll(System,*this,0);
-  bellowA->createAll(System,*collA,1);
+  fm1->createAll(System,*this,0);
+  bellowA->createAll(System,*fm1,1);
 
   dipolePipe->setFront(*chokeChamber,"photon");
   dipolePipe->setBack(*bellowA,"back");
@@ -546,8 +546,8 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowA,1);
   bellowA->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*collA,2);
-  collA->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*fm1,2);
+  fm1->insertInCell(System,outerCell);
 
 
   if (stopPoint=="Dipole")
@@ -558,7 +558,7 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
     }
 
   constructSystem::constructUnit
-    (System,buildZone,*collA,"back",*bellowB);
+    (System,buildZone,*fm1,"back",*bellowB);
 
   // FM2 Built relateive to MASTER coordinate
 
