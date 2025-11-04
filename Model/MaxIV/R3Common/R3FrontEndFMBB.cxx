@@ -130,7 +130,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(collABPipe);
   // OR.addObject(bellowC);
   // OR.addObject(fm2);
-  // OR.addObject(collC);
+  // OR.addObject(fm3);
   // OR.addObject(eCutDisk);
   // OR.addObject(eCutMagDisk);
   //  OR.addObject(collExitPipe);
@@ -581,8 +581,8 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
   if (collFM3Active)
     {
       constructSystem::constructUnit
-	(System,buildZone,*fm2,"back",*collC);
-      linkFC=collC;
+	(System,buildZone,*fm2,"back",*fm3);
+      linkFC=fm3;
     }
 
   collExitPipe->setFront(*linkFC,2);

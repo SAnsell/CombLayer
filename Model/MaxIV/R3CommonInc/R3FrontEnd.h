@@ -150,8 +150,8 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// FM2
   std::shared_ptr<xraySystem::SquareFMask> fm2;
-  /// collimator C
-  std::shared_ptr<xraySystem::SquareFMask> collC;
+  /// FM3
+  std::shared_ptr<xraySystem::SquareFMask> fm3;
   /// Pipe from collimator B to heat dump or MSM
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
 
