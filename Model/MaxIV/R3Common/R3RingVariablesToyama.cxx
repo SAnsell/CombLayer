@@ -511,6 +511,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   name = "FlangePlateA";
   setVariable::FlangePlateGenerator FPGen;
   FPGen.setFlange(CF100::flangeRadius, 1.75); // [4]
+  FPGen.setWindow(0.0, 0.0, "Void"); // [4]
   FPGen.setMat("Stainless304"); // guess
   FPGen.generateFlangePlate(Control,name);
   Control.addVariable(name+"InnerRadius",1.9); // guess (same as BellowA)
