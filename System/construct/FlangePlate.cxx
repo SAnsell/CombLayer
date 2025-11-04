@@ -204,8 +204,8 @@ FlangePlate::createObjects(Simulation& System)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"107 -7");
       makeCell("Main",System,cellIndex++,flangeMat,0.0,HR*frontHR*backHR);
-      
-      if (innerThick>0.0)
+
+      if (innerThick>Geometry::zeroTol)
 	{
       	  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -107");
 	  makeCell("Inner",System,cellIndex++,windowMat,0.0,HR);
