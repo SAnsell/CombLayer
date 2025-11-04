@@ -71,6 +71,8 @@
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 
+// [4] see [4] in R3RingVariablesToyama.cxx
+
 namespace setVariable
 {
 
@@ -150,28 +152,31 @@ frontMaskVariables(FuncDataBase& Control,
   setVariable::SqrFMaskGenerator FMaskGen;
   setVariable::BellowGenerator BellowGen;
 
-  constexpr double FM1Length(40.0); // [3]
-  constexpr double FM2Length(40.0); // [3]
-  constexpr double MSMLength(40.0); // [3]
+  Control.addVariable(preName+"BellowALength",10.0); // [4]
 
-  const double FM1dist(1150.0+FM1Length/2.0); // [3]
-  const double FM2dist(1500.0+FM2Length/2.0); // [3]
-  const double MSMdist(1600.0); // [3]
+
+  constexpr double FM1Length(40.0); // [4]
+  constexpr double FM2Length(40.0); //
+  constexpr double MSMLength(40.0); //
+
+  const double FM1dist(1104.75+FM1Length/2.0); // [4]
+  const double FM2dist(1500.0+FM2Length/2.0); //
+  const double MSMdist(1600.0); //
 
   FMaskGen.setCF<CF100>();
-  FMaskGen.setFrontGap(2.53, 2.53); // [3]
-  double backWidth = 1.19; // [3]
+  FMaskGen.setFrontGap(2.53, 2.53); //
+  double backWidth = 1.19; //
   double backHeight = backWidth;
   FMaskGen.setBackGap(backWidth, backHeight);
   FMaskGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
 
+  Control.addVariable(preName+"BellowBLength",10.0); // [4]
 
-
-  FMaskGen.setFrontGap(1.65, 1.65); // [3]
-  backWidth = 1.54; // [3]
-  backHeight = 0.154; // [3]
+  FMaskGen.setFrontGap(1.65, 1.65); //
+  backWidth = 1.54; //
+  backHeight = 0.154; //
   FMaskGen.setBackGap(backWidth, backHeight);
   FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
@@ -201,7 +206,7 @@ frontMaskVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
 
   MovableSafetyMaskGenerator MSMGen;
-  MSMGen.generate(Control,preName+"MSM",MSMLength, "undulator"); // [2]
+  MSMGen.generate(Control,preName+"MSM",MSMLength, "undulator"); //
   Control.addVariable(preName+"MSMYStep",MSMdist);
 
   BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
