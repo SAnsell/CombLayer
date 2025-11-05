@@ -129,6 +129,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   pMag(std::make_shared<tdcSystem::CleaningMagnet>(newName+"PermanentMagnet")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   fm2(new xraySystem::SquareFMask(newName+"FM2")),
+  bellowCA(new constructSystem::Bellows(newName+"BellowCA")),
   fm3(new xraySystem::SquareFMask(newName+"FM3")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -186,6 +187,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(pMag);
   OR.addObject(bellowC);
   OR.addObject(fm2);
+  OR.addObject(bellowCA);
   OR.addObject(fm3);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);

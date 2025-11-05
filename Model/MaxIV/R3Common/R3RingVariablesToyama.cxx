@@ -541,10 +541,12 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
+  constexpr double bellowCALength = 10.0;
+  BellowGen.generateBellow(Control,frontKey+"BellowCA",bellowCALength);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5-bellowCALength);
 
   // Create HEAT DUMP
   heatDumpTableToyama(Control,frontKey);

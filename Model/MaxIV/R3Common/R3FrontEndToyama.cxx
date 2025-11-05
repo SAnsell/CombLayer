@@ -124,7 +124,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
   proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
-  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe"))
+  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe")),
+  msmActive(false)
 
   /*!
     Constructor
@@ -273,25 +274,19 @@ R3FrontEndToyama::createSurfaces()
 // }
 
 void
-R3FrontEndToyama::buildHeatTable(Simulation& System)
+R3FrontEndToyama::buildHeatTable(Simulation& System,
+				 const attachSystem::FixedComp& preFC,
+				 const std::string& preSide)
   /*!
     Build the heatDump table
     \param System :: Simulation to use
+    \param preFC :: initial Fixedcomp
+    \param preSide :: link point on initial FC
   */
 {
   ELog::RegMethod RegA("R3FrontEndToyama","buildHeatTable");
 
   int outerCell;
-
-  ha->createAll(System, *this, 0);
-
-  bellowPreHA->createAll(System, *ha, "front");
-
-  msmExitPipe->setBack(*bellowPreHA,"back");
-
-  msmExitPipe->createAll(System,*bellowPostMSM,"back");
-  outerCell=buildZone.createUnit(System,*msmExitPipe,"back");
-  msmExitPipe->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*ha,"#front");
   bellowPreHA->insertAllInCell(System,outerCell);
@@ -491,7 +486,7 @@ R3FrontEndToyama::buildShutterTable(Simulation& System)
 
 void
 R3FrontEndToyama::buildMSM(Simulation& System,
-			   const attachSystem::FixedComp& preFC,
+			   attachSystem::FixedComp& preFC,
 			   const std::string& preSide)
 /*!
   Build the Movable Safety Mask
@@ -503,16 +498,14 @@ R3FrontEndToyama::buildMSM(Simulation& System,
   ELog::RegMethod RegA("R3FrontEndToyama","buildMSM");
   int outerCell;
 
-  ELog::EM << "MSM is always built for Toyama front-ends" << ELog::endWarn;
-
   msm->createAll(System, *this, 0);
   bellowPreMSM->createAll(System, *msm, "front");
 
-  collExitPipe->setBack(*bellowPreMSM,"back");
+  dynamic_cast<attachSystem::FrontBackCut*>(std::addressof(preFC))->setBack(*bellowPreMSM,"back");
 
-  collExitPipe->createAll(System,*fm2,"back");
-  outerCell=buildZone.createUnit(System,*collExitPipe,"back");
-  collExitPipe->insertAllInCell(System,outerCell);
+  preFC.createAll(System,*fm2,"back"); // note: fm2 but not bellowCA
+  outerCell=buildZone.createUnit(System,preFC,"back");
+  dynamic_cast<attachSystem::ContainedGroup*>(std::addressof(preFC))->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*msm,"#front");
   bellowPreMSM->insertAllInCell(System,outerCell);
@@ -705,10 +698,31 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   //     linkFC=fm3;
   //   }
 
-  collExitPipe->setFront(*linkFC,2);
+  constructSystem::constructUnit(System,buildZone,*linkFC,"back",*bellowCA);
+  collExitPipe->setFront(*bellowCA,2);  // build it later (setBack depending on the msmActive flag)
 
-  buildMSM(System,*collExitPipe,"back");
-  buildHeatTable(System);
+  if (msmActive) {
+    buildMSM(System,*collExitPipe,"back");
+
+    ha->createAll(System, *this, 0);
+    bellowPreHA->createAll(System, *ha, "front");
+
+    msmExitPipe->setBack(*bellowPreHA,"back");
+    msmExitPipe->createAll(System,*bellowPostMSM,"back");
+    outerCell=buildZone.createUnit(System,*msmExitPipe,"back");
+    msmExitPipe->insertAllInCell(System,outerCell);
+
+    buildHeatTable(System, *bellowPostMSM, "back");
+  } else {
+    ha->createAll(System, *this, 0);
+    bellowPreHA->createAll(System, *ha, "front");
+    collExitPipe->setBack(*bellowPreHA, "back");
+    collExitPipe->createAll(System,*fm2,"back"); // note: fm2 but not bellowCA
+    outerCell=buildZone.createUnit(System,*collExitPipe,"back");
+    collExitPipe->insertAllInCell(System,outerCell);
+
+    buildHeatTable(System, *bellowCA, "back");
+  }
 
   if (stopPoint=="HeatTable")
     {
