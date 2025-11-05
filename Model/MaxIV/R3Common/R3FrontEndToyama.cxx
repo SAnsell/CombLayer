@@ -501,9 +501,11 @@ R3FrontEndToyama::buildMSM(Simulation& System,
   msm->createAll(System, *this, 0);
   bellowPreMSM->createAll(System, *msm, "front");
 
-  dynamic_cast<attachSystem::FrontBackCut*>(std::addressof(preFC))->setBack(*bellowPreMSM,"back");
+  auto p = dynamic_cast<attachSystem::FrontBackCut*>(std::addressof(preFC));
+  //  p->setFront(*bellowCA,2);  // build it later (setBack depending on the msmActive flag)
+  p->setBack(*bellowPreMSM,"back");
 
-  preFC.createAll(System,*fm2,"back"); // note: fm2 but not bellowCA
+  preFC.createAll(System,*bellowCA,"back");
   outerCell=buildZone.createUnit(System,preFC,"back");
   dynamic_cast<attachSystem::ContainedGroup*>(std::addressof(preFC))->insertAllInCell(System,outerCell);
 
@@ -699,7 +701,6 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   //   }
 
   constructSystem::constructUnit(System,buildZone,*linkFC,"back",*bellowCA);
-  collExitPipe->setFront(*bellowCA,2);  // build it later (setBack depending on the msmActive flag)
 
   if (msmActive) {
     buildMSM(System,*collExitPipe,"back");
@@ -715,11 +716,9 @@ R3FrontEndToyama::buildObjects(Simulation& System)
     buildHeatTable(System, *bellowPostMSM, "back");
   } else {
     ha->createAll(System, *this, 0);
+    //    bellowPreHA->setFront(*ha, "front");
+    bellowPreHA->setBack(*bellowCA, "back");
     bellowPreHA->createAll(System, *ha, "front");
-    collExitPipe->setBack(*bellowPreHA, "back");
-    collExitPipe->createAll(System,*fm2,"back"); // note: fm2 but not bellowCA
-    outerCell=buildZone.createUnit(System,*collExitPipe,"back");
-    collExitPipe->insertAllInCell(System,outerCell);
 
     buildHeatTable(System, *bellowCA, "back");
   }
