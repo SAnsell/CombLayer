@@ -161,7 +161,7 @@ frontMaskVariables(FuncDataBase& Control,
   constexpr double MSMLength(40.0); //
 
   const double FM1dist(1104.75+FM1Length/2.0); // [4]
-  const double FM2dist(1500.0+FM2Length/2.0); //
+  const double FM2dist(1597.08+FM2Length/2.0); //
   //  const double FM2dist(1597.08+FM2Length/2.0); // [4]
   const double MSMdist(1600.0); //
 
@@ -175,6 +175,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
 
   Control.addVariable(preName+"BellowBLength",10.0); // [4]
+  Control.addVariable(preName+"BellowCLength",10.0); // [4]
 
   FMaskGen.setFrontGap(1.65, 1.65); //
   backWidth = 1.54; //
