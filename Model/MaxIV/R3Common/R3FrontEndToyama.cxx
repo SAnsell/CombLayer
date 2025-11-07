@@ -114,6 +114,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
   bellowPostMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPostMSM")),
   msmExitPipe(new constructSystem::VacuumPipe(newName+"MSMExitPipe")),
+  flangePlateC(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateC")),
   bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
@@ -185,6 +186,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(msm);
   OR.addObject(bellowPostMSM);
   OR.addObject(msmExitPipe);
+  OR.addObject(flangePlateC);
   OR.addObject(bellowPreHA);
   OR.addObject(ha);
   OR.addObject(bellowPostHA);
@@ -676,19 +678,26 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   // FM2 Built relateive to MASTER coordinate
 
   fm2->createAll(System,*this,0);
-  bellowC->createAll(System,*fm2,1);
+  flangePlateC->createAll(System,*fm2,"front");
+  bellowC->createAll(System,*flangePlateC,"back");
 
-  collABPipe->setFront(*bellowB,2);
-  collABPipe->setBack(*bellowC,2);
+  // pipe before bellowC (between FM1 and FM2)
+  collABPipe->setFront(*bellowB,"back");
+  collABPipe->setBack(*bellowC,"back");
   collABPipe->createAll(System,*bellowB,"back");
 
+  // permanent magnet (e/p separator) in the middle of this pipe
   constructSystem::pipeMagUnit(System,buildZone,collABPipe,"#front","outerPipe",pMag);
   constructSystem::pipeTerminate(System,buildZone,collABPipe);
 
-  outerCell=buildZone.createUnit(System,*bellowC,1);
+  outerCell=buildZone.createUnit(System,*bellowC,"front");
   bellowC->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*fm2,2);
+  outerCell=buildZone.createUnit(System,*flangePlateC,"front");
+  flangePlateC->insertInCell(System,outerCell);
+
+
+  outerCell=buildZone.createUnit(System,*fm2,"back");
   fm2->insertInCell(System,outerCell);
 
   std::shared_ptr<attachSystem::FixedComp> linkFC(fm2);

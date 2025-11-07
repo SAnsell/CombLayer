@@ -525,6 +525,8 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"PermanentMagnetYokeLength",31.4); // should be the same length as the magnet, but making it 1 mm shorter to avoid zero volume cells
   Control.addVariable(frontKey+"PermanentMagnetGap",5.2); // [3]
 
+  FPGen.generateFlangePlate(Control,frontKey+"FlangePlateC");
+
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
   Control.addVariable(frontKey+"ECutDiskRadius",1.0);
@@ -538,8 +540,6 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutMagDiskMat","H2Gas#0.1");
 
   // note : reversed becaues using fixed FM
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
   constexpr double bellowCALength = 10.0;
   BellowGen.generateBellow(Control,frontKey+"BellowCA",bellowCALength);
