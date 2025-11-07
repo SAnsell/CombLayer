@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File: danmax/danmaxFrontEnd.cxx
+ * File: tomowise/tomowiseFrontEnd.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -57,12 +56,12 @@
 #include "CopiedComp.h"
 #include "BlockZone.h"
 
-#include "VirtualTube.h"
-#include "PipeTube.h"
-#include "PortTube.h"
-#include "Wiggler.h"
+#include "GeneralPipe.h"
+#include "UTubePipe.h"
+#include "VacuumPipe.h"
+#include "Undulator.h"
 #include "R3FrontEnd.h"
-#include "R3FrontEndFMBB.h"
+#include "R3FrontEndToyama.h"
 
 #include "danmaxFrontEnd.h"
 
@@ -72,9 +71,9 @@ namespace xraySystem
 // Note currently uncopied:
 
 danmaxFrontEnd::danmaxFrontEnd(const std::string& Key) :
-  R3FrontEndFMBB(Key),
-  undulatorTube(new constructSystem::PortTube(newName+"UndulatorTube")),
-  undulator(new Wiggler(newName+"Undulator"))
+  R3FrontEndToyama(Key),
+  undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
+  undulator(new xraySystem::Undulator(newName+"Undulator"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -84,7 +83,7 @@ danmaxFrontEnd::danmaxFrontEnd(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(undulatorTube);
+  OR.addObject(undulatorPipe);
   OR.addObject(undulator);
 }
 
@@ -100,13 +99,10 @@ danmaxFrontEnd::createLinks()
     Create a front/back link
    */
 {
-  ELog::RegMethod RegA("danmaxFrontEnd","createLinks");
-
-  setLinkCopy(0,*undulatorTube,1);
+  setLinkCopy(0,*undulator,1);
   setLinkCopy(1,*lastComp,2);
   return;
 }
-
 
 const attachSystem::FixedComp&
 danmaxFrontEnd::buildUndulator(Simulation& System,
@@ -123,18 +119,22 @@ danmaxFrontEnd::buildUndulator(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxFrontEnd","buildUndulator");
 
+
   int outerCell;
 
-  undulatorTube->createAll(System,preFC,preSideIndex);
-  outerCell=buildZone.createUnit(System,*undulatorTube,2);
-
-  undulator->addInsertCell(undulatorTube->getCell("Void"));
-  undulator->createAll(System,*undulatorTube,0);
-
+  undulatorPipe->createAll(System,preFC,preSideIndex);
+  outerCell=buildZone.createUnit(System,*undulatorPipe,2);
   CellMap::addCell("UndulatorOuter",outerCell);
-  undulatorTube->insertAllInCell(System,outerCell);
-  return *undulatorTube;
+  undulatorPipe->insertAllInCell(System,outerCell);
 
+  prePipe->createAll(System,*undulatorPipe,"front");
+  prePipe->insertAllInCell(System,outerCell);
+
+  undulator->addInsertCell(outerCell);
+  undulator->createAll(System,*undulatorPipe,0);
+  undulatorPipe->insertInCell("Main",System,undulator->getCell("Void"));
+
+  return *undulatorPipe;
 }
 
 

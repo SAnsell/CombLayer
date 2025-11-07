@@ -125,12 +125,12 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(dipolePipe);
   // OR.addObject(eTransPipe);
   // OR.addObject(bellowA);
-  // OR.addObject(collA);
+  // OR.addObject(fm1);
   // OR.addObject(bellowB);
   // OR.addObject(collABPipe);
   // OR.addObject(bellowC);
-  // OR.addObject(collB);
-  // OR.addObject(collC);
+  // OR.addObject(fm2);
+  // OR.addObject(fm3);
   // OR.addObject(eCutDisk);
   // OR.addObject(eCutMagDisk);
   //  OR.addObject(collExitPipe);
@@ -265,7 +265,7 @@ R3FrontEndFMBB::buildHeatTable(Simulation& System)
 
   // Built after heatDump
   collExitPipe->setBack(PIA,"OuterPlate");
-  collExitPipe->createAll(System,*collB,2);
+  collExitPipe->createAll(System,*fm2,2);
   outerCell=buildZone.createUnit(System,*collExitPipe,2);
   collExitPipe->insertAllInCell(System,outerCell);
 
@@ -510,8 +510,8 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
 		      chokeChamber->getSideIndex("-photon"));
 
   // FM1 Built relateive to MASTER coordinate
-  collA->createAll(System,*this,0);
-  bellowA->createAll(System,*collA,1);
+  fm1->createAll(System,*this,0);
+  bellowA->createAll(System,*fm1,1);
 
   dipolePipe->setFront(*chokeChamber,"photon");
   dipolePipe->setBack(*bellowA,"back");
@@ -546,8 +546,8 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowA,1);
   bellowA->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*collA,2);
-  collA->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*fm1,2);
+  fm1->insertInCell(System,outerCell);
 
 
   if (stopPoint=="Dipole")
@@ -558,12 +558,12 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
     }
 
   constructSystem::constructUnit
-    (System,buildZone,*collA,"back",*bellowB);
+    (System,buildZone,*fm1,"back",*bellowB);
 
   // FM2 Built relateive to MASTER coordinate
 
-  collB->createAll(System,*this,0);
-  bellowC->createAll(System,*collB,1);
+  fm2->createAll(System,*this,0);
+  bellowC->createAll(System,*fm2,1);
 
   collABPipe->setFront(*bellowB,2);
   collABPipe->setBack(*bellowC,2);
@@ -574,15 +574,15 @@ R3FrontEndFMBB::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowC,1);
   bellowC->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*collB,2);
-  collB->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*fm2,2);
+  fm2->insertInCell(System,outerCell);
 
-  std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
+  std::shared_ptr<attachSystem::FixedComp> linkFC(fm2);
   if (collFM3Active)
     {
       constructSystem::constructUnit
-	(System,buildZone,*collB,"back",*collC);
-      linkFC=collC;
+	(System,buildZone,*fm2,"back",*fm3);
+      linkFC=fm3;
     }
 
   collExitPipe->setFront(*linkFC,2);

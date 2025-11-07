@@ -606,16 +606,14 @@ ExperimentalHutch::createLinks()
   setLinkSurf(3,SMap.realSurf(buildIndex+34));
   nameSideIndex(3,"rightWall");
 
-  setConnect(11,Origin,Y);
-  setConnect(12,Origin+Y*(length-backWallThick),-Y);
+  // TODO: take into account !isActive("frontWall")
+  setLinkSurf(11,SMap.realSurf(buildIndex+31));
+  setConnect(11,Origin+Y*(outerThick+pbFrontThick+innerThick),Y);
+  nameSideIndex(11,"innerFront");
 
-  if (!isActive("frontWall"))
-    setLinkSurf(11,SMap.realSurf(buildIndex+1));
-  else
-    setLinkSurf(11,getRule("frontWall"));
+  setConnect(12,Origin+Y*(length-backWallThick),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
 
-  nameSideIndex(11,"innerFront");
   nameSideIndex(12,"innerBack");
 
   // inner surf

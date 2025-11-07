@@ -85,6 +85,8 @@ tomowiseFrontEnd::tomowiseFrontEnd(const std::string& Key) :
 
   OR.addObject(undulatorPipe);
   OR.addObject(undulator);
+
+  msmActive = true;
 }
 
 tomowiseFrontEnd::~tomowiseFrontEnd()

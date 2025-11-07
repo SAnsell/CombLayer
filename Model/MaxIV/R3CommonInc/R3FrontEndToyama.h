@@ -41,6 +41,7 @@ namespace constructSystem
   class SupplyPipe;
   class VacuumBox;
   class VacuumPipe;
+  class FlangePlate;
 }
 
 /*!
@@ -84,6 +85,8 @@ class R3FrontEndToyama :
   public R3FrontEnd
 {
 protected:
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateA;
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateB;
   std::shared_ptr<constructSystem::Bellows> bellowPreMSM;
   std::shared_ptr<xraySystem::MovableSafetyMask> msm;
   std::shared_ptr<constructSystem::Bellows> bellowPostMSM;
@@ -102,6 +105,9 @@ protected:
   std::shared_ptr<constructSystem::VacuumPipe> proxiShieldAPipe; // pipe inside proxiShieldA
   std::shared_ptr<xraySystem::ProximityShielding> proxiShieldB; // proximity shielding
   std::shared_ptr<constructSystem::VacuumPipe> proxiShieldBPipe; // pipe inside proxiShieldA
+
+  bool msmActive; /// Movable Safety Mask active flag
+
   /// point to stop [normal none]
   // std::string stopPoint;
 
@@ -214,19 +220,17 @@ protected:
   // void insertFlanges(Simulation&,const constructSystem::PipeTube&,
   // 		     const size_t);
   virtual const attachSystem::FixedComp&
-    buildUndulator(Simulation&,
-		   const attachSystem::FixedComp&,
-		   const long int) =0;
+    buildUndulator(Simulation&,const attachSystem::FixedComp&,const long int) = 0;
 
   /// Null op for extra components after build
   virtual void buildExtras(Simulation&) {}
 
-  void buildHeatTable(Simulation&);
+  void buildHeatTable(Simulation&,const attachSystem::FixedComp&,const std::string&);
   void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&);
   void buildMSM(Simulation&,
-		const attachSystem::FixedComp&,
+		attachSystem::FixedComp&,
 		const std::string&);
 
 
@@ -243,8 +247,6 @@ protected:
   R3FrontEndToyama& operator=(const R3FrontEndToyama&);
   ~R3FrontEndToyama() override;
 
-  /// remove FM3
-  void deactivateFM3() { collFM3Active=0; }
   /// set stop point
   void setStopPoint(const std::string& S) { stopPoint=S; }
   void createAll(Simulation&,const attachSystem::FixedComp&,

@@ -123,13 +123,14 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),
   eCutMagDisk(new insertSystem::insertCylinder(newName+"ECutMagDisk")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  collA(new xraySystem::SquareFMask(newName+"FM1")),
+  fm1(new xraySystem::SquareFMask(newName+"FM1")),
   bellowB(new constructSystem::Bellows(newName+"BellowB")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
   pMag(std::make_shared<tdcSystem::CleaningMagnet>(newName+"PermanentMagnet")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  collB(new xraySystem::SquareFMask(newName+"FM2")),
-  collC(new xraySystem::SquareFMask(newName+"FM3")),
+  fm2(new xraySystem::SquareFMask(newName+"FM2")),
+  bellowCA(new constructSystem::Bellows(newName+"BellowCA")),
+  fm3(new xraySystem::SquareFMask(newName+"FM3")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
@@ -180,13 +181,14 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(dipolePipe);
   OR.addObject(eTransPipe);
   OR.addObject(bellowA);
-  OR.addObject(collA);
+  OR.addObject(fm1);
   OR.addObject(bellowB);
   OR.addObject(collABPipe);
   OR.addObject(pMag);
   OR.addObject(bellowC);
-  OR.addObject(collB);
-  OR.addObject(collC);
+  OR.addObject(fm2);
+  OR.addObject(bellowCA);
+  OR.addObject(fm3);
   OR.addObject(eCutDisk);
   OR.addObject(eCutMagDisk);
   OR.addObject(collExitPipe);
@@ -316,7 +318,7 @@ R3FrontEnd::buildHeatTable(Simulation& System)
 
   //   // Built after heatDump
   //   collExitPipe->setBack(PIA,"OuterPlate");
-  //   collExitPipe->createAll(System,*collB,2);
+  //   collExitPipe->createAll(System,*fm2,2);
   //   outerCell=buildZone.createUnit(System,*collExitPipe,2);
   //   collExitPipe->insertAllInCell(System,outerCell);
 
@@ -329,7 +331,7 @@ R3FrontEnd::buildHeatTable(Simulation& System)
   // } else {
   //   haToyama->createAll(System,*this,0);
   //   collExitPipe->setBack(*haToyama,"front");
-  //   collExitPipe->createAll(System,*collB,2);
+  //   collExitPipe->createAll(System,*fm2,2);
   //   outerCell=buildZone.createUnit(System,*collExitPipe,2);
   //   collExitPipe->insertAllInCell(System,outerCell);
 

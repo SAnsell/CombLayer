@@ -138,8 +138,8 @@ class R3FrontEnd :
   std::shared_ptr<insertSystem::insertCylinder> eCutMagDisk;
   /// bellow infront of collimator
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// collimator A
-  std::shared_ptr<xraySystem::SquareFMask> collA;
+  /// FM1
+  std::shared_ptr<xraySystem::SquareFMask> fm1;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowB;
   /// Mask1:2 connection pipe
@@ -148,10 +148,11 @@ class R3FrontEnd :
   std::shared_ptr<tdcSystem::CleaningMagnet> pMag;
   /// bellow after collimator
   std::shared_ptr<constructSystem::Bellows> bellowC;
-  /// collimator B
-  std::shared_ptr<xraySystem::SquareFMask> collB;
-  /// collimator C
-  std::shared_ptr<xraySystem::SquareFMask> collC;
+  /// FM2
+  std::shared_ptr<xraySystem::SquareFMask> fm2;
+  std::shared_ptr<constructSystem::Bellows> bellowCA;
+  /// FM3
+  std::shared_ptr<xraySystem::SquareFMask> fm3;
   /// Pipe from collimator B to heat dump or MSM
   std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
 

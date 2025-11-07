@@ -50,10 +50,12 @@ namespace setVariable
 {
 
 ProximityShieldingGenerator::ProximityShieldingGenerator() :
-  length(15.0),width(20.0),height(20.0), boreRadius(2.25), // all dimensions: CAD
-  voidMat("Void"),wallMat("Stainless316L")
+  length(10.0),width(20.0),height(20.0), boreRadius(2.25), // all dimensions: CAD
+  voidMat("Void"),wallMat("Lead")
   /*!
     Constructor and defaults
+    length=10 and wallMat=Lead correspond to "older" desing (most of the Toyama front-ends)
+    newer design: length=15 and wallMat=Stainless steel (unknown grade) - to be used at TomoWISE
   */
 {}
 

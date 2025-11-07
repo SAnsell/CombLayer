@@ -552,26 +552,20 @@ safetyUnit(FuncDataBase& Control,
   BBGen.generateBlock(Control,preName+"BremColl",0);
   Control.addVariable(preName+"BremCollYStep",(bremCollPipeLength-bremCollLength)/2.0);
 
-
-
-
   Control.addVariable(preName+"BremBlockRadius",3.0);
   Control.addVariable(preName+"BremBlockLength",20.0);
   Control.addVariable(preName+"BremBlockHoleWidth",2.0);
   Control.addVariable(preName+"BremBlockHoleHeight",2.0);
   Control.addVariable(preName+"BremBlockMainMat","Tungsten");
 
-
-
   PSGen.generate(Control,preName+"ProxiShieldA", 15.0); // CAD
   Control.addVariable(preName+"ProxiShieldAYStep",3.53); // CAD
   Control.addVariable(preName+"ProxiShieldABoreRadius",0.0);
+  Control.addVariable(preName+"ProxiShieldAWallMat","Stainless316L");
+
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,preName+"ProxiShieldAPipe",proxiShieldAPipeLength);
-  PSGen.generate(Control,preName+"ProxiShieldA", 15.0); // CAD
-  Control.addVariable(preName+"ProxiShieldAYStep",3.53); // CAD
-  Control.addVariable(preName+"ProxiShieldABoreRadius",0.0);
 
   Control.copyVarSet(preName+"ProxiShieldAPipe", preName+"ProxiShieldBPipe");
   Control.copyVarSet(preName+"ProxiShieldA", preName+"ProxiShieldB");
@@ -1561,6 +1555,12 @@ TOMOWISEvariables(FuncDataBase& Control)
   tomowiseVar::undulatorVariables(Control,frontKey);
   setVariable::R3FrontEndToyamaVariables(Control,beamLineName);
   tomowiseVar::frontMaskVariables(Control,frontKey);
+
+  Control.addVariable(frontKey+"ProxiShieldALength",15.0);
+  Control.addVariable(frontKey+"ProxiShieldAWallMat","Stainless316L");
+  Control.addVariable(frontKey+"ProxiShieldBLength",15.0);
+  Control.addVariable(frontKey+"ProxiShieldBWallMat","Stainless316L");
+
 
 
   PipeGen.setMat("Stainless304");

@@ -3,7 +3,7 @@
 
  * File:   danmax/danmaxVariables.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,15 +34,10 @@
 #include <memory>
 #include <array>
 
-#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
-#include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
 #include "Vec3D.h"
 #include "Code.h"
 #include "varList.h"
@@ -52,7 +47,6 @@
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
 #include "BellowGenerator.h"
-#include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
 #include "PipeTubeGenerator.h"
@@ -63,25 +57,21 @@
 #include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
-#include "MirrorGenerator.h"
 #include "MonoShutterGenerator.h"
-#include "ShutterUnitGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
-#include "RingDoorGenerator.h"
-#include "LeadBoxGenerator.h"
-#include "WallLeadGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
-#include "QuadUnitGenerator.h"
-#include "DipoleChamberGenerator.h"
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
 #include "BremBlockGenerator.h"
 #include "OpticsHutGenerator.h"
 #include "ExptHutGenerator.h"
+#include "MovableSafetyMaskGenerator.h"
+
+// [4] see [4] in R3RingVariablesToyama.cxx
 
 namespace setVariable
 {
@@ -114,34 +104,36 @@ undulatorVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","undulatorVariables");
+  setVariable::PipeGenerator PipeGen;
 
-  setVariable::PortTubeGenerator PTubeGen;
+  const double undulatorLen(300.0);
+  PipeGen.setMat("Aluminium");
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.generatePipe(Control,frontKey+"UPipe",undulatorLen);
+  Control.addVariable(frontKey+"UPipeYStep",-undulatorLen/2.0);
 
-  Control.addVariable(frontKey+"FrontOffset",-200.0);
+  Control.addVariable(frontKey+"UPipeWidth",6.0);
+  Control.addVariable(frontKey+"UPipeHeight",0.6);
+  Control.addVariable(frontKey+"UPipePipeThick",0.2);
 
-  PTubeGen.setMat("Stainless304");
-  PTubeGen.setPipe(30.0,1.0);
-  PTubeGen.setPortCF<CF63>();
-  PTubeGen.setPortLength(15.0,15.0);
+  // undulator
+  Control.addVariable(frontKey+"UndulatorVGap",1.1);  // mininum 11mm
+  Control.addVariable(frontKey+"UndulatorLength",270.0);   // 46.2mm*30*2
+  Control.addVariable(frontKey+"UndulatorMagnetWidth",6.0);
+  Control.addVariable(frontKey+"UndulatorMagnetDepth",3.0);
+  Control.addVariable(frontKey+"UndulatorSupportWidth",12.0);
+  Control.addVariable(frontKey+"UndulatorSupportThick",8.0);
+  Control.addVariable(frontKey+"UndulatorSupportLength",4.0);  // extra
+  Control.addVariable(frontKey+"UndulatorSupportVOffset",2.0);
+  Control.addVariable(frontKey+"UndulatorStandWidth",6.0);
+  Control.addVariable(frontKey+"UndulatorStandHeight",8.0);
+  Control.addVariable(frontKey+"UndulatorVoidMat","Void");
+  Control.addVariable(frontKey+"UndulatorMagnetMat","NbFeB");
+  Control.addVariable(frontKey+"UndulatorSupportMat","Copper");
+  Control.addVariable(frontKey+"UndulatorStandMat","Aluminium");
 
-  // ystep/length ystep == 303
-  PTubeGen.generateTube(Control,frontKey+"UndulatorTube",-150.0,310.0);
-  Control.addVariable(frontKey+"UndulatorTubeNPorts",0);
-
-  // Undulator
-  Control.addVariable(frontKey+"UndulatorLength",300.0);
-  Control.addVariable(frontKey+"UndulatorBlockWidth",8.0);
-  Control.addVariable(frontKey+"UndulatorBlockHeight",8.0);
-  Control.addVariable(frontKey+"UndulatorBlockDepth",8.0);
-  Control.addVariable(frontKey+"UndulatorBlockHGap",0.2);
-  Control.addVariable(frontKey+"UndulatorBlockVGap",0.96);
-
-  Control.addVariable(frontKey+"UndulatorBlockVCorner",1.0);
-  Control.addVariable(frontKey+"UndulatorBlockHCorner",2.0);
-
-
-  Control.addVariable(frontKey+"UndulatorVoidMat",0);
-  Control.addVariable(frontKey+"UndulatorBlockMat","NbFeB");
+  Control.addVariable(frontKey+"UndulatorFlipX",1);
 
   return;
 }
@@ -158,28 +150,38 @@ frontMaskVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
   setVariable::SqrFMaskGenerator FMaskGen;
+  setVariable::BellowGenerator BellowGen;
 
-  const double FM1dist(1172.60);
-  const double FM2dist(1624.2);
+  Control.addVariable(preName+"BellowALength",10.0); // [4]
 
-    // collimator block
+
+  constexpr double FM1Length(40.0); // [4]
+  constexpr double FM2Length(40.0); //
+  constexpr double MSMLength(40.0); //
+
+  const double FM1dist(1104.75+FM1Length/2.0); // [4]
+  const double FM2dist(1500.0+FM2Length/2.0); //
+  //  const double FM2dist(1597.08+FM2Length/2.0); // [4]
+  const double MSMdist(1600.0); //
+
   FMaskGen.setCF<CF100>();
-  FMaskGen.setMat("Copper");
-  FMaskGen.setFrontGap(3.99,1.97);  // 1033.8
-  //  FMaskGen.setBackGap(0.71,0.71);
-  // Approximated to get 1mrad x 1mrad
-  FMaskGen.setMinAngleSize(10.0,FM1dist,1000.0,1000.0);
-  FMaskGen.setBackAngleSize(FM1dist, 1200.0,1100.0);     // Approximated to get 1mrad x 1mrad
-  FMaskGen.generateColl(Control,preName+"FM1",FM1dist,15.0);
+  FMaskGen.setFrontGap(2.53, 2.53); //
+  double backWidth = 1.19; //
+  double backHeight = backWidth;
+  FMaskGen.setBackGap(backWidth, backHeight);
+  FMaskGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
+		      backWidth, backHeight);
+  FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
 
-  FMaskGen.setFrontGap(2.13,2.146);
-  FMaskGen.setBackGap(0.756,0.432);
-  // Approximated to get 100urad x 100urad @16m
-  FMaskGen.setMinAngleSize(32.0,FM2dist, 100.0,100.0 );
-  // Approximated to get 150urad x 150urad @16m
-  FMaskGen.setBackAngleSize(FM2dist, 150.0,150.0 );
-  FMaskGen.generateColl(Control,preName+"FM2",FM2dist,40.0);
+  Control.addVariable(preName+"BellowBLength",10.0); // [4]
 
+  FMaskGen.setFrontGap(1.65, 1.65); //
+  backWidth = 1.54; //
+  backHeight = 0.154; //
+  FMaskGen.setBackGap(backWidth, backHeight);
+  FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
+		      backWidth, backHeight);
+  FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
 
   // NOT PRESENT :::
   // FMaskGen.setFrontGap(0.84,0.582);
@@ -188,6 +190,30 @@ frontMaskVariables(FuncDataBase& Control,
   // FMaskGen.setMinAngleSize(12.0,1600.0, 100.0, 100.0);
   // FMaskGen.generateColl(Control,preName+"CollC",17/2.0,17.0);
 
+  // approx for 100uRad x 100uRad
+  FMaskGen.setFrontAngleSize(FM2dist,150.0,150.0);
+  FMaskGen.setMinAngleSize(12.0,FM2dist, 100.0, 100.0 );
+  FMaskGen.setBackAngleSize(FM2dist, 160.0,160.0 );
+  FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
+
+  setVariable::PipeGenerator PipeGen;
+  PipeGen.setNoWindow();
+  PipeGen.setCF<setVariable::CF40>(); // dummy
+  PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy
+
+
+  // Movable Safety Mask
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
+
+  MovableSafetyMaskGenerator MSMGen;
+  MSMGen.generate(Control,preName+"MSM",MSMLength, "undulator"); //
+  Control.addVariable(preName+"MSMYStep",MSMdist);
+
+  BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
+
+  PipeGen.setMat("Stainless304L"); // dummy
+  PipeGen.generatePipe(Control,preName+"MSMExitPipe",100.0); // dummy
 
   return;
 }
@@ -734,7 +760,7 @@ shieldVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("danmaxVariables","shieldVariables");
 
-  const std::string preName("Danmax");
+  const std::string preName("DanMAX");
 
   Control.addVariable(preName+"GuillotineLength",10.0);
   Control.addVariable(preName+"GuillotineWidth",80.0);
@@ -945,7 +971,6 @@ void
 DANMAXvariables(FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
-    -- This version is for Photon Moderator
     \param Control :: Function data base to add constants too
   */
 {
@@ -958,35 +983,40 @@ DANMAXvariables(FuncDataBase& Control)
 
   PipeGen.setNoWindow();
 
+  const std::string beamLineName("DanMAX");
+  const std::string frontKey(beamLineName+"FrontBeam");
 
-  danmaxVar::undulatorVariables(Control,"DanmaxFrontBeam");
-  setVariable::R3FrontEndFMBBVariables(Control,"Danmax");
-
+  danmaxVar::undulatorVariables(Control,frontKey);
+  setVariable::R3FrontEndToyamaVariables(Control,beamLineName);
+  danmaxVar::frontMaskVariables(Control,frontKey);
 
   //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
-  danmaxVar::frontMaskVariables(Control,"DanmaxFrontBeam");
+  danmaxVar::frontMaskVariables(Control,frontKey);
+
+  Control.addVariable(frontKey+"ProxiShieldAWallMat","Void"); // [AR 251104: checked by JR 251103]
+  Control.addVariable(frontKey+"ProxiShieldBWallMat","Void"); // [AR 251104: checked by JR 251103]
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"DanmaxJoinPipe",150.0);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipe",190.0); // dummy
 
-  danmaxVar::opticsHutVariables(Control,"DanmaxOpticsHut");
-  danmaxVar::opticsVariables(Control,"Danmax");
+  danmaxVar::opticsHutVariables(Control,beamLineName+"OpticsHut");
+  danmaxVar::opticsVariables(Control,beamLineName);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeB",49.3);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",49.3);
 
   danmaxVar::shieldVariables(Control);
-  danmaxVar::connectVariables(Control,"DanmaxConnectUnit");
+  danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setWindow(2.7, 0.005);
   PipeGen.setWindowMat("Diamond");
-  PipeGen.generatePipe(Control,"DanmaxJoinPipeC",54.0);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeC",54.0);
 
-  danmaxVar::exptHutVariables(Control,"Danmax");
+  danmaxVar::exptHutVariables(Control,beamLineName);
 
-  const std::string exptName="DanmaxExptLine";
+  const std::string exptName=beamLineName+"ExptLine";
 
   Control.addVariable(exptName+"BeamStopYStep",806.0);
   Control.addVariable(exptName+"BeamStopRadius",10.0);

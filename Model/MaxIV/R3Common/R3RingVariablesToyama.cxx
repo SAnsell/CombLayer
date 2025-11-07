@@ -64,7 +64,7 @@
 #include "HeatAbsorberToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 #include "CleaningMagnetGenerator.h"
-
+#include "FlangePlateGenerator.h"
 
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
@@ -72,6 +72,7 @@
 // [2] Toyama ForMAX Mechanical drawings
 //     http://localhost:8080/maxiv/work-log/tomowise/toyama_formax_fe_mechanical_drawings.pdf/view
 // [3] 236798-Toyama-front-end.step
+// [4] S0-2-0AB01088_DanMAX.pdf
 
 namespace setVariable
 {
@@ -287,15 +288,12 @@ shutterTableToyama(FuncDataBase& Control,
   Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
   Control.addVariable(frontKey+"BremBlockMainMat","Tungsten");
 
-  PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
+  PSGen.generate(Control,frontKey+"ProxiShieldA", 10.0); // CAD
   Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
   Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",proxiShieldAPipeLength);
-  PSGen.generate(Control,frontKey+"ProxiShieldA", 15.0); // CAD
-  Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
-  Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
 
   Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
   Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
@@ -400,7 +398,7 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
 
   constexpr double heatAbsorberLength = 26.5;  // [2]
 
-  const double heatAbsorberDist(1700.0); // centre
+  const double heatAbsorberDist(1700.0);
 
   SimpleTubeGen.setMat("Stainless304");
   SimpleTubeGen.setCF<CF150>();
@@ -456,6 +454,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;
+  setVariable::FlangePlateGenerator FPGen;
 
   const std::string frontKey(beamlineKey+"FrontBeam");
   // So that we can assume it's the straight section centre [2, page 1]
@@ -504,11 +503,16 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   //  Note bellow reversed for FM fixed:
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",16.0);
 
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
+  name = "FlangePlateA";
+  FPGen.setFlange(CF100::flangeRadius, 1.75); // [4]
+  FPGen.setWindow(0.0, 0.0, "Void"); // [4]
+  FPGen.setMat("Stainless304"); // guess
+  FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
+  FPGen.generateFlangePlate(Control,frontKey+name);
+
+  FPGen.generateFlangePlate(Control,frontKey+"FlangePlateB");
   BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
 
   PipeGen.setCF<CF40>();
@@ -537,10 +541,12 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
+  constexpr double bellowCALength = 10.0;
+  BellowGen.generateBellow(Control,frontKey+"BellowCA",bellowCALength);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5);
+  PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5-bellowCALength);
 
   // Create HEAT DUMP
   heatDumpTableToyama(Control,frontKey);

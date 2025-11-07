@@ -97,6 +97,7 @@
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
 #include "ProximityShielding.h"
+#include "FlangePlate.h"
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
 
@@ -107,6 +108,8 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  flangePlateA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateA")),
+  flangePlateB(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateB")),
   bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
   msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
   bellowPostMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPostMSM")),
@@ -121,7 +124,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
   proxiShieldAPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldAPipe")),
   proxiShieldB(new xraySystem::ProximityShielding(newName+"ProxiShieldB")),
-  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe"))
+  proxiShieldBPipe(new constructSystem::VacuumPipe(newName+"ProxiShieldBPipe")),
+  msmActive(false)
 
   /*!
     Constructor
@@ -141,12 +145,12 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(dipolePipe);
   // OR.addObject(eTransPipe);
   // OR.addObject(bellowA);
-  // OR.addObject(collA);
+  // OR.addObject(fm1);
   // OR.addObject(bellowB);
   // OR.addObject(collABPipe);
   // OR.addObject(bellowC);
-  // OR.addObject(collB);
-  // OR.addObject(collC);
+  // OR.addObject(fm2);
+  // OR.addObject(fm3);
   // OR.addObject(eCutDisk);
   // OR.addObject(eCutMagDisk);
   // OR.addObject(collExitPipe);
@@ -175,6 +179,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(flangePlateA);
+  OR.addObject(flangePlateB);
   OR.addObject(bellowPreMSM);
   OR.addObject(msm);
   OR.addObject(bellowPostMSM);
@@ -268,25 +274,19 @@ R3FrontEndToyama::createSurfaces()
 // }
 
 void
-R3FrontEndToyama::buildHeatTable(Simulation& System)
+R3FrontEndToyama::buildHeatTable(Simulation& System,
+				 const attachSystem::FixedComp& preFC,
+				 const std::string& preSide)
   /*!
     Build the heatDump table
     \param System :: Simulation to use
+    \param preFC :: initial Fixedcomp
+    \param preSide :: link point on initial FC
   */
 {
   ELog::RegMethod RegA("R3FrontEndToyama","buildHeatTable");
 
   int outerCell;
-
-  ha->createAll(System, *this, 0);
-
-  bellowPreHA->createAll(System, *ha, "front");
-
-  msmExitPipe->setBack(*bellowPreHA,"back");
-
-  msmExitPipe->createAll(System,*bellowPostMSM,"back");
-  outerCell=buildZone.createUnit(System,*msmExitPipe,"back");
-  msmExitPipe->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*ha,"#front");
   bellowPreHA->insertAllInCell(System,outerCell);
@@ -324,8 +324,6 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
   */
 {
   ELog::RegMethod RegA("R3FrontEndToyama","buildApertureTable");
-
-  int outerCell;
 
   constructSystem::constructUnit(System,buildZone,preFC,"back",*bellowE);
   constructSystem::constructUnit(System,buildZone,*bellowE,"back",*aperturePipeA);
@@ -488,7 +486,7 @@ R3FrontEndToyama::buildShutterTable(Simulation& System)
 
 void
 R3FrontEndToyama::buildMSM(Simulation& System,
-			   const attachSystem::FixedComp& preFC,
+			   attachSystem::FixedComp& preFC,
 			   const std::string& preSide)
 /*!
   Build the Movable Safety Mask
@@ -500,16 +498,16 @@ R3FrontEndToyama::buildMSM(Simulation& System,
   ELog::RegMethod RegA("R3FrontEndToyama","buildMSM");
   int outerCell;
 
-  ELog::EM << "MSM is always built for Toyama front-ends" << ELog::endWarn;
-
   msm->createAll(System, *this, 0);
   bellowPreMSM->createAll(System, *msm, "front");
 
-  collExitPipe->setBack(*bellowPreMSM,"back");
+  auto p = dynamic_cast<attachSystem::FrontBackCut*>(std::addressof(preFC));
+  //  p->setFront(*bellowCA,2);  // build it later (setBack depending on the msmActive flag)
+  p->setBack(*bellowPreMSM,"back");
 
-  collExitPipe->createAll(System,*collB,"back");
-  outerCell=buildZone.createUnit(System,*collExitPipe,"back");
-  collExitPipe->insertAllInCell(System,outerCell);
+  preFC.createAll(System,*bellowCA,"back");
+  outerCell=buildZone.createUnit(System,preFC,"back");
+  dynamic_cast<attachSystem::ContainedGroup*>(std::addressof(preFC))->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*msm,"#front");
   bellowPreMSM->insertAllInCell(System,outerCell);
@@ -590,8 +588,9 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   if (stopPoint != "U1Block") {
   // FM1 Built relateive to MASTER coordinate
-    collA->createAll(System,*this,0);
-    bellowA->createAll(System,*collA,1);
+    fm1->createAll(System,*this,0);
+    flangePlateA->createAll(System,*fm1,"front");
+    bellowA->createAll(System,*flangePlateA,"back");
   }
 
   magBlockU1->createAll(System,*epSeparator,"Electron");
@@ -653,11 +652,14 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   dipolePipe->insertInCell("Main",System,outerCell);
   dipolePipe->insertInCell("FlangeB",System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*bellowA,1);
+  outerCell=buildZone.createUnit(System,*bellowA,"front");
   bellowA->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*collA,2);
-  collA->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*flangePlateA,"front");
+  flangePlateA->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*fm1,"back");
+  fm1->insertInCell(System,outerCell);
 
 
   if (stopPoint=="Dipole")
@@ -668,13 +670,13 @@ R3FrontEndToyama::buildObjects(Simulation& System)
       return;
     }
 
-  constructSystem::constructUnit
-    (System,buildZone,*collA,"back",*bellowB);
+  constructSystem::constructUnit(System,buildZone,*fm1,"back",*flangePlateB);
+  constructSystem::constructUnit(System,buildZone,*flangePlateB,"back",*bellowB);
 
   // FM2 Built relateive to MASTER coordinate
 
-  collB->createAll(System,*this,0);
-  bellowC->createAll(System,*collB,1);
+  fm2->createAll(System,*this,0);
+  bellowC->createAll(System,*fm2,1);
 
   collABPipe->setFront(*bellowB,2);
   collABPipe->setBack(*bellowC,2);
@@ -686,22 +688,40 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowC,1);
   bellowC->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*collB,2);
-  collB->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*fm2,2);
+  fm2->insertInCell(System,outerCell);
 
-  std::shared_ptr<attachSystem::FixedComp> linkFC(collB);
+  std::shared_ptr<attachSystem::FixedComp> linkFC(fm2);
   // We never have FM3 in Toyama front-ends
   // if (collFM3Active)
   //   {
   //     constructSystem::constructUnit
-  // 	(System,buildZone,*collB,"back",*collC);
-  //     linkFC=collC;
+  // 	(System,buildZone,*fm2,"back",*fm3);
+  //     linkFC=fm3;
   //   }
 
-  collExitPipe->setFront(*linkFC,2);
+  constructSystem::constructUnit(System,buildZone,*linkFC,"back",*bellowCA);
 
-  buildMSM(System,*collExitPipe,"back");
-  buildHeatTable(System);
+  if (msmActive) {
+    buildMSM(System,*collExitPipe,"back");
+
+    ha->createAll(System, *this, 0);
+    bellowPreHA->createAll(System, *ha, "front");
+
+    msmExitPipe->setBack(*bellowPreHA,"back");
+    msmExitPipe->createAll(System,*bellowPostMSM,"back");
+    outerCell=buildZone.createUnit(System,*msmExitPipe,"back");
+    msmExitPipe->insertAllInCell(System,outerCell);
+
+    buildHeatTable(System, *bellowPostMSM, "back");
+  } else {
+    ha->createAll(System, *this, 0);
+    //    bellowPreHA->setFront(*ha, "front");
+    bellowPreHA->setBack(*bellowCA, "back");
+    bellowPreHA->createAll(System, *ha, "front");
+
+    buildHeatTable(System, *bellowCA, "back");
+  }
 
   if (stopPoint=="HeatTable")
     {
