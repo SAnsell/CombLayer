@@ -70,6 +70,7 @@
 #include "OpticsHutGenerator.h"
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
+#include "HeatAbsorberToyamaGenerator.h"
 
 // [4] see [4] in R3RingVariablesToyama.cxx
 
@@ -156,7 +157,8 @@ frontMaskVariables(FuncDataBase& Control,
 
 
   constexpr double FM1Length(40.0); // [4]
-  constexpr double FM2Length(40.0); //
+  constexpr double FM2Length(50.5); // TODO: not indicated in [4]
+  ELog::EM << "FM2 length ??? " << ELog::endWarn;
   constexpr double MSMLength(40.0); //
 
   const double FM1dist(1104.75+FM1Length/2.0); // [4]
@@ -183,6 +185,15 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
+
+  HeatAbsorberToyamaGenerator HAGen;
+
+  constexpr double heatAbsorberLength = 26.5;  // [4]
+  constexpr double heatAbsorberDist(1673.3); // [4]
+
+  HAGen.generate(Control,preName+"HeatAbsorber",heatAbsorberLength);
+  Control.addVariable(preName+"HeatAbsorberYStep",heatAbsorberDist);
+
 
   // NOT PRESENT :::
   // FMaskGen.setFrontGap(0.84,0.582);
@@ -989,8 +1000,6 @@ DANMAXvariables(FuncDataBase& Control)
 
   danmaxVar::undulatorVariables(Control,frontKey);
   setVariable::R3FrontEndToyamaVariables(Control,beamLineName);
-  danmaxVar::frontMaskVariables(Control,frontKey);
-
   //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
   danmaxVar::frontMaskVariables(Control,frontKey);
 
