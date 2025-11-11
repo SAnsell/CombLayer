@@ -526,6 +526,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"PermanentMagnetGap",5.2); // [3]
 
   FPGen.generateFlangePlate(Control,frontKey+"FlangePlateC");
+  FPGen.generateFlangePlate(Control,frontKey+"FlangePlateD");
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
