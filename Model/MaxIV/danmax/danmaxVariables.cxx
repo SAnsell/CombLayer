@@ -70,6 +70,7 @@
 #include "OpticsHutGenerator.h"
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
+#include "HeatAbsorberToyamaGenerator.h"
 
 // [4] see [4] in R3RingVariablesToyama.cxx
 
@@ -182,6 +183,17 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
+
+  BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [4]
+
+  HeatAbsorberToyamaGenerator HAGen;
+
+  constexpr double heatAbsorberLength = 26.5;  // [4]
+  constexpr double heatAbsorberDist(1673.3); // [4]
+
+  HAGen.generate(Control,preName+"HeatAbsorber",heatAbsorberLength);
+  Control.addVariable(preName+"HeatAbsorberYStep",heatAbsorberDist);
+
 
   // NOT PRESENT :::
   // FMaskGen.setFrontGap(0.84,0.582);

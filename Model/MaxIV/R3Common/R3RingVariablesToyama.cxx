@@ -541,7 +541,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
-  constexpr double bellowCALength = 10.0;
+  constexpr double bellowCALength = 9.6; // [2]
   BellowGen.generateBellow(Control,frontKey+"BellowCA",bellowCALength);
 
   PipeGen.setCF<setVariable::CF40>();
