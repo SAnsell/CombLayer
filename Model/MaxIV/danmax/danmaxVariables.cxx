@@ -186,6 +186,8 @@ frontMaskVariables(FuncDataBase& Control,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
 
+  BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [4]
+
   HeatAbsorberToyamaGenerator HAGen;
 
   constexpr double heatAbsorberLength = 26.5;  // [4]
