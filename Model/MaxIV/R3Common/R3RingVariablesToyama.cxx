@@ -525,6 +525,9 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"PermanentMagnetYokeLength",31.4); // should be the same length as the magnet, but making it 1 mm shorter to avoid zero volume cells
   Control.addVariable(frontKey+"PermanentMagnetGap",5.2); // [3]
 
+  FPGen.generateFlangePlate(Control,frontKey+"FlangePlateC");
+  FPGen.generateFlangePlate(Control,frontKey+"FlangePlateD");
+
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
   Control.addVariable(frontKey+"ECutDiskRadius",1.0);

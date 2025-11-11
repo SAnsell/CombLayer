@@ -114,6 +114,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   msm(std::make_shared<xraySystem::MovableSafetyMask>(newName+"MSM")),
   bellowPostMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPostMSM")),
   msmExitPipe(new constructSystem::VacuumPipe(newName+"MSMExitPipe")),
+  flangePlateC(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateC")),
+  flangePlateD(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateD")),
   bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
@@ -185,6 +187,8 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(msm);
   OR.addObject(bellowPostMSM);
   OR.addObject(msmExitPipe);
+  OR.addObject(flangePlateC);
+  OR.addObject(flangePlateD);
   OR.addObject(bellowPreHA);
   OR.addObject(ha);
   OR.addObject(bellowPostHA);
@@ -701,6 +705,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   //   }
 
   constructSystem::constructUnit(System,buildZone,*linkFC,"back",*bellowCA);
+  constructSystem::constructUnit(System,buildZone,*bellowCA,"back",*flangePlateD);
 
   if (msmActive) {
     buildMSM(System,*collExitPipe,"back");
@@ -717,10 +722,10 @@ R3FrontEndToyama::buildObjects(Simulation& System)
   } else {
     ha->createAll(System, *this, 0);
     //    bellowPreHA->setFront(*ha, "front");
-    bellowPreHA->setBack(*bellowCA, "back");
+    bellowPreHA->setBack(*flangePlateD, "back");
     bellowPreHA->createAll(System, *ha, "front");
 
-    buildHeatTable(System, *bellowCA, "back");
+    buildHeatTable(System, *flangePlateD, "back");
   }
 
   if (stopPoint=="HeatTable")

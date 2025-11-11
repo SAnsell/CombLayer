@@ -91,6 +91,8 @@ protected:
   std::shared_ptr<xraySystem::MovableSafetyMask> msm;
   std::shared_ptr<constructSystem::Bellows> bellowPostMSM;
   std::shared_ptr<constructSystem::VacuumPipe> msmExitPipe;
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateC;
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateD;
   std::shared_ptr<constructSystem::Bellows> bellowPreHA;
   std::shared_ptr<xraySystem::HeatAbsorberToyama> ha;
   std::shared_ptr<constructSystem::Bellows> bellowPostHA;
