@@ -116,6 +116,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   msmExitPipe(new constructSystem::VacuumPipe(newName+"MSMExitPipe")),
   flangePlateC(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateC")),
   flangePlateD(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateD")),
+  flangePlateE(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateE")),
   bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
@@ -189,6 +190,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(msmExitPipe);
   OR.addObject(flangePlateC);
   OR.addObject(flangePlateD);
+  OR.addObject(flangePlateE);
   OR.addObject(bellowPreHA);
   OR.addObject(ha);
   OR.addObject(bellowPostHA);
@@ -299,7 +301,8 @@ R3FrontEndToyama::buildHeatTable(Simulation& System,
   ha->insertInCell(System,outerCell);
 
   constructSystem::constructUnit(System,buildZone,*ha,"back",*bellowPostHA);
-  constructSystem::constructUnit(System,buildZone,*bellowPostHA,"back",*bellowD);
+  constructSystem::constructUnit(System,buildZone,*bellowPostHA,"back",*flangePlateE);
+  constructSystem::constructUnit(System,buildZone,*flangePlateE,"back",*bellowD);
 
   constructSystem::constructUnit(System,buildZone,*bellowD,"back",*gateA);
 
