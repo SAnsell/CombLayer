@@ -74,6 +74,17 @@ DBMaterial::initMaterial()
 		 "74183.70c 0.0089819772 74184.70c 0.0192722  74186.70c "
 		 " 0.018014274","",MLib);
 
+  // Steel with unknown grade (a copy of Stainless304)
+  // Density: 7.65g/cc
+  createMaterial("SteelUnknownGrade",
+		 "6000.70c 3.18640e-4 14028.70c 1.70336e-3 "
+		 "15031.70c 6.95038e-5 16032.70c 4.47520e-5 "
+		 "24000.50c 1.74813e-2 25055.70c 1.74159e-3 "
+		 "26054.70c 3.380e-3 26056.70c 5.3455e-2 "
+		 "26057.70c 1.282177e-3 27059.70c 2.453e-4 "
+		 "28000.50c 8.15128e-3",
+		 "",MLib);
+
   // Density --> 7.65g/cc
   createMaterial("Stainless304",
 		 "6000.70c 3.18640e-4 14028.70c 1.70336e-3 "
