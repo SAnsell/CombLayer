@@ -527,6 +527,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   FPGen.generateFlangePlate(Control,frontKey+"FlangePlateC");
   FPGen.generateFlangePlate(Control,frontKey+"FlangePlateD");
+  FPGen.generateFlangePlate(Control,frontKey+"FlangePlateE");
 
   Control.addVariable(frontKey+"ECutDiskYStep",5.0);
   Control.addVariable(frontKey+"ECutDiskLength",0.1);
