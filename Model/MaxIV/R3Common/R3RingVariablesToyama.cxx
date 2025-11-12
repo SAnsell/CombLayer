@@ -108,6 +108,7 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
+  BellowGen.setMat("Stainless304", "Stainless304");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowDA",10.0); // [2]
 
@@ -204,6 +205,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   assert(std::abs(bellowIYstep - 1947.53)<Geometry::zeroTol && "Wrong shutter table length.");
 
+  BellowGen.setMat("Stainless304", "Stainless304");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",bellowILength);
   Control.addVariable(frontKey+"BellowIYStep",bellowIYstep);
@@ -353,6 +355,7 @@ heatDumpTableToyama(FuncDataBase& Control,
 
   heatDumpVariablesToyama(Control,frontKey);
 
+  BellowGen.setMat("Stainless304", "Stainless304");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowD",10.0); // [2]
 
@@ -369,6 +372,7 @@ heatDumpTableToyama(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF40>();
+  GateGen.setBladeMat("Stainless304L");
   GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
   const double gateAYAngle(-30.0); // approx
   Control.addVariable(frontKey+"GateAYAngle",gateAYAngle);
@@ -423,6 +427,7 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   // new Toyama
 
 
+  BellowGen.setMat("Stainless304", "Stainless304");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowPreHA",14.0); // [2]
 
@@ -494,7 +499,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   CPipeGen.setCF<CF40>();
   CPipeGen.setAFlangeCF<CF25>();
-  CPipeGen.setMat("Aluminium","Stainless304");
+  CPipeGen.setMat("Stainless304","Stainless304");
   CPipeGen.generatePipe(Control,frontKey+"DipolePipe",800.0);
 
   PipeGen.setCF<CF25>();
@@ -503,16 +508,13 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ETransPipeOuterVoid",1);
 
   //  Note bellow reversed for FM fixed:
+  BellowGen.setMat("Stainless304", "Stainless304");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",16.0);
-
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
 
   PipeGen.setCF<CF40>();
-  PipeGen.setMat("Stainless304");
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0);
 
   setVariable::CleaningMagnetGenerator CLGen;
@@ -534,11 +536,8 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   Control.addVariable(frontKey+"ECutMagDiskMat","H2Gas#0.1");
 
   // note : reversed becaues using fixed FM
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,frontKey+"BellowC",16.0);
 
-  PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5);
 

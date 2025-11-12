@@ -109,7 +109,7 @@ undulatorVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
 
   const double undulatorLen(300.0);
-  PipeGen.setMat("Aluminium");
+  PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,frontKey+"UPipe",undulatorLen);
@@ -201,6 +201,7 @@ frontMaskVariables(FuncDataBase& Control,
 
 
   // Movable Safety Mask
+  BellowGen.setMat("Stainless304", "Stainless304");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
 
