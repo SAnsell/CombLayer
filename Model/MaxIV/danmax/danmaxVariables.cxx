@@ -190,6 +190,7 @@ frontMaskVariables(FuncDataBase& Control,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
 
+  BellowGen.setMat("Stainless304", "Stainless304");
   BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [4]
 
   HeatAbsorberToyamaGenerator HAGen;
@@ -260,7 +261,7 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
   const double opticsHutLength = 1010.0; // Section A-A in [1]
-  OGen.generateHut(Control,hutName, opticsHutLength); 
+  OGen.generateHut(Control,hutName, opticsHutLength);
   const double opticsHutOuterWidth = 259.7;
   Control.addVariable(hutName+"OutWidth", opticsHutOuterWidth); // Section A-A [1]
   Control.addVariable(hutName+"Height", 411.0-131.88); // Optics hutch height (Section B-B) - optical-axis height (back view) [1]
@@ -270,7 +271,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"BackPlateThick", 7.0); // "Lead Thickness", back view [1]
   const double backPlateSideLength = 200.0; // back view [1]
-  Control.addVariable(hutName+"BackPlateWidth", backPlateSideLength); 
+  Control.addVariable(hutName+"BackPlateWidth", backPlateSideLength);
   Control.addVariable(hutName+"BackPlateHeight", backPlateSideLength);
 
   Control.addVariable(hutName+"NChicane",2);
