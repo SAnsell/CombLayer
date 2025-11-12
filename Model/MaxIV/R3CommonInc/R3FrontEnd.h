@@ -187,7 +187,7 @@ class R3FrontEnd :
 
 
   /// Exit of movables [?]
-  std::shared_ptr<constructSystem::GateValveCube> gateA;
+  std::shared_ptr<constructSystem::GateValveCube> valve1;
   /// bellows for florescence system
   std::shared_ptr<constructSystem::Bellows> bellowI;
   /// florescence screen tube

@@ -371,16 +371,16 @@ heatDumpTableToyama(FuncDataBase& Control,
   GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.setBladeMat("Stainless304L");
-  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
-  const double gateAYAngle(-30.0); // approx
-  Control.addVariable(frontKey+"GateAYAngle",gateAYAngle);
+  GateGen.generateValve(Control,frontKey+"Valve1",0.0,0);
+  const double valve1YAngle(-30.0); // approx
+  Control.addVariable(frontKey+"Valve1YAngle",valve1YAngle);
 
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPB",0.0,26.6,26.6);
-  Control.addVariable(frontKey+"IonPBYAngle",-gateAYAngle);
+  Control.addVariable(frontKey+"IonPBYAngle",-valve1YAngle);
 
   return;
 }

@@ -304,9 +304,9 @@ R3FrontEndToyama::buildHeatTable(Simulation& System,
   constructSystem::constructUnit(System,buildZone,*bellowPostHA,"back",*flangePlateE);
   constructSystem::constructUnit(System,buildZone,*flangePlateE,"back",*bellowD);
 
-  constructSystem::constructUnit(System,buildZone,*bellowD,"back",*gateA);
+  constructSystem::constructUnit(System,buildZone,*bellowD,"back",*valve1);
 
-  constructSystem::constructUnit(System,buildZone,*gateA,"back",*ionPB);
+  constructSystem::constructUnit(System,buildZone,*valve1,"back",*ionPB);
 
   constructSystem::constructUnit(System,buildZone,*ionPB,"back",*pipeB);
 

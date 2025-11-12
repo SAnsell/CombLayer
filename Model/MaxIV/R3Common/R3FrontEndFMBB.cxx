@@ -149,7 +149,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(bellowH);
   // OR.addObject(pipeC);
 
-  // OR.addObject(gateA);
+  // OR.addObject(valve1);
   // OR.addObject(bellowI);
   // OR.addObject(florTubeA);
   // OR.addObject(bellowJ);
@@ -383,15 +383,15 @@ R3FrontEndFMBB::buildShutterTable(Simulation& System,
   int outerCell;
 
   constructSystem::constructUnit
-    (System,buildZone,preFC,preSide,*gateA);
+    (System,buildZone,preFC,preSide,*valve1);
 
-  // gateA->createAll(System,preFC,preSideIndex);
-  // outerCell=buildZone.createUnit(System,*gateA,2);
-  // gateA->insertInCell(System,outerCell);
+  // valve1->createAll(System,preFC,preSideIndex);
+  // outerCell=buildZone.createUnit(System,*valve1,2);
+  // valve1->insertInCell(System,outerCell);
 
   // bellows
   constructSystem::constructUnit
-    (System,buildZone,*gateA,"back",*bellowI);
+    (System,buildZone,*valve1,"back",*bellowI);
 
   florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   florTubeA->createAll(System,*bellowI,2);
