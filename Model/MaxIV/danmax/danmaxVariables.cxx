@@ -112,7 +112,7 @@ undulatorVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
 
   const double undulatorLen(300.0);
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF63>();
   PipeGen.generatePipe(Control,frontKey+"UPipe",undulatorLen);
@@ -190,7 +190,7 @@ frontMaskVariables(FuncDataBase& Control,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
 
-  BellowGen.setMat("Stainless304", "Stainless304");
+  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [4]
 
   HeatAbsorberToyamaGenerator HAGen;
@@ -222,7 +222,7 @@ frontMaskVariables(FuncDataBase& Control,
 
 
   // Movable Safety Mask
-  BellowGen.setMat("Stainless304", "Stainless304");
+  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
 
@@ -232,7 +232,7 @@ frontMaskVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
 
-  PipeGen.setMat("Stainless304L"); // dummy
+  PipeGen.setMat("SteelUnknownGradeL"); // dummy
   PipeGen.generatePipe(Control,preName+"MSMExitPipe",100.0); // dummy
 
   return;
@@ -306,7 +306,7 @@ connectVariables(FuncDataBase& Control,
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setNoWindow();
 
@@ -317,7 +317,7 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"Thick",0.5);
   Control.addVariable(connectName+"SkinThick",0.1);
 
-  Control.addVariable(connectName+"SkinMat","Stainless304");
+  Control.addVariable(connectName+"SkinMat","SteelUnknownGrade");
   Control.addVariable(connectName+"Mat","Lead");
   Control.addVariable(connectName+"VoidMat","Void");
 
@@ -329,7 +329,7 @@ connectVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,beamName+"FlangeA",5.0);
 
-  SimpleTubeGen.setMat("Stainless304");
+  SimpleTubeGen.setMat("SteelUnknownGrade");
   SimpleTubeGen.setCF<CF100>();
   // ystep/length
   SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",10.0);
@@ -388,7 +388,7 @@ exptHutVariables(FuncDataBase& Control,
   // Control.addVariable(beamName+"PShieldHeight",10.0);
   // Control.addVariable(beamName+"PShieldWallThick",0.2);
   // Control.addVariable(beamName+"PShieldClearGap",0.3);
-  // Control.addVariable(beamName+"PShieldWallMat","Stainless304");
+  // Control.addVariable(beamName+"PShieldWallMat","SteelUnknownGrade");
   // Control.addVariable(beamName+"PShieldMat","Lead");
 
   Control.addVariable(hutName+"NChicane",2);
@@ -434,7 +434,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.generatePort(Control,pipeName+"Port1",
 			Geometry::Vec3D(0,8.75,0),
 			Geometry::Vec3D(0,0,-1));
-  PItemGen.setPlate(0.0,"Stainless304");
+  PItemGen.setPlate(0.0,"SteelUnknownGrade");
   PItemGen.setCF<setVariable::CF40>(sqrt(2.0)*CF100::outerRadius+8.0);
   PItemGen.generatePort(Control,pipeName+"Port2",
 			Geometry::Vec3D(0,8.75,0),
@@ -498,7 +498,7 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::FlangeMountGenerator FlangeGen;
 
   const std::string pipeName=viewKey+"ViewTubeB";
-  PTubeGen.setMat("Stainless304");
+  PTubeGen.setMat("SteelUnknownGrade");
   PTubeGen.setPipeCF<CF150>();
   PTubeGen.setPortCF<CF40>();
   PTubeGen.setPortLength(3.0,3.0);
@@ -585,7 +585,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,viewKey+"SlitsA",0.0,0.8,0.8);
 
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
@@ -650,7 +650,7 @@ revBeamStopPackage(FuncDataBase& Control,
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,viewKey+"SlitsB",0.0,0.8,0.8);
 
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
@@ -689,7 +689,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",0);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF63>(5.0+31.2);
-  PItemGen.setWindowPlate(2.5,2.0,-0.8,"Stainless304","LeadGlass");
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
   			Geometry::Vec3D(0,5.0,-10.0),
   			Geometry::Vec3D(1,0,0));
@@ -759,7 +759,7 @@ monoShutterVariables(FuncDataBase& Control,
   // up / up (true)
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
 
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF63>();
@@ -795,7 +795,7 @@ shieldVariables(FuncDataBase& Control)
   Control.addVariable(preName+"GuillotineHeight",40.0); // Coupe C-C [2]
   Control.addVariable(preName+"GuillotineWallThick",0.0); // Coupe C-C [2], no guillotine wall shown
   Control.addVariable(preName+"GuillotineClearGap",4.1-2.0*(JoinPipeCCF::innerRadius+JoinPipeCCF::wallThick)); // Coupe C-C [2]
-  Control.addVariable(preName+"GuillotineWallMat","Stainless304");
+  Control.addVariable(preName+"GuillotineWallMat","SteelUnknownGrade");
   Control.addVariable(preName+"GuillotineMat","Lead");
 
   Control.addVariable(preName+"NShieldYStep",10.2);
@@ -804,7 +804,7 @@ shieldVariables(FuncDataBase& Control)
   Control.addVariable(preName+"NShieldHeight",80.0);
   Control.addVariable(preName+"NShieldWallThick",0.5);
   Control.addVariable(preName+"NShieldClearGap",0.2);
-  Control.addVariable(preName+"NShieldWallMat","Stainless304");
+  Control.addVariable(preName+"NShieldWallMat","SteelUnknownGrade");
   Control.addVariable(preName+"NShieldMat","Poly");
 
   Control.addVariable(preName+"OuterShieldYStep",10.2);
@@ -813,7 +813,7 @@ shieldVariables(FuncDataBase& Control)
   Control.addVariable(preName+"OuterShieldHeight",80.0);
   Control.addVariable(preName+"OuterShieldWallThick",0.5);
   Control.addVariable(preName+"OuterShieldClearGap",0.2);
-  Control.addVariable(preName+"OuterShieldWallMat","Stainless304");
+  Control.addVariable(preName+"OuterShieldWallMat","SteelUnknownGrade");
   Control.addVariable(preName+"OuterShieldMat","Poly");
   return;
 }
@@ -845,7 +845,7 @@ opticsSlitPackage(FuncDataBase& Control,
 
   Control.addVariable(sName+"NPorts",3);   // beam ports (lots!!)
   PItemGen.setCF<setVariable::CF150>(CF200::outerRadius+6.1);
-  PItemGen.setPlate(setVariable::CF150::flangeLength,"Stainless304");
+  PItemGen.setPlate(setVariable::CF150::flangeLength,"SteelUnknownGrade");
 
   // Top port 16.0: Side 20.0cm  from front :  Vacuum 1/2 way
   //
@@ -909,7 +909,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
 
   PipeGen.setNoWindow();   // no window
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,opticsName+"InitBellow",6.0);
 
@@ -1022,7 +1022,7 @@ DANMAXvariables(FuncDataBase& Control)
   Control.addVariable(frontKey+"ProxiShieldAWallMat","Void"); // [AR 251104: checked by JR 251103]
   Control.addVariable(frontKey+"ProxiShieldBWallMat","Void"); // [AR 251104: checked by JR 251103]
 
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.generatePipe(Control,beamLineName+"JoinPipe",190.0); // dummy
 
@@ -1047,7 +1047,7 @@ DANMAXvariables(FuncDataBase& Control)
   Control.addVariable(exptName+"BeamStopYStep",806.0);
   Control.addVariable(exptName+"BeamStopRadius",10.0);
   Control.addVariable(exptName+"BeamStopThick",5.0);
-  Control.addVariable(exptName+"BeamStopMat","Stainless304");
+  Control.addVariable(exptName+"BeamStopMat","SteelUnknownGrade");
 
   Control.addVariable(exptName+"SampleYStep",406.0);
   Control.addVariable(exptName+"SampleRadius",10.0);
