@@ -158,8 +158,6 @@ class R3FrontEnd :
 
   /// bellow after HeatShield
   std::shared_ptr<constructSystem::Bellows> bellowD;
-  /// Real Ion pump (KF40) 26cm vertioal
-  std::shared_ptr<constructSystem::CrossPipe> ionPB;
   /// Pipe to third optic table
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 
@@ -187,7 +185,7 @@ class R3FrontEnd :
 
 
   /// Exit of movables [?]
-  std::shared_ptr<constructSystem::GateValveCube> gateA;
+  std::shared_ptr<constructSystem::GateValveCube> valve1;
   /// bellows for florescence system
   std::shared_ptr<constructSystem::Bellows> bellowI;
   /// florescence screen tube

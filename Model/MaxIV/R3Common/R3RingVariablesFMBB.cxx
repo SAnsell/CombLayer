@@ -174,7 +174,7 @@ shutterTableFMBB(FuncDataBase& Control,
   // joined and open
   GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
+  GateGen.generateValve(Control,frontKey+"Valve1",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",10.0);

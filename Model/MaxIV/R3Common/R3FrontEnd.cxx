@@ -133,7 +133,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   fm3(new xraySystem::SquareFMask(newName+"FM3")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   // aperture table
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
@@ -147,7 +146,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   // shutter table
-  gateA(new constructSystem::GateValveCube(newName+"GateA")),
+  valve1(new constructSystem::GateValveCube(newName+"Valve1")), // V1 FCV Valve (fast closing valve)
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
@@ -205,7 +204,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(bellowH);
   OR.addObject(pipeC);
 
-  OR.addObject(gateA);
+  OR.addObject(valve1);
   OR.addObject(bellowI);
   OR.addObject(florTubeA);
   OR.addObject(bellowJ);
@@ -449,15 +448,15 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   int outerCell;
 
   // constructSystem::constructUnit
-  //   (System,buildZone,preFC,preSide,*gateA);
+  //   (System,buildZone,preFC,preSide,*valve1);
 
-  // // gateA->createAll(System,preFC,preSideIndex);
-  // // outerCell=buildZone.createUnit(System,*gateA,2);
-  // // gateA->insertInCell(System,outerCell);
+  // // valve1->createAll(System,preFC,preSideIndex);
+  // // outerCell=buildZone.createUnit(System,*valve1,2);
+  // // valve1->insertInCell(System,outerCell);
 
   // // bellows
   // constructSystem::constructUnit
-  //   (System,buildZone,*gateA,"back",*bellowI);
+  //   (System,buildZone,*valve1,"back",*bellowI);
 
   // florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
   // florTubeA->createAll(System,*bellowI,2);

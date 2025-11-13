@@ -143,8 +143,8 @@ class R3FrontEndFMBB :
   // std::shared_ptr<constructSystem::Bellows> bellowD;
   // /// Gate box
   std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
-  // /// Real Ion pump (KF40) 26cm vertioal
-  // std::shared_ptr<constructSystem::CrossPipe> ionPB;
+  /// Real Ion pump (KF40) 26cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPB;
   // /// Pipe to third optic table
   // std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 

@@ -109,6 +109,7 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.setBFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
+  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowDA",10.0); // [2]
 
@@ -205,6 +206,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   assert(std::abs(bellowIYstep - 1947.53)<Geometry::zeroTol && "Wrong shutter table length.");
 
+  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowI",bellowILength);
   Control.addVariable(frontKey+"BellowIYStep",bellowIYstep);
@@ -225,6 +227,7 @@ shutterTableToyama(FuncDataBase& Control,
   PItemGen.setOuterVoid(1);
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
   PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);
   PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
 
@@ -351,6 +354,7 @@ heatDumpTableToyama(FuncDataBase& Control,
 
   heatDumpVariablesToyama(Control,frontKey);
 
+  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowD",10.0); // [2]
 
@@ -367,16 +371,19 @@ heatDumpTableToyama(FuncDataBase& Control,
   setVariable::GateValveGenerator GateGen;
   GateGen.setLength(3.5);
   GateGen.setCubeCF<setVariable::CF40>();
-  GateGen.generateValve(Control,frontKey+"GateA",0.0,0);
-  const double gateAYAngle(-30.0); // approx
-  Control.addVariable(frontKey+"GateAYAngle",gateAYAngle);
+  GateGen.setBladeMat("Stainless304L");
+  GateGen.generateValve(Control,frontKey+"Valve1",0.0,0);
+  const double valve1YAngle(-30.0); // approx
+  Control.addVariable(frontKey+"Valve1YAngle",valve1YAngle);
 
-  CrossGen.setMat("Stainless304");
+  CrossGen.setMat("SteelUnknownGrade");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
+  constexpr double ionPump3Length = 20.0; // [4]
+  // lengths of ports from origin (back, front):
+  CrossGen.setTotalPorts(ionPump3Length/2.0, ionPump3Length/2.0);
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,frontKey+"IonPB",0.0,26.6,26.6);
-  Control.addVariable(frontKey+"IonPBYAngle",-gateAYAngle);
+    (Control,frontKey+"IonPump3",0.0,26.6,26.6); // yStep, height, depth (dummy)
+  Control.addVariable(frontKey+"IonPump3YAngle",-valve1YAngle);
 
   return;
 }
@@ -421,6 +428,7 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   // new Toyama
 
 
+  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowPreHA",14.0); // [2]
 
@@ -493,22 +501,23 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   CPipeGen.setCF<CF40>();
   CPipeGen.setAFlangeCF<CF25>();
-  CPipeGen.setMat("Aluminium","Stainless304");
+  CPipeGen.setMat("SteelUnknownGrade","SteelUnknownGrade");
   CPipeGen.generatePipe(Control,frontKey+"DipolePipe",800.0);
 
   PipeGen.setCF<CF25>();
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.generatePipe(Control,frontKey+"ETransPipe",800.0);
   Control.addVariable(frontKey+"ETransPipeOuterVoid",1);
 
   //  Note bellow reversed for FM fixed:
+  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowA",16.0);
 
   name = "FlangePlateA";
   FPGen.setFlange(CF100::flangeRadius, 1.75); // [4]
   FPGen.setWindow(0.0, 0.0, "Void"); // [4]
-  FPGen.setMat("Stainless304"); // guess
+  FPGen.setMat("SteelUnknownGrade"); // guess
   FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
   FPGen.generateFlangePlate(Control,frontKey+name);
 
@@ -516,7 +525,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowB",16.0);
 
   PipeGen.setCF<CF40>();
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",222.0); // length is dummy since it's a pipe between two fixed masks built with absolute offset
 
   setVariable::CleaningMagnetGenerator CLGen;
@@ -547,7 +556,6 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   constexpr double bellowCALength = 9.6; // [2]
   BellowGen.generateBellow(Control,frontKey+"BellowCA",bellowCALength);
 
-  PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,frontKey+"CollExitPipe",165.5-bellowCALength);
 
