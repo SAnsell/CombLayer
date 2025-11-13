@@ -378,7 +378,9 @@ heatDumpTableToyama(FuncDataBase& Control,
 
   CrossGen.setMat("Stainless304");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
+  constexpr double ionPump3Length = 20.0; // [4]
+  // lengths of ports from origin (back, front):
+  CrossGen.setTotalPorts(ionPump3Length/2.0, ionPump3Length/2.0);
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPump3",0.0,26.6,26.6);
   Control.addVariable(frontKey+"IonPump3YAngle",-valve1YAngle);
