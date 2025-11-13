@@ -133,7 +133,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   fm3(new xraySystem::SquareFMask(newName+"FM3")),
   collExitPipe(new constructSystem::VacuumPipe(newName+"CollExitPipe")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
-  ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   // aperture table
   bellowE(new constructSystem::Bellows(newName+"BellowE")),

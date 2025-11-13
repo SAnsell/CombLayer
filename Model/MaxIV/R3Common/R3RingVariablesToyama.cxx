@@ -380,8 +380,8 @@ heatDumpTableToyama(FuncDataBase& Control,
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setTotalPorts(10.0,10.0);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
-    (Control,frontKey+"IonPB",0.0,26.6,26.6);
-  Control.addVariable(frontKey+"IonPBYAngle",-valve1YAngle);
+    (Control,frontKey+"IonPump3",0.0,26.6,26.6);
+  Control.addVariable(frontKey+"IonPump3YAngle",-valve1YAngle);
 
   return;
 }

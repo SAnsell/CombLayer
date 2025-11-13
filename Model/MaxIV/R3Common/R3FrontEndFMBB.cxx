@@ -105,6 +105,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   heatBox(new constructSystem::PipeTube(newName+"HeatBox")),
   heatDump(new xraySystem::HeatDump(newName+"HeatDump")),
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
+  ionPB(new constructSystem::CrossPipe(newName+"IonPB")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   exitPipe(new constructSystem::VacuumPipe(newName+"ExitPipe"))
   /*!

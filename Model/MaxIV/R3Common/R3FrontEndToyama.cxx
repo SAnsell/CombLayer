@@ -120,6 +120,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
   ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
+  ionPump3(new constructSystem::CrossPipe(newName+"IonPump3")),
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
   gateTubePreMM1(std::make_shared<xraySystem::CylGateValve>(newName+"GateTubePreMM1")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
@@ -306,9 +307,9 @@ R3FrontEndToyama::buildHeatTable(Simulation& System,
 
   constructSystem::constructUnit(System,buildZone,*bellowD,"back",*valve1);
 
-  constructSystem::constructUnit(System,buildZone,*valve1,"back",*ionPB);
+  constructSystem::constructUnit(System,buildZone,*valve1,"back",*ionPump3);
 
-  constructSystem::constructUnit(System,buildZone,*ionPB,"back",*pipeB);
+  constructSystem::constructUnit(System,buildZone,*ionPump3,"back",*pipeB);
 
   constructSystem::constructUnit(System,buildZone,*pipeB,"back",*bellowDA);
 
