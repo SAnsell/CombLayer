@@ -71,12 +71,12 @@
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 #include "HeatAbsorberToyamaGenerator.h"
-
-// [4] see [4] in R3RingVariablesToyama.cxx
+#include "CrossGenerator.h"
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
 // [2] CARATELLI Drawing 06769-03-000
+// [4] S0-2-0AB01088_DanMAX.pdf
 
 namespace setVariable
 {
@@ -1017,6 +1017,16 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::undulatorVariables(Control,frontKey);
   setVariable::R3FrontEndToyamaVariables(Control,beamLineName);
   //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
+
+  setVariable::CrossGenerator CrossGen;
+
+  CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
+  constexpr double ionPump3Length = 20.0; // [4]
+  // lengths of ports from origin (back, front):
+  CrossGen.setTotalPorts(ionPump3Length/2.0, ionPump3Length/2.0);
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
+    (Control,frontKey+"IonPump3",0.0,13.3,26.6); // yStep, height, depth (dummy)
+
   danmaxVar::frontMaskVariables(Control,frontKey);
 
   Control.addVariable(frontKey+"ProxiShieldAWallMat","Void"); // [AR 251104: checked by JR 251103]
