@@ -92,7 +92,7 @@ R3ChokeChamber::R3ChokeChamber(const R3ChokeChamber& A) :
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::ExternalCut(A),
   radius(A.radius),wallThick(A.wallThick),length(A.length),
-  flangeRadius(A.flangeRadius),flangeLength(A.flangeLength),
+  flangeRadius(A.flangeRadius),flangeLength(A.flangeLength), capThick(A.capThick),
   inletXStep(A.inletXStep),inletWidth(A.inletWidth),
   inletHeight(A.inletHeight),inletLength(A.inletLength),
   inletThick(A.inletThick),flangeInletRadius(A.flangeInletRadius),
@@ -137,6 +137,7 @@ R3ChokeChamber::operator=(const R3ChokeChamber& A)
       length=A.length;
       flangeRadius=A.flangeRadius;
       flangeLength=A.flangeLength;
+      capThick=A.capThick;
       inletXStep=A.inletXStep;
       inletWidth=A.inletWidth;
       inletHeight=A.inletHeight;
@@ -198,6 +199,7 @@ R3ChokeChamber::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  capThick=Control.EvalVar<double>(keyName+"CapThick");
 
   inletXStep=Control.EvalVar<double>(keyName+"InletXStep");
   inletWidth=Control.EvalVar<double>(keyName+"InletWidth");
@@ -318,6 +320,11 @@ R3ChokeChamber::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(length/2.0-flangeLength),Z);
 
+  ModelSupport::buildPlane(SMap,buildIndex+25,
+			   Origin-Z*(length/2.0+capThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,
+			   Origin+Z*(length/2.0+capThick),Z);
+
 
   // Inlet Pipe (100)
   //-----------------
@@ -416,8 +423,14 @@ R3ChokeChamber::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -15 17 -27");
   makeCell("MainFlangeA",System,cellIndex++,flangeMat,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-5 25 -27");
+  makeCell("MainCapA",System,cellIndex++,flangeMat,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-6 16 17 -27");
   makeCell("MainFlangeB",System,cellIndex++,flangeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"6 -26 -27");
+  makeCell("MainCapB",System,cellIndex++,flangeMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
    "15 -16 17 -27 (-113:114:-115:116:1) (217:-1) (317:-1) (417:3)");
@@ -498,7 +511,7 @@ R3ChokeChamber::createObjects(Simulation& System)
   makeCell("SideOuterVoid",System,cellIndex++,0,0.0,HR);
 
   // External
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -27");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"25 -26 -27");  
   addOuterSurf("Main",HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-127 -1");  
