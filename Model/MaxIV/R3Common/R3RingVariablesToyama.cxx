@@ -106,7 +106,6 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<CF40>();
-  PipeGen.setBFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
