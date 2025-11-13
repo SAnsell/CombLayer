@@ -227,6 +227,7 @@ shutterTableToyama(FuncDataBase& Control,
   PItemGen.setOuterVoid(1);
   PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
   PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);
   PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
 
