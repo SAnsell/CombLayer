@@ -110,8 +110,6 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
 
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowDA",10.0); // [2]
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowE",14.0); // [2]
