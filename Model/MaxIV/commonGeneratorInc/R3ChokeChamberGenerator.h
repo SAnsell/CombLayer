@@ -45,6 +45,7 @@ class R3ChokeChamberGenerator
   double length;              ///< Main length
   double flangeRadius;        ///< Main Flange radius
   double flangeLength;        ///< Main Flange length
+  double capThick;            ///< Thickness of main tube caps
   
   double inletXStep;           ///< Step of inlet from flange centre
   double inletWidth;           ///< inlet width

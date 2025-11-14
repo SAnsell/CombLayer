@@ -49,6 +49,7 @@ class R3ChokeChamber :
   double length;              ///< Main length
   double flangeRadius;        ///< Main Flange radius
   double flangeLength;        ///< Main Flange length
+  double capThick;            ///< Thickness of main tube caps
 
   double inletXStep;           ///< Inlex X Step
   double inletWidth;           ///< In pipe radius
