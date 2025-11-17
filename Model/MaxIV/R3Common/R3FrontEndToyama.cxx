@@ -509,7 +509,7 @@ R3FrontEndToyama::buildMSM(Simulation& System,
   //  p->setFront(*bellowCA,2);  // build it later (setBack depending on the msmActive flag)
   p->setBack(*bellowPreMSM,"back");
 
-  preFC.createAll(System,*bellowCA,"back");
+  preFC.createAll(System,*flangePlateD,"back");
   outerCell=buildZone.createUnit(System,preFC,"back");
   dynamic_cast<attachSystem::ContainedGroup*>(std::addressof(preFC))->insertAllInCell(System,outerCell);
 
