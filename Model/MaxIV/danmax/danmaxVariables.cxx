@@ -190,6 +190,7 @@ frontMaskVariables(FuncDataBase& Control,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
 
+  BellowGen.setCF<setVariable::CF40>();
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [4]
 
