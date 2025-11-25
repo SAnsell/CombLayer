@@ -911,7 +911,8 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,opticsName+"InitBellow",6.0);
+  BellowGen.setBellowStep(2.5);
+  BellowGen.generateBellow(Control,opticsName+"InitBellow",10.0);
 
   // will be rotated vertical
   TGen.setCF<CF100>();
