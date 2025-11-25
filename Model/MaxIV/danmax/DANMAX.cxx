@@ -187,7 +187,7 @@ DANMAX::build(Simulation& System,
 			 opticsHut->getSideIndex("innerFront"));
   opticsBeam->setCutSurf("back",*opticsHut,
 			 opticsHut->getSideIndex("innerBack"));
-  opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  opticsBeam->setCutSurf("floor",opticsHut->getSurf("Floor"));
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 

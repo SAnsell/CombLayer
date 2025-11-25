@@ -281,6 +281,9 @@ opticsHutVariables(FuncDataBase& Control,
   PGen.generatePortChicane(Control,hutName+"Chicane0",320.0,-25.0);
   PGen.generatePortChicane(Control,hutName+"Chicane1",-350.0,-25.0);
 
+  ELog::EM << "TODO: Fix FloorShineThick" << ELog::endDiag;
+  Control.addVariable(hutName+"FloorShineThick", 1.0); // dummy
+
   return;
 }
 

@@ -32,9 +32,9 @@ namespace xraySystem
   \version 1.0
   \author S. Ansell
   \date January 2021
-  \brief OpticsHutch unit 
+  \brief OpticsHutch unit
 
-  Built around the central beam axis with out 
+  Built around the central beam axis with out
   side wall on the ring side.
 */
 
@@ -50,7 +50,7 @@ class OpticsHutch :
   double height;                ///< void height
   double length;                ///< void out side width
   double outWidth;              ///< Width from beamline centre to outside
-  
+
   // walls
   double innerThick;            ///< Inner wall/roof skin
   double pbWallThick;           ///< Thickness of lead in walls
@@ -66,6 +66,7 @@ class OpticsHutch :
   double outerOutVoid;          ///< Extension for outer left void space
   double backVoid;              ///< Extension for inner back void space
   double outerBackVoid;         ///< Extension for outer back void space
+  double floorShineThick;       ///< Floorshine thickness
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
@@ -74,11 +75,12 @@ class OpticsHutch :
   int pbMat;                  ///< pb layer material for walls
   int concreteMat;            ///< side wall (concrete filler)
   int voidMat;                ///< Void material
+  int floorShineMat;          ///< Floorshine material
 
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
 
-  forkHoles forks;              ///< Forklift holes if made 
+  forkHoles forks;              ///< Forklift holes if made
 
   void populate(const FuncDataBase&) override;
   virtual void createSurfaces();

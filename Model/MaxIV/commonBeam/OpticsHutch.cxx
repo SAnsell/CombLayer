@@ -117,6 +117,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
   outerBackVoid=Control.EvalDefVar<double>(keyName+"OuterBackVoid",0.0);
+  floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");
 
   double holeRad(0.0);
   size_t holeIndex(0);
@@ -143,6 +144,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  floorShineMat=ModelSupport::EvalDefMat(Control,keyName+"FloorShineMat",pbMat);
 
   return;
 }
@@ -163,6 +165,22 @@ OpticsHutch::createSurfaces()
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length-backWallThick),Y);
   SurfMap::makePlane("innerWall",SMap,buildIndex+3,Origin-X*(outWidth-sideWallThick),X);
+
+  // The 'Floor' surface comes from the Ring and is set in DANMAX.cxx
+  // In this particular case it's just a single surface, but in
+  // general it can be not a single surface but their boolean
+  // function, therefore we use HeadRule:
+  const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
+
+  // Define the upper surface for the floor shine as surface #5
+  // shifted from 'Floor' by 'florShineThick'
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+5,
+				  SMap.realPtr<Geometry::Plane>(floor.getPrimarySurface()),
+				  floorShineThick);
+  // Name this surface to make it easier to refer to it from
+  // DANMAX.cxx to build opticsBeam
+  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
+
 
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-roofThick),Z);
 
