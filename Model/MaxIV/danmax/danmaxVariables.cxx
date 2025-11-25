@@ -76,7 +76,8 @@
 // References
 // [1] CARATELLI Drawing 06769-01-000
 // [2] CARATELLI Drawing 06769-03-000
-// [4] S0-2-0AB01088_DanMAX.pdf
+// [3] S0-2-0AB01088_DanMAX.pdf
+// [4] CAD Models (October/November 2025)
 
 namespace setVariable
 {
@@ -157,17 +158,17 @@ frontMaskVariables(FuncDataBase& Control,
   setVariable::SqrFMaskGenerator FMaskGen;
   setVariable::BellowGenerator BellowGen;
 
-  Control.addVariable(preName+"BellowALength",10.0); // [4]
+  Control.addVariable(preName+"BellowALength",10.0); // [3]
 
 
-  constexpr double FM1Length(40.0); // [4]
-  constexpr double FM2Length(50.5); // TODO: not indicated in [4]
+  constexpr double FM1Length(40.0); // [3]
+  constexpr double FM2Length(50.5); // TODO: not indicated in [3]
   ELog::EM << "FM2 length ??? " << ELog::endWarn;
   constexpr double MSMLength(40.0); //
 
-  const double FM1dist(1104.75+FM1Length/2.0); // [4]
+  const double FM1dist(1104.75+FM1Length/2.0); // [3]
   const double FM2dist(1597.08+FM2Length/2.0); //
-  //  const double FM2dist(1597.08+FM2Length/2.0); // [4]
+  //  const double FM2dist(1597.08+FM2Length/2.0); // [3]
   const double MSMdist(1600.0); //
 
   FMaskGen.setCF<CF100>();
@@ -179,8 +180,8 @@ frontMaskVariables(FuncDataBase& Control,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
 
-  Control.addVariable(preName+"BellowBLength",10.0); // [4]
-  Control.addVariable(preName+"BellowCLength",10.0); // [4]
+  Control.addVariable(preName+"BellowBLength",10.0); // [3]
+  Control.addVariable(preName+"BellowCLength",10.0); // [3]
 
   FMaskGen.setFrontGap(1.65, 1.65); //
   backWidth = 1.54; //
@@ -191,12 +192,12 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
 
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
-  BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [4]
+  BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [3]
 
   HeatAbsorberToyamaGenerator HAGen;
 
-  constexpr double heatAbsorberLength = 26.5;  // [4]
-  constexpr double heatAbsorberDist(1673.3); // [4]
+  constexpr double heatAbsorberLength = 26.5;  // [3]
+  constexpr double heatAbsorberDist(1673.3); // [3]
 
   HAGen.generate(Control,preName+"HeatAbsorber",heatAbsorberLength);
   Control.addVariable(preName+"HeatAbsorberYStep",heatAbsorberDist);
@@ -1022,7 +1023,7 @@ DANMAXvariables(FuncDataBase& Control)
   setVariable::CrossGenerator CrossGen;
 
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
-  constexpr double ionPump3Length = 20.0; // [4]
+  constexpr double ionPump3Length = 20.0; // [3]
   // lengths of ports from origin (back, front):
   CrossGen.setTotalPorts(ionPump3Length/2.0, ionPump3Length/2.0);
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
