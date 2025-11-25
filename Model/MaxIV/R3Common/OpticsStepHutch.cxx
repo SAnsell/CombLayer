@@ -129,6 +129,10 @@ OpticsStepHutch::createSurfaces()
   SPoint+=X*outerThick;
   ModelSupport::buildPlane(SMap,buildIndex+234,SPoint,X);
 
+  // floor shine
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+304, buildIndex+204, Y, -floorShineLength);
+
+
   return;
 }
 
@@ -183,6 +187,8 @@ OpticsStepHutch::createObjects(Simulation& System)
 
       if (floorShineLength-innerOutVoid>Geometry::zeroTol)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"303:305");
+
+      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-304:305:-202");
     }
   else // not yet implemented with floor shine
     {
@@ -227,6 +233,9 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 204 -214 -12 -16");
   makeCell("ringIWall",System,cellIndex++,skinMat,0.0,HR*floor);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 -302 304 -204 -305");
+  makeCell("RingWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 214 -224 -22 -26");
   makeCell("ringPbWall",System,cellIndex++,pbMat,0.0,HR*floor);
 
@@ -258,10 +267,9 @@ OpticsStepHutch::createObjects(Simulation& System)
   makeCell("BackPlateFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
 
   if (floorShineLength-backPlateThick<Geometry::zeroTol) {
-    HR=ModelSupport::getHeadRule(SMap,buildIndex, "112 -302 -2 1003 -204 -305");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex, "112 -302 -2 1003 -304 -305");
     makeCell("BackPlateFloorShineVoid",System,cellIndex++,0,0.0,HR*floor);
   }
-
 
   // Outer void for pipe(s)
   BI=buildIndex;
