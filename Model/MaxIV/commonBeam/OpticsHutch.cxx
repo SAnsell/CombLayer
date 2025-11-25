@@ -177,10 +177,6 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+5,
 				  SMap.realPtr<Geometry::Plane>(floor.getPrimarySurface()),
 				  floorShineThick);
-  // Name this surface to make it easier to refer to it from
-  // DANMAX.cxx to build opticsBeam
-  SurfMap::setSurf("Floor",SMap.realSurf(buildIndex+5));
-
 
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-roofThick),Z);
 
