@@ -283,6 +283,8 @@ opticsHutVariables(FuncDataBase& Control,
 
   ELog::EM << "TODO: Fix FloorShineThick" << ELog::endDiag;
   Control.addVariable(hutName+"FloorShineThick", 1.0); // dummy
+  ELog::EM << "TODO: Fix FloorShineLength" << ELog::endDiag;
+  Control.addVariable(hutName+"FloorShineLength", 5.0); // dummy
 
   return;
 }

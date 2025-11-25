@@ -3,7 +3,7 @@
 
  * File:   R3common/OpticsStepHutch.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,19 +165,22 @@ OpticsStepHutch::createObjects(Simulation& System)
 
   if (innerOutVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 5 -6 ");
-      makeCell("WallVoid",System,cellIndex++,voidMat,0.0,HR*frontWall);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 305 -6 ");
+      makeCell("OuterWallVoid",System,cellIndex++,voidMat,0.0,HR*frontWall);
 
       // floor shine horizontal container
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 -5");
-      makeCell("FloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor*frontWall*sideCut);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -1003 -305 -302");
+      makeCell("OuterWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor*frontWall*sideCut);
 
       // big void cell
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 (-204:-202) -6");
+      if (floorShineLength-backPlateThick>Geometry::zeroTol)
+	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-302:305");
+
     }
   else
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 (-204:-202) -6")*floor;
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 (-204:-202) -6");
     }
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall*sideCut);
 
@@ -241,18 +244,24 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
   makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex, "112 -2 3 -204 5 -6 (-103:104:-105:106)");
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex, "112 -2 3 -204 305 -6 (-103:104:-105:106)");
   makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex, "112 -2 3 -204 -5");
-  makeCell("BackPlateVoidFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
+  // floor shine
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex, "302 -2 3 -204 -305");
+  makeCell("BackPlateFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
+
+  if (floorShineLength-backPlateThick<Geometry::zeroTol) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex, "112 -302 -2 1003 -204 -305");
+    makeCell("BackPlateFloorShineVoid",System,cellIndex++,0,0.0,HR*floor);
+  }
 
 
   // Outer void for pipe(s)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI," 112 -32 -107");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI,"112 -32 -107");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
       BI+=100;
     }

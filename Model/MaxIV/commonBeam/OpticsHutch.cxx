@@ -3,7 +3,7 @@
 
  * File:   commonBeam/OpticsHutch.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,6 +118,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
   outerBackVoid=Control.EvalDefVar<double>(keyName+"OuterBackVoid",0.0);
   floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");
+  floorShineLength=Control.EvalVar<double>(keyName+"FloorShineLength");
 
   double holeRad(0.0);
   size_t holeIndex(0);
@@ -166,17 +167,6 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length-backWallThick),Y);
   SurfMap::makePlane("innerWall",SMap,buildIndex+3,Origin-X*(outWidth-sideWallThick),X);
 
-  // The 'Floor' surface comes from the Ring and is set in DANMAX.cxx
-  // In this particular case it's just a single surface, but in
-  // general it can be not a single surface but their boolean
-  // function, therefore we use HeadRule:
-  const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
-
-  // Define the upper surface for the floor shine as surface #5
-  // shifted from 'Floor' by 'florShineThick'
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+5,
-				  SMap.realPtr<Geometry::Plane>(floor.getPrimarySurface()),
-				  floorShineThick);
 
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-roofThick),Z);
 
@@ -242,6 +232,16 @@ OpticsHutch::createSurfaces()
 
   forks.createSurfaces(SMap,*this,buildIndex+3000);
 
+  // Floorshine
+
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+302, buildIndex+2, Y, -floorShineLength);
+
+  const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
+
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+305,
+				  SMap.realPtr<Geometry::Plane>(floor.getPrimarySurface()),
+				  floorShineThick);
+
   return;
 }
 
@@ -279,7 +279,7 @@ OpticsHutch::createObjects(Simulation& System)
   if (innerOutVoid>Geometry::zeroTol)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 -6");
-      makeCell("WallVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
+      makeCell("OuterWallVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 -6");
     }
   else
@@ -451,17 +451,16 @@ OpticsHutch::createLinks()
 
   setConnect(11,Origin,Y);
   setLinkSurf(11,ExternalCut::getValidRule("RingWall",Origin+Y*(length-backWallThick)));
+  nameSideIndex(11,"innerFront");
 
   // use
   setConnect(12,Origin+Y*(length-backWallThick-backPlateThick),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+112));
+  nameSideIndex(12,"innerBack");
 
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
   nameSideIndex(13,"innerLeftWall");
-
-  nameSideIndex(11,"innerFront");
-  nameSideIndex(12,"innerBack");
 
   return;
 }
@@ -490,7 +489,7 @@ OpticsHutch::createChicane(Simulation& System)
 	std::make_shared<PortChicane>(keyName+"Chicane"+NStr);
 
       OR.addObject(PItem);
-      PItem->addInsertCell("Main",getCell("WallVoid"));
+      PItem->addInsertCell("Main",getCell("OuterWallVoid"));
       PItem->addInsertCell("Main",getCell("OuterVoid"));
       PItem->addInsertCell("Inner",getCell("InnerWall"));
       PItem->addInsertCell("Inner",getCell("LeadWall"));
