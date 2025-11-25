@@ -130,6 +130,7 @@ OpticsStepHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+234,SPoint,X);
 
   // floor shine
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+301, buildIndex+202, Y, -floorShineLength);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+304, buildIndex+204, Y, -floorShineLength);
 
 
@@ -189,6 +190,7 @@ OpticsStepHutch::createObjects(Simulation& System)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"303:305");
 
       HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-304:305:-202");
+      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-301:305:-304");
     }
   else // not yet implemented with floor shine
     {
@@ -245,6 +247,9 @@ OpticsStepHutch::createObjects(Simulation& System)
   // flat cutout
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 -212 214 -16");
   makeCell("flatIWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -305");
+  makeCell("FlatWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor*sideWall);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 -222 224 -26");
   makeCell("flatPbWall",System,cellIndex++,pbMat,0.0,HR*floor*sideWall);
