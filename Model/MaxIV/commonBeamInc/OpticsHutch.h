@@ -67,7 +67,7 @@ class OpticsHutch :
   double backVoid;              ///< Extension for inner back void space
   double outerBackVoid;         ///< Extension for outer back void space
   double floorShineThick;       ///< Floorshine thickness
-  double floorShineLength;      ///< Floorshine length
+  double floorShineLength;      ///< Floorshine full length (starting from the wall outer surface)
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii

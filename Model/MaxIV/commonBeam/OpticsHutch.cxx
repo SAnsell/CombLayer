@@ -234,8 +234,8 @@ OpticsHutch::createSurfaces()
 
   // Floorshine
 
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+302, buildIndex+2, Y, -floorShineLength);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+303, buildIndex+3, Y,  floorShineLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+302, buildIndex+32, Y, -floorShineLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+303, buildIndex+33, Y,  floorShineLength);
 
   const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
 

@@ -130,8 +130,8 @@ OpticsStepHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+234,SPoint,X);
 
   // floor shine
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+301, buildIndex+202, Y, -floorShineLength);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+304, buildIndex+204, Y, -floorShineLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+301, buildIndex+232, Y, -floorShineLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+304, buildIndex+234, Y, -floorShineLength);
 
 
   return;
