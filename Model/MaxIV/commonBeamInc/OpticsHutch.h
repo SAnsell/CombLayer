@@ -86,7 +86,7 @@ class OpticsHutch :
   void populate(const FuncDataBase&) override;
   virtual void createSurfaces();
   virtual void createObjects(Simulation&);
-  void createLinks();
+  virtual void createLinks();
   void createChicane(Simulation&);
   void createForkSurfaces();
   void createForkCut(Simulation&);

@@ -323,6 +323,10 @@ OpticsStepHutch::createLinks()
 
   OpticsHutch::createLinks();
 
+  FixedComp::setLinkSurf(14,-SMap.realSurf(buildIndex+305));
+  FixedComp::addLinkSurf(14,SMap.realSurf(buildIndex+302));
+  FixedComp::nameSideIndex(14,"BackPlateFloorShine");
+
   return;
 }
 

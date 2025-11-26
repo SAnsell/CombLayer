@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R3CommonInc/OpticsStepHutch.h
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_OpticsStepHutch_h
@@ -32,7 +32,7 @@ namespace xraySystem
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief OpticsStepHutch unit  
+  \brief OpticsStepHutch unit
 
   Built around the central beam axis
 */
@@ -41,14 +41,14 @@ class OpticsStepHutch :
     public OpticsHutch
 {
  private:
-  
+
   double ringStepLength;          ///< Distance down hutch to step
   double ringStepWidth;           ///< Width of step from centre line
-  
+
   void populate(const FuncDataBase&) override;
   void createSurfaces() override;
   void createObjects(Simulation&) override;
-  virtual void createLinks();
+  void createLinks() override;
 
  public:
 
@@ -62,4 +62,3 @@ class OpticsStepHutch :
 }
 
 #endif
- 
