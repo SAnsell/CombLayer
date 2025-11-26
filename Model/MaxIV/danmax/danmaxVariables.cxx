@@ -916,8 +916,10 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"InitBellow",10.0); // bellow length from [4]
 
   // will be rotated vertical
-  TGen.setCF<CF100>();
-  TGen.setVertical(15.0,25.0);
+  TGen.setCF<CF100>(); // [4] CF100 as reasonable approximation. See modifications below.
+  TGen.setRadius(4.8); // [4]
+  TGen.setWallThick(0.3); // [4]
+  TGen.setVertical(25.0,15.0); // [4]
   TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
   TGen.generateTube(Control,opticsName+"TriggerUnit");
 
