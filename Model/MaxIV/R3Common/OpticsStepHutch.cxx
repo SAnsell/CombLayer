@@ -182,15 +182,14 @@ OpticsStepHutch::createObjects(Simulation& System)
       }
 
       // big void cell
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 (-204:-202) -6");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 (-304:-301) -6");
       if (floorShineLength-backPlateThick>Geometry::zeroTol)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-302:305");
 
       if (floorShineLength-innerOutVoid>Geometry::zeroTol)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"303:305");
 
-      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-304:305:-202");
-      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-301:305:-304");
+      //      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-301:305:-304");
     }
   else // not yet implemented with floor shine
     {
@@ -238,6 +237,9 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 -302 304 -204 -305");
   makeCell("RingWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 -112 304 -204 305 -6");
+  makeCell("RingWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 214 -224 -22 -26");
   makeCell("ringPbWall",System,cellIndex++,pbMat,0.0,HR*floor);
 
@@ -250,6 +252,9 @@ OpticsStepHutch::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -305");
   makeCell("FlatWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor*sideWall);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 305 -6");
+  makeCell("FlatWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR*sideWall);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 -222 224 -26");
   makeCell("flatPbWall",System,cellIndex++,pbMat,0.0,HR*floor*sideWall);
