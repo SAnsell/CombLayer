@@ -253,8 +253,8 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -305");
   makeCell("FlatWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor*sideWall);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 305 -6");
-  makeCell("FlatWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR*sideWall);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -403 305 -6");
+  makeCell("FlatWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 -222 224 -26");
   makeCell("flatPbWall",System,cellIndex++,pbMat,0.0,HR*floor*sideWall);
@@ -280,6 +280,10 @@ OpticsStepHutch::createObjects(Simulation& System)
     HR=ModelSupport::getHeadRule(SMap,buildIndex, "112 -302 -2 1003 -304 -305");
     makeCell("BackPlateFloorShineVoid",System,cellIndex++,0,0.0,HR*floor);
   }
+
+  // wall shine along the ring side wall
+  HR=ModelSupport::getSetHeadRule(SMap,buildIndex, "301 -202 3 403 305 -6"); // 301 is dummy
+  makeCell("RingSideWallWallShine",System,cellIndex++,wallShineMat,0.0,HR*sideWall);
 
   // Outer void for pipe(s)
   BI=buildIndex;

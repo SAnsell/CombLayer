@@ -62,6 +62,15 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "Quadratic.h"
+#include "General.h"
+
+#include "Plane.h"
+
 #include "PortChicane.h"
 #include "forkHoles.h"
 #include "OpticsHutch.h"
@@ -119,6 +128,8 @@ OpticsHutch::populate(const FuncDataBase& Control)
   outerBackVoid=Control.EvalDefVar<double>(keyName+"OuterBackVoid",0.0);
   floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");
   floorShineLength=Control.EvalVar<double>(keyName+"FloorShineLength");
+  wallShineThick=Control.EvalVar<double>(keyName+"WallShineThick");
+  wallShineLength=Control.EvalVar<double>(keyName+"WallShineLength");
 
   double holeRad(0.0);
   size_t holeIndex(0);
@@ -146,6 +157,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   floorShineMat=ModelSupport::EvalDefMat(Control,keyName+"FloorShineMat",pbMat);
+  wallShineMat=ModelSupport::EvalDefMat(Control,keyName+"WallShineMat",pbMat);
 
   return;
 }
@@ -232,7 +244,7 @@ OpticsHutch::createSurfaces()
 
   forks.createSurfaces(SMap,*this,buildIndex+3000);
 
-  // Floorshine
+  // Floor shine
 
   ModelSupport::buildShiftedPlane(SMap, buildIndex+302, buildIndex+32, Y, -floorShineLength);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+303, buildIndex+33, Y,  floorShineLength);
@@ -242,6 +254,11 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+305,
 				  SMap.realPtr<Geometry::Plane>(floor.getPrimarySurface()),
 				  floorShineThick);
+
+  //  Wall shine along the ring side wall
+  const HeadRule sideWall=ExternalCut::getValidRule("SideWall",Origin); // ring side wall
+  Geometry::Plane *pSideWall = SMap.realPtr<Geometry::Plane>(sideWall.getPrimarySurface());
+  ModelSupport::buildShiftedPlaneReversed(SMap, buildIndex+403, pSideWall, -wallShineThick);
 
   return;
 }

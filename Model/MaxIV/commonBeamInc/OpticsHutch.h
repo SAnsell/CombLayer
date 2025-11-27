@@ -66,8 +66,10 @@ class OpticsHutch :
   double outerOutVoid;          ///< Extension for outer left void space
   double backVoid;              ///< Extension for inner back void space
   double outerBackVoid;         ///< Extension for outer back void space
-  double floorShineThick;       ///< Floorshine thickness
-  double floorShineLength;      ///< Floorshine full length (starting from the wall outer surface)
+  double floorShineThick;       ///< Floor shine thickness
+  double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface)
+  double wallShineThick;        ///< Wall shine thickness
+  double wallShineLength;       ///< Wall shine full length (starting from the wall outer surface)
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
@@ -76,7 +78,8 @@ class OpticsHutch :
   int pbMat;                  ///< pb layer material for walls
   int concreteMat;            ///< side wall (concrete filler)
   int voidMat;                ///< Void material
-  int floorShineMat;          ///< Floorshine material
+  int floorShineMat;          ///< Floor shine material
+  int wallShineMat;          ///< Wall shine material
 
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
