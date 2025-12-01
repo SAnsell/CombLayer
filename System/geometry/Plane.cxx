@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   geometry/Plane.cxx
  *
  * Copyright (c) 2004-2025 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -106,7 +106,7 @@ Plane::Plane(const Plane& A) : Quadratic(A),
 Plane*
 Plane::clone() const
   /*!
-    Makes a clone (implicit virtual copy constructor) 
+    Makes a clone (implicit virtual copy constructor)
     \return new(this)
   */
 {
@@ -114,7 +114,7 @@ Plane::clone() const
 }
 
 Plane&
-Plane::operator=(const Plane& A) 
+Plane::operator=(const Plane& A)
   /*!
     Assignment operator
     \param A :: Plane to copy
@@ -172,7 +172,7 @@ Plane::isEqual(const Plane& A) const
     Determine if two plane are equal (within tolerance).
     Note : planes can have opposite signed Normals and D
     \param A :: Plane to compare
-    \retval 1 :: Normals equal    
+    \retval 1 :: Normals equal
     \retval 0 :: not equal
     \retval -1 :: Normals opposite
   */
@@ -188,7 +188,7 @@ Plane::isEqual(const Plane& A) const
 	return -1;
       return 0;
     }
-  // Normal opposite  
+  // Normal opposite
   if (fabs(A.Dist+Dist)<=Geometry::zeroTol)
     return (A.NormV != -NormV) ? 0 : -1;
 
@@ -197,25 +197,25 @@ Plane::isEqual(const Plane& A) const
 
 int
 Plane::setSurface(const std::string& Pstr)
-  /*! 
+  /*!
      processes a standard MCNPX plane string:
-     There are three types : 
+     There are three types :
      - (A) px Distance
      - (B) p A B C D (equation Ax+By+Cz=D)
      - (C) p Vec3D Vec3D Vec3D
-     \param Pstr :: String to make into a plane of type p{xyz} or p 
+     \param Pstr :: String to make into a plane of type p{xyz} or p
      \return 0 on success, -ve of failure
   */
 {
   // Two types of plane string p[x-z]  and p
   std::string Line=Pstr;
   std::string item;
-  
+
   if (!StrFunc::section(Line,item) || tolower(item[0])!='p')
     return -1;
   // Only 3 need to be declared
   double surf[9]={0.0,0,0,0,0};
-      
+
   if (item.size()==1)  // PROCESS BASIC PLANE:
     {
       int cnt;
@@ -234,10 +234,10 @@ Plane::setSurface(const std::string& Pstr)
 	  Dist=A.dotProd(NormV);
 	}
       else        // Norm Equation:
-        { 
+        {
 	  NormV=Geometry::Vec3D(surf[0],surf[1],surf[2]);
 	  const double ll=NormV.makeUnit();
-	  if (ll<Geometry::zeroTol)   // avoid 
+	  if (ll<Geometry::zeroTol)   // avoid
 	    return -4;
 	  Dist= surf[3]/ll;
 	}
@@ -260,7 +260,7 @@ Plane::setSurface(const std::string& Pstr)
 }
 
 int
-Plane::setPlane(const Geometry::Vec3D& P,const Geometry::Vec3D& N) 
+Plane::setPlane(const Geometry::Vec3D& P,const Geometry::Vec3D& N)
   /*!
     Given a point and a normal direction set the plane
     \param P :: Point for plane to pass thought
@@ -276,7 +276,7 @@ Plane::setPlane(const Geometry::Vec3D& P,const Geometry::Vec3D& N)
 
 int
 Plane::setPlane(const Geometry::Vec3D& PA,const Geometry::Vec3D& PB,
-		const Geometry::Vec3D& PC) 
+		const Geometry::Vec3D& PC)
   /*!
     Given three points make the plane pass via the points
     \param PA :: Point for plane to pass through
@@ -297,13 +297,13 @@ Plane::setPlane(const Geometry::Vec3D& PA,const Geometry::Vec3D& PB,
 
 int
 Plane::setPlane(const Geometry::Vec3D& PA,const Geometry::Vec3D& PB,
-		const Geometry::Vec3D& PC,const Geometry::Vec3D& N) 
+		const Geometry::Vec3D& PC,const Geometry::Vec3D& N)
   /*!
     Given three points make the plane pass via the points
     \param PA :: Point for plane to pass through
     \param PB :: Point for plane to pass through
     \param PC :: Point for plane to pass through
-    \param N :: Approximate normal direction 
+    \param N :: Approximate normal direction
     \retval 0 :: success
   */
 {
@@ -338,7 +338,7 @@ Plane::setPlane(const Plane& A)
 }
 
 int
-Plane::setPlane(const Geometry::Vec3D& N,const double D) 
+Plane::setPlane(const Geometry::Vec3D& N,const double D)
   /*!
     Given a point and a normal direction set the plane
     \param N :: Normal for the plane
@@ -411,7 +411,7 @@ Plane::mirrorAxis(Geometry::Vec3D& Axis) const
 }
 
 void
-Plane::mirror(const Geometry::Plane& MP) 
+Plane::mirror(const Geometry::Plane& MP)
   /*!
     Apply a mirror plane to the Plane
     This involves moving the normal
@@ -440,9 +440,9 @@ Plane::mirrorSelf()
 }
 
 void
-Plane::rotate(const Geometry::M3<double>& MA) 
+Plane::rotate(const Geometry::M3<double>& MA)
   /*!
-    Rotate the plane about the origin by MA 
+    Rotate the plane about the origin by MA
     \param MA :: direct rotation matrix (3x3)
   */
 {
@@ -454,9 +454,9 @@ Plane::rotate(const Geometry::M3<double>& MA)
 
 
 void
-Plane::rotate(const Geometry::Quaternion& QA) 
+Plane::rotate(const Geometry::Quaternion& QA)
   /*!
-    Rotate the plane about the origin by QA 
+    Rotate the plane about the origin by QA
     \param QA :: Quaternion
   */
 {
@@ -467,10 +467,10 @@ Plane::rotate(const Geometry::Quaternion& QA)
 }
 
 void
-Plane::displace(const Geometry::Vec3D& Sp) 
+Plane::displace(const Geometry::Vec3D& Sp)
   /*!
-    Displace the plane by Point Sp.  
-    i.e. r+sp now on the plane 
+    Displace the plane by Point Sp.
+    i.e. r+sp now on the plane
     \param Sp :: point value of displacement
   */
 {
@@ -482,9 +482,9 @@ Plane::displace(const Geometry::Vec3D& Sp)
 double
 Plane::distance(const Geometry::Vec3D& A) const
   /*!
-    Determine the distance of point A from the plane 
+    Determine the distance of point A from the plane
     returns a value relative to the normal
-    \param A :: point to get distance from 
+    \param A :: point to get distance from
     \returns signed distance from point
   */
 {
@@ -496,19 +496,19 @@ Geometry::Vec3D
 Plane::surfaceNormal(const Geometry::Vec3D&) const
  /*!
    Assumption that point is on surface and
-   provide normla
+   provide normal
    \return normal
  */
 {
   return NormV;
 }
-  
+
 Geometry::Vec3D
 Plane::closestPt(const Geometry::Vec3D& A) const
   /*!
     Determine the closet point on the plane from A
     \param A :: point to compare with the plane
-    \returns distance tot he point 
+    \returns distance tot he point
   */
 {
   return A-NormV*(A.dotProd(NormV)-Dist);
@@ -529,8 +529,8 @@ Geometry::Vec3D
 Plane::crossProd(const Plane& A) const
   /*!
     Take the cross produce of the normals
-    \param A :: plane to calculate the cross product from 
-    \returns the Normal x A.Normal cross product 
+    \param A :: plane to calculate the cross product from
+    \returns the Normal x A.Normal cross product
   */
 {
   return NormV*A.NormV;
@@ -542,8 +542,8 @@ Plane::side(const Geometry::Vec3D& A) const
     Calcualates the side that the point is on
     \param A :: test point
     \retval +ve :: on the same side as the normal
-    \retval -ve :: the  opposite side 
-    \retval 0 :: A is on the plane itself (within tolerence) 
+    \retval -ve :: the  opposite side
+    \retval 0 :: A is on the plane itself (within tolerence)
   */
 {
   double Dp=NormV.dotProd(A);
@@ -557,7 +557,7 @@ void
 Plane::reversePtValid(const int sign,const Geometry::Vec3D& A)
   /*!
     Calcualates the side that the point is on
-    and reverses the plane sense if the 
+    and reverses the plane sense if the
     \param sign :: Sign of the direction to use
     \param A :: test point
   */
@@ -574,20 +574,20 @@ Plane::reversePtValid(const int sign,const Geometry::Vec3D& A)
 
 int
 Plane::onSurface(const Geometry::Vec3D& A) const
-  /*! 
+  /*!
      Calcuate the side that the point is on
      and returns success if it is on the surface.
      - Uses zeroTol to determine the closeness
      \param A :: Point to check
-     \retval 1 if on the surface 
-     \retval 0 if off the surface 
-     
+     \retval 1 if on the surface
+     \retval 0 if off the surface
+
   */
 {
   return (side(A)!=0) ? 0 : 1;
 }
 
-void 
+void
 Plane::print() const
   /*!
     Prints out the surface info and
@@ -614,9 +614,9 @@ Plane::reversedPlane() const
 
 int
 Plane::planeType() const
-  /*! 
+  /*!
     Find if the normal vector allows it to be a special
-    type of plane (x,y,z direction) 
+    type of plane (x,y,z direction)
     (Assumes NormV is a unit vector)
     \retval 1-3 :: on the x,y,z axis
     \retval 0 :: general plane
@@ -628,7 +628,7 @@ Plane::planeType() const
   return 0;
 }
 
-void 
+void
 Plane::setBaseEqn()
   /*!
     Sets the general equation for a plane
@@ -636,7 +636,7 @@ Plane::setBaseEqn()
 {
   BaseEqn[0]=0.0;     // A x^2
   BaseEqn[1]=0.0;     // B y^2
-  BaseEqn[2]=0.0;     // C z^2 
+  BaseEqn[2]=0.0;     // C z^2
   BaseEqn[3]=0.0;     // D xy
   BaseEqn[4]=0.0;     // E xz
   BaseEqn[5]=0.0;     // F yz
@@ -646,16 +646,16 @@ Plane::setBaseEqn()
   BaseEqn[9]= -Dist;        // K const
   return;
 }
-  
-void 
+
+void
 Plane::writeFLUKA(std::ostream& OX) const
-  /*! 
+  /*!
     Object of write is to output a Fluka file [free format]
-    \param OX :: Output stream (required for multiple std::endl)  
+    \param OX :: Output stream (required for multiple std::endl)
   */
 {
   ELog::RegMethod RegA("Plane","writeFLUKA");
-  
+
   masterWrite& MW=masterWrite::Instance();
 
   std::ostringstream cx;
@@ -677,16 +677,16 @@ Plane::writeFLUKA(std::ostream& OX) const
   return;
 }
 
-  
-void 
+
+void
 Plane::writePOVRay(std::ostream& OX) const
-  /*! 
+  /*!
     Object of write is to output a POV-Ray file
-    \param OX :: Output stream (required for multiple std::endl)  
+    \param OX :: Output stream (required for multiple std::endl)
   */
 {
   ELog::RegMethod RegA("Plane","writePOVRay");
-  
+
   masterWrite& MW=masterWrite::Instance();
 
   OX<<"#declare s"<<getName()
@@ -707,11 +707,11 @@ Plane::writePOVRay(std::ostream& OX) const
   return;
 }
 
-void 
+void
 Plane::write(std::ostream& OX) const
-  /*! 
-    Object of write is to output a MCNPX plane info 
-    \param OX :: Output stream (required for multiple std::endl)  
+  /*!
+    Object of write is to output a MCNPX plane info
+    \param OX :: Output stream (required for multiple std::endl)
   */
 {
   masterWrite& MW=masterWrite::Instance();
@@ -723,7 +723,7 @@ Plane::write(std::ostream& OX) const
       cx<<"p "<<MW.Num(NormV)<<" "<<MW.Num(Dist);
   else if(NormV[ptype-1]<0)
     cx<<"p"<<"xyz"[ptype-1]<<" "<<MW.Num(-Dist);
-  else 
+  else
     cx<<"p"<<"xyz"[ptype-1]<<" "<<MW.Num(Dist);
 
   StrFunc::writeMCNPX(cx.str(),OX);
