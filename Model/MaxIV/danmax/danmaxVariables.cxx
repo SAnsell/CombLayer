@@ -287,6 +287,8 @@ opticsHutVariables(FuncDataBase& Control,
   ELog::EM << "Check wall shine dimensions" << ELog::endDiag;
   Control.addVariable(hutName+"WallShineThick", 0.6); // dummy
   Control.addVariable(hutName+"WallShineLength", 59.0); // dummy
+  Control.addVariable(hutName+"WallShineOutThick", 1.2); // measured by UFG 251201
+  Control.addVariable(hutName+"WallShineOutLength", 20.0); // measured by UFG 251201
 
   return;
 }

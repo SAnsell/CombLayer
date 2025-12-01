@@ -120,18 +120,17 @@ OpticsHutch::populate(const FuncDataBase& Control)
   floorShineLength=Control.EvalVar<double>(keyName+"FloorShineLength");
   wallShineThick=Control.EvalVar<double>(keyName+"WallShineThick");
   wallShineLength=Control.EvalVar<double>(keyName+"WallShineLength");
+  wallShineOutThick=Control.EvalVar<double>(keyName+"WallShineOutThick");
+  wallShineOutLength=Control.EvalVar<double>(keyName+"WallShineOutLength");
 
   double holeRad(0.0);
   size_t holeIndex(0);
   do
     {
       const std::string iStr("Hole"+std::to_string(holeIndex));
-      const double holeXStep=
-	Control.EvalDefVar<double>(keyName+iStr+"XStep",0.0);
-      const double holeZStep=
-	Control.EvalDefVar<double>(keyName+iStr+"ZStep",0.0);
-      holeRad=
-	Control.EvalDefVar<double>(keyName+iStr+"Radius",-1.0);
+      const double holeXStep=Control.EvalDefVar<double>(keyName+iStr+"XStep",0.0);
+      const double holeZStep=Control.EvalDefVar<double>(keyName+iStr+"ZStep",0.0);
+      holeRad=Control.EvalDefVar<double>(keyName+iStr+"Radius",-1.0);
 
       if (holeRad>Geometry::zeroTol)
 	{
@@ -255,6 +254,10 @@ OpticsHutch::createSurfaces()
   const Geometry::Plane *pFrontWall = SMap.realPtr<Geometry::Plane>(frontWall.getPrimarySurface());
   ModelSupport::buildShiftedPlane(SMap, buildIndex+501, pFrontWall, wallShineThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+503, buildIndex+33, X, wallShineLength);
+
+  // Wall shine along the ratchet-end wall outside OH
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+502, pFrontWall, -wallShineOutLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+504, buildIndex+33, X, -wallShineOutThick);
 
   return;
 }

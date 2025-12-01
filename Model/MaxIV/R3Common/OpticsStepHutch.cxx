@@ -318,13 +318,29 @@ OpticsStepHutch::createObjects(Simulation& System)
     {
       HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 1033 -33 -36");
       makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
+
+      const HeadRule notFrontWall = frontWall.complement();
+
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"502 504 -33 -36");
+      makeCell("WallShineREW",System,cellIndex++,wallShineMat,0.0,HR*floor*notFrontWall);
+
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"502 1033 -504 -36");
+      makeCell("WallShineREWVoid",System,cellIndex++,voidMat,0.0,HR*floor*notFrontWall);
+
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 1033 -36");
+
     }
   else
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
 
 
   addOuterSurf(HR*frontWall*sideCut);
+
+  if (outerOutVoid>Geometry::zeroTol) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -32 1033 -33 -36");
+    addOuterUnionSurf(HR*floor);
+  }
+
 
   return;
 }

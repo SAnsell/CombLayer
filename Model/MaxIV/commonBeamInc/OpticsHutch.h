@@ -70,6 +70,8 @@ class OpticsHutch :
   double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface)
   double wallShineThick;        ///< Wall shine thickness (same value for the both wall shine plates)
   double wallShineLength;       ///< Wall shine full length (starting from the wall outer surface, same value for the both wall shine plates)
+  double wallShineOutThick;     ///< Thickness of the wall shine outside of REW
+  double wallShineOutLength;    ///< Length of the wall shine outside of REW
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
