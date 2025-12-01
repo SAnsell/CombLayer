@@ -165,10 +165,12 @@ OpticsHutch::createSurfaces()
   const double sideWallThick(pbWallThick+steelThick);
   const double roofThick(pbRoofThick+steelThick);
 
+  frontWall=ExternalCut::getValidRule("RingWall",Origin+Y*length);
+  sideWall=ExternalCut::getValidRule("SideWall",Origin);
+
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length-backWallThick),Y);
   SurfMap::makePlane("innerWall",SMap,buildIndex+3,Origin-X*(outWidth-sideWallThick),X);
-
 
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-roofThick),Z);
 
@@ -245,10 +247,14 @@ OpticsHutch::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(floor.getPrimarySurface()),
 				  floorShineThick);
 
-  //  Wall shine along the ring side wall
-  sideWall=ExternalCut::getValidRule("SideWall",Origin); // ring side wall
+  // Wall shine along the ring side wall
   pSideWall = SMap.realPtr<Geometry::Plane>(sideWall.getPrimarySurface());
   ModelSupport::buildShiftedPlaneReversed(SMap, buildIndex+403, pSideWall, -wallShineThick);
+
+  // Wall shine along the ratchet-end wall inside OH
+  const Geometry::Plane *pFrontWall = SMap.realPtr<Geometry::Plane>(frontWall.getPrimarySurface());
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+501, pFrontWall, wallShineThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+503, buildIndex+33, X, wallShineLength);
 
   return;
 }
@@ -269,8 +275,6 @@ OpticsHutch::createObjects(Simulation& System)
   const HeadRule sideCut=ExternalCut::getValidRule("SideWallCut",Origin);
 
   const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
-  const HeadRule frontWall=
-    ExternalCut::getValidRule("RingWall",Origin+Y*length);
 
   HeadRule holeCut;
   int BI(buildIndex);

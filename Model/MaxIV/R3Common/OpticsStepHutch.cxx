@@ -135,7 +135,7 @@ OpticsStepHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+301, buildIndex+232, Y, -floorShineLength);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+304, buildIndex+234, Y, -floorShineLength);
 
-  // wall shine
+  // wall shine along the ring side wall
   const Geometry::Vec3D corner = SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+232), SMap.realPtr<Geometry::Surface>(buildIndex+6), pSideWall);
 
   Geometry::Vec3D n = pSideWall->getNormal();
@@ -159,8 +159,6 @@ OpticsStepHutch::createObjects(Simulation& System)
   const HeadRule sideCut=ExternalCut::getValidRule("SideWallCut",Origin);
 
   const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
-  const HeadRule frontWall=
-    ExternalCut::getValidRule("RingWall",Origin+Y*length);
 
   HeadRule holeCut;
   int BI(buildIndex);
@@ -178,18 +176,18 @@ OpticsStepHutch::createObjects(Simulation& System)
 
   if (innerOutVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -1003 305 -6 ");
-      makeCell("OuterWallVoid",System,cellIndex++,voidMat,0.0,HR*frontWall);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 501 -1003 305 -6");
+      makeCell("OuterWallVoid",System,cellIndex++,voidMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -303 -302 -305");
-      makeCell("OuterWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor*frontWall);
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,"3 -303 501 -302 -305");
+      makeCell("OuterWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
 
       if (floorShineLength-innerOutVoid<Geometry::zeroTol) {
 	HR=ModelSupport::getHeadRule(SMap,buildIndex,"303 -1003 -302 -305");
 	makeCell("OuterWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
       }
 
-      // big void cell
+      // Big void cell
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 (-304:-301) -6");
       if (floorShineLength-backPlateThick>Geometry::zeroTol)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-302:305");
@@ -197,8 +195,11 @@ OpticsStepHutch::createObjects(Simulation& System)
       if (floorShineLength-innerOutVoid>Geometry::zeroTol)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"303:305");
 
-      // wall shine
+      // Wall shine along the ring side wall
       HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-403:-341");
+
+      // Wall shine along the ratchet-end wall inside OH
+      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"501:503");
 
       //      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-301:305:-304");
     }
@@ -261,8 +262,8 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 -212 214 -16");
   makeCell("flatIWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -305");
-  makeCell("FlatWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor*sideWall);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -403 -305");
+  makeCell("FlatWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -403 305 -6");
   makeCell("FlatWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR);
@@ -292,9 +293,14 @@ OpticsStepHutch::createObjects(Simulation& System)
     makeCell("BackPlateFloorShineVoid",System,cellIndex++,0,0.0,HR*floor);
   }
 
-  // wall shine along the ring side wall
-  HR=ModelSupport::getHeadRule(SMap,buildIndex, "341 -202 3 403 -6 (-301:305)");
-  makeCell("RingSideWallWallShine",System,cellIndex++,wallShineMat,0.0,HR*sideWall*floor);
+  // Wall shine along the ring side wall
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "341 -202 403 -6");
+  makeCell("RingSideWallWallShine",System,cellIndex++,floorShineMat,0.0,HR*sideWall*floor);
+
+  // Wall shine along the ratchet-end wall inside OH
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "-501 3 -503 -6");
+  makeCell("REWInWallShine",System,cellIndex++,floorShineMat,0.0,HR*frontWall*floor);
+
 
   // Outer void for pipe(s)
   BI=buildIndex;
