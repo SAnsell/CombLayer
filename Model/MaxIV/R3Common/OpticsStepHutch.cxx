@@ -38,33 +38,35 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "groupRange.h"
-#include "objectGroups.h"
-#include "Simulation.h"
 #include "ModelSupport.h"
-#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "PortChicane.h"
 #include "forkHoles.h"
-#include "OpticsHutch.h"
 
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+
+#include "Vec3D.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "SurInter.h"
+
+
+#include "OpticsHutch.h"
 #include "OpticsStepHutch.h"
 
 namespace xraySystem
@@ -133,6 +135,13 @@ OpticsStepHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+301, buildIndex+232, Y, -floorShineLength);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+304, buildIndex+234, Y, -floorShineLength);
 
+  // wall shine
+  const Geometry::Vec3D corner = SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+232), SMap.realPtr<Geometry::Surface>(buildIndex+6), pSideWall);
+
+  Geometry::Vec3D n = pSideWall->getNormal();
+  n.rotate(Z, -M_PI_2);
+
+  ModelSupport::buildPlane(SMap, buildIndex+341, corner-n*wallShineLength, n);
 
   return;
 }
@@ -147,7 +156,6 @@ OpticsStepHutch::createObjects(Simulation& System)
   ELog::RegMethod RegA("OpticsStepHutch","createObjects");
 
   // ring wall
-  const HeadRule sideWall=ExternalCut::getValidRule("SideWall",Origin);
   const HeadRule sideCut=ExternalCut::getValidRule("SideWallCut",Origin);
 
   const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
@@ -188,6 +196,9 @@ OpticsStepHutch::createObjects(Simulation& System)
 
       if (floorShineLength-innerOutVoid>Geometry::zeroTol)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"303:305");
+
+      // wall shine
+      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-403:-341");
 
       //      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-301:305:-304");
     }
@@ -282,8 +293,8 @@ OpticsStepHutch::createObjects(Simulation& System)
   }
 
   // wall shine along the ring side wall
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex, "301 -202 3 403 305 -6"); // 301 is dummy
-  makeCell("RingSideWallWallShine",System,cellIndex++,wallShineMat,0.0,HR*sideWall);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "341 -202 3 403 -6 (-301:305)");
+  makeCell("RingSideWallWallShine",System,cellIndex++,wallShineMat,0.0,HR*sideWall*floor);
 
   // Outer void for pipe(s)
   BI=buildIndex;

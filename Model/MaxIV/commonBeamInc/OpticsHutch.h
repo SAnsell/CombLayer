@@ -81,6 +81,9 @@ class OpticsHutch :
   int floorShineMat;          ///< Floor shine material
   int wallShineMat;          ///< Wall shine material
 
+  HeadRule sideWall;
+  Geometry::Plane *pSideWall;
+
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
 

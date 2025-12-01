@@ -35,10 +35,7 @@
 #include <array>
 
 #include "FileReport.h"
-#include "NameStack.h"
-#include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -61,16 +58,8 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "Quadratic.h"
-#include "General.h"
-
-#include "Plane.h"
-
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "PortChicane.h"
 #include "forkHoles.h"
 #include "OpticsHutch.h"
@@ -85,6 +74,7 @@ OpticsHutch::OpticsHutch(const std::string& Key) :
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
+  pSideWall(nullptr),
   forks(keyName+"Fork")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -256,8 +246,8 @@ OpticsHutch::createSurfaces()
 				  floorShineThick);
 
   //  Wall shine along the ring side wall
-  const HeadRule sideWall=ExternalCut::getValidRule("SideWall",Origin); // ring side wall
-  Geometry::Plane *pSideWall = SMap.realPtr<Geometry::Plane>(sideWall.getPrimarySurface());
+  sideWall=ExternalCut::getValidRule("SideWall",Origin); // ring side wall
+  pSideWall = SMap.realPtr<Geometry::Plane>(sideWall.getPrimarySurface());
   ModelSupport::buildShiftedPlaneReversed(SMap, buildIndex+403, pSideWall, -wallShineThick);
 
   return;
