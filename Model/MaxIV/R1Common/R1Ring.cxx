@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   R1Common/R1Ring.cxx
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -58,7 +58,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
@@ -80,7 +80,7 @@
 namespace xraySystem
 {
 
-R1Ring::R1Ring(const std::string& Key) : 
+R1Ring::R1Ring(const std::string& Key) :
   attachSystem::FixedOffset(Key,24),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -95,7 +95,7 @@ R1Ring::R1Ring(const std::string& Key) :
 {
 }
 
-R1Ring::~R1Ring() 
+R1Ring::~R1Ring()
   /*!
     Destructor
   */
@@ -109,14 +109,14 @@ R1Ring::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("R1Ring","populate");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   FixedOffset::populate(Control);
 
   fullOuterRadius=Control.EvalVar<double>(keyName+"FullOuterRadius");
-  
+
   hexRadius=Control.EvalVar<double>(keyName+"HexRadius");
   hexWallThick=Control.EvalVar<double>(keyName+"HexWallThick");
 
@@ -155,13 +155,13 @@ R1Ring::populate(const FuncDataBase& Control)
     }
   concaveNPoints=concavePts.size();
 
-  // SIDE 
+  // SIDE
   const size_t nSide=Control.EvalVar<size_t>(keyName+"NSideWall");
   for(size_t i=0;i<nSide;i++)
     {
       const std::string sideKey=
 	Control.EvalVar<std::string>(keyName+"SideWallName"+std::to_string(i));
-      
+
       const size_t ID=Control.EvalVar<size_t>(sideKey+"ID");
       std::shared_ptr<SideShield>
 	shieldPtr(new SideShield(keyName+"SideWall",sideKey));
@@ -175,7 +175,7 @@ R1Ring::populate(const FuncDataBase& Control)
       const std::string freeKey=
 	Control.EvalVar<std::string>
 	(keyName+"FreeShieldName"+std::to_string(i));
-      
+
       const size_t ID=Control.EvalVar<size_t>(freeKey+"ID");
 
       std::shared_ptr<insertSystem::insertPlate>
@@ -190,7 +190,7 @@ R1Ring::populate(const FuncDataBase& Control)
     {
       const std::string outerKey=
 	Control.EvalVar<std::string>(keyName+"OutShieldName"+std::to_string(i));
-      
+
       const size_t ID=Control.EvalVar<size_t>(outerKey+"ID");
       std::shared_ptr<insertSystem::insertPlate>
 	shieldPtr(new insertSystem::insertPlate(keyName+"OutShield",outerKey));
@@ -199,10 +199,10 @@ R1Ring::populate(const FuncDataBase& Control)
     }
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
-  
+
   return;
 }
- 
+
 void
 R1Ring::createSurfaces()
   /*!
@@ -212,13 +212,13 @@ R1Ring::createSurfaces()
   ELog::RegMethod RegA("R1Ring","createSurfaces");
 
   ModelSupport::buildCylinder(SMap,buildIndex+9007,Origin,Z,fullOuterRadius);
-  
+
   // quick way to rotate outgoing vector to
   // dividing vector
   const Geometry::Quaternion Qz=Geometry::Quaternion::calcQRotDeg(-120.0,Z);
   double theta(0.0);
   int surfN(buildIndex);
-  
+
   for(size_t i=0;i<6;i++)
     {
       Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
@@ -230,7 +230,7 @@ R1Ring::createSurfaces()
       theta+=M_PI/3.0;
       surfN+=10;
     }
-  
+
   SurfMap::makePlane("Floor",SMap,buildIndex+5,Origin-Z*depth,Z);
   SurfMap::makePlane("Roof",SMap,buildIndex+6,Origin+Z*height,Z);
 
@@ -238,7 +238,7 @@ R1Ring::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+roofThick),Z);
   ModelSupport::buildPlane(SMap,buildIndex+26,
 			   Origin+Z*(height+roofThick+roofExtra),Z);
-    
+
   surfN=buildIndex+1000;
   for(size_t i=0;i<NPoints;i++)
     {
@@ -246,8 +246,8 @@ R1Ring::createSurfaces()
       const Geometry::Vec3D BP
 	(X*voidTrack[(i+1)% NPoints].X()+Y*voidTrack[(i+1) % NPoints].Y());
       // note that voidTrack is about (0,0,0)
-      const Geometry::Vec3D NDir=(-BP);  
-      
+      const Geometry::Vec3D NDir=(-BP);
+
       ModelSupport::buildPlane(SMap,surfN+3,
 			       Origin+AP,
 			       Origin+BP,
@@ -264,7 +264,7 @@ R1Ring::createSurfaces()
       const Geometry::Vec3D BP
 	(X*outerTrack[(i+1)% NPoints].X()+Y*outerTrack[(i+1) % NPoints].Y());
       const Geometry::Vec3D NDir=(Origin-BP);
-      
+
       ModelSupport::buildPlane(SMap,surfN+3,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
@@ -287,7 +287,7 @@ R1Ring::createSurfaces()
   // last wall
   SurfMap::addSurf("SideInner",SMap.realSurf(surfN-1010+3));
   SurfMap::addSurf("SideOuter",SMap.realSurf(surfN-10+3));
-	  
+
 
   // Exit wall dividers
   surfN=buildIndex+3000;
@@ -297,8 +297,8 @@ R1Ring::createSurfaces()
       const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
       const Geometry::Vec3D BP(X*outerTrack[aI].X()+Y*outerTrack[aI].Y());
       PointMap::addPoint("OutSideWall",BP);
-      // going round ring clockwize 
-      const Geometry::Vec3D NDir=((BP-AP)*Z).unit();      
+      // going round ring clockwize
+      const Geometry::Vec3D NDir=((BP-AP)*Z).unit();
       ModelSupport::buildPlane(SMap,surfN+1,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
@@ -308,7 +308,7 @@ R1Ring::createSurfaces()
 
 
       surfN+=10;
-    } 
+    }
 
   // Inner cut points
   surfN=buildIndex+5000;
@@ -319,7 +319,7 @@ R1Ring::createSurfaces()
       const Geometry::Vec3D AP(X*voidTrack[aI].X()+Y*voidTrack[aI].Y());
       const Geometry::Vec3D BP(X*voidTrack[bI].X()+Y*voidTrack[bI].Y());
       const Geometry::Vec3D NDir=(-BP);
-      
+
       ModelSupport::buildPlane(SMap,surfN+9,
 			       Origin+AP,Origin+BP,
 			       Origin+BP+Z,NDir);
@@ -329,9 +329,9 @@ R1Ring::createSurfaces()
 			       Origin+AP,Origin,
 			       Origin+Z,BP-AP);
       SurfMap::addSurf("DivideCut",SMap.realSurf(surfN+1001));
-      surfN+=10;      
-    }  
-  
+      surfN+=10;
+    }
+
   return;
 }
 
@@ -344,7 +344,7 @@ R1Ring::createFloor(Simulation& System)
 {
   ELog::RegMethod RegA("R1Ring","createFloor");
   HeadRule HR;
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 -5 15");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,HR);
   return;
@@ -361,7 +361,7 @@ R1Ring::createRoof(Simulation& System)
   ELog::RegMethod RegA("R1Ring","createRoof");
 
   HeadRule HR;
-  
+
 
   const HeadRule TBase=
     ModelSupport::getHeadRule(SMap,buildIndex,"6 -16");
@@ -381,8 +381,8 @@ R1Ring::createRoof(Simulation& System)
   HR*=ModelSupport::getHeadRule
     (SMap,buildIndex,"(103:113:123:133:143:153)");
   makeCell("InnerRoof",System,cellIndex++,roofMat,0.0,HR*TBase);
-  makeCell("InnerExtra",System,cellIndex++,0,0.0,HR*EBase);  
-  
+  makeCell("InnerExtra",System,cellIndex++,0,0.0,HR*EBase);
+
   return;
 }
 
@@ -440,7 +440,7 @@ R1Ring::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule(SMap,buildIndex,Item);
       makeCell("Void",System,cellIndex++,innerMat,0.0,HR*innerBaseHR);
     }
-  
+
   // loop to make individual units:
   const std::vector<std::string> Voids
     ({
@@ -469,7 +469,7 @@ R1Ring::createObjects(Simulation& System)
       makeCell("SkyCylB",System,cellIndex++,0,0.0,HRB*extraBaseHR);
       BI+=10;
     }
-    
+
   for(const std::string& item : Voids)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,item);
@@ -490,30 +490,30 @@ R1Ring::createObjects(Simulation& System)
 	"-1143  2133  2143 -3061 3067 3068",
 	"-1163  2153  2163 -3071 3077 3078",
 	"-1183  2173  2183 -3081 3087 3088",
-	"-1203  2193  2203 -3091 3097 3098"       
+	"-1203  2193  2203 -3091 3097 3098"
       });
 
   const std::vector<std::string> walls
     ({
       "-2003 (-1013 : -1023) 1033 2013 2023 3008 ",
-      "(3011 : -2033) -1043 1053 2043 3017 3018",   
-      "(3021 : -2053) -1063 1073 2063 3027 3028 ",  
+      "(3011 : -2033) -1043 1053 2043 3017 3018",
+      "(3021 : -2053) -1063 1073 2063 3027 3028 ",
       "-2073 (-1083 : -1093) 1103 2083 2093 3038",
-      "(3041 : -2103) -1113 1123 2113 3047 3048",        
-      "(3051 : -2123) -1133 1143 2133 3057 3058",        
+      "(3041 : -2103) -1113 1123 2113 3047 3048",
+      "(3051 : -2123) -1133 1143 2133 3057 3058",
       "(3061 : -2143) -1153 1163 2153 3067 3068",
       "(3071 : -2163) -1173 1183 2173 3077 3078",
       "(3081 : -2183) -1193 1203 2193 3087 3088",
-      "3091 -1213 1003 2213 3097 3098"  
+      "3091 -1213 1003 2213 3097 3098"
     });
 
   // Front walls:
   for(const std::string& item : frontWalls)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,item);
-      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR*wallBaseHR);
-      makeCell("FrontExtra",System,cellIndex++,0,0.0,HR*extraBaseHR);
-    }      
+      makeCell("RatchetEndWall",System,cellIndex++,wallMat,0.0,HR*wallBaseHR); // former FrontWall cell
+      makeCell("RatchetEndExtra",System,cellIndex++,0,0.0,HR*extraBaseHR);
+    }
 
   // Main walls:
   for(const std::string& item : walls)
@@ -521,32 +521,32 @@ R1Ring::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule(SMap,buildIndex,item);
       makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*wallBaseHR);
       makeCell("Extra",System,cellIndex++,0,0.0,HR*extraBaseHR);
-    }      
+    }
 
   // EXTERNAL void-triangles:
   const std::vector<std::string> extTriangle
     ({
       "-9007 -2003 -2013 2213 3008",
-      "-9007 -2023 2013 ",        
+      "-9007 -2023 2013 ",
       "-9007 -2033 -2043 2023 3018",
       "-9007 -2053 -2063 2043 3028",
       "-9007 -2073 -2083 2063 3038",
-      "-9007 -2093 2083 ",         
+      "-9007 -2093 2083 ",
       "-9007 -2103 -2113 2093 3048",
       "-9007 -2123 -2133 2113 3058",
       "-9007 -2143 -2153 2133 3068",
       "-9007 -2163 -2173 2153 3078",
       "-9007 -2183 -2193 2173 3088",
-      "-9007 -2203 -2213 2193 3098" 
+      "-9007 -2203 -2213 2193 3098"
     });
   for(const std::string& item : extTriangle)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,item);
       makeCell("OuterSegment",System,cellIndex++,outerMat,0.0,HR*fullBaseHR);
     }
-	  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-9007 15 -26");
-  addOuterSurf(HR);    
+  addOuterSurf(HR);
   return;
 }
 
@@ -562,7 +562,7 @@ R1Ring::createLinks()
   ELog::RegMethod RegA("R1Ring","createLinks");
 
   FixedComp::setNConnect(2*concaveNPoints+2);
-  
+
   const double beamStepOut(1510.55);  // from origin
   // Main beam start points DONT have a surface [yet]
 
@@ -616,7 +616,7 @@ R1Ring::createDoor(Simulation& System)
   */
 {
   ELog::RegMethod RegA("R1Ring","createDoor");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -643,8 +643,8 @@ R1Ring::createDoor(Simulation& System)
 void
 R1Ring::createSideShields(Simulation& System)
   /*!
-    Create side shields only: 
-    \param System :: Simulation to add data 
+    Create side shields only:
+    \param System :: Simulation to add data
    */
 {
   ELog::RegMethod RegA("R1Ring","createSideShields");
@@ -655,7 +655,7 @@ R1Ring::createSideShields(Simulation& System)
       SWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
       SWPtr->setCutSurf("Wall",-SurfMap::getSurf("SideInner",id));
       SWPtr->setCutSurf("Clip",-SurfMap::getSurf("InnerCut",id));
-      SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id));      
+      SWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id));
     }
   return;
 }
@@ -663,8 +663,8 @@ R1Ring::createSideShields(Simulation& System)
 void
 R1Ring::createFreeShields(Simulation& System)
   /*!
-    Create free standing shields 
-    \param System :: Simulation to add data 
+    Create free standing shields
+    \param System :: Simulation to add data
    */
 {
   ELog::RegMethod RegA("R1Ring","createFreeShields");
@@ -674,14 +674,14 @@ R1Ring::createFreeShields(Simulation& System)
     {
       PWPtr->setNoInsert();
       PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
-      PWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));      
+      PWPtr->createAll(System,*this,"OpticCentre"+std::to_string(id-1));
     }
 
   for(auto& [ id , PWPtr ] : outShields)
     {
       //      PWPtr->setNoInsert();
       //      PWPtr->addInsertCell(CellMap::getCell("VoidTriangle",id));
-      PWPtr->createAll(System,*this,"SideWall"+std::to_string(id));      
+      PWPtr->createAll(System,*this,"SideWall"+std::to_string(id));
     }
   return;
 }
@@ -702,15 +702,15 @@ R1Ring::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  
-  createSurfaces();    
+
+  createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);
 
   createSideShields(System);
   createFreeShields(System);
-  
+
   createDoor(System);
   return;
 }

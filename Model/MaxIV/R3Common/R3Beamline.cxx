@@ -102,11 +102,8 @@ R3Beamline::buildOpticsHutch
 			r3Ring->getSurf("BeamOuter",segmentIndex));
 
   opticsHut->addAllInsertCell(r3Ring->getCell("OuterSegment",prevSegment));
-  // the previous line is equivalent to these two commented out:
-  // opticsHut->addInsertCell("Hutch",        r3Ring->getCell("OuterSegment",prevSegment));
-  // opticsHut->addInsertCell("WallShineREW", r3Ring->getCell("OuterSegment",prevSegment));
   opticsHut->addInsertCell("Hutch", r3Ring->getCell("OuterSegment",segmentIndex));
-  opticsHut->addInsertCell("WallShineREW", r3Ring->getCell("FrontWall",segmentIndex));
+  opticsHut->addInsertCell("WallShineREW", r3Ring->getCell("RatchetEndWall",segmentIndex));
 
   opticsHut->setCutSurf("InnerSideWall",
 			r3Ring->getSurf("FlatInner",segmentIndex));

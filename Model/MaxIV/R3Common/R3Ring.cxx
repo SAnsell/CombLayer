@@ -331,7 +331,7 @@ R3Ring::createObjects(Simulation& System)
 
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,"1 -1001 -1003M  3");
-      makeCell("FrontWall",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+      makeCell("RatchetEndWall",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);  // former FrontWall cell
 
       HR=ModelSupport::getHeadRule
 	(SMap,BNext,BPrev,buildIndex,"1001 -1003M  (1003:1503) -9007N ");
