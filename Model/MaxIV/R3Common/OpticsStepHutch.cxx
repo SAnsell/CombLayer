@@ -50,6 +50,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -334,11 +335,11 @@ OpticsStepHutch::createObjects(Simulation& System)
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
 
 
-  addOuterSurf(HR*frontWall*sideCut);
+  addOuterSurf("Hutch", HR*frontWall*sideCut);
 
   if (outerOutVoid>Geometry::zeroTol) {
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -32 1033 -33 -36");
-    addOuterUnionSurf(HR*floor);
+    addOuterSurf("WallShineREW", HR*floor);
   }
 
 

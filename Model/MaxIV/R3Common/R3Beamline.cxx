@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: R3Common/R3Beamline.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -89,20 +89,24 @@ R3Beamline::buildOpticsHutch
  const std::string& exitLink)
   /*!
     Build the optics hutch
-    \param segmentIndex :: segment number     
+    \param segmentIndex :: segment number
    */
 {
   ELog::RegMethod RegA("R3Beamline","buildHutch");
 
   const size_t NS=r3Ring->getNInnerSurf();
   const size_t prevSegment=(NS+segmentIndex-1) % NS;
-  
+
   opticsHut->setCutSurf("Floor",r3Ring->getSurf("Floor"));
   opticsHut->setCutSurf("RingWall",
 			r3Ring->getSurf("BeamOuter",segmentIndex));
 
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",prevSegment));
-  opticsHut->addInsertCell(r3Ring->getCell("OuterSegment",segmentIndex));
+  opticsHut->addAllInsertCell(r3Ring->getCell("OuterSegment",prevSegment));
+  // the previous line is equivalent to these two commented out:
+  // opticsHut->addInsertCell("Hutch",        r3Ring->getCell("OuterSegment",prevSegment));
+  // opticsHut->addInsertCell("WallShineREW", r3Ring->getCell("OuterSegment",prevSegment));
+  opticsHut->addInsertCell("Hutch", r3Ring->getCell("OuterSegment",segmentIndex));
+  opticsHut->addInsertCell("WallShineREW", r3Ring->getCell("FrontWall",segmentIndex));
 
   opticsHut->setCutSurf("InnerSideWall",
 			r3Ring->getSurf("FlatInner",segmentIndex));
@@ -117,8 +121,7 @@ R3Beamline::buildOpticsHutch
 
   return;
 }
-  
+
 
 
 }   // NAMESPACE xraySystem
-

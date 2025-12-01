@@ -70,7 +70,7 @@ namespace xraySystem
 
 OpticsHutch::OpticsHutch(const std::string& Key) :
   attachSystem::FixedRotate(Key,18),
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Hutch", "WallShineREW"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -370,7 +370,7 @@ OpticsHutch::createObjects(Simulation& System)
   else
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
 
-  addOuterSurf(HR*frontWall*sideCut);
+  addOuterSurf("Hutch", HR*frontWall*sideCut);
   return;
 }
 

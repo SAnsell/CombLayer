@@ -40,7 +40,7 @@ namespace xraySystem
 
 class OpticsHutch :
   public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::ExternalCut,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
