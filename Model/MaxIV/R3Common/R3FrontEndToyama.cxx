@@ -123,6 +123,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   ionPump3(new constructSystem::CrossPipe(newName+"IonPump3")),
   valve2(std::make_shared<xraySystem::CylGateValve>(newName+"Valve2")),
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
+  flangePlateF(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateF")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
@@ -198,6 +199,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(ionPump3);
   OR.addObject(valve2);
   OR.addObject(bellowDA);
+  OR.addObject(flangePlateF);
   OR.addObject(bremColl);
   OR.addObject(bremCollPipe);
   OR.addObject(proxiShieldA);
@@ -333,7 +335,8 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
 {
   ELog::RegMethod RegA("R3FrontEndToyama","buildApertureTable");
 
-  constructSystem::constructUnit(System,buildZone,preFC,"back",*bellowE);
+  constructSystem::constructUnit(System,buildZone,preFC,"back",*flangePlateF);
+  constructSystem::constructUnit(System,buildZone,*flangePlateF,"back",*bellowE);
   constructSystem::constructUnit(System,buildZone,*bellowE,"back",*aperturePipeA);
   moveCollA->addInsertCell(aperturePipeA->getCell("Void"));
   moveCollA->createAll(System,*aperturePipeA,"midPoint");

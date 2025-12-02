@@ -100,6 +100,7 @@ protected:
   std::shared_ptr<constructSystem::CrossPipe> ionPump3;
   std::shared_ptr<xraySystem::CylGateValve> valve2;
   std::shared_ptr<constructSystem::Bellows> bellowDA;
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateF;
 
   // Bremsstrahlung collimator
   std::shared_ptr<xraySystem::BremBlock> bremColl;
