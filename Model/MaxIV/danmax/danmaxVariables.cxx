@@ -383,6 +383,9 @@ exptHutVariables(FuncDataBase& Control,
   EGen.setRoofLead(0.4); // "Roof Thk Pb", Section A-A [2]
   EGen.setWallLead(0.4); // "Lead Thickness Side Wall", Section A-A [2]
 
+  Control.addVariable(hutName+"FloorShineThick", 0.6); // [2]
+  Control.addVariable(hutName+"FloorShineLength", 20.0); // full length [2]
+
   EGen.generateHut(Control,hutName,1845.0, 1401.3); // Hutch length: Section A-A [2]
   Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]

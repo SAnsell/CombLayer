@@ -62,6 +62,8 @@ class ExperimentalHutch :
   double pbTiltedThick;         ///< Thickness of lead in tilted wall
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
+  double floorShineThick;       ///< Floor shine thickness
+  double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface)
 
   double fHoleRadius;            ///< Radius of front hole (if used)
   double fHoleXStep;             ///< X step offset
