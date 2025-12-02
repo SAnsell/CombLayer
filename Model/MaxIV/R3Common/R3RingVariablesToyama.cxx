@@ -73,6 +73,7 @@
 //     http://localhost:8080/maxiv/work-log/tomowise/toyama_formax_fe_mechanical_drawings.pdf/view
 // [3] 236798-Toyama-front-end.step
 // [4] S0-2-0AB01088_DanMAX.pdf
+// [5] FE_02.STEP - CAD file for the DanMAX Front-end
 
 namespace setVariable
 {
@@ -367,12 +368,17 @@ heatDumpTableToyama(FuncDataBase& Control,
 
   // Fast gate valve
   setVariable::GateValveGenerator GateGen;
-  GateGen.setLength(3.5);
+  constexpr double valve1LengthTotal = 3.5; // [4]
+  constexpr double valve1InnerLength = 1.2; // [5]
+  constexpr double valve1PortLength = valve1LengthTotal - 2.0*valve1InnerLength + 0.05; // [5]
+  GateGen.setLength(valve1InnerLength);
   GateGen.setCubeCF<setVariable::CF40>();
   GateGen.setBladeMat("Stainless304L");
-  GateGen.generateValve(Control,frontKey+"Valve1",0.0,0);
-  const double valve1YAngle(-30.0); // approx
+  GateGen.generateValve(Control,frontKey+"Valve1",0.0,false);
+  const double valve1YAngle(0.0);
   Control.addVariable(frontKey+"Valve1YAngle",valve1YAngle);
+  Control.addVariable(frontKey+"Valve1PortALen",valve1PortLength);
+  Control.addVariable(frontKey+"Valve1PortBLen",valve1PortLength);
 
   CrossGen.setMat("SteelUnknownGrade");
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
