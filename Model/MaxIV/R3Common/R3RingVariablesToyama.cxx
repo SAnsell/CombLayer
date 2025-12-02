@@ -105,9 +105,9 @@ moveApertureTableToyama(FuncDataBase& Control,
   setVariable::CrossGenerator CrossGen;
 
   PipeGen.setNoWindow();   // no window
-  PipeGen.setMat("Stainless304");
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"PipeB",15.0);
+  PipeGen.generatePipe(Control,frontKey+"PipeB",15.25); // [4]
 
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
 
@@ -358,13 +358,14 @@ heatDumpTableToyama(FuncDataBase& Control,
 
   setVariable::CylGateValveGenerator GVGen;
   std::string name=frontKey+"Valve2";
-  GVGen.generateGate(Control,name,0);
+  GVGen.generateGate(Control,name,false);
   // TODO: all dimensions except total y-length are dummy
-  Control.addVariable(name+"PortThick",3.4); // to make 14 cm length as in the CAD file
+  Control.addVariable(name+"PortThick",1.1-1); // to make 7.2 cm length as in [5]
   Control.addVariable(name+"PortRadius",1.9);
   Control.addVariable(name+"PortFlangeRadius",3.5);
-  Control.addVariable(name+"Radius",5);
-  Control.addVariable(name+"TopRadius",10);
+  Control.addVariable(name+"Radius",3.2); // [5], add 2 mm to avoid gap b/w ports
+  Control.addVariable(name+"WallThick",0.3); // [5]
+  Control.addVariable(name+"TopRadius",5.25); // [5]
 
   // Fast gate valve
   setVariable::GateValveGenerator GateGen;
