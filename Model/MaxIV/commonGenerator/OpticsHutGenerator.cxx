@@ -57,6 +57,9 @@ OpticsHutGenerator::OpticsHutGenerator() :
   pbBackThick(7.0),pbRoofThick(1.6),
   outerThick(0.3),backPlateThick(5.0),
   backPlateWidth(120.0),backPlateHeight(120.0),
+  floorShineThick(0.6), floorShineLength(50.0),
+  wallShineThick(0.6), wallShineLength(59.0),
+  wallShineOutThick(1.2), wallShineOutLength(20.0),
   innerOutVoid(10.0),outerOutVoid(10.0),
   frontVoid(0.0),backVoid(0.0),
   outerBackVoid(0.0),
@@ -115,6 +118,13 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"BackPlateThick",backPlateThick);
   Control.addVariable(keyName+"BackPlateWidth",backPlateWidth);
   Control.addVariable(keyName+"BackPlateHeight",backPlateHeight);
+
+  Control.addVariable(keyName+"FloorShineThick",floorShineThick);
+  Control.addVariable(keyName+"FloorShineLength",floorShineLength);
+  Control.addVariable(keyName+"WallShineThick",wallShineThick);
+  Control.addVariable(keyName+"WallShineLength",wallShineLength);
+  Control.addVariable(keyName+"WallShineOutThick",wallShineOutThick);
+  Control.addVariable(keyName+"WallShineOutLength",wallShineOutLength);
 
   for(size_t i=0;i<holeRadius.size();i++)
     {

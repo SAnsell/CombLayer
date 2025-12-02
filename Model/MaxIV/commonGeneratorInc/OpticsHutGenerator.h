@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/OpticsHutGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_OpticsHutGenerator_h
@@ -35,23 +35,30 @@ namespace setVariable
   \brief Standard (exept length/chicane) optics hutch for Max IV
 */
 
-class OpticsHutGenerator 
+class OpticsHutGenerator
 {
  protected:
 
   double height;                ///< void height
   double outWidth;              ///< Width from beamline centre to outside
-  
+
   // walls
   double innerThick;            ///< Inner wall/roof skin
   double pbWallThick;           ///< Thickness of lead in walls
   double pbBackThick;           ///< Thickness of lead in back plate
   double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
-  
+
   double backPlateThick;        ///< Back plate thick
   double backPlateWidth;        ///< Back plate width
   double backPlateHeight;       ///< back plate height
+
+  double floorShineThick;       ///< floor shine thickness
+  double floorShineLength;      ///< floor shine lenght
+  double wallShineThick;        ///< wall shine thickness
+  double wallShineLength;       ///< wall shine lenght
+  double wallShineOutThick;     ///< thickness of wall shine outside of REW
+  double wallShineOutLength;    ///< length of wall shine outside of REW
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
@@ -61,7 +68,7 @@ class OpticsHutGenerator
 
   std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
   std::vector<double> holeRadius;           ///< hole radii
-  
+
   std::string skinMat;         ///< Fe layer material for walls
   std::string pbMat;           ///< pb layer material for walls
   std::string voidMat;         ///< Void material
@@ -88,7 +95,7 @@ class OpticsHutGenerator
   { backPlateWidth=W;backPlateHeight=H;backPlateThick=T; }
 
   void addHole(const Geometry::Vec3D&,const double);
-  
+
   void generateHut(FuncDataBase&,const std::string&,
 		   const double) const;
 
@@ -97,4 +104,3 @@ class OpticsHutGenerator
 }
 
 #endif
- 
