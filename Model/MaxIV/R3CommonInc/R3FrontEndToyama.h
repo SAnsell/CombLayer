@@ -98,7 +98,7 @@ protected:
   std::shared_ptr<xraySystem::HeatAbsorberToyama> ha;
   std::shared_ptr<constructSystem::Bellows> bellowPostHA;
   std::shared_ptr<constructSystem::CrossPipe> ionPump3;
-  std::shared_ptr<xraySystem::CylGateValve> gateTubePreMM1; // TODO ask what this component is. Maybe vacuum valve.
+  std::shared_ptr<xraySystem::CylGateValve> valve2;
 
   // Bremsstrahlung collimator
   std::shared_ptr<xraySystem::BremBlock> bremColl;

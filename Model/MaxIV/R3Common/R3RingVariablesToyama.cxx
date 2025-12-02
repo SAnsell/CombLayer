@@ -356,13 +356,14 @@ heatDumpTableToyama(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowD",10.0); // [2]
 
   setVariable::CylGateValveGenerator GVGen;
-  GVGen.generateGate(Control,frontKey+"GateTubePreMM1",0);
+  std::string name=frontKey+"Valve2";
+  GVGen.generateGate(Control,name,0);
   // TODO: all dimensions except total y-length are dummy
-  Control.addVariable(frontKey+"GateTubePreMM1PortThick",3.4); // to make 14 cm length as in the CAD file
-  Control.addVariable(frontKey+"GateTubePreMM1PortRadius",1.9);
-  Control.addVariable(frontKey+"GateTubePreMM1PortFlangeRadius",3.5);
-  Control.addVariable(frontKey+"GateTubePreMM1Radius",5);
-  Control.addVariable(frontKey+"GateTubePreMM1TopRadius",10);
+  Control.addVariable(name+"PortThick",3.4); // to make 14 cm length as in the CAD file
+  Control.addVariable(name+"PortRadius",1.9);
+  Control.addVariable(name+"PortFlangeRadius",3.5);
+  Control.addVariable(name+"Radius",5);
+  Control.addVariable(name+"TopRadius",10);
 
   // Fast gate valve
   setVariable::GateValveGenerator GateGen;
