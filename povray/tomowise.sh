@@ -2,7 +2,7 @@
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 [ITEM]"
-    echo "       ITEM is the value of ITEM in povray/tdc.pov"
+    echo "       ITEM is one of the items in povray/tomowise.pov"
     echo "       Example: povray/tomowise.sh Gate"
     exit 1
 fi
