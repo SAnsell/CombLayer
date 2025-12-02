@@ -99,6 +99,7 @@ protected:
   std::shared_ptr<constructSystem::Bellows> bellowPostHA;
   std::shared_ptr<constructSystem::CrossPipe> ionPump3;
   std::shared_ptr<xraySystem::CylGateValve> valve2;
+  std::shared_ptr<constructSystem::Bellows> bellowDA;
 
   // Bremsstrahlung collimator
   std::shared_ptr<xraySystem::BremBlock> bremColl;
@@ -176,7 +177,6 @@ protected:
 
 
   //   /// bellows for third table
-  // std::shared_ptr<constructSystem::Bellows> bellowE;
   // /// Variable Apperature pipe
   // std::shared_ptr<constructSystem::VacuumPipe> aperturePipeA;
   // /// L collimator
@@ -228,7 +228,7 @@ protected:
   /// Null op for extra components after build
   virtual void buildExtras(Simulation&) {}
 
-  void buildHeatTable(Simulation&,const attachSystem::FixedComp&,const std::string&);
+  void buildSupport5(Simulation&,const attachSystem::FixedComp&,const std::string&);
   void buildApertureTable(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&);

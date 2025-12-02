@@ -122,6 +122,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
   ionPump3(new constructSystem::CrossPipe(newName+"IonPump3")),
   valve2(std::make_shared<xraySystem::CylGateValve>(newName+"Valve2")),
+  bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
@@ -194,10 +195,13 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(bellowPreHA);
   OR.addObject(ha);
   OR.addObject(bellowPostHA);
-  OR.addObject(proxiShieldA);
-  OR.addObject(proxiShieldAPipe);
+  OR.addObject(ionPump3);
+  OR.addObject(valve2);
+  OR.addObject(bellowDA);
   OR.addObject(bremColl);
   OR.addObject(bremCollPipe);
+  OR.addObject(proxiShieldA);
+  OR.addObject(proxiShieldAPipe);
   OR.addObject(proxiShieldB);
   OR.addObject(proxiShieldBPipe);
 }
@@ -279,7 +283,7 @@ R3FrontEndToyama::createSurfaces()
 // }
 
 void
-R3FrontEndToyama::buildHeatTable(Simulation& System,
+R3FrontEndToyama::buildSupport5(Simulation& System,
 				 const attachSystem::FixedComp& preFC,
 				 const std::string& preSide)
   /*!
@@ -289,7 +293,7 @@ R3FrontEndToyama::buildHeatTable(Simulation& System,
     \param preSide :: link point on initial FC
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","buildHeatTable");
+  ELog::RegMethod RegA("R3FrontEndToyama","buildSupport5");
 
   int outerCell;
 
@@ -725,17 +729,17 @@ R3FrontEndToyama::buildObjects(Simulation& System)
     outerCell=buildZone.createUnit(System,*msmExitPipe,"back");
     msmExitPipe->insertAllInCell(System,outerCell);
 
-    buildHeatTable(System, *bellowPostMSM, "back");
+    buildSupport5(System, *bellowPostMSM, "back");
   } else {
     ha->createAll(System, *this, 0);
     //    bellowPreHA->setFront(*ha, "front");
     bellowPreHA->setBack(*flangePlateD, "back");
     bellowPreHA->createAll(System, *ha, "front");
 
-    buildHeatTable(System, *flangePlateD, "back");
+    buildSupport5(System, *flangePlateD, "back");
   }
 
-  if (stopPoint=="HeatTable")
+  if (stopPoint=="Support5")
     {
       buildZone.rebuildInsertCells(System);
       setCell("MasterVoid",outerCell);
@@ -743,7 +747,10 @@ R3FrontEndToyama::buildObjects(Simulation& System)
       return;
     }
 
-  buildApertureTable(System,*valve2,2);
+  constructSystem::constructUnit(System,buildZone,*valve2,"back",*bellowDA);
+
+
+  buildApertureTable(System,*bellowDA,2);
   buildShutterTable(System);
 
   // Bremsstrahlung collimator

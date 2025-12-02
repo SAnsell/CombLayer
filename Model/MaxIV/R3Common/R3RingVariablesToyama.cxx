@@ -355,6 +355,7 @@ heatDumpTableToyama(FuncDataBase& Control,
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowD",10.0); // [2]
+  BellowGen.generateBellow(Control,frontKey+"BellowDA",10.0); // [4]
 
   setVariable::CylGateValveGenerator GVGen;
   std::string name=frontKey+"Valve2";
