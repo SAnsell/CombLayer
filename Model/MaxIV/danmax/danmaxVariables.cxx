@@ -197,10 +197,11 @@ frontMaskVariables(FuncDataBase& Control,
   HeatAbsorberToyamaGenerator HAGen;
 
   constexpr double heatAbsorberLength = 26.5;  // [4]
-  constexpr double heatAbsorberDist(1673.3); // [4]
+  constexpr double heatAbsorberDist(1673.33); // [4]
 
   HAGen.generate(Control,preName+"HeatAbsorber",heatAbsorberLength);
   Control.addVariable(preName+"HeatAbsorberYStep",heatAbsorberDist);
+  Control.addVariable(preName+"HeatAbsorberDumpLength",heatAbsorberLength - 1.0); // dummy - HA geometry for DanMAX is anyway dummy
 
 
   // NOT PRESENT :::
