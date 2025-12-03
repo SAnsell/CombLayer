@@ -291,7 +291,7 @@ R3FrontEndToyama::buildSupport5(Simulation& System,
 				 const attachSystem::FixedComp& preFC,
 				 const std::string& preSide)
   /*!
-    Build the heatDump table
+    Build Support5 - the Heat Absorber table
     \param System :: Simulation to use
     \param preFC :: initial Fixedcomp
     \param preSide :: link point on initial FC
@@ -324,18 +324,18 @@ R3FrontEndToyama::buildSupport5(Simulation& System,
 }
 
 void
-R3FrontEndToyama::buildApertureTable(Simulation& System,
+R3FrontEndToyama::buildSupport6(Simulation& System,
 				   const attachSystem::FixedComp& preFC,
 				   const long int preSideIndex)
 
   /*!
-    Build the moveable aperature table
+    Build Support6 - the table hosting both movable masks
     \param System :: Simulation to use
     \param preFC :: Initial Fixed Component
     \param preSideIndex :: Initial FC side index
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","buildApertureTable");
+  ELog::RegMethod RegA("R3FrontEndToyama","buildSupport6");
 
   constructSystem::constructUnit(System,buildZone,preFC,"back",*flangePlateF);
   constructSystem::constructUnit(System,buildZone,*flangePlateF,"back",*bellowE);
@@ -754,8 +754,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*valve2,"back",*bellowDA);
 
-
-  buildApertureTable(System,*bellowDA,2);
+  buildSupport6(System,*bellowDA,2);
 
   constructSystem::constructUnit(System,buildZone,*bellowH,"back",*flangePlateG);
 

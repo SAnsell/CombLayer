@@ -231,7 +231,7 @@ protected:
   virtual void buildExtras(Simulation&) {}
 
   void buildSupport5(Simulation&,const attachSystem::FixedComp&,const std::string&);
-  void buildApertureTable(Simulation&,
+  void buildSupport6(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
   void buildShutterTable(Simulation&);
   void buildMSM(Simulation&,
