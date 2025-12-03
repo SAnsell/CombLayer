@@ -115,7 +115,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
 
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),
   triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
-  gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
+  valve4(new xraySystem::CylGateValve(newName+"Valve4")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   bremCollA(new xraySystem::SquareFMask(newName+"BremCollA")),
   filterPipe(new constructSystem::VacuumPipe(newName+"FilterPipe")),
@@ -173,7 +173,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
 
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
-  OR.addObject(gateTubeA);
+  OR.addObject(valve4);
 
   OR.addObject(bellowA);
   OR.addObject(bremCollA);
@@ -615,10 +615,10 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*pipeInit,"back",*triggerPipe);
 
   constructSystem::constructUnit
-    (System,buildZone,*triggerPipe,"back",*gateTubeA);
+    (System,buildZone,*triggerPipe,"back",*valve4);
 
   constructSystem::constructUnit
-    (System,buildZone,*gateTubeA,"back",*bellowA);
+    (System,buildZone,*valve4,"back",*bellowA);
 
   constructSystem::constructUnit
     (System,buildZone,*bellowA,"back",*bremCollA);

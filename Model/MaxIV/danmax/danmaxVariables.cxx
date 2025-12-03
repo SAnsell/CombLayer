@@ -939,7 +939,7 @@ opticsVariables(FuncDataBase& Control,
   TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
   TGen.generateTube(Control,opticsName+"TriggerUnit");
 
-  GVGen.generateGate(Control,opticsName+"GateTubeA",0);  // open
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve4");
 
   PipeGen.setCF<setVariable::CF40>();
   BellowGen.setCF<setVariable::CF40>();

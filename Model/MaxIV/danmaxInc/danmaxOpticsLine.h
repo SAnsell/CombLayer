@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   danmaxInc/danmaxOpticsLine.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_danmaxOpticsLine_h
@@ -69,7 +69,7 @@ namespace xraySystem
   class MonoBox;
   class TriggerTube;
 
-  
+
   /*!
     \class danmaxOpticsLine
     \version 1.0
@@ -101,7 +101,7 @@ class danmaxOpticsLine :
   /// vacuum trigger system
   std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
   /// first ion pump
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeA;
+  std::shared_ptr<xraySystem::CylGateValve> valve4;
   /// bellows from trigger outward
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Brem for collimator
@@ -143,7 +143,7 @@ class danmaxOpticsLine :
   /// Mirror-Mono system
   std::shared_ptr<xraySystem::MLMono> MLM;
   /// bellows from second mono
-  std::shared_ptr<constructSystem::Bellows> bellowG;  
+  std::shared_ptr<constructSystem::Bellows> bellowG;
   /// Gate value BL-V5
   std::shared_ptr<constructSystem::GateValveCylinder> gateE;
   /// BeamStopTube
@@ -172,7 +172,7 @@ class danmaxOpticsLine :
 
   /// Flange convert
   std::shared_ptr<constructSystem::VacuumPipe> slitsBOut;
-  
+
   /// BeamStopTube
   std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
   /// BeamStopBlock
@@ -180,7 +180,7 @@ class danmaxOpticsLine :
   /// Slits after beamstop
   std::shared_ptr<constructSystem::JawValveTube> slitsB;
   /// bellows from second mono
-  std::shared_ptr<constructSystem::Bellows> bellowK;  
+  std::shared_ptr<constructSystem::Bellows> bellowK;
   /// adaptor plate from CF63->CF40
   std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
   /// The main mono shutter
@@ -188,9 +188,9 @@ class danmaxOpticsLine :
   /// adaptor plate from CF63->CF40
   std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
   /// bellows from second mono
-  std::shared_ptr<constructSystem::GateValveCylinder> gateG;  
+  std::shared_ptr<constructSystem::GateValveCylinder> gateG;
 
-  
+
 
   double outerLeft;    ///< Left Width for cut rectangle
   double outerRight;   ///< Right width for cut rectangle
@@ -223,15 +223,15 @@ class danmaxOpticsLine :
 			    const attachSystem::FixedComp&,
 			    const std::string&);
 
-  
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void buildObjects(Simulation&);
 
   void createLinks();
-  
+
  public:
-  
+
   danmaxOpticsLine(const std::string&);
   danmaxOpticsLine(const danmaxOpticsLine&);
   danmaxOpticsLine& operator=(const danmaxOpticsLine&);
