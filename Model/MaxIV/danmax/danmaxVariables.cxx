@@ -183,6 +183,7 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BellowCLength",10.0); // [4]
   Control.addVariable(preName+"BellowFLength",14.0); // [4]
   Control.addVariable(preName+"BellowHLength",14.0); // [4]
+  Control.addVariable(preName+"PipeCLength",34.0); // [4]
 
   FMaskGen.setFrontGap(1.65, 1.65); //
   backWidth = 1.54; //
