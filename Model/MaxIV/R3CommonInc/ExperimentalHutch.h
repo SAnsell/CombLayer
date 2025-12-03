@@ -88,6 +88,7 @@ class ExperimentalHutch :
   int voidMat;                  ///< Void material [air]
   int skinMat;                  ///< Fe layer material for walls
   int pbMat;                    ///< pb layer material for walls
+  int floorShineMat;            ///< Floor shine material
 
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;

@@ -158,6 +158,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
+  floorShineMat=ModelSupport::EvalDefMat(Control,keyName+"FloorShineMat",pbMat);
 
   return;
 }
