@@ -233,7 +233,7 @@ protected:
   void buildSupport5(Simulation&,const attachSystem::FixedComp&,const std::string&);
   void buildSupport6(Simulation&,
 			  const attachSystem::FixedComp&,const long int);
-  void buildShutterTable(Simulation&);
+  void buildSupport7(Simulation&);
   void buildMSM(Simulation&,
 		attachSystem::FixedComp&,
 		const std::string&);

@@ -411,14 +411,15 @@ R3FrontEndToyama::buildSupport6(Simulation& System,
 }
 
 void
-R3FrontEndToyama::buildShutterTable(Simulation& System)
+R3FrontEndToyama::buildSupport7(Simulation& System)
   /*!
-    Build the shutter block table. BellowI y-offset is an external variable
-    (shutter table is fixed anc cant move)
+    Build Support7 - the shutter block table.
+    BellowI y-offset is an external variable
+    (shutter table is fixed and can't move)
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("R3FrontEndToyama","buildShutterTable");
+  ELog::RegMethod RegA("R3FrontEndToyama","buildSupport7");
   int outerCell;
 
 
@@ -758,7 +759,7 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*bellowH,"back",*flangePlateG);
 
-  buildShutterTable(System);
+  buildSupport7(System);
 
   // Bremsstrahlung collimator
   outerCell = constructSystem::constructUnit(System,buildZone,*offPipeB,"back",*bremCollPipe);
