@@ -931,7 +931,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();   // no window
   PipeGen.setMat("SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,opticsName+"InitBellow",6.0);
+  BellowGen.generateBellow(Control,opticsName+"InitBellow",10.0); // [4]
 
   // will be rotated vertical
   TGen.setCF<CF100>();
@@ -1234,13 +1234,13 @@ DANMAXvariables(FuncDataBase& Control)
 
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,beamLineName+"JoinPipe",190.0); // dummy
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipe",146.0); // [4]
 
   danmaxVar::opticsHutVariables(Control,beamLineName+"OpticsHut");
   danmaxVar::opticsVariables(Control,beamLineName);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",49.3);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",93.3); // dummy
 
   danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
