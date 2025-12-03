@@ -264,7 +264,6 @@ ExperimentalHutch::createSurfaces()
       if (outerOutVoid>Geometry::zeroTol)
 	ModelSupport::buildPlane(SMap,buildIndex+1333,cornerPt-CX*outerOutVoid,-CX);
       ModelSupport::buildPlane(SMap,buildIndex+333,cornerPt,-CX);
-      // cornerPt+=CX*outerThick;
       ModelSupport::buildPlane(SMap,buildIndex+323,cornerPt+CX*outerThick,-CX);
       ModelSupport::buildPlane(SMap,buildIndex+313,cornerPt+CX*(outerThick+pbTiltedThick),-CX);
       ModelSupport::buildPlane(SMap,buildIndex+303,cornerPt+CX*(outerThick+pbTiltedThick+innerThick),-CX);
