@@ -101,6 +101,7 @@ protected:
   std::shared_ptr<xraySystem::CylGateValve> valve2;
   std::shared_ptr<constructSystem::Bellows> bellowDA;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateF;
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateG;
 
   // Bremsstrahlung collimator
   std::shared_ptr<xraySystem::BremBlock> bremColl;

@@ -124,6 +124,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   valve2(std::make_shared<xraySystem::CylGateValve>(newName+"Valve2")),
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
   flangePlateF(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateF")),
+  flangePlateG(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateG")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
@@ -200,6 +201,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   OR.addObject(valve2);
   OR.addObject(bellowDA);
   OR.addObject(flangePlateF);
+  OR.addObject(flangePlateG);
   OR.addObject(bremColl);
   OR.addObject(bremCollPipe);
   OR.addObject(proxiShieldA);
@@ -403,7 +405,6 @@ R3FrontEndToyama::buildApertureTable(Simulation& System,
   // outerCell=buildZone.createUnit(System,*pipeC,2);
   // pipeC->insertAllInCell(System,outerCell);
 
-  pipeC->setFront(*bellowH, 2);
 
 
   return;
@@ -423,8 +424,9 @@ R3FrontEndToyama::buildShutterTable(Simulation& System)
 
   bellowI->createAll(System,*this, 0);
 
+  pipeC->setFront(*flangePlateG, 2);
   pipeC->setBack(*bellowI, 1);
-  pipeC->createAll(System,*bellowH, 2);
+  pipeC->createAll(System,*flangePlateG, 2);
   outerCell=buildZone.createUnit(System,*bellowI,"#front");
   pipeC->insertAllInCell(System,outerCell);
 
@@ -754,6 +756,9 @@ R3FrontEndToyama::buildObjects(Simulation& System)
 
 
   buildApertureTable(System,*bellowDA,2);
+
+  constructSystem::constructUnit(System,buildZone,*bellowH,"back",*flangePlateG);
+
   buildShutterTable(System);
 
   // Bremsstrahlung collimator
