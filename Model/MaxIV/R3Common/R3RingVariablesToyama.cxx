@@ -47,11 +47,9 @@
 #include "PipeGenerator.h"
 #include "CornerPipeGenerator.h"
 #include "PipeTubeGenerator.h"
-#include "VacBoxGenerator.h"
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "PortItemGenerator.h"
-#include "HeatDumpGenerator.h"
 #include "GateValveGenerator.h"
 #include "CylGateValveGenerator.h"
 #include "BeamMountGenerator.h"
@@ -83,7 +81,7 @@ namespace setVariable
 
   void heatDumpTableToyama(FuncDataBase&,const std::string&);
   void heatDumpVariablesToyama(FuncDataBase&,const std::string&);
-  void shutterTableToyama(FuncDataBase&,const std::string&);
+  void support7(FuncDataBase&,const std::string&);
   void moveApertureTableToyama(FuncDataBase&,const std::string&);
   void R3FrontEndToyamaVariables(FuncDataBase& Control, const std::string& beamlineKey);
 
@@ -152,7 +150,6 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.setCF<CF40>();
   PipeGen.setAFlangeCF<CF63>();
   PipeGen.generatePipe(Control,frontKey+"PipeC",32.5-11-17); // [2]
-  ELog::EM << "PipeC length reduce by 17 cm to avoid geometric errors. Check abs placements / lengths of other components" << ELog::endWarn;
   Control.addVariable(frontKey+"PipeCYStep",52.0);
 
   return;
@@ -160,7 +157,7 @@ moveApertureTableToyama(FuncDataBase& Control,
 
 
 void
-shutterTableToyama(FuncDataBase& Control,
+support7(FuncDataBase& Control,
 	     const std::string& frontKey)
   /*!
     Set the variables for the Toyama front-end shutter table (number 3)
@@ -168,7 +165,7 @@ shutterTableToyama(FuncDataBase& Control,
     \param frontKey :: name before part names
   */
 {
-  ELog::RegMethod RegA("R3RingVariables[F]","shutterTableToyama");
+  ELog::RegMethod RegA("R3RingVariables[F]","support7");
 
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
@@ -183,7 +180,7 @@ shutterTableToyama(FuncDataBase& Control,
   constexpr double bellowILength = 10.0;
   constexpr double florTubeALength = 12.0; //
   constexpr double bellowJLength = 10.0;
-  constexpr double gateTubeBLength = 7.2; //
+  constexpr double valve3Length = 7.2; //
   constexpr double proxiShieldAPipeLength = 21.5;
   constexpr double proxiShieldBPipeLength = 20.0;
   // safety shutter
@@ -197,7 +194,7 @@ shutterTableToyama(FuncDataBase& Control,
 
   constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [2, page1]
   constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
-    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - gateTubeBLength -
+    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - valve3Length -
     bellowJLength - florTubeALength - bellowILength;
   // same as counting from Movable Mask 2
   // 18692.8 + 300 + 140 + 17.5 + 325
@@ -569,7 +566,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
   // Create HEAT DUMP
   heatDumpTableToyama(Control,frontKey);
   moveApertureTableToyama(Control,frontKey);
-  shutterTableToyama(Control,frontKey);
+  support7(Control,frontKey);
 
   wallVariables(Control,beamlineKey+"WallLead");
 

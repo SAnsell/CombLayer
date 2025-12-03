@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <memory>
 #include <array>
+#include <cassert>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -66,12 +67,15 @@
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
-#include "BremBlockGenerator.h"
 #include "OpticsHutGenerator.h"
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
-#include "HeatAbsorberToyamaGenerator.h"
 #include "CrossGenerator.h"
+#include "BeamMountGenerator.h"
+#include "BremBlockGenerator.h"
+#include "HeatAbsorberToyamaGenerator.h"
+#include "ProximityShieldingGenerator.h"
+
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
@@ -98,6 +102,8 @@ void viewPackage(FuncDataBase&,const std::string&);
 void viewBPackage(FuncDataBase&,const std::string&);
 void beamStopPackage(FuncDataBase&,const std::string&);
 void revBeamStopPackage(FuncDataBase&,const std::string&);
+void support7DanMAX(FuncDataBase&,const std::string&);
+
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -1009,6 +1015,177 @@ opticsVariables(FuncDataBase& Control,
 
 }  // NAMESPACE danmaxVar
 
+
+void
+support7DanMAX(FuncDataBase& Control,
+	     const std::string& frontKey)
+  /*!
+    Set the variables for the Toyama DanMAX-like front-end shutter table (number 3)
+    \param Control :: DataBase to use
+    \param frontKey :: name before part names
+  */
+{
+  ELog::RegMethod RegA("R3RingVariables[F]","support7");
+
+  setVariable::BellowGenerator BellowGen;
+  setVariable::PipeTubeGenerator SimpleTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::BeamMountGenerator BeamMGen;
+  setVariable::CylGateValveGenerator GVGen;
+  setVariable::ProximityShieldingGenerator PSGen;
+  setVariable::BremBlockGenerator BBGen;
+
+  // Lengths are based on [2]
+  constexpr double bellowILength = 10.0;
+  constexpr double florTubeALength = 12.0; //
+  constexpr double bellowJLength = 10.0;
+  constexpr double valve3Length = 7.2; //
+  constexpr double proxiShieldAPipeLength = 20.0;
+  constexpr double proxiShieldBPipeLength = 20.0;
+  // safety shutter
+  constexpr double shutterLength = 57.8; // [2]
+  constexpr double offPipeALength = 6.8; // approx
+  constexpr double shutterBoxLength = shutterLength - offPipeALength;
+
+  constexpr double bremCollTotalLength = 21.0; //[2] (OffPipeB + BremCollPipe)
+  constexpr double offPipeBLength = 2.6; // as small as possible
+  constexpr double bremCollPipeLength = bremCollTotalLength - offPipeBLength;
+
+  constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [2, page1]
+  constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
+    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - valve3Length -
+    bellowJLength - florTubeALength - bellowILength;
+  // same as counting from Movable Mask 2
+  // 18692.8 + 300 + 140 + 17.5 + 340 = 19490.3
+  assert(std::abs(bellowIYstep - 1949.03)<Geometry::zeroTol && "Wrong shutter table length."); // [4]
+
+  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowI",bellowILength);
+  Control.addVariable(frontKey+"BellowIYStep",bellowIYstep);
+
+  SimpleTubeGen.setCF<CF66_TDC>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
+  Control.addVariable(frontKey+"FlorTubeARadius",7.63/2-0.2);
+
+  // beam ports
+  const std::string florName(frontKey+"FlorTubeA");
+  Control.addVariable(florName+"NPorts",4);
+  const Geometry::Vec3D XVec(1,0,0);
+  const Geometry::Vec3D ZVec(0,0,1);
+
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.setOuterVoid(1);
+  PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
+  PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);
+  PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
+
+  Control.addVariable(florName+"Port0Length",6);
+  Control.addVariable(florName+"Port1Length",6);
+
+
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.generateBellow(Control,frontKey+"BellowJ",bellowJLength);
+
+  // V3 Valve
+  GVGen.generateGate(Control,frontKey+"Valve3",0);
+  Control.addVariable(frontKey+"Valve3Radius",3.25);
+  Control.addVariable(frontKey+"Valve3WallThick",0.2);
+  Control.addVariable(frontKey+"Valve3PortThick",0.6-0.45);
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setBFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,frontKey+"OffPipeA",offPipeALength);
+  Control.addVariable(frontKey+"OffPipeAFlangeBZStep",3.0);
+
+
+  const std::string shutterName=frontKey+"ShutterBox";
+  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCap(0,0);
+  SimpleTubeGen.generateTube(Control,shutterName,shutterBoxLength);
+  Control.addVariable(shutterName+"NPorts",2);
+
+  // 20cm above port tube
+  PItemGen.setCF<setVariable::CF50>(14.0);
+  PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
+  // lift is actually 60mm [check]
+  BeamMGen.setThread(1.0,"Nickel");
+  BeamMGen.setLift(5.0,0.0);
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");
+
+  // centre of mid point
+  Geometry::Vec3D CPos(0,-shutterBoxLength/4.0,0);
+  for(size_t i=0;i<2;i++)
+    {
+      const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
+      const std::string fname=frontKey+"BS"+std::to_string(i+1);
+
+      PItemGen.generatePort(Control,name,CPos,ZVec);
+      BeamMGen.generateMount(Control,fname,0);      // out of beam
+      CPos+=Geometry::Vec3D(0,shutterBoxLength/2.0,0);
+    }
+
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.setAFlangeCF<setVariable::CF150>();
+  PipeGen.generatePipe(Control,frontKey+"OffPipeB",offPipeBLength);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
+  Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
+  Control.addVariable(frontKey+"OffPipeBFlangeBType",0);
+
+  Control.addVariable(frontKey+"BremBlockRadius",3.0);
+  Control.addVariable(frontKey+"BremBlockLength",20.0);
+  Control.addVariable(frontKey+"BremBlockHoleWidth",2.0);
+  Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
+  Control.addVariable(frontKey+"BremBlockMainMat","Tungsten");
+
+  PSGen.generate(Control,frontKey+"ProxiShieldA", 10.0); // CAD
+  Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
+  Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
+
+  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",proxiShieldAPipeLength);
+
+  Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
+  Control.copyVarSet(frontKey+"ProxiShieldA", frontKey+"ProxiShieldB");
+  Control.addVariable(frontKey+"ProxiShieldBPipeLength",proxiShieldBPipeLength);
+  Control.addVariable(frontKey+"ProxiShieldBPipeFlangeARadius",7.5);
+  Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
+
+  // Bremsstrahulung collimator
+  std::string name;
+  name=frontKey+"BremCollPipe";
+  constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
+
+  constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,name,bremCollPipeLength);
+  constexpr double bremCollPipeInnerRadius = 4.5; // CAD
+  Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
+  Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
+  Control.addVariable(name+"FlangeBRadius",7.5); // CAD
+  Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
+  Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
+
+  BBGen.centre();
+  BBGen.setMaterial("Tungsten", "Void");
+  BBGen.setLength(bremCollLength);
+  BBGen.setRadius(bremCollRadius);
+  // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
+  BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
+  BBGen.generateBlock(Control,frontKey+"BremColl",0);
+  Control.addVariable(frontKey+"BremCollYStep",(bremCollPipeLength-bremCollLength)/2.0);
+
+  return;
+}
+
+
 void
 DANMAXvariables(FuncDataBase& Control)
   /*!
@@ -1031,6 +1208,8 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::undulatorVariables(Control,frontKey);
   setVariable::R3FrontEndToyamaVariables(Control,beamLineName);
   //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
+
+  support7DanMAX(Control,frontKey);
 
   setVariable::CrossGenerator CrossGen;
 
