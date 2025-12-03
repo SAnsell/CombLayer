@@ -143,7 +143,7 @@ R3FrontEndFMBB::R3FrontEndFMBB(const std::string& Key) :
   // OR.addObject(aperturePipeA);
   // OR.addObject(moveCollA);
   // OR.addObject(bellowF);
-  // OR.addObject(ionPC);
+  // OR.addObject(pump4);
   // OR.addObject(bellowG);
   // OR.addObject(aperturePipeB);
   // OR.addObject(moveCollB);
@@ -313,11 +313,11 @@ R3FrontEndFMBB::buildApertureTable(Simulation& System,
   bellowE->setBack(*aperturePipeA,1);
   bellowE->createAll(System,preFC,preSideIndex);
 
-  ionPC->createAll(System,preFC,preSideIndex);
+  pump4->createAll(System,preFC,preSideIndex);
 
   // bellows AFTER aperature ionpump and ion pump
   bellowF->setFront(*aperturePipeA,2);
-  bellowF->setBack(*ionPC,1);
+  bellowF->setBack(*pump4,1);
   bellowF->createAll(System,preFC,preSideIndex);
 
   // now do insert:
@@ -330,26 +330,26 @@ R3FrontEndFMBB::buildApertureTable(Simulation& System,
   outerCell=buildZone.createUnit(System,*bellowF,2);
   bellowF->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*ionPC,2);
-  ionPC->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*pump4,2);
+  pump4->insertInCell(System,outerCell);
 
 
   // Next 4 objects need to be build before insertion
-  aperturePipeB->createAll(System,*ionPC,2);
+  aperturePipeB->createAll(System,*pump4,2);
   moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
   moveCollB->createAll(System,*aperturePipeB,"midPoint");
 
   // bellows AFTER movable aperture pipe
-  bellowG->setFront(*ionPC,2);
+  bellowG->setFront(*pump4,2);
   bellowG->setBack(*aperturePipeB,1);
-  bellowG->createAll(System,*ionPC,2);
+  bellowG->createAll(System,*pump4,2);
 
-  pipeC->createAll(System,*ionPC,2);
+  pipeC->createAll(System,*pump4,2);
 
   // bellows AFTER movable aperture pipe
   bellowH->setFront(*aperturePipeB,2);
   bellowH->setBack(*pipeC,1);
-  bellowH->createAll(System,*ionPC,2);
+  bellowH->createAll(System,*pump4,2);
 
 
   // now do insert:

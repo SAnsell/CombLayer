@@ -130,7 +130,7 @@ moveApertureTableToyama(FuncDataBase& Control,
   CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
   CrossGen.setTotalPorts(7.5,7.5);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
-    (Control,frontKey+"IonPC",0.0,15.74,28.70);   // height/depth
+    (Control,frontKey+"IonPump4",0.0,15.74,28.70);   // height/depth
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();

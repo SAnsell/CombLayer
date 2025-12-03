@@ -171,7 +171,7 @@ class R3FrontEnd :
   /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// Real Ion pump (KF40) 26cm vertioal
-  std::shared_ptr<constructSystem::CrossPipe> ionPC;
+  std::shared_ptr<constructSystem::CrossPipe> pump4;
   /// bellows for second movable aperature
   std::shared_ptr<constructSystem::Bellows> bellowG;
   /// Variable Apperature pipe B
