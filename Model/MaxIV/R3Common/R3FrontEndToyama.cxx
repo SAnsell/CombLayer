@@ -179,7 +179,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(bellowI);
   // OR.addObject(florTubeA);
   // OR.addObject(bellowJ);
-  // OR.addObject(gateTubeB);
+  // OR.addObject(valve3);
   // OR.addObject(offPipeA);
   // OR.addObject(shutterBox);
   // OR.addObject(shutters[0]);
@@ -454,16 +454,16 @@ R3FrontEndToyama::buildSupport7(Simulation& System)
 
   insertFlanges(System,*florTubeA,3);
 
-  constructSystem::constructUnit(System,buildZone,*bellowJ,"back",*gateTubeB);
+  constructSystem::constructUnit(System,buildZone,*bellowJ,"back",*valve3);
 
   // Broximity shielding A
-  proxiShieldAPipe->createAll(System,*gateTubeB,"back");
+  proxiShieldAPipe->createAll(System,*valve3,"back");
   constructSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
   constructSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
 
   constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);
 
-  //  insertFlanges(System,*gateTubeB);
+  //  insertFlanges(System,*valve3);
 
   shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
   outerCell=buildZone.createUnit(System,*shutterBox,"back");

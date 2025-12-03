@@ -199,7 +199,7 @@ shutterTableFMBB(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowJ",10.0);
 
-  GVGen.generateGate(Control,frontKey+"GateTubeB",0);
+  GVGen.generateGate(Control,frontKey+"Valve3",0);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window

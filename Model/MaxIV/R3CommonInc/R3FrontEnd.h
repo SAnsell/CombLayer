@@ -193,7 +193,7 @@ class R3FrontEnd :
   /// bellows for florescence system
   std::shared_ptr<constructSystem::Bellows> bellowJ;
   /// Gate box B
-  std::shared_ptr<xraySystem::CylGateValve> gateTubeB;
+  std::shared_ptr<xraySystem::CylGateValve> valve3;
   /// Front port connection for shutterbox
   std::shared_ptr<constructSystem::OffsetFlangePipe> offPipeA;
   /// Main shutters

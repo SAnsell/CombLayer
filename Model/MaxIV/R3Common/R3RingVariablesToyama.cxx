@@ -237,10 +237,10 @@ shutterTableToyama(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowJ",bellowJLength);
 
   // V3 Valve
-  GVGen.generateGate(Control,frontKey+"GateTubeB",0);
-  Control.addVariable(frontKey+"GateTubeBRadius",3.25);
-  Control.addVariable(frontKey+"GateTubeBWallThick",0.2);
-  Control.addVariable(frontKey+"GateTubeBPortThick",0.6-0.45);
+  GVGen.generateGate(Control,frontKey+"Valve3",0);
+  Control.addVariable(frontKey+"Valve3Radius",3.25);
+  Control.addVariable(frontKey+"Valve3WallThick",0.2);
+  Control.addVariable(frontKey+"Valve3PortThick",0.6-0.45);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window

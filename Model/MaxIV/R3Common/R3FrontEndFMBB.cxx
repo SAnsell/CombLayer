@@ -410,12 +410,12 @@ R3FrontEndFMBB::buildShutterTable(Simulation& System,
   insertFlanges(System,*florTubeA,3);
 
   constructSystem::constructUnit
-    (System,buildZone,*bellowJ,"back",*gateTubeB);
+    (System,buildZone,*bellowJ,"back",*valve3);
 
   constructSystem::constructUnit
-    (System,buildZone,*gateTubeB,"back",*offPipeA);
+    (System,buildZone,*valve3,"back",*offPipeA);
 
-  //  insertFlanges(System,*gateTubeB);
+  //  insertFlanges(System,*valve3);
 
   shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
   outerCell=buildZone.createUnit(System,*shutterBox,"back");

@@ -150,7 +150,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
   florTubeA(new constructSystem::PipeTube(newName+"FlorTubeA")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),
+  valve3(new xraySystem::CylGateValve(newName+"Valve3")),
   offPipeA(new constructSystem::OffsetFlangePipe(newName+"OffPipeA")),
   shutterBox(new constructSystem::PipeTube(newName+"ShutterBox")),
   shutters({
@@ -208,7 +208,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(bellowI);
   OR.addObject(florTubeA);
   OR.addObject(bellowJ);
-  OR.addObject(gateTubeB);
+  OR.addObject(valve3);
   OR.addObject(offPipeA);
   OR.addObject(shutterBox);
   OR.addObject(shutters[0]);
@@ -474,12 +474,12 @@ R3FrontEnd::buildShutterTable(Simulation& System,
   // insertFlanges(System,*florTubeA,3);
 
   // constructSystem::constructUnit
-  //   (System,buildZone,*bellowJ,"back",*gateTubeB);
+  //   (System,buildZone,*bellowJ,"back",*valve3);
 
   // constructSystem::constructUnit
-  //   (System,buildZone,*gateTubeB,"back",*offPipeA);
+  //   (System,buildZone,*valve3,"back",*offPipeA);
 
-  // //  insertFlanges(System,*gateTubeB);
+  // //  insertFlanges(System,*valve3);
 
   // shutterBox->createAll(System,*offPipeA,"FlangeBCentre");
   // outerCell=buildZone.createUnit(System,*shutterBox,"back");
