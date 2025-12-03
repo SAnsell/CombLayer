@@ -167,6 +167,9 @@ HeatAbsorberToyama::populate(const FuncDataBase& Control)
   dumpWidth=Control.EvalVar<double>(keyName+"DumpWidth");
   dumpHeight=Control.EvalVar<double>(keyName+"DumpHeight");
   dumpLength=Control.EvalVar<double>(keyName+"DumpLength");
+  if (dumpLength + Geometry::zeroTol > length )
+      throw ColErr::RangeError<double>(dumpLength,0.0,length,"DumpLength can't exceed the total Length");
+
   dumpEndRadius=Control.EvalVar<double>(keyName+"DumpEndRadius");
   dumpFrontRadius=Control.EvalVar<double>(keyName+"DumpFrontRadius");
   dumpXOffset=Control.EvalVar<double>(keyName+"DumpXOffset");
@@ -201,8 +204,7 @@ HeatAbsorberToyama::createSurfaces()
     APt=ExternalCut::interPoint("front",Origin,Y);
 
   if (!backActive()) {
-    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+dumpWidth),Y);
-    ELog::EM << "Why + dumpWidth?" << ELog::endWarn;
+    ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     BPt = Origin+Y*(length);
   } else
