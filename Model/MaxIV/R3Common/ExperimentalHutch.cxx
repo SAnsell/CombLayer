@@ -367,11 +367,11 @@ ExperimentalHutch::createObjects(Simulation& System)
       BI+=100;
     }
 
-  const HeadRule floorShineFrontWall = ModelSupport::getSetHeadRule(SMap, buildIndex, "31 -51 3 -4 -15");
-  const HeadRule floorShineLeftWall = ModelSupport::getSetHeadRule(SMap, buildIndex, "3 -43 51 -303 -15");
-  const HeadRule floorShineLeftCornerWall = ModelSupport::getSetHeadRule(SMap, buildIndex, "343 -303 -62 43 -15");
-  const HeadRule floorShineRightWall = ModelSupport::getSetHeadRule(SMap, buildIndex, "-4 44 51 -2 -15");
-  const HeadRule floorShineBackWall = ModelSupport::getSetHeadRule(SMap, buildIndex, "-2 62 -44 -303 -15");
+  const HeadRule floorShineFrontWall = ModelSupport::getHeadRule(SMap, buildIndex, "31 -51 3 -4 -15");
+  const HeadRule floorShineLeftWall = ModelSupport::getHeadRule(SMap, buildIndex, "3 -43 51 -303 -15");
+  const HeadRule floorShineLeftCornerWall = ModelSupport::getHeadRule(SMap, buildIndex, "343 -303 -62 43 -15");
+  const HeadRule floorShineRightWall = ModelSupport::getHeadRule(SMap, buildIndex, "-4 44 51 -2 -15");
+  const HeadRule floorShineBackWall = ModelSupport::getHeadRule(SMap, buildIndex, "-2 62 -44 -303 -15");
   const HeadRule floorShine = (floorShineFrontWall+floorShineLeftWall+floorShineRightWall+floorShineBackWall+floorShineLeftCornerWall)*floor;
   makeCell("FloorShine", System, cellIndex++, pbMat, 0.0, floorShine);
 
