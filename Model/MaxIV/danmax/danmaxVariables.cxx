@@ -1039,6 +1039,13 @@ DANMAXvariables(FuncDataBase& Control)
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF100>
     (Control,frontKey+"IonPump3",0.0,13.3,26.6); // yStep, height, depth (dummy)
 
+  CrossGen.setMat("SteelUnknownGrade");
+  CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
+  CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main): 14 in total [4]
+  CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
+    (Control,frontKey+"IonPump4",0.0,15.74,28.70);   // height/depth
+
+
   danmaxVar::frontMaskVariables(Control,frontKey);
 
   Control.addVariable(frontKey+"ProxiShieldAWallMat","Void"); // [AR 251104: checked by JR 251103]

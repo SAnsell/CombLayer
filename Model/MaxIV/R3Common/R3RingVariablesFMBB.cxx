@@ -121,7 +121,7 @@ moveApertureTableFMBB(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowF",14.0);
 
   // Stepped 420mm from pipeB so bellows/aperturePipe can move freely
-  CrossGen.setMat("Stainless304");
+  CrossGen.setMat("SteelUnknownGrade");
   CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
   CrossGen.setTotalPorts(7.5,7.5);     // len of ports (after main)
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
