@@ -62,7 +62,7 @@ PreDipoleGenerator::PreDipoleGenerator() :
   flangeBRadius(CF50::flangeRadius),
   flangeBLength(CF50::flangeLength),
   voidMat("Void"),wallMat("Copper"),
-  flangeMat("Stainless304")
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

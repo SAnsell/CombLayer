@@ -65,7 +65,7 @@ HPJawsGenerator::HPJawsGenerator() :
   jawThick(0.8),
   jawCornerEdge(2.5),
   jawCornerFar(1.0),
-  voidMat("Void"),wallMat("Stainless304L"),
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
   jawMat("Tungsten")
   /*!
     Constructor and defaults

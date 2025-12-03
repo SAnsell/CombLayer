@@ -76,7 +76,7 @@ SlitsMaskGenerator::SlitsMaskGenerator() :
   leftFlangeCapWindowMat("SiO2"),
   slitsMat("Tungsten"),
   slitSupportMat("Aluminium"),
-  wallMat("Stainless304"),
+  wallMat("SteelUnknownGrade"),
   voidMat("Void")
   /*!
     Constructor and defaults

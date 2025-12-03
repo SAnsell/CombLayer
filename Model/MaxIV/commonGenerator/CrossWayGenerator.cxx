@@ -66,8 +66,8 @@ CrossWayGenerator::CrossWayGenerator() :
   flangeYLength(CF40::flangeLength),
   flangeZLength(CF63::flangeLength),
   plateThick(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  plateMat("Stainless304L")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  plateMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

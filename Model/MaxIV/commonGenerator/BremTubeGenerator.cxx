@@ -68,8 +68,8 @@ BremTubeGenerator::BremTubeGenerator() :
   backFlangeLength(CF150::flangeLength),
   wallThick(CF150::wallThick),
   plateThick(CF150::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  plateMat("Stainless304L")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  plateMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

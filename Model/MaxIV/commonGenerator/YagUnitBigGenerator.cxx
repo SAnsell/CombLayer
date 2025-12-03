@@ -71,7 +71,7 @@ YagUnitBigGenerator::YagUnitBigGenerator() :
   portFlangeLength(CF35_TDC::flangeLength),
   frontLength(10.0),backLength(10.0),
   outerRadius(CF63::flangeRadius*1.2),
-  voidMat("Void"),mainMat("Stainless304L")
+  voidMat("Void"),mainMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

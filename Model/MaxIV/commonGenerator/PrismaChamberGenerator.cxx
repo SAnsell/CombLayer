@@ -61,8 +61,8 @@ PrismaChamberGenerator::PrismaChamberGenerator() :
   flangeLength(2.7),flangeXLength(CF100::flangeLength),
   flangeBeamLength(CF40::flangeLength),
   sideThick(CF100::flangeLength),plateThick(CF100::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  plateMat("Stainless304L")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  plateMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

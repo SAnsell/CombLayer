@@ -65,7 +65,7 @@ PowerFilterGenerator::PowerFilterGenerator() :
   holderGapWidth(1.0),
   holderGapHeight(14.8),
   mat("Silicon300K"),
-  holderMat("Stainless304L")
+  holderMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

@@ -58,8 +58,8 @@ StriplineBPMGenerator::StriplineBPMGenerator() :
   flangeBRadius(CF27_TDC::flangeRadius),flangeBLength(CF27_TDC::flangeLength),
   striplineRadius(3.2),striplineThick(2.4),
   striplineYStep(3.1),striplineEnd(4.0),
-  voidMat("Void"),striplineMat("Stainless304L"),
-  flangeMat("Stainless304L"),outerMat("Stainless304L")
+  voidMat("Void"),striplineMat("SteelUnknownGrade"),
+  flangeMat("SteelUnknownGrade"),outerMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

@@ -56,7 +56,7 @@ FlangeMountGenerator::FlangeMountGenerator() :
   bladeWidth(3.0),bladeHeight(4.0),bladeFlag(1),
   bladeCentreFlag(1),
   threadMat("Nickel"),bladeMat("Tungsten"),
-  plateMat("Stainless304")
+  plateMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

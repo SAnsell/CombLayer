@@ -68,8 +68,8 @@ BiPortGenerator::BiPortGenerator() :
   outFlangeRadius(CF50::flangeRadius),
   outFlangeLength(CF50::flangeLength),
   
-  voidMat("Void"),wallMat("Stainless304"),
-  capMat("Stainless304")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  capMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

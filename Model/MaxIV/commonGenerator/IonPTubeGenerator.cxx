@@ -62,8 +62,8 @@ IonPTubeGenerator::IonPTubeGenerator() :
   flangeYLength(CF35_TDC::flangeLength),
   flangeZLength(CF66_TDC::flangeLength),
   plateThick(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  plateMat("Stainless304L")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  plateMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

@@ -64,7 +64,7 @@ WallLeadGenerator::WallLeadGenerator() :
   extraLeadXCut(60.0),
   preLeadVoidThick(7.0),
   voidMat("Void"),midMat("Concrete"),wallMat("Lead"),
-  steelMat("Stainless304")
+  steelMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

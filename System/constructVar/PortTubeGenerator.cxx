@@ -58,7 +58,7 @@ PortTubeGenerator::PortTubeGenerator() :
   portBWallThick(0.5),portBTubeLength(5.0),portBTubeRadius(4.0),
   flangeALen(1.0),flangeARadius(1.0),
   flangeBLen(1.0),flangeBRadius(1.0),
-  voidMat("Void"),wallMat("Stainless304")
+  voidMat("Void"),wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

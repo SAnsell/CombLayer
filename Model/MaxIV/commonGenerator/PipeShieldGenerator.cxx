@@ -52,8 +52,8 @@ namespace setVariable
 PipeShieldGenerator::PipeShieldGenerator() :
   height(60.0),width(60.0),length(7.0),clearGap(0.2),
   wallThick(0.5),wingThick(7.0),
-  mat("Lead"),wallMat("Stainless304"),
-  wingMat("Stainless304")
+  mat("Lead"),wallMat("SteelUnknownGrade"),
+  wingMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

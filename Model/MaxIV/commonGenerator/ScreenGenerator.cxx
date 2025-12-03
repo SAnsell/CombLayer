@@ -64,7 +64,7 @@ ScreenGenerator::ScreenGenerator() :
   juncBoxMat("StbTCABL%Void%50"), // guess
   juncBoxWallMat("Aluminium"),
   threadMat("Aluminium"),
-  feedWallMat("Stainless304L")
+  feedWallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

@@ -60,8 +60,8 @@ DiffXIADP03Generator::DiffXIADP03Generator() :
   flangeVoidThick(4.44),magnetWidth(12.7),
   magnetLength(36.83),magnetThick(2.54),
   magnetGap(0.17),
-  mat("Stainless304"),magnetMat("Fe2O3"),
-  flangeMat("Stainless304")
+  mat("SteelUnknownGrade"),magnetMat("Fe2O3"),
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */
@@ -77,8 +77,8 @@ DiffXIADP03Generator::DiffXIADP03Generator(const CF40&) :
   flangeVoidThick(CF40::flangeLength+1.2),magnetWidth(4.7),
   magnetLength(10.0),magnetThick(1.54),
   magnetGap(0.17),
-  mat("Stainless304"),magnetMat("Fe2O3"),
-  flangeMat("Stainless304")
+  mat("SteelUnknownGrade"),magnetMat("Fe2O3"),
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

@@ -70,7 +70,7 @@ UndVacGenerator::UndVacGenerator() :
 
   preLength(16.5),
 
-  voidMat("Void"),wallMat("Stainless304L"),supportMat("Nickel")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),supportMat("Nickel")
   /*!
     Constructor and defaults
   */

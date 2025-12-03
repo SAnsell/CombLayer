@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/JawValveGenerator.cxx
  *
  * Copyright (c) 2004-2020 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -55,14 +55,14 @@ JawValveGenerator::JawValveGenerator() :
   width(24.0),height(46.0),depth(10.5),
   wallThick(0.5),portARadius(5.0),portAThick(1.0),portALen(1.5),
   portBRadius(5.0),portBThick(1.0),portBLen(1.5),
-  voidMat("Void"),wallMat("Stainless304"),jawWidth(2.0),
+  voidMat("Void"),wallMat("SteelUnknownGrade"),jawWidth(2.0),
   jawHeight(1.0),jawThick(0.2),jawGap(0.1)
   /*!
     Constructor and defaults
   */
 {}
 
-JawValveGenerator::JawValveGenerator(const JawValveGenerator& A) : 
+JawValveGenerator::JawValveGenerator(const JawValveGenerator& A) :
   length(A.length),innerRadius(A.innerRadius),width(A.width),height(A.height),
   depth(A.depth),wallThick(A.wallThick),portARadius(A.portARadius),
   portAThick(A.portAThick),portALen(A.portALen),
@@ -114,7 +114,7 @@ void
 JawValveGenerator::setRadius(const double R)
   /*!
     Set the radius of the cylinder
-    If the radius positive then the cylinder form 
+    If the radius positive then the cylinder form
     is activated.
     \param R :: Radius
    */
@@ -128,7 +128,7 @@ JawValveGenerator::setSlits(const double W,const double H,
 			    const double T,const std::string& Mat)
   /*!
     Set the jaw valve generator
-    \param W :: Width					       
+    \param W :: Width
     \param H :: Height
     \param T :: thickness
     \param Mat :: Material
@@ -157,7 +157,7 @@ JawValveGenerator::setOuter(const double L,const double W,
   depth=D;
   return;
 }
-  
+
 void
 JawValveGenerator::setPort(const double R,const double L,
 			 const double T)
@@ -206,7 +206,7 @@ JawValveGenerator::setBPort(const double R,const double L,
 }
 
 
-  
+
 template<typename CF>
 void
 JawValveGenerator::setAPortCF()
@@ -217,7 +217,7 @@ JawValveGenerator::setAPortCF()
   // rad/len/thick
   setAPort(CF::innerRadius,CF::flangeLength,
 	   CF::flangeRadius-CF::innerRadius);
-  
+
   return;
 }
 
@@ -231,7 +231,7 @@ JawValveGenerator::setBPortCF()
   // rad/len/thick
   setBPort(CF::innerRadius,CF::flangeLength,
 	   CF::flangeRadius-CF::innerRadius);
-  
+
   return;
 }
 
@@ -248,7 +248,7 @@ JawValveGenerator::setCF()
   depth=  1.1*CF::flangeRadius;
   height= 2.5*CF::flangeRadius;
   width=  2.1*CF::flangeRadius;
-  
+
   return;
 }
 
@@ -264,11 +264,11 @@ JawValveGenerator::setCylCF()
   setBPortCF<CF>();
 
   innerRadius=CF::innerRadius;
-  
+
   return;
 }
 
-  
+
 
 void
 JawValveGenerator::generateSlits(FuncDataBase& Control,
@@ -278,15 +278,15 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
 				 const double zOpen) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \parma xOpen :: Gap of x-jaws
     \parma zOpen :: Gap of z-jaws
   */
 {
   ELog::RegMethod RegA("JawValveGenerator","generatorValve");
-  
+
 
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
@@ -298,16 +298,16 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
     }
   else
     Control.addVariable(keyName+"InnerRadius",innerRadius);
-  
+
   Control.addVariable(keyName+"Depth",depth);
 
   Control.addVariable(keyName+"WallThick",wallThick);
 
-  Control.addVariable(keyName+"PortARadius",portARadius);	
+  Control.addVariable(keyName+"PortARadius",portARadius);
   Control.addVariable(keyName+"PortAThick",portAThick);
   Control.addVariable(keyName+"PortALen",portALen);
 
-  Control.addVariable(keyName+"PortBRadius",portBRadius);	
+  Control.addVariable(keyName+"PortBRadius",portBRadius);
   Control.addVariable(keyName+"PortBThick",portBThick);
   Control.addVariable(keyName+"PortBLen",portBLen);
 
@@ -326,10 +326,10 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
   Control.addVariable(jawName+"ZOpen",zOpen);
   Control.addVariable(jawName+"ZOffset",0.0);
   Control.addVariable(jawName+"ZThick",jawThick);
-  Control.addVariable(jawName+"ZHeight",jawHeight); 
-  Control.addVariable(jawName+"ZWidth",jawWidth);  
-  
-  
+  Control.addVariable(jawName+"ZHeight",jawHeight);
+  Control.addVariable(jawName+"ZWidth",jawWidth);
+
+
   Control.addVariable(jawName+"XJawMat",jawMat);
   Control.addVariable(jawName+"ZJawMat",jawMat);
 
@@ -357,5 +357,5 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
 
 ///\endcond TEMPLATE
 
-  
+
 }  // NAMESPACE setVariable

@@ -67,7 +67,7 @@ MagnetU1Generator::MagnetU1Generator() :
   exitLength(33.5),
   exitFlangeRadius(CF50::flangeRadius),
   exitFlangeLength(CF50::flangeLength),
-  voidMat("Void"),wallMat("Stainless304")
+  voidMat("Void"),wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

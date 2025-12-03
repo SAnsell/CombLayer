@@ -71,7 +71,7 @@ ViewScreenGenerator::ViewScreenGenerator() :
   viewFlangeLength(CF40::flangeLength),
   viewPlateThick(CF40::flangeLength),
 
-  voidMat("Void"),wallMat("Stainless304L")
+  voidMat("Void"),wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

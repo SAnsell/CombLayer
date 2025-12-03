@@ -58,7 +58,7 @@ BremMonoCollGenerator::BremMonoCollGenerator() :
   holeWidth(2.5),holeHeight(0.7),
   inRadius(setVariable::CF63::innerRadius),
   voidMat("Void"),innerMat("Tungsten"),
-  wallMat("Stainless304")
+  wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

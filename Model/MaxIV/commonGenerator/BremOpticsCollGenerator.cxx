@@ -52,7 +52,7 @@ BremOpticsCollGenerator::BremOpticsCollGenerator() :
   extActive(1),extXStep(0.0),extZStep(0.0),
   extLength(5.0),extRadius(2.5),
   voidMat("Void"),colMat("Tungsten"),
-  wallMat("Stainless304")
+  wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

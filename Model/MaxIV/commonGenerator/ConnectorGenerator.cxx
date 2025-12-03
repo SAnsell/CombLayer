@@ -67,8 +67,8 @@ ConnectorGenerator::ConnectorGenerator() :
   outerLength(0.65),
   flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  flangeMat("Stainless304L")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

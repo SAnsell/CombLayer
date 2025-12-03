@@ -77,10 +77,10 @@ CRLTubeGenerator::CRLTubeGenerator() :
   voidMat("Void"),
   lensMat("Be300K"),
   lensOuterMat("Copper"),
-  pipeMat("Stainless304L"),
-  mainMat("Stainless304L"),
+  pipeMat("SteelUnknownGrade"),
+  mainMat("SteelUnknownGrade"),
   magnetMat("NbFeB"),
-  flangeMat("Stainless304L")
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

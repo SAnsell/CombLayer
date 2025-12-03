@@ -57,7 +57,7 @@ GateValveGenerator::GateValveGenerator() :
   portBRadius(CF40::flangeRadius),portBThick(1.0),portBLen(1.0),
   bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),
   liftWidth(10.0),liftHeight(14.0),voidMat("Void"),
-  bladeMat("Aluminium"),wallMat("Stainless304L")
+  bladeMat("Aluminium"),wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */
@@ -124,7 +124,7 @@ GateValveGenerator::setOuter(const double L,const double W,
   width=(W>Geometry::zeroTol) ? W : width;
   height=(H>Geometry::zeroTol) ? H : height;
   depth=(D>Geometry::zeroTol) ? D : depth;
-	
+
   return;
 }
 

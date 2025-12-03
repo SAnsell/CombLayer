@@ -54,7 +54,7 @@ FlangeDomeGenerator::FlangeDomeGenerator() :
   curveStep(3.0),
   plateThick(CF350::flangeLength),
   flangeRadius(CF350::flangeRadius),
-  voidMat("Void"),mainMat("Stainless304L")
+  voidMat("Void"),mainMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

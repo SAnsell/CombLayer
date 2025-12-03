@@ -56,7 +56,7 @@ BellowGenerator::BellowGenerator() :
   wallThick(0.03),
   nFolds(10),
   engActive(0),
-  bellowMat("Stainless304%Void%10.0")
+  bellowMat("SteelUnknownGrade%Void%10.0")
   /*!
     Constructor and defaults
   */

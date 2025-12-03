@@ -55,7 +55,7 @@ MovableSafetyMaskGenerator::MovableSafetyMaskGenerator() :
   wMaskWidth(1.76),wMaskHeight(0.4),
   undZOffset(0.9),
   idType("undulator"),
-  mainMat("Stainless304"),voidMat("Void")
+  mainMat("SteelUnknownGrade"),voidMat("Void")
   /*!
     Constructor and defaults
   */

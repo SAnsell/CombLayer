@@ -97,7 +97,7 @@ MLMDetailGenerator::MLMDetailGenerator() :
   WPbaseSideSlotEdge(2.0),WPbaseSideSlotHeight(1.3),
   WPbaseSideSlotWidth(6.1),
   
-  plateMat("Stainless304"),mirrorMat("Silicon300K"),
+  plateMat("SteelUnknownGrade"),mirrorMat("Silicon300K"),
   baseMat("Copper"),voidMat("Void")
   /*!
     Constructor and defaults

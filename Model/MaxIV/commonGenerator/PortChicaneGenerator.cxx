@@ -53,7 +53,7 @@ PortChicaneGenerator::PortChicaneGenerator() :
   width(60.0),height(45.0),clearGap(8.0),downGap(10.0),
   overHang(4.0),skinThick(0.3),plateThick(1.2),
   wallThick(0.8),plateMat("Lead"),
-  skinMat("Stainless304"),wallMat("Stainless304")
+  skinMat("SteelUnknownGrade"),wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

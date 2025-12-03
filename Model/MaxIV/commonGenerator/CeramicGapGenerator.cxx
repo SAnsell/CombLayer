@@ -60,9 +60,9 @@ CeramicGapGenerator::CeramicGapGenerator() :
   bellowLen(3.5),bellowThick(0.85),
   flangeARadius(CF40::flangeRadius),flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),flangeBLength(CF40::flangeLength),
-  voidMat("Void"),pipeMat("Stainless304L"),
-  ceramicMat("Al2O3"),bellowMat("Stainless304L%Void%10.0"),
-  flangeMat("Stainless304L"),outerMat("Void")
+  voidMat("Void"),pipeMat("SteelUnknownGrade"),
+  ceramicMat("Al2O3"),bellowMat("SteelUnknownGrade%Void%10.0"),
+  flangeMat("SteelUnknownGrade"),outerMat("Void")
   /*!
     Constructor and defaults
   */

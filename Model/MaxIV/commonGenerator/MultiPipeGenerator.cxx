@@ -53,8 +53,8 @@ namespace setVariable
 MultiPipeGenerator::MultiPipeGenerator() :
   flangeRadius(CF150::flangeRadius),
   flangeLength(CF150::flangeLength),
-  voidMat("Void"),pipeMat("Stainless304L"),
-  flangeMat("Stainless304L")
+  voidMat("Void"),pipeMat("SteelUnknownGrade"),
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

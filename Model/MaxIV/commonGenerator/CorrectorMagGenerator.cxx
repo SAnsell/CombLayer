@@ -56,7 +56,7 @@ CorrectorMagGenerator::CorrectorMagGenerator() :
   pipeClampYStep(0.8),pipeClampZStep(0.7),
   pipeClampThick(0.7),pipeClampWidth(5.5),pipeClampHeight(2.0),
   magCorner((magWidth-magInnerWidth)/2.0),frameHeight(2.0),
-  voidMat("Void"),coilMat("Copper"),clampMat("Stainless304"),
+  voidMat("Void"),coilMat("Copper"),clampMat("SteelUnknownGrade"),
   frameMat("Iron")
   /*!
     Constructor and defaults

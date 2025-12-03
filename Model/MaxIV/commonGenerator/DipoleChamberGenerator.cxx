@@ -62,7 +62,7 @@ DipoleChamberGenerator::DipoleChamberGenerator() :
   innerXOut(4.64),elecXFlat(1.0),
   elecXCut(3.2),elecXFull(1.2),
   voidMat("Void"),wallMat("Copper"),
-  innerMat("Copper"),flangeMat("Stainless304")
+  innerMat("Copper"),flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

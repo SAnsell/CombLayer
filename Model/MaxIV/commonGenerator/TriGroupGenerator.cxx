@@ -74,7 +74,7 @@ TriGroupGenerator::TriGroupGenerator() :
   bendFlangeLength(CF63::flangeLength),
 
   voidMat("Void"),wallMat("Stainless316L"),
-  flangeMat("Stainless304L")
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

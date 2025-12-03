@@ -58,8 +58,8 @@ FlatPipeGenerator::FlatPipeGenerator() :
   flangeALength(CF40::flangeLength),
   flangeBRadius(CF40::flangeRadius),
   flangeBLength(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  flangeMat("Stainless304L")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

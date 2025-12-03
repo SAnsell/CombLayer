@@ -53,7 +53,7 @@ DuctGenerator::DuctGenerator() :
   length(0.0),width(50.0),height(150.0),
   radius(1.0),voidMat(0),
   ductType("Cylinder"),
-  shieldMat("Stainless304"),
+  shieldMat("SteelUnknownGrade"),
   shieldType("None"),
   shieldPenetrationType("None"),
   shieldPenetrationZOffset(-2.0),

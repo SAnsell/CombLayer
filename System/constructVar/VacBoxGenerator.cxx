@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVar/VacBoxGenerator.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -58,13 +58,13 @@ VacBoxGenerator::VacBoxGenerator() :
   portBXStep(0.0),portBZStep(0.0),portBXAngle(0.0),portBZAngle(0.0),
   portBWallThick(0.5),portBTubeLength(5.0),portBTubeRadius(4.0),
   flangeALen(1.0),flangeARadius(6.0),flangeBLen(1.0),flangeBRadius(6.0),
-  voidMat("Void"),wallMat("Stainless304")
+  voidMat("Void"),wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */
 {}
 
-VacBoxGenerator::VacBoxGenerator(const VacBoxGenerator& A) : 
+VacBoxGenerator::VacBoxGenerator(const VacBoxGenerator& A) :
   wallThick(A.wallThick),portAXStep(A.portAXStep),
   portAZStep(A.portAZStep),portAWallThick(A.portAWallThick),
   portATubeLength(A.portATubeLength),portATubeRadius(A.portATubeRadius),
@@ -111,7 +111,7 @@ VacBoxGenerator::operator=(const VacBoxGenerator& A)
   return *this;
 }
 
-VacBoxGenerator::~VacBoxGenerator() 
+VacBoxGenerator::~VacBoxGenerator()
  /*!
    Destructor
  */
@@ -126,10 +126,10 @@ VacBoxGenerator::setAPortCF()
 {
   portATubeRadius=CF::innerRadius;
   portAWallThick=CF::wallThick;
-  // extra only 
-  flangeARadius=CF::flangeRadius; 
+  // extra only
+  flangeARadius=CF::flangeRadius;
   flangeALen=CF::flangeLength;
-  
+
   return;
 }
 
@@ -142,10 +142,10 @@ VacBoxGenerator::setBPortCF()
 {
   portBTubeRadius=CF::innerRadius;
   portBWallThick=CF::wallThick;
-  // extra only 
-  flangeBRadius=CF::flangeRadius; 
+  // extra only
+  flangeBRadius=CF::flangeRadius;
   flangeBLen=CF::flangeLength;
-  
+
   return;
 }
 
@@ -264,7 +264,7 @@ VacBoxGenerator::setBPortAngle(const double XA,const double ZA)
   portBZAngle=ZA;
   return;
 }
-  
+
 void
 VacBoxGenerator::setFlange(const double R,const double L)
   /*!
@@ -323,7 +323,7 @@ VacBoxGenerator::setAllThick(const double WH,const double WD,
   feFront=WF;
   feBack=WB;
   wallThick=-1.0;
-  
+
   return;
 }
 
@@ -333,7 +333,7 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 			     const double depth,const double length) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param height :: height of box
     \param depth :: depth of box
@@ -342,7 +342,7 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
   */
 {
   ELog::RegMethod RegA("VacBoxGenerator","generatorBox");
-  
+
   Control.addVariable(keyName+"VoidHeight",height);
   Control.addVariable(keyName+"VoidDepth",depth);
   Control.addVariable(keyName+"VoidWidth",width);
@@ -358,7 +358,7 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
       Control.addVariable(keyName+"FeFront",feFront);
       Control.addVariable(keyName+"FeBack",feBack);
     }
-  
+
   Control.addVariable(keyName+"PortAXStep",portAXStep);
   Control.addVariable(keyName+"PortAZStep",portAZStep);
   Control.addVariable(keyName+"PortAWallThick",portAWallThick);
@@ -381,7 +381,7 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"PipeMat",wallMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-       
+
   return;
 
 }
@@ -402,5 +402,5 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 
 ///\endcond  TEMPLATE
 
-  
+
 }  // NAMESPACE setVariable

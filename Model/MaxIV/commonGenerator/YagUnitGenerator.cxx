@@ -67,8 +67,8 @@ YagUnitGenerator::YagUnitGenerator() :
   frontLength(7.0),backLength(13.0),
   backCapThick(0.0),
   outerRadius(CF63::flangeRadius*1.2),
-  voidMat("Void"),mainMat("Stainless304L"),
-  backCapMat("Stainless304L")
+  voidMat("Void"),mainMat("SteelUnknownGrade"),
+  backCapMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

@@ -55,7 +55,7 @@ PipeTubeGenerator::PipeTubeGenerator() :
   flangeALen(1.0),flangeARadius(1.0),
   flangeBLen(1.0),flangeBRadius(1.0),
   ACap(0.0),BCap(0.0),
-  voidMat("Void"),wallMat("Stainless304"),
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
   capMat(wallMat)
   /*!
     Constructor and defaults

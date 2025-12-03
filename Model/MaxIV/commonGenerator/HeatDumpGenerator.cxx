@@ -61,8 +61,8 @@ HeatDumpGenerator::HeatDumpGenerator() :
   outRadius(CF100::flangeRadius),
   outLength(CF100::flangeLength),
   waterRadius(1.6),waterZStop(2.4),
-  mat("Copper"),flangeMat("Stainless304"),
-  bellowMat("Stainless304%Void%10.0"),
+  mat("Copper"),flangeMat("SteelUnknownGrade"),
+  bellowMat("SteelUnknownGrade%Void%10.0"),
   waterMat("H2O")
   /*!
     Constructor and defaults

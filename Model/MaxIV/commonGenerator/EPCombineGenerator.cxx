@@ -65,7 +65,7 @@ EPCombineGenerator::EPCombineGenerator() :
   flangeBLength(CF63::flangeLength),
 
   voidMat("Void"),wallMat("Copper"),
-  flangeMat("Stainless304")
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

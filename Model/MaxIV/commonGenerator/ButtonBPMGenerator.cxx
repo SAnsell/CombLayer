@@ -63,7 +63,7 @@ ButtonBPMGenerator::ButtonBPMGenerator() :
   buttonFlangeLength(0.3),
   buttonCaseLength(1.5), // approx. email from EM 2020-07-17
   buttonCaseRadius(0.4),
-  buttonCaseMat("Stainless304"),
+  buttonCaseMat("SteelUnknownGrade"),
   buttonHandleRadius(0.27),
   buttonHandleLength(0.85),
   elThick(0.4),
@@ -75,9 +75,9 @@ ButtonBPMGenerator::ButtonBPMGenerator() :
   ceramicMat("Al2O3"),
   pinRadius(0.05),
   pinOuterRadius(0.09),
-  pinMat("Stainless304"),
-  voidMat("Void"),wallMat("Stainless304L"),
-  flangeMat("Stainless304L")
+  pinMat("SteelUnknownGrade"),
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

@@ -59,7 +59,7 @@ SqrFMaskGenerator::SqrFMaskGenerator() :
   pipeRadius(0.3),pipeXWidth(4.0),
   pipeZDepth(1.8),
   pipeYStart(2.5/15.0),pipeYStep(3.0/15.0),
-  flangeMat("Stainless304"),
+  flangeMat("SteelUnknownGrade"),
   waterMat("H2O")
   /*!
     Constructor and defaults

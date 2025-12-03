@@ -57,7 +57,7 @@ GratingUnitGenerator::GratingUnitGenerator() :
   slidePlateThick(1.0),slidePlateWidth(1.0),slidePlateLength(4.0),
   sideThick(2.0),sideHeight(3.0),endWidth(3.0),
   endHeight(10.0),endThick(3.0),
-  xstalMat("Silicon300K"), mainMat("Stainless304"),
+  xstalMat("Silicon300K"), mainMat("SteelUnknownGrade"),
   slideMat("Aluminium")
  /*!
     Constructor and defaults

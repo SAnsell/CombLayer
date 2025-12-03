@@ -66,9 +66,9 @@ ScrapperGenerator::ScrapperGenerator() :
   driveFlangeLength(CF40::flangeLength),
   supportRadius(1.8),supportThick(0.1),
   supportHeight(17.0), topBoxWidth(5.5),topBoxHeight(1.5),
-  voidMat("Void"),tubeMat("Stainless304L"),
-  flangeMat("Stainless304L"),scrapperMat("Tungsten"),
-  driveMat("Nickel"),topMat("Stainless304L")
+  voidMat("Void"),tubeMat("SteelUnknownGrade"),
+  flangeMat("SteelUnknownGrade"),scrapperMat("Tungsten"),
+  driveMat("Nickel"),topMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

@@ -59,7 +59,7 @@ TwinPipeGenerator::TwinPipeGenerator() :
   flangeCJRadius(5.7),flangeCJLength(0.8),
   flangeARadius(5.7),flangeALength(0.8),
   flangeBRadius(5.7),flangeBLength(0.8),
-  pipeMat("Stainless304"),voidMat("Void")
+  pipeMat("SteelUnknownGrade"),voidMat("Void")
   /*!
     Constructor and defaults
   */

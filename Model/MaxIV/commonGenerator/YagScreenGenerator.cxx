@@ -65,7 +65,7 @@ YagScreenGenerator::YagScreenGenerator() :
  
   screenHolderRadius(1.3), screenHolderThick(0.3), // measured,
   
-  holderMat("Stainless304L"),
+  holderMat("SteelUnknownGrade"),
   screenMat("SiO2"),
   screenHolderMat("Aluminium"),
   mirrorMat("SiO2")

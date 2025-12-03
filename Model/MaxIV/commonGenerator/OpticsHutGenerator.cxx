@@ -63,7 +63,7 @@ OpticsHutGenerator::OpticsHutGenerator() :
   innerOutVoid(10.0),outerOutVoid(10.0),
   frontVoid(0.0),backVoid(0.0),
   outerBackVoid(0.0),
-  skinMat("Stainless304"),pbMat("Lead"),
+  skinMat("SteelUnknownGrade"),pbMat("Lead"),
   voidMat("Void")
   /*!
     Constructor and defaults

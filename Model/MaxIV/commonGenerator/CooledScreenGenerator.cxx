@@ -59,7 +59,7 @@ CooledScreenGenerator::CooledScreenGenerator() :
 
   innerRadius(1.0),screenThick(0.8),
 
-  copperMat("Stainless304L"),
+  copperMat("SteelUnknownGrade"),
   screenMat("SiO2")
   
   /*!

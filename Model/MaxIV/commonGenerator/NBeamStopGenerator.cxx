@@ -58,8 +58,8 @@ NBeamStopGenerator::NBeamStopGenerator() :
        {110.0,115.0},
        {115.0}
     }),
-  mat({{"Void","Tungsten","Stainless304","Poly","B4C"},
-       {"Stainless304","Poly","B4C","Void"},
+  mat({{"Void","Tungsten","SteelUnknownGrade","Poly","B4C"},
+       {"SteelUnknownGrade","Poly","B4C","Void"},
        {"Poly","B4C","Void"},
        {"B4C","Void"}
     })

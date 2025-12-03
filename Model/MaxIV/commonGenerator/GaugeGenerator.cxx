@@ -61,8 +61,8 @@ GaugeGenerator::GaugeGenerator() :
   flangeXLength(CF37_TDC::flangeLength),
   flangeYLength(CF37_TDC::flangeLength),
   plateThick(CF37_TDC::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  plateMat("Stainless304L")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  plateMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

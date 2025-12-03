@@ -55,7 +55,7 @@ CleaningMagnetGenerator::CleaningMagnetGenerator() :
   yokeDepth(14.0),
   yokeThick(5.0),
   mat("Neodymium"),
-  yokeMat("Stainless304"), // actually s235jr,
+  yokeMat("SteelUnknownGrade"), // actually s235jr,
   voidMat("Void")
   /*!
     Constructor and defaults

@@ -51,7 +51,7 @@ namespace setVariable
 
 SimpleChicaneGenerator::SimpleChicaneGenerator() :
   width(50.0),height(20.0),clearGap(8.0),upStep(10.0),
-  plateThick(0.2),barThick(4.0),plateMat("Stainless304")
+  plateThick(0.2),barThick(4.0),plateMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

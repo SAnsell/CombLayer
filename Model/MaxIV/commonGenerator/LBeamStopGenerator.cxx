@@ -56,7 +56,7 @@ LBeamStopGenerator::LBeamStopGenerator() :
   midRadius(7.0),midNLayers(1),
   outerRadius(20.0),outerNLayers(1),
   voidMat("Void"),innerMat("Graphite"),
-  midMat("Poly"),outerMat("Stainless304L")
+  midMat("Poly"),outerMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

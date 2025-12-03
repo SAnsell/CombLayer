@@ -61,7 +61,7 @@ EArrivalMonGenerator::EArrivalMonGenerator() :
   flangeRadius(CF40::flangeRadius),flangeLength(CF40::flangeLength),
   windowRotAngle(90.0),windowRadius(CF40_22::innerRadius),
   windowThick(0.7),voidMat("Void"),mainMat("Copper"),
-  windowMat("SiO2"),flangeMat("Stainless304L")
+  windowMat("SiO2"),flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

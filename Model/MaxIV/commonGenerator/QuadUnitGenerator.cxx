@@ -59,7 +59,7 @@ QuadUnitGenerator::QuadUnitGenerator() :
   flangeRadius(CF63::innerRadius),
   flangeLength(CF63::flangeLength),
   voidMat("Void"),wallMat("Copper"),
-  flangeMat("Stainless304"),
+  flangeMat("SteelUnknownGrade"),
   QGen(new QuadrupoleGenerator)
   /*!
     Constructor and defaults

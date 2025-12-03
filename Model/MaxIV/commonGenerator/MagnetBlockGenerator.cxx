@@ -54,7 +54,7 @@ MagnetBlockGenerator::MagnetBlockGenerator() :
   aLength(50.2),bLength(125.3),
   midLength(116.0),sectorAngle(30.0),
   height(70.0),width(34.0),
-  voidMat("Void"),outerMat("Stainless304")
+  voidMat("Void"),outerMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

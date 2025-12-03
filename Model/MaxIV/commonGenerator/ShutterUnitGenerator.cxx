@@ -62,8 +62,8 @@ ShutterUnitGenerator::ShutterUnitGenerator() :
   outRadius(CF100::flangeRadius),
   outLength(CF100::flangeLength),
   mat("Tungsten"),threadMat("Copper"),
-  flangeMat("Stainless304"),
-  bellowMat("Stainless304%Void%10.0")
+  flangeMat("SteelUnknownGrade"),
+  bellowMat("SteelUnknownGrade%Void%10.0")
   /*!
     Constructor and defaults
   */

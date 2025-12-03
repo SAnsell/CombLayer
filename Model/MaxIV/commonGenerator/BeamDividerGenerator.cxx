@@ -66,8 +66,8 @@ BeamDividerGenerator::BeamDividerGenerator(const CF63&) :
   flangeARadius(CF63::innerRadius),flangeALength(CF63::flangeLength),
   flangeBRadius(CF40::innerRadius),flangeBLength(CF40::flangeLength),
   flangeERadius(CF40::innerRadius),flangeELength(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  flangeMat("Stainless304")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */
@@ -85,8 +85,8 @@ BeamDividerGenerator::BeamDividerGenerator(const CF40&) :
   flangeARadius(CF50::innerRadius),flangeALength(CF50::flangeLength),
   flangeBRadius(CF40::innerRadius),flangeBLength(CF40::flangeLength),
   flangeERadius(CF40::innerRadius),flangeELength(CF40::flangeLength),
-  voidMat("Void"),wallMat("Stainless304L"),
-  flangeMat("Stainless304")
+  voidMat("Void"),wallMat("SteelUnknownGrade"),
+  flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

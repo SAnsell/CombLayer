@@ -54,7 +54,7 @@ FlangePlateGenerator::FlangePlateGenerator() :
   innerThick(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),
   flangeLength(CF40::flangeLength),
-  windowMat("Void"),flangeMat("Stainless304L")
+  windowMat("Void"),flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */
@@ -92,7 +92,7 @@ FlangePlateGenerator::setWindow(const double R,const double T,
   innerRadius=R;
   innerThick=T;
   windowMat=winMat;
-  
+
   return;
 }
 

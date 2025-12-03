@@ -59,7 +59,7 @@ CollUnitGenerator::CollUnitGenerator() :
   plateWidth(5.0),nHoles(5),
   holeGap(0.8),holeRadius(0.2),
 
-  voidMat("Void"),plateMat("Stainless304L"),
+  voidMat("Void"),plateMat("SteelUnknownGrade"),
   pipeMat("Copper"),waterMat("H2O")
   /*!
     Constructor and defaults

@@ -56,7 +56,7 @@ ElectroBoxGenerator::ElectroBoxGenerator() :
   voidSpace(10.0),
   frontThick(4.0),backThick(4.0),sideThick(4.0),
   skinThick(0.2),voidMat("Void"),elecMat("Poly"),
-  skinMat("Stainless304"),wallMat("Lead")
+  skinMat("SteelUnknownGrade"),wallMat("Lead")
   /*!
     Constructor and defaults
   */

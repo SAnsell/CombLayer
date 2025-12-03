@@ -56,7 +56,7 @@ DomeConnectorGenerator::DomeConnectorGenerator() :
   flatLen(8.0),plateThick(CF200::wallThick),
   flangeRadius(CF200::flangeRadius),
   flangeLen(CF200::flangeLength),
-  wallMat("Stainless304L"),voidMat("Void")
+  wallMat("SteelUnknownGrade"),voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -113,7 +113,7 @@ DomeConnectorGenerator::generateDome
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"NPorts",nPorts);
-  
+
   return;
 }
 

@@ -60,7 +60,7 @@ BremCollGenerator::BremCollGenerator() :
   pipeYStep(2.2),pipeZStep(2.0),pipeWidth(5.2),pipeMidGap(1.0),
   
   voidMat("Void"),innerMat("Tungsten"),
-  wallMat("Stainless304"),waterMat("H2O"),
+  wallMat("SteelUnknownGrade"),waterMat("H2O"),
   pipeMat("Copper")
   /*!
     Constructor and defaults

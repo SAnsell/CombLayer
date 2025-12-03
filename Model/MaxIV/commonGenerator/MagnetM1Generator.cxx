@@ -74,7 +74,7 @@ MagnetM1Generator::MagnetM1Generator() :
   fullLength(205.0),
 
   // halfpipe
-  voidMat("Void"),wallMat("Stainless304")
+  voidMat("Void"),wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

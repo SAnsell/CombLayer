@@ -80,8 +80,8 @@ R3ChokeChamberGenerator::R3ChokeChamberGenerator() :
   plateThick(4.0),plateGap(0.14),
   plateDepth(2.0),plateLength(15.0),
 
-  voidMat("Void"),wallMat("Copper"),flangeMat("Stainless304"),
-  capMat("Stainless304"),plateMat("Copper")
+  voidMat("Void"),wallMat("Copper"),flangeMat("SteelUnknownGrade"),
+  capMat("SteelUnknownGrade"),plateMat("Copper")
   /*!
     Constructor and defaults
   */

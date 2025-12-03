@@ -54,7 +54,7 @@ CrossGenerator::CrossGenerator() :
   wallThick(0.5),topThick(1.0),baseThick(1.0),
   frontLen(5.0),backLen(5.0),
   flangeRadius(1.0),flangeLen(1.0),
-  voidMat("Void"),wallMat("Stainless304")
+  voidMat("Void"),wallMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */

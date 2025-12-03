@@ -55,7 +55,7 @@ SolenoidGenerator::SolenoidGenerator() :
   coilThick(3.0),coilRadius(17),
   coilGap(0.3),
   penRadius(3.8),
-  frameMat("Stainless304"), // AB: some carbon steel
+  frameMat("SteelUnknownGrade"), // AB: some carbon steel
   coilMat("Copper"), // TODO: maybe StbTCABL?
   voidMat("Void"),
   nCoils(4)

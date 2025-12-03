@@ -54,7 +54,7 @@ PortItemGenerator::PortItemGenerator() :
   length(12.0),radius(5.0),wallThick(0.5),
   flangeLen(1.0),flangeRadius(1.0),
   capThick(0.0),windowThick(0.0),windowRadius(0.0),
-  wallMat("Stainless304"),capMat("Aluminium"),
+  wallMat("SteelUnknownGrade"),capMat("Aluminium"),
   windowMat("LeadGlass"),outerVoidMat("Void"),
   outerVoid(1)
   /*!
