@@ -55,7 +55,8 @@ ExptHutGenerator::ExptHutGenerator() :
   OpticsHutGenerator(),
   ringWidth(200.0),pbFrontThick(-1.0),
   cornerAngle(45.0),cornerYStep(100000.0),
-  fHoleXStep(0.0),fHoleZStep(0.0),fHoleRadius(3.0)
+  fHoleXStep(0.0),fHoleZStep(0.0),fHoleRadius(3.0),
+  floorShineThick(0.6), floorShineLength(20.0)
   /*!
     Constructor and defaults
   */
@@ -130,6 +131,8 @@ ExptHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(hutName+"FHoleZStep",fHoleZStep);
   Control.addVariable(hutName+"FHoleRadius",fHoleRadius);
 
+  Control.addVariable(hutName+"FloorShineThick",floorShineThick);
+  Control.addVariable(hutName+"FloorShineLength",floorShineLength);
 
   return;
 
