@@ -275,7 +275,7 @@ ExperimentalHutch::createSurfaces()
   // Plane parallel to the floor that defines the thickness.
   const HeadRule floor=ExternalCut::getRule("floor");
   ModelSupport::buildShiftedPlane(SMap, buildIndex+15, SMap.realPtr<Geometry::Plane>(floor.getPrimarySurface()), floorShineThick);
-  // Planes parallel to the walls of the hutch that defined the extent of the floor shine cover.
+  // Planes parallel to the walls of the hutch that define the extent of the floor shine cover.
   // Front wall
   ModelSupport::buildShiftedPlane(SMap, buildIndex+51, buildIndex+1, Y, floorShineLength);
   // Left wall (straight part)
@@ -369,15 +369,15 @@ ExperimentalHutch::createObjects(Simulation& System)
     }
 
   const HeadRule floorShineFrontWall = ModelSupport::getHeadRule(SMap, buildIndex, "31 -51 3 -4 -15");
-  makeCell("FloorShineFrontWall", System, cellIndex++, pbMat, 0.0, floorShineFrontWall);
+  makeCell("FloorShineFrontWall", System, cellIndex++, pbMat, 0.0, floorShineFrontWall*floor);
   const HeadRule floorShineLeftWall = ModelSupport::getHeadRule(SMap, buildIndex, "3 -43 51 -303 -15");
-  makeCell("FloorShineLeftWall", System, cellIndex++, pbMat, 0.0, floorShineLeftWall);
+  makeCell("FloorShineLeftWall", System, cellIndex++, pbMat, 0.0, floorShineLeftWall*floor);
   const HeadRule floorShineLeftCornerWall = ModelSupport::getHeadRule(SMap, buildIndex, "343 -303 -62 43 -15");
-  makeCell("FloorShineLeftCornerWall", System, cellIndex++, pbMat, 0.0, floorShineLeftCornerWall);
+  makeCell("FloorShineLeftCornerWall", System, cellIndex++, pbMat, 0.0, floorShineLeftCornerWall*floor);
   const HeadRule floorShineRightWall = ModelSupport::getHeadRule(SMap, buildIndex, "-4 44 51 -2 -15");
-  makeCell("FloorShineRightWall", System, cellIndex++, pbMat, 0.0, floorShineRightWall);
+  makeCell("FloorShineRightWall", System, cellIndex++, pbMat, 0.0, floorShineRightWall*floor);
   const HeadRule floorShineBackWall = ModelSupport::getHeadRule(SMap, buildIndex, "-2 62 -44 -303 -15");
-  makeCell("FloorShineBackWall", System, cellIndex++, pbMat, 0.0, floorShineBackWall);
+  makeCell("FloorShineBackWall", System, cellIndex++, pbMat, 0.0, floorShineBackWall*floor);
   const HeadRule floorShine = (floorShineFrontWall+floorShineLeftWall+floorShineRightWall+floorShineBackWall+floorShineLeftCornerWall)*floor;
 
   if (innerOutVoid>Geometry::zeroTol)
