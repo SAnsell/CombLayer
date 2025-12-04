@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
+#include <format>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -210,7 +211,9 @@ ExperimentalHutch::createSurfaces()
   // Inner void
   SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*(length-steelThick-pbBackThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outWidth-steelThick-pbWallThick),X);
+  voidLeft = 3;
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(ringWidth-steelThick-pbWallThick),X);
+  voidRight = 4;
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-steelThick-pbRoofThick),Z);
 
 
@@ -218,8 +221,10 @@ ExperimentalHutch::createSurfaces()
     {
       ModelSupport::buildPlane
 	(SMap,buildIndex+1003,Origin-X*(outWidth-innerOutVoid-steelThick-pbWallThick),X);
+      voidLeft = 1003;
       ModelSupport::buildPlane
 	(SMap,buildIndex+1004,Origin+X*(ringWidth-innerOutVoid-steelThick-pbWallThick),X);
+      voidRight = 1004;
     }
 
   // Steel inner layer
@@ -285,6 +290,7 @@ ExperimentalHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+44, buildIndex+4, Y, -floorShineLength);
   // Back wall
   ModelSupport::buildShiftedPlane(SMap, buildIndex+62, buildIndex+2, Y, -floorShineLength);
+  voidBack = 2;
 
   // INNER / OUTER BACK VOID
 
@@ -292,6 +298,7 @@ ExperimentalHutch::createSurfaces()
     {
       SurfMap::makePlane("innerBackVoid",SMap,buildIndex+42,
 			 Origin+Y*(length-steelThick-pbBackThick-backVoid),Y);
+      voidBack = 42;
     }
 
   if (outerBackVoid>Geometry::zeroTol)
@@ -368,38 +375,47 @@ ExperimentalHutch::createObjects(Simulation& System)
       BI+=100;
     }
 
-  const HeadRule floorShineFrontWall = ModelSupport::getHeadRule(SMap, buildIndex, "31 -51 3 -4 -15");
-  makeCell("FloorShineFrontWall", System, cellIndex++, pbMat, 0.0, floorShineFrontWall*floor);
-  const HeadRule floorShineLeftWall = ModelSupport::getHeadRule(SMap, buildIndex, "3 -43 51 -303 -15");
-  makeCell("FloorShineLeftWall", System, cellIndex++, pbMat, 0.0, floorShineLeftWall*floor);
-  const HeadRule floorShineLeftCornerWall = ModelSupport::getHeadRule(SMap, buildIndex, "343 -303 -62 43 -15");
-  makeCell("FloorShineLeftCornerWall", System, cellIndex++, pbMat, 0.0, floorShineLeftCornerWall*floor);
-  const HeadRule floorShineRightWall = ModelSupport::getHeadRule(SMap, buildIndex, "-4 44 51 -2 -15");
-  makeCell("FloorShineRightWall", System, cellIndex++, pbMat, 0.0, floorShineRightWall*floor);
-  const HeadRule floorShineBackWall = ModelSupport::getHeadRule(SMap, buildIndex, "-2 62 -44 -303 -15");
-  makeCell("FloorShineBackWall", System, cellIndex++, pbMat, 0.0, floorShineBackWall*floor);
-  const HeadRule floorShine = (floorShineFrontWall+floorShineLeftWall+floorShineRightWall+floorShineBackWall+floorShineLeftCornerWall)*floor;
+  HeadRule voidFloor = floor;
+  if(floorShineThick > Geometry::zeroTol && floorShineLength > Geometry::zeroTol){
+    const HeadRule floorShineFrontWall = ModelSupport::getHeadRule(SMap, buildIndex, "31 -51 3 -4 -15");
+    makeCell("FloorShineFrontWall", System, cellIndex++, pbMat, 0.0, floorShineFrontWall*floor);
+    const HeadRule floorShineLeftWall = ModelSupport::getHeadRule(SMap, buildIndex, "3 -43 51 -303 -15");
+    makeCell("FloorShineLeftWall", System, cellIndex++, pbMat, 0.0, floorShineLeftWall*floor);
+    const HeadRule floorShineLeftCornerWall = ModelSupport::getHeadRule(SMap, buildIndex, "343 -303 -62 43 -15");
+    makeCell("FloorShineLeftCornerWall", System, cellIndex++, pbMat, 0.0, floorShineLeftCornerWall*floor);
+    const HeadRule floorShineRightWall = ModelSupport::getHeadRule(SMap, buildIndex, "-4 44 51 -2 -15");
+    makeCell("FloorShineRightWall", System, cellIndex++, pbMat, 0.0, floorShineRightWall*floor);
+    const HeadRule floorShineBackWall = ModelSupport::getHeadRule(SMap, buildIndex, "-2 62 -44 -303 -15");
+    makeCell("FloorShineBackWall", System, cellIndex++, pbMat, 0.0, floorShineBackWall*floor);
+    const HeadRule floorShineVoid = ModelSupport::getHeadRule(SMap, buildIndex, "-62 43 -44 -303 51 -15");
+    makeCell("FloorShineVoid", System, cellIndex++, voidMat, 0.0, floorShineVoid*floor);
+    voidFloor = ModelSupport::getHeadRule(SMap, buildIndex, "15");
+    if(floorShineLength > backVoid + Geometry::zeroTol){
+      voidBack = 62;
+    }
+    if(floorShineLength > innerOutVoid + Geometry::zeroTol){
+      voidLeft = 43;
+      voidRight = 44;
+    }
+  }
+
+  HR=ModelSupport::getHeadRule
+	(SMap,buildIndex, std::format("-{} {} -{} -6 -303", voidBack, voidLeft, voidRight));
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*voidFloor*innerVoid);
 
   if (innerOutVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getAltHeadRule
-	(SMap,buildIndex,"-42A -2B 1003 -1004 -6 -303");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*innerVoid/floorShine);
-
-      HR=ModelSupport::getAltHeadRule
-	(SMap,buildIndex,"-42A -2B 3 -1003 -6 -303");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,std::format("-{} 3 -{} -6 -303", voidBack, voidLeft));
       makeCell("LeftWallVoid",System,cellIndex++,voidMat,0.0,
-	       HR*floor*innerWall/floorShine);
+	       HR*voidFloor*innerWall);
 
-      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-42A -2B -4 1004 -6 ");
+      HR=ModelSupport::getHeadRule(SMap,buildIndex,std::format("-{} -4 {} -6 ", voidBack, voidRight));
       makeCell("RightWallVoid",System,cellIndex++,voidMat,0.0,
-	       HR*floor*innerWall/floorShine);
+	       HR*voidFloor*innerWall);
     }
-  else
-    {
-      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-42A -2B 3 -4 -6 -303");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*innerWall);
-    }
+  HR=ModelSupport::getHeadRule
+  (SMap,buildIndex, std::format("{} -2 -4 -6 -303 15", voidBack));
+  makeCell("BackWallVoid",System,cellIndex++,voidMat,0.0,HR*floor);
 
   // main external void
   if (outerBackVoid>Geometry::zeroTol)

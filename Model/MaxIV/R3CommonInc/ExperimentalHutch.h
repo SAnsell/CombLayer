@@ -93,6 +93,12 @@ class ExperimentalHutch :
   /// Chicanes
   std::vector<std::shared_ptr<PortChicane>> PChicane;
 
+  // Auxiliary variables for building and segmenting inner void
+  int voidBack;
+  int voidLeft;
+  int voidRight;
+  int voidFloor;
+
   forkHoles forks;              ///< Forklift holes if made
 
   void populate(const FuncDataBase&) override;
