@@ -133,6 +133,7 @@ ExptHutGenerator::generateHut(FuncDataBase& Control,
 
   Control.addVariable(hutName+"FloorShineThick",floorShineThick);
   Control.addVariable(hutName+"FloorShineLength",floorShineLength);
+  Control.addVariable(hutName+"FloorShineMat", floorShineMat);
 
   return;
 

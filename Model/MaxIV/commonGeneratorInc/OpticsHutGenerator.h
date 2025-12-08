@@ -65,6 +65,7 @@ class OpticsHutGenerator
   std::string skinMat;         ///< Fe layer material for walls
   std::string pbMat;           ///< pb layer material for walls
   std::string voidMat;         ///< Void material
+  std::string floorShineMat;   ///< Floor shine material
 
  public:
 

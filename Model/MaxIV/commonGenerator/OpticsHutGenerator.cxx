@@ -61,7 +61,7 @@ OpticsHutGenerator::OpticsHutGenerator() :
   frontVoid(0.0),backVoid(0.0),
   outerBackVoid(0.0),
   skinMat("Stainless304"),pbMat("Lead"),
-  voidMat("Void")
+  voidMat("Void"), floorShineMat("Lead")
   /*!
     Constructor and defaults
   */
@@ -127,6 +127,7 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"SkinMat",skinMat);
   Control.addVariable(keyName+"PbMat",pbMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"FloorShineMat",floorShineMat);
 
   return;
 
