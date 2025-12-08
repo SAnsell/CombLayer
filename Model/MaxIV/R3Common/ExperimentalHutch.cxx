@@ -381,26 +381,25 @@ ExperimentalHutch::createObjects(Simulation& System)
   const HeadRule floorShineBackWall = ModelSupport::getHeadRule(SMap, buildIndex, "-2 62 -44 -303 -15");
   makeCell("FloorShineBackWall", System, cellIndex++, floorShineMat, 0.0, floorShineBackWall*floor);
   const HeadRule floorShineVoid = ModelSupport::getHeadRule(SMap, buildIndex, "-62 43 -44 -343 51 -15");
+  // Void cell filling the space on the floor between the floor shine
   makeCell("FloorShineVoid", System, cellIndex++, voidMat, 0.0, floorShineVoid*floor);
   voidFloor = ModelSupport::getHeadRule(SMap, buildIndex, "15");
 
+  // Inner void cell
   HR=ModelSupport::getHeadRule
 	(SMap,buildIndex, "-62 43 -44 -6 -343");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*voidFloor*innerVoid);
-
-
+  // Void cells between floor shine and ceiling, one corresponding to each piece 
+  // of floor shine.
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-62 3 -43 -6 -303");
   makeCell("LeftWallVoid",System,cellIndex++,voidMat,0.0,
       HR*voidFloor*innerWall);
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-303 343 -62 43 -6");
   makeCell("LeftCornerWallVoid",System,cellIndex++,voidMat,0.0,
       HR*voidFloor);
-
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-62 -4 44 -6");
   makeCell("RightWallVoid",System,cellIndex++,voidMat,0.0,
       HR*voidFloor*innerWall);
-
   HR=ModelSupport::getHeadRule
   (SMap,buildIndex, "62 -2 -4 -6 -303 15");
   makeCell("BackWallVoid",System,cellIndex++,voidMat,0.0,HR*floor);
