@@ -81,6 +81,7 @@
 // [1] CARATELLI Drawing 06769-01-000
 // [2] CARATELLI Drawing 06769-03-000
 // [4] S0-2-0AB01088_DanMAX.pdf
+// [5] S4-2-2AJ00829.pdf
 
 namespace setVariable
 {
@@ -167,8 +168,7 @@ frontMaskVariables(FuncDataBase& Control,
 
 
   constexpr double FM1Length(40.0); // [4]
-  constexpr double FM2Length(50.5); // TODO: not indicated in [4]
-  ELog::EM << "FM2 length ??? " << ELog::endWarn;
+  constexpr double FM2Length(50.5); // [5]
   constexpr double MSMLength(40.0); //
 
   const double FM1dist(1104.75+FM1Length/2.0); // [4]
@@ -191,13 +191,17 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BellowHLength",14.0); // [4]
   Control.addVariable(preName+"PipeCLength",34.0); // [4]
 
-  FMaskGen.setFrontGap(1.65, 1.65); //
-  backWidth = 1.54; //
-  backHeight = 0.154; //
+  FMaskGen.setFrontGap(2.1, 2.1); // [5]
+  backWidth = 0.16; // [5]
+  backHeight = 0.16; // [5]
   FMaskGen.setBackGap(backWidth, backHeight);
-  FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
-		      backWidth, backHeight);
+  FMaskGen.setMinSize(FM2Length-4.6-Geometry::zeroTol,
+		      backWidth, backHeight); // [5] Min position: 46 mm
+  FMaskGen.setMat("Copper"); // [5] TODO: should be GLIDCOP
+  ELog::EM << "FM2 material set to copper, should be GLIDCOP" << ELog::endWarn;
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
+  Control.addVariable(preName+"FM2Width", 8.8); // [5]
+  Control.addVariable(preName+"FM2Height", 6.8); // [5]
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
