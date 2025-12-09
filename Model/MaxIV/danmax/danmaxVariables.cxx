@@ -83,6 +83,7 @@
 // [4] S0-2-0AB01088_DanMAX.pdf
 // [5] S4-2-2AJ00829.pdf
 // [6] S7-4-2AJ00837.pdf
+// [7] S7-3-0AF00293.pdf
 
 namespace setVariable
 {
@@ -1117,21 +1118,24 @@ support7DanMAX(FuncDataBase& Control,
 
 
   const std::string shutterName=frontKey+"ShutterBox";
-  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCF<CF200>(); // [7]
   SimpleTubeGen.setCap(0,0);
+  SimpleTubeGen.setFlangeLength(0.0, 0.0); // Remove flanges [7]
   SimpleTubeGen.generateTube(Control,shutterName,shutterBoxLength);
   Control.addVariable(shutterName+"NPorts",2);
+  Control.addVariable(shutterName+"WallThick",0.3); // [7]
+  Control.addVariable(shutterName+"Radius",9.85); // [7]
 
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
   PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
-  // lift is actually 60mm [check]
   BeamMGen.setThread(1.0,"Nickel");
-  BeamMGen.setLift(5.0,0.0);
-  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");
+  BeamMGen.setLift(6.0,0.0); // [7]
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten"); // [7]
 
-  // centre of mid point
-  Geometry::Vec3D CPos(0,-shutterBoxLength/4.0,0);
+  // Build bocks symmetrically around center of shutter box
+  // such that the center-center distance is 25 cm;
+  Geometry::Vec3D CPos(0, -12.5,0); // [7]
   for(size_t i=0;i<2;i++)
     {
       const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
@@ -1139,7 +1143,7 @@ support7DanMAX(FuncDataBase& Control,
 
       PItemGen.generatePort(Control,name,CPos,ZVec);
       BeamMGen.generateMount(Control,fname,0);      // out of beam
-      CPos+=Geometry::Vec3D(0,shutterBoxLength/2.0,0);
+      CPos+=Geometry::Vec3D(0,25.0,0); // [7]
     }
 
   PipeGen.setCF<setVariable::CF63>();
