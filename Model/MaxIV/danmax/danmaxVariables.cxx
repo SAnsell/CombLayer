@@ -82,6 +82,7 @@
 // [2] CARATELLI Drawing 06769-03-000
 // [4] S0-2-0AB01088_DanMAX.pdf
 // [5] S4-2-2AJ00829.pdf
+// [6] S7-4-2AJ00837.pdf
 
 namespace setVariable
 {
@@ -1170,14 +1171,15 @@ support7DanMAX(FuncDataBase& Control,
   // Bremsstrahulung collimator
   std::string name;
   name=frontKey+"BremCollPipe";
-  constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
+  constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[6]
 
-  constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
+  constexpr double bremCollRadius(3.0); // CAD and [6]
   PipeGen.setCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,name,bremCollPipeLength);
-  constexpr double bremCollPipeInnerRadius = 4.5; // CAD
+  constexpr double bremCollPipeInnerRadius = 4.35; // [6]
   Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
   Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
+  Control.addVariable(name+"FlangeALength",1.0); // Estimated from [6]
   Control.addVariable(name+"FlangeBRadius",7.5); // CAD
   Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
   Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
@@ -1186,8 +1188,7 @@ support7DanMAX(FuncDataBase& Control,
   BBGen.setMaterial("Tungsten", "Void");
   BBGen.setLength(bremCollLength);
   BBGen.setRadius(bremCollRadius);
-  // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
-  BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
+  BBGen.setAperature(-1.0, 1.5, 0.7,  1.5, 0.7,   1.5, 0.7); // [6]
   BBGen.generateBlock(Control,frontKey+"BremColl",0);
   Control.addVariable(frontKey+"BremCollYStep",(bremCollPipeLength-bremCollLength)/2.0);
 
