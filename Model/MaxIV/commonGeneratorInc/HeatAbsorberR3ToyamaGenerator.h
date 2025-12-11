@@ -38,9 +38,19 @@ namespace setVariable
 class HeatAbsorberR3ToyamaGenerator
 {
  private:
-  double length;                ///< Length
-  double width;                 ///< Width
-  double height;                ///< Height
+  // Outer dimensions
+  double length;
+  double flangeRadius;
+
+  // Absorber dimensions
+  double absorberLength;
+  double absorberWidth;
+  double absorberHeight;
+
+  // Inner dimensions
+  double gapWidth;
+  double gapMinHeight;
+  double gapMaxHeight;
 
   bool closed;                  ///< open/closed flag
 

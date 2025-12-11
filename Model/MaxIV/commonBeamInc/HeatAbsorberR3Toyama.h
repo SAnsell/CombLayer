@@ -44,11 +44,21 @@ class HeatAbsorberR3Toyama :
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
+  // Outer dimensions
+  double length;
+  double flangeRadius;
 
-  bool closed;           ///< open/closed flag
+  // Absorber dimensions
+  double absorberLength;
+  double absorberWidth;
+  double absorberHeight;
+
+  // Gap dimensions
+  double gapWidth;
+  double gapMinHeight;
+  double gapMaxHeight;
+
+  bool closed;                  ///< open/closed flag
 
   int mainMat;                  ///< Main material
   int voidMat;                  ///< Void material

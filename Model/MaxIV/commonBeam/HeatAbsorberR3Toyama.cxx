@@ -74,7 +74,8 @@ HeatAbsorberR3Toyama::HeatAbsorberR3Toyama(const HeatAbsorberR3Toyama& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
+  length(A.length),flangeRadius(A.flangeRadius),absorberLength(A.absorberLength),
+  absorberWidth(A.absorberWidth),absorberHeight(A.absorberHeight),
   closed(A.closed),
   mainMat(A.mainMat),voidMat(A.voidMat)
   /*!
@@ -99,8 +100,10 @@ HeatAbsorberR3Toyama::operator=(const HeatAbsorberR3Toyama& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      width=A.width;
-      height=A.height;
+      flangeRadius=A.flangeRadius;
+      absorberLength=A.absorberLength;
+      absorberWidth=A.absorberWidth;
+      absorberHeight=A.absorberHeight;
       closed=A.closed;
       mainMat=A.mainMat;
       voidMat=A.voidMat;
@@ -136,8 +139,13 @@ HeatAbsorberR3Toyama::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  absorberLength=Control.EvalVar<double>(keyName+"AbsorberLength");
+  absorberWidth=Control.EvalVar<double>(keyName+"AbsorberWidth");
+  absorberHeight=Control.EvalVar<double>(keyName+"AbsorberHeight");
+  gapWidth=Control.EvalVar<double>(keyName+"GapWidth");
+  gapMinHeight=Control.EvalVar<double>(keyName+"GapMinHeight");
+  gapMaxHeight=Control.EvalVar<double>(keyName+"GapMaxHeight");
   closed=Control.EvalVar<int>(keyName+"Closed");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -168,12 +176,30 @@ HeatAbsorberR3Toyama::createSurfaces()
   } else
     backPos=ExternalCut::interPoint("back",Origin,Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*flangeRadius,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*flangeRadius,X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*flangeRadius,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*flangeRadius,Z);
 
+  const double flangeLength = (length-absorberLength)/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-flangeLength),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*absorberWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*absorberWidth/2.0,X);
+
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*absorberHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*absorberHeight/2.0,Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*gapWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*gapWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*gapMaxHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*gapMaxHeight/2.0,Z);
+
+
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Y*flangeLength+Z*gapMaxHeight/2.0,
+    Y*(gapMaxHeight-gapMinHeight)+Z*absorberLength);
 }
 
 void
@@ -189,8 +215,32 @@ HeatAbsorberR3Toyama::createObjects(Simulation& System)
   const HeadRule frontStr(frontRule());
   const HeadRule backStr(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
+  makeCell("MainCellTop",System,cellIndex++,voidMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 3 -4 -6 16"));
+  makeCell("MainCellBottom",System,cellIndex++,voidMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 3 -4 5 -15"));;
+  makeCell("MainCellLeft",System,cellIndex++,voidMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 3 -13 15 -16"));
+  makeCell("MainCellRight",System,cellIndex++,voidMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -4 14 15 -16"));
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 -11");
+  makeCell("MainCellFront",System,cellIndex++,voidMat,0.0,HR*frontStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 12");
+  makeCell("MainCellBack",System,cellIndex++,voidMat,0.0,HR*backStr);
+
+  makeCell("AbsorberMainCellTop",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 -16 26"));
+  makeCell("AbsorberMainCellBottom",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -25"));
+  makeCell("AbsorberMainCellLeft",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -23 25 -26"));
+  makeCell("AbsorberMainCellLeft",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -14 24 25 -26"));
+
+  makeCell("AbsorberSlope",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -24 -26 36"));
+  makeCell("AbsorberHole",System,cellIndex++,voidMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -24 25 -36"));
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(HR*frontStr*backStr);
@@ -209,16 +259,16 @@ HeatAbsorberR3Toyama::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*flangeRadius,-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*flangeRadius,X);
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*flangeRadius,-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*flangeRadius,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;

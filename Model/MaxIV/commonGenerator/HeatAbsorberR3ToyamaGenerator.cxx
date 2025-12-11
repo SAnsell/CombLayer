@@ -38,7 +38,9 @@ namespace setVariable
 {
 
 HeatAbsorberR3ToyamaGenerator::HeatAbsorberR3ToyamaGenerator() :
-  length(26.5),width(8.0),height(8.0),
+  length(26.5), flangeRadius(5.7),
+  absorberLength(22.0), absorberWidth(8.0), absorberHeight(8.0),
+  gapWidth(1.0), gapMinHeight(0.9), gapMaxHeight(2.6),
   closed(false),
   mainMat("SteelUnknownGrade"),voidMat("Void")
   /*!
@@ -64,8 +66,13 @@ HeatAbsorberR3ToyamaGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("HeatAbsorberR3ToyamaGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"AbsorberLength",absorberLength);
+  Control.addVariable(keyName+"AbsorberWidth",absorberWidth);
+  Control.addVariable(keyName+"AbsorberHeight",absorberHeight);
+  Control.addVariable(keyName+"GapWidth",gapWidth);
+  Control.addVariable(keyName+"GapMinHeight",gapMinHeight);
+  Control.addVariable(keyName+"GapMaxHeight",gapMaxHeight);
   Control.addVariable(keyName+"Closed",static_cast<int>(closed));
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
