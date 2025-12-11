@@ -265,9 +265,9 @@ makeSingleItem::build(Simulation& System,
 
   if (validItems.find(item)==validItems.end())
     throw ColErr::InContainerError<std::string>
-      (item,"Item no a single component");
+      (item,"Item not a single component");
 
-  ELog::EM<<"Conponent == "<<item<<ELog::endDiag;
+  ELog::EM<<"Component == "<<item<<ELog::endDiag;
   if (item=="default" || item == "CylGateValve" )
     {
       std::shared_ptr<xraySystem::CylGateValve>
