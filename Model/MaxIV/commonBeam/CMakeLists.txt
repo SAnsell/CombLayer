@@ -9,7 +9,7 @@ set (commonBeamSources
     Dipole.cxx Duct.cxx FilterHolder.cxx
     FlangeMount.cxx forkHoles.cxx FourPortTube.cxx
     GaugeTube.cxx GrateHolder.cxx GrateMonoBox.cxx
-    GratingMono.cxx GratingUnit.cxx HeatAbsorberToyama.cxx HeatDump.cxx
+    GratingMono.cxx GratingUnit.cxx HeatAbsorberR3Toyama.cxx HeatAbsorberToyama.cxx HeatDump.cxx
     HPJaws.cxx IonGauge.cxx IonPumpTube.cxx LObjectSupport.cxx
     LCollimator.cxx Maze.cxx Mirror.cxx
     MLMono.cxx MonoBeamStop.cxx MonoBlockXstals.cxx
@@ -75,6 +75,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/GrateMonoBox.cxx
   ${tarDIR}/GratingMono.cxx
   ${tarDIR}/GratingUnit.cxx
+  ${tarDIR}/HeatAbsorberR3Toyama.cxx
   ${tarDIR}/HeatAbsorberToyama.cxx
   ${tarDIR}/HeatDump.cxx
   ${tarDIR}/HPJaws.cxx
@@ -149,6 +150,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/GrateMonoBox.h
   ${tarINC}/GratingMono.h
   ${tarINC}/GratingUnit.h
+  ${tarINC}/HeatAbsorberR3Toyama.h
   ${tarINC}/HeatAbsorberToyama.h
   ${tarINC}/HeatDump.h
   ${tarINC}/HPJaws.h
