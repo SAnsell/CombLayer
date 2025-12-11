@@ -147,6 +147,7 @@
 #include "SlitsMaskGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 #include "HeatAbsorberToyamaGenerator.h"
+#include "HeatAbsorberR3ToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 #include "PowerFilterGenerator.h"
 #include "TDCBeamDumpGenerator.h"
@@ -305,6 +306,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   HeatAbsorberToyamaGenerator HAGen;
   HAGen.generate(Control,"HA",30.0);
+
+  HeatAbsorberR3ToyamaGenerator HAR3Gen;
+  HAR3Gen.generate(Control,"HAR3");
 
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator");

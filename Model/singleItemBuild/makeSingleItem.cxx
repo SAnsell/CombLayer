@@ -189,6 +189,7 @@
 #include "SlitsMask.h"
 #include "MovableSafetyMask.h"
 #include "HeatAbsorberToyama.h"
+#include "HeatAbsorberR3Toyama.h"
 #include "ProximityShielding.h"
 #include "PowerFilter.h"
 #include "TDCBeamDump.h"
@@ -251,8 +252,8 @@ makeSingleItem::build(Simulation& System,
 	"MonoShutter","RoundMonoShutter","TubeDetBox", "TDCBeamDump",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
-	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama",
-	"Help","help"
+	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama", 
+  "HeatAbsorberR3Toyama", "Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -711,6 +712,18 @@ makeSingleItem::build(Simulation& System,
     {
       std::shared_ptr<xraySystem::HeatAbsorberToyama>
 	ha(new xraySystem::HeatAbsorberToyama("HA"));
+      OR.addObject(ha);
+
+      ha->addInsertCell(voidCell);
+      ha->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+  if (item == "HeatAbsorberR3Toyama")
+    {
+      std::shared_ptr<xraySystem::HeatAbsorberR3Toyama>
+	ha(new xraySystem::HeatAbsorberR3Toyama("HAR3"));
       OR.addObject(ha);
 
       ha->addInsertCell(voidCell);
