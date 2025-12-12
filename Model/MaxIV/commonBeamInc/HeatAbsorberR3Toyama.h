@@ -22,6 +22,9 @@
 #ifndef xraySystem_HeatAbsorberR3Toyama_h
 #define xraySystem_HeatAbsorberR3Toyama_h
 
+namespace constructSystem{
+  class VacuumPipe;
+}
 class Simulation;
 
 namespace xraySystem
@@ -35,7 +38,7 @@ namespace xraySystem
   \brief Heat absorber in Toyama front-ends at R3 ring
 */
 
-class HeatAbsorberR3Toyama :
+class HeatAbsorberR3Toyama:
     public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
     public attachSystem::CellMap,
@@ -43,6 +46,9 @@ class HeatAbsorberR3Toyama :
     public attachSystem::FrontBackCut
 {
  private:
+
+  std::shared_ptr<constructSystem::VacuumPipe> frontPipe;
+  std::shared_ptr<constructSystem::VacuumPipe> backPipe;
 
   // Outer dimensions
   double length;

@@ -95,9 +95,6 @@ HeatAbsorberToyamaGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Closed",static_cast<int>(closed));
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
-
-  return;
-
 }
 
 

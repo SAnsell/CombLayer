@@ -21,11 +21,14 @@
  ****************************************************************************/
 #include <complex>
 #include <fstream>
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
 #include <vector>
+#include <iostream>
 
+#include "CFFlanges.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -51,6 +54,10 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 
+#include "ContainedGroup.h"
+#include "GeneralPipe.h"
+#include "VacuumPipe.h"
+
 #include "HeatAbsorberR3Toyama.h"
 
 namespace xraySystem
@@ -61,7 +68,10 @@ HeatAbsorberR3Toyama::HeatAbsorberR3Toyama(const std::string& Key)  :
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()
+  attachSystem::FrontBackCut(),
+  frontPipe(new constructSystem::VacuumPipe(Key+"FrontPipe")),
+  backPipe(new constructSystem::VacuumPipe(Key+"BackPipe")),
+  flangeRadius(setVariable::CF63::flangeRadius)
  /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -139,7 +149,6 @@ HeatAbsorberR3Toyama::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   absorberLength=Control.EvalVar<double>(keyName+"AbsorberLength");
   absorberWidth=Control.EvalVar<double>(keyName+"AbsorberWidth");
   absorberHeight=Control.EvalVar<double>(keyName+"AbsorberHeight");
@@ -150,8 +159,6 @@ HeatAbsorberR3Toyama::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-
-  return;
 }
 
 void
@@ -182,9 +189,9 @@ HeatAbsorberR3Toyama::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*flangeRadius,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*flangeRadius,Z);
 
-  const double flangeLength = (length-absorberLength)/2.0;
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-flangeLength),Y);
+  const double frontBackPipeLength = (length-absorberLength)/2.0;
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*frontBackPipeLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-frontBackPipeLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*absorberWidth/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*absorberWidth/2.0,X);
@@ -197,8 +204,8 @@ HeatAbsorberR3Toyama::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*gapMaxHeight/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*gapMaxHeight/2.0,Z);
 
-
-  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Y*flangeLength+Z*gapMaxHeight/2.0,
+  ModelSupport::buildPlane(SMap,buildIndex+36,
+    Origin+Y*frontBackPipeLength+Z*gapMaxHeight/2.0,
     Y*(gapMaxHeight-gapMinHeight)+Z*absorberLength);
 }
 
@@ -242,10 +249,18 @@ HeatAbsorberR3Toyama::createObjects(Simulation& System)
   makeCell("AbsorberHole",System,cellIndex++,voidMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 23 -24 25 -36"));
 
+  frontPipe->setFront(frontStr);
+  frontPipe->setBack(-SMap.realSurf(buildIndex+11));
+  frontPipe->addAllInsertCell(this->getCell("MainCellFront"));
+  frontPipe->createAll(System, *this, 0);
+
+  backPipe->setFront(SMap.realSurf(buildIndex+12));
+  backPipe->setBack(backStr);
+  backPipe->addAllInsertCell(this->getCell("MainCellBack"));
+  backPipe->createAll(System, *this, 0);
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 5 -6 ");
   addOuterSurf(HR*frontStr*backStr);
-
-  return;
 }
 
 
@@ -270,8 +285,6 @@ HeatAbsorberR3Toyama::createLinks()
 
   FixedComp::setConnect(5,Origin+Z*flangeRadius,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
-
-  return;
 }
 
 void
@@ -293,8 +306,6 @@ HeatAbsorberR3Toyama::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);
-
-  return;
 }
 
 }  // xraySystem
