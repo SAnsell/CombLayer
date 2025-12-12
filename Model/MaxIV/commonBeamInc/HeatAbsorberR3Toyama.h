@@ -58,6 +58,7 @@ class HeatAbsorberR3Toyama:
   double absorberLength;
   double absorberWidth;
   double absorberHeight;
+  double absorberConnectorLength;
 
   // Gap dimensions
   double gapWidth;

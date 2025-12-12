@@ -46,6 +46,7 @@ class HeatAbsorberR3ToyamaGenerator
   double absorberLength;
   double absorberWidth;
   double absorberHeight;
+  double absorberConnectorLength;
 
   // Inner dimensions
   double gapWidth;

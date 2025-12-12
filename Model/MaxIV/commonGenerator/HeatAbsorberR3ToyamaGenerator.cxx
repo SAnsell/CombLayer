@@ -41,8 +41,8 @@ namespace setVariable
 
 HeatAbsorberR3ToyamaGenerator::HeatAbsorberR3ToyamaGenerator() :
   length(26.5),absorberLength(22.0),absorberWidth(8.0),absorberHeight(8.0),
-  gapWidth(1.0),gapMinHeight(0.9),gapMaxHeight(2.6),closed(false),
-  mainMat("GLIDCOPUnknownGrade"),voidMat("Void")
+  absorberConnectorLength(1.0),gapWidth(1.0),gapMinHeight(0.9),
+  gapMaxHeight(2.6),closed(false),mainMat("GLIDCOPUnknownGrade"),voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -69,6 +69,7 @@ HeatAbsorberR3ToyamaGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"AbsorberLength",absorberLength);
   Control.addVariable(keyName+"AbsorberWidth",absorberWidth);
   Control.addVariable(keyName+"AbsorberHeight",absorberHeight);
+  Control.addVariable(keyName+"AbsorberConnectorLength",absorberConnectorLength);
   Control.addVariable(keyName+"GapWidth",gapWidth);
   Control.addVariable(keyName+"GapMinHeight",gapMinHeight);
   Control.addVariable(keyName+"GapMaxHeight",gapMaxHeight);
