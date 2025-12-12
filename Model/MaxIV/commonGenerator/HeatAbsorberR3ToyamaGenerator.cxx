@@ -42,7 +42,7 @@ namespace setVariable
 HeatAbsorberR3ToyamaGenerator::HeatAbsorberR3ToyamaGenerator() :
   length(26.5),absorberLength(22.0),absorberWidth(8.0),absorberHeight(8.0),
   gapWidth(1.0),gapMinHeight(0.9),gapMaxHeight(2.6),closed(false),
-  mainMat("SteelUnknownGrade"),voidMat("Void")
+  mainMat("GLIDCOPUnknownGrade"),voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -79,6 +79,7 @@ HeatAbsorberR3ToyamaGenerator::generate(FuncDataBase& Control,
   setVariable::PipeGenerator pipeGen;
 
   const double frontBackPipeLength = (length-absorberLength)/2.0;
+  pipeGen.setMat("SteelUnknownGrade");
   pipeGen.setCF<setVariable::CF63>();
   pipeGen.setFlangeLength(setVariable::CF63::flangeLength, 0.0);
   pipeGen.generatePipe(Control, keyName+"FrontPipe", frontBackPipeLength);
