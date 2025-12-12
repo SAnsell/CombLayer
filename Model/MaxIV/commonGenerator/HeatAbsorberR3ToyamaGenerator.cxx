@@ -40,8 +40,8 @@ namespace setVariable
 {
 
 HeatAbsorberR3ToyamaGenerator::HeatAbsorberR3ToyamaGenerator() :
-  length(26.5),absorberLength(22.0),absorberWidth(8.0),absorberHeight(8.0),
-  absorberConnectorLength(1.0),gapWidth(1.0),gapMinHeight(0.9),
+  length(26.5),connectorInnerRadius(2.0),absorberLength(22.0),absorberWidth(8.0),
+  absorberHeight(8.0),absorberConnectorLength(1.0),gapWidth(1.0),gapMinHeight(0.9),
   gapMaxHeight(2.6),closed(false),mainMat("GLIDCOPUnknownGrade"),voidMat("Void")
   /*!
     Constructor and defaults
@@ -66,6 +66,7 @@ HeatAbsorberR3ToyamaGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("HeatAbsorberR3ToyamaGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"ConnectorInnerRadius",connectorInnerRadius);
   Control.addVariable(keyName+"AbsorberLength",absorberLength);
   Control.addVariable(keyName+"AbsorberWidth",absorberWidth);
   Control.addVariable(keyName+"AbsorberHeight",absorberHeight);
@@ -82,6 +83,7 @@ HeatAbsorberR3ToyamaGenerator::generate(FuncDataBase& Control,
   const double frontBackPipeLength = (length-absorberLength)/2.0;
   pipeGen.setMat("SteelUnknownGrade");
   pipeGen.setCF<setVariable::CF63>();
+  pipeGen.setPipe(connectorInnerRadius, CF63::wallThick);
   pipeGen.setFlangeLength(setVariable::CF63::flangeLength, 0.0);
   pipeGen.generatePipe(Control, keyName+"FrontPipe", frontBackPipeLength);
   pipeGen.setFlangeLength(0.0, setVariable::CF63::flangeLength);

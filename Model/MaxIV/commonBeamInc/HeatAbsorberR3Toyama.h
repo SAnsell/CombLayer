@@ -54,6 +54,9 @@ class HeatAbsorberR3Toyama:
   double length;
   double flangeRadius;
 
+  // Connector dimensions
+  double connectorInnerRadius;
+
   // Absorber dimensions
   double absorberLength;
   double absorberWidth;

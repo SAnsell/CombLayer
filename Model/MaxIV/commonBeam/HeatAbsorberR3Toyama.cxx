@@ -84,7 +84,8 @@ HeatAbsorberR3Toyama::HeatAbsorberR3Toyama(const HeatAbsorberR3Toyama& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),flangeRadius(A.flangeRadius),absorberLength(A.absorberLength),
+  length(A.length),flangeRadius(A.flangeRadius),
+  connectorInnerRadius(A.connectorInnerRadius),absorberLength(A.absorberLength),
   absorberWidth(A.absorberWidth),absorberHeight(A.absorberHeight),
   absorberConnectorLength(A.absorberConnectorLength),
   closed(A.closed),
@@ -112,6 +113,7 @@ HeatAbsorberR3Toyama::operator=(const HeatAbsorberR3Toyama& A)
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
       flangeRadius=A.flangeRadius;
+      connectorInnerRadius=A.connectorInnerRadius;
       absorberLength=A.absorberLength;
       absorberWidth=A.absorberWidth;
       absorberHeight=A.absorberHeight;
@@ -151,6 +153,7 @@ HeatAbsorberR3Toyama::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
+  connectorInnerRadius=Control.EvalVar<double>(keyName+"ConnectorInnerRadius");
   absorberLength=Control.EvalVar<double>(keyName+"AbsorberLength");
   absorberWidth=Control.EvalVar<double>(keyName+"AbsorberWidth");
   absorberHeight=Control.EvalVar<double>(keyName+"AbsorberHeight");
@@ -201,9 +204,9 @@ HeatAbsorberR3Toyama::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*
     (length-frontBackPipeLength-absorberConnectorLength),Y);
   ModelSupport::buildCylinder(SMap, buildIndex+7,Origin,Y,
-    setVariable::CF63::innerRadius+setVariable::CF63::wallThick);
+    connectorInnerRadius+setVariable::CF63::wallThick);
   ModelSupport::buildCylinder(SMap, buildIndex+17,Origin,Y,
-    setVariable::CF63::innerRadius);
+    connectorInnerRadius);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*absorberWidth/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*absorberWidth/2.0,X);
