@@ -170,24 +170,17 @@ HeatAbsorberR3Toyama::createSurfaces()
 {
   ELog::RegMethod RegA("HeatAbsorberR3Toyama","createSurfaces");
 
-  Geometry::Vec3D frontPos;
-  Geometry::Vec3D backPos;
-
   const double zOffset = closed ? -inOutRange/2.0 : inOutRange/2.0;
 
   if (!frontActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Z*zOffset,Y);
     FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
-    frontPos = Origin;
-  } else
-    frontPos=ExternalCut::interPoint("front",Origin,Y);
+  }
 
   if (!backActive()) {
     ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
     FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
-    backPos = Origin+Y*length;
-  } else
-    backPos=ExternalCut::interPoint("back",Origin,Y);
+  }
 
   ModelSupport::buildCylinder(SMap, buildIndex+7,Origin+Z*zOffset,Y,
     setVariable::CF63::flangeRadius);
@@ -196,8 +189,10 @@ HeatAbsorberR3Toyama::createSurfaces()
   ModelSupport::buildCylinder(SMap, buildIndex+27,Origin+Z*zOffset,Y,
     connectorInnerRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*setVariable::CF63::flangeLength,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-setVariable::CF63::flangeLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin
+    +Y*setVariable::CF63::flangeLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin
+    +Y*(length-setVariable::CF63::flangeLength),Y);
 
   const double frontBackPipeLength = (length-absorberLength)/2.0;
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*frontBackPipeLength,Y);

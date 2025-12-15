@@ -33,6 +33,21 @@ namespace xraySystem
   \author Udo Friman-Gayer
   \date December 2025
   \brief Heat absorber in Toyama front-ends at R3 ring
+
+  The geometry is a simplified version of the drawing in Ref. [1], containing 
+  the following parts:
+  
+  * The main heat-absorber block with a rectangular cross section. Inside, it has a 
+    rectangular gap with a slanted upper side, i.e. its cross section decreases from
+    front to back.
+  * Flanges at the front and back. According to Ref. [1], they have CF63 standard 
+    dimensions.
+  * Short pieces with circular cross section between the flanges and the block.
+  
+  The entire object can either be in a closed or open position, which is determined
+  by its location on the Z axis.
+
+  [1] Toyama Drawing S5-2-1AJ00545
 */
 
 class HeatAbsorberR3Toyama:
@@ -45,7 +60,7 @@ class HeatAbsorberR3Toyama:
  private:
 
   // Outer dimensions
-  double length;
+  double length; ///< Including flanges
   double flangeRadius;
 
   // Connector dimensions
@@ -59,15 +74,18 @@ class HeatAbsorberR3Toyama:
 
   // Gap dimensions
   double gapWidth;
-  double gapMinHeight;
-  double gapMaxHeight;
+  double gapMinHeight; ///< Gap height at the back.
+  double gapMaxHeight; ///< Gap height at the front.
 
-  double inOutRange;
-  bool closed;                  ///< open/closed flag
+  double inOutRange;  ///< Distance between the IN and OUT positions.
+                      ///< The position where the beam centered on the gap at the back
+                      ///< is +inOutRange/2
+  bool closed;                  ///< open/closed flag, corresponding to positioning at
+                                ///< +inOutRange/2 and -inOutRange/2
 
-  int mainMat;                  ///< Main material
-  int voidMat;                  ///< Void material
-  int pipeMat;                  ///< Pipe material
+  int mainMat;        ///< Main material
+  int voidMat;        ///< Void material
+  int pipeMat;        ///< Pipe material (wall + flange)
 
   void populate(const FuncDataBase&);
 

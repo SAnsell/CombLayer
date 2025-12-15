@@ -31,8 +31,12 @@ namespace setVariable
   \class HeatAbsorberR3ToyamaGenerator
   \version 1.0
   \author Udo Friman-Gayer
-  \date February 2025
+  \date December 2025
   \brief HeatAbsorberR3ToyamaGenerator for variables
+
+  Reference:
+
+  [1] Toyama Drawing S5-2-1AJ00545
 */
 
 class HeatAbsorberR3ToyamaGenerator

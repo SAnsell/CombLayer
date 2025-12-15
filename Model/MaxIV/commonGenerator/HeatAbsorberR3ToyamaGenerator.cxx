@@ -39,10 +39,26 @@ namespace setVariable
 {
 
 HeatAbsorberR3ToyamaGenerator::HeatAbsorberR3ToyamaGenerator() :
-  length(26.5),connectorInnerRadius(2.0),absorberLength(22.0),absorberWidth(8.0),
-  absorberHeight(8.0),absorberConnectorLength(1.0),gapWidth(1.0),gapMinHeight(0.9),
-  gapMaxHeight(2.6),inOutRange(1.7),closed(false),mainMat("Copper"),
-  voidMat("Void"),pipeMat("SteelUnknownGrade")
+  // Most of the dimensions are explicitly given in Ref. [1],
+  // but some have been measured with a ruler. This is clearly indicated in the
+  // comments below.
+  //
+  // All dimensions of the flanges not set here are assumed to correspond to the
+  // CF63 standard.
+  length(26.5), // [1]
+  connectorInnerRadius(2.0), // measured in [1]
+  absorberLength(22.0), // [1]
+  absorberWidth(8.0), // [1]
+  absorberHeight(8.0), // [1]
+  absorberConnectorLength(1.0), // measured in [1] 
+  gapWidth(1.0), // [1]
+  gapMinHeight(0.9), // [1]
+  gapMaxHeight(2.6), // [1]
+  inOutRange(1.7), // [1]
+  closed(false),
+  mainMat("Copper"), // TODO: Should be GLIDCOP, grade not given in [1].
+  voidMat("Void"),
+  pipeMat("SteelUnknownGrade") // TODO
   /*!
     Constructor and defaults
   */
