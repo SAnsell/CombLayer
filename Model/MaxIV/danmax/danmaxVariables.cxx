@@ -81,6 +81,9 @@
 // [1] CARATELLI Drawing 06769-01-000
 // [2] CARATELLI Drawing 06769-03-000
 // [4] S0-2-0AB01088_DanMAX.pdf
+// [5] S4-2-2AJ00829.pdf
+// [6] S7-4-2AJ00837.pdf
+// [7] S7-3-0AF00293.pdf
 
 namespace setVariable
 {
@@ -167,8 +170,7 @@ frontMaskVariables(FuncDataBase& Control,
 
 
   constexpr double FM1Length(40.0); // [4]
-  constexpr double FM2Length(50.5); // TODO: not indicated in [4]
-  ELog::EM << "FM2 length ??? " << ELog::endWarn;
+  constexpr double FM2Length(50.5); // [5]
   constexpr double MSMLength(40.0); //
 
   const double FM1dist(1104.75+FM1Length/2.0); // [4]
@@ -191,13 +193,20 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BellowHLength",14.0); // [4]
   Control.addVariable(preName+"PipeCLength",34.0); // [4]
 
-  FMaskGen.setFrontGap(1.65, 1.65); //
-  backWidth = 1.54; //
-  backHeight = 0.154; //
+  Control.addVariable(preName+"PermanentMagnetYStep",270.0); // Distance permanent magnet center to FM2 front: 170.5 cm, measured by AR
+  // TODO: Define position with absolute coordinates or relative to FM2.
+
+  FMaskGen.setFrontGap(2.1, 2.1); // [5]
+  backWidth = 0.16; // [5]
+  backHeight = 0.16; // [5]
   FMaskGen.setBackGap(backWidth, backHeight);
-  FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
-		      backWidth, backHeight);
+  FMaskGen.setMinSize(FM2Length-4.6-Geometry::zeroTol,
+		      backWidth, backHeight); // [5] Min position: 46 mm
+  FMaskGen.setMat("Copper"); // [5] TODO: should be GLIDCOP
+  ELog::EM << "FM2 material set to copper, should be GLIDCOP" << ELog::endWarn;
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
+  Control.addVariable(preName+"FM2Width", 8.8); // [5]
+  Control.addVariable(preName+"FM2Height", 6.8); // [5]
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
@@ -1109,21 +1118,24 @@ support7DanMAX(FuncDataBase& Control,
 
 
   const std::string shutterName=frontKey+"ShutterBox";
-  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCF<CF200>(); // [7]
   SimpleTubeGen.setCap(0,0);
+  SimpleTubeGen.setFlangeLength(0.0, 0.0); // Remove flanges [7]
   SimpleTubeGen.generateTube(Control,shutterName,shutterBoxLength);
   Control.addVariable(shutterName+"NPorts",2);
+  Control.addVariable(shutterName+"WallThick",0.3); // [7]
+  Control.addVariable(shutterName+"Radius",9.85); // [7]
 
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
   PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
-  // lift is actually 60mm [check]
   BeamMGen.setThread(1.0,"Nickel");
-  BeamMGen.setLift(5.0,0.0);
-  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten");
+  BeamMGen.setLift(6.0,0.0); // [7]
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten"); // [7]
 
-  // centre of mid point
-  Geometry::Vec3D CPos(0,-shutterBoxLength/4.0,0);
+  // Build bocks symmetrically around center of shutter box
+  // such that the center-center distance is 25 cm;
+  Geometry::Vec3D CPos(0, -12.5,0); // [7]
   for(size_t i=0;i<2;i++)
     {
       const std::string name=frontKey+"ShutterBoxPort"+std::to_string(i);
@@ -1131,7 +1143,7 @@ support7DanMAX(FuncDataBase& Control,
 
       PItemGen.generatePort(Control,name,CPos,ZVec);
       BeamMGen.generateMount(Control,fname,0);      // out of beam
-      CPos+=Geometry::Vec3D(0,shutterBoxLength/2.0,0);
+      CPos+=Geometry::Vec3D(0,25.0,0); // [7]
     }
 
   PipeGen.setCF<setVariable::CF63>();
@@ -1163,14 +1175,15 @@ support7DanMAX(FuncDataBase& Control,
   // Bremsstrahulung collimator
   std::string name;
   name=frontKey+"BremCollPipe";
-  constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
+  constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[6]
 
-  constexpr double bremCollRadius(3.0); // CAD and [1, page 26]
+  constexpr double bremCollRadius(3.0); // CAD and [6]
   PipeGen.setCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,name,bremCollPipeLength);
-  constexpr double bremCollPipeInnerRadius = 4.5; // CAD
+  constexpr double bremCollPipeInnerRadius = 4.35; // [6]
   Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
   Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
+  Control.addVariable(name+"FlangeALength",1.0); // Estimated from [6]
   Control.addVariable(name+"FlangeBRadius",7.5); // CAD
   Control.addVariable(name+"FlangeAInnerRadius",bremCollRadius);
   Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
@@ -1179,8 +1192,7 @@ support7DanMAX(FuncDataBase& Control,
   BBGen.setMaterial("Tungsten", "Void");
   BBGen.setLength(bremCollLength);
   BBGen.setRadius(bremCollRadius);
-  // Calculated by PI and AR based on angular acceptance of FM2 + safety margin
-  BBGen.setAperature(-1.0, 2.7, 0.7,  2.7, 0.7,   2.7, 0.7);
+  BBGen.setAperature(-1.0, 1.5, 0.7,  1.5, 0.7,   1.5, 0.7); // [6]
   BBGen.generateBlock(Control,frontKey+"BremColl",0);
   Control.addVariable(frontKey+"BremCollYStep",(bremCollPipeLength-bremCollLength)/2.0);
 

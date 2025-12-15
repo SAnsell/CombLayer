@@ -533,7 +533,7 @@ R3FrontEndToyamaVariables(FuncDataBase& Control,
 
   setVariable::CleaningMagnetGenerator CLGen;
   CLGen.generate(Control,frontKey+"PermanentMagnet");
-  Control.addVariable(frontKey+"PermanentMagnetYStep",102.25); // email from AR 251110: 13.1 m from the straight section center (does not match [3])
+  Control.addVariable(frontKey+"PermanentMagnetYStep",102.25); // email from AR 251110: 13.1 m from the straight section center for TomoWISE conceptual design (does not match [3]). Position depends on beamline.
   Control.addVariable(frontKey+"PermanentMagnetYokeLength",31.4); // should be the same length as the magnet, but making it 1 mm shorter to avoid zero volume cells
   Control.addVariable(frontKey+"PermanentMagnetGap",5.2); // [3]
 
