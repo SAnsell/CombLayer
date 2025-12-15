@@ -61,7 +61,7 @@ namespace xraySystem
 
 HeatAbsorberR3Toyama::HeatAbsorberR3Toyama(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key,7),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
@@ -336,15 +336,19 @@ HeatAbsorberR3Toyama::createLinks()
 
   FixedComp::setConnect(3,midPoint-X*absorberWidth/2.0,-X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+3));
+  FixedComp::nameSideIndex(3, "left");
 
   FixedComp::setConnect(4,midPoint+X*absorberWidth/2.0,X);
   FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+4));
+  FixedComp::nameSideIndex(4, "right");
 
   FixedComp::setConnect(5,midPoint-Z*absorberHeight/2.0,-Z);
   FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+5));
+  FixedComp::nameSideIndex(5, "bottom");
 
   FixedComp::setConnect(6,midPoint+Z*absorberHeight/2.0,Z);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+6));
+  FixedComp::nameSideIndex(6, "top");
 }
 
 void
