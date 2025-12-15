@@ -208,18 +208,18 @@ HeatAbsorberR3Toyama::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+32,Origin+Y*
     (length-frontBackPipeLength-absorberConnectorLength),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*absorberWidth/2.0+Z*zOffset,X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*absorberWidth/2.0+Z*zOffset,X);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*absorberWidth/2.0+Z*zOffset,X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*absorberWidth/2.0+Z*zOffset,X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*absorberHeight/2.0+Z*zOffset,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*absorberHeight/2.0+Z*zOffset,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*absorberHeight/2.0+Z*zOffset,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*absorberHeight/2.0+Z*zOffset,Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*gapWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*gapWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*gapMaxHeight/2.0+Z*zOffset,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*gapMaxHeight/2.0+Z*zOffset,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*gapWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*gapWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*gapMaxHeight/2.0+Z*zOffset,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*gapMaxHeight/2.0+Z*zOffset,Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+36,
+  ModelSupport::buildPlane(SMap,buildIndex+26,
     Origin+Y*frontBackPipeLength+Z*gapMaxHeight/2.0+Z*zOffset,
     Y*(gapMaxHeight-gapMinHeight)+Z*absorberLength);
 
@@ -244,56 +244,56 @@ HeatAbsorberR3Toyama::createObjects(Simulation& System)
   makeCell("AbsorberConnectorFront",System,cellIndex++,mainMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 -17 27"));
   makeCell("AbsorberConnectorFront",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 -25 -27"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 -15 -27"));
   makeCell("AbsorberConnectorFront",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 26 -27"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 16 -27"));
   makeCell("AbsorberConnectorFront",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 -23 -27 25 -26"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 -13 -27 15 -16"));
   makeCell("AbsorberConnectorFront",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 24 -27 25 -26"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 14 -27 15 -16"));
   makeCell("AbsorberConnectorFrontSlope",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 23 -24 -26 36"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 13 -14 -16 26"));
   makeCell("AbsorberConnectorFrontHole",System,cellIndex++,voidMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 23 -24 25 -36"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 13 -14 15 -26"));
 
   makeCell("AbsorberConnectorBackVoid",System,cellIndex++,voidMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 -7 17"));
   makeCell("AbsorberConnectorBack",System,cellIndex++,mainMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 -17 27"));
   makeCell("AbsorberConnectorBack",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 -25 -27"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 -15 -27"));
   makeCell("AbsorberConnectorBack",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 26 -27"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 16 -27"));
   makeCell("AbsorberConnectorBack",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 -23 -27 25 -26"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 -13 -27 15 -16"));
   makeCell("AbsorberConnectorBack",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 24 -27 25 -26"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 14 -27 15 -16"));
   makeCell("AbsorberConnectorBackSlope",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 23 -24 -26 36"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 13 -14 -16 26"));
   makeCell("AbsorberConnectorBackHole",System,cellIndex++,voidMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 23 -24 25 -36"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 13 -14 15 -26"));
 
   makeCell("AbsorberMainCellTop",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 13 -14 -16 26"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 3 -4 -6 16"));
   makeCell("AbsorberMainCellTopVoid",System,cellIndex++,voidMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 13 -14 16 -7"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 3 -4 6 -7"));
   makeCell("AbsorberMainCellBottom",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 13 -14 15 -25"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 3 -4 5 -15"));
   makeCell("AbsorberMainCellBottomVoid",System,cellIndex++,voidMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 13 -14 -15 -7"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 3 -4 -5 -7"));
   makeCell("AbsorberMainCellLeft",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 13 -23 25 -26"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 3 -13 15 -16"));
   makeCell("AbsorberMainCellLeftVoid",System,cellIndex++,voidMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -13 -7"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -3 -7"));
   makeCell("AbsorberMainCellRight",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -14 24 25 -26"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -4 14 15 -16"));
   makeCell("AbsorberMainCellRightVoid",System,cellIndex++,voidMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 14 -7"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 4 -7"));
 
   makeCell("AbsorberSlope",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 23 -24 -26 36"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 13 -14 -16 26"));
   makeCell("AbsorberHole",System,cellIndex++,voidMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 23 -24 25 -36"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 13 -14 15 -26"));
 
   makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 27"));
