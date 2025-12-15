@@ -40,7 +40,8 @@ namespace xraySystem
   * The main heat-absorber block with a rectangular cross section. Inside, it has a 
     rectangular gap with a slanted upper side, i.e. its cross section decreases from
     front to back.
-  * Flanges at the front and back.
+  * Flanges at the front and back. According to Ref. [1], they have CF63 standard 
+    dimensions.
   * Short pieces with circular cross section between the flanges and the block.
   
   The entire object can either be in a closed or open position, which is determined
