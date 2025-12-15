@@ -332,17 +332,19 @@ HeatAbsorberR3Toyama::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*flangeRadius,-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  const Geometry::Vec3D midPoint = Origin+Y*length/2.0;
 
-  FixedComp::setConnect(3,Origin+X*flangeRadius,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect(3,midPoint-X*absorberWidth/2.0,-X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(4,Origin-Z*flangeRadius,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect(4,midPoint+X*absorberWidth/2.0,X);
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(5,Origin+Z*flangeRadius,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect(5,midPoint-Z*absorberHeight/2.0,-Z);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+5));
+
+  FixedComp::setConnect(6,midPoint+Z*absorberHeight/2.0,Z);
+  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+6));
 }
 
 void
