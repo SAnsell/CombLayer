@@ -56,6 +56,7 @@ class HeatAbsorberR3ToyamaGenerator
   double gapMinHeight;
   double gapMaxHeight;
 
+  double inOutRange;
   bool closed;                  ///< open/closed flag
 
   std::string mainMat;          ///< Main material

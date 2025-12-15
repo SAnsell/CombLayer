@@ -22,9 +22,6 @@
 #ifndef xraySystem_HeatAbsorberR3Toyama_h
 #define xraySystem_HeatAbsorberR3Toyama_h
 
-namespace constructSystem{
-  class VacuumPipe;
-}
 class Simulation;
 
 namespace xraySystem
@@ -47,9 +44,6 @@ class HeatAbsorberR3Toyama:
 {
  private:
 
-  std::shared_ptr<constructSystem::VacuumPipe> frontPipe;
-  std::shared_ptr<constructSystem::VacuumPipe> backPipe;
-
   // Outer dimensions
   double length;
   double flangeRadius;
@@ -68,6 +62,7 @@ class HeatAbsorberR3Toyama:
   double gapMinHeight;
   double gapMaxHeight;
 
+  double inOutRange;
   bool closed;                  ///< open/closed flag
 
   int mainMat;                  ///< Main material
