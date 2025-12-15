@@ -20,7 +20,6 @@
  *
  ****************************************************************************/
 
-#include <format>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -482,44 +481,6 @@ DBMaterial::initMaterial()
   // Density : 8.91g/cc rho=0.084438
   createMaterial("Copper","29063.70c 0.058389212 "
 		 "29065.70c 0.02604927","",MLib);
-
-  // GLIDCOP family
-  // "Glidcop® is a non-heat treatable copper alloy system that is 
-  // dispersion-strengthened with ultra-fine particles of aluminium oxide.
-  // This results in a unique combination of high strength and high conductivity 
-  // unmatched by other copper alloy systems." (
-  // 	https://www.hoganas.com/en/powder-technologies/glidcop/
-  // 	accessed in December 2025
-  // )
-  // All GLIDCOP alloys below are approximated as copper-Al2O3 mixtures, in which
-  // oxygen is approximated as pure 16O.
-  // Atomic masses and natural abundances from ENSDF (all values rounded)
-  struct GLIDCOPGrade{
-	const std::string id;
-	const double al2o3MassFraction;
-	const double massDensity;
-  };
-  const std::vector<GLIDCOPGrade> glidcopGrades{
-	{"UnknownGrade", 0.0015, 8.90}, // Dummy material, same properties as GLIDCOP AL-15
-	{"AL-15", 0.0015, 8.90},
-	{"AL-25", 0.0025, 8.86},
-	{"AL-60", 0.0060, 8.81},
-  };
-  for(auto grade: glidcopGrades){
-	createMaterial(std::format("GLIDCOP{}", grade.id),
-		std::format(
-			"29063.70c {} 29065.70c {} 13027.70c {} 8016.70c {}",
-			grade.massDensity*(1.0-grade.al2o3MassFraction)*0.6915/62.930
-			*RefCon::avogadro,
-			grade.massDensity*(1.0-grade.al2o3MassFraction)*0.3085/64.928
-			*RefCon::avogadro,
-			grade.massDensity*grade.al2o3MassFraction*2.0/(3.0*15.995+2.0*26.982)
-			*RefCon::avogadro,
-			grade.massDensity*grade.al2o3MassFraction*3.0/(3.0*15.995+2.0*26.982)
-			*RefCon::avogadro
-		),
-		"",MLib);
-  }
 
    //Material #74: ChipIR Guide Steel (K Jones spec)
    //Density : 7.800 g/cc

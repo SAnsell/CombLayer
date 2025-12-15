@@ -41,7 +41,7 @@ namespace setVariable
 HeatAbsorberR3ToyamaGenerator::HeatAbsorberR3ToyamaGenerator() :
   length(26.5),connectorInnerRadius(2.0),absorberLength(22.0),absorberWidth(8.0),
   absorberHeight(8.0),absorberConnectorLength(1.0),gapWidth(1.0),gapMinHeight(0.9),
-  gapMaxHeight(2.6),inOutRange(1.7),closed(false),mainMat("GLIDCOPUnknownGrade"),
+  gapMaxHeight(2.6),inOutRange(1.7),closed(false),mainMat("Copper"),
   voidMat("Void"),pipeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
