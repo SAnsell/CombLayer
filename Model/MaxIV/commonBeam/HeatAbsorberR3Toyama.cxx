@@ -83,7 +83,7 @@ HeatAbsorberR3Toyama::HeatAbsorberR3Toyama(const HeatAbsorberR3Toyama& A) :
   absorberWidth(A.absorberWidth),absorberHeight(A.absorberHeight),
   absorberConnectorLength(A.absorberConnectorLength),
   inOutRange(A.inOutRange),closed(A.closed),
-  mainMat(A.mainMat),voidMat(A.voidMat)
+  mainMat(A.mainMat),voidMat(A.voidMat),pipeMat(A.pipeMat)
   /*!
     Copy constructor
     \param A :: HeatAbsorberR3Toyama to copy
@@ -116,6 +116,7 @@ HeatAbsorberR3Toyama::operator=(const HeatAbsorberR3Toyama& A)
       closed=A.closed;
       mainMat=A.mainMat;
       voidMat=A.voidMat;
+      pipeMat=A.pipeMat;
     }
   return *this;
 }
@@ -161,6 +162,7 @@ HeatAbsorberR3Toyama::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
 }
 
 void
@@ -297,27 +299,27 @@ HeatAbsorberR3Toyama::createObjects(Simulation& System)
   makeCell("AbsorberHole",System,cellIndex++,voidMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 23 -24 25 -36"));
 
-  makeCell("FrontPipe",System,cellIndex++,mainMat,0.0,
+  makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -7 17"));
   makeCell("FrontPipeVoid",System,cellIndex++,voidMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 3 -4 5 -6 7"));
   makeCell("FrontPipeVoid",System,cellIndex++,voidMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17"));
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"-11 17 -27");
-  makeCell("FrontFlange",System,cellIndex++,mainMat,0.0,HR*frontStr);
+  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,HR*frontStr);
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"-11 -17");
   makeCell("FrontFlangeVoid",System,cellIndex++,voidMat,0.0,HR*frontStr);
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"-11 3 -4 5 -6 27");
   makeCell("FrontFlangeVoid",System,cellIndex++,voidMat,0.0,HR*frontStr);
 
-  makeCell("BackPipe",System,cellIndex++,mainMat,0.0,
+  makeCell("BackPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-12 22 -7 17"));
   makeCell("BackPipeVoid",System,cellIndex++,voidMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-12 22 3 -4 5 -6 7"));
   makeCell("BackPipeVoid",System,cellIndex++,voidMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-12 22 -17"));
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"12 17 -27");
-  makeCell("BackFlange",System,cellIndex++,mainMat,0.0,HR*backStr);
+  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,HR*backStr);
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"12 -17");
   makeCell("BackFlangeVoid",System,cellIndex++,voidMat,0.0,HR*backStr);
   HR = ModelSupport::getHeadRule(SMap,buildIndex,"12 3 -4 5 -6 27");

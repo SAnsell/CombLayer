@@ -61,6 +61,7 @@ class HeatAbsorberR3ToyamaGenerator
 
   std::string mainMat;          ///< Main material
   std::string voidMat;          ///< Wall material
+  std::string pipeMat;          ///< Pipe material
 
  public:
 

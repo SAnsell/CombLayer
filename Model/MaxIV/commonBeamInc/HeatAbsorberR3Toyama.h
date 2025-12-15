@@ -67,6 +67,7 @@ class HeatAbsorberR3Toyama:
 
   int mainMat;                  ///< Main material
   int voidMat;                  ///< Void material
+  int pipeMat;                  ///< Pipe material
 
   void populate(const FuncDataBase&);
 

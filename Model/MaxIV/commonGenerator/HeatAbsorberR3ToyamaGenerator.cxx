@@ -42,7 +42,7 @@ HeatAbsorberR3ToyamaGenerator::HeatAbsorberR3ToyamaGenerator() :
   length(26.5),connectorInnerRadius(2.0),absorberLength(22.0),absorberWidth(8.0),
   absorberHeight(8.0),absorberConnectorLength(1.0),gapWidth(1.0),gapMinHeight(0.9),
   gapMaxHeight(2.6),inOutRange(1.7),closed(false),mainMat("GLIDCOPUnknownGrade"),
-  voidMat("Void")
+  voidMat("Void"),pipeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */
@@ -78,6 +78,7 @@ HeatAbsorberR3ToyamaGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Closed",static_cast<int>(closed));
   Control.addVariable(keyName+"MainMat",mainMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"PipeMat",pipeMat);
 
 }
 
