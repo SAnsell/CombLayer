@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/commonBeam/HeatAbsorberR3Toyama.cxx
  *
- * Copyright (c) 2025 by Udo Friman-Gayer
+ * Copyright (c) 2004-2025 by Udo Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -227,6 +227,8 @@ HeatAbsorberR3Toyama::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+36,
     Origin+Y*frontBackPipeLength+Z*gapMaxHeight/2.0+Z*zOffset,
     Y*(gapMaxHeight-gapMinHeight)+Z*absorberLength);
+
+  
 }
 
 void
