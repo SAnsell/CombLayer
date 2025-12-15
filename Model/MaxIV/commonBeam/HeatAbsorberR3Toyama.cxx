@@ -189,8 +189,10 @@ HeatAbsorberR3Toyama::createSurfaces()
   ModelSupport::buildCylinder(SMap, buildIndex+27,Origin+Z*zOffset,Y,
     connectorInnerRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*setVariable::CF63::flangeLength,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-setVariable::CF63::flangeLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin
+    +Y*setVariable::CF63::flangeLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin
+    +Y*(length-setVariable::CF63::flangeLength),Y);
 
   const double frontBackPipeLength = (length-absorberLength)/2.0;
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*frontBackPipeLength,Y);
