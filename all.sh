@@ -58,7 +58,7 @@ $parallel "./singleItem --singleItem {} $opts $inp" ::: \
  PortTube PrismaChamber Quadrupole  \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SlitsMask SixPort StriplineBPM \
  TDCBeamDump TWCavity TargetShield Torus TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
- UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac RFGun || exit
+ UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac RFGun HeatAbsorberToyama HeatAbsorberR3Toyama || exit
 
 exit
 

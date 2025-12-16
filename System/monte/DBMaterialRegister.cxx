@@ -36,7 +36,6 @@
 #include <numeric>
 #include <tuple>
 
-#include "RefCon.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
