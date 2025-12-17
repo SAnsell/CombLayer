@@ -270,7 +270,7 @@ HeatAbsorberToyama::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -23 16 -26 ");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 24 -4 16 -26 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 24 -4 16 -26 17 ");
   makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR*frontStr*backStr);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 3 -4 26 -6 ");
