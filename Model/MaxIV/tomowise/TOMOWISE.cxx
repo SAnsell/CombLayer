@@ -59,6 +59,7 @@
 #include "VacuumPipe.h"
 #include "PipeShield.h"
 #include "forkHoles.h"
+#include "XRayHutchBase.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "ProximityShielding.h"

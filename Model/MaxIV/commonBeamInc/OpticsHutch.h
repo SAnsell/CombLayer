@@ -26,7 +26,7 @@ class Simulation;
 
 namespace xraySystem
 {
-  class PortChicane;
+  class XRayHutchBase;
 /*!
   \class OpticsHutch
   \version 1.0
@@ -39,35 +39,18 @@ namespace xraySystem
 */
 
 class OpticsHutch :
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedGroup,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+    public xraySystem::XRayHutchBase,
+    public attachSystem::ContainedGroup
 {
  protected:
 
-  double height;                ///< void height
-  double length;                ///< void out side width
   double outWidth;              ///< Width from beamline centre to outside
 
-  // walls
-  double innerThick;            ///< Inner wall/roof skin
-  double pbWallThick;           ///< Thickness of lead in walls
-  double pbBackThick;           ///< Thickness of lead in back plate
-  double pbRoofThick;           ///< Thickness of lead in Roof
-  double outerThick;            ///< Outer wall/roof skin
 
   double backPlateThick;        ///< Back plate thick
   double backPlateWidth;        ///< Back plate width
   double backPlateHeight;       ///< back plate Height
 
-  double innerOutVoid;          ///< Extension for inner left void space
-  double outerOutVoid;          ///< Extension for outer left void space
-  double backVoid;              ///< Extension for inner back void space
-  double outerBackVoid;         ///< Extension for outer back void space
-  double floorShineThick;       ///< Floor shine thickness
-  double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface)
   double wallShineThick;        ///< Wall shine thickness (same value for the both wall shine plates)
   double wallShineLength;       ///< Wall shine full length (starting from the wall outer surface, same value for the both wall shine plates)
   double wallShineOutThick;     ///< Thickness of the wall shine outside of REW
@@ -75,24 +58,12 @@ class OpticsHutch :
   double roofShineLength;       ///< Roof shine length
   double roofShineThick;        ///< Roof shine thickness
 
-  std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
-  std::vector<double> holeRadius;           ///< hole radii
-
-  int skinMat;                ///< Fe layer material for walls
-  int pbMat;                  ///< pb layer material for walls
   int concreteMat;            ///< side wall (concrete filler)
-  int voidMat;                ///< Void material
-  int floorShineMat;          ///< Floor shine material
   int wallShineMat;           ///< Wall shine material
 
   HeadRule sideWall; ///< Ring side wall outer surface
   HeadRule frontWall; /// Ratchet-end wall outer surface (=front optics hutch surface)
   Geometry::Plane *pSideWall;
-
-  /// Chicanes
-  std::vector<std::shared_ptr<PortChicane>> PChicane;
-
-  forkHoles forks;              ///< Forklift holes if made
 
   void populate(const FuncDataBase&) override;
   virtual void createSurfaces();

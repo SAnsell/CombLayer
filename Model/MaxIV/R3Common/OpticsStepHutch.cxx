@@ -66,7 +66,7 @@
 #include "Plane.h"
 #include "SurInter.h"
 
-
+#include "XRayHutchBase.h"
 #include "OpticsHutch.h"
 #include "OpticsStepHutch.h"
 

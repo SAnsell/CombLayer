@@ -56,6 +56,7 @@
 #include "FrontBackCut.h"
 #include "BlockZone.h"
 #include "forkHoles.h"
+#include "XRayHutchBase.h"
 #include "OpticsHutch.h"
 
 #include "R3Ring.h"

@@ -69,6 +69,7 @@
 #include "VacuumPipe.h"
 
 #include "forkHoles.h"
+#include "XRayHutchBase.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "JawFlange.h"

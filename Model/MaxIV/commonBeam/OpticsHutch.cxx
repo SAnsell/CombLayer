@@ -62,6 +62,7 @@
 #include "RegMethod.h"
 #include "PortChicane.h"
 #include "forkHoles.h"
+#include "XRayHutchBase.h"
 #include "OpticsHutch.h"
 
 
@@ -69,13 +70,9 @@ namespace xraySystem
 {
 
 OpticsHutch::OpticsHutch(const std::string& Key) :
-  attachSystem::FixedRotate(Key,18),
+  xraySystem::XRayHutchBase(Key),
   attachSystem::ContainedGroup("Hutch", "WallShineREW"),
-  attachSystem::ExternalCut(),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-  pSideWall(nullptr),
-  forks(keyName+"Fork")
+  pSideWall(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -98,26 +95,14 @@ OpticsHutch::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OpticsHutch","populate");
 
-  FixedRotate::populate(Control);
-  height=Control.EvalVar<double>(keyName+"Height");
-  length=Control.EvalVar<double>(keyName+"Length");
-  outWidth=Control.EvalVar<double>(keyName+"OutWidth");
+  XRayHutchBase::populate(Control);
 
-  innerThick=Control.EvalVar<double>(keyName+"InnerThick");
-  pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
-  pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
-  pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
-  outerThick=Control.EvalVar<double>(keyName+"OuterThick");
+  outWidth=Control.EvalVar<double>(keyName+"OutWidth");
 
   backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
   backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
   backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
 
-  innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
-  outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
-  outerBackVoid=Control.EvalDefVar<double>(keyName+"OuterBackVoid",0.0);
-  floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");
-  floorShineLength=Control.EvalVar<double>(keyName+"FloorShineLength");
   wallShineThick=Control.EvalVar<double>(keyName+"WallShineThick");
   wallShineLength=Control.EvalVar<double>(keyName+"WallShineLength");
   wallShineOutThick=Control.EvalVar<double>(keyName+"WallShineOutThick");
@@ -125,29 +110,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   roofShineLength=Control.EvalVar<double>(keyName+"RoofShineLength");
   roofShineThick=Control.EvalVar<double>(keyName+"RoofShineThick");
 
-  double holeRad(0.0);
-  size_t holeIndex(0);
-  do
-    {
-      const std::string iStr("Hole"+std::to_string(holeIndex));
-      const double holeXStep=Control.EvalDefVar<double>(keyName+iStr+"XStep",0.0);
-      const double holeZStep=Control.EvalDefVar<double>(keyName+iStr+"ZStep",0.0);
-      holeRad=Control.EvalDefVar<double>(keyName+iStr+"Radius",-1.0);
 
-      if (holeRad>Geometry::zeroTol)
-	{
-	  holeOffset.push_back(Geometry::Vec3D(holeXStep,0.0,holeZStep));
-	  holeRadius.push_back(holeRad);
-	  holeIndex++;
-	}
-    } while(holeRad>Geometry::zeroTol);
-
-  forks.populate(Control);
-
-  skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
-  pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
-  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
-  floorShineMat=ModelSupport::EvalDefMat(Control,keyName+"FloorShineMat",pbMat);
   wallShineMat=ModelSupport::EvalDefMat(Control,keyName+"WallShineMat",pbMat);
 
   return;

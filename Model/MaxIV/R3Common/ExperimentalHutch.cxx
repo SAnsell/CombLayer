@@ -66,18 +66,15 @@
 #include "PortChicane.h"
 #include "forkHoles.h"
 
+#include "XRayHutchBase.h"
 #include "ExperimentalHutch.h"
 
 namespace xraySystem
 {
 
 ExperimentalHutch::ExperimentalHutch(const std::string& Key) :
-  attachSystem::FixedRotate(Key,18),
-  attachSystem::ContainedComp(),
-  attachSystem::ExternalCut(),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-  forks(Key+"Fork")
+  xraySystem::XRayHutchBase(Key),
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -99,11 +96,9 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ExperimentalHutch","populate");
 
-  FixedRotate::populate(Control);
+  XRayHutchBase::populate(Control);
 
   // Void + Fe special:
-  height=Control.EvalVar<double>(keyName+"Height");
-  length=Control.EvalVar<double>(keyName+"Length");
   ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
 
@@ -111,54 +106,16 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   cornerAngle=Control.EvalDefVar<double>(keyName+"CornerAngle",45.0);
 
   pbFrontThick=Control.EvalDefVar<double>(keyName+"PbFrontThick",-1.0);
+  pbTiltedThick=Control.EvalVar<double>(keyName+"PbTiltedThick");
 
   fHoleRadius=Control.EvalDefVar<double>(keyName+"FHoleRadius",1.0);
   fHoleXStep=Control.EvalDefVar<double>(keyName+"FHoleXStep",0.0);
   fHoleZStep=Control.EvalDefVar<double>(keyName+"FHoleZStep",0.0);
 
-  innerThick=Control.EvalVar<double>(keyName+"InnerThick");
-  pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");
-  pbBackThick=Control.EvalVar<double>(keyName+"PbBackThick");
-  pbTiltedThick=Control.EvalVar<double>(keyName+"PbTiltedThick");
-  pbRoofThick=Control.EvalVar<double>(keyName+"PbRoofThick");
   outerThick=Control.EvalVar<double>(keyName+"OuterThick");
-  floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");
-  floorShineLength=Control.EvalVar<double>(keyName+"FloorShineLength");
 
-  innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
-  outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
   frontVoid=Control.EvalDefVar<double>(keyName+"FrontVoid",0.0);
   backVoid=Control.EvalDefVar<double>(keyName+"BackVoid",0.0);
-  outerBackVoid=Control.EvalDefVar<double>(keyName+"OuterBackVoid",0.0);
-
-  // exit hole radii
-  double holeRad(0.0);
-  size_t holeIndex(0);
-  do
-    {
-      const std::string iStr("Hole"+std::to_string(holeIndex));
-      const double holeXStep=
-	Control.EvalDefVar<double>(keyName+iStr+"XStep",0.0);
-      const double holeZStep=
-	Control.EvalDefVar<double>(keyName+iStr+"ZStep",0.0);
-      holeRad=
-	Control.EvalDefVar<double>(keyName+iStr+"Radius",-1.0);
-
-      if (holeRad>Geometry::zeroTol)
-	{
-	  holeOffset.push_back(Geometry::Vec3D(holeXStep,0.0,holeZStep));
-	  holeRadius.push_back(holeRad);
-	  holeIndex++;
-	}
-    } while(holeRad>Geometry::zeroTol);
-
-
-  forks.populate(Control);
-
-  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
-  pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
-  floorShineMat=ModelSupport::EvalDefMat(Control,keyName+"FloorShineMat",pbMat);
 
   return;
 }
@@ -388,7 +345,7 @@ ExperimentalHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
 	(SMap,buildIndex, "-62 43 -44 -6 -343");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*voidFloor*innerVoid);
-  // Void cells between floor shine and ceiling, one corresponding to each piece 
+  // Void cells between floor shine and ceiling, one corresponding to each piece
   // of floor shine.
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-62 3 -43 -6 -303");
   makeCell("LeftWallVoid",System,cellIndex++,voidMat,0.0,

@@ -65,6 +65,7 @@
 #include "R3FrontEnd.h"
 #include "R3FrontEndFMBB.h"
 #include "forkHoles.h"
+#include "XRayHutchBase.h"
 #include "OpticsHutch.h"
 #include "softimaxFrontEnd.h"
 #include "softimaxOpticsLine.h"

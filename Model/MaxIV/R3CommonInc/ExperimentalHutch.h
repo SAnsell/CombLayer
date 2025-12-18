@@ -39,44 +39,26 @@ namespace xraySystem
 */
 
 class ExperimentalHutch :
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+  public xraySystem::XRayHutchBase,
+  public attachSystem::ContainedComp
 {
  private:
 
-  double height;                ///< void height to roof (from origin)
-  double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
   double outWidth;              ///< out side width
 
   double cornerAngle;           ///< angle at corner
   double cornerLength;          ///< length to corner
 
-  double innerThick;            ///< Inner wall/roof skin
-  double pbWallThick;           ///< Thickness of lead in walls
-  double pbFrontThick;          ///< Thickness of lead in front plate(if used)
-  double pbBackThick;           ///< Thickness of lead in back plate
   double pbTiltedThick;         ///< Thickness of lead in tilted wall
-  double pbRoofThick;           ///< Thickness of lead in Roof
-  double outerThick;            ///< Outer wall/roof skin
-  double floorShineThick;       ///< Floor shine thickness
-  double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface)
+  double pbFrontThick;          ///< Thickness of lead in front plate(if used)
 
   double fHoleRadius;            ///< Radius of front hole (if used)
   double fHoleXStep;             ///< X step offset
   double fHoleZStep;             ///< Z step offset
 
-  std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
-  std::vector<double> holeRadius;           ///< hole radii
-
-  double innerOutVoid;          ///< Extension for inner void space (side)
-  double outerOutVoid;          ///< Extension for outer void space (side)
   double frontVoid;             ///< Extension for inner front void space
   double backVoid;              ///< Extension for inner back void space
-  double outerBackVoid;         ///< Extension for outer back void space
 
   std::string forkWall;         ///< Wall for forklift [only one allowed]
   double forkXStep;             ///< Step across beamline for forklift hole
@@ -84,16 +66,6 @@ class ExperimentalHutch :
   double forkLength;            ///< length of units
   double forkHeight;            ///< height of unit
   std::vector<double> fZStep;   ///< step of units
-
-  int voidMat;                  ///< Void material [air]
-  int skinMat;                  ///< Fe layer material for walls
-  int pbMat;                    ///< pb layer material for walls
-  int floorShineMat;            ///< Floor shine material
-
-  /// Chicanes
-  std::vector<std::shared_ptr<PortChicane>> PChicane;
-
-  forkHoles forks;              ///< Forklift holes if made
 
   void populate(const FuncDataBase&) override;
   void createSurfaces();

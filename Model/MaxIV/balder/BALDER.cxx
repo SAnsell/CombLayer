@@ -62,6 +62,7 @@
 #include "LeadPipe.h"
 
 #include "forkHoles.h"
+#include "XRayHutchBase.h"
 #include "OpticsHutch.h"
 #include "ExperimentalHutch.h"
 #include "WallLead.h"
