@@ -43,9 +43,7 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "CFFlanges.h"
 
-#include "ScreenGenerator.h"
 #include "BeamScrapperGenerator.h"
 
 namespace setVariable

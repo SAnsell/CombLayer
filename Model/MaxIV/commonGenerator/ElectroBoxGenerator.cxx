@@ -44,7 +44,6 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "OpticsHutchGenerator.h"
 #include "ElectroBoxGenerator.h"
 
 namespace setVariable

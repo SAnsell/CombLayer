@@ -49,7 +49,6 @@
 #include "DipoleGenerator.h"
 #include "QuadrupoleGenerator.h"
 #include "SexupoleGenerator.h"
-#include "OctupoleGenerator.h"
 
 #include "MagnetU1Generator.h"
 
