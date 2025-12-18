@@ -59,6 +59,8 @@ OpticsHutchGenerator::OpticsHutchGenerator() :
   floorShineThick(0.6), floorShineLength(50.0),
   wallShineThick(0.6), wallShineLength(59.0),
   wallShineOutThick(1.2), wallShineOutLength(20.0),
+  roofShineLength(20.0),
+  roofShineThick(0.6),
   innerOutVoid(10.0),outerOutVoid(10.0),
   frontVoid(0.0),backVoid(0.0),
   outerBackVoid(0.0),
@@ -124,6 +126,8 @@ OpticsHutchGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"WallShineLength",wallShineLength);
   Control.addVariable(keyName+"WallShineOutThick",wallShineOutThick);
   Control.addVariable(keyName+"WallShineOutLength",wallShineOutLength);
+  Control.addVariable(keyName+"RoofShineLength",roofShineLength);
+  Control.addVariable(keyName+"RoofShineThick",roofShineThick);
 
   for(size_t i=0;i<holeRadius.size();i++)
     {

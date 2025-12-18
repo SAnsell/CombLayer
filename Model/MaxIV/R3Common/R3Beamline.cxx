@@ -110,10 +110,10 @@ R3Beamline::buildOpticsHutch
   opticsHut->setCutSurf("SideWall",
 			r3Ring->getSurf("FlatOuter",segmentIndex));
 
-  const HeadRule cutHR=
-    r3Ring->getSurfRule("FlatOuter",segmentIndex)+
-    r3Ring->getSurfRule("FlatOuterCut",segmentIndex);
-  opticsHut->setCutSurf("SideWallCut",cutHR);
+  const HeadRule flatOuterCut = r3Ring->getSurfRule("FlatOuterCut",segmentIndex);
+  const HeadRule sideWallCut  = r3Ring->getSurfRule("FlatOuter",segmentIndex)+flatOuterCut;
+  opticsHut->setCutSurf("SideWallCut",sideWallCut);
+  opticsHut->setCutSurf("FlatOuterCut",flatOuterCut);
   opticsHut->createAll(System,*r3Ring,exitLink);
 
   return;

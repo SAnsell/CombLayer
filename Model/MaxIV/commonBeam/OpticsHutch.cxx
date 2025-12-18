@@ -122,6 +122,8 @@ OpticsHutch::populate(const FuncDataBase& Control)
   wallShineLength=Control.EvalVar<double>(keyName+"WallShineLength");
   wallShineOutThick=Control.EvalVar<double>(keyName+"WallShineOutThick");
   wallShineOutLength=Control.EvalVar<double>(keyName+"WallShineOutLength");
+  roofShineLength=Control.EvalVar<double>(keyName+"RoofShineLength");
+  roofShineThick=Control.EvalVar<double>(keyName+"RoofShineThick");
 
   double holeRad(0.0);
   size_t holeIndex(0);
@@ -259,7 +261,17 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+502, pFrontWall, -wallShineOutLength);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+504, buildIndex+33, X, -wallShineOutThick);
 
-  return;
+  // Roof shine along the ring side wall
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+603, pSideWall, roofShineLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+605, buildIndex+6, Z, -roofShineThick);
+
+  const HeadRule flatOuterCut=ExternalCut::getValidRule("FlatOuterCut",Origin);
+  const Geometry::Plane *pFlatOuterCut=SMap.realPtr<Geometry::Plane>(flatOuterCut.getPrimarySurface());
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+604, pFlatOuterCut, roofShineLength);
+
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+601, pFrontWall, roofShineLength);
+
+return;
 }
 
 void
@@ -275,7 +287,7 @@ OpticsHutch::createObjects(Simulation& System)
 
   // ring wall
   const HeadRule sideWall=ExternalCut::getValidRule("SideWall",Origin);
-  const HeadRule sideCut=ExternalCut::getValidRule("SideWallCut",Origin);
+  const HeadRule sideWallCut=ExternalCut::getValidRule("SideWallCut",Origin);
 
   const HeadRule floor=ExternalCut::getValidRule("Floor",Origin);
 
@@ -301,7 +313,7 @@ OpticsHutch::createObjects(Simulation& System)
     {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 3 -6");
     }
-  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall*sideCut);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*frontWall*sideWallCut);
 
   // walls:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-2 -3 13 -6");
@@ -333,11 +345,11 @@ OpticsHutch::createObjects(Simulation& System)
     }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 13 6 -16");
-  makeCell("RoofIWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
+  makeCell("RoofIWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideWallCut);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 23 16 -26");
-  makeCell("RoofPbWall",System,cellIndex++,pbMat,0.0,HR*frontWall*sideCut);
+  makeCell("RoofPbWall",System,cellIndex++,pbMat,0.0,HR*frontWall*sideWallCut);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33  26 -36");
-  makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideCut);
+  makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideWallCut);
 
   // Back plate:
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
@@ -370,7 +382,7 @@ OpticsHutch::createObjects(Simulation& System)
   else
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33 -36");
 
-  addOuterSurf("Hutch", HR*frontWall*sideCut);
+  addOuterSurf("Hutch", HR*frontWall*sideWallCut);
   return;
 }
 

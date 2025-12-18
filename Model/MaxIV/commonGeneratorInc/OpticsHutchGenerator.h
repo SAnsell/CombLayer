@@ -59,6 +59,8 @@ class OpticsHutchGenerator
   double wallShineLength;       ///< wall shine lenght
   double wallShineOutThick;     ///< thickness of wall shine outside of REW
   double wallShineOutLength;    ///< length of wall shine outside of REW
+  double roofShineLength;       ///< Roof shine length
+  double roofShineThick;        ///< Roof shine thickness
 
   double innerOutVoid;          ///< Extension for inner left void space
   double outerOutVoid;          ///< Extension for outer left void space
