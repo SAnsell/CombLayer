@@ -44,7 +44,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 
 namespace setVariable
@@ -52,7 +52,7 @@ namespace setVariable
 
 
 ExptHutGenerator::ExptHutGenerator() :
-  OpticsHutGenerator(),
+  OpticsHutchGenerator(),
   ringWidth(200.0),pbFrontThick(-1.0),
   cornerAngle(45.0),cornerYStep(100000.0),
   fHoleXStep(0.0),fHoleZStep(0.0),fHoleRadius(3.0),
@@ -117,7 +117,7 @@ ExptHutGenerator::generateHut(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("ExptHutGenerator","generateOpticsHut");
 
-  OpticsHutGenerator::generateHut(Control,hutName,length);
+  OpticsHutchGenerator::generateHut(Control,hutName,length);
 
   Control.addVariable(hutName+"YStep",yStep);
   Control.addVariable(hutName+"RingWidth",ringWidth);

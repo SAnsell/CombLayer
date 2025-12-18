@@ -67,7 +67,7 @@
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 #include "CrossGenerator.h"
@@ -273,7 +273,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   const double beamMirrorShift(-0.6);
 
-  OpticsHutGenerator OGen;
+  OpticsHutchGenerator OGen;
 
   OGen.setSkin(0.2);
   OGen.setBackLead(5.0); // "Lead Thickness Back Wall" Section A-A [1]

@@ -68,7 +68,7 @@
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 #include "MonoShutterGenerator.h"
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 #include "FlangeDomeGenerator.h"
 
@@ -228,7 +228,7 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("cosaxsVariables[F]","opticsHutVariables");
 
-  OpticsHutGenerator OGen;
+  OpticsHutchGenerator OGen;
 
   OGen.addHole(Geometry::Vec3D(3.2,0,0),3.5);
   OGen.generateHut(Control,hutName,892.1+7.6);

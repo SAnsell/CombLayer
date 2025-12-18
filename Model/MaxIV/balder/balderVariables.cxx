@@ -60,7 +60,7 @@
 #include "LeadBoxGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "WallLeadGenerator.h"
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
@@ -171,7 +171,7 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables","opticsHutVariables");
 
-  OpticsHutGenerator OGen;
+  OpticsHutchGenerator OGen;
 
   OGen.addHole(Geometry::Vec3D(0,0,4.0),3.5);
   OGen.generateHut(Control,hutName,1034.0+7.6);

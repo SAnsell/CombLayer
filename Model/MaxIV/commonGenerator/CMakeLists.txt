@@ -27,7 +27,7 @@ set (commonGeneratorSources
     MirrorGenerator.cxx MLMDetailGenerator.cxx MLMonoGenerator.cxx
     MonoBlockXstalsGenerator.cxx MonoBoxGenerator.cxx MonoShutterGenerator.cxx
     MultiPipeGenerator.cxx MovableSafetyMaskGenerator.cxx NBeamStopGenerator.cxx OctupoleGenerator.cxx
-    OpticsHutGenerator.cxx PipeShieldGenerator.cxx PortChicaneGenerator.cxx
+    OpticsHutchGenerator.cxx PipeShieldGenerator.cxx PortChicaneGenerator.cxx
     PowerFilterGenerator.cxx
     ProximityShieldingGenerator.cxx
     PreDipoleGenerator.cxx PrismaChamberGenerator.cxx QuadrupoleGenerator.cxx
@@ -139,7 +139,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MovableSafetyMaskGenerator.cxx
   ${tarDIR}/NBeamStopGenerator.cxx
   ${tarDIR}/OctupoleGenerator.cxx
-  ${tarDIR}/OpticsHutGenerator.cxx
+  ${tarDIR}/OpticsHutchGenerator.cxx
   ${tarDIR}/PipeShieldGenerator.cxx
   ${tarDIR}/PortChicaneGenerator.cxx
   ${tarDIR}/PowerFilterGenerator.cxx
@@ -254,7 +254,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/MovableSafetyMaskGenerator.h
   ${tarINC}/NBeamStopGenerator.h
   ${tarINC}/OctupoleGenerator.h
-  ${tarINC}/OpticsHutGenerator.h
+  ${tarINC}/OpticsHutchGenerator.h
   ${tarINC}/PipeShieldGenerator.h
   ${tarINC}/PortChicaneGenerator.h
   ${tarINC}/PowerFilterGenerator.h

@@ -75,7 +75,7 @@
 #include "WallLeadGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "DiffXIADP03Generator.h"
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 
 namespace setVariable
 {
@@ -251,7 +251,7 @@ opticsHutVariables(FuncDataBase& Control,
   ELog::RegMethod RegA("softimaxVariables[F]","opticsHutVariables");
 
   const std::string hutName(preName+"OpticsHut");
-  OpticsHutGenerator OGen;
+  OpticsHutchGenerator OGen;
 
   OGen.setOuterBackExt(40.0);
   OGen.addHole(Geometry::Vec3D(22,0,0),5.0);

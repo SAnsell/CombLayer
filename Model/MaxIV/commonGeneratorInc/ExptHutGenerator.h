@@ -36,7 +36,7 @@ namespace setVariable
 */
 
 class ExptHutGenerator  :
-    public OpticsHutGenerator
+    public OpticsHutchGenerator
 {
  private:
 

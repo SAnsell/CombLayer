@@ -86,7 +86,7 @@
 #include "ConnectorGenerator.h"
 #include "FlangeDomeGenerator.h"
 #include "AreaDetectorGenerator.h"
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 
 
@@ -491,7 +491,7 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("formaxVariables","opticsHutVariables");
 
-  OpticsHutGenerator OGen;
+  OpticsHutchGenerator OGen;
 
   OGen.setSkin(0.2);
 

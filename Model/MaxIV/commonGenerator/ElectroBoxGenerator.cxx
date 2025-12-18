@@ -44,7 +44,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 #include "ElectroBoxGenerator.h"
 
 namespace setVariable
@@ -61,7 +61,7 @@ ElectroBoxGenerator::ElectroBoxGenerator() :
     Constructor and defaults
   */
 {}
-  
+
 void
 ElectroBoxGenerator::generateBox(FuncDataBase& Control,
 				 const std::string& boxName,
@@ -79,7 +79,7 @@ ElectroBoxGenerator::generateBox(FuncDataBase& Control,
 
   Control.addVariable(boxName+"XStep",xStep);
   Control.addVariable(boxName+"YStep",yStep);
-  
+
   Control.addVariable(boxName+"ElecWidth",elecWidth);
   Control.addVariable(boxName+"ElecLength",elecLength);
   Control.addVariable(boxName+"ElecHeight",elecHeight);
@@ -94,8 +94,8 @@ ElectroBoxGenerator::generateBox(FuncDataBase& Control,
   Control.addVariable(boxName+"ElecMat",elecMat);
   Control.addVariable(boxName+"SkinMat",skinMat);
   Control.addVariable(boxName+"WallMat",wallMat);
- 
-  
+
+
   return;
 
 }

@@ -91,7 +91,7 @@
 #include "CollUnitGenerator.h"
 #include "TableGenerator.h"
 #include "AreaDetectorGenerator.h"
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 
 namespace setVariable
@@ -485,7 +485,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   const double beamMirrorShift(-1.0);
 
-  OpticsHutGenerator OGen;
+  OpticsHutchGenerator OGen;
   PortChicaneGenerator PGen;
 
   OGen.setSkin(0.2);

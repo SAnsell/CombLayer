@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGeneratorInc/OpticsHutGenerator.h
+ * File:   commonGeneratorInc/OpticsHutchGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_OpticsHutGenerator_h
-#define setVariable_OpticsHutGenerator_h
+#ifndef setVariable_OpticsHutchGenerator_h
+#define setVariable_OpticsHutchGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class OpticsHutGenerator
+  \class OpticsHutchGenerator
   \version 1.0
   \author S. Ansell
   \date July 2021
   \brief Standard (exept length/chicane) optics hutch for Max IV
 */
 
-class OpticsHutGenerator
+class OpticsHutchGenerator
 {
  protected:
 
@@ -76,10 +76,10 @@ class OpticsHutGenerator
 
  public:
 
-  OpticsHutGenerator();
-  OpticsHutGenerator(const OpticsHutGenerator&) =default;
-  OpticsHutGenerator& operator=(const OpticsHutGenerator&) =default;
-  ~OpticsHutGenerator() =default;
+  OpticsHutchGenerator();
+  OpticsHutchGenerator(const OpticsHutchGenerator&) =default;
+  OpticsHutchGenerator& operator=(const OpticsHutchGenerator&) =default;
+  ~OpticsHutchGenerator() =default;
 
   // set skinthickness
   void setSkin(const double T) { outerThick=T; innerThick=T;}

@@ -80,7 +80,7 @@
 #include "CollTubeGenerator.h"
 #include "CollUnitGenerator.h"
 #include "TableGenerator.h"
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"
 #include "MLMDetailGenerator.h"
@@ -723,7 +723,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   const double beamMirrorShift(4.3); //-1.0);
 
-  OpticsHutGenerator OGen;
+  OpticsHutchGenerator OGen;
   PortChicaneGenerator PGen;
 
   OGen.setSkin(0.2);

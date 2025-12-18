@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/OpticsHutGenerator.cxx
+ * File:   commonGenerator/OpticsHutchGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
  *
@@ -45,13 +45,13 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "OpticsHutGenerator.h"
+#include "OpticsHutchGenerator.h"
 
 namespace setVariable
 {
 
 
-OpticsHutGenerator::OpticsHutGenerator() :
+OpticsHutchGenerator::OpticsHutchGenerator() :
   height(279.2),outWidth(261.8),
   innerThick(0.3),pbWallThick(1.6),
   pbBackThick(7.0),pbRoofThick(1.6),
@@ -71,7 +71,7 @@ OpticsHutGenerator::OpticsHutGenerator() :
 {}
 
 void
-OpticsHutGenerator::addHole(const Geometry::Vec3D& HO,
+OpticsHutchGenerator::addHole(const Geometry::Vec3D& HO,
 			    const double R)
   /*!
     Add an additional hole to the back wall
@@ -88,7 +88,7 @@ OpticsHutGenerator::addHole(const Geometry::Vec3D& HO,
 }
 
 void
-OpticsHutGenerator::generateHut(FuncDataBase& Control,
+OpticsHutchGenerator::generateHut(FuncDataBase& Control,
 				const std::string& keyName,
 				const double length) const
   /*!
@@ -98,7 +98,7 @@ OpticsHutGenerator::generateHut(FuncDataBase& Control,
     \param length :: Full length of hut
   */
 {
-  ELog::RegMethod RegA("OpticsHutGenerator","generateOpticsHut");
+  ELog::RegMethod RegA("OpticsHutchGenerator","generateOpticsHut");
 
   Control.addVariable(keyName+"Length",length);
 
