@@ -3,7 +3,7 @@
 
  * File:   R3CommonInc/ExperimentalHutch.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell & Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,9 @@ namespace xraySystem
 
 /*!
   \class ExperimentalHutch
-  \version 1.0
-  \author S. Ansell
-  \date January 2018
+  \version 1.1
+  \author S. Ansell & K. Batkov
+  \date December 2025
   \brief ExperimentalHutch unit
 
   Built around the central beam axis
