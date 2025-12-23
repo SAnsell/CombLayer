@@ -72,6 +72,9 @@ namespace xraySystem
       XRayHutchBase(const std::string&);
       virtual ~XRayHutchBase() = default;
 
+      /// accessor to void mat
+      int getInnerMat() const { return voidMat; }
+
       void populate(const FuncDataBase&);
       virtual void createAll(Simulation&,const attachSystem::FixedComp&,const long int) = 0;
     };

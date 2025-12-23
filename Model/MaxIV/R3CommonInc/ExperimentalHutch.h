@@ -82,9 +82,6 @@ class ExperimentalHutch :
   ExperimentalHutch& operator=(const ExperimentalHutch&);
   ~ExperimentalHutch() override;
 
-  /// accessor to void mat
-  int getInnerMat() const { return voidMat; }
-
   const PortChicane* getPortItem(const size_t) const;
 
   void splitChicane(Simulation& System,const size_t,const size_t);
