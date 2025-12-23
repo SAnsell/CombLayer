@@ -395,7 +395,7 @@ exptHutVariables(FuncDataBase& Control,
 
 
   const double beamMirrorShift(0.6);
-  const std::string hutName(beamName+"ExptHut");
+  const std::string hut1Name(beamName+"ExptHut1");
 
   EGen.setFrontHole(beamMirrorShift,0.0,4.0);
   EGen.setCorner(atan(167.4/281.5)*180.0/M_PI,281.5); // Section A-A [2]
@@ -406,10 +406,10 @@ exptHutVariables(FuncDataBase& Control,
   EGen.setFloorShineThick(0.6); // [2]
   EGen.setFloorShineLength(20.0); // full length [2]
 
-  EGen.generateHut(Control,hutName,1845.0, 1401.3); // Hutch length: Section A-A [2]
-  Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
-  Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
-  Control.addVariable(hutName+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
+  EGen.generateHut(Control,hut1Name,1845.0, 1401.3); // Hutch length: Section A-A [2]
+  Control.addVariable(hut1Name+"RingWidth",204.8); // Section A-A [2]
+  Control.addVariable(hut1Name+"OutWidth",260.2); // Section A-A [2]
+  Control.addVariable(hut1Name+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
 
   // // lead shield on pipe
   // Control.addVariable(beamName+"PShieldXStep",beamMirrorShift);
@@ -422,11 +422,11 @@ exptHutVariables(FuncDataBase& Control,
   // Control.addVariable(beamName+"PShieldWallMat","SteelUnknownGrade");
   // Control.addVariable(beamName+"PShieldMat","Lead");
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hut1Name+"NChicane",2);
   PortChicaneGenerator PGen;
   PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
+  PGen.generatePortChicane(Control,hut1Name+"Chicane0","Left",150.0,-5.0);
+  PGen.generatePortChicane(Control,hut1Name+"Chicane1","Left",-270.0,-5.0);
 
   return;
 }

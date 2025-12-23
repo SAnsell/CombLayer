@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   danmaxInc/DANMAX.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_DANMAX_h
@@ -70,28 +70,28 @@ class DANMAX : public R3Beamline
   std::shared_ptr<danmaxFrontEnd> frontBeam;
 
   /// lead in beam wall
-  std::shared_ptr<WallLead> wallLead;           
-  
+  std::shared_ptr<WallLead> wallLead;
+
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 
   /// Optics hutch
   std::shared_ptr<OpticsStepHutch> opticsHut;
-  
+
   /// Beamline
   std::shared_ptr<danmaxOpticsLine> opticsBeam;
 
-    /// Pipe joining optics hut to outer 
+    /// Pipe joining optics hut to outer
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
-  
-  /// Pipe joining optics hut to outer 
+
+  /// Pipe joining optics hut to outer
   std::shared_ptr<xraySystem::danmaxConnectLine> connectUnit;
 
   /// Pipe joining connecting unit to expt.
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeC;
 
-  /// Pipe joining optics hut to outer 
-  std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;
+  /// Pipe joining optics hut to outer
+  std::shared_ptr<xraySystem::ExperimentalHutch> exptHut1;
 
   /// Shielding block guilatine
   std::shared_ptr<xraySystem::PipeShield> guillotine;
@@ -99,9 +99,9 @@ class DANMAX : public R3Beamline
   /// Beamline for experimental hutch
   std::shared_ptr<balderExptLine> exptBeam;
 
-  
+
  public:
-  
+
   DANMAX(const std::string&);
   DANMAX(const DANMAX&);
   DANMAX& operator=(const DANMAX&);
