@@ -234,14 +234,17 @@ ExperimentalHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+15, SMap.realPtr<Geometry::Plane>(floor.getPrimarySurface()), floorShineThick);
   // Planes parallel to the walls of the hutch that define the extent of the floor shine cover.
   // Front wall
-  makeShiftedSurf(SMap, "frontWall", buildIndex+51, Y, floorShineLength);
+  makeShiftedSurf(SMap, "frontWall", buildIndex+51, Y, floorShineFrontLength);
   // Left wall (straight part)
   ModelSupport::buildShiftedPlane(SMap, buildIndex+43, buildIndex+33, Y, floorShineLength);
   // Left wall (corner) -> Built along with other corner planes above.
   // Right wall
   ModelSupport::buildShiftedPlane(SMap, buildIndex+44, buildIndex+4, Y, -floorShineLength);
   // Back wall
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+62, buildIndex+2, Y, -floorShineLength);
+  if (floorShineBackLength>Geometry::zeroTol)
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+62, buildIndex+32, Y, -floorShineBackLength);
+  else // make plane 62 to be the same as 2
+    ModelSupport::buildShiftedPlane(SMap, buildIndex+62, buildIndex+2, Y, 0.0); // TODO: use the appropriate surface clone method
 
   // INNER / OUTER BACK VOID
 
@@ -334,10 +337,12 @@ ExperimentalHutch::createObjects(Simulation& System)
       BI+=100;
     }
 
-  HR = ModelSupport::getHeadRule(SMap, buildIndex, "-51 43 -44 -15");
-  makeCell("FloorShineFrontWall", System, cellIndex++, floorShineMat, 0.0, HR*floor*innerWall);
+  if (floorShineFrontLength>Geometry::zeroTol) {
+    HR = ModelSupport::getHeadRule(SMap, buildIndex, "-51 43 -44 -15");
+    makeCell("FloorShineFrontWall", System, cellIndex++, floorShineMat, 0.0, HR*floor*innerWall);
+  }
 
-  HR = ModelSupport::getAltHeadRule(SMap, buildIndex, "3 -43 -303A -62B");
+  HR = ModelSupport::getAltHeadRule(SMap, buildIndex, "3 -43 -303A -2B");
   makeCell("FloorShineOuterWall", System, cellIndex++, floorShineMat, 0.0, HR*innerWall*tbFloorShine);
   makeCell("FloorShineOuterWallVoid",System,cellIndex++,voidMat,0.0,HR*innerWall*tbFloorShineVoid);
 
@@ -347,16 +352,18 @@ ExperimentalHutch::createObjects(Simulation& System)
     makeCell("FloorShineTiltedWallVoid",System,cellIndex++,voidMat,0.0,HR*tbFloorShineVoid);
   }
 
-  HR = ModelSupport::getHeadRule(SMap, buildIndex, "-62 44 -4");
+  HR = ModelSupport::getHeadRule(SMap, buildIndex, "-2 44 -4");
   makeCell("FloorShineRingWall",System,cellIndex++,floorShineMat,0.0,HR*innerWall*tbFloorShine);
   makeCell("FloorShineRingWallVoid",System,cellIndex++,voidMat,0.0,HR*innerWall*tbFloorShineVoid);
 
-  HR = ModelSupport::getAltHeadRule(SMap, buildIndex, "62 -2 -303A 3B -4");
-  makeCell("FloorShineBackWall", System, cellIndex++, floorShineMat, 0.0, HR*tbFloorShine);
-  makeCell("FloorShineBackWallVoid",System,cellIndex++,voidMat,0.0,HR*tbFloorShineVoid);
+  if (floorShineBackLength>Geometry::zeroTol) {
+    HR = ModelSupport::getAltHeadRule(SMap, buildIndex, "62 -2 -303A 43B -44");
+    makeCell("FloorShineBackWall", System, cellIndex++, floorShineMat, 0.0, HR*tbFloorShine);
+    makeCell("FloorShineBackWallVoid",System,cellIndex++,voidMat,0.0,HR*tbFloorShineVoid);
+  }
 
   // Void cell filling the space on the floor between the floor shine
-  HR = ModelSupport::getSetHeadRule(SMap, buildIndex, "-62 43 -44 -343 51 -15");
+  HR = ModelSupport::getSetHeadRule(SMap, buildIndex, "51 -62 43 -44 -343 -15");
   makeCell("FloorShineVoid", System, cellIndex++, voidMat, 0.0, HR*floor);
 
   // Inner void cell

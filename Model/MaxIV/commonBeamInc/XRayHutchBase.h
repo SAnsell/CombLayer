@@ -55,7 +55,9 @@ namespace xraySystem
       double outerBackVoid;         ///< Extension for outer back void space
 
       double floorShineThick;       ///< Floor shine thickness
-      double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface)
+      double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface) - general length that is overriden by the particular lengths below
+      double floorShineFrontLength; ///< Floors hine length along the front wall
+      double floorShineBackLength;  ///< Floors hine length along the back wall
 
       std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
       std::vector<double> holeRadius;           ///< hole radii

@@ -107,6 +107,8 @@ namespace xraySystem
 
     floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");
     floorShineLength=Control.EvalVar<double>(keyName+"FloorShineLength");
+    floorShineFrontLength=Control.EvalDefVar<double>(keyName+"FloorShineFrontLength", floorShineLength);
+    floorShineBackLength=Control.EvalDefVar<double>(keyName+"FloorShineBackLength", floorShineLength);
 
     double holeRad(0.0);
     size_t holeIndex(0);

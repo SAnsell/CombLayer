@@ -53,7 +53,7 @@ class ExptHutGenerator  :
   double fHoleRadius;   ///< Front hole radius
 
   double floorShineThick;   ///< Floor shine thickness
-  double floorShineLength;  ///< Floor shine full length (starting from the wall outer surface)
+  double floorShineLength;  ///< Floor shine full length (starting from the wall outer surface) - general value for floor shines along all walls - can be overriden for the front and back walls (see XRayHutchBase.h)
 
  public:
 
