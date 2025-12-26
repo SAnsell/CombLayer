@@ -96,7 +96,8 @@ void frontMaskVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
 void connectVariables(FuncDataBase&,const std::string&);
 void opticsHutVariables(FuncDataBase&,const std::string&);
-void exptHutVariables(FuncDataBase&,const std::string&);
+void exptHut1Variables(FuncDataBase&,const std::string&);
+void exptHut2Variables(FuncDataBase&,const std::string&);
 
 void lensPackage(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
@@ -381,52 +382,79 @@ connectVariables(FuncDataBase& Control,
 }
 
 void
-exptHutVariables(FuncDataBase& Control,
+exptHut1Variables(FuncDataBase& Control,
 		 const std::string& beamName)
   /*!
-    Optics hut variables
+    Experimental hutch 1 variables
     \param Control :: DataBase to add
     \param beamName :: Beamline name
   */
 {
-  ELog::RegMethod RegA("danmaxVariables[F]","exptHutVariables");
+  ELog::RegMethod RegA("danmaxVariables[F]","exptHut1Variables");
 
   setVariable::ExptHutGenerator EGen;
 
-
-  const double beamMirrorShift(0.6);
-  const std::string hut1Name(beamName+"ExptHut1");
+  const double beamMirrorShift(0.6); // will be adjusted later when the beamline is built
+  const std::string hutName(beamName+"ExptHut1");
 
   EGen.setFrontHole(beamMirrorShift,0.0,4.0);
   EGen.setCorner(atan(167.4/281.5)*180.0/M_PI,281.5); // Section A-A [2]
-  EGen.setFrontLead(0.4); // "Lead Thickness Upstream Wall", Section A-A [2]
   EGen.setBackLead(0.6); // "Lead Thickness Downstream Wall", Section A-A [2]
   EGen.setRoofLead(0.4); // "Roof Thk Pb", Section A-A [2]
   EGen.setWallLead(0.4); // "Lead Thickness Side Wall", Section A-A [2]
   EGen.setFloorShineThick(0.6); // [2]
   EGen.setFloorShineLength(20.0); // full length [2]
 
-  EGen.generateHut(Control,hut1Name,1845.0, 1401.3); // Hutch length: Section A-A [2]
-  Control.addVariable(hut1Name+"RingWidth",204.8); // Section A-A [2]
-  Control.addVariable(hut1Name+"OutWidth",260.2); // Section A-A [2]
-  Control.addVariable(hut1Name+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
+  EGen.generateHut(Control,hutName,0.0, 1401.3); // Hutch length: Section A-A [2]
+  Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
+  Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
+  Control.addVariable(hutName+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
 
-  // // lead shield on pipe
-  // Control.addVariable(beamName+"PShieldXStep",beamMirrorShift);
-  // Control.addVariable(beamName+"PShieldYStep",1.0);
-  // Control.addVariable(beamName+"PShieldLength",1.0);
-  // Control.addVariable(beamName+"PShieldWidth",10.0);
-  // Control.addVariable(beamName+"PShieldHeight",10.0);
-  // Control.addVariable(beamName+"PShieldWallThick",0.2);
-  // Control.addVariable(beamName+"PShieldClearGap",0.3);
-  // Control.addVariable(beamName+"PShieldWallMat","SteelUnknownGrade");
-  // Control.addVariable(beamName+"PShieldMat","Lead");
+  Control.addVariable(hutName+"FloorShineFrontLength",0.0);
 
-  Control.addVariable(hut1Name+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
   PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hut1Name+"Chicane0","Left",150.0,-5.0);
-  PGen.generatePortChicane(Control,hut1Name+"Chicane1","Left",-270.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
+  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
+
+  return;
+}
+
+void
+exptHut2Variables(FuncDataBase& Control,
+		 const std::string& beamName)
+  /*!
+    Experimental hutch 2 variables
+    \param Control :: DataBase to add
+    \param beamName :: Beamline name
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","exptHut2Variables");
+
+  setVariable::ExptHutGenerator EGen;
+
+  const double beamMirrorShift(0.6); // will be adjusted later when the beamline is built
+  const std::string hutName(beamName+"ExptHut2");
+
+  EGen.setFrontHole(beamMirrorShift,0.0,4.0); // TODO: check radius (coordinates will be adjusted later)
+  EGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),4.0); // exit hole. TODO: check radius  (coordinates will be adjusted later)
+
+  EGen.setBackLead(0.4); // "Lead Thickness Upstream Wall", Section A-A [2]
+  EGen.setRoofLead(0.4); // TODO: check
+  EGen.setWallLead(0.4); // TODO: check
+  EGen.setFloorShineThick(0.6);
+  EGen.setFloorShineLength(20.0);
+  EGen.generateHut(Control,hutName,0.0,835.6); // TODO: check length
+
+  // TODO: copy-pasted from Hutch 1: check
+  Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
+  Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
+  Control.addVariable(hutName+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
+
+  Control.addVariable(hutName+"FloorShineFrontLength",0.0);
+  Control.addVariable(hutName+"FloorShineBackLength",0.0);
+  Control.addVariable(hutName+"NChicane",0);
 
   return;
 }
@@ -1262,9 +1290,10 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setWindow(2.7, 0.005);
   PipeGen.setWindowMat("Diamond");
-  PipeGen.generatePipe(Control,beamLineName+"JoinPipeC",54.0);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeC",94.0);
 
-  danmaxVar::exptHutVariables(Control,beamLineName);
+  danmaxVar::exptHut1Variables(Control,beamLineName);
+  danmaxVar::exptHut2Variables(Control,beamLineName);
 
   const std::string exptName=beamLineName+"ExptLine";
 

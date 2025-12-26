@@ -93,6 +93,7 @@ DANMAX::DANMAX(const std::string& KN) :
   connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut1(new xraySystem::ExperimentalHutch(newName+"ExptHut1")),
+  exptHut2(new xraySystem::ExperimentalHutch(newName+"ExptHut2")),
   guillotine(new xraySystem::PipeShield(newName+"Guillotine")),
   exptBeam(new balderExptLine(newName+"ExptLine"))
   /*!
@@ -113,6 +114,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(connectUnit);
   OR.addObject(joinPipeC);
   OR.addObject(exptHut1);
+  OR.addObject(exptHut2);
   OR.addObject(guillotine);
 
 }
@@ -165,8 +167,6 @@ DANMAX::build(Simulation& System,
   frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("Void"));
   frontBeam->getProxiShieldB()->insertInCell(System, wallLead->getCell("ExtraVoid"));
 
-
-
   if (stopPoint=="frontEnd" || stopPoint=="Dipole") return;
 
   buildOpticsHutch(System,opticsHut,PIndex,exitLink);
@@ -181,7 +181,6 @@ DANMAX::build(Simulation& System,
   joinPipe->addInsertCell("FlangeA",wallLead->getCell("SteelVoid"));
   joinPipe->createAll(System,*frontBeam,2);
 
-    // new
   opticsBeam->setInnerMat(opticsHut->getCellMat(System,"Void"));
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->setCutSurf("front",*opticsHut,
@@ -199,30 +198,34 @@ DANMAX::build(Simulation& System,
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
 
-
-  exptHut1->setCutSurf("floor",r3Ring->getSurf("Floor"));
-  exptHut1->setCutSurf("InnerSideWall",r3Ring->getSurf("FlatInner",PIndex));
-  exptHut1->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
-  exptHut1->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
-  exptHut1->createAll(System,*r3Ring,r3Ring->getSideIndex(exitLink));
+  exptHut2->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptHut2->setCutSurf("frontWall",*opticsHut,"back");
+  exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  exptHut2->createAll(System,*opticsHut,"back");
 
   connectUnit->registerJoinPipe(joinPipeC);
-  connectUnit->setInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  connectUnit->setInsertCell(exptHut2->getCell("Void"));
   connectUnit->setFront(*opticsHut,2);
-  connectUnit->setBack(*exptHut1,1);
+  connectUnit->setBack(*exptHut2,"innerBack");
   connectUnit->createAll(System,*joinPipeB,"back");
-
 
   joinPipeB->insertAllInCell(System,connectUnit->getCell("FirstVoid"));
 
+  if (stopPoint=="exptHut2") return;
+
+  exptHut1->setCutSurf("floor",r3Ring->getSurf("Floor"));
+  exptHut1->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
+  exptHut1->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
+  exptHut1->createAll(System,*exptHut2,"back");
+
   joinPipeC->insertAllInCell(System,exptHut1->getCell("Void"));
-  joinPipeC->insertInCell("Main",System,exptHut1->getCell("EntranceHole"));
+  joinPipeC->insertInCell("Main",System,exptHut2->getCell("ExitHole"));
 
   // pipe shield goes around joinPipeC:
   guillotine->addAllInsertCell(exptHut1->getCell("Void"));
   guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
-  //  guillotine->setCutSurf("front",*opticsHut,"innerBack");
-  guillotine->createAll(System,*exptHut1,"innerFront");
+  guillotine->createAll(System,*exptHut2,"back");
 
   exptBeam->addInsertCell(exptHut1->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);

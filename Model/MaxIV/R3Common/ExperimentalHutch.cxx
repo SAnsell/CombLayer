@@ -659,10 +659,10 @@ ExperimentalHutch::createChicane(Simulation& System)
       // set surfaces:
       if (wallName=="Left" || wallName=="Outer")
 	{
-	  PItem->addInsertCell("Inner",getCell("InnerLeftWall"));
-	  PItem->addInsertCell("Inner",getCell("LeadLeftWall"));
-	  PItem->addInsertCell("Inner",getCell("OuterLeftWall"));
-	  PItem->addInsertCell("Main",getCell("LeftWallVoid"));
+	  PItem->addInsertCell("Inner",getCell("InnerOuterWall"));
+	  PItem->addInsertCell("Inner",getCell("LeadOuterWall"));
+	  PItem->addInsertCell("Inner",getCell("OuterSkinOuterWall"));
+	  PItem->addInsertCell("Main",getCell("FloorShineOuterWallVoid"));
 	  PItem->addInsertCell("Main",getCell("OuterLeftVoid",0));
 	  PItem->setCutSurf("innerWall",*this,"innerLeftWall");
 	  PItem->setCutSurf("outerWall",*this,"leftWall");
@@ -730,12 +730,12 @@ ExperimentalHutch::splitChicane(Simulation& System,
 	  const Geometry::Vec3D Axis=PChicane[indexA]->getLinkAxis(4);
 	  const Geometry::Vec3D midPt=(APt+BPt)/2.0;
 
-	  this->splitObjectAbsolute(System,5001,getCell("LeftWallVoid"),
+	  this->splitObjectAbsolute(System,5001,getCell("FloorShineOuterWallVoid"),
 				    midPt,Axis);
 	  for(const std::string cellName :
 		{
-		  "InnerLeftWall","LeadLeftWall",
-		  "OuterLeftWall","OuterLeftVoid"
+		  "InnerOuterWall","LeadOuterWall",
+		  "OuterSkinOuterWall","OuterLeftVoid"
 		})
 	    {
 	      this->splitObject(System,buildIndex+5001,getCell(cellName));

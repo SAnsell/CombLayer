@@ -92,6 +92,7 @@ class DANMAX : public R3Beamline
 
   /// Pipe joining optics hut to outer
   std::shared_ptr<xraySystem::ExperimentalHutch> exptHut1;
+  std::shared_ptr<xraySystem::ExperimentalHutch> exptHut2;
 
   /// Shielding block guilatine
   std::shared_ptr<xraySystem::PipeShield> guillotine;
