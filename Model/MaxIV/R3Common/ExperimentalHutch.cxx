@@ -100,7 +100,6 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
 
   // Void + Fe special:
   ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
-  outWidth=Control.EvalVar<double>(keyName+"OutWidth");
 
   cornerLength=Control.EvalDefVar<double>(keyName+"CornerLength",-100.0);
   cornerAngle=Control.EvalDefVar<double>(keyName+"CornerAngle",45.0);

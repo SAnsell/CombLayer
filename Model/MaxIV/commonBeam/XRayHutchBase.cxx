@@ -93,6 +93,7 @@ namespace xraySystem
 
     height=Control.EvalVar<double>(keyName+"Height");
     length=Control.EvalVar<double>(keyName+"Length");
+    outWidth=Control.EvalVar<double>(keyName+"OutWidth");
 
     innerThick=Control.EvalVar<double>(keyName+"InnerThick");
     pbWallThick=Control.EvalVar<double>(keyName+"PbWallThick");

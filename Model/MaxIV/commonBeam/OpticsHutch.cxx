@@ -97,8 +97,6 @@ OpticsHutch::populate(const FuncDataBase& Control)
 
   XRayHutchBase::populate(Control);
 
-  outWidth=Control.EvalVar<double>(keyName+"OutWidth");
-
   backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
   backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
   backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");

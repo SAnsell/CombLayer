@@ -42,6 +42,7 @@ namespace xraySystem
     protected:
       double height;                ///< void height
       double length;                ///< void out side width
+      double outWidth;              ///< Width from beamline centre to outside
       // walls
       double innerThick;            ///< Inner wall/roof skin
       double pbWallThick;           ///< Thickness of lead in walls

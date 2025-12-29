@@ -43,10 +43,6 @@ class OpticsHutch :
     public attachSystem::ContainedGroup
 {
  protected:
-
-  double outWidth;              ///< Width from beamline centre to outside
-
-
   double backPlateThick;        ///< Back plate thick
   double backPlateWidth;        ///< Back plate width
   double backPlateHeight;       ///< back plate Height

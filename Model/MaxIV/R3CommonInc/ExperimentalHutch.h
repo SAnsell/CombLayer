@@ -43,9 +43,7 @@ class ExperimentalHutch :
   public attachSystem::ContainedComp
 {
  private:
-
   double ringWidth;             ///< void flat part to ring
-  double outWidth;              ///< out side width
 
   double cornerAngle;           ///< angle at corner
   double cornerLength;          ///< length to corner
