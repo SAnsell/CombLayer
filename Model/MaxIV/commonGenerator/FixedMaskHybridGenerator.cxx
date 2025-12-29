@@ -53,10 +53,14 @@ namespace setVariable
 
 FixedMaskHybridGenerator::FixedMaskHybridGenerator() :
   length(40.0), // [1]
-  radius(3.0),
+  radius(2.9), // [1]: diameter = 5.8, in the middle the max diameter is 6.0, but use conservative
   flangeLength(2.0),  // TODO: guess
-  flangeRadius(7.7), // TODO: guess
-  mat("Copper"),flangeMat("SteelUnknownGrade")
+  flangeRadius(7.7), // TODO: guess,
+  outWidth(1.12), // TODO: guess
+  outHeight(1.12), // TODO: guess,
+  outAngle(0.7), // [1]
+  mat("Copper"), // TODO: use GLIDCOP
+  flangeMat("Stainless304L") // [1]: SUS304L
   /*!
     Constructor and defaults
   */
@@ -83,6 +87,9 @@ FixedMaskHybridGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"OutWidth",outWidth);
+  Control.addVariable(keyName+"OutHeight",outHeight);
+  Control.addVariable(keyName+"OutAngle",outAngle);
   Control.addVariable(keyName+"Mat",mat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
 

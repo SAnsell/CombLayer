@@ -40,6 +40,7 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "surfRegister.h"
 #include "varList.h"
 #include "Code.h"
@@ -86,6 +87,9 @@ FixedMaskHybrid::FixedMaskHybrid(const FixedMaskHybrid& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),radius(A.radius),flangeLength(A.flangeLength),
   flangeRadius(A.flangeRadius),
+  outWidth(A.outWidth),
+  outHeight(A.outHeight),
+  outAngle(A.outAngle),
   mat(A.mat),flangeMat(A.flangeMat),
   voidMat(A.voidMat)
   /*!
@@ -113,6 +117,9 @@ FixedMaskHybrid::operator=(const FixedMaskHybrid& A)
       radius=A.radius;
       flangeLength=A.flangeLength;
       flangeRadius=A.flangeRadius;
+      outWidth=A.outWidth;
+      outHeight=A.outHeight;
+      outAngle=A.outAngle;
       mat=A.mat;
       flangeMat=A.flangeMat;
       voidMat=A.voidMat;
@@ -155,6 +162,9 @@ FixedMaskHybrid::populate(const FuncDataBase& Control)
     throw ColErr::IndexError<double>(flangeLength, length/2.0, keyName+"FlangeLength");
 
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  outWidth=Control.EvalVar<double>(keyName+"OutWidth");
+  outHeight=Control.EvalVar<double>(keyName+"OutHeight");
+  outAngle=Control.EvalVar<double>(keyName+"OutAngle");
   if (flangeRadius < radius + Geometry::zeroTol)
     throw ColErr::SizeError<double>(flangeRadius, radius, keyName+"FlangeRadius");
 
@@ -173,36 +183,35 @@ FixedMaskHybrid::createSurfaces()
 {
   ELog::RegMethod RegA("FixedMaskHybrid","createSurfaces");
 
-  if (!frontActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
-
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(flangeRadius),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
-	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      flangeRadius);
-    }
-
-  if (!backActive())
-    {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+flangeRadius),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
-
+  if (!frontActive()) {
+    ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+    FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
+  }
+  if (!backActive()) {
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
-    } else
-    {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
-	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -flangeRadius);
-    }
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
+  }
 
-  makeShiftedSurf(SMap, "front", buildIndex+21, Y, flangeLength);
-  makeShiftedSurf(SMap, "back", buildIndex+22, Y, -flangeLength);
+  makeShiftedSurf(SMap, "front", buildIndex+11, Y, flangeLength);
+  makeShiftedSurf(SMap, "back", buildIndex+12, Y, -flangeLength);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,flangeRadius);
+
+  // Exit aperture
+
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+33,Origin-X*(outWidth/2.0)+Y*length,X,Z,-outAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+34,Origin+X*(outWidth/2.0)+Y*length,X,Z,outAngle/2.0);
+
+  ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*(outHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*(outHeight/2.0),Z);
+
+  // // Exit aperture - straight segment
+  // ModelSupport::buildPlane(SMap,buildIndex+43,Origin-X*(outWidth/2.0), X);
+  // ModelSupport::buildPlane(SMap,buildIndex+44,Origin+X*(outWidth/2.0), X);
+
+  // ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*(outHeight/2.0),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(outHeight/2.0),Z);
+
 
   return;
 }
@@ -220,16 +229,19 @@ FixedMaskHybrid::createObjects(Simulation& System)
   const HeadRule front(frontRule());
   const HeadRule back(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," (-33:34:-35:36) -7 ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,HR*front*back);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -21 7 -17 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 33 -34 35 -36 ");
+  makeCell("Exit",System,cellIndex++,voidMat,0.0,HR*front*back);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 7 -17 ");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*front);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 7 -17 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 7 -17 ");
   makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 7 -17 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 7 -17 ");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*back);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 ");

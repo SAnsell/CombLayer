@@ -44,6 +44,9 @@ class FixedMaskHybridGenerator
 
   double flangeLength;          ///< Flange length
   double flangeRadius;          ///< Flange radius
+  double outWidth;              ///< Exit aperture min full width
+  double outHeight;             ///< Exit aperture min full height
+  double outAngle;              ///< Exit aperture full angle
 
   std::string mat;              ///< FM material
   std::string flangeMat;        ///< Flange material

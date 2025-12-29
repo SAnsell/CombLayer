@@ -51,6 +51,9 @@ class FixedMaskHybrid :
   double radius;                ///< Outer radius
   double flangeLength;          ///< Flange length
   double flangeRadius;          ///< Flange radius
+  double outWidth;              ///< Exit aperture min full width
+  double outHeight;             ///< Exit aperture min full height
+  double outAngle;              ///< Exit aperture full angle
 
   int mat;                      ///< FM material
   int flangeMat;                ///< Flange material
