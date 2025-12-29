@@ -151,6 +151,7 @@
 #include "ProximityShieldingGenerator.h"
 #include "PowerFilterGenerator.h"
 #include "TDCBeamDumpGenerator.h"
+#include "FixedMaskHybridGenerator.h"
 
 namespace setVariable
 {
@@ -624,7 +625,6 @@ SingleItemVariables(FuncDataBase& Control)
   // Bellow
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
-  ELog::EM<<"HERE "<<ELog::endDiag;
   BellowGen.generateBellow(Control,"Bellow",7.5);
 
   // Lead Clad Pipe
@@ -1001,6 +1001,9 @@ m1chamberDetails(FuncDataBase& Control)
   //  Control.addVariable(name+"YStep",3.0);
   Control.addVariable(name+"BulkThickBack",60.0);
   Control.addVariable(name+"PreCoreLength",65.0);
+
+  setVariable::FixedMaskHybridGenerator FMHGen;
+  FMHGen.generate(Control, "FMH");
 }
 
 

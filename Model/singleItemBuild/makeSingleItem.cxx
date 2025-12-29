@@ -159,6 +159,7 @@
 #include "CRLTube.h"
 #include "ViewScreenTube.h"
 #include "forkHoles.h"
+#include "XRayHutchBase.h"
 #include "ExperimentalHutch.h"
 #include "ConnectorTube.h"
 #include "CornerPipe.h"
@@ -193,6 +194,7 @@
 #include "ProximityShielding.h"
 #include "PowerFilter.h"
 #include "TDCBeamDump.h"
+#include "FixedMaskHybrid.h"
 
 #include "makeSingleItem.h"
 
@@ -252,8 +254,8 @@ makeSingleItem::build(Simulation& System,
 	"MonoShutter","RoundMonoShutter","TubeDetBox", "TDCBeamDump",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
-	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama", 
-  "HeatAbsorberR3Toyama", "Help","help"
+	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama",
+	"HeatAbsorberR3Toyama", "FixedMaskHybrid", "Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -356,7 +358,7 @@ makeSingleItem::build(Simulation& System,
 
       MLMVessel->createAll(System,World::masterOrigin(),0);
       MLMVessel->insertInCell(System,voidCell);
-      
+
       MLM->addInsertCell(MLMVessel->getCell("Void"));
       MLM->createAll(System,*MLMVessel,0);
       return;
@@ -1878,6 +1880,16 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+    if (item == "FixedMaskHybrid")
+      {
+	const auto fmh = std::make_shared<xraySystem::FixedMaskHybrid>("FMH");
+	OR.addObject(fmh);
+
+	fmh->addInsertCell(voidCell);
+	fmh->createAll(System,World::masterOrigin(),0);
+
+	return;
+      }
 
     if (item=="Help" || item=="help")
       {
@@ -1888,7 +1900,11 @@ makeSingleItem::build(Simulation& System,
 	  ELog::EM<<"Item : "<<Name<<"\n";
 
 	ELog::EM<<"-----------"<<ELog::endDiag;
+
+	return;
       }
+
+    ELog::EM<<"WARNING: Component not found in makeSingleItem: " << item <<ELog::endWarn;
 
   return;
 }
