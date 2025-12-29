@@ -67,6 +67,7 @@
 #include "DCMTankGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
+#include "XRayHutchBaseGenerator.h"
 #include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"

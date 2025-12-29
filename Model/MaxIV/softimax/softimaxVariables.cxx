@@ -75,6 +75,7 @@
 #include "WallLeadGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "DiffXIADP03Generator.h"
+#include "XRayHutchBaseGenerator.h"
 #include "OpticsHutchGenerator.h"
 
 namespace setVariable

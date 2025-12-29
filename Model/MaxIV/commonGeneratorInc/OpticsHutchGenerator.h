@@ -26,7 +26,7 @@ class FuncDataBase;
 
 namespace setVariable
 {
-
+  class XRayHutchBaseGenerator;
 /*!
   \class OpticsHutchGenerator
   \version 1.0
@@ -35,26 +35,14 @@ namespace setVariable
   \brief Standard (exept length/chicane) optics hutch for Max IV
 */
 
-class OpticsHutchGenerator
+class OpticsHutchGenerator :
+    public XRayHutchBaseGenerator
 {
  protected:
-
-  double height;                ///< void height
-  double outWidth;              ///< Width from beamline centre to outside
-
-  // walls
-  double innerThick;            ///< Inner wall/roof skin
-  double pbWallThick;           ///< Thickness of lead in walls
-  double pbBackThick;           ///< Thickness of lead in back plate
-  double pbRoofThick;           ///< Thickness of lead in Roof
-  double outerThick;            ///< Outer wall/roof skin
-
   double backPlateThick;        ///< Back plate thick
   double backPlateWidth;        ///< Back plate width
   double backPlateHeight;       ///< back plate height
 
-  double floorShineThick;       ///< floor shine thickness
-  double floorShineLength;      ///< floor shine lenght
   double wallShineThick;        ///< wall shine thickness
   double wallShineLength;       ///< wall shine lenght
   double wallShineOutThick;     ///< thickness of wall shine outside of REW
@@ -62,42 +50,16 @@ class OpticsHutchGenerator
   double roofShineLength;       ///< Roof shine length
   double roofShineThick;        ///< Roof shine thickness
 
-  double innerOutVoid;          ///< Extension for inner left void space
-  double outerOutVoid;          ///< Extension for outer left void space
-  double frontVoid;             ///< Extension for inner front void space
-  double backVoid;              ///< Extension for inner back void space
-  double outerBackVoid;         ///< Extension for outer back void space
-
-  std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
-  std::vector<double> holeRadius;           ///< hole radii
-
-  std::string skinMat;         ///< Fe layer material for walls
-  std::string pbMat;           ///< pb layer material for walls
-  std::string voidMat;         ///< Void material
-  std::string floorShineMat;   ///< Floor shine material
-
- public:
+public:
 
   OpticsHutchGenerator();
   OpticsHutchGenerator(const OpticsHutchGenerator&) =default;
   OpticsHutchGenerator& operator=(const OpticsHutchGenerator&) =default;
   ~OpticsHutchGenerator() =default;
 
-  // set skinthickness
-  void setSkin(const double T) { outerThick=T; innerThick=T;}
-
-  void setBackLead(const double T) { pbBackThick=T; }
-  void setRoofLead(const double T) { pbRoofThick=T; }
-  void setWallLead(const double T) { pbWallThick=T; }
-  void setFrontExt(const double T) { frontVoid=T; }
-  void setBackExt(const double T) { backVoid=T; }
-  void setOuterBackExt(const double T) { outerBackVoid=T; }
-
   /// Set back plate [must be smaller than back wall]
   void setBackPlateSize(const double W,const double H,const double T)
   { backPlateWidth=W;backPlateHeight=H;backPlateThick=T; }
-
-  void addHole(const Geometry::Vec3D&,const double);
 
   void generateHut(FuncDataBase&,const std::string&,
 		   const double) const;

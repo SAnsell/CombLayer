@@ -68,6 +68,7 @@
 #include "PortChicaneGenerator.h"
 #include "WallLeadGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "XRayHutchBaseGenerator.h"
 #include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 #include "FlangeDomeGenerator.h"

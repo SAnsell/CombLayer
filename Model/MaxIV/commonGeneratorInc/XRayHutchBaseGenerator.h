@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeamInc/XRayHutchBase.h
+ * File:   commonGeneratorInc/XRayHutchBaseGenerator.h
  *
  * Copyright (c) 2004-2025 by Konstantin Batkov
  *
@@ -19,30 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
+#ifndef setVariable_XRayHutchBaseGenerator_h
+#define setVariable_XRayHutchBaseGenerator_h
 
-#ifndef xraySystem_XRayHutchBase_h
-#define xraySystem_XRayHutchBase_h
+class FuncDataBase;
 
-namespace xraySystem
+namespace setVariable
 {
-  class PortChicane;
-  /*!
-    \class XRayHutchBase
-    \version 1.0
-    \author K. Batkov
-    \date December 2025
-    \brief Base abstract class for x-ray hutches
-  */
-  class XRayHutchBase :
-    public attachSystem::FixedRotate,
-    public attachSystem::ExternalCut,
-    public attachSystem::CellMap,
-    public attachSystem::SurfMap
-    {
-    protected:
+/*!
+  \class XRayHutchBaseGenerator
+  \version 1.0
+  \author K. Batkov
+  \date December 2025
+  \brief XRayHutchBase variable generator
+*/
+
+class XRayHutchBaseGenerator
+{
+ protected:
       double height;                ///< void height
       double length;                ///< void out side width
       double outWidth;              ///< Width from beamline centre to outside
+
       // walls
       double innerThick;            ///< Inner wall/roof skin
       double pbWallThick;           ///< Thickness of lead in walls
@@ -56,30 +54,41 @@ namespace xraySystem
 
       double floorShineThick;       ///< Floor shine thickness
       double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface) - general length that is overriden by the particular lengths below
-      double floorShineFrontLength; ///< Floors hine length along the front wall
-      double floorShineBackLength;  ///< Floors hine length along the back wall
 
       std::vector<Geometry::Vec3D> holeOffset;  ///< hole offsets [y ignored]
       std::vector<double> holeRadius;           ///< hole radii
 
-      int voidMat;                ///< Void material
-      int skinMat;                ///< Fe layer material for walls
-      int pbMat;                  ///< pb layer material for walls
-      int floorShineMat;          ///< Floor shine material
+      std::string voidMat;                ///< Void material
+      std::string skinMat;                ///< Fe layer material for walls
+      std::string pbMat;                  ///< pb layer material for walls
+      std::string floorShineMat;          ///< Floor shine material
 
-      std::vector<std::shared_ptr<PortChicane>> PChicane; /// Chicanes
-      forkHoles forks;              ///< Forklift holes if made
+      // std::vector<std::shared_ptr<PortChicane>> PChicane; /// Chicanes
+      // forkHoles forks;              ///< Forklift holes if made
 
-    public:
-      XRayHutchBase(const std::string&);
-      virtual ~XRayHutchBase() = default;
+public:
 
-      /// accessor to void mat
-      int getInnerMat() const { return voidMat; }
+  XRayHutchBaseGenerator();
+  XRayHutchBaseGenerator(const XRayHutchBaseGenerator&) =default;
+  XRayHutchBaseGenerator& operator=(const XRayHutchBaseGenerator&) =default;
+  ~XRayHutchBaseGenerator() =default;
 
-      void populate(const FuncDataBase&);
-      virtual void createAll(Simulation&,const attachSystem::FixedComp&,const long int) = 0;
-    };
+  // set skinthickness
+  virtual void setSkin(const double T) final { outerThick=T; innerThick=T;}
+
+  virtual void setBackLead(const double T) final { pbBackThick=T; }
+  virtual void setRoofLead(const double T) final { pbRoofThick=T; }
+  virtual void setWallLead(const double T) final { pbWallThick=T; }
+  // void setFrontExt(const double T) { frontVoid=T; }
+  // void setBackExt(const double T) { backVoid=T; }
+  virtual void setOuterBackExt(const double T) final { outerBackVoid=T; }
+
+  virtual void addHole(const Geometry::Vec3D&,const double) final;
+
+  void generateHut(FuncDataBase&,const std::string&, const double) const;
+
+};
+
 }
 
 #endif

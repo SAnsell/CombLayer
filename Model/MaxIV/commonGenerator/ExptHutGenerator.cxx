@@ -3,7 +3,7 @@
 
  * File:   commonGenerator/ExptHutGenerator.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell & Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
+#include "XRayHutchBaseGenerator.h"
 #include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 
@@ -52,11 +53,13 @@ namespace setVariable
 
 
 ExptHutGenerator::ExptHutGenerator() :
-  OpticsHutchGenerator(),
-  ringWidth(200.0),pbFrontThick(-1.0),
-  cornerAngle(45.0),cornerYStep(100000.0),
-  fHoleXStep(0.0),fHoleZStep(0.0),fHoleRadius(3.0),
-  floorShineThick(0.6), floorShineLength(20.0)
+  XRayHutchBaseGenerator(),
+  ringWidth(200.0),
+  cornerAngle(45.0),
+  cornerYStep(100000.0),
+  pbFrontThick(-1.0),
+  fHoleRadius(3.0),fHoleXStep(0.0),fHoleZStep(0.0),
+  frontVoid(0.0),backVoid(0.0)
   /*!
     Constructor and defaults
   */
@@ -117,23 +120,22 @@ ExptHutGenerator::generateHut(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("ExptHutGenerator","generateOpticsHut");
 
-  OpticsHutchGenerator::generateHut(Control,hutName,length);
-
+  XRayHutchBaseGenerator::generateHut(Control,hutName,length);
   Control.addVariable(hutName+"YStep",yStep);
-  Control.addVariable(hutName+"RingWidth",ringWidth);
-  Control.addVariable(hutName+"PbFrontThick",pbFrontThick);
-  Control.addVariable(hutName+"PbTiltedThick",pbTiltedThick);
 
+  Control.addVariable(hutName+"RingWidth",ringWidth);
   Control.addVariable(hutName+"CornerAngle",cornerAngle);
   Control.addVariable(hutName+"CornerLength",length-cornerYStep);
 
+  Control.addVariable(hutName+"PbTiltedThick",pbTiltedThick);
+  Control.addVariable(hutName+"PbFrontThick",pbFrontThick);
+
+  Control.addVariable(hutName+"FHoleRadius",fHoleRadius);
   Control.addVariable(hutName+"FHoleXStep",fHoleXStep);
   Control.addVariable(hutName+"FHoleZStep",fHoleZStep);
-  Control.addVariable(hutName+"FHoleRadius",fHoleRadius);
 
-  Control.addVariable(hutName+"FloorShineThick",floorShineThick);
-  Control.addVariable(hutName+"FloorShineLength",floorShineLength);
-  Control.addVariable(hutName+"FloorShineMat", floorShineMat);
+  Control.addVariable(hutName+"FrontVoid",frontVoid);
+  Control.addVariable(hutName+"BackVoid",backVoid);
 
   return;
 

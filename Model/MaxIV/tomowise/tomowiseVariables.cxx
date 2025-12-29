@@ -80,6 +80,7 @@
 #include "CollTubeGenerator.h"
 #include "CollUnitGenerator.h"
 #include "TableGenerator.h"
+#include "XRayHutchBaseGenerator.h"
 #include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 #include "MovableSafetyMaskGenerator.h"

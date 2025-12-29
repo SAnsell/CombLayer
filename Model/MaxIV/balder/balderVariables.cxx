@@ -60,6 +60,7 @@
 #include "LeadBoxGenerator.h"
 #include "PipeShieldGenerator.h"
 #include "WallLeadGenerator.h"
+#include "XRayHutchBaseGenerator.h"
 #include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 #include "TriggerGenerator.h"

@@ -86,6 +86,7 @@
 #include "ConnectorGenerator.h"
 #include "FlangeDomeGenerator.h"
 #include "AreaDetectorGenerator.h"
+#include "XRayHutchBaseGenerator.h"
 #include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
 

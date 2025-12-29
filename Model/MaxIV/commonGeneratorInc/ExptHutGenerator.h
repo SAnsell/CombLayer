@@ -26,41 +26,43 @@ class FuncDataBase;
 
 namespace setVariable
 {
-
+  class XRayHutchBaseGenerator;
 /*!
   \class ExptHutGenerator
-  \version 1.0
-  \author S. Ansell
-  \date July 2021
-  \brief Standard (exept length/chicane) optics hutch for Max IV
+  \version 1.1
+  \author S. Ansell & K. Batkov
+  \date December 2022
+  \brief ExperimentalHutch variable generator
 */
 
 class ExptHutGenerator  :
-    public OpticsHutchGenerator
+    public XRayHutchBaseGenerator
 {
  private:
 
   double ringWidth;     ///< Ring side width (interior)
-  double pbFrontThick;  ///< if front lead is needed (+ve)
-  double pbTiltedThick; ///< Thickness of lead in tilted wall
-
-
   double cornerAngle;   ///< Angle of corner
   double cornerYStep;   ///< Setp back for corner point
 
+  double pbTiltedThick; ///< Thickness of lead in tilted wall
+  double pbFrontThick;  ///< if front lead is needed (+ve)
+
+  double fHoleRadius;   ///< Front hole radius
   double fHoleXStep;    ///< Front hole x-step
   double fHoleZStep;    ///< Front hole z-step
-  double fHoleRadius;   ///< Front hole radius
 
-  double floorShineThick;   ///< Floor shine thickness
-  double floorShineLength;  ///< Floor shine full length (starting from the wall outer surface) - general value for floor shines along all walls - can be overriden for the front and back walls (see XRayHutchBase.h)
+  double frontVoid;             ///< Extension for inner front void space
+  double backVoid;              ///< Extension for inner back void space
 
  public:
 
   ExptHutGenerator();
-  ExptHutGenerator(const ExptHutGenerator&) =default;
-  ExptHutGenerator& operator=(const ExptHutGenerator&) =default;
-  ~ExptHutGenerator() =default;
+  ExptHutGenerator(const ExptHutGenerator&) = default;
+  ExptHutGenerator& operator=(const ExptHutGenerator&) = default;
+  ~ExptHutGenerator() = default;
+
+  void setFrontExt(const double T) { frontVoid=T; }
+  void setBackExt(const double T) { backVoid=T; }
 
   void setCorner(const double,const double);
 
@@ -68,8 +70,7 @@ class ExptHutGenerator  :
   void setFrontHole(const double,const double,const double);
   void setFloorShineThick(const double T){ floorShineThick=T; }
   void setFloorShineLength(const double T){ floorShineLength=T; }
-  void generateHut(FuncDataBase&,const std::string&,
-		   const double,const double) const;
+  void generateHut(FuncDataBase&,const std::string&,const double,const double) const;
 
 };
 

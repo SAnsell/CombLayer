@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonGenerator/OpticsHutchGenerator.cxx
+ * File:   commonGenerator/XRayHutchBaseGenerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,26 +45,42 @@
 #include "FuncDataBase.h"
 
 #include "XRayHutchBaseGenerator.h"
-#include "OpticsHutchGenerator.h"
 
 namespace setVariable
 {
 
 
-OpticsHutchGenerator::OpticsHutchGenerator() :
-  backPlateThick(5.0),
-  backPlateWidth(120.0),backPlateHeight(120.0),
-  wallShineThick(0.6), wallShineLength(59.0),
-  wallShineOutThick(1.2), wallShineOutLength(20.0),
-  roofShineLength(20.0),
-  roofShineThick(0.6)
+XRayHutchBaseGenerator::XRayHutchBaseGenerator() :
+  height(279.2),length(1010.0),outWidth(261.8),
+  innerThick(0.3),pbWallThick(1.6),pbBackThick(7.0),pbRoofThick(1.6),outerThick(0.3),
+  innerOutVoid(10.0),outerOutVoid(10.0),outerBackVoid(0.0),
+  floorShineThick(0.6), floorShineLength(50.0),
+  voidMat("Void"),skinMat("SteelUnknownGrade"),pbMat("Lead"),
+  floorShineMat("Lead")
   /*!
     Constructor and defaults
   */
 {}
 
 void
-OpticsHutchGenerator::generateHut(FuncDataBase& Control,
+XRayHutchBaseGenerator::addHole(const Geometry::Vec3D& HO,
+			    const double R)
+  /*!
+    Add an additional hole to the back wall
+    \param HO :: Offset relative to electron beam
+    \param R :: Radius [inner]
+   */
+{
+  if (R>Geometry::zeroTol)
+    {
+      holeOffset.push_back(HO);
+      holeRadius.push_back(R);
+    }
+  return;
+}
+
+void
+XRayHutchBaseGenerator::generateHut(FuncDataBase& Control,
 				const std::string& keyName,
 				const double length) const
   /*!
@@ -74,21 +90,24 @@ OpticsHutchGenerator::generateHut(FuncDataBase& Control,
     \param length :: Full length of hut
   */
 {
-  ELog::RegMethod RegA("OpticsHutchGenerator","generateOpticsHut");
+  ELog::RegMethod RegA("XRayHutchBaseGenerator","generateOpticsHut");
 
-  XRayHutchBaseGenerator::generateHut(Control, keyName, length);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"OutWidth",outWidth);
 
+  Control.addVariable(keyName+"InnerThick",innerThick);
+  Control.addVariable(keyName+"PbWallThick",pbWallThick);
+  Control.addVariable(keyName+"PbBackThick",pbBackThick);
+  Control.addVariable(keyName+"PbRoofThick",pbRoofThick);
+  Control.addVariable(keyName+"OuterThick",outerThick);
 
-  Control.addVariable(keyName+"BackPlateThick",backPlateThick);
-  Control.addVariable(keyName+"BackPlateWidth",backPlateWidth);
-  Control.addVariable(keyName+"BackPlateHeight",backPlateHeight);
+  Control.addVariable(keyName+"InnerOutVoid",innerOutVoid);
+  Control.addVariable(keyName+"OuterOutVoid",outerOutVoid);
+  Control.addVariable(keyName+"OuterBackVoid",outerBackVoid);
 
-  Control.addVariable(keyName+"WallShineThick",wallShineThick);
-  Control.addVariable(keyName+"WallShineLength",wallShineLength);
-  Control.addVariable(keyName+"WallShineOutThick",wallShineOutThick);
-  Control.addVariable(keyName+"WallShineOutLength",wallShineOutLength);
-  Control.addVariable(keyName+"RoofShineLength",roofShineLength);
-  Control.addVariable(keyName+"RoofShineThick",roofShineThick);
+  Control.addVariable(keyName+"FloorShineThick",floorShineThick);
+  Control.addVariable(keyName+"FloorShineLength",floorShineLength);
 
   for(size_t i=0;i<holeRadius.size();i++)
     {
@@ -97,6 +116,11 @@ OpticsHutchGenerator::generateHut(FuncDataBase& Control,
       Control.addVariable(keyName+iStr+"ZStep",holeOffset[i].Z());
       Control.addVariable(keyName+iStr+"Radius",holeRadius[i]);
     }
+
+  Control.addVariable(keyName+"VoidMat",voidMat);
+  Control.addVariable(keyName+"SkinMat",skinMat);
+  Control.addVariable(keyName+"PbMat",pbMat);
+  Control.addVariable(keyName+"FloorShineMat",floorShineMat);
 
   return;
 
