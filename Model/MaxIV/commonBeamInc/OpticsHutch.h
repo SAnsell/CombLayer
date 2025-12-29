@@ -54,7 +54,6 @@ class OpticsHutch :
   double roofShineLength;       ///< Roof shine length
   double roofShineThick;        ///< Roof shine thickness
 
-  int concreteMat;            ///< side wall (concrete filler)
   int wallShineMat;           ///< Wall shine material
 
   HeadRule sideWall; ///< Ring side wall outer surface

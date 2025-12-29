@@ -101,20 +101,18 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   // Void + Fe special:
   ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
 
-  cornerLength=Control.EvalDefVar<double>(keyName+"CornerLength",-100.0);
   cornerAngle=Control.EvalDefVar<double>(keyName+"CornerAngle",45.0);
+  cornerLength=Control.EvalDefVar<double>(keyName+"CornerLength",-100.0);
 
-  pbFrontThick=Control.EvalDefVar<double>(keyName+"PbFrontThick",-1.0);
   pbTiltedThick=Control.EvalVar<double>(keyName+"PbTiltedThick");
+  pbFrontThick=Control.EvalDefVar<double>(keyName+"PbFrontThick",-1.0);
 
   fHoleRadius=Control.EvalDefVar<double>(keyName+"FHoleRadius",1.0);
   fHoleXStep=Control.EvalDefVar<double>(keyName+"FHoleXStep",0.0);
   fHoleZStep=Control.EvalDefVar<double>(keyName+"FHoleZStep",0.0);
 
-  outerThick=Control.EvalVar<double>(keyName+"OuterThick");
-
-  frontVoid=Control.EvalDefVar<double>(keyName+"FrontVoid",0.0);
-  backVoid=Control.EvalDefVar<double>(keyName+"BackVoid",0.0);
+  frontVoid=Control.EvalDefVar<double>(keyName+"FrontVoid",voidMat);
+  backVoid=Control.EvalDefVar<double>(keyName+"BackVoid",voidMat);
 
   return;
 }

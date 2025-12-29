@@ -58,13 +58,6 @@ class ExperimentalHutch :
   double frontVoid;             ///< Extension for inner front void space
   double backVoid;              ///< Extension for inner back void space
 
-  std::string forkWall;         ///< Wall for forklift [only one allowed]
-  double forkXStep;             ///< Step across beamline for forklift hole
-  double forkYStep;             ///< Step down beamline for forklift hole
-  double forkLength;            ///< length of units
-  double forkHeight;            ///< height of unit
-  std::vector<double> fZStep;   ///< step of units
-
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
