@@ -68,8 +68,6 @@ class ExptHutGenerator  :
 
   void setFrontLead(const double T) { pbFrontThick=T; }
   void setFrontHole(const double,const double,const double);
-  void setFloorShineThick(const double T){ floorShineThick=T; }
-  void setFloorShineLength(const double T){ floorShineLength=T; }
   void generateHut(FuncDataBase&,const std::string&,const double,const double) const;
 
 };

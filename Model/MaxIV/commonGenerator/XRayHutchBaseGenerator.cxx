@@ -63,6 +63,18 @@ XRayHutchBaseGenerator::XRayHutchBaseGenerator() :
 {}
 
 void
+XRayHutchBaseGenerator::setFloorShine(const double T, const double L)
+/*!
+  Set default floor shine dimensions
+  \param T :: thickness
+  \param L :: full length (including wall thickness)
+ */
+{
+  floorShineThick=T;
+  floorShineLength=L;
+}
+
+void
 XRayHutchBaseGenerator::addHole(const Geometry::Vec3D& HO,
 			    const double R)
   /*!

@@ -79,9 +79,9 @@ public:
   virtual void setBackLead(const double T) final { pbBackThick=T; }
   virtual void setRoofLead(const double T) final { pbRoofThick=T; }
   virtual void setWallLead(const double T) final { pbWallThick=T; }
-  // void setFrontExt(const double T) { frontVoid=T; }
-  // void setBackExt(const double T) { backVoid=T; }
   virtual void setOuterBackExt(const double T) final { outerBackVoid=T; }
+
+  virtual void setFloorShine(const double T, const double L) final;
 
   virtual void addHole(const Geometry::Vec3D&,const double) final;
 
