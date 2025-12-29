@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -85,7 +86,8 @@ FixedMaskHybrid::FixedMaskHybrid(const FixedMaskHybrid& A) :
   attachSystem::FrontBackCut(A),
   length(A.length),radius(A.radius),flangeLength(A.flangeLength),
   flangeRadius(A.flangeRadius),
-  mat(A.mat),flangeMat(A.flangeMat)
+  mat(A.mat),flangeMat(A.flangeMat),
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: FixedMaskHybrid to copy
@@ -113,6 +115,7 @@ FixedMaskHybrid::operator=(const FixedMaskHybrid& A)
       flangeRadius=A.flangeRadius;
       mat=A.mat;
       flangeMat=A.flangeMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -146,11 +149,18 @@ FixedMaskHybrid::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");
+
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  if (flangeLength*2 + Geometry::zeroTol > length)
+    throw ColErr::IndexError<double>(flangeLength, length/2.0, keyName+"FlangeLength");
+
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  if (flangeRadius < radius + Geometry::zeroTol)
+    throw ColErr::SizeError<double>(flangeRadius, radius, keyName+"FlangeRadius");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
+  voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat", "Void");
 
   return;
 }
@@ -189,7 +199,10 @@ FixedMaskHybrid::createSurfaces()
 				      -flangeRadius);
     }
 
+  makeShiftedSurf(SMap, "front", buildIndex+21, Y, flangeLength);
+  makeShiftedSurf(SMap, "back", buildIndex+22, Y, -flangeLength);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,flangeRadius);
 
   return;
 }
@@ -210,6 +223,16 @@ FixedMaskHybrid::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
   makeCell("MainCell",System,cellIndex++,mat,0.0,HR*front*back);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -21 7 -17 ");
+  makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*front);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -22 7 -17 ");
+  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 7 -17 ");
+  makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*back);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 ");
   addOuterSurf(HR*front*back);
 
   return;

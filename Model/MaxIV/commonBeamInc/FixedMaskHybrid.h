@@ -47,13 +47,14 @@ class FixedMaskHybrid :
 {
  private:
 
-  double length;                ///< Total length including void
-  double radius;                ///< Radius
+  double length;                ///< Total length
+  double radius;                ///< Outer radius
   double flangeLength;          ///< Flange length
   double flangeRadius;          ///< Flange radius
 
   int mat;                      ///< FM material
   int flangeMat;                ///< Flange material
+  int voidMat;                  ///< Void material
 
   void populate(const FuncDataBase&);
 

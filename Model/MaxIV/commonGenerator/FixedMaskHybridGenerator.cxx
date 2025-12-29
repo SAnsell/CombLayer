@@ -54,7 +54,8 @@ namespace setVariable
 FixedMaskHybridGenerator::FixedMaskHybridGenerator() :
   length(40.0), // [1]
   radius(3.0),
-  flangeLength(15.0),flangeRadius(1.0),
+  flangeLength(2.0),  // TODO: guess
+  flangeRadius(7.7), // TODO: guess
   mat("Copper"),flangeMat("SteelUnknownGrade")
   /*!
     Constructor and defaults

@@ -39,8 +39,8 @@ class FixedMaskHybridGenerator
 {
  private:
 
-  double length;                ///< Total length including void
-  double radius;                ///< Radius
+  double length;                ///< Total length
+  double radius;                ///< Outer radius
 
   double flangeLength;          ///< Flange length
   double flangeRadius;          ///< Flange radius
