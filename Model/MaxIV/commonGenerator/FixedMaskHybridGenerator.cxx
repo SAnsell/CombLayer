@@ -58,7 +58,8 @@ FixedMaskHybridGenerator::FixedMaskHybridGenerator() :
   flangeRadius(7.7), // TODO: guess,
   outWidth(1.12), // TODO: guess
   outHeight(1.12), // TODO: guess,
-  outAngle(0.7), // [1]
+  outAngle(0.7), // [1],
+  outStraightLength(5.0), // AR, not displayed in [1] (TODO: clarify)
   mat("Copper"), // TODO: use GLIDCOP
   flangeMat("Stainless304L") // [1]: SUS304L
   /*!
@@ -90,6 +91,7 @@ FixedMaskHybridGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"OutWidth",outWidth);
   Control.addVariable(keyName+"OutHeight",outHeight);
   Control.addVariable(keyName+"OutAngle",outAngle);
+  Control.addVariable(keyName+"OutStraightLength",outStraightLength);
   Control.addVariable(keyName+"Mat",mat);
   Control.addVariable(keyName+"FlangeMat",flangeMat);
 

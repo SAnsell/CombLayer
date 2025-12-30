@@ -54,6 +54,7 @@ class FixedMaskHybrid :
   double outWidth;              ///< Exit aperture min full width
   double outHeight;             ///< Exit aperture min full height
   double outAngle;              ///< Exit aperture full angle
+  double outStraightLength;     ///< Length of straight exit segment
 
   int mat;                      ///< FM material
   int flangeMat;                ///< Flange material

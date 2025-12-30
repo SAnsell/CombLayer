@@ -90,6 +90,7 @@ FixedMaskHybrid::FixedMaskHybrid(const FixedMaskHybrid& A) :
   outWidth(A.outWidth),
   outHeight(A.outHeight),
   outAngle(A.outAngle),
+  outStraightLength(A.outStraightLength),
   mat(A.mat),flangeMat(A.flangeMat),
   voidMat(A.voidMat),
   airMat(A.airMat)
@@ -121,6 +122,7 @@ FixedMaskHybrid::operator=(const FixedMaskHybrid& A)
       outWidth=A.outWidth;
       outHeight=A.outHeight;
       outAngle=A.outAngle;
+      outStraightLength=A.outStraightLength;
       mat=A.mat;
       flangeMat=A.flangeMat;
       voidMat=A.voidMat;
@@ -167,6 +169,7 @@ FixedMaskHybrid::populate(const FuncDataBase& Control)
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
   outHeight=Control.EvalVar<double>(keyName+"OutHeight");
   outAngle=Control.EvalVar<double>(keyName+"OutAngle");
+  outStraightLength=Control.EvalVar<double>(keyName+"OutStraightLength");
   if (flangeRadius < radius + Geometry::zeroTol)
     throw ColErr::SizeError<double>(flangeRadius, radius, keyName+"FlangeRadius");
 
@@ -197,23 +200,24 @@ FixedMaskHybrid::createSurfaces()
 
   makeShiftedSurf(SMap, "front", buildIndex+11, Y, flangeLength);
   makeShiftedSurf(SMap, "back", buildIndex+12, Y, -flangeLength);
+  makeShiftedSurf(SMap, "back", buildIndex+22, Y, -outStraightLength);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,flangeRadius);
 
-  // Exit aperture
+  // Exit aperture - tilted segment
+  const Geometry::Vec3D dY(Y*(length-outStraightLength));
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+33,Origin-X*(outWidth/2.0)+dY,X,Z,-outAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+34,Origin+X*(outWidth/2.0)+dY,X,Z,outAngle/2.0);
 
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+33,Origin-X*(outWidth/2.0)+Y*length,X,Z,-outAngle/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+34,Origin+X*(outWidth/2.0)+Y*length,X,Z,outAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+35,Origin-Z*(outHeight/2.0)+dY,Z,X,outAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+36,Origin+Z*(outHeight/2.0)+dY,Z,X,-outAngle/2.0);
 
-  ModelSupport::buildPlane(SMap,buildIndex+35,Origin-Z*(outHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*(outHeight/2.0),Z);
+  // Exit aperture - straight segment
+  ModelSupport::buildPlane(SMap,buildIndex+43,Origin-X*(outWidth/2.0), X);
+  ModelSupport::buildPlane(SMap,buildIndex+44,Origin+X*(outWidth/2.0), X);
 
-  // // Exit aperture - straight segment
-  // ModelSupport::buildPlane(SMap,buildIndex+43,Origin-X*(outWidth/2.0), X);
-  // ModelSupport::buildPlane(SMap,buildIndex+44,Origin+X*(outWidth/2.0), X);
-
-  // ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*(outHeight/2.0),Z);
-  // ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(outHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*(outHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(outHeight/2.0),Z);
 
 
   return;
@@ -232,11 +236,17 @@ FixedMaskHybrid::createObjects(Simulation& System)
   const HeadRule front(frontRule());
   const HeadRule back(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," (-33:34:-35:36) -7 ");
-  makeCell("MainCell",System,cellIndex++,mat,0.0,HR*front*back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -22 (-33:34:-35:36) -7 ");
+  makeCell("MainCell",System,cellIndex++,mat,0.0,HR*front);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 33 -34 35 -36 ");
-  makeCell("Exit",System,cellIndex++,voidMat,0.0,HR*front*back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 (-43:44:-45:46) -7 ");
+  makeCell("MainCell",System,cellIndex++,mat,0.0,HR*back);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -22 33 -34 35 -36 ");
+  makeCell("ExitTilted",System,cellIndex++,voidMat,0.0,HR*front);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 43 -44 45 -46 ");
+  makeCell("ExitStraight",System,cellIndex++,voidMat,0.0,HR*back);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 7 -17 ");
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*front);
