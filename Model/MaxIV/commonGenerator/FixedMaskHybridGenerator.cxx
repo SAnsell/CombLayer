@@ -56,6 +56,10 @@ FixedMaskHybridGenerator::FixedMaskHybridGenerator() :
   radius(2.9), // [1]: diameter = 5.8, in the middle the max diameter is 6.0, but use conservative
   flangeLength(2.0),  // TODO: guess
   flangeRadius(7.7), // TODO: guess,
+  flangeGrooveLength(0.4), // [1]
+  inAngle(6.6), // [1]
+  inRadius(1.8), // [1]
+  coneLength(19.26), // [1]
   outWidth(1.12), // TODO: guess
   outHeight(1.12), // TODO: guess,
   outAngle(0.7), // [1],
@@ -88,6 +92,10 @@ FixedMaskHybridGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeGrooveLength",flangeGrooveLength);
+  Control.addVariable(keyName+"InAngle",inAngle);
+  Control.addVariable(keyName+"InRadius",inRadius);
+  Control.addVariable(keyName+"ConeLength",coneLength);
   Control.addVariable(keyName+"OutWidth",outWidth);
   Control.addVariable(keyName+"OutHeight",outHeight);
   Control.addVariable(keyName+"OutAngle",outAngle);
