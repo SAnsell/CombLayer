@@ -58,6 +58,7 @@ class FixedMaskHybrid :
   int mat;                      ///< FM material
   int flangeMat;                ///< Flange material
   int voidMat;                  ///< Void material
+  int airMat;                   ///< Air material
 
   void populate(const FuncDataBase&);
 

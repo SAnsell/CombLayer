@@ -91,7 +91,8 @@ FixedMaskHybrid::FixedMaskHybrid(const FixedMaskHybrid& A) :
   outHeight(A.outHeight),
   outAngle(A.outAngle),
   mat(A.mat),flangeMat(A.flangeMat),
-  voidMat(A.voidMat)
+  voidMat(A.voidMat),
+  airMat(A.airMat)
   /*!
     Copy constructor
     \param A :: FixedMaskHybrid to copy
@@ -123,6 +124,7 @@ FixedMaskHybrid::operator=(const FixedMaskHybrid& A)
       mat=A.mat;
       flangeMat=A.flangeMat;
       voidMat=A.voidMat;
+      airMat=A.airMat;
     }
   return *this;
 }
@@ -171,6 +173,7 @@ FixedMaskHybrid::populate(const FuncDataBase& Control)
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat", "Void");
+  airMat =ModelSupport::EvalDefMat(Control,keyName+"AirMat",  "Void");
 
   return;
 }
@@ -239,7 +242,7 @@ FixedMaskHybrid::createObjects(Simulation& System)
   makeCell("FlangeA",System,cellIndex++,flangeMat,0.0,HR*front);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 7 -17 ");
-  makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("OuterVoid",System,cellIndex++,airMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 7 -17 ");
   makeCell("FlangeB",System,cellIndex++,flangeMat,0.0,HR*back);
