@@ -61,9 +61,11 @@ class PortChicaneGenerator
   PortChicaneGenerator& operator=(const PortChicaneGenerator&);
   ~PortChicaneGenerator();
 
-  void setSize(const double,const double,const double);
+  void setHeight(const double H){height = H;};
   void setPlate(const double,const double,const std::string&);
+  void setSize(const double,const double,const double);
   void setWall(const double,const std::string&);
+  void setWidth(const double W){width = W;};
 
 
   void generatePortChicane(FuncDataBase&,const std::string&,
