@@ -405,18 +405,46 @@ exptHut1Variables(FuncDataBase& Control,
   EGen.setWallLead(0.4); // "Lead Thickness Side Wall", Section A-A [2]
   EGen.setFloorShine(0.6, 20.0); // [2], full length [2]
 
-  EGen.generateHut(Control,hutName,0.0, 1401.3); // Hutch length: Section A-A [2]
+  const double hutchLength = 1401.3; // Section A-A [2]
+  EGen.generateHut(Control,hutName,0.0, hutchLength);
   Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
-  Control.addVariable(hutName+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
+  const double opticalAxisHeight = 130.0; // Front view [2]
+  Control.addVariable(
+    hutName+"Height",
+    375.0-opticalAxisHeight // Hutch height (Coupe B-B) - optical-axis height
+  );
 
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",3);
   PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
+  // Coupe B-B [2]. Only shown for Chicane0, assumed to be valid for 
+  // Chicane1 and Chicane2 as well.
+  const double chicaneHeight = 60.0;
+  PGen.setHeight(chicaneHeight);
+  PGen.setWidth(60.0); // Coupe B-B [2]
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane0","Left",
+    // Coupe B-B [2], hutch front to center of chicane
+    // 1655 mm + 1750 mm + 4.5 x 1500 mm = 10155 mm
+    -hutchLength/2.0+1015.5,
+    -opticalAxisHeight+80.0+chicaneHeight/2.0 // Coupe B-B [2]
+  );
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane1","Left",
+    // Coupe B-B [2], hutch front to center of chicane
+    // 1655 mm + 1750 mm + 0.5 x 1500 mm = 10155 mm
+    -hutchLength/2.0+415.5,
+    -opticalAxisHeight+110.0+chicaneHeight/2.0 // Coupe B-B [2]
+  );
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane2","Left",
+    // Coupe B-B [2], hutch front to center of chicane
+    // 1655 mm + 1750 mm + 0.5 x 1500 mm = 10155 mm
+    -hutchLength/2.0+115.0,
+    -opticalAxisHeight+80.0+chicaneHeight/2.0 // Coupe B-B [2]
+  );
 
   return;
 }
