@@ -417,11 +417,12 @@ exptHut1Variables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
 
-  Control.addVariable(hutName+"NChicane",3);
+  // 5 chicanes, 3 wide ones (#0 - #2) and 2 small ones (#3 and #4).
+  Control.addVariable(hutName+"NChicane",5);
   PortChicaneGenerator PGen;
-  // Coupe B-B [2]. Only shown for Chicane0, assumed to be valid for 
-  // Chicane1 and Chicane2 as well.
-  const double chicaneHeight = 60.0;
+  // Coupe B-B [2], height of wide chicanes. Only shown for leftmost chicane, 
+  // assumed to be valid for all.
+  double chicaneHeight = 60.0;
   PGen.setHeight(chicaneHeight);
   PGen.setWidth(60.0); // Coupe B-B [2]
   PGen.generatePortChicane(
@@ -440,10 +441,29 @@ exptHut1Variables(FuncDataBase& Control,
   );
   PGen.generatePortChicane(
     Control,hutName+"Chicane2","Left",
-    // Coupe B-B [2], hutch front to center of chicane
-    // 1655 mm + 1750 mm + 0.5 x 1500 mm = 10155 mm
-    -hutchLength/2.0+115.0,
+    // Position estimated. Chicane 2 and chicane 4 are within 1655 mm from the hutch
+    // front. Chicane 2 is 600 mm wide, chicane 4 is 300 mm wide. Distribute the 
+    // remaining 755 mm evenly. Uncertainty: +- 50 mm.
+    -hutchLength/2.0+110.3,
     -opticalAxisHeight+80.0+chicaneHeight/2.0 // Coupe B-B [2]
+  );
+  // Coupe B-B [2], height of small chicanes. It is assumed that the upper edge of the 
+  // small chicanes is a 1400 mm above ground level as for the wide chicanes.
+  chicaneHeight = 68.0;
+  PGen.setHeight(chicaneHeight);
+  PGen.setWidth(30.0); // Coupe B-B [2]
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane3","Left",
+    // Coupe B-B [2], hutch front to center of chicane
+    // 1655 mm + 1750 mm + 2.5 x 1500 mm = 7155 mm
+    -hutchLength/2.0+715.5,
+    -opticalAxisHeight+72.0+chicaneHeight/2.0 // Coupe B-B [2]
+  );
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane4","Left",
+    // About positioning, see Chicane2.
+    -hutchLength/2.0+40.1,
+    -opticalAxisHeight+72.0+chicaneHeight/2.0 // Coupe B-B [2]
   );
 
   return;
