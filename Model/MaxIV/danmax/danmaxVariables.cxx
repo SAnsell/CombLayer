@@ -509,8 +509,8 @@ exptHut2Variables(FuncDataBase& Control,
   EGen.generateHut(Control,hutName,0.0,545.8);
 
   // TODO: copy-pasted from Hutch 1: check
-  Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
-  Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
+  Control.addVariable(hutName+"RingWidth",47.3); // Section A-A [3]
+  Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [3]
   Control.addVariable(hutName+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
 
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
