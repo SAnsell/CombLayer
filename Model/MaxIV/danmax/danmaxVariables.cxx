@@ -81,10 +81,12 @@
 // References
 // [1] CARATELLI Drawing 06769-01-000
 // [2] CARATELLI Drawing 06769-03-000
+// [3] CARATELLI Drawing 06769-02-000
 // [4] S0-2-0AB01088_DanMAX.pdf
 // [5] S4-2-2AJ00829.pdf
 // [6] S7-4-2AJ00837.pdf
 // [7] S7-3-0AF00293.pdf
+// [8] CARATELLI Drawing 06769-00-000
 
 namespace setVariable
 {
@@ -344,7 +346,6 @@ connectVariables(FuncDataBase& Control,
   const std::string connectName(beamName+"ConnectShield");
   Control.addVariable(connectName+"Height",50.0);
   Control.addVariable(connectName+"Width",70.0);
-  Control.addVariable(connectName+"Length",858.4);
   Control.addVariable(connectName+"Thick",0.5);
   Control.addVariable(connectName+"SkinThick",0.1);
 
@@ -352,7 +353,14 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"Mat","Lead");
   Control.addVariable(connectName+"VoidMat","Void");
 
-  PipeGen.generatePipe(Control,beamName+"PipeA",425.0);
+  // dummy, adjusted such that ion pump is centered in Experimental Hutch 2.
+  // PipeA length = 
+  //    Expt. Hutch 2 length / 2.0
+  //    - length of JoinPipeB inside Expt. Hutch 2
+  //    - ion pump length / 2.0
+  //    - FlangeA length
+  //    - BellowA length
+  PipeGen.generatePipe(Control,beamName+"PipeA",236.9);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
@@ -377,7 +385,8 @@ connectVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,beamName+"BellowB",16.0);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,beamName+"PipeB",325.0);
+  // dummy, see comment for PipeA
+  PipeGen.generatePipe(Control,beamName+"PipeB",236.9);
 
   return;
 }
@@ -494,7 +503,10 @@ exptHut2Variables(FuncDataBase& Control,
   EGen.setRoofLead(0.4); // TODO: check
   EGen.setWallLead(0.4); // TODO: check
   EGen.setFloorShine(0.6, 20.0); // TODO: check
-  EGen.generateHut(Control,hutName,0.0,835.6); // TODO: check length
+  // The actual length of hutch 2 is 5366 mm as shown in [3].
+  // However, to match the simplified model of the optics hutch, use the slightly 
+  // larger value given in [8].
+  EGen.generateHut(Control,hutName,0.0,545.8);
 
   // TODO: copy-pasted from Hutch 1: check
   Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
@@ -1331,7 +1343,8 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::opticsVariables(Control,beamLineName);
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",93.3); // dummy
+  // dummy, adjusted such that JoinPipeB extends 100 mm into Experimental Hutch 2.
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",78.47);
 
   danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
