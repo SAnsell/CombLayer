@@ -331,16 +331,12 @@ void
 connectVariables(FuncDataBase& Control,
 		 const std::string& beamName)
   /*!
-    Optics hut variables
+    Connecting line variables
     \param Control :: DataBase to add
     \param beamName :: beamline name
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","connectVariables");
-
-  Control.addVariable(beamName+"OuterLeft",70.0);
-  Control.addVariable(beamName+"OuterRight",60.0);
-  Control.addVariable(beamName+"OuterTop",70.0);
 
   const Geometry::Vec3D OPos(0,0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
