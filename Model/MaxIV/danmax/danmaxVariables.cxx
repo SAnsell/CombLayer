@@ -431,8 +431,6 @@ exptHut1Variables(FuncDataBase& Control,
   const double opticalAxisHeight = 130.0; // Front view [2]
   Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
 
-  Control.addVariable(hutName+"FloorShineFrontLength",0.0);
-
   // 5 chicanes, 3 wide ones (#0 - #2) and 2 small ones (#3 and #4).
   // TODO: Check other chicane dimensions apart from width, height, and gap height.
   // At the moment, all chicances use the default values from the PortChicaneGenerator.
@@ -521,7 +519,8 @@ exptHut2Variables(FuncDataBase& Control,
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [3]
   Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
 
-  // No floor shine at the front/back wall shown in [1-3] or [8].
+  // No floor shine at the front/back wall inside Expt. Hutch 2 shown in [1-3] or [8].
+  // Confirmed during site visit.
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
   Control.addVariable(hutName+"FloorShineBackLength",0.0);
 
