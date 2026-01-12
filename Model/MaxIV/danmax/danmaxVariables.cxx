@@ -94,6 +94,17 @@ namespace setVariable
 namespace danmaxVar
 {
 
+// Height of Optics Hutch and Expt. Hutches 1 and 2.
+// The value that is passed as the 'Height' variable of each hutch is the height above 
+// the optical axis.
+// From [8], it can be seen that the height of all the hutches is roughly the same.
+// For the Optics Hutch and Expt. Hutch 1, the heights are given in [1] (Section B-B) 
+// and [2] (Coupe B-B), respectively, and they agree within 3 mm.
+// For Expt. Hutch 2, the height is not shown in the drawing [3].
+// It was decided to use the value from [1] for all heights.
+// The optical-axis height was taken from [1] (back view, MEASURED).
+const double hutchHeightAboveOpticalAxis = 411.0-131.88;
+
 void undulatorVariables(FuncDataBase&,const std::string&);
 void frontMaskVariables(FuncDataBase&,const std::string&);
 void monoShutterVariables(FuncDataBase&,const std::string&);
@@ -288,7 +299,7 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.generateHut(Control,hutName, opticsHutLength);
   const double opticsHutOuterWidth = 259.7;
   Control.addVariable(hutName+"OutWidth", opticsHutOuterWidth); // Section A-A [1]
-  Control.addVariable(hutName+"Height", 411.0-131.88); // Optics hutch height (Section B-B) - optical-axis height (back view) [1]
+  Control.addVariable(hutName+"Height", hutchHeightAboveOpticalAxis);
 
   Control.addVariable(hutName+"RingStepLength", opticsHutLength-155.2); // Section A-A [1]
   Control.addVariable(hutName+"RingStepWidth",566.7-opticsHutOuterWidth-120.2); // Section A-A [1]
@@ -419,10 +430,7 @@ exptHut1Variables(FuncDataBase& Control,
   Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
   const double opticalAxisHeight = 130.0; // Front view [2]
-  Control.addVariable(
-    hutName+"Height",
-    375.0-opticalAxisHeight // Hutch height (Coupe B-B) - optical-axis height
-  );
+  Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
 
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
 
@@ -459,7 +467,7 @@ exptHut1Variables(FuncDataBase& Control,
     -opticalAxisHeight+80.0+chicaneHeight/2.0 // Coupe B-B [2]
   );
   // Coupe B-B [2], height of small chicanes. It is assumed that the upper edge of the 
-  // small chicanes is a 1400 mm above ground level as for the wide chicanes.
+  // small chicanes is 1400 mm above ground level as for the wide chicanes.
   chicaneHeight = 68.0;
   PGen.setHeight(chicaneHeight);
   PGen.setWidth(30.0); // Coupe B-B [2]
@@ -511,7 +519,7 @@ exptHut2Variables(FuncDataBase& Control,
   // TODO: copy-pasted from Hutch 1: check
   Control.addVariable(hutName+"RingWidth",47.3); // Section A-A [3]
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [3]
-  Control.addVariable(hutName+"Height",375.0-130.0); // Hutch height (Coupe B-B) - optical-axis height (front view) [2]
+  Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
 
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
   Control.addVariable(hutName+"FloorShineBackLength",0.0);
