@@ -509,21 +509,22 @@ exptHut2Variables(FuncDataBase& Control,
   EGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6);
 
   EGen.setBackLead(0.4); // "Lead Thickness Upstream Wall", Section A-A [2]
-  EGen.setRoofLead(0.4); // TODO: check
-  EGen.setWallLead(0.4); // TODO: check
-  EGen.setFloorShine(0.6, 20.0); // TODO: check
+  EGen.setRoofLead(0.2); // "ROOF THK Pb", Section A-A [3]
+  EGen.setWallLead(0.2); // "Lead Thickness Side Wall", Section A-A [3]
+  EGen.setFloorShine(0.6, 20.0); // Detail J [3]
   // The actual length of hutch 2 is 5366 mm as shown in [3].
   // However, to match the simplified model of the optics hutch, use the slightly 
   // larger value given in [8].
   EGen.generateHut(Control,hutName,0.0,545.8);
 
-  // TODO: copy-pasted from Hutch 1: check
   Control.addVariable(hutName+"RingWidth",47.3); // Section A-A [3]
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [3]
   Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
 
+  // No floor shine at the front/back wall shown in [1-3] or [8].
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
   Control.addVariable(hutName+"FloorShineBackLength",0.0);
+
   Control.addVariable(hutName+"NChicane",0);
 
   return;
