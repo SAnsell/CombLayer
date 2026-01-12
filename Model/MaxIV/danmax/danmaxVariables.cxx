@@ -294,17 +294,20 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setBackLead(5.0); // "Lead Thickness Back Wall" Section A-A [1]
   OGen.setWallLead(1.2); // "Lead Thickness Side Wall", Section A-A [1]
   OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
-  OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.5);
+  OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6); // Section D-D [1]
   const double opticsHutLength = 1010.0; // Section A-A in [1]
   OGen.generateHut(Control,hutName, opticsHutLength);
-  const double opticsHutOuterWidth = 259.7;
-  Control.addVariable(hutName+"OutWidth", opticsHutOuterWidth); // Section A-A [1]
+  const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
+  Control.addVariable(hutName+"OutWidth", opticsHutOuterWidth);
   Control.addVariable(hutName+"Height", hutchHeightAboveOpticalAxis);
 
-  Control.addVariable(hutName+"RingStepLength", opticsHutLength-155.2); // Section A-A [1]
-  Control.addVariable(hutName+"RingStepWidth",566.7-opticsHutOuterWidth-120.2); // Section A-A [1]
+  // Section A-A [1]
+  Control.addVariable(hutName+"RingStepLength", opticsHutLength-155.2);
+  // Section A-A [1]
+  Control.addVariable(hutName+"RingStepWidth",566.7-opticsHutOuterWidth-120.2);
 
-  Control.addVariable(hutName+"BackPlateThick", 7.0); // "Lead Thickness", back view [1]
+  // "Lead Thickness", back view [1]
+  Control.addVariable(hutName+"BackPlateThick", 7.0);
   const double backPlateSideLength = 200.0; // back view [1]
   Control.addVariable(hutName+"BackPlateWidth", backPlateSideLength);
   Control.addVariable(hutName+"BackPlateHeight", backPlateSideLength);
@@ -414,7 +417,7 @@ exptHut1Variables(FuncDataBase& Control,
   const double beamMirrorShift(0.6); // will be adjusted later when the beamline is built
   const std::string hutName(beamName+"ExptHut1");
 
-  EGen.setFrontHole(beamMirrorShift,0.0,4.0);
+  EGen.setFrontHole(beamMirrorShift,0.0,3.6); // Coupe C-C [2]
   EGen.setCorner(atan(167.4/281.5)*180.0/M_PI,281.5); // Section A-A [2]
   EGen.setBackLead(0.6); // "Lead Thickness Downstream Wall", Section A-A [2]
   EGen.setRoofLead(0.4); // "Roof Thk Pb", Section A-A [2]
@@ -500,8 +503,10 @@ exptHut2Variables(FuncDataBase& Control,
   const double beamMirrorShift(0.6); // will be adjusted later when the beamline is built
   const std::string hutName(beamName+"ExptHut2");
 
-  EGen.setFrontHole(beamMirrorShift,0.0,4.0); // TODO: check radius (coordinates will be adjusted later)
-  EGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),4.0); // exit hole. TODO: check radius  (coordinates will be adjusted later)
+  // Section D-D [1] (coordinates will be adjusted later)
+  EGen.setFrontHole(beamMirrorShift,0.0,3.6);
+  // Exit hole, Coupe C-C [2] (coordinates will be adjusted later)
+  EGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6);
 
   EGen.setBackLead(0.4); // "Lead Thickness Upstream Wall", Section A-A [2]
   EGen.setRoofLead(0.4); // TODO: check
