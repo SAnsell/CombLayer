@@ -236,7 +236,7 @@ ExperimentalHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+43, buildIndex+33, Y, floorShineLength);
   // Left wall (corner) -> Built along with other corner planes above.
   // Right wall
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+44, buildIndex+4, Y, -floorShineLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+44, buildIndex+34, Y, -floorShineLength);
   // Back wall
   if (floorShineBackLength>Geometry::zeroTol)
     ModelSupport::buildShiftedPlane(SMap, buildIndex+62, buildIndex+32, Y, -floorShineBackLength);

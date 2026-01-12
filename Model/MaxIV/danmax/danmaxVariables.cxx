@@ -430,6 +430,11 @@ exptHut1Variables(FuncDataBase& Control,
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
   const double opticalAxisHeight = 130.0; // Front view [2]
   Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
+  // In [2], the floor-shine length is measured from the outside of the wall, i.e. the
+  // wall thickness is included. In this case here, where the front wall is the back 
+  // wall of Expt. Hutch 2, the wall thickness (steel layer inside and outside from 
+  // Detail E and lead thickness from Section A-A in [2]) needs to be subtracted.
+  Control.addVariable(hutName+"FloorShineFrontLength",20.0-0.6);
 
   // 5 chicanes, 3 wide ones (#0 - #2) and 2 small ones (#3 and #4).
   // TODO: Check other chicane dimensions apart from width, height, and gap height.
