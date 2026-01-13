@@ -419,7 +419,10 @@ exptHut1Variables(FuncDataBase& Control,
 
   EGen.setFrontHole(beamMirrorShift,0.0,3.6); // Coupe C-C [2]
   EGen.setCorner(atan(167.4/281.5)*180.0/M_PI,281.5); // Section A-A [2]
-  EGen.setBackLead(0.6); // "Lead Thickness Downstream Wall", Section A-A [2]
+  const double backLead = 0.6; // "Lead Thickness Downstream Wall", Section A-A [2]
+  EGen.setBackLead(backLead);
+  const double skinThick = 0.1; // "Steel", Detail E [2]
+  EGen.setSkin(skinThick);
   EGen.setRoofLead(0.4); // "Roof Thk Pb", Section A-A [2]
   EGen.setWallLead(0.4); // "Lead Thickness Side Wall", Section A-A [2]
   EGen.setFloorShine(0.6, 20.0); // [2], full length [2]
@@ -445,45 +448,56 @@ exptHut1Variables(FuncDataBase& Control,
   // assumed to be valid for all.
   double chicaneHeight = 60.0;
   PGen.setHeight(chicaneHeight);
-  PGen.setWidth(60.0); // Coupe B-B [2]
+  const double chicaneWidth = 60.0; // Coupe B-B [2]
+  PGen.setWidth(chicaneWidth);
+  const double chicaneWallThick = 0.8; // Default value
+  PGen.setWallThick(chicaneWallThick);
+  const double chicaneOverHang = 4.0; // Default value
+  PGen.setOverHang(chicaneOverHang);
+
+  // Reference x value for all chicanes
+  const double x0 = -(hutchLength-2.0*skinThick-backLead)/2.0;
+
   PGen.generatePortChicane(
     Control,hutName+"Chicane0","Left",
     // Coupe B-B [2], hutch front to center of chicane
     // 1655 mm + 1750 mm + 4.5 x 1500 mm = 10155 mm
-    -hutchLength/2.0+1015.5,
+    x0+1015.5,
     -opticalAxisHeight+80.0+chicaneHeight/2.0 // Coupe B-B [2]
   );
   PGen.generatePortChicane(
     Control,hutName+"Chicane1","Left",
     // Coupe B-B [2], hutch front to center of chicane
     // 1655 mm + 1750 mm + 0.5 x 1500 mm = 10155 mm
-    -hutchLength/2.0+415.5,
+    x0+415.5,
     -opticalAxisHeight+110.0+chicaneHeight/2.0 // Coupe B-B [2]
   );
+  const double smallChicaneWidth = 30.0;
+  // Distance from hutch front wall to chicane vertical wall
+  const double chicane4WallDist = 22.5;
+  // Distance from chicane 2 to chicane 4, vertical wall to vertical wall
+  const double chicane2chicane4Dist = 24.0;
   PGen.generatePortChicane(
     Control,hutName+"Chicane2","Left",
-    // Position estimated. Chicane 2 and chicane 4 are within 1655 mm from the hutch
-    // front. Chicane 2 is 600 mm wide, chicane 4 is 300 mm wide. Distribute the 
-    // remaining 755 mm evenly. Uncertainty: +- 50 mm.
-    -hutchLength/2.0+110.3,
+    x0+chicane4WallDist+smallChicaneWidth+3.0*chicaneWallThick+chicane2chicane4Dist
+    +0.5*chicaneWidth,
     -opticalAxisHeight+80.0+chicaneHeight/2.0 // Coupe B-B [2]
   );
   // Coupe B-B [2], height of small chicanes. It is assumed that the upper edge of the 
   // small chicanes is 1400 mm above ground level as for the wide chicanes.
   chicaneHeight = 68.0;
   PGen.setHeight(chicaneHeight);
-  PGen.setWidth(30.0); // Coupe B-B [2]
+  PGen.setWidth(smallChicaneWidth); // Coupe B-B [2]
   PGen.generatePortChicane(
     Control,hutName+"Chicane3","Left",
     // Coupe B-B [2], hutch front to center of chicane
     // 1655 mm + 1750 mm + 2.5 x 1500 mm = 7155 mm
-    -hutchLength/2.0+715.5,
+    x0+715.5,
     -opticalAxisHeight+72.0+chicaneHeight/2.0 // Coupe B-B [2]
   );
   PGen.generatePortChicane(
     Control,hutName+"Chicane4","Left",
-    // About positioning, see Chicane2.
-    -hutchLength/2.0+40.1,
+    x0+smallChicaneWidth/2.0+chicaneWallThick+chicane4WallDist,
     -opticalAxisHeight+72.0+chicaneHeight/2.0 // Coupe B-B [2]
   );
 
