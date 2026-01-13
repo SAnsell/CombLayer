@@ -321,9 +321,12 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"FloorShineThick", 0.6); // [1]
   Control.addVariable(hutName+"FloorShineLength", 50.0); // full length [1]
 
-  ELog::EM << "Check wall shine dimensions" << ELog::endDiag;
-  Control.addVariable(hutName+"WallShineThick", 0.6); // dummy
-  Control.addVariable(hutName+"WallShineLength", 59.0); // dummy
+  Control.addVariable(hutName+"WallShineThick", 0.6); // Detail G [2]
+  // In Detail G [2], the length of the wall-shine element is given as 650 mm.
+  // It is not clear from [2] what the 650 mm correspond to. Here, it is assumed that 
+  // this value is measured from the outside wall like all other shielding of this 
+  // type.
+  Control.addVariable(hutName+"WallShineLength", 65.0);
   Control.addVariable(hutName+"WallShineOutThick", 1.2); // measured by UFG 251201
   Control.addVariable(hutName+"WallShineOutLength", 20.0); // measured by UFG 251201
 
