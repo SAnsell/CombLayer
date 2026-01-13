@@ -545,7 +545,7 @@ exptHut2Variables(FuncDataBase& Control,
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
   Control.addVariable(hutName+"FloorShineBackLength",0.0);
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",3);
   PortChicaneGenerator PGen;
   double chicaneHeight = 60.0; // Outside view [3]
   PGen.setHeight(chicaneHeight);
@@ -567,6 +567,17 @@ exptHut2Variables(FuncDataBase& Control,
     Control, hutName+"Chicane1", "Left",
     x0-182.8*0.75,
     -opticalAxisHeight+80.0+chicaneHeight/2.0 // Outside view [3]
+  );
+
+  chicaneHeight = 68.0; // Outside view [3]
+  PGen.setHeight(chicaneHeight);
+  PGen.setWidth(30.0); // Outside view [3]
+  PGen.generatePortChicane(
+    Control, hutName+"Chicane2", "Left",
+    // Section A-A [3], hutch back to center of chicane
+    // 1828 mm + 8 mm + 0.5 x 760 mm = 2216 mm
+    x0-221.6,
+    -opticalAxisHeight+72.0+chicaneHeight/2.0 // Outside view [3]
   );
 
   return;
