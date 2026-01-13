@@ -62,9 +62,11 @@ class PortChicaneGenerator
   ~PortChicaneGenerator();
 
   void setHeight(const double H){height = H;};
+  void setOverHang(const double O){overHang = O;};
   void setPlate(const double,const double,const std::string&);
   void setSize(const double,const double,const double);
   void setWall(const double,const std::string&);
+  void setWallThick(const double T){wallThick = T;};
   void setWidth(const double W){width = W;};
 
 
