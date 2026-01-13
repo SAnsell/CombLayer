@@ -290,8 +290,12 @@ opticsHutVariables(FuncDataBase& Control,
 
   OpticsHutchGenerator OGen;
 
-  OGen.setSkin(0.2);
-  OGen.setBackLead(5.0); // "Lead Thickness Back Wall" Section A-A [1]
+  // Not given in [1]. Use same value as in other beamlines (where this value is also 
+  // used without reference).
+  const double skinThick = 0.2;
+  OGen.setSkin(skinThick);
+  const double backLead = 5.0; // "Lead Thickness Back Wall" Section A-A [1]
+  OGen.setBackLead(backLead);
   OGen.setWallLead(1.2); // "Lead Thickness Side Wall", Section A-A [1]
   OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6); // Section D-D [1]
@@ -314,9 +318,26 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
-  PGen.setSize(8.0,80.0,45.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0",320.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1",-350.0,-25.0);
+  const double chicaneHeight = 60.0; // Outside view [1]
+  PGen.setHeight(chicaneHeight);
+  PGen.setWidth(60.0); // Outside view [1]
+
+  // Reference x value for all chicanes
+  const double x0 = (opticsHutLength+2.0*skinThick+backLead)/2.0;
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane0","Left",
+    // Section A-A [1], hutch back to center of chicane
+    // 1552 mm + 2 x 12 mm + 1.5 x 1500 mm = 3802 mm
+    x0-380.2,
+    -opticalAxisHeight+80.0+chicaneHeight/2.0 // Outside view [1]
+  );
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane1","Left",
+    // Section A-A [1], hutch back to center of chicane
+    // 1552 mm + 4 x 12 mm + 2950 mm + 2.5 x 1500 mm = 8300 mm
+    x0-830.0,
+    -opticalAxisHeight+80.0+chicaneHeight/2.0 // Outside view [1]
+  );
 
   Control.addVariable(hutName+"FloorShineThick", 0.6); // [1]
   Control.addVariable(hutName+"FloorShineLength", 50.0); // full length [1]
