@@ -94,6 +94,7 @@ namespace setVariable
 namespace danmaxVar
 {
 
+const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // Height of Optics Hutch and Expt. Hutches 1 and 2.
 // The value that is passed as the 'Height' variable of each hutch is the height above 
 // the optical axis.
@@ -102,8 +103,7 @@ namespace danmaxVar
 // and [2] (Coupe B-B), respectively, and they agree within 3 mm.
 // For Expt. Hutch 2, the height is not shown in the drawing [3].
 // It was decided to use the value from [1] for all heights.
-// The optical-axis height was taken from [1] (back view, MEASURED).
-const double hutchHeightAboveOpticalAxis = 411.0-131.88;
+const double hutchHeightAboveOpticalAxis = 411.0-opticalAxisHeight;
 
 void undulatorVariables(FuncDataBase&,const std::string&);
 void frontMaskVariables(FuncDataBase&,const std::string&);
@@ -431,7 +431,6 @@ exptHut1Variables(FuncDataBase& Control,
   EGen.generateHut(Control,hutName,0.0, hutchLength);
   Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
-  const double opticalAxisHeight = 130.0; // Front view [2]
   Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
   // In [2], the floor-shine length is measured from the outside of the wall, i.e. the
   // wall thickness is included. In this case here, where the front wall is the back 
@@ -452,8 +451,6 @@ exptHut1Variables(FuncDataBase& Control,
   PGen.setWidth(chicaneWidth);
   const double chicaneWallThick = 0.8; // Default value
   PGen.setWallThick(chicaneWallThick);
-  const double chicaneOverHang = 4.0; // Default value
-  PGen.setOverHang(chicaneOverHang);
 
   // Reference x value for all chicanes
   const double x0 = -(hutchLength-2.0*skinThick-backLead)/2.0;
@@ -525,14 +522,19 @@ exptHut2Variables(FuncDataBase& Control,
   // Exit hole, Coupe C-C [2] (coordinates will be adjusted later)
   EGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6);
 
-  EGen.setBackLead(0.4); // "Lead Thickness Upstream Wall", Section A-A [2]
+  // "Lead Thickness Upstream Wall", Section A-A [2]
+  const double backLead = 0.4;
+  EGen.setBackLead(backLead);
+  const double skinThick = 0.1; // "Steel", Detail E [3]
+  EGen.setSkin(skinThick);
   EGen.setRoofLead(0.2); // "ROOF THK Pb", Section A-A [3]
   EGen.setWallLead(0.2); // "Lead Thickness Side Wall", Section A-A [3]
   EGen.setFloorShine(0.6, 20.0); // Detail J [3]
   // The actual length of hutch 2 is 5366 mm as shown in [3].
   // However, to match the simplified model of the optics hutch, use the slightly 
   // larger value given in [8].
-  EGen.generateHut(Control,hutName,0.0,545.8);
+  const double hutchLength = 545.8;
+  EGen.generateHut(Control,hutName,0.0,hutchLength);
 
   Control.addVariable(hutName+"RingWidth",47.3); // Section A-A [3]
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [3]
@@ -543,7 +545,29 @@ exptHut2Variables(FuncDataBase& Control,
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
   Control.addVariable(hutName+"FloorShineBackLength",0.0);
 
-  Control.addVariable(hutName+"NChicane",0);
+  Control.addVariable(hutName+"NChicane",2);
+  PortChicaneGenerator PGen;
+  double chicaneHeight = 60.0; // Outside view [3]
+  PGen.setHeight(chicaneHeight);
+  PGen.setWidth(60.0); // Outside view [3]
+  const double chicaneWallThick = 0.8; // Default value
+  PGen.setWallThick(chicaneWallThick);
+
+  // Reference x value for all chicanes
+  const double x0 = (hutchLength-2.0*skinThick-backLead)/2.0;
+  // Chicane0 and Chicane1 are within 1828 mm from the back wall of Expt. Hutch 2 
+  // (Section A-A [3]). Assume that their centers are located at 1/4*1828 and 3/4*1828.
+  // Positioning uncertainty estimate from the drawing: += 50 mm.
+  PGen.generatePortChicane(
+    Control, hutName+"Chicane0", "Left",
+    x0-182.8*0.25,
+    -opticalAxisHeight+80.0+chicaneHeight/2.0 // Outside view [3]
+  );
+  PGen.generatePortChicane(
+    Control, hutName+"Chicane1", "Left",
+    x0-182.8*0.75,
+    -opticalAxisHeight+80.0+chicaneHeight/2.0 // Outside view [3]
+  );
 
   return;
 }
