@@ -941,10 +941,18 @@ SingleItemVariables(FuncDataBase& Control)
 
   // SqrShield
   const std::string name = "SqrShield";
-  Control.addVariable(name+"Width", 70.0);
-  Control.addVariable(name+"Height", 50.0);
-  Control.addVariable(name+"Length", 5390.0);
-  Control.addVariable(name+"Thick", 0.5);
+  Control.addVariable(name+"SmallWidth", 22.0);
+  Control.addVariable(name+"LargeWidth", 40.0);
+  Control.addVariable(name+"SmallHeight", 23.5);
+  Control.addVariable(name+"LargeHeight", 23.5);
+  Control.addVariable(name+"Length", 539.0);
+  Control.addVariable(name+"LargeRegionStart", 241.8);
+  Control.addVariable(name+"LargeRegionLength", 55.4);
+  Control.addVariable(name+"TopThick", 0.7);
+  Control.addVariable(name+"BottomThick", 1.0);
+  Control.addVariable(name+"LeftThick", 0.7);
+  Control.addVariable(name+"RightThick", 0.7);
+  Control.addVariable(name+"FrontBackThick", 0.7);
   Control.addVariable(name+"SkinThick", 0.1);
   Control.addVariable(name+"Mat", "Lead");
   Control.addVariable(name+"SkinMat", "SteelUnknownGrade");
