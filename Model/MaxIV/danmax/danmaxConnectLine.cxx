@@ -140,7 +140,7 @@ danmaxConnectLine::buildObjects(Simulation& System,
   buildZone.setFront(FrontBackCut::getFrontRule());
   buildZone.setMaxExtent(FrontBackCut::getBackRule());
 
-  buildZone.setSurround(connectShield->getInnerVoid());
+  buildZone.setSurround(connectShield->getSurround());
   buildZone.setInnerMat(connectShield->getInnerMat());
 
       
