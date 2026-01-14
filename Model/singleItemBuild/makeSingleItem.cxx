@@ -42,24 +42,33 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "Line.h"
-#include "inputParam.h"
 #include "surfRegister.h"
-#include "objectRegister.h"
 #include "HeadRule.h"
+#include "Importance.h"
+#include "Object.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "BlockZone.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Line.h"
+#include "inputParam.h"
+#include "objectRegister.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "BaseMap.h"
-#include "CellMap.h"
 #include "SurfMap.h"
 #include "PointMap.h"
 #include "World.h"
@@ -195,6 +204,7 @@
 #include "PowerFilter.h"
 #include "TDCBeamDump.h"
 #include "FixedMaskHybrid.h"
+#include "SqrShield.h"
 
 #include "makeSingleItem.h"
 
@@ -255,7 +265,7 @@ makeSingleItem::build(Simulation& System,
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama",
-	"HeatAbsorberR3Toyama", "FixedMaskHybrid", "Help","help"
+	"HeatAbsorberR3Toyama", "FixedMaskHybrid", "SqrShield", "Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -1888,6 +1898,25 @@ makeSingleItem::build(Simulation& System,
 	fmh->addInsertCell(voidCell);
 	fmh->createAll(System,World::masterOrigin(),0);
 
+	return;
+      }
+
+    if (item == "SqrShield")
+      {
+	const auto sqrShield = std::make_shared<xraySystem::SqrShield>("SqrShield");
+	OR.addObject(sqrShield);
+
+	sqrShield->addInsertCell(voidCell);
+	sqrShield->createAll(System,World::masterOrigin(),0);
+
+  attachSystem::BlockZone blockZone("BlockZone");
+  blockZone.setFront(sqrShield->getFrontRule());
+  blockZone.setMaxExtent(sqrShield->getBackRule());
+  blockZone.setSurround(sqrShield->getSurround());
+  blockZone.setInnerMat(sqrShield->getInnerMat());
+  blockZone.createUnit(System);
+  blockZone.createAll(System,World::masterOrigin(),0);
+  
 	return;
       }
 

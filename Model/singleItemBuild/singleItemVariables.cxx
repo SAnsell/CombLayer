@@ -939,6 +939,16 @@ SingleItemVariables(FuncDataBase& Control)
   PowerFilterGenerator PFGen;
   PFGen.generate(Control,"PowerFilter");
 
+  // SqrShield
+  const std::string name = "SqrShield";
+  Control.addVariable(name+"Width", 70.0);
+  Control.addVariable(name+"Height", 50.0);
+  Control.addVariable(name+"Length", 5390.0);
+  Control.addVariable(name+"Thick", 0.5);
+  Control.addVariable(name+"SkinThick", 0.1);
+  Control.addVariable(name+"Mat", "Lead");
+  Control.addVariable(name+"SkinMat", "SteelUnknownGrade");
+  Control.addVariable(name+"VoidMat", "Void");
 
   return;
 }
