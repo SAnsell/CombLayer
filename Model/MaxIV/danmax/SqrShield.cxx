@@ -98,7 +98,7 @@ SqrShield::populate(const FuncDataBase& Control)
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  length=Control.EvalDefVar<double>(keyName+"Lenght",0.0);
+  length=Control.EvalDefVar<double>(keyName+"Length",0.0);
   thick=Control.EvalVar<double>(keyName+"Thick");
   
   skinThick=Control.EvalVar<double>(keyName+"SkinThick");
@@ -146,9 +146,9 @@ SqrShield::createSurfaces()
 }
 
 HeadRule
-SqrShield::getInnerVoid() const
+SqrShield::getSurround() const
   /*!
-    Get the inner void psace
+    Get the inner void space
     \return HeadRule of inner void [minus front/back]
    */
 {
