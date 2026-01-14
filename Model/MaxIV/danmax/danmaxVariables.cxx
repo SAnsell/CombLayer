@@ -87,6 +87,7 @@
 // [6] S7-4-2AJ00837.pdf
 // [7] S7-3-0AF00293.pdf
 // [8] CARATELLI Drawing 06769-00-000
+// [9] CARATELLI Drawing 06769-04-000
 
 namespace setVariable
 {
@@ -378,19 +379,21 @@ connectVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
 
   const std::string connectName(beamName+"ConnectShield");
-  Control.addVariable(connectName+"SmallWidth", 22.0);
-  Control.addVariable(connectName+"LargeWidth", 40.0);
-  Control.addVariable(connectName+"SmallHeight", 23.5);
-  Control.addVariable(connectName+"LargeHeight", 23.5);
+  Control.addVariable(connectName+"SmallWidth", 22.0); // Detail D [9]
+  Control.addVariable(connectName+"LargeWidth", 40.0); // Detail K [9]
+  Control.addVariable(connectName+"SmallHeight", 23.5); // Detail D [9]
+  Control.addVariable(connectName+"LargeHeight", 23.5); // Detail K [9]
+  // Front wall inside to start of inner void of large region, Section B-B [9]
+  // 103 mm + 2 x 1147.5 mm + 2 x 10 mm = 2418.0 mm
   Control.addVariable(connectName+"LargeRegionStart", 241.8);
-  Control.addVariable(connectName+"LargeRegionLength", 55.4);
-  Control.addVariable(connectName+"TopThick", 0.7);
-  Control.addVariable(connectName+"BottomThick", 1.0);
-  Control.addVariable(connectName+"LeftThick", 0.7);
-  Control.addVariable(connectName+"RightThick", 0.7);
-  Control.addVariable(connectName+"FrontBackThick", 0.7);
-  Control.addVariable(connectName+"SkinThick", 0.1);
-  Control.addVariable(connectName+"Mat", "Lead");
+  Control.addVariable(connectName+"LargeRegionLength", 55.4); // Section B-B [9]
+  Control.addVariable(connectName+"TopThick", 0.7); // Detail D and Detail K [9]
+  Control.addVariable(connectName+"BottomThick", 1.0); // Detail D and Detail K [9]
+  Control.addVariable(connectName+"LeftThick", 0.7); // Detail D and Detail K [9]
+  Control.addVariable(connectName+"RightThick", 0.7); // Detail D and Detail K [9]
+  Control.addVariable(connectName+"FrontBackThick", 0.7); // Detail D and Detail K [9]
+  Control.addVariable(connectName+"SkinThick", 0.1); // Estimated, not shown in [9]
+  Control.addVariable(connectName+"Mat", "Lead"); // [9]
   Control.addVariable(connectName+"SkinMat", "SteelUnknownGrade");
   Control.addVariable(connectName+"VoidMat", "Void");
 
