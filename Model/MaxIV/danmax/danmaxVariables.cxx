@@ -378,14 +378,21 @@ connectVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
 
   const std::string connectName(beamName+"ConnectShield");
-  Control.addVariable(connectName+"Height",50.0);
-  Control.addVariable(connectName+"Width",70.0);
-  Control.addVariable(connectName+"Thick",0.5);
-  Control.addVariable(connectName+"SkinThick",0.1);
-
-  Control.addVariable(connectName+"SkinMat","SteelUnknownGrade");
-  Control.addVariable(connectName+"Mat","Lead");
-  Control.addVariable(connectName+"VoidMat","Void");
+  Control.addVariable(connectName+"SmallWidth", 22.0);
+  Control.addVariable(connectName+"LargeWidth", 40.0);
+  Control.addVariable(connectName+"SmallHeight", 23.5);
+  Control.addVariable(connectName+"LargeHeight", 23.5);
+  Control.addVariable(connectName+"LargeRegionStart", 241.8);
+  Control.addVariable(connectName+"LargeRegionLength", 55.4);
+  Control.addVariable(connectName+"TopThick", 0.7);
+  Control.addVariable(connectName+"BottomThick", 1.0);
+  Control.addVariable(connectName+"LeftThick", 0.7);
+  Control.addVariable(connectName+"RightThick", 0.7);
+  Control.addVariable(connectName+"FrontBackThick", 0.7);
+  Control.addVariable(connectName+"SkinThick", 0.1);
+  Control.addVariable(connectName+"Mat", "Lead");
+  Control.addVariable(connectName+"SkinMat", "SteelUnknownGrade");
+  Control.addVariable(connectName+"VoidMat", "Void");
 
   // dummy, adjusted such that ion pump is centered in Experimental Hutch 2.
   // PipeA length = 
