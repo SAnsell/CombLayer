@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/danmax/SqrShield.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Udo Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ SqrShield::SqrShield(const std::string& Key)  :
   attachSystem::FrontBackCut(),
   voidMat(0)
  /*!
-    Constructor BUT ALL variable are left unpopulated.
+    Constructor BUT ALL variables are left unpopulated.
     \param Key :: Name for item in search
   */
 {
@@ -96,19 +96,55 @@ SqrShield::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
+  smallWidth=Control.EvalVar<double>(keyName+"SmallWidth");
+  largeWidth=Control.EvalVar<double>(keyName+"LargeWidth");
+  smallHeight=Control.EvalVar<double>(keyName+"SmallHeight");
+  largeHeight=Control.EvalVar<double>(keyName+"LargeHeight");
   length=Control.EvalDefVar<double>(keyName+"Length",0.0);
-  thick=Control.EvalVar<double>(keyName+"Thick");
-  
+  largeRegionStart=Control.EvalVar<double>(keyName+"LargeRegionStart");
+  largeRegionLength=Control.EvalVar<double>(keyName+"LargeRegionLength");
+  topThick=Control.EvalVar<double>(keyName+"TopThick");
+  bottomThick=Control.EvalVar<double>(keyName+"BottomThick");
+  leftThick=Control.EvalVar<double>(keyName+"LeftThick");
+  rightThick=Control.EvalVar<double>(keyName+"RightThick");
+  frontBackThick=Control.EvalVar<double>(keyName+"FrontBackThick");
   skinThick=Control.EvalVar<double>(keyName+"SkinThick");
-
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
 
   return;
+}
+
+double SqrShield::dXYZ(const unsigned int n, const unsigned int i) const {
+  double dY = 0.0;
+  switch(n){
+    case 0:
+      return 0.0;
+    case 1:
+      return skinThick;
+    case 2:
+    case 3:
+      dY = (n-1)*skinThick;
+      switch(i){
+        case 1:
+        case 2:
+          return dY+frontBackThick;
+        case 3:
+          return dY+rightThick;
+        case 4:
+          return dY+leftThick;
+        case 5:
+          return dY+bottomThick;
+        case 6:
+          return dY+topThick;
+        default:
+          return 0.0;
+      }
+    default:
+      return 0.0;
+  }
 }
 
 void
@@ -131,17 +167,23 @@ SqrShield::createSurfaces()
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
-  int BI(buildIndex);
-  double T(0.0);
-  for(const double extra : {0.0,skinThick,thick,skinThick})
-    {
-      T+=extra;
-      ModelSupport::buildPlane(SMap,BI+3,Origin-X*(T+width/2.0),X);
-      ModelSupport::buildPlane(SMap,BI+4,Origin+X*(T+width/2.0),X);
-      ModelSupport::buildPlane(SMap,BI+5,Origin-Z*(T+height/2.0),Z);
-      ModelSupport::buildPlane(SMap,BI+6,Origin+Z*(T+height/2.0),Z);
-      BI+=10;
-    }
+  int BI;
+  for(unsigned int n=0;n<4;++n){
+    BI = n*10;
+    getShiftedFront(SMap,buildIndex+11+BI,Y,largeRegionStart-dXYZ(n,1));
+    getShiftedFront(SMap,buildIndex+12+BI,Y,largeRegionStart+largeRegionLength+dXYZ(n,2));
+
+    ModelSupport::buildPlane(SMap,buildIndex+3+BI,Origin-X*(smallWidth/2.0+dXYZ(n, 3)),X);
+    ModelSupport::buildPlane(SMap,buildIndex+4+BI,Origin+X*(smallWidth/2.0+dXYZ(n, 4)),X);
+    ModelSupport::buildPlane(SMap,buildIndex+5+BI,Origin-Z*(smallHeight/2.0+dXYZ(n, 5)),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+6+BI,Origin+Z*(smallHeight/2.0+dXYZ(n, 6)),Z);
+
+    ModelSupport::buildPlane(SMap,buildIndex+103+BI,Origin-X*(largeWidth/2.0+dXYZ(n, 3)),X);
+    ModelSupport::buildPlane(SMap,buildIndex+104+BI,Origin+X*(largeWidth/2.0+dXYZ(n, 4)),X);
+    ModelSupport::buildPlane(SMap,buildIndex+105+BI,Origin-Z*(largeHeight/2.0+dXYZ(n, 5)),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+106+BI,Origin+Z*(largeHeight/2.0+dXYZ(n, 6)),Z);
+  }
+
   return;
 }
 
@@ -169,21 +211,49 @@ SqrShield::createObjects(Simulation& System)
   const HeadRule frontHR(getFrontRule());
   const HeadRule backHR(getBackRule());
 
+  makeCell("FrontOuterVoid",System,cellIndex++,voidMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"133 -134 135 -136 (-33:34:-35:36) -41")*frontHR);
+  makeCell("FrontOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"33 -34 35 -36 (-23:24:-25:26) -41")*frontHR);
+  makeCell("FrontWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"23 -24 25 -26 (-13:14:-15:16) -31")*frontHR);
+  makeCell("FrontInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6) -11")*frontHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6)");
-  makeCell("Inner",System,cellIndex++,skinMat,0.0,HR*frontHR*backHR);
+  makeCell("LargeRegionVoid",System,cellIndex++,voidMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"103 -104 105 -106 (-3:4:-5:6) 11 -12"));
+  makeCell("LargeRegionOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"133 -134 135 -136 (-123:124:-125:126) 41 -42")*frontHR);
+  makeCell("LargeRegionWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"123 -124 125 -126 (-113:114:-115:116) 31 -32")*frontHR);
+  makeCell("LargeRegionInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"113 -114 115 -116 (-103:104:-105:106) 11 -12")*frontHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"23 -24 25 -26 (-13:14:-15:16)");
-  makeCell("Wall",System,cellIndex++,mat,0.0,HR*frontHR*backHR);
+  makeCell("LargeRegionFrontInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) -11 21")*frontHR);
+  makeCell("LargeRegionFrontWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) -21 31")*frontHR);
+  makeCell("LargeRegionFrontOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"123 -124 125 -126 (-23:24:-25:26) -31 41")*frontHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 "33 -34 35 -36 (-23:24:-25:26)");
-  makeCell("Outer",System,cellIndex++,skinMat,0.0,HR*frontHR*backHR);
+  makeCell("LargeRegionBackInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) 12 -22")*backHR);
+  makeCell("LargeRegionBackWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) 22 -32")*backHR);
+  makeCell("LargeRegionBackOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"123 -124 125 -126 (-23:24:-25:26) 32 -42")*backHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 35 -36");
-  addOuterSurf(HR*frontHR*backHR);
+  makeCell("BackOuterVoid",System,cellIndex++,voidMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"133 -134 135 -136 (-33:34:-35:36) 42")*backHR);
+  makeCell("BackOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"33 -34 35 -36 (-23:24:-25:26) 42")*backHR);
+  makeCell("BackWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"23 -24 25 -26 (-13:14:-15:16) 32")*backHR);
+  makeCell("BackInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+    (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6) 12")*backHR);
+
+  addOuterSurf(ModelSupport::getHeadRule
+    (SMap,buildIndex,"133 -134 135 -136")*frontHR*backHR);
 
   return;
 }
@@ -191,7 +261,7 @@ SqrShield::createObjects(Simulation& System)
 void
 SqrShield::createLinks()
   /*!
-    Create all the linkes
+    Create all the links
   */
 {
   ELog::RegMethod RegA("SqrShield","createLinks");
