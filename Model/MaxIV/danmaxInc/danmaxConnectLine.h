@@ -67,7 +67,7 @@ class danmaxConnectLine :
   std::shared_ptr<constructSystem::Bellows> bellowA;    ///< Bellow to pump
   std::shared_ptr<constructSystem::VacuumPipe> flangeA;  ///< adaptor flange
 
-  std::shared_ptr<constructSystem::PipeTube> ionPumpA; ///< Ion pump port
+  std::shared_ptr<constructSystem::VacuumPipe> ionPumpA; ///< Ion pump port
   std::shared_ptr<constructSystem::VacuumPipe> flangeB;  ///< adaptor flange
   std::shared_ptr<constructSystem::Bellows> bellowB;    ///< Second bellow
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;   // out pipe

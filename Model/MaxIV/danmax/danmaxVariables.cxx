@@ -88,6 +88,8 @@
 // [7] S7-3-0AF00293.pdf
 // [8] CARATELLI Drawing 06769-00-000
 // [9] CARATELLI Drawing 06769-04-000
+// [10] CAD model of DanMAX/SINCRYS, J. Selberg, fall/winter 2025
+// [11] https://www.gammavacuum.com/detail/index/sArticle/3381/number/100LCV6SSCNN/sCategory/17668 (accessed on 2026-01-14)
 
 namespace setVariable
 {
@@ -366,12 +368,8 @@ connectVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","connectVariables");
 
-  const Geometry::Vec3D OPos(0,0,0);
-  const Geometry::Vec3D ZVec(0,0,-1);
-
   setVariable::BellowGenerator BellowGen;
   setVariable::PipeGenerator PipeGen;
-  setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
 
   PipeGen.setMat("SteelUnknownGrade");
@@ -412,15 +410,11 @@ connectVariables(FuncDataBase& Control,
   PipeGen.setBFlangeCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,beamName+"FlangeA",5.0);
 
-  SimpleTubeGen.setMat("SteelUnknownGrade");
-  SimpleTubeGen.setCF<CF100>();
-  // ystep/length
-  SimpleTubeGen.generateTube(Control,beamName+"IonPumpA",10.0);
-  Control.addVariable(beamName+"IonPumpANPorts",1);
-  PItemGen.setCF<setVariable::CF40>(10.0+CF100::outerRadius);
-  PItemGen.setOuterVoid(0);
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,beamName+"IonPumpAPort0",OPos,ZVec);
+  // Gamma Vacuum 100L TiTan Ion Pump [9-11]
+  // Geometry simplified to a single pipe with the appropriate standard.
+  PipeGen.setMat("SteelUnknownGrade");
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,beamName+"IonPumpA", 32.59);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
@@ -430,7 +424,7 @@ connectVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF40>();
   // dummy, see comment for PipeA
-  PipeGen.generatePipe(Control,beamName+"PipeB",236.9);
+  PipeGen.generatePipe(Control,beamName+"PipeB",214.31);
 
   return;
 }

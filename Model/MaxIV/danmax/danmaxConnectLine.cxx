@@ -66,8 +66,6 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bellows.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
 #include "SqrShield.h"
 
 #include "danmaxConnectLine.h"
@@ -87,7 +85,7 @@ danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   flangeA(new constructSystem::VacuumPipe(keyName+"FlangeA")),
-  ionPumpA(new constructSystem::PipeTube(keyName+"IonPumpA")),
+  ionPumpA(new constructSystem::VacuumPipe(keyName+"IonPumpA")),
   flangeB(new constructSystem::VacuumPipe(keyName+"FlangeB")),
   bellowB(new constructSystem::Bellows(keyName+"BellowB")),
   pipeB(new constructSystem::VacuumPipe(keyName+"PipeB"))
