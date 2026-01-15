@@ -118,6 +118,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   valve4(new xraySystem::CylGateValve(newName+"Valve4")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   bremColl1Tube(new constructSystem::PipeTube(newName+"BremColl1Tube")),
+  bremColl1(new xraySystem::BremBlock(newName+"BremColl1")),
   filterPipe(new constructSystem::VacuumPipe(newName+"FilterPipe")),
   gateA(new constructSystem::GateValveCylinder(newName+"GateA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
@@ -177,6 +178,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
 
   OR.addObject(bellowA);
   OR.addObject(bremColl1Tube);
+  OR.addObject(bremColl1);
   OR.addObject(filterPipe);
   OR.addObject(gateA);
   OR.addObject(bellowC);
@@ -296,6 +298,9 @@ danmaxOpticsLine::constructBremColl1Tube
 
   outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
   bremColl1Tube->insertAllInCell(System,outerCell);
+
+  bremColl1->addInsertCell(bremColl1Tube->getCell("Void"));
+  bremColl1->createAll(System,*bremColl1Tube,"Origin");
 
   constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*filterPipe);

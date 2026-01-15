@@ -106,6 +106,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Bremsstrahlung Collimator 1 (tube and collimator)
   std::shared_ptr<constructSystem::PipeTube> bremColl1Tube;
+  std::shared_ptr<xraySystem::BremBlock> bremColl1;
   /// Filter unit pipe
   std::shared_ptr<constructSystem::VacuumPipe> filterPipe;
   /// First gate valve

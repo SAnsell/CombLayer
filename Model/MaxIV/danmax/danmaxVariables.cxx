@@ -1147,6 +1147,7 @@ opticsVariables(FuncDataBase& Control,
   const double bremColl1Length = 29.0; // [11]
   const double bremcoll1Height = 44.0; // [11]
   const double bremColl1TopHeight = 8.2 + setVariable::CF40::innerRadius; // [11]
+  const double bremColl1Z = bremcoll1Height/2.0-bremColl1TopHeight;
 
   PipeGen.setCF<setVariable::CF40>();
 
@@ -1163,11 +1164,19 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF40>(bremColl1Length/2.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control, bremColl1TubeName+"Port0",
-    Geometry::Vec3D(0,bremcoll1Height/2.0-bremColl1TopHeight,0),
+    Geometry::Vec3D(0,bremColl1Z,0),
 		Geometry::Vec3D(0,0,1));
   PItemGen.generatePort(Control, bremColl1TubeName+"Port1",
-    Geometry::Vec3D(0,bremcoll1Height/2.0-bremColl1TopHeight,0),
+    Geometry::Vec3D(0,bremColl1Z,0),
 		Geometry::Vec3D(0,0,-1));
+
+  const std::string bremColl1Name = opticsName+"BremColl1";
+  BremGen.centre();
+  BremGen.setLength(8.0); // [11]
+  BremGen.setCube(10.0,10.0); // [11]
+  BremGen.setAperature(2.0,0.4,0.4,0.2,0.2,0.72,0.72); // [11]
+  BremGen.generateBlock(Control,bremColl1Name,bremColl1Z);
+  Control.addVariable(bremColl1Name+"XAngle",90);
 
   // filter pipe [add filter later]
   PipeGen.generatePipe(Control,opticsName+"FilterPipe",3.0);
