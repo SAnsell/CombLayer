@@ -111,7 +111,7 @@ template<typename CF>
 void
 TriggerGenerator::setSideCF(const double L)
   /*!
-    Setter for flange beam direction flanges
+    Setter for beam direction flanges
   */
 {
   yRadius=CF::innerRadius;
