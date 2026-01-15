@@ -1127,7 +1127,6 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,opticsName+"InitBellow",10.0); // [4]
 
-  // will be rotated vertical
   TGen.setCF<CF100>();
   TGen.setVertical(15.0,25.0);
   // Total length of 200 mm given in [4], object is symmetric.
