@@ -189,12 +189,13 @@ frontMaskVariables(FuncDataBase& Control,
 
   constexpr double FM1Length(40.0); // [4]
   constexpr double FM2Length(50.5); // [5]
-  constexpr double MSMLength(40.0); //
+  // MSM not used
+  // constexpr double MSMLength(40.0);
 
   const double FM1dist(1104.75+FM1Length/2.0); // [4]
-  const double FM2dist(1597.08+FM2Length/2.0); //
-  //  const double FM2dist(1597.08+FM2Length/2.0); // [4]
-  const double MSMdist(1600.0); //
+  const double FM2dist(1597.08+FM2Length/2.0); // [4]
+  // MSM not used
+  // const double MSMdist(1600.0);
 
   FMaskGen.setCF<CF100>();
   FMaskGen.setFrontGap(2.53, 2.53); //
@@ -211,7 +212,8 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BellowHLength",14.0); // [4]
   Control.addVariable(preName+"PipeCLength",34.0); // [4]
 
-  Control.addVariable(preName+"PermanentMagnetYStep",270.0); // Distance permanent magnet center to FM2 front: 170.5 cm, measured by AR
+  Control.addVariable(preName+"PermanentMagnetYStep",270.0); // Distance permanent 
+  // magnet center to FM2 front: 170.5 cm, measured by AR
   // TODO: Define position with absolute coordinates or relative to FM2.
 
   FMaskGen.setFrontGap(2.1, 2.1); // [5]
@@ -259,19 +261,19 @@ frontMaskVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy
 
 
-  // Movable Safety Mask
-  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
+  // Movable Safety Mask (not used)
+  // BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
+  // BellowGen.setCF<setVariable::CF40>();
+  // BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
 
-  MovableSafetyMaskGenerator MSMGen;
-  MSMGen.generate(Control,preName+"MSM",MSMLength, "undulator"); //
-  Control.addVariable(preName+"MSMYStep",MSMdist);
+  // MovableSafetyMaskGenerator MSMGen;
+  // MSMGen.generate(Control,preName+"MSM",MSMLength, "undulator"); //
+  // Control.addVariable(preName+"MSMYStep",MSMdist);
 
-  BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
+  // BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
 
-  PipeGen.setMat("SteelUnknownGradeL"); // dummy
-  PipeGen.generatePipe(Control,preName+"MSMExitPipe",100.0); // dummy
+  // PipeGen.setMat("SteelUnknownGradeL"); // dummy
+  // PipeGen.generatePipe(Control,preName+"MSMExitPipe",100.0); // dummy
 
   return;
 }
