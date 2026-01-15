@@ -90,6 +90,7 @@
 // [9] CARATELLI Drawing 06769-04-000
 // [10] CAD model of DanMAX/SINCRYS, J. Selberg, fall/winter 2025
 // [11] https://www.gammavacuum.com/detail/index/sArticle/3381/number/100LCV6SSCNN/sCategory/17668 (accessed on 2026-01-14)
+// [12] DanMAX Beamline, FMB Oxford Drawing ABM0070
 
 namespace setVariable
 {
@@ -1121,7 +1122,7 @@ opticsVariables(FuncDataBase& Control,
 
   setVariable::GateValveGenerator GateGen;
 
-  PipeGen.setNoWindow();   // no window
+  PipeGen.setNoWindow();
   PipeGen.setMat("SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,opticsName+"InitBellow",10.0); // [4]
@@ -1129,13 +1130,23 @@ opticsVariables(FuncDataBase& Control,
   // will be rotated vertical
   TGen.setCF<CF100>();
   TGen.setVertical(15.0,25.0);
-  TGen.setSideCF<setVariable::CF40>(10.0); // add centre distance?
+  // Total length of 200 mm given in [4], object is symmetric.
+  TGen.setMainLength(10.0, 10.0);
+  TGen.setPortCF<setVariable::CF40>(); // [10]
+  TGen.setSideCF<setVariable::CF40>(10.0); // [10]
   TGen.generateTube(Control,opticsName+"TriggerUnit");
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve4");
 
+  // Absolute positions of the following elements are given in [12].
+  // To determine the lengths of elements that are not shown in [12], use the last 
+  // absolute position from [4], which is the downstream side of the V4 valve at 
+  // 22902.3 mm.
+  double yRef = 2290.23; // [4]
+  const double bremCollAY = 2330.0; // [12]
+  const double bremCollALength = 29.0; // [11]
+
   PipeGen.setCF<setVariable::CF40>();
-  BellowGen.setCF<setVariable::CF40>();
 
   BellowGen.generateBellow(Control,opticsName+"BellowA",16.0);
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
@@ -1229,23 +1240,22 @@ support7DanMAX(FuncDataBase& Control,
   setVariable::ProximityShieldingGenerator PSGen;
   setVariable::BremBlockGenerator BBGen;
 
-  // Lengths are based on [2]
-  constexpr double bellowILength = 10.0;
-  constexpr double florTubeALength = 12.0; //
-  constexpr double bellowJLength = 10.0;
-  constexpr double valve3Length = 7.2; //
-  constexpr double proxiShieldAPipeLength = 20.0;
-  constexpr double proxiShieldBPipeLength = 20.0;
+  constexpr double bellowILength = 10.0; // [4]
+  constexpr double florTubeALength = 12.0; // "Flourescent Screen" [4]
+  constexpr double bellowJLength = 10.0; // [4]
+  constexpr double valve3Length = 7.2; // "V3 Valve" [4]
+  constexpr double proxiShieldAPipeLength = 20.0; // [4]
+  constexpr double proxiShieldBPipeLength = 20.0; // [4]
   // safety shutter
-  constexpr double shutterLength = 57.8; // [2]
+  constexpr double shutterLength = 57.8; // [4]
   constexpr double offPipeALength = 6.8; // approx
   constexpr double shutterBoxLength = shutterLength - offPipeALength;
 
-  constexpr double bremCollTotalLength = 21.0; //[2] (OffPipeB + BremCollPipe)
+  constexpr double bremCollTotalLength = 21.0; //[4] (OffPipeB + BremCollPipe)
   constexpr double offPipeBLength = 2.6; // as small as possible
   constexpr double bremCollPipeLength = bremCollTotalLength - offPipeBLength;
 
-  constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [2, page1]
+  constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [4, page1]
   constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
     bremCollTotalLength - shutterLength - proxiShieldAPipeLength - valve3Length -
     bellowJLength - florTubeALength - bellowILength;
