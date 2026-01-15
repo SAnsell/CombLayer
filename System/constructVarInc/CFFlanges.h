@@ -3,7 +3,7 @@
 
  * File:   constructVarInc/CFFlanges.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Udo Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -443,6 +443,23 @@ struct CF150
   static constexpr double flangeLength=2.5;
   static constexpr double bellowStep=1.5;
   static constexpr double bellowThick=1.5;
+  static constexpr size_t nBolts=20;
+};
+
+/*!
+  \struct CF160
+  \version 1.0
+  \author U. Friman-Gayer
+  \date January 2026
+  \brief CFFlanges for CF160
+*/
+struct CF160
+{
+  static constexpr double innerRadius=15.0368/2.0;
+  static constexpr double outerRadius=15.24/2.0;
+  static constexpr double wallThick=outerRadius-innerRadius;
+  static constexpr double flangeRadius=20.32/2.0;
+  static constexpr double flangeLength=2.2352;
   static constexpr size_t nBolts=20;
 };
 

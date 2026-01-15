@@ -330,6 +330,7 @@ PipeTubeGenerator::generateBlank(FuncDataBase& Control,
   template void PipeTubeGenerator::setCF<CF100>();
   template void PipeTubeGenerator::setCF<CF120>();
   template void PipeTubeGenerator::setCF<CF150>();
+  template void PipeTubeGenerator::setCF<CF160>();
   template void PipeTubeGenerator::setCF<CF200>();
   template void PipeTubeGenerator::setCF<CF300>();
   template void PipeTubeGenerator::setCF<CF350>();
