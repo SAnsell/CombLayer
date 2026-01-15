@@ -117,7 +117,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
   valve4(new xraySystem::CylGateValve(newName+"Valve4")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  bremCollA(new xraySystem::SquareFMask(newName+"BremCollA")),
+  bremColl1Tube(new constructSystem::PipeTube(newName+"BremColl1Tube")),
   filterPipe(new constructSystem::VacuumPipe(newName+"FilterPipe")),
   gateA(new constructSystem::GateValveCylinder(newName+"GateA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
@@ -176,7 +176,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(valve4);
 
   OR.addObject(bellowA);
-  OR.addObject(bremCollA);
+  OR.addObject(bremColl1Tube);
   OR.addObject(filterPipe);
   OR.addObject(gateA);
   OR.addObject(bellowC);
@@ -273,6 +273,35 @@ danmaxOpticsLine::createSurfaces()
   return;
 }
 
+void
+danmaxOpticsLine::constructBremColl1Tube
+   (Simulation& System,
+    const attachSystem::FixedComp& initFC,
+    const std::string& sideName)
+ /*!
+    Sub build of the Bremsstrahlung Collimator 1 tube.
+    \param System :: Simulation to use
+    \param initFC :: Start point
+    \param sideName :: start link point
+  */
+{
+  ELog::RegMethod RegA("danmaxOpticsLine","constructBremColl1Tube");
+
+  int outerCell;
+
+  bremColl1Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  bremColl1Tube->createAll(System,initFC,sideName);
+
+  const constructSystem::portItem& VPB=bremColl1Tube->getPort(1);
+
+  outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
+  bremColl1Tube->insertAllInCell(System,outerCell);
+
+  constructSystem::constructUnit
+    (System,buildZone,VPB,"OuterPlate",*filterPipe);
+
+  return;
+}
 
 void
 danmaxOpticsLine::constructViewScreen(Simulation& System,
@@ -620,11 +649,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*valve4,"back",*bellowA);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowA,"back",*bremCollA);
-
-  constructSystem::constructUnit
-    (System,buildZone,*bremCollA,"back",*filterPipe);
+  constructBremColl1Tube(System, *bellowA, "back");
 
   constructSystem::constructUnit
     (System,buildZone,*filterPipe,"back",*gateA);

@@ -104,8 +104,8 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::CylGateValve> valve4;
   /// bellows from trigger outward
   std::shared_ptr<constructSystem::Bellows> bellowA;
-  /// Brem for collimator
-  std::shared_ptr<xraySystem::SquareFMask> bremCollA;
+  /// Bremsstrahlung Collimator 1 (tube and collimator)
+  std::shared_ptr<constructSystem::PipeTube> bremColl1Tube;
   /// Filter unit pipe
   std::shared_ptr<constructSystem::VacuumPipe> filterPipe;
   /// First gate valve
@@ -196,6 +196,8 @@ class danmaxOpticsLine :
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
+  void constructBremColl1Tube(Simulation&,
+			 const attachSystem::FixedComp&,const std::string&);
 
   void constructSlitTube(Simulation&,
 			 const attachSystem::FixedComp&,const std::string&);

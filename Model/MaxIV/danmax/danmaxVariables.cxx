@@ -1142,22 +1142,32 @@ opticsVariables(FuncDataBase& Control,
   // absolute position from [4], which is the downstream side of the V4 valve at 
   // 22902.3 mm.
   double yRef = 2290.23; // [4]
-  const double bremCollAY = 2330.0; // [12]
-  const double bremCollALength = 29.0; // [11]
+  const double bremColl1Y = 2330.0; // [12]
+
+  const double bremColl1Length = 29.0; // [11]
+  const double bremcoll1Height = 44.0; // [11]
+  const double bremColl1TopHeight = 8.2 + setVariable::CF40::innerRadius; // [11]
 
   PipeGen.setCF<setVariable::CF40>();
 
-  BellowGen.generateBellow(Control,opticsName+"BellowA",16.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowA",
+    bremColl1Y-bremColl1Length/2.0-yRef);
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
   BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
 
-  const double FM2dist(1624.2);
-  FMaskGen.setCF<CF63>();
-  FMaskGen.setFrontGap(2.13,2.146);
-  FMaskGen.setBackGap(0.756,0.432);
-  FMaskGen.setMinAngleSize(10.0,FM2dist, 100.0,100.0 );
-  // step to +7.5 to make join with fixedComp:linkpt
-  FMaskGen.generateColl(Control,opticsName+"BremCollA",7.5,15.0);
+  const std::string bremColl1TubeName = opticsName+"BremColl1Tube";
+  SimpleTubeGen.setCF<setVariable::CF160>();
+  SimpleTubeGen.setCap(1,1);
+  SimpleTubeGen.generateTube(Control,bremColl1TubeName,bremcoll1Height);
+  Control.addVariable(bremColl1TubeName+"NPorts",2);
+  PItemGen.setCF<setVariable::CF40>(bremColl1Length/2.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control, bremColl1TubeName+"Port0",
+    Geometry::Vec3D(0,bremcoll1Height/2.0-bremColl1TopHeight,0),
+		Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(Control, bremColl1TubeName+"Port1",
+    Geometry::Vec3D(0,bremcoll1Height/2.0-bremColl1TopHeight,0),
+		Geometry::Vec3D(0,0,-1));
 
   // filter pipe [add filter later]
   PipeGen.generatePipe(Control,opticsName+"FilterPipe",3.0);
