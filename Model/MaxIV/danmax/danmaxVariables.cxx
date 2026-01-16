@@ -1179,6 +1179,11 @@ opticsVariables(FuncDataBase& Control,
   BremGen.setCube(10.0,10.0); // Sec. 2.1 in [13]
   // All dimensions from Sec. 2.1 in [13], except aperture position.
   // The aperture position is not mentioned in [13], but was read off from [10].
+  // Aperture dimensions can be given in two ways, either as an angle or by 
+  // setting the cross-section dimensions at different positions. Tried both ways,
+  // once with the angle from [13] and once with dimensions read off from [10].
+  // Since the entrance/exit dimensions agreed within a few percent, decided to use
+  // the angle, since its value is given explicitly.
   BremGen.setAperatureAngle(2.0, 0.2, 0.2, 5.0, 5.0); 
   BremGen.generateBlock(Control,bremColl1Name,bremColl1Z);
   Control.addVariable(bremColl1Name+"XAngle",90);
