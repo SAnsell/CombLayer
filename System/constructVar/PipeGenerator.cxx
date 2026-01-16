@@ -155,6 +155,36 @@ PipeGenerator::setRectWindow(const double W,
 }
 
 void
+PipeGenerator::setRectWindow(
+  const double WA,
+	const double HA,
+	const double TA,  
+  const double WB,
+	const double HB,
+	const double TB
+)
+/*!
+    Set window values individually for windows A (front) and B (back).
+    \param WA :: Full width of front window
+    \param HA :: Full height of front window
+    \param TA :: Thickness of front window
+    \param WB :: Full width of back window
+    \param HB :: Full height of back window
+    \param TB :: Thickness of back window
+   */
+{
+  windowA.type=2;
+  windowA.width=WA;
+  windowA.height=HA;
+  windowA.thick=TA;
+  windowB.type=2;
+  windowB.width=WB;
+  windowB.height=HB;
+  windowB.thick=TB;
+  return;
+}
+
+void
 PipeGenerator::setNoWindow()
   /*!
     Remove the window values
