@@ -90,7 +90,7 @@ BellowGenerator::setPipe(const double R,const double T,
     Set all the pipe values
     \param R :: radius of main pipe
     \param T :: Thickness
-    \parma S :: Bellow step
+    \param S :: Bellow step
     \param BT :: Bellow Thickness
     \param n :: Number of folds
    */

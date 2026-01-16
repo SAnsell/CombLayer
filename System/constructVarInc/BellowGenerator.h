@@ -41,10 +41,10 @@ class BellowGenerator :
  private:
 
   double bellowStep;              ///< bellow step from flange
+  double bellowThick;             ///< bellow thickness.
     double wallThick;             ///< wall thickness
     int nFolds;                   ///< number of foldings
     int engActive;                ///< engineering active flag
-  double bellowThick;             ///< bellow thickness.
 
   std::string bellowMat;        ///< Primary bellow material
 
@@ -60,6 +60,7 @@ class BellowGenerator :
   void setPipe(const double,const double,const double,const double, const int=10);
   void setMat(const std::string&,const double);
   void setMat(const std::string&,const std::string&);
+  void setBellowStep(const double bS){bellowStep = bS;};
 
   void generateBellow(FuncDataBase&,const std::string&,
 		      const double) const;
