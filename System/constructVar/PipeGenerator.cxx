@@ -114,6 +114,25 @@ PipeGenerator::setWindow(const double R,const double T)
 }
 
 void
+PipeGenerator::setWindow(const double RA,const double TA,const double RB,const double TB)
+  /*!
+    Set window values individually for windows A (front) and B (back).
+    \param RA :: Radius of front window
+    \param TA :: Thickness of front window
+    \param RB :: Radius of back window
+    \param TB :: Thickness of back window
+   */
+{
+  windowA.type=1;
+  windowA.radius=RA;
+  windowA.thick=TA;
+  windowB.type=1;
+  windowB.radius=RB;
+  windowB.thick=TB;
+  return;
+}
+
+void
 PipeGenerator::setRectWindow(const double W,
 			     const double H,
 			     const double T)

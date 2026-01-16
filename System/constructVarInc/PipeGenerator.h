@@ -75,6 +75,7 @@ class PipeGenerator
   void setRectPipe(const double,const double,const double =-1.0);
   void setNoWindow();
   void setWindow(const double,const double);
+  void setWindow(const double,const double,const double,const double);
   void setRectWindow(const double,const double,const double);
   void setFlange(const double R,const double L, const double =-1.0);
   void setRectFlange(const double,const double,const double);
