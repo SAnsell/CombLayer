@@ -1183,8 +1183,15 @@ opticsVariables(FuncDataBase& Control,
   BremGen.generateBlock(Control,bremColl1Name,bremColl1Z);
   Control.addVariable(bremColl1Name+"XAngle",90);
 
-  // filter pipe [add filter later]
-  PipeGen.generatePipe(Control,opticsName+"FilterPipe",3.0);
+  const double highPassFilterY = 2347.0; // [12]
+
+  // High Pass Filter
+  // Simplified to a pipe with two 'windows' corresponding to the two diamond filters.
+  PipeGen.setRectWindow(0.6,0.6,0.06,0.6,0.6,0.04); // [13]
+  PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
+  // Length adjusted to fit the position given in [12]
+  PipeGen.generatePipe(Control,opticsName+"HighPassFilter",
+    2.0*(highPassFilterY-bremColl1Y-bremColl1Length/2.0));
 
   GateGen.setCylCF<setVariable::CF40>();
   GateGen.setLength(1.1);
