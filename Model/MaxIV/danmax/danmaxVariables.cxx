@@ -91,6 +91,7 @@
 // [10] CAD model of DanMAX/SINCRYS, J. Selberg, fall/winter 2025
 // [11] https://www.gammavacuum.com/detail/index/sArticle/3381/number/100LCV6SSCNN/sCategory/17668 (accessed on 2026-01-14)
 // [12] DanMAX Beamline, FMB Oxford Drawing ABM0070
+// [13] DanMAX Diagnostics, Functional Specification, FMB Oxford S3716, Rev. 5.0
 
 namespace setVariable
 {
@@ -1144,9 +1145,11 @@ opticsVariables(FuncDataBase& Control,
   double yRef = 2290.23; // [4]
   const double bremColl1Y = 2330.0; // [12]
 
-  const double bremColl1Length = 29.0; // [11]
-  const double bremcoll1Height = 44.0; // [11]
-  const double bremColl1TopHeight = 8.2 + setVariable::CF40::innerRadius; // [11]
+  const double bremColl1Length = 29.0; // [10]
+  const double bremcoll1Height = 44.0; // [10]
+  // Distance measured from top of beam pipe in [10], not from its center, therefore 
+  // need to add beam-pipe radius.
+  const double bremColl1TopHeight = 8.2 + setVariable::CF40::innerRadius;
   const double bremColl1Z = bremcoll1Height/2.0-bremColl1TopHeight;
 
   PipeGen.setCF<setVariable::CF40>();
@@ -1172,9 +1175,11 @@ opticsVariables(FuncDataBase& Control,
 
   const std::string bremColl1Name = opticsName+"BremColl1";
   BremGen.centre();
-  BremGen.setLength(8.0); // [11]
-  BremGen.setCube(10.0,10.0); // [11]
-  BremGen.setAperature(2.0,0.4,0.4,0.2,0.2,0.72,0.72); // [11]
+  BremGen.setLength(8.0); // Sec. 2.1 in [13]
+  BremGen.setCube(10.0,10.0); // Sec. 2.1 in [13]
+  // All dimensions from Sec. 2.1 in [13], except aperture position.
+  // The aperture position is not mentioned in [13], but was read off from [10].
+  BremGen.setAperatureAngle(2.0, 0.2, 0.2, 5.0, 5.0); 
   BremGen.generateBlock(Control,bremColl1Name,bremColl1Z);
   Control.addVariable(bremColl1Name+"XAngle",90);
 
