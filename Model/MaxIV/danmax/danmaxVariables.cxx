@@ -478,8 +478,8 @@ exptHut1Variables(FuncDataBase& Control,
   Control.addVariable(hutName+"FloorShineFrontLength",20.0-0.6);
 
   // 5 chicanes, 3 wide ones (#0 - #2) and 2 small ones (#3 and #4).
-  // TODO: Check other chicane dimensions apart from width, height, and gap height.
-  // At the moment, all chicances use the default values from the PortChicaneGenerator.
+  // Apart from the values set explicitly here, using default values for, e.g. gap 
+  // sizes, that have been deemed reasonable by site visits.
   Control.addVariable(hutName+"NChicane",5);
   PortChicaneGenerator PGen;
   // Coupe B-B [2], height of wide chicanes. Only shown for leftmost chicane, 
