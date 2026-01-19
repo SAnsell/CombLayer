@@ -109,6 +109,7 @@ const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // For Expt. Hutch 2, the height is not shown in the drawing [3].
 // It was decided to use the value from [1] for all heights.
 const double hutchHeightAboveOpticalAxis = 411.0-opticalAxisHeight;
+const double exptHut1WallThick = 0.4; // "Lead Thickness Side Wall", Section A-A [2]
 
 void undulatorVariables(FuncDataBase&,const std::string&);
 void frontMaskVariables(FuncDataBase&,const std::string&);
@@ -303,7 +304,8 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setSkin(skinThick);
   const double backLead = 5.0; // "Lead Thickness Back Wall" Section A-A [1]
   OGen.setBackLead(backLead);
-  OGen.setWallLead(1.2); // "Lead Thickness Side Wall", Section A-A [1]
+  const double opticsHutchWallThick = 1.2; // "Lead Thickness Side Wall", Section A-A [1]
+  OGen.setWallLead(opticsHutchWallThick); 
   OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6); // Section D-D [1]
   const double opticsHutLength = 1010.0; // Section A-A in [1]
@@ -328,6 +330,11 @@ opticsHutVariables(FuncDataBase& Control,
   const double chicaneHeight = 60.0; // Outside view [1]
   PGen.setHeight(chicaneHeight);
   PGen.setWidth(60.0); // Outside view [1]
+  // Determined by AR and UFG 260112 to be the same as hutch wall thickness.
+  // Measured on site to confirm.
+  PGen.setPlateThick(opticsHutchWallThick);
+  // Assume it is the same as the hutch skin thickness as in Expt. Hutches.
+  PGen.setSkin(skinThick);
 
   // Reference x value for all chicanes
   const double x0 = (opticsHutLength+2.0*skinThick+backLead)/2.0;
@@ -456,7 +463,7 @@ exptHut1Variables(FuncDataBase& Control,
   const double skinThick = 0.1; // "Steel", Detail E [2]
   EGen.setSkin(skinThick);
   EGen.setRoofLead(0.4); // "Roof Thk Pb", Section A-A [2]
-  EGen.setWallLead(0.4); // "Lead Thickness Side Wall", Section A-A [2]
+  EGen.setWallLead(exptHut1WallThick);
   EGen.setFloorShine(0.6, 20.0); // [2], full length [2]
 
   const double hutchLength = 1401.3; // Section A-A [2]
@@ -481,8 +488,11 @@ exptHut1Variables(FuncDataBase& Control,
   PGen.setHeight(chicaneHeight);
   const double chicaneWidth = 60.0; // Coupe B-B [2]
   PGen.setWidth(chicaneWidth);
-  const double chicaneWallThick = 0.8; // Default value
-  PGen.setWallThick(chicaneWallThick);
+  // Determined by AR and UFG 260112 to be the same as hutch wall thickness.
+  // Measured on site to confirm.
+  const double chicaneWallThick = exptHut1WallThick;
+  PGen.setPlateThick(exptHut1WallThick);
+  PGen.setSkin(skinThick); // Measured on site.
 
   // Reference x value for all chicanes
   const double x0 = -(hutchLength-2.0*skinThick-backLead)/2.0;
@@ -582,8 +592,13 @@ exptHut2Variables(FuncDataBase& Control,
   double chicaneHeight = 60.0; // Outside view [3]
   PGen.setHeight(chicaneHeight);
   PGen.setWidth(60.0); // Outside view [3]
-  const double chicaneWallThick = 0.8; // Default value
-  PGen.setWallThick(chicaneWallThick);
+  // Determined by AR and UFG 260112 to be the same as the wall thickness of 
+  // Experimental Hutch 1 (!). Measured on site to confirm.
+  // Supposedly, the chicane design from hutch 1 was reused when hutch 2 was added
+  // later.
+  const double chicaneWallThick = exptHut1WallThick;
+  PGen.setPlateThick(chicaneWallThick);
+  PGen.setSkin(skinThick); // Measured on site.
 
   // Reference x value for all chicanes
   const double x0 = (hutchLength-2.0*skinThick-backLead)/2.0;
