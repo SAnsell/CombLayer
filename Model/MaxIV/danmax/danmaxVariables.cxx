@@ -1217,6 +1217,7 @@ opticsVariables(FuncDataBase& Control,
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5");
 
   // laue monochromator
+  PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
   PipeGen.generatePipe(Control,opticsName+"LauePipe",257.0);
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
