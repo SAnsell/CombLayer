@@ -1223,6 +1223,8 @@ opticsVariables(FuncDataBase& Control,
 
   opticsSlitPackage(Control,opticsName);
 
+  GateGen.setCylCF<setVariable::CF40>();
+  GateGen.setLength(1.1);
   GateGen.generateValve(Control,opticsName+"GateB",0.0,0);
   BellowGen.generateBellow(Control,opticsName+"BellowE",16.0);
 
