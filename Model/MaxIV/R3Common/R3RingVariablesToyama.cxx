@@ -234,10 +234,14 @@ support7(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowJ",bellowJLength);
 
   // V3 Valve
-  GVGen.generateGate(Control,frontKey+"Valve3",0);
-  Control.addVariable(frontKey+"Valve3Radius",3.25);
-  Control.addVariable(frontKey+"Valve3WallThick",0.2);
-  Control.addVariable(frontKey+"Valve3PortThick",0.6-0.45);
+  // See comments on Valve 2.
+  std::string name = frontKey+"Valve3";
+  GVGen.generateGate(Control,name,0);
+  Control.addVariable(name+"PortRadius",setVariable::CF40::innerRadius); // [5]
+  Control.addVariable(name+"PortFlangeRadius",setVariable::CF40::flangeRadius); // [5]
+  Control.addVariable(name+"Radius",3.25);
+  Control.addVariable(name+"WallThick",0.2);
+  Control.addVariable(name+"PortThick",0.6-0.45);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window
@@ -300,7 +304,6 @@ support7(FuncDataBase& Control,
   Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
 
   // Bremsstrahulung collimator
-  std::string name;
   name=frontKey+"BremCollPipe";
   constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[1, page 26],[2]
 
@@ -356,11 +359,12 @@ heatDumpTableToyama(FuncDataBase& Control,
 
   setVariable::CylGateValveGenerator GVGen;
   std::string name=frontKey+"Valve2";
+  // TODO: At the moment, this uses many default values. Check dimensions and compare 
+  // to Valve 3.
   GVGen.generateGate(Control,name,false);
-  // TODO: all dimensions except total y-length are dummy
   Control.addVariable(name+"PortThick",1.1-1); // to make 7.2 cm length as in [5]
-  Control.addVariable(name+"PortRadius",1.9);
-  Control.addVariable(name+"PortFlangeRadius",3.5);
+  Control.addVariable(name+"PortRadius",setVariable::CF40::innerRadius); // [5]
+  Control.addVariable(name+"PortFlangeRadius",setVariable::CF40::flangeRadius); // [5]
   Control.addVariable(name+"Radius",3.2); // [5], add 2 mm to avoid gap b/w ports
   Control.addVariable(name+"WallThick",0.3); // [5]
   Control.addVariable(name+"TopRadius",5.25); // [5]
