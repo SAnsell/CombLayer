@@ -110,7 +110,7 @@ class danmaxOpticsLine :
   /// High Pass Filter
   std::shared_ptr<constructSystem::VacuumPipe> highPassFilter;
   /// First gate valve
-  std::shared_ptr<constructSystem::GateValveCylinder> gateA;
+  std::shared_ptr<xraySystem::CylGateValve> valve5;
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe for laue mono

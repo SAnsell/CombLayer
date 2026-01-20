@@ -1214,9 +1214,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,opticsName+"HighPassFilter",
     2.0*(highPassFilterY-bremColl1Y-bremColl1Length/2.0));
 
-  GateGen.setCylCF<setVariable::CF40>();
-  GateGen.setLength(1.1);
-  GateGen.generateValve(Control,opticsName+"GateA",0.0,0);
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5");
 
   // laue monochromator
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);

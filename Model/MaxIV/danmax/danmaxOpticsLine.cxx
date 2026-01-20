@@ -120,7 +120,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bremColl1Tube(new constructSystem::PipeTube(newName+"BremColl1Tube")),
   bremColl1(new xraySystem::BremBlock(newName+"BremColl1")),
   highPassFilter(new constructSystem::VacuumPipe(newName+"HighPassFilter")),
-  gateA(new constructSystem::GateValveCylinder(newName+"GateA")),
+  valve5(new xraySystem::CylGateValve(newName+"Valve5")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -180,7 +180,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bremColl1Tube);
   OR.addObject(bremColl1);
   OR.addObject(highPassFilter);
-  OR.addObject(gateA);
+  OR.addObject(valve5);
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
   OR.addObject(bellowD);
@@ -657,10 +657,10 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructBremColl1Tube(System, *bellowA, "back");
 
   constructSystem::constructUnit
-    (System,buildZone,*highPassFilter,"back",*gateA);
+    (System,buildZone,*highPassFilter,"back",*valve5);
 
   constructSystem::constructUnit
-    (System,buildZone,*gateA,"back",*bellowC);
+    (System,buildZone,*valve5,"back",*bellowC);
 
   constructSystem::constructUnit
     (System,buildZone,*bellowC,"back",*lauePipe);
