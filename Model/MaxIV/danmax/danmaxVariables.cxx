@@ -1209,7 +1209,7 @@ opticsVariables(FuncDataBase& Control,
   BremGen.generateBlock(Control,bremColl1Name,bremColl1Z);
   Control.addVariable(bremColl1Name+"XAngle",90);
 
-  const double highPassFilterY = 2347.0; // [12]
+  const double highPassFilterY = 2347.48; // [12]
 
   // High Pass Filter
   // Simplified to a pipe with two 'windows' corresponding to the two diamond filters.
@@ -1221,7 +1221,7 @@ opticsVariables(FuncDataBase& Control,
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5");
 
-  // laue monochromator
+  // Laue monochromator
   PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
   PipeGen.generatePipe(Control,opticsName+"LauePipe",257.0);
