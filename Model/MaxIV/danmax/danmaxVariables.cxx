@@ -1063,32 +1063,37 @@ opticsSlitPackage(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::BeamPairGenerator BeamMGen;
 
-    /// SLIT PACKAGE
-
   const std::string sName=opticsName+"SlitTube";
-  const double tLen(48.2);
-  PortTubeGen.setPipeCF<CF200>();
+  const double tubeLength = 48.5; // Outer length [10]
+  PortTubeGen.setPipeCF<CF200>(); // [10]
+  // [10] TODO: This is actually only the thickness of the hull.
+  // The front and back walls are actually 1 mm thicker, but the present PortTubeGenerator 
+  // does not distinguish between these walls.
+  const double wallThick = 0.2;
+  PortTubeGen.setWallThick(0.2);
 
-  PortTubeGen.setPortCF<CF40>();
-  PortTubeGen.setPortLength(-5.0,-5.0);
-  PortTubeGen.generateTube(Control,sName,0.0,tLen);
+  PortTubeGen.setPortCF<CF40>(); // [10]
+  const double portLength = 2.8; // [10]
+  PortTubeGen.setPortLength(portLength, portLength);
+  const double totalLength = tubeLength+2.0*(wallThick+portLength);
+  PortTubeGen.generateTube(Control,sName,0.0,tubeLength-2.0*wallThick);
 
-  Control.addVariable(sName+"NPorts",3);   // beam ports (lots!!)
-  PItemGen.setCF<setVariable::CF150>(CF200::outerRadius+6.1);
+  Control.addVariable(sName+"NPorts",3);
+  // [10] Length of Port0 and Port1 within a few millimeters.
+  PItemGen.setCF<setVariable::CF150>(CF200::innerRadius+wallThick+14.4);
   PItemGen.setPlate(setVariable::CF150::flangeLength,"SteelUnknownGrade");
 
-  // Top port 16.0: Side 20.0cm  from front :  Vacuum 1/2 way
-  //
-  const Geometry::Vec3D topJaw(0.0,16.0-tLen/2.0,0.0);
-  const Geometry::Vec3D sideJaw(0.0,20.0-tLen/2.0,0.0);
-  const Geometry::Vec3D vacPort(0.0,0.0,0.0);
+  const Geometry::Vec3D topJaw(0.0,4.4+CF150::outerRadius-tubeLength/2.0,0.0); // [10]
+  const Geometry::Vec3D sideJaw(0.0,7.9+CF150::outerRadius-tubeLength/2.0,0.0); // [10]
+  const Geometry::Vec3D vacPort(0.0,0.0,0.0); // [10]
 
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  PItemGen.setOuterVoid(1); ///
+  PItemGen.setOuterVoid(1);
   PItemGen.generatePort(Control,sName+"Port0",topJaw,ZVec);
   PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);
+  PItemGen.setCF<setVariable::CF150>(CF200::innerRadius+wallThick+24.0); // [10]
   PItemGen.generatePort(Control,sName+"Port2",vacPort,-ZVec);
   //  PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
 
