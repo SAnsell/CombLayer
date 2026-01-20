@@ -1346,12 +1346,6 @@ support7DanMAX(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowJ",bellowJLength);
 
-  // V3 Valve
-  GVGen.generateGate(Control,frontKey+"Valve3",0);
-  Control.addVariable(frontKey+"Valve3Radius",3.25);
-  Control.addVariable(frontKey+"Valve3WallThick",0.2);
-  Control.addVariable(frontKey+"Valve3PortThick",0.6-0.45);
-
   PipeGen.setMat("Stainless304");
   PipeGen.setNoWindow();   // no window
   PipeGen.setCF<setVariable::CF40>();
