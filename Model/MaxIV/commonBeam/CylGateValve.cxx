@@ -3,7 +3,7 @@
  
  * File:   commonBeam/CylGateValve.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell 
+ * Copyright (c) 2004-2026 by Stuart Ansell and Udo Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -229,8 +229,12 @@ CylGateValve::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-407 401 -402");
   makeCell("Blade",System,cellIndex++,bladeMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 7 -17 117");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 5 -6 7 -17 107");
   makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 5 -6 7 -17 117");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 5 -6 7 -17 117");
+  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*backHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -5 -17");
   makeCell("Base",System,cellIndex++,wallMat,0.0,HR);
@@ -244,9 +248,9 @@ CylGateValve::createObjects(Simulation& System)
 
   if (closed)
     HR=ModelSupport::getHeadRule
-      (SMap,buildIndex,"101 -102 -117 (407 : -401 : 402) (507:-405)");
+      (SMap,buildIndex,"101 -102 -117 (-7:17) (407 : -401 : 402) (507:-405)");
   else
-    HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -117");
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 -117 (-7:17)");
   makeCell("MidVoid",System,cellIndex++,voidMat,0.0,HR);
   // end caps
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
