@@ -98,7 +98,8 @@ namespace setVariable
 
 namespace danmaxVar
 {
-
+// "V3 Valve" [4] Determines the length of several valves of the same type.
+constexpr double valve3Length = 7.2;
 const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // Height of Optics Hutch and Expt. Hutches 1 and 2.
 // The value that is passed as the 'Height' variable of each hutch is the height above 
@@ -1051,11 +1052,17 @@ shieldVariables(FuncDataBase& Control)
 
 void
 opticsSlitPackage(FuncDataBase& Control,
-		  const std::string& opticsName)
+		  const std::string& opticsName, const double topPortOffsetY)
   /*!
     Builds the DM2 slit package
+
+    The parameter topPortOffsetY determines the position of the center of the top port
+    by adjusting the lenght of the front port. This parameter was introduced because 
+    the drawings give the absolute position of the top-port center [12].
+
     \param Control :: Function data base for variables
-    \param opticsName :: PreNaem
+    \param opticsName :: PreName
+    \param topPortOffsetY :: Distance of the top port center from the front plane
    */
 {
   setVariable::PortTubeGenerator PortTubeGen;
@@ -1073,18 +1080,28 @@ opticsSlitPackage(FuncDataBase& Control,
   PortTubeGen.setWallThick(0.2);
 
   PortTubeGen.setPortCF<CF40>(); // [10]
-  const double portLength = 2.8; // [10]
-  PortTubeGen.setPortLength(portLength, portLength);
-  const double totalLength = tubeLength+2.0*(wallThick+portLength);
-  PortTubeGen.generateTube(Control,sName,0.0,tubeLength-2.0*wallThick);
+  const double topPortPipeToSlitTubeFront = 4.4; // [10]
+  // Front port length determined by the Y offset.
+  const double frontPortLength = topPortOffsetY-CF150::outerRadius-topPortPipeToSlitTubeFront;
+  const double backPortLength = 2.8; // [10]
+  PortTubeGen.setPortLength(frontPortLength, backPortLength);
+  const double totalLength = tubeLength+2.0*wallThick+frontPortLength+backPortLength;
+  PortTubeGen.generateTube(Control,sName,0.0,tubeLength);
 
   Control.addVariable(sName+"NPorts",3);
-  // [10] Length of Port0 and Port1 within a few millimeters.
+  // [10] Length of Port0 and Port1 (they are the same within a few millimeters).
   PItemGen.setCF<setVariable::CF150>(CF200::innerRadius+wallThick+14.4);
   PItemGen.setPlate(setVariable::CF150::flangeLength,"SteelUnknownGrade");
 
-  const Geometry::Vec3D topJaw(0.0,4.4+CF150::outerRadius-tubeLength/2.0,0.0); // [10]
-  const Geometry::Vec3D sideJaw(0.0,7.9+CF150::outerRadius-tubeLength/2.0,0.0); // [10]
+  const Geometry::Vec3D topJaw(
+    0.0,
+    frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius-totalLength/2.0,
+    0.0
+  );
+  const Geometry::Vec3D sideJaw(
+    0.0,
+    frontPortLength+7.9+CF150::outerRadius-totalLength/2.0,
+    0.0); // [10]
   const Geometry::Vec3D vacPort(0.0,0.0,0.0); // [10]
 
   const Geometry::Vec3D XVec(1,0,0);
@@ -1216,18 +1233,37 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setRectWindow(0.6,0.6,0.06,0.6,0.6,0.04); // [13]
   PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
   // Length adjusted to fit the position given in [12]
+  const double highPassFilterLength = 
+    2.0*(highPassFilterY-bremColl1Y-bremColl1Length/2.0);
   PipeGen.generatePipe(Control,opticsName+"HighPassFilter",
-    2.0*(highPassFilterY-bremColl1Y-bremColl1Length/2.0));
+    highPassFilterLength);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5");
+
+  const double bellowCDLength = 8.0; // Dummy
+  // Offset of the slit tube along the Y axis.
+  // Adjusts the front port length of the slit tube such that the center of the top
+  // port is at the given offset.
+  //
+  // Front Port Length 
+  // + Distance Top Port Pipe to Slit Tube Front 
+  // + Top Port Radius
+  const double slitTubeTopPortOffsetY = 2.8+4.4+CF150::outerRadius; // [10]
 
   // Laue monochromator
   PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
-  PipeGen.generatePipe(Control,opticsName+"LauePipe",257.0);
+  // [12] Assume that the Y coordinate given there is the central axis of the top-jaw
+  // port.
+  const double whiteBeamSlitsTopJawY = 2622.75;
+  PipeGen.generatePipe(
+    Control,opticsName+"LauePipe",
+    whiteBeamSlitsTopJawY-highPassFilterY-0.5*highPassFilterLength
+    -valve3Length-2.0*bellowCDLength-slitTubeTopPortOffsetY
+  );
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
-  opticsSlitPackage(Control,opticsName);
+  opticsSlitPackage(Control,opticsName, slitTubeTopPortOffsetY);
 
   GateGen.setCylCF<setVariable::CF40>();
   GateGen.setLength(1.1);
@@ -1300,7 +1336,6 @@ support7DanMAX(FuncDataBase& Control,
   constexpr double bellowILength = 10.0; // [4]
   constexpr double florTubeALength = 12.0; // "Flourescent Screen" [4]
   constexpr double bellowJLength = 10.0; // [4]
-  constexpr double valve3Length = 7.2; // "V3 Valve" [4]
   constexpr double proxiShieldAPipeLength = 20.0; // [4]
   constexpr double proxiShieldBPipeLength = 20.0; // [4]
   // safety shutter
@@ -1314,7 +1349,7 @@ support7DanMAX(FuncDataBase& Control,
 
   constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [4, page1]
   constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
-    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - valve3Length -
+    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - danmaxVar::valve3Length -
     bellowJLength - florTubeALength - bellowILength;
   // same as counting from Movable Mask 2
   // 18692.8 + 300 + 140 + 17.5 + 340 = 19490.3
