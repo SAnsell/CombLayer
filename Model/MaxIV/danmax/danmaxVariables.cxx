@@ -100,6 +100,9 @@ namespace danmaxVar
 {
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
+  // [12] Assume that the Y coordinate given there is the central axis of the top-jaw
+  // port.
+const double whiteBeamSlitsTopJawY = 2622.75;
 const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // Height of Optics Hutch and Expt. Hutches 1 and 2.
 // The value that is passed as the 'Height' variable of each hutch is the height above 
@@ -1088,7 +1091,7 @@ opticsSlitPackage(FuncDataBase& Control,
   const double totalLength = tubeLength+2.0*wallThick+frontPortLength+backPortLength;
   PortTubeGen.generateTube(Control,sName,0.0,tubeLength);
 
-  Control.addVariable(sName+"NPorts",3);
+  Control.addVariable(sName+"NPorts",4);
   // [10] Length of Port0 and Port1 (they are the same within a few millimeters).
   PItemGen.setCF<setVariable::CF150>(CF200::innerRadius+wallThick+14.4);
   PItemGen.setPlate(setVariable::CF150::flangeLength,"SteelUnknownGrade");
@@ -1103,6 +1106,13 @@ opticsSlitPackage(FuncDataBase& Control,
     frontPortLength+7.9+CF150::outerRadius-totalLength/2.0,
     0.0); // [10]
   const Geometry::Vec3D vacPort(0.0,0.0,0.0); // [10]
+  const double beamViewer1Y = 2647.72; // [12]
+  const Geometry::Vec3D beamViewer1(
+    0.0,
+    frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius
+    +beamViewer1Y-whiteBeamSlitsTopJawY-totalLength/2.0,
+    0.0
+  );  
 
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
@@ -1112,7 +1122,8 @@ opticsSlitPackage(FuncDataBase& Control,
   PItemGen.generatePort(Control,sName+"Port1",sideJaw,XVec);
   PItemGen.setCF<setVariable::CF150>(CF200::innerRadius+wallThick+24.0); // [10]
   PItemGen.generatePort(Control,sName+"Port2",vacPort,-ZVec);
-  //  PItemGen.generatePort(Control,sName+"Port3",CPt,ZVec);
+  PItemGen.setCF<setVariable::CF100>(CF200::innerRadius+wallThick+5.9); // [10]
+  PItemGen.generatePort(Control,sName+"Port3",beamViewer1,ZVec);
 
   // Jaw units:
   BeamMGen.setThread(0.5,"Nickel");
@@ -1253,9 +1264,6 @@ opticsVariables(FuncDataBase& Control,
   // Laue monochromator
   PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
-  // [12] Assume that the Y coordinate given there is the central axis of the top-jaw
-  // port.
-  const double whiteBeamSlitsTopJawY = 2622.75;
   PipeGen.generatePipe(
     Control,opticsName+"LauePipe",
     whiteBeamSlitsTopJawY-highPassFilterY-0.5*highPassFilterLength
