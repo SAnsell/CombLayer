@@ -1278,16 +1278,20 @@ opticsVariables(FuncDataBase& Control,
   opticsSlitPackage(Control,opticsName, slitTubeTopPortOffsetY);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [10]
+  // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [10]
 
   BellowGen.generateBellow(Control,opticsName+"BellowE",16.0);
 
   monoPackage(Control,opticsName);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [10]
+  // Angle roughly adjusted to [10]. Found it difficult to read off from the model.
+  // Control.addVariable(opticsName+"Valve7YAngle", -20.0);
 
   viewPackage(Control,opticsName);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [10]
+  // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [10]
 
   BellowGen.generateBellow(Control,opticsName+"BellowF",10.0);
 
