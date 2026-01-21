@@ -98,11 +98,23 @@ namespace setVariable
 
 namespace danmaxVar
 {
+  namespace absY{
+    const double FM1Y = 1104.75; // [4]
+    const double FM2Y = 1597.08; // [4]
+    const double heatAbsorberY = 1673.33; // [4]
+    // Absolute position of the downstream side of Valve4 [4].
+    // This value is used to determine the lengths of elements in the optics hutch that 
+    // are not shown in [12].
+    double valve4BackY = 2290.23; // [4]
+    const double bremColl1Y = 2330.0; // [12]
+    const double highPassFilterY = 2347.48; // [12]
+    // [12] Assume that the Y coordinate given there is the central axis of the top-jaw
+    // port.
+    const double whiteBeamSlitsTopJawY = 2622.75;
+    const double beamViewer1Y = 2647.72; // [12]
+  }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
-  // [12] Assume that the Y coordinate given there is the central axis of the top-jaw
-  // port.
-const double whiteBeamSlitsTopJawY = 2622.75;
 const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // Height of Optics Hutch and Expt. Hutches 1 and 2.
 // The value that is passed as the 'Height' variable of each hutch is the height above 
@@ -199,8 +211,8 @@ frontMaskVariables(FuncDataBase& Control,
   // MSM not used
   // constexpr double MSMLength(40.0);
 
-  const double FM1dist(1104.75+FM1Length/2.0); // [4]
-  const double FM2dist(1597.08+FM2Length/2.0); // [4]
+  const double FM1dist(danmaxVar::absY::FM1Y+FM1Length/2.0); // [4]
+  const double FM2dist(danmaxVar::absY::FM2Y+FM2Length/2.0); // [4]
   // MSM not used
   // const double MSMdist(1600.0);
 
@@ -242,10 +254,9 @@ frontMaskVariables(FuncDataBase& Control,
   HeatAbsorberToyamaGenerator HAGen;
 
   constexpr double heatAbsorberLength = 26.5;  // [4]
-  constexpr double heatAbsorberDist(1673.33); // [4]
 
   HAGen.generate(Control,preName+"HeatAbsorber",heatAbsorberLength);
-  Control.addVariable(preName+"HeatAbsorberYStep",heatAbsorberDist);
+  Control.addVariable(preName+"HeatAbsorberYStep",danmaxVar::absY::heatAbsorberY);
   Control.addVariable(preName+"HeatAbsorberDumpLength",heatAbsorberLength - 1.0); // dummy - HA geometry for DanMAX is anyway dummy
 
 
@@ -1106,11 +1117,10 @@ opticsSlitPackage(FuncDataBase& Control,
     frontPortLength+7.9+CF150::outerRadius-totalLength/2.0,
     0.0); // [10]
   const Geometry::Vec3D vacPort(0.0,0.0,0.0); // [10]
-  const double beamViewer1Y = 2647.72; // [12]
   const Geometry::Vec3D beamViewer1(
     0.0,
     frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius
-    +beamViewer1Y-whiteBeamSlitsTopJawY-totalLength/2.0,
+    +danmaxVar::absY::beamViewer1Y-danmaxVar::absY::whiteBeamSlitsTopJawY-totalLength/2.0,
     0.0
   );  
 
@@ -1187,13 +1197,6 @@ opticsVariables(FuncDataBase& Control,
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve4");
 
-  // Absolute positions of the following elements are given in [12].
-  // To determine the lengths of elements that are not shown in [12], use the last 
-  // absolute position from [4], which is the downstream side of the V4 valve at 
-  // 22902.3 mm.
-  double yRef = 2290.23; // [4]
-  const double bremColl1Y = 2330.0; // [12]
-
   const double bremColl1Length = 29.0; // [10]
   const double bremcoll1Height = 44.0; // [10]
   // Distance measured from top of beam pipe in [10], not from its center, therefore 
@@ -1204,7 +1207,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
 
   BellowGen.generateBellow(Control,opticsName+"BellowA",
-    bremColl1Y-bremColl1Length/2.0-yRef);
+    danmaxVar::absY::bremColl1Y-bremColl1Length/2.0-danmaxVar::absY::valve4BackY);
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
   BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
 
@@ -1237,15 +1240,15 @@ opticsVariables(FuncDataBase& Control,
   BremGen.generateBlock(Control,bremColl1Name,bremColl1Z);
   Control.addVariable(bremColl1Name+"XAngle",90);
 
-  const double highPassFilterY = 2347.48; // [12]
-
   // High Pass Filter
   // Simplified to a pipe with two 'windows' corresponding to the two diamond filters.
   PipeGen.setRectWindow(0.6,0.6,0.06,0.6,0.6,0.04); // [13]
   PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
   // Length adjusted to fit the position given in [12]
   const double highPassFilterLength = 
-    2.0*(highPassFilterY-bremColl1Y-bremColl1Length/2.0);
+    2.0*(
+      danmaxVar::absY::highPassFilterY-danmaxVar::absY::bremColl1Y-bremColl1Length/2.0
+  );
   PipeGen.generatePipe(Control,opticsName+"HighPassFilter",
     highPassFilterLength);
 
@@ -1266,8 +1269,9 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
   PipeGen.generatePipe(
     Control,opticsName+"LauePipe",
-    whiteBeamSlitsTopJawY-highPassFilterY-0.5*highPassFilterLength
-    -valve3Length-2.0*bellowCDLength-slitTubeTopPortOffsetY
+    danmaxVar::absY::whiteBeamSlitsTopJawY-danmaxVar::absY::highPassFilterY
+    -0.5*highPassFilterLength-valve3Length
+    -2.0*bellowCDLength-slitTubeTopPortOffsetY
   );
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
