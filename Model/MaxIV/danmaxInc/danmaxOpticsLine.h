@@ -122,7 +122,7 @@ class danmaxOpticsLine :
   /// Jaws for the slit tube (x/z pair)
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
   // Gate after slittube
-  std::shared_ptr<constructSystem::GateValveCylinder> gateB;
+  std::shared_ptr<xraySystem::CylGateValve> valve6;
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowE;
   /// Main mono vessel
@@ -130,13 +130,13 @@ class danmaxOpticsLine :
   /// Grating
   std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
   /// Gate value BL-V3
-  std::shared_ptr<constructSystem::GateValveCylinder> gateC;
+  std::shared_ptr<xraySystem::CylGateValve> valve7;
   /// Beam viewer 2
   std::shared_ptr<constructSystem::PipeTube> viewTube;
   /// Beam viewer [item]
   std::shared_ptr<xraySystem::FlangeMount> viewTubeScreen;
   /// Gate value BL-V4
-  std::shared_ptr<constructSystem::GateValveCylinder> gateD;
+  std::shared_ptr<xraySystem::CylGateValve> valve8;
   /// bellows to second mono
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// MirrorMonoBox

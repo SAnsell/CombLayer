@@ -129,14 +129,14 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
       std::make_shared<xraySystem::BeamPair>(newName+"JawX"),
       std::make_shared<xraySystem::BeamPair>(newName+"JawZ")
 	}),
-  gateB(new constructSystem::GateValveCylinder(newName+"GateB")),
+  valve6(new xraySystem::CylGateValve(newName+"Valve6")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
-  gateC(new constructSystem::GateValveCylinder(newName+"GateC")),
+  valve7(new xraySystem::CylGateValve(newName+"Valve7")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
-  gateD(new constructSystem::GateValveCylinder(newName+"GateD")),
+  valve8(new xraySystem::CylGateValve(newName+"Valve8")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
   MLM(new xraySystem::MLMono(newName+"MLM")),
@@ -188,14 +188,14 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(jaws[0]);
   OR.addObject(jaws[1]);
 
-  OR.addObject(gateB);
+  OR.addObject(valve6);
   OR.addObject(bellowE);
   OR.addObject(monoVessel);
   OR.addObject(mbXstals);
-  OR.addObject(gateC);
+  OR.addObject(valve7);
   OR.addObject(viewTube);
   OR.addObject(viewTubeScreen);
-  OR.addObject(gateD);
+  OR.addObject(valve8);
   OR.addObject(bellowF);
   OR.addObject(MLMVessel);
   OR.addObject(MLM);
@@ -367,7 +367,7 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   viewTubeScreen->createAll(System,VPC,"-InnerPlate");
 
   outerCell=constructSystem::constructUnit
-    (System,buildZone,VPB,"OuterPlate",*gateD);
+    (System,buildZone,VPB,"OuterPlate",*valve8);
   VPC.insertInCell(System,outerCell);
   return;
 }
@@ -671,21 +671,21 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSlitTube(System,*bellowD,"back");
 
   constructSystem::constructUnit
-    (System,buildZone,*slitTube,"back",*gateB);
+    (System,buildZone,*slitTube,"back",*valve6);
 
   constructSystem::constructUnit
-    (System,buildZone,*gateB,"back",*bellowE);
+    (System,buildZone,*valve6,"back",*bellowE);
 
   constructMono(System,*bellowE,"back");
 
 
   constructSystem::constructUnit
-    (System,buildZone,*monoVessel,"back",*gateC);
+    (System,buildZone,*monoVessel,"back",*valve7);
 
-  constructViewScreen(System,*gateC,"back");
+  constructViewScreen(System,*valve7,"back");
 
   constructSystem::constructUnit
-    (System,buildZone,*gateD,"back",*bellowF);
+    (System,buildZone,*valve8,"back",*bellowF);
 
   constructMirrorMono(System,*bellowF,"back");
 

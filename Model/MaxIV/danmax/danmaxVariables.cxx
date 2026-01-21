@@ -1195,7 +1195,7 @@ opticsVariables(FuncDataBase& Control,
   TGen.setSideCF<setVariable::CF40>(10.0); // [10]
   TGen.generateTube(Control,opticsName+"TriggerUnit");
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve4");
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve4"); // [10]
 
   const double bremColl1Length = 29.0; // [10]
   const double bremcoll1Height = 44.0; // [10]
@@ -1252,7 +1252,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,opticsName+"HighPassFilter",
     highPassFilterLength);
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5");
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5"); // [10]
 
   const double bellowCDLength = 8.0; // Dummy
   // Offset of the slit tube along the Y axis.
@@ -1277,24 +1277,25 @@ opticsVariables(FuncDataBase& Control,
 
   opticsSlitPackage(Control,opticsName, slitTubeTopPortOffsetY);
 
-  GateGen.setCylCF<setVariable::CF40>();
-  GateGen.setLength(1.1);
-  GateGen.generateValve(Control,opticsName+"GateB",0.0,0);
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [10]
+
   BellowGen.generateBellow(Control,opticsName+"BellowE",16.0);
 
   monoPackage(Control,opticsName);
 
-  GateGen.generateValve(Control,opticsName+"GateC",0.0,0);
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [10]
 
   viewPackage(Control,opticsName);
 
-  GateGen.setLength(3.1);
-  GateGen.generateValve(Control,opticsName+"GateD",0.0,0);
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [10]
+
   BellowGen.generateBellow(Control,opticsName+"BellowF",10.0);
 
   mirrorMonoPackage(Control,opticsName);
   BellowGen.generateBellow(Control,opticsName+"BellowG",16.0);
 
+  GateGen.setCylCF<setVariable::CF40>();
+  GateGen.setLength(3.1);
   GateGen.generateValve(Control,opticsName+"GateE",0.0,0);
 
   beamStopPackage(Control,opticsName);
