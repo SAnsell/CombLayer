@@ -365,7 +365,7 @@ heatDumpTableToyama(FuncDataBase& Control,
   Control.addVariable(name+"PortThick",1.1-1); // to make 7.2 cm length as in [5]
   Control.addVariable(name+"PortRadius",setVariable::CF40::innerRadius); // [5]
   Control.addVariable(name+"PortFlangeRadius",setVariable::CF40::flangeRadius); // [5]
-  Control.addVariable(name+"Radius",3.2); // [5], add 2 mm to avoid gap b/w ports
+  Control.addVariable(name+"Radius",3.2); // [5]
   Control.addVariable(name+"WallThick",0.3); // [5]
   Control.addVariable(name+"TopRadius",5.25); // [5]
 
