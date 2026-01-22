@@ -114,6 +114,7 @@ namespace danmaxVar
     const double whiteBeamSlitsTopJawY = 2622.75;
     const double beamViewer1Y = 2647.72; // [12]
     const double HDCMY = 2715.50; // [12]
+    const double beamViewer2Y = 2784.0; // [12]
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -1098,7 +1099,7 @@ opticsSlitPackage(FuncDataBase& Control,
   const std::string sName=opticsName+"SlitTube";
   const double tubeLength = 48.5; // Outer length [10]
   PortTubeGen.setPipeCF<CF200>(); // [10]
-  // [10] TODO: This is actually only the thickness of the hull.
+  // [10] TODO: This is only the thickness of the hull.
   // The front and back walls are actually 1 mm thicker, but the present 
   // PortTubeGenerator does not distinguish between these walls.
   const double wallThick = 0.2;
