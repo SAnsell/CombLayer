@@ -424,13 +424,16 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"VoidMat", "Void");
 
   // dummy, adjusted such that ion pump is centered in Experimental Hutch 2.
+  // (Note that the shielding box around it is not exactly centered in the hutch)
   // PipeA length = 
-  //    Expt. Hutch 2 length / 2.0
-  //    - length of JoinPipeB inside Expt. Hutch 2
-  //    - ion pump length / 2.0
-  //    - FlangeA length
-  //    - BellowA length
-  PipeGen.generatePipe(Control,beamName+"PipeA",236.9);
+  //    Expt. Hutch 2 length (545.8 cm) / 2.0
+  //    - length of JoinPipeB inside Expt. Hutch 2 (10.0 cm) (*)
+  //    - ion pump length (32.59 cm) / 2.0
+  //    - FlangeA length (5.0 cm)
+  //    - BellowA length (16.0 cm)
+  //
+  // (*) see comment there
+  PipeGen.generatePipe(Control,beamName+"PipeA",225.605);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
@@ -1565,7 +1568,7 @@ DANMAXvariables(FuncDataBase& Control)
 
   PipeGen.setCF<setVariable::CF40>();
   // dummy, adjusted such that JoinPipeB extends 100 mm into Experimental Hutch 2.
-  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",78.47);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",64.8);
 
   danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
