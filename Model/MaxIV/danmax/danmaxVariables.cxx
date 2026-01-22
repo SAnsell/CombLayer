@@ -1093,7 +1093,7 @@ opticsSlitPackage(FuncDataBase& Control,
   setVariable::BeamPairGenerator BeamMGen;
 
   const std::string sName=opticsName+"SlitTube";
-  const double tubeLength = 48.5; // Inner length [10]
+  const double tubeLength = 48.5; // Outer length [10]
   PortTubeGen.setPipeCF<CF200>(); // [10]
   // [10] TODO: This is actually only the thickness of the hull.
   // The front and back walls are actually 1 mm thicker, but the present 
@@ -1104,11 +1104,11 @@ opticsSlitPackage(FuncDataBase& Control,
   PortTubeGen.setPortCF<CF40>(); // [10]
   const double topPortPipeToSlitTubeFront = 4.4; // [10]
   // Front port length determined by the Y offset.
-  const double frontPortLength = topPortOffsetY-CF150::outerRadius-topPortPipeToSlitTubeFront;
-  const double backPortLength = 2.8; // [10]
+  const double frontPortLength = topPortOffsetY-CF150::outerRadius-topPortPipeToSlitTubeFront; 
+  const double backPortLength = 2.5; // [10] 
   PortTubeGen.setPortLength(frontPortLength, backPortLength);
-  const double totalLength = tubeLength+2.0*wallThick+frontPortLength+backPortLength;
-  PortTubeGen.generateTube(Control,sName,0.0,tubeLength);
+  const double totalLength = tubeLength+frontPortLength+backPortLength;
+  PortTubeGen.generateTube(Control,sName,0.0,tubeLength-2.0*wallThick);
 
   Control.addVariable(sName+"NPorts",4);
   // [10] Length of Port0 and Port1 (they are the same within a few millimeters).
@@ -1270,7 +1270,7 @@ opticsVariables(FuncDataBase& Control,
   // Front Port Length 
   // + Distance Top Port Pipe to Slit Tube Front 
   // + Top Port Radius
-  const double slitTubeTopPortOffsetY = 2.8+4.4+CF150::outerRadius; // [10]
+  const double slitTubeTopPortOffsetY = 2.5+4.4+CF150::outerRadius; // [10]
 
   // Laue monochromator
   PipeGen.setNoWindow();
@@ -1283,7 +1283,8 @@ opticsVariables(FuncDataBase& Control,
   );
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
-  const double slitTubeTotalLength = opticsSlitPackage(Control,opticsName,slitTubeTopPortOffsetY);
+  const double slitTubeTotalLength = opticsSlitPackage(
+    Control,opticsName,slitTubeTopPortOffsetY);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [10]
   // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [10]
