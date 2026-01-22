@@ -92,6 +92,7 @@
 // [11] https://www.gammavacuum.com/detail/index/sArticle/3381/number/100LCV6SSCNN/sCategory/17668 (accessed on 2026-01-14)
 // [12] DanMAX Beamline, FMB Oxford Drawing ABM0070
 // [13] DanMAX Diagnostics, Functional Specification, FMB Oxford S3716, Rev. 5.0
+// [14] DanMAX HDCM, Funcation Specification, FMB Oxford S3716, Rev. 6.0
 
 namespace setVariable
 {
@@ -112,6 +113,7 @@ namespace danmaxVar
     // port.
     const double whiteBeamSlitsTopJawY = 2622.75;
     const double beamViewer1Y = 2647.72; // [12]
+    const double HDCMY = 2715.50; // [12]
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -918,13 +920,19 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   setVariable::DCMTankGenerator MBoxGen;
   setVariable::MonoBlockXstalsGenerator MXtalGen;
 
-  // ystep/width/height/depth/length
-  //
-  MBoxGen.setCF<CF40>();   // set ports
-  MBoxGen.setPortLength(7.5,7.5); // La/Lb
-  MBoxGen.setBPortOffset(-0.6,0.0);    // note -1mm from crystal offset
+  const double HDCMTotalLength = 75.0; // [14]
+  const double HDCMPortALength = 4.5; // [10]
+  const double monoVesselWallThick = 0.5; // [10]
+  const double monoVesselRadius = 30.0; // [10]
+  MBoxGen.setCF<CF40>(); // [10]
+  MBoxGen.setPortLength(
+    HDCMPortALength,HDCMTotalLength-HDCMPortALength
+    -2.0*monoVesselWallThick-2.0*monoVesselRadius
+  );
+  MBoxGen.setBPortOffset(-0.6,0.0); // note -1mm from crystal offset
   // radius : Heigh / depth  [need heigh = 0]
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",30.0,0.0,16.0);
+  MBoxGen.generateBox(Control,monoKey+"MonoVessel",monoVesselRadius,0.0,17.5); // [10]
+  Control.addVariable(monoKey+"MonoVesselWallThick", 0.5);
 
   //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
   //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
@@ -1064,7 +1072,7 @@ shieldVariables(FuncDataBase& Control)
 }
 
 
-void
+double
 opticsSlitPackage(FuncDataBase& Control,
 		  const std::string& opticsName, const double topPortOffsetY)
   /*!
@@ -1085,11 +1093,11 @@ opticsSlitPackage(FuncDataBase& Control,
   setVariable::BeamPairGenerator BeamMGen;
 
   const std::string sName=opticsName+"SlitTube";
-  const double tubeLength = 48.5; // Outer length [10]
+  const double tubeLength = 48.5; // Inner length [10]
   PortTubeGen.setPipeCF<CF200>(); // [10]
   // [10] TODO: This is actually only the thickness of the hull.
-  // The front and back walls are actually 1 mm thicker, but the present PortTubeGenerator 
-  // does not distinguish between these walls.
+  // The front and back walls are actually 1 mm thicker, but the present 
+  // PortTubeGenerator does not distinguish between these walls.
   const double wallThick = 0.2;
   PortTubeGen.setWallThick(0.2);
 
@@ -1149,7 +1157,7 @@ opticsSlitPackage(FuncDataBase& Control,
       BeamMGen.generateMount(Control,fname,0);  // outer of beam
     }
 
-  return;
+  return totalLength;
 }
 
 void
@@ -1275,12 +1283,18 @@ opticsVariables(FuncDataBase& Control,
   );
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
-  opticsSlitPackage(Control,opticsName, slitTubeTopPortOffsetY);
+  const double slitTubeTotalLength = opticsSlitPackage(Control,opticsName,slitTubeTopPortOffsetY);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [10]
   // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [10]
 
-  BellowGen.generateBellow(Control,opticsName+"BellowE",16.0);
+  // Distance from the front plane to the center of the mono vessel:
+  // port A length + vessel radius + vessel wall thickness
+  const double HDCMOffsetY = 4.5 + 30.0 + 0.5;
+  BellowGen.generateBellow(
+    Control,opticsName+"BellowE",
+    danmaxVar::absY::HDCMY-danmaxVar::absY::whiteBeamSlitsTopJawY-(slitTubeTotalLength-slitTubeTopPortOffsetY)-valve3Length-HDCMOffsetY
+  );
 
   monoPackage(Control,opticsName);
 
