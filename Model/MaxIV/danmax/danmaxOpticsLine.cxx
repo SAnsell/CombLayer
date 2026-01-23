@@ -524,24 +524,30 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
    			   slitTube->getCell("Void"),
    			   Geometry::Vec3D(0,1,0));
 
-  slitTube->splitObject(System,1501,outerCell,
+  std::vector<int> splitCells = slitTube->splitObject(System,1501,outerCell,
 			Geometry::Vec3D(0,0,0),
 			Geometry::Vec3D(0,0,1));
-  cellIndex++;  // remember creates an extra cell in  primary
+  cellIndex++;  // remember creates an extra cell in primary
 
+  // Since the jaws have large xy offsets, they partially end up in the void cells of 
+  // the other ports.
+  const constructSystem::portItem& port0=slitTube->getPort(0);
+  jaws[0]->addInsertCell("SupportA",port0.getCell("Void"));
+  jaws[0]->addInsertCell("SupportA",slitTube->getCell("SplitVoid",0));
+  jaws[0]->addInsertCell("BlockA",slitTube->getCell("SplitVoid",0));
+  jaws[0]->addInsertCell("SupportB",port0.getCell("Void"));
+  jaws[0]->addInsertCell("SupportB",slitTube->getCell("SplitVoid",1));
+  jaws[0]->addInsertCell("BlockB",slitTube->getCell("SplitVoid",1));
+  jaws[0]->createAll(System,*slitTube,0,port0,port0.getSideIndex("InnerPlate"));
 
-  for(size_t i=0;i<jaws.size();i++)
-    {
-      const constructSystem::portItem& PI=slitTube->getPort(i);
-      jaws[i]->addInsertCell("SupportA",PI.getCell("Void"));
-      jaws[i]->addInsertCell("SupportA",slitTube->getCell("SplitVoid",i));
-      jaws[i]->addInsertCell("SupportB",PI.getCell("Void"));
-      jaws[i]->addInsertCell("SupportB",slitTube->getCell("SplitVoid",i));
-      jaws[i]->addInsertCell("BlockA",slitTube->getCell("SplitVoid",i));
-      jaws[i]->addInsertCell("BlockB",slitTube->getCell("SplitVoid",i));
-      jaws[i]->createAll(System,*slitTube,0,
-			 PI,PI.getSideIndex("InnerPlate"));
-    }
+  const constructSystem::portItem& port1=slitTube->getPort(1);
+  jaws[1]->addInsertCell("SupportA",port1.getCell("Void"));
+  jaws[1]->addInsertCell("SupportA",slitTube->getCell("SplitVoid",0));
+  jaws[1]->addInsertCell("BlockA",slitTube->getCell("SplitVoid",0));
+  jaws[1]->addInsertCell("SupportB",port1.getCell("Void"));
+  jaws[1]->addInsertCell("SupportB",slitTube->getCell("SplitVoid",1));
+  jaws[1]->addInsertCell("BlockB",slitTube->getCell("SplitVoid",1));
+  jaws[1]->createAll(System,*slitTube,0,port1,port1.getSideIndex("InnerPlate"));
 
   return;
 }

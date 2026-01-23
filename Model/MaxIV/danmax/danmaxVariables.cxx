@@ -1152,11 +1152,17 @@ opticsSlitPackage(FuncDataBase& Control,
   BeamMGen.setThread(0.5,"Nickel"); // Estimated
   BeamMGen.setLift(0.6, 0.6); // "Maximum aperture" given as 10 mm x 10 mm [13]
   BeamMGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
+  // Width, height, and angle from [13]
+  // Thickness: Estimated from the given coolant-connection radius of 8 mm in [13]
+  // Material: TODO: Should be Tungsten Carbide [13]
   BeamMGen.setBlock(5.0,3.5,1.0,0.0,"Tungsten"); // [13]
 
-  BeamMGen.setXYStep(0.0,3.6,0.0,-3.6);
+  // Seen from upstream, the beam hits the jaws in the following order [10]:
+  // Top (JawX B) -> Right (JawZ A) -> Bottom (JawX A) -> Left (JawZ B)
+  const double bladeOffset = 3.6; // [10]
+  BeamMGen.setXYStep(0.0,bladeOffset,0.0,-bladeOffset);
   BeamMGen.generateMount(Control,opticsName+"JawX",0);
-  BeamMGen.setXYStep(-3.6,0.0,3.6,0.0);
+  BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
   BeamMGen.generateMount(Control,opticsName+"JawZ",0);
 
   return totalLength;
