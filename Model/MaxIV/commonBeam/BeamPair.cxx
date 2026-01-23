@@ -188,7 +188,8 @@ BeamPair::createSurfaces()
 
   // BLOCK A : [UPPER]
   // action in Y direction:
-  const Geometry::Vec3D bA(bOrigin+X*xStepA+Z*yStepA-Y*gapA);
+  const double blockAY = upFlag ? gapA + outLiftA : gapA;
+  const Geometry::Vec3D bA(bOrigin+X*xStepA+Z*yStepA-Y*blockAY);
   const Geometry::Vec3D wAxis=(bY*Y).unit();
 
   
@@ -201,7 +202,8 @@ BeamPair::createSurfaces()
 
   // BLOCK B : [LOWER]
   // action in Y direction:
-  const Geometry::Vec3D bB(bOrigin+X*xStepB+Z*yStepB+Y*gapB);
+  const double blockBY = upFlag ? gapB + outLiftB : gapB;
+  const Geometry::Vec3D bB(bOrigin+X*xStepB+Z*yStepB+Y*blockBY);
   
   ModelSupport::buildPlane(SMap,buildIndex+11,bB-bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+12,bB+bY*(length/2.0),bY);

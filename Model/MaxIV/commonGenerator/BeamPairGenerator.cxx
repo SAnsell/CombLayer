@@ -158,7 +158,7 @@ BeamPairGenerator::generateMount(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param blockType :: Block position [0:None,1:Mid,2:lower edge]		    \param upFlag :: true if item open/withdrawn
+    \param upFlag :: true if item open/withdrawn
   */
 {
   ELog::RegMethod RegA("BeamPairGenerator","generatorMount");
