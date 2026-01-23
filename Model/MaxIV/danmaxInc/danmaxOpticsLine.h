@@ -129,6 +129,8 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::DCMTank> monoVessel;
   /// Grating
   std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
+  /// Bellows between monochromator and Valve7
+  std::shared_ptr<constructSystem::Bellows> bellowAfterMono;
   /// Gate value BL-V3
   std::shared_ptr<xraySystem::CylGateValve> valve7;
   /// Beam viewer 2

@@ -140,7 +140,7 @@ void exptHut2Variables(FuncDataBase&,const std::string&);
 
 void lensPackage(FuncDataBase&,const std::string&);
 void mirrorMonoPackage(FuncDataBase&,const std::string&);
-void monoPackage(FuncDataBase&,const std::string&);
+double monoPackage(FuncDataBase&,const std::string&);
 void viewPackage(FuncDataBase&,const std::string&);
 void viewBPackage(FuncDataBase&,const std::string&);
 void beamStopPackage(FuncDataBase&,const std::string&);
@@ -910,7 +910,7 @@ revBeamStopPackage(FuncDataBase& Control,
   return;
 }
 
-void
+double
 monoPackage(FuncDataBase& Control,const std::string& monoKey)
   /*!
     Builds the variables for the mono packge
@@ -955,7 +955,8 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
 
 
-  return;
+  return HDCMTotalLength-HDCMPortALength
+    -monoVesselWallThick-monoVesselRadius;
 }
 
 void
@@ -1310,7 +1311,13 @@ opticsVariables(FuncDataBase& Control,
     -(slitTubeTotalLength-slitTubeTopPortOffsetY)-valve3Length-HDCMOffsetY
   );
 
-  monoPackage(Control,opticsName);
+  const double HDCMCenterToBack = monoPackage(Control,opticsName);
+
+  BellowGen.generateBellow(
+    Control,opticsName+"BellowAfterMono",
+    danmaxVar::absY::beamViewer2Y-danmaxVar::absY::HDCMY
+    -valve3Length-10.6-HDCMCenterToBack
+  );
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [10]
   // Angle roughly adjusted to [10]. Found it difficult to read off from the model.

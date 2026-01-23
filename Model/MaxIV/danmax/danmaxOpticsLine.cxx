@@ -133,6 +133,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
+  bellowAfterMono(new constructSystem::Bellows(newName+"BellowAfterMono")),
   valve7(new xraySystem::CylGateValve(newName+"Valve7")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
@@ -192,6 +193,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowE);
   OR.addObject(monoVessel);
   OR.addObject(mbXstals);
+  OR.addObject(bellowAfterMono),
   OR.addObject(valve7);
   OR.addObject(viewTube);
   OR.addObject(viewTubeScreen);
@@ -684,9 +686,11 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructMono(System,*bellowE,"back");
 
+  constructSystem::constructUnit
+    (System,buildZone,*monoVessel,"back",*bellowAfterMono);
 
   constructSystem::constructUnit
-    (System,buildZone,*monoVessel,"back",*valve7);
+    (System,buildZone,*bellowAfterMono,"back",*valve7);
 
   constructViewScreen(System,*valve7,"back");
 
