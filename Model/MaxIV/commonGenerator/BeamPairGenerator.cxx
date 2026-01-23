@@ -52,6 +52,7 @@ namespace setVariable
 BeamPairGenerator::BeamPairGenerator() :
   outLiftA(7.0),outLiftB(5.0),
   gapA(0.3),gapB(0.3),supportRadius(0.5),
+  waterPipesHorizontal(0),nWaterPipes(3),
   waterRadius(0.3),
   waterMat("H2O"),supportMat("Nickel"),
   xStepA(0.4),yStepA(-0.8),
@@ -132,6 +133,16 @@ BeamPairGenerator::setBlock(const double W,const double H,
   return;
 }
 
+void BeamPairGenerator::setWaterPipes(const int n, const int horizontal){
+/*!
+    Configure water piping
+    \param n :: Number of pipes
+    \param horizontal :: Orientation of pipes
+   */
+  nWaterPipes = n;
+  waterPipesHorizontal = horizontal;
+}
+
 void
 BeamPairGenerator::setXYStep(const double xA,const double yA,
 			     const double xB,const double yB)
@@ -173,6 +184,8 @@ BeamPairGenerator::generateMount(FuncDataBase& Control,
   Control.addVariable(keyName+"GapB",gapB);
 
   Control.addVariable(keyName+"WaterRadius",waterRadius);
+  Control.addVariable(keyName+"WaterPipesHorizontal",waterPipesHorizontal);
+  Control.addVariable(keyName+"NWaterPipes",nWaterPipes);
   Control.addVariable(keyName+"WaterMat",waterMat);
 
   Control.addVariable(keyName+"SupportRadius",supportRadius);

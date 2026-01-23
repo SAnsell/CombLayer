@@ -62,6 +62,12 @@ class BeamPair :
   double width;            ///< width accross beam
   double length;           ///< Thickness in normal direction to reflection
 
+  ///< Determines whether water pipes are horizontal (length = block width) or 
+  ///< vertical (length = block height)
+  int waterPipesHorizontal;
+  ///< Number of water pipes.
+  ///< They will be built such that they are evenly distributed inside the blocks.
+  int nWaterPipes;
   double waterRadius;      ///< inner water pipe radius
 
   int blockMat;            ///< block material

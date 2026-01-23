@@ -115,6 +115,8 @@ BeamPair::populate(const FuncDataBase& Control)
   supportRadius=Control.EvalVar<double>(keyName+"SupportRadius");
   supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
 
+  waterPipesHorizontal=Control.EvalVar<int>(keyName+"WaterPipesHorizontal");
+  nWaterPipes=Control.EvalVar<int>(keyName+"NWaterPipes");
   waterRadius=Control.EvalVar<double>(keyName+"WaterRadius");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
@@ -213,17 +215,29 @@ BeamPair::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+16,bB+Y*(height),Y);
 
   // water if present
-  ModelSupport::buildCylinder(SMap,buildIndex+107,bA,bZ,waterRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+117,bA-wAxis*(width/4.0),bZ,waterRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+127,bA+wAxis*(width/4.0),bZ,waterRadius);
-  
-  ModelSupport::buildCylinder(SMap,buildIndex+207,bB,bZ,waterRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+217,bB-wAxis*(width/4.0),bZ,waterRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+227,bB+wAxis*(width/4.0),bZ,waterRadius);
+  Geometry::Vec3D axis, b0A, b0B, flowDir;
+  double dim;
+  if(waterPipesHorizontal){
+    axis = Y;
+    b0A = bA-Y*(height/2.0);
+    b0B = bB+Y*(height/2.0);
+    flowDir = bX;
+    dim = height;
+  } else {
+    axis = wAxis;
+    b0A = bA;
+    b0B = bB;
+    flowDir = bZ;
+    dim = width;
+  }
+  for(int i = 0; i < nWaterPipes; ++i){
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+107+i*10,
+        b0A-axis*(-dim/2.0 + dim/(nWaterPipes+1)*(i+1)),flowDir,waterRadius);
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+207+i*10,
+        b0B-axis*(-dim/2.0 + dim/(nWaterPipes+1)*(i+1)),flowDir,waterRadius);
+  }
   
   
   // Support tube
@@ -248,27 +262,25 @@ BeamPair::createObjects(Simulation& System)
 
   HeadRule HR;
 
+  std::string blockAHR = "1 -2 3 -4 5 -6";
+  std::string blockBHR = "11 -12 13 -14 15 -16";
+
+  for(int i = 0; i < nWaterPipes; ++i){
+    blockAHR += (" " + std::to_string(107+i*10));
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,(waterPipesHorizontal ? "3 -4 -" : "5 -6 -") + std::to_string(107+i*10));
+    makeCell("TubeA",System,cellIndex++,waterMat,0.0,HR);
+    blockBHR += (" " + std::to_string(207+i*10));
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,(waterPipesHorizontal ? "13 -14 -" : "15 -16 -")+std::to_string(207+i*10));
+    makeCell("TubeB",System,cellIndex++,waterMat,0.0,HR);
+  }
+
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1 -2 3 -4 5 -6 107 117 127" );
+    (SMap,buildIndex,blockAHR);
   makeCell("BlockA",System,cellIndex++,blockMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"11 -12 13 -14 15 -16 207 217 227" );
+    (SMap,buildIndex,blockBHR);
   makeCell("BlockB",System,cellIndex++,blockMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -107" );
-  makeCell("TubeA",System,cellIndex++,waterMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -117" );
-  makeCell("TubeA",System,cellIndex++,waterMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6 -127" );
-  makeCell("TubeA",System,cellIndex++,waterMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -207" );
-  makeCell("TubeB",System,cellIndex++,waterMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -217" );
-  makeCell("TubeB",System,cellIndex++,waterMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -227" );
-  makeCell("TubeB",System,cellIndex++,waterMat,0.0,HR);
 
   // outer surfaces
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6" );
@@ -284,7 +296,6 @@ BeamPair::createObjects(Simulation& System)
   makeCell("SupportB",System,cellIndex++,supportMat,0.0,HR*mountSurfHR);
    
   // final exclude:
-  //  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-117 -6");
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 -5 " );
   addOuterSurf("SupportA",HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 -15" );

@@ -45,8 +45,14 @@ class BeamPairGenerator
   double gapB;             ///< Gap from centre point (base +ve down)
   
   double supportRadius;    ///< Radius of support
+
+  ///< Determines whether water pipes are horizontal (length = block width) or 
+  ///< vertical (length = block height)
+  int waterPipesHorizontal;
+  ///< Number of water pipes.
+  ///< They will be built such that they are evenly distributed inside the blocks.
+  int nWaterPipes;
   double waterRadius;    ///< Radius of support  
- 
   std::string waterMat;    ///< water material
   std::string supportMat;  ///< support material
 
@@ -74,6 +80,7 @@ class BeamPairGenerator
   void setThread(const double,const std::string&);
   void setBlock(const double,const double,
 		      const double,const double,const std::string&);
+  void setWaterPipes(const int, const int);
   void generateMount(FuncDataBase&,const std::string&,
 		     const int) const;
 
