@@ -1156,6 +1156,7 @@ opticsSlitPackage(FuncDataBase& Control,
   // Thickness: Estimated from the given coolant-connection radius of 8 mm in [13]
   // Material: TODO: Should be Tungsten Carbide [13]
   BeamMGen.setBlock(5.0,3.5,1.0,0.0,"Tungsten"); // [13]
+  BeamMGen.setWaterPipes(2, 1);
 
   // Seen from upstream, the beam hits the jaws in the following order [10]:
   // Top (JawX B) -> Right (JawZ A) -> Bottom (JawX A) -> Left (JawZ B)
