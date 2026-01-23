@@ -1132,7 +1132,8 @@ opticsSlitPackage(FuncDataBase& Control,
   const Geometry::Vec3D beamViewer1(
     0.0,
     frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius
-    +danmaxVar::absY::beamViewer1Y-danmaxVar::absY::whiteBeamSlitsTopJawY-totalLength/2.0,
+    +danmaxVar::absY::beamViewer1Y
+    -danmaxVar::absY::whiteBeamSlitsTopJawY-totalLength/2.0,
     0.0
   );  
 
@@ -1148,18 +1149,15 @@ opticsSlitPackage(FuncDataBase& Control,
   PItemGen.generatePort(Control,sName+"Port3",beamViewer1,ZVec);
 
   // Jaw units:
-  BeamMGen.setThread(0.5,"Nickel");
-  BeamMGen.setLift(0.0,2.5);
-  BeamMGen.setGap(1.0,1.0);
-  BeamMGen.setXYStep(0.6,0.0,-0.6,0);
-  BeamMGen.setBlock(4.0,2.0,1.0,0.0,"Tungsten");
+  BeamMGen.setThread(0.5,"Nickel"); // Estimated
+  BeamMGen.setLift(0.6, 0.6); // "Maximum aperture" given as 10 mm x 10 mm [13]
+  BeamMGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
+  BeamMGen.setBlock(5.0,3.5,1.0,0.0,"Tungsten"); // [13]
 
-  const std::string jawKey[]={"JawX","JawZ"};
-  for(size_t i=0;i<2;i++)
-    {
-      const std::string fname=opticsName+jawKey[i];
-      BeamMGen.generateMount(Control,fname,0);  // outer of beam
-    }
+  BeamMGen.setXYStep(0.0,3.6,0.0,-3.6);
+  BeamMGen.generateMount(Control,opticsName+"JawX",0);
+  BeamMGen.setXYStep(-3.6,0.0,3.6,0.0);
+  BeamMGen.generateMount(Control,opticsName+"JawZ",0);
 
   return totalLength;
 }
