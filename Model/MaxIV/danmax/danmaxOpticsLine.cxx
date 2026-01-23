@@ -329,11 +329,13 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   viewTube->setOuterVoid();
   viewTube->createAll(System,initFC,sideName);
-  viewTube->intersectPorts(System,1,2);
+  viewTube->intersectPorts(System,0,2);
 
   const constructSystem::portItem& VPA=viewTube->getPort(0);
   const constructSystem::portItem& VPB=viewTube->getPort(1);
   const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
+
+  VPC.insertInCell(System,buildZone.getLastCell("Unit"));
 
   int outerCell=buildZone.createUnit
     (System,VPB,VPB.getSideIndex("OuterPlate"));
@@ -342,10 +344,10 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   std::vector<int> cellUnit;
   cellUnit.push_back(outerCell);
 
-  const Geometry::Vec3D Axis=viewTube->getY()*(VPB.getY()+VPC.getY())/2.0;
+  const Geometry::Vec3D Axis=viewTube->getY()*(VPA.getY()+VPC.getY())/2.0;
 
   buildZone.splitObjectAbsolute(System,1501,"Unit",
-			      viewTube->getCentre(),VPB.getY());
+			      viewTube->getCentre(),-VPB.getY());
   cellUnit.push_back(buildZone.getLastCell("Unit"));
   buildZone.splitObjectAbsolute(System,1502,"Unit",
 			      viewTube->getCentre(),Axis);
@@ -353,9 +355,9 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
 
   viewTube->insertMainInCell(System,cellUnit);
 
-  VPA.insertInCell(System,buildZone.getLastCell("Unit"));
-  viewTube->insertPortInCell(System,0,cellUnit[0]);
-  viewTube->insertPortInCell(System,1,cellUnit[1]);
+  VPB.insertInCell(System,buildZone.getLastCell("Unit"));
+  viewTube->insertPortInCell(System,0,cellUnit[1]);
+  viewTube->insertPortInCell(System,1,cellUnit[0]);
   viewTube->insertPortInCell(System,2,cellUnit[2]);
 
   cellIndex+=3;
@@ -370,7 +372,6 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
 
   outerCell=constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*valve8);
-  VPC.insertInCell(System,outerCell);
   return;
 }
 
