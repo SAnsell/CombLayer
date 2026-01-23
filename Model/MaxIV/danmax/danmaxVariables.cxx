@@ -652,7 +652,7 @@ exptHut2Variables(FuncDataBase& Control,
 }
 
 void
-viewPackage(FuncDataBase& Control,const std::string& viewKey)
+viewPackage(FuncDataBase& Control,const std::string& viewKey, const double totalLength)
   /*!
     Builds the variables for the ViewTube
     \param Control :: Database
@@ -669,31 +669,41 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
 
   // will be rotated vertical
   const std::string pipeName=viewKey+"ViewTube";
-  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCF<CF100>(); // [10]
   SimpleTubeGen.setCap();
-  // up 15cm / 32.5cm down : Measured
-  SimpleTubeGen.generateTube(Control,pipeName,47.5);
+  const double mainTubeAboveOpticalAxis = 15.0; // [10]
+  const double mainTubeBelowOpticalAxis = 32.5; // [10]
+  const double offsetZ = (mainTubeBelowOpticalAxis-mainTubeAboveOpticalAxis)/2.0;
+  SimpleTubeGen.generateTube(
+    Control,pipeName,mainTubeAboveOpticalAxis+mainTubeBelowOpticalAxis);
 
 
-  Control.addVariable(pipeName+"NPorts",3);   // beam ports (lots!!)
+  Control.addVariable(pipeName+"NPorts",3);
 
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+5.0);
+  const double connectPortLength = (totalLength-2.0*CF100::outerRadius)/2.0;
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+connectPortLength);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,offsetZ,0),
 			Geometry::Vec3D(0,0,1));
   PItemGen.generatePort(Control,pipeName+"Port1",
-			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,offsetZ,0),
 			Geometry::Vec3D(0,0,-1));
   PItemGen.setPlate(0.0,"SteelUnknownGrade");
-  PItemGen.setCF<setVariable::CF40>(sqrt(2.0)*CF100::outerRadius+8.0);
+  PItemGen.setCF<setVariable::CF40>(sqrt(2.0)*CF100::outerRadius+10.0); // [10]
   PItemGen.generatePort(Control,pipeName+"Port2",
-			Geometry::Vec3D(0,8.75,0),
+			Geometry::Vec3D(0,offsetZ,0),
 			Geometry::Vec3D(-1,0,-1));
 
   FlangeGen.setNoPlate();
-  FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);
-  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);  // in beam
+  // Most blade data from [13].
+  //
+  // Angle from [10]. Orientation is not correct. Blade is actually perpendicular to mount.
+  // However, the plate is hit at a 45-degree angle by the beam as in reality.
+  //
+  // Material is actually given as "pCVD Diamond" in [13].
+  FlangeGen.setBlade(3.3,1.3,0.2,-45.0,"Diamond",1);
+  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);
 
   return;
 }
@@ -1313,17 +1323,18 @@ opticsVariables(FuncDataBase& Control,
 
   const double HDCMCenterToBack = monoPackage(Control,opticsName);
 
+  const double beamViewer2Length = 19.8; // [10]
   BellowGen.generateBellow(
     Control,opticsName+"BellowAfterMono",
     danmaxVar::absY::beamViewer2Y-danmaxVar::absY::HDCMY
-    -valve3Length-10.6-HDCMCenterToBack
+    -valve3Length-beamViewer2Length/2.0-HDCMCenterToBack
   );
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [10]
   // Angle roughly adjusted to [10]. Found it difficult to read off from the model.
   // Control.addVariable(opticsName+"Valve7YAngle", -20.0);
 
-  viewPackage(Control,opticsName);
+  viewPackage(Control,opticsName,beamViewer2Length);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [10]
   // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [10]
