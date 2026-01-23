@@ -1226,6 +1226,9 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowA",
     danmaxVar::absY::bremColl1Y-bremColl1Length/2.0-danmaxVar::absY::valve4BackY);
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
+  // Reset bellow step to default value [10]. Large bellow step of InitBellow and 
+  // BellowA looked odd on the short bellows.
+  BellowGen.setBellowStep(1.0);
   BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
 
   const std::string bremColl1TubeName = opticsName+"BremColl1Tube";
@@ -1303,7 +1306,8 @@ opticsVariables(FuncDataBase& Control,
   const double HDCMOffsetY = 4.5 + 30.0 + 0.5;
   BellowGen.generateBellow(
     Control,opticsName+"BellowE",
-    danmaxVar::absY::HDCMY-danmaxVar::absY::whiteBeamSlitsTopJawY-(slitTubeTotalLength-slitTubeTopPortOffsetY)-valve3Length-HDCMOffsetY
+    danmaxVar::absY::HDCMY-danmaxVar::absY::whiteBeamSlitsTopJawY
+    -(slitTubeTotalLength-slitTubeTopPortOffsetY)-valve3Length-HDCMOffsetY
   );
 
   monoPackage(Control,opticsName);
