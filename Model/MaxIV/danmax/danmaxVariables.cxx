@@ -117,6 +117,7 @@ namespace danmaxVar
     const double HDCMY = 2715.50;
     const double beamViewer2Y = 2784.0;
     const double MLMY = 2834.8; // Position of the view port on the top
+    const double whiteBeamStopY = 2954.83;
     const double bremColl2Y = 2965.03;
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
@@ -1353,7 +1354,7 @@ opticsVariables(FuncDataBase& Control,
   viewPackage(Control,opticsName,beamViewer2Length);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [10]
-  // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [10]
+  // Control.addVariable(opticsName+"Valve8YAngle", 90.0); // [10]
 
   const double MLMFrontToTopViewPort = 21.95; // [10]
   BellowGen.generateBellow(Control,opticsName+"BellowF",
@@ -1365,9 +1366,9 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName, MLMFrontToTopViewPort);
   BellowGen.generateBellow(Control,opticsName+"BellowG",16.0);
 
-  GateGen.setCylCF<setVariable::CF40>();
-  GateGen.setLength(3.1);
-  GateGen.generateValve(Control,opticsName+"GateE",0.0,0);
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve9"); // [10]
+  // Angle estimated from [10]
+  // Control.addVariable(opticsName+"Valve9YAngle", 135.0);
 
   beamStopPackage(Control,opticsName);
 
@@ -1379,6 +1380,8 @@ opticsVariables(FuncDataBase& Control,
 
   lensPackage(Control,opticsName);
 
+  GateGen.setCylCF<setVariable::CF40>();
+  GateGen.setLength(3.1);
   GateGen.generateValve(Control,opticsName+"GateF",0.0,0);
   BellowGen.generateBellow(Control,opticsName+"BellowJ",10.0);
 

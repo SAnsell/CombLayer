@@ -142,7 +142,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
   MLM(new xraySystem::MLMono(newName+"MLM")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
-  gateE(new constructSystem::GateValveCylinder(newName+"GateE")),
+  valve9(new xraySystem::CylGateValve(newName+"Valve9")),
   beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube")),
   beamStop(new xraySystem::BremBlock(newName+"BeamStop")),
   slitsA(new constructSystem::JawValveTube(newName+"SlitsA")),
@@ -202,7 +202,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(MLMVessel);
   OR.addObject(MLM);
   OR.addObject(bellowG);
-  OR.addObject(gateE);
+  OR.addObject(valve9);
   OR.addObject(beamStopTube);
   OR.addObject(beamStop);
   OR.addObject(slitsA);
@@ -703,9 +703,9 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*MLMVessel,"back",*bellowG);
 
   constructSystem::constructUnit
-    (System,buildZone,*bellowG,"back",*gateE);
+    (System,buildZone,*bellowG,"back",*valve9);
 
-  constructBeamStopTube(System,*gateE,"back");
+  constructBeamStopTube(System,*valve9,"back");
 
   constructSystem::constructUnit
     (System,buildZone,*slitsAOut,"back",*bellowH);

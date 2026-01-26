@@ -148,7 +148,7 @@ class danmaxOpticsLine :
   /// bellows from second mono
   std::shared_ptr<constructSystem::Bellows> bellowG;
   /// Gate value BL-V5
-  std::shared_ptr<constructSystem::GateValveCylinder> gateE;
+  std::shared_ptr<xraySystem::CylGateValve> valve9;
   /// BeamStopTube
   std::shared_ptr<constructSystem::PipeTube> beamStopTube;
   /// BeamStopBlock
