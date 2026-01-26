@@ -225,12 +225,12 @@ DANMAX::build(Simulation& System,
   exptHut1->createAll(System,*exptHut2,"back");
 
   joinPipeC->insertAllInCell(System,exptHut1->getCell("Void"));
-  joinPipeC->insertInCell("Main",System,exptHut2->getCell("ExitHole"));
+  joinPipeC->insertInCell("Main",System,exptHut1->getCell("EntranceHole"));
 
   // pipe shield goes around joinPipeC:
   guillotine->addAllInsertCell(exptHut1->getCell("Void"));
   guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
-  guillotine->createAll(System,*exptHut2,"back");
+  guillotine->createAll(System,*exptHut1,"innerFront");
 
   exptBeam->addInsertCell(exptHut1->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);

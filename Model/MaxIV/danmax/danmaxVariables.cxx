@@ -104,7 +104,7 @@ namespace danmaxVar
     const double FM2Y = 1597.08; // [4]
     const double heatAbsorberY = 1673.33; // [4]
     // Absolute position of the downstream side of Valve4 [4].
-    // This value is used to determine the lengths of elements in the optics hutch that 
+    // This value is used to determine the lengths of elements in the optics hutch that
     // are not shown in [12].
     double valve4BackY = 2290.23; // [4]
     const double bremColl1Y = 2330.0; // [12]
@@ -119,10 +119,10 @@ namespace danmaxVar
 constexpr double valve3Length = 7.2;
 const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // Height of Optics Hutch and Expt. Hutches 1 and 2.
-// The value that is passed as the 'Height' variable of each hutch is the height above 
+// The value that is passed as the 'Height' variable of each hutch is the height above
 // the optical axis.
 // From [8], it can be seen that the height of all the hutches is roughly the same.
-// For the Optics Hutch and Expt. Hutch 1, the heights are given in [1] (Section B-B) 
+// For the Optics Hutch and Expt. Hutch 1, the heights are given in [1] (Section B-B)
 // and [2] (Coupe B-B), respectively, and they agree within 3 mm.
 // For Expt. Hutch 2, the height is not shown in the drawing [3].
 // It was decided to use the value from [1] for all heights.
@@ -233,7 +233,7 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BellowHLength",14.0); // [4]
   Control.addVariable(preName+"PipeCLength",34.0); // [4]
 
-  Control.addVariable(preName+"PermanentMagnetYStep",270.0); // Distance permanent 
+  Control.addVariable(preName+"PermanentMagnetYStep",270.0); // Distance permanent
   // magnet center to FM2 front: 170.5 cm, measured by AR
   // TODO: Define position with absolute coordinates or relative to FM2.
 
@@ -315,14 +315,14 @@ opticsHutVariables(FuncDataBase& Control,
 
   OpticsHutchGenerator OGen;
 
-  // Not given in [1]. Use same value as in other beamlines (where this value is also 
+  // Not given in [1]. Use same value as in other beamlines (where this value is also
   // used without reference).
   const double skinThick = 0.2;
   OGen.setSkin(skinThick);
   const double backLead = 5.0; // "Lead Thickness Back Wall" Section A-A [1]
   OGen.setBackLead(backLead);
   const double opticsHutchWallThick = 1.2; // "Lead Thickness Side Wall", Section A-A [1]
-  OGen.setWallLead(opticsHutchWallThick); 
+  OGen.setWallLead(opticsHutchWallThick);
   OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6); // Section D-D [1]
   const double opticsHutLength = 1010.0; // Section A-A in [1]
@@ -375,8 +375,8 @@ opticsHutVariables(FuncDataBase& Control,
 
   Control.addVariable(hutName+"WallShineThick", 0.6); // Detail G [2]
   // In Detail G [2], the length of the wall-shine element is given as 650 mm.
-  // It is not clear from [2] what the 650 mm correspond to. Here, it is assumed that 
-  // this value is measured from the outside wall like all other shielding of this 
+  // It is not clear from [2] what the 650 mm correspond to. Here, it is assumed that
+  // this value is measured from the outside wall like all other shielding of this
   // type.
   Control.addVariable(hutName+"WallShineLength", 65.0);
   Control.addVariable(hutName+"WallShineOutThick", 1.2); // measured by UFG 251201
@@ -425,7 +425,7 @@ connectVariables(FuncDataBase& Control,
 
   // dummy, adjusted such that ion pump is centered in Experimental Hutch 2.
   // (Note that the shielding box around it is not exactly centered in the hutch)
-  // PipeA length = 
+  // PipeA length =
   //    Expt. Hutch 2 length (545.8 cm) / 2.0
   //    - length of JoinPipeB inside Expt. Hutch 2 (10.0 cm) (*)
   //    - ion pump length (32.59 cm) / 2.0
@@ -476,6 +476,8 @@ exptHut1Variables(FuncDataBase& Control,
   const double beamMirrorShift(0.6); // will be adjusted later when the beamline is built
   const std::string hutName(beamName+"ExptHut1");
 
+  // See the comment for EGen.setBackLead in exptHut1Variables
+  EGen.setFrontLead(0.4); // "Lead Thickness Upstream Wall", Section A-A [2]
   EGen.setFrontHole(beamMirrorShift,0.0,3.6); // Coupe C-C [2]
   EGen.setCorner(atan(167.4/281.5)*180.0/M_PI,281.5); // Section A-A [2]
   const double backLead = 0.6; // "Lead Thickness Downstream Wall", Section A-A [2]
@@ -492,17 +494,17 @@ exptHut1Variables(FuncDataBase& Control,
   Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
   Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
   // In [2], the floor-shine length is measured from the outside of the wall, i.e. the
-  // wall thickness is included. In this case here, where the front wall is the back 
-  // wall of Expt. Hutch 2, the wall thickness (steel layer inside and outside from 
+  // wall thickness is included. In this case here, where the front wall is the back
+  // wall of Expt. Hutch 2, the wall thickness (steel layer inside and outside from
   // Detail E and lead thickness from Section A-A in [2]) needs to be subtracted.
   Control.addVariable(hutName+"FloorShineFrontLength",20.0-0.6);
 
   // 5 chicanes, 3 wide ones (#0 - #2) and 2 small ones (#3 and #4).
-  // Apart from the values set explicitly here, using default values for, e.g. gap 
+  // Apart from the values set explicitly here, using default values for, e.g. gap
   // sizes, that have been deemed reasonable by site visits.
   Control.addVariable(hutName+"NChicane",5);
   PortChicaneGenerator PGen;
-  // Coupe B-B [2], height of wide chicanes. Only shown for leftmost chicane, 
+  // Coupe B-B [2], height of wide chicanes. Only shown for leftmost chicane,
   // assumed to be valid for all.
   double chicaneHeight = 60.0;
   PGen.setHeight(chicaneHeight);
@@ -542,7 +544,7 @@ exptHut1Variables(FuncDataBase& Control,
     +0.5*chicaneWidth,
     -opticalAxisHeight+80.0+chicaneHeight/2.0 // Coupe B-B [2]
   );
-  // Coupe B-B [2], height of small chicanes. It is assumed that the upper edge of the 
+  // Coupe B-B [2], height of small chicanes. It is assumed that the upper edge of the
   // small chicanes is 1400 mm above ground level as for the wide chicanes.
   chicaneHeight = 68.0;
   PGen.setHeight(chicaneHeight);
@@ -584,16 +586,20 @@ exptHut2Variables(FuncDataBase& Control,
   // Exit hole, Coupe C-C [2] (coordinates will be adjusted later)
   EGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6);
 
-  // "Lead Thickness Upstream Wall", Section A-A [2]
-  const double backLead = 0.4;
-  EGen.setBackLead(backLead);
+  // Both experimental hutches share the same wall: it is the back
+  // wall of hutch 1 and the front wall of hutch 2. Since hutch 2 is
+  // narrower than hutch 1, the wall is built according to the wider
+  // hutch to avoid gaps.
+  EGen.setBackLead(0.0);
+  // backLead is needed for chicane placement:
+  const double backLead = Control.EvalVar<double>(beamName+"ExptHut1PbFrontThick");
   const double skinThick = 0.1; // "Steel", Detail E [3]
   EGen.setSkin(skinThick);
   EGen.setRoofLead(0.2); // "ROOF THK Pb", Section A-A [3]
   EGen.setWallLead(0.2); // "Lead Thickness Side Wall", Section A-A [3]
   EGen.setFloorShine(0.6, 20.0); // Detail J [3]
   // The actual length of hutch 2 is 5366 mm as shown in [3].
-  // However, to match the simplified model of the optics hutch, use the slightly 
+  // However, to match the simplified model of the optics hutch, use the slightly
   // larger value given in [8].
   const double hutchLength = 545.8;
   EGen.generateHut(Control,hutName,0.0,hutchLength);
@@ -612,7 +618,7 @@ exptHut2Variables(FuncDataBase& Control,
   double chicaneHeight = 60.0; // Outside view [3]
   PGen.setHeight(chicaneHeight);
   PGen.setWidth(60.0); // Outside view [3]
-  // Determined by AR and UFG 260112 to be the same as the wall thickness of 
+  // Determined by AR and UFG 260112 to be the same as the wall thickness of
   // Experimental Hutch 1 (!). Measured on site to confirm.
   // Supposedly, the chicane design from hutch 1 was reused when hutch 2 was added
   // later.
@@ -622,7 +628,7 @@ exptHut2Variables(FuncDataBase& Control,
 
   // Reference x value for all chicanes
   const double x0 = (hutchLength-2.0*skinThick-backLead)/2.0;
-  // Chicane0 and Chicane1 are within 1828 mm from the back wall of Expt. Hutch 2 
+  // Chicane0 and Chicane1 are within 1828 mm from the back wall of Expt. Hutch 2
   // (Section A-A [3]). Assume that their centers are located at 1/4*1828 and 3/4*1828.
   // Positioning uncertainty estimate from the drawing: += 50 mm.
   PGen.generatePortChicane(
@@ -1082,7 +1088,7 @@ opticsSlitPackage(FuncDataBase& Control,
     Builds the DM2 slit package
 
     The parameter topPortOffsetY determines the position of the center of the top port
-    by adjusting the lenght of the front port. This parameter was introduced because 
+    by adjusting the lenght of the front port. This parameter was introduced because
     the drawings give the absolute position of the top-port center [12].
 
     \param Control :: Function data base for variables
@@ -1099,7 +1105,7 @@ opticsSlitPackage(FuncDataBase& Control,
   const double tubeLength = 48.5; // Outer length [10]
   PortTubeGen.setPipeCF<CF200>(); // [10]
   // [10] TODO: This is actually only the thickness of the hull.
-  // The front and back walls are actually 1 mm thicker, but the present 
+  // The front and back walls are actually 1 mm thicker, but the present
   // PortTubeGenerator does not distinguish between these walls.
   const double wallThick = 0.2;
   PortTubeGen.setWallThick(0.2);
@@ -1107,8 +1113,8 @@ opticsSlitPackage(FuncDataBase& Control,
   PortTubeGen.setPortCF<CF40>(); // [10]
   const double topPortPipeToSlitTubeFront = 4.4; // [10]
   // Front port length determined by the Y offset.
-  const double frontPortLength = topPortOffsetY-CF150::outerRadius-topPortPipeToSlitTubeFront; 
-  const double backPortLength = 2.5; // [10] 
+  const double frontPortLength = topPortOffsetY-CF150::outerRadius-topPortPipeToSlitTubeFront;
+  const double backPortLength = 2.5; // [10]
   PortTubeGen.setPortLength(frontPortLength, backPortLength);
   const double totalLength = tubeLength+frontPortLength+backPortLength;
   PortTubeGen.generateTube(Control,sName,0.0,tubeLength-2.0*wallThick);
@@ -1133,7 +1139,7 @@ opticsSlitPackage(FuncDataBase& Control,
     frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius
     +danmaxVar::absY::beamViewer1Y-danmaxVar::absY::whiteBeamSlitsTopJawY-totalLength/2.0,
     0.0
-  );  
+  );
 
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
@@ -1210,7 +1216,7 @@ opticsVariables(FuncDataBase& Control,
 
   const double bremColl1Length = 29.0; // [10]
   const double bremcoll1Height = 44.0; // [10]
-  // Distance measured from top of beam pipe in [10], not from its center, therefore 
+  // Distance measured from top of beam pipe in [10], not from its center, therefore
   // need to add beam-pipe radius.
   const double bremColl1TopHeight = 8.2 + setVariable::CF40::innerRadius;
   const double bremColl1Z = bremcoll1Height/2.0-bremColl1TopHeight;
@@ -1242,12 +1248,12 @@ opticsVariables(FuncDataBase& Control,
   BremGen.setCube(10.0,10.0); // Sec. 2.1 in [13]
   // All dimensions from Sec. 2.1 in [13], except aperture position.
   // The aperture position is not mentioned in [13], but was read off from [10].
-  // Aperture dimensions can be given in two ways, either as an angle or by 
+  // Aperture dimensions can be given in two ways, either as an angle or by
   // setting the cross-section dimensions at different positions. Tried both ways,
   // once with the angle from [13] and once with dimensions read off from [10].
   // Since the entrance/exit dimensions agreed within a few percent, decided to use
   // the angle, since its value is given explicitly.
-  BremGen.setAperatureAngle(2.0, 0.2, 0.2, 5.0, 5.0); 
+  BremGen.setAperatureAngle(2.0, 0.2, 0.2, 5.0, 5.0);
   BremGen.generateBlock(Control,bremColl1Name,bremColl1Z);
   Control.addVariable(bremColl1Name+"XAngle",90);
 
@@ -1256,7 +1262,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setRectWindow(0.6,0.6,0.06,0.6,0.6,0.04); // [13]
   PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
   // Length adjusted to fit the position given in [12]
-  const double highPassFilterLength = 
+  const double highPassFilterLength =
     2.0*(
       danmaxVar::absY::highPassFilterY-danmaxVar::absY::bremColl1Y-bremColl1Length/2.0
   );
@@ -1270,8 +1276,8 @@ opticsVariables(FuncDataBase& Control,
   // Adjusts the front port length of the slit tube such that the center of the top
   // port is at the given offset.
   //
-  // Front Port Length 
-  // + Distance Top Port Pipe to Slit Tube Front 
+  // Front Port Length
+  // + Distance Top Port Pipe to Slit Tube Front
   // + Top Port Radius
   const double slitTubeTopPortOffsetY = 2.5+4.4+CF150::outerRadius; // [10]
 
