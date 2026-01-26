@@ -693,7 +693,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey, const double total
   PItemGen.setCF<setVariable::CF40>(sqrt(2.0)*CF100::outerRadius+10.0); // [10]
   PItemGen.generatePort(Control,pipeName+"Port2",
 			Geometry::Vec3D(0,offsetZ,0),
-			Geometry::Vec3D(1,0,1));
+			Geometry::Vec3D(-1,0,1));
 
   FlangeGen.setNoPlate();
   // Most blade data from [13].

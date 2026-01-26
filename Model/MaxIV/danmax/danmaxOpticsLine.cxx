@@ -356,9 +356,9 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   viewTube->insertMainInCell(System,cellUnit);
 
   VPB.insertInCell(System,buildZone.getLastCell("Unit"));
-  viewTube->insertPortInCell(System,0,cellUnit[1]);
+  viewTube->insertPortInCell(System,0,cellUnit[2]);
   viewTube->insertPortInCell(System,1,cellUnit[0]);
-  viewTube->insertPortInCell(System,2,cellUnit[2]);
+  viewTube->insertPortInCell(System,2,cellUnit[1]);
 
   cellIndex+=3;
 
