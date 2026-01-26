@@ -335,9 +335,9 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param width :: width of box (full)
     \param height :: height of box
     \param depth :: depth of box
-    \param width :: width of box (full)
     \param length :: length of box - ports
   */
 {
