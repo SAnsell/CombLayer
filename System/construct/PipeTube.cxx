@@ -348,6 +348,9 @@ PipeTube::createLinks()
     }
   nameSideIndex(8,"OuterRadius");
 
+  FixedComp::setConnect(9,Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf(9,-(buildIndex+202));
+  nameSideIndex(9,"InnerBackOnCap");
   
   return;
 }
