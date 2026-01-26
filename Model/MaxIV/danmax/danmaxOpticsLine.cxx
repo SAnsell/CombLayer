@@ -364,11 +364,9 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
 
 
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
-  viewTubeScreen->addInsertCell("Body",VPC.getCell("Void"));
   viewTubeScreen->addInsertCell("Blade",viewTube->getCell("Void"));
-  viewTubeScreen->addInsertCell("Blade",VPC.getCell("Void"));
-  viewTubeScreen->setBladeCentre(*viewTube,0);
-  viewTubeScreen->createAll(System,VPC,"-InnerPlate");
+  viewTubeScreen->setBladeCentre(Geometry::Vec3D(0.0,0.0,0.0));
+  viewTubeScreen->createAll(System,*viewTube,"InnerBackOnCap");
 
   outerCell=constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*valve8);

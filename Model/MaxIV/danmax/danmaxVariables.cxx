@@ -698,8 +698,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey, const double total
   FlangeGen.setNoPlate();
   // Most blade data from [13].
   //
-  // Angle from [10]. Orientation is not correct. Blade is actually perpendicular to mount.
-  // However, the plate is hit at a 45-degree angle by the beam as in reality.
+  // Angle from [10].
   //
   // Material is actually given as "pCVD Diamond" in [13].
   FlangeGen.setBlade(3.3,1.3,0.2,-45.0,"Diamond",1);
