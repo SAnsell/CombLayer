@@ -971,8 +971,9 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
     -monoVesselWallThick-monoVesselRadius;
 }
 
-void
-mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
+double
+mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
+  const double MLMFrontToTopViewPort)
   /*!
     Builds the variables for the mirror mono package (MLM)
     \param Control :: Database
@@ -985,8 +986,6 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   setVariable::VacBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
 
-  // ystep/width/height/depth/length
-  //
   MBoxGen.setCF<CF40>();   // set ports
   const double MLMWallThick = 1.2; // Walls: front, side, back [10]
   // Roof/Base/Width/Front/Back
@@ -1013,7 +1012,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);
 
   const std::string portName=monoKey+"MLMVessel";
-  Control.addVariable(monoKey+"MLMVesselNPorts",0);   // beam ports (lots!!)
+  Control.addVariable(monoKey+"MLMVesselNPorts",0);
   PItemGen.setCF<setVariable::CF63>(5.0);
   PItemGen.setPlate(4.0,"LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
@@ -1023,7 +1022,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   // crystals gap 4mm
   MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
 
-  return;
+  return MLMTotalLength;
 }
 
 void
@@ -1356,9 +1355,14 @@ opticsVariables(FuncDataBase& Control,
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [10]
   // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [10]
 
-  BellowGen.generateBellow(Control,opticsName+"BellowF",10.0);
+  const double MLMFrontToTopViewPort = 21.95; // [10]
+  BellowGen.generateBellow(Control,opticsName+"BellowF",
+    danmaxVar::absY::MLMY-danmaxVar::absY::beamViewer2Y-0.5*beamViewer2Length
+    -valve3Length-MLMFrontToTopViewPort
+  );
 
-  mirrorMonoPackage(Control,opticsName);
+  const double MLMTotalLength = mirrorMonoPackage(
+    Control,opticsName, MLMFrontToTopViewPort);
   BellowGen.generateBellow(Control,opticsName+"BellowG",16.0);
 
   GateGen.setCylCF<setVariable::CF40>();
