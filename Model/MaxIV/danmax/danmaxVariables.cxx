@@ -107,14 +107,17 @@ namespace danmaxVar
     // This value is used to determine the lengths of elements in the optics hutch that 
     // are not shown in [12].
     double valve4BackY = 2290.23; // [4]
-    const double bremColl1Y = 2330.0; // [12]
-    const double highPassFilterY = 2347.48; // [12]
-    // [12] Assume that the Y coordinate given there is the central axis of the top-jaw
+    // All following absolute coordinates taken from [12]
+    const double bremColl1Y = 2330.0;
+    const double highPassFilterY = 2347.48;
+    // Assume that the Y coordinate given there is the central axis of the top-jaw
     // port.
     const double whiteBeamSlitsTopJawY = 2622.75;
-    const double beamViewer1Y = 2647.72; // [12]
-    const double HDCMY = 2715.50; // [12]
-    const double beamViewer2Y = 2784.0; // [12]
+    const double beamViewer1Y = 2647.72;
+    const double HDCMY = 2715.50;
+    const double beamViewer2Y = 2784.0;
+    const double MLMY = 2834.8; // Position of the view port on the top
+    const double bremColl2Y = 2965.03;
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -985,14 +988,29 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   // ystep/width/height/depth/length
   //
   MBoxGen.setCF<CF40>();   // set ports
-  MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
-  MBoxGen.setPortLength(7.5,7.5); // La/Lb
-  MBoxGen.setBPortOffset(-0.4,0.0);    // note -1mm from crystal offset
+  const double MLMWallThick = 1.2; // Walls: front, side, back [10]
+  // Roof/Base/Width/Front/Back
+  const double MLMRoofThick = 1.5; // [10]
+  const double MLMFloorThick = 2.7; // [10]
+  MBoxGen.setAllThick(
+    MLMRoofThick,MLMFloorThick,MLMWallThick,MLMWallThick,MLMWallThick);
+  const double MLMPortLength = 2.4; // [10], same for A and B
+  const double MLMTotalLength = 115.9; // [10]
+  MBoxGen.setPortLength(MLMPortLength, MLMPortLength); // [10]
+  const double MLMHeight = 47.0;
+  const double MLMHeightAboveOpticalAxis = 11.55+CF40::innerRadius;
   // width / heigh / depth / length
   MBoxGen.generateBox
-    (Control,monoKey+"MLMVessel",57.0,12.5,31.0,109.0);
+    (
+      Control,monoKey+"MLMVessel",
+      59.0-2.0*MLMWallThick, // [10]
+      MLMHeightAboveOpticalAxis-MLMRoofThick,
+      MLMHeight-MLMHeightAboveOpticalAxis-MLMFloorThick,
+      MLMTotalLength-2.0*MLMWallThick-2.0*MLMPortLength
+    );
 
-  Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);   // from primary
+  // No difference in offset between A and B ports in [10]
+  Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);
 
   const std::string portName=monoKey+"MLMVessel";
   Control.addVariable(monoKey+"MLMVesselNPorts",0);   // beam ports (lots!!)
