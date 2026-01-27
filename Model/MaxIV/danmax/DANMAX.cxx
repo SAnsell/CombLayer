@@ -204,7 +204,7 @@ DANMAX::build(Simulation& System,
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut2->createAll(System,*opticsHut,"back");
 
-  joinPipeB->insertInCell("Main",System,exptHut2->getCell("FrontPlate"));
+  joinPipeB->insertInCell("Main",System,exptHut2->getCell("FrontPlateHole"));
 
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(

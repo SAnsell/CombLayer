@@ -149,17 +149,18 @@ ExperimentalHutch::createSurfaces()
 
   if (pbFrontThick>Geometry::zeroTol)
     {
-      const Geometry::Vec3D holeOrg(Origin+X*fHoleXStep+Z*fHoleZStep);
-
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+11,Y,innerThick);
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+21,Y,pbFrontThick+innerThick);
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+31,Y,outerThick+pbFrontThick+innerThick);
-      if (fHoleRadius>Geometry::zeroTol)
-	makeCylinder("frontHole",SMap,buildIndex+7,holeOrg,Y,fHoleRadius);
     }
+
+  if (fHoleRadius>Geometry::zeroTol) {
+    const Geometry::Vec3D holeOrg(Origin+X*fHoleXStep+Z*fHoleZStep);
+    makeCylinder("frontHole",SMap,buildIndex+7,holeOrg,Y,fHoleRadius);
+  }
 
   if (frontVoid>Geometry::zeroTol)
     {
@@ -495,7 +496,9 @@ ExperimentalHutch::createObjects(Simulation& System)
     }
 
   if (frontPlateActive) {
-    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-101 103 -104 105 -106");
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-101 -7");
+    makeCell("FrontPlateHole",System,cellIndex++,voidMat,0.0,HR*frontWall);
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-101 103 -104 105 -106 7");
     makeCell("FrontPlate",System,cellIndex++,pbMat,0.0,HR*frontWall);
   }
 
