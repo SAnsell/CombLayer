@@ -54,6 +54,8 @@ XRayHutchBaseGenerator::XRayHutchBaseGenerator() :
   height(279.2),length(1010.0),outWidth(261.8),
   innerThick(0.3),pbWallThick(1.6),pbBackThick(7.0),pbRoofThick(1.6),outerThick(0.3),
   innerOutVoid(10.0),outerOutVoid(10.0),outerBackVoid(0.0),
+  frontPlateActive(false),frontPlateThick(0.0),frontPlateWidth(0.0),frontPlateHeight(0.0),
+  backPlateActive(false),backPlateThick(0.0),backPlateWidth(0.0),backPlateHeight(0.0),
   floorShineThick(0.6), floorShineLength(50.0),
   voidMat("Void"),skinMat("SteelUnknownGrade"),pbMat("Lead"),
   floorShineMat("Lead")
@@ -61,6 +63,36 @@ XRayHutchBaseGenerator::XRayHutchBaseGenerator() :
     Constructor and defaults
   */
 {}
+
+void
+XRayHutchBaseGenerator::setFrontPlate(const double T, const double W, const double H)
+/*!
+  Set front wall plate
+  \param T :: thickness
+  \param W :: width
+  \param H :: full height
+ */
+{
+  frontPlateActive = true;
+  frontPlateThick  = T;
+  frontPlateWidth  = W;
+  frontPlateHeight = H;
+}
+
+void
+XRayHutchBaseGenerator::setBackPlate(const double T, const double W, const double H)
+/*!
+  Set back wall plate
+  \param T :: thickness
+  \param W :: width
+  \param H :: full height
+ */
+{
+  backPlateActive = true;
+  backPlateThick  = T;
+  backPlateWidth  = W;
+  backPlateHeight = H;
+}
 
 void
 XRayHutchBaseGenerator::setFloorShine(const double T, const double L)
@@ -117,6 +149,16 @@ XRayHutchBaseGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"InnerOutVoid",innerOutVoid);
   Control.addVariable(keyName+"OuterOutVoid",outerOutVoid);
   Control.addVariable(keyName+"OuterBackVoid",outerBackVoid);
+
+  Control.addVariable(keyName+"FrontPlateActive",frontPlateActive);
+  Control.addVariable(keyName+"FrontPlateThick", frontPlateThick);
+  Control.addVariable(keyName+"FrontPlateWidth", frontPlateWidth);
+  Control.addVariable(keyName+"FrontPlateHeight",frontPlateHeight);
+
+  Control.addVariable(keyName+"BackPlateActive",backPlateActive);
+  Control.addVariable(keyName+"BackPlateThick", backPlateThick);
+  Control.addVariable(keyName+"BackPlateWidth", backPlateWidth);
+  Control.addVariable(keyName+"BackPlateHeight",backPlateHeight);
 
   Control.addVariable(keyName+"FloorShineThick",floorShineThick);
   Control.addVariable(keyName+"FloorShineLength",floorShineLength);

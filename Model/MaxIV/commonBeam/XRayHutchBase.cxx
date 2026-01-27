@@ -75,9 +75,17 @@ namespace xraySystem
   attachSystem::SurfMap(),
   forks(keyName+"Fork")
   /*!
-    \param Key :: KeyName
+    \param Key :: hutch name
   */
   {
+    // Must explicitly set since not always populated:
+    frontPlateThick = 0.0;
+    frontPlateWidth = 0.0;
+    frontPlateHeight= 0.0;
+
+    backPlateThick = 0.0;
+    backPlateWidth = 0.0;
+    backPlateHeight= 0.0;
   }
 
   void
@@ -103,8 +111,21 @@ namespace xraySystem
 
     innerOutVoid=Control.EvalDefVar<double>(keyName+"InnerOutVoid",0.0);
     outerOutVoid=Control.EvalDefVar<double>(keyName+"OuterOutVoid",0.0);
-
     outerBackVoid=Control.EvalDefVar<double>(keyName+"OuterBackVoid",0.0);
+
+    frontPlateActive=Control.EvalDefVar<int>(keyName+"FrontPlateActive",false);
+    if (frontPlateActive) {
+      frontPlateThick=Control.EvalVar<double>(keyName+"FrontPlateThick");
+      frontPlateWidth=Control.EvalVar<double>(keyName+"FrontPlateWidth");
+      frontPlateHeight=Control.EvalVar<double>(keyName+"FrontPlateHeight");
+    }
+
+    backPlateActive=Control.EvalDefVar<int>(keyName+"BackPlateActive",false);
+    if (backPlateActive) {
+      backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
+      backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
+      backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
+    }
 
     floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");
     floorShineLength=Control.EvalVar<double>(keyName+"FloorShineLength");

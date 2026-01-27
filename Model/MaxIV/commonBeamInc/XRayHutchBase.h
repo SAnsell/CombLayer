@@ -46,13 +46,23 @@ namespace xraySystem
       // walls
       double innerThick;            ///< Inner wall/roof skin
       double pbWallThick;           ///< Thickness of lead in walls
-      double pbBackThick;           ///< Thickness of lead in back plate
+      double pbBackThick;           ///< Thickness of lead in back wall
       double pbRoofThick;           ///< Thickness of lead in Roof
       double outerThick;            ///< Outer wall/roof skin
 
       double innerOutVoid;          ///< Extension for inner left void space
       double outerOutVoid;          ///< Extension for outer left void space
       double outerBackVoid;         ///< Extension for outer back void space
+
+      bool frontPlateActive;        ///< Front plate active flag
+      double frontPlateThick;       ///< Front plate thickness
+      double frontPlateWidth;       ///< Front plate width
+      double frontPlateHeight;      ///< Front plate full height
+
+      bool backPlateActive;         ///< Back plate active flag
+      double backPlateThick;        ///< Back plate thick
+      double backPlateWidth;        ///< Back plate width
+      double backPlateHeight;       ///< back plate Height
 
       double floorShineThick;       ///< Floor shine thickness
       double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface) - general length that is overriden by the particular lengths below

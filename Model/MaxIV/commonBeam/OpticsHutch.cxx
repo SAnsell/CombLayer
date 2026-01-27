@@ -34,6 +34,7 @@
 #include <memory>
 #include <array>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
@@ -97,10 +98,6 @@ OpticsHutch::populate(const FuncDataBase& Control)
 
   XRayHutchBase::populate(Control);
 
-  backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
-  backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
-  backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
-
   wallShineThick=Control.EvalVar<double>(keyName+"WallShineThick");
   wallShineLength=Control.EvalVar<double>(keyName+"WallShineLength");
   wallShineOutThick=Control.EvalVar<double>(keyName+"WallShineOutThick");
@@ -108,8 +105,10 @@ OpticsHutch::populate(const FuncDataBase& Control)
   roofShineLength=Control.EvalVar<double>(keyName+"RoofShineLength");
   roofShineThick=Control.EvalVar<double>(keyName+"RoofShineThick");
 
-
   wallShineMat=ModelSupport::EvalDefMat(Control,keyName+"WallShineMat",pbMat);
+
+  if (frontPlateActive)
+    throw ColErr::AbsObjMethod(keyName+": Front wall plate is not implemented for OpticsHutch yet");
 
   return;
 }
@@ -168,15 +167,16 @@ OpticsHutch::createSurfaces()
   SurfMap::makePlane("roof",SMap,buildIndex+36,
 		     Origin+Z*(height),Z);
 
-  if (outerBackVoid>Geometry::zeroTol)
+  if (outerBackVoid>Geometry::zeroTol) {
     SurfMap::makePlane("outerBackVoid",SMap,buildIndex+52,
 		       Origin+Y*(length+outerBackVoid),Y);
-
+  }
 
   ModelSupport::buildPlane(SMap,buildIndex+102,
-		      Origin+Y*(length+innerThick-backPlateThick-backWallThick),Y);
+			   Origin+Y*(length+innerThick-backPlateThick-backWallThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+112,
-		      Origin+Y*(length-backWallThick-backPlateThick),Y);
+			   Origin+Y*(length-backWallThick-backPlateThick),Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(backPlateWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(backPlateWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(backPlateHeight/2.0),Z);
@@ -313,16 +313,18 @@ OpticsHutch::createObjects(Simulation& System)
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideWallCut);
 
   // Back plate:
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
-  makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
+  if (backPlateActive) {
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
+    makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
-  makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
+    makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
-				  "112 -2 3 -6 (-103:104:-105:106)");
-  makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,
-	   HR*floor*sideWall);
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+				    "112 -2 3 -6 (-103:104:-105:106)");
+    makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,
+	     HR*floor*sideWall);
+  }
 
   // Outer void for pipe(s)
   BI=buildIndex;

@@ -39,10 +39,6 @@ class OpticsHutchGenerator :
     public XRayHutchBaseGenerator
 {
  protected:
-  double backPlateThick;        ///< Back plate thick
-  double backPlateWidth;        ///< Back plate width
-  double backPlateHeight;       ///< back plate height
-
   double wallShineThick;        ///< wall shine thickness
   double wallShineLength;       ///< wall shine lenght
   double wallShineOutThick;     ///< thickness of wall shine outside of REW
@@ -56,10 +52,6 @@ public:
   OpticsHutchGenerator(const OpticsHutchGenerator&) =default;
   OpticsHutchGenerator& operator=(const OpticsHutchGenerator&) =default;
   ~OpticsHutchGenerator() =default;
-
-  /// Set back plate [must be smaller than back wall]
-  void setBackPlateSize(const double W,const double H,const double T)
-  { backPlateWidth=W;backPlateHeight=H;backPlateThick=T; }
 
   void generateHut(FuncDataBase&,const std::string&,
 		   const double) const;

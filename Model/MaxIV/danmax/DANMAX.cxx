@@ -204,14 +204,17 @@ DANMAX::build(Simulation& System,
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut2->createAll(System,*opticsHut,"back");
 
+  joinPipeB->insertInCell("Main",System,exptHut2->getCell("FrontPlate"));
+
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(
     {
       exptHut2->getCell("Void"),
-      exptHut2->getCell("FloorShineRingWallVoid")
+      exptHut2->getCell("FloorShineRingWallVoid"),
+      //      exptHut2->getCell("FrontVoid")
     }
   );
-  connectUnit->setFront(*opticsHut,2);
+  connectUnit->setFront(*exptHut2, "frontPlate");
   connectUnit->setBack(*exptHut2,"innerBack");
   connectUnit->createAll(System,*joinPipeB,"back");
 

@@ -52,8 +52,7 @@ namespace setVariable
 
 
 OpticsHutchGenerator::OpticsHutchGenerator() :
-  backPlateThick(5.0),
-  backPlateWidth(120.0),backPlateHeight(120.0),
+  XRayHutchBaseGenerator(),
   wallShineThick(0.6), wallShineLength(59.0),
   wallShineOutThick(1.2), wallShineOutLength(20.0),
   roofShineLength(20.0),
@@ -61,7 +60,13 @@ OpticsHutchGenerator::OpticsHutchGenerator() :
   /*!
     Constructor and defaults
   */
-{}
+{
+  // by default the back wall plate is active in optics hutches:
+  backPlateActive = true;
+  backPlateThick = 7.0;
+  backPlateWidth = 200.0;
+  backPlateHeight = 200.0;
+}
 
 void
 OpticsHutchGenerator::generateHut(FuncDataBase& Control,
@@ -77,11 +82,6 @@ OpticsHutchGenerator::generateHut(FuncDataBase& Control,
   ELog::RegMethod RegA("OpticsHutchGenerator","generateOpticsHut");
 
   XRayHutchBaseGenerator::generateHut(Control, keyName, length);
-
-
-  Control.addVariable(keyName+"BackPlateThick",backPlateThick);
-  Control.addVariable(keyName+"BackPlateWidth",backPlateWidth);
-  Control.addVariable(keyName+"BackPlateHeight",backPlateHeight);
 
   Control.addVariable(keyName+"WallShineThick",wallShineThick);
   Control.addVariable(keyName+"WallShineLength",wallShineLength);

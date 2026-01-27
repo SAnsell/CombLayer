@@ -496,7 +496,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   OGen.setSkin(0.2);
 
-  OGen.setBackPlateSize(200.0,200.0,5.0);
+  OGen.setBackPlate(5.0,200.0,200.0);
   OGen.setBackLead(9.0);
   OGen.setWallLead(1.6);
   OGen.setRoofLead(1.6);
