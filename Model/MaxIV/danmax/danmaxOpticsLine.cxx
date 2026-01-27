@@ -143,8 +143,10 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   MLM(new xraySystem::MLMono(newName+"MLM")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   valve9(new xraySystem::CylGateValve(newName+"Valve9")),
+  beamStopInPipe(new constructSystem::VacuumPipe(newName+"BeamStopInPipe")),
   beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube")),
   beamStop(new xraySystem::BremBlock(newName+"BeamStop")),
+  beamStopOutPipe(new constructSystem::VacuumPipe(newName+"BeamStopOutPipe")),
   slitsA(new constructSystem::JawValveTube(newName+"SlitsA")),
   slitsAOut(new constructSystem::VacuumPipe(newName+"SlitsAOut")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
@@ -203,8 +205,10 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(MLM);
   OR.addObject(bellowG);
   OR.addObject(valve9);
+  OR.addObject(beamStopInPipe);
   OR.addObject(beamStopTube);
   OR.addObject(beamStop);
+  OR.addObject(beamStopOutPipe);
   OR.addObject(slitsA);
   OR.addObject(slitsAOut);
   OR.addObject(bellowH);
@@ -568,11 +572,13 @@ danmaxOpticsLine::constructBeamStopTube
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructBeamStopTube");
 
+  constructSystem::constructUnit
+    (System,buildZone,initFC,sideName,*beamStopInPipe);
+
   int outerCell;
 
   beamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  beamStopTube->createAll(System,initFC,sideName);
-  //  beamStopTube->intersectPorts(System,1,2);
+  beamStopTube->createAll(System,*beamStopInPipe,sideName);
 
   const constructSystem::portItem& VPB=beamStopTube->getPort(1);
 
@@ -583,7 +589,10 @@ danmaxOpticsLine::constructBeamStopTube
   beamStop->createAll(System,*beamStopTube,"Origin");
 
   constructSystem::constructUnit
-    (System,buildZone,VPB,"OuterPlate",*slitsA);
+    (System,buildZone,VPB,"OuterPlate",*beamStopOutPipe);
+
+  constructSystem::constructUnit
+    (System,buildZone,*beamStopOutPipe,"back",*slitsA);
 
   constructSystem::constructUnit
     (System,buildZone,*slitsA,"back",*slitsAOut);

@@ -811,45 +811,64 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::BremBlockGenerator BremGen;
   setVariable::JawValveGenerator JawGen;
 
+  const double port0Radius = 5.08; // [10]
+  const double port0WallThick = 0.2; // [10]
+  PipeGen.setMat("SteelUnknownGrade");
+  PipeGen.setCF<CF40>(); // [10]
+  PipeGen.setBFlange(port0Radius+port0WallThick, port0WallThick);
+  PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",2.98+port0WallThick); // [10]
+
   // will be rotated vertical
   const std::string pipeName=viewKey+"BeamStopTube";
-
-  SimpleTubeGen.setCF<CF150>();
+  SimpleTubeGen.setCF<CF160>(); // [10]
+  SimpleTubeGen.setWallThick(0.2); // [10]
   SimpleTubeGen.setCap(1,1);
-  // up 16cm / 37.5cm down : Measured +1cm up for clearance
-  SimpleTubeGen.generateTube(Control,pipeName,53.5);
+  const double tubeLengthAboveOpticalAxis = 11.2; // [10]
+  const double tubeLengthBelowOpticalAxis = 32.8; // [10]
+  const double tubeLength = tubeLengthAboveOpticalAxis+tubeLengthBelowOpticalAxis;
+  SimpleTubeGen.generateTube(Control,pipeName,
+    tubeLengthAboveOpticalAxis+tubeLengthBelowOpticalAxis);
 
-  Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
+  Control.addVariable(pipeName+"NPorts",2);
 
-  // BOTH PORTS COMPLETLEY NON-STANDARD:
-  // Ports 11cm + 15(inner)cm + 10cm   ==> 36.0
-  DItemGen.setDCF<CF63,CF40>(6.5,4.0);
-  DItemGen.setPlate(0.0,"Void");
-
-  DItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,10.75,0),  // 53.5/2-16.0
+  PItemGen.setPort(15.4-port0WallThick, port0Radius, port0WallThick); // [10]
+  PItemGen.setFlange(10.0, 0.0);
+  PItemGen.setOuterVoid(0);
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),
 			Geometry::Vec3D(0,0,1));
 
-  PItemGen.setCF<setVariable::CF150>(12.5);  // needs to be CF75
+  const double port1Length = 19.575; // [10]
+  const double port1ArtificialSplitLength = 12.0;
+  const double port1Radius = 7.3; // [10]
+  const double port1WallThick = 0.2; // [10]
+  PItemGen.setPort(port1ArtificialSplitLength, port1Radius, port1WallThick); // [10]
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pipeName+"Port1",
-			Geometry::Vec3D(0,10.75,0),
+			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),
 			Geometry::Vec3D(0,0,-1));
+
+  PipeGen.setMat("SteelUnknownGrade");
+  PipeGen.setPipe(port1Radius, port1WallThick);
+  PipeGen.setAFlange(1.0, 0.0);
+  PipeGen.setBFlangeCF<CF150>();
+  PipeGen.generatePipe(Control,viewKey+"BeamStopOutPipe",port1Length-port1ArtificialSplitLength);
 
   BremGen.centre();
   BremGen.setCube(10.0,10.0);
   BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
-  BremGen.generateBlock(Control,viewKey+"BeamStop",10.75);
+  BremGen.generateBlock(Control,viewKey+"BeamStop",tubeLength/2.0-tubeLengthAboveOpticalAxis);
   Control.addVariable(viewKey+"BeamStopXAngle",90);
 
    // Single slit pair
-  JawGen.setRadius(8.0);
-  JawGen.setWallThick(2.0);
-  JawGen.setLength(10.0);
+  const double jawTubeWallThick = 1.5; // [10]
+  // CF150 to fit flange B of port 1 [10]
+  JawGen.setRadius(CF150::flangeRadius-jawTubeWallThick);
+  JawGen.setWallThick(jawTubeWallThick);
+  JawGen.setLength(10.5); // [10]
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,viewKey+"SlitsA",0.0,0.8,0.8);
 
-  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
