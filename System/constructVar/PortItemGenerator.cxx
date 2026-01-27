@@ -147,8 +147,8 @@ PortItemGenerator::setPort(const double L,const double R,
 			   const double T)
   /*!
     Set both the ports
+    \param L :: length of port tube
     \param R :: radius of port tube
-    \param R :: lenght of port tube
     \param T :: Thickness of port tube
    */
 {
