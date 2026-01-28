@@ -814,24 +814,25 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
 
   const double port0Radius = 5.08; // [10]
   const double port0WallThick = 0.2; // [10]
+  const double beamStopInPipeLength = 2.5; // [10]
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<CF40>(); // [10]
   PipeGen.setBFlange(port0Radius+port0WallThick, port0WallThick);
   PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",
-    2.5+CF40::flangeLength+port0WallThick); // [10]
+    beamStopInPipeLength+CF40::flangeLength+port0WallThick); // [10]
 
-  const double port0Length=15.4;
+  const double port0Length=15.4; // [10]
   const double port0SplitLength=8.0;
 
   std::string pipeName = viewKey+"BeamStopSection";
   SimpleTubeGen.setPipe(port0Radius, port0WallThick, 1.0, 0.0);
   SimpleTubeGen.generateTube(Control,pipeName,port0Length-port0SplitLength);
   Control.addVariable(pipeName+"NPorts",1);
-  PItemGen.setCF<CF40>(14.0);
+  PItemGen.setCF<CF40>(14.0); // [10]
   PItemGen.setPlate(CF40::flangeLength, "SteelUnknownGrade");
   PItemGen.generatePort(Control,pipeName+"Port0",
 			Geometry::Vec3D(0,-(port0Length-port0SplitLength)/2.0
-      +beamStopFrontToWBPort-2.5-CF40::flangeLength-port0WallThick,0),
+      +beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength-port0WallThick,0),
 			Geometry::Vec3D(1,0,0));
 
   // will be rotated vertical
@@ -869,11 +870,12 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   PipeGen.setPipe(port1Radius, port1WallThick);
   PipeGen.setAFlange(1.0, 0.0);
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,viewKey+"BeamStopOutPipe",port1Length-port1ArtificialSplitLength);
+  PipeGen.generatePipe(Control,viewKey+"BeamStopOutPipe",
+    port1Length-port1ArtificialSplitLength);
 
   BremGen.centre();
-  BremGen.setCube(10.0,10.0);
-  BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
+  BremGen.setCube(10.0,10.0); // [13]
+  BremGen.setAperature(0.4); // [13]
   BremGen.generateBlock(Control,viewKey+"BeamStop",tubeLength/2.0-tubeLengthAboveOpticalAxis);
   Control.addVariable(viewKey+"BeamStopXAngle",90);
 
