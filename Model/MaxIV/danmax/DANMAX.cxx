@@ -204,33 +204,6 @@ DANMAX::build(Simulation& System,
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut2->createAll(System,*opticsHut,"back");
 
-  // Example:
-
-  // The outer back plate of the optics hutch (BackPlateOuter) needs
-  // to be inserted into some cells of the experimental hutch. This
-  // can be done either by manually inserting it into each cell, or by
-  // letting CombLayer search for all required cells using the
-  // addToInsertSurfCtrl method.
-
-  // Both approaches produce the same geometry, although the resulting
-  // files may differ in the order of the cell surfaces. In both
-  // cases, only the necessary surfaces are used; for example, when
-  // intersecting with LeadRingWall, only 3 out of the 6 surfaces of
-  // BackPlateOuter are involved.
-
-  // The automatic method does not always replace the manual one
-  // because there might be situations when you don't want to
-  // intersect all cells.
-
-  // Manually:
-  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("Void"));
-  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("FloorShineRingWallVoid"));
-  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("InnerSkinRingWall"));
-  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("LeadRingWall"));
-  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("OuterSkinRingWall"));
-  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("OuterRightVoid"));
-
-  // Automatically:
   attachSystem::addToInsertSurfCtrl(System, *exptHut2, opticsHut->getCC("BackPlateOuter"));
 
   connectUnit->registerJoinPipe(joinPipeC);
