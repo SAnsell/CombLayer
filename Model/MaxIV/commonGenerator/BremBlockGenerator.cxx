@@ -164,6 +164,25 @@ BremBlockGenerator::setAperature(const double MLength,
 }
 
 void
+BremBlockGenerator::setAperature(const double A)
+/*
+    Overload of setAperature for blocks that have a uniform, quadratic cross section.
+    The aperture length is arbitrarily set to the center of the block.
+    \param MLength :: Aperature length
+    \param A :: Aperture dimension / square side length
+  */
+{
+  holeMidDist=length*0.5;
+  holeAWidth=A;
+  holeAHeight=A;
+  holeMidWidth=A;
+  holeMidHeight=A;
+  holeBWidth=A;
+  holeBHeight=A;
+  return;
+}
+
+void
 BremBlockGenerator::setAperatureAngle
   (const double MLength,
    const double midW,const double midH,

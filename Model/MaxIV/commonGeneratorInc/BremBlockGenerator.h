@@ -76,6 +76,7 @@ class BremBlockGenerator
   void setAperature(const double,const double,const double,
 		    const double,const double,
 		    const double,const double);
+  void setAperature(const double);
   void setAperatureAngle(const double,const double,
 			 const double,const double,
 			 const double);
