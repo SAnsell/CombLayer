@@ -795,7 +795,8 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
 }
 
 void
-beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
+beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
+  const double beamStopFrontToWBPort)
   /*!
     Builds the variables for the ViewTube 2
     \param Control :: Database
@@ -816,7 +817,8 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<CF40>(); // [10]
   PipeGen.setBFlange(port0Radius+port0WallThick, port0WallThick);
-  PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",2.98+port0WallThick); // [10]
+  PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",
+    2.5+CF40::flangeLength+port0WallThick); // [10]
 
   const double port0Length=15.4;
   const double port0SplitLength=8.0;
@@ -828,7 +830,8 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.setCF<CF40>(14.0);
   PItemGen.setPlate(CF40::flangeLength, "SteelUnknownGrade");
   PItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,0.0,0),
+			Geometry::Vec3D(0,-(port0Length-port0SplitLength)/2.0
+      +beamStopFrontToWBPort-2.5-CF40::flangeLength-port0WallThick,0),
 			Geometry::Vec3D(1,0,0));
 
   // will be rotated vertical
@@ -1403,7 +1406,8 @@ opticsVariables(FuncDataBase& Control,
   // Angle estimated from [10]
   // Control.addVariable(opticsName+"Valve9YAngle", 135.0);
 
-  beamStopPackage(Control,opticsName);
+  const double beamStopFrontToWBPort = 2.5+CF40::flangeLength+5.2;
+  beamStopPackage(Control,opticsName,beamStopFrontToWBPort);
 
   BellowGen.generateBellow(Control,opticsName+"BellowH",10.0);
 

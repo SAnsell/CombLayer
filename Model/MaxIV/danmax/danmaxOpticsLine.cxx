@@ -589,6 +589,7 @@ danmaxOpticsLine::constructBeamStopTube
   const constructSystem::portItem& VPB=beamStopTube->getPort(1);
 
   outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
+  beamStopSection->insertAllInCell(System,buildZone.getLastCell("Unit"));
   beamStopTube->insertAllInCell(System,outerCell);
 
   beamStop->addInsertCell(beamStopTube->getCell("Void"));
@@ -712,7 +713,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*valve8,"back",*bellowF);
 
   constructMirrorMono(System,*bellowF,"back");
-
 
   constructSystem::constructUnit
     (System,buildZone,*MLMVessel,"back",*bellowG);
