@@ -1400,13 +1400,16 @@ opticsVariables(FuncDataBase& Control,
 
   const double MLMTotalLength = mirrorMonoPackage(
     Control,opticsName, MLMFrontToTopViewPort);
-  BellowGen.generateBellow(Control,opticsName+"BellowG",16.0);
+  const double beamStopFrontToWBPort = 2.5+CF40::flangeLength+5.2;
+  BellowGen.generateBellow(Control,opticsName+"BellowG",
+    danmaxVar::absY::whiteBeamStopY-danmaxVar::absY::MLMY
+    -(MLMTotalLength-MLMFrontToTopViewPort)-valve3Length-beamStopFrontToWBPort
+  );
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve9"); // [10]
   // Angle estimated from [10]
   // Control.addVariable(opticsName+"Valve9YAngle", 135.0);
 
-  const double beamStopFrontToWBPort = 2.5+CF40::flangeLength+5.2;
   beamStopPackage(Control,opticsName,beamStopFrontToWBPort);
 
   BellowGen.generateBellow(Control,opticsName+"BellowH",10.0);
