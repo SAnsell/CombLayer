@@ -144,6 +144,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   valve9(new xraySystem::CylGateValve(newName+"Valve9")),
   beamStopInPipe(new constructSystem::VacuumPipe(newName+"BeamStopInPipe")),
+  beamStopSection(new constructSystem::PipeTube(newName+"BeamStopSection")),
   beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube")),
   beamStop(new xraySystem::BremBlock(newName+"BeamStop")),
   beamStopOutPipe(new constructSystem::VacuumPipe(newName+"BeamStopOutPipe")),
@@ -206,6 +207,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowG);
   OR.addObject(valve9);
   OR.addObject(beamStopInPipe);
+  OR.addObject(beamStopSection);
   OR.addObject(beamStopTube);
   OR.addObject(beamStop);
   OR.addObject(beamStopOutPipe);
@@ -575,10 +577,14 @@ danmaxOpticsLine::constructBeamStopTube
   constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*beamStopInPipe);
 
+  constructSystem::constructUnit
+    (System,buildZone,*beamStopInPipe,"back",*beamStopSection);
+
   int outerCell;
 
   beamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  beamStopTube->createAll(System,*beamStopInPipe,sideName);
+  beamStopTube->createAll(System,*beamStopSection,sideName);
+  beamStopTube->insertAllInCell(System,buildZone.getLastCell("Unit"));
 
   const constructSystem::portItem& VPB=beamStopTube->getPort(1);
 

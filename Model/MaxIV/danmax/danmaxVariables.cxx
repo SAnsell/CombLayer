@@ -818,8 +818,21 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.setBFlange(port0Radius+port0WallThick, port0WallThick);
   PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",2.98+port0WallThick); // [10]
 
+  const double port0Length=15.4;
+  const double port0SplitLength=8.0;
+
+  std::string pipeName = viewKey+"BeamStopSection";
+  SimpleTubeGen.setPipe(port0Radius, port0WallThick, 1.0, 0.0);
+  SimpleTubeGen.generateTube(Control,pipeName,port0Length-port0SplitLength);
+  Control.addVariable(pipeName+"NPorts",1);
+  PItemGen.setCF<CF40>(14.0);
+  PItemGen.setPlate(CF40::flangeLength, "SteelUnknownGrade");
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,0.0,0),
+			Geometry::Vec3D(1,0,0));
+
   // will be rotated vertical
-  const std::string pipeName=viewKey+"BeamStopTube";
+  pipeName=viewKey+"BeamStopTube";
   SimpleTubeGen.setCF<CF160>(); // [10]
   SimpleTubeGen.setWallThick(0.2); // [10]
   SimpleTubeGen.setCap(1,1);
@@ -831,8 +844,9 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
 
   Control.addVariable(pipeName+"NPorts",2);
 
-  PItemGen.setPort(15.4-port0WallThick, port0Radius, port0WallThick); // [10]
-  PItemGen.setFlange(10.0, 0.0);
+  PItemGen.setPort(port0SplitLength-port0WallThick, port0Radius, port0WallThick); // [10]
+  PItemGen.setFlange(1.0, 0.0);
+  PItemGen.setNoPlate();
   PItemGen.setOuterVoid(0);
   PItemGen.generatePort(Control,pipeName+"Port0",
 			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),

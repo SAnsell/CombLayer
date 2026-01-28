@@ -149,11 +149,15 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> bellowG;
   /// Gate value BL-V5
   std::shared_ptr<xraySystem::CylGateValve> valve9;
-  std::shared_ptr<constructSystem::VacuumPipe> beamStopInPipe; 
+  // Connector from CF40 to larger pipe
+  std::shared_ptr<constructSystem::VacuumPipe> beamStopInPipe;
+  // Short section that contains a port for the WB stop
+  std::shared_ptr<constructSystem::PipeTube> beamStopSection;
   /// BeamStopTube
   std::shared_ptr<constructSystem::PipeTube> beamStopTube;
   /// BeamStopBlock
   std::shared_ptr<xraySystem::BremBlock> beamStop;
+  // Connector from beamstop tube to slit tube
   std::shared_ptr<constructSystem::VacuumPipe> beamStopOutPipe;
   /// Slits after beamstop
   std::shared_ptr<constructSystem::JawValveTube> slitsA;
