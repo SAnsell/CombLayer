@@ -244,7 +244,7 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setMinSize(FM2Length-4.6-Geometry::zeroTol,
 		      backWidth, backHeight); // [5] Min position: 46 mm
   FMaskGen.setMat("Copper"); // [5] TODO: should be GLIDCOP
-  ELog::EM << "FM2 material set to copper, should be GLIDCOP" << ELog::endWarn;
+  ELog::EM << "TODO: FM2 material set to copper, should be GLIDCOP" << ELog::endWarn;
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
   Control.addVariable(preName+"FM2Width", 8.8); // [5]
   Control.addVariable(preName+"FM2Height", 6.8); // [5]
@@ -326,6 +326,11 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6); // Section D-D [1]
   const double opticsHutLength = 1010.0; // Section A-A in [1]
+
+  // "Lead Thickness", back view [1]
+  ELog::EM << "TODO: Reference for " << hutName << "BackPlateOuterThick==7 ???" << ELog::endWarn;
+  OGen.setBackPlateOuter(7.0, 200.0, 200.0);
+
   OGen.generateHut(Control,hutName, opticsHutLength);
   const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
   Control.addVariable(hutName+"OutWidth", opticsHutOuterWidth);

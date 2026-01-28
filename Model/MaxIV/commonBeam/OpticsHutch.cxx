@@ -72,7 +72,7 @@ namespace xraySystem
 
 OpticsHutch::OpticsHutch(const std::string& Key) :
   xraySystem::XRayHutchBase(Key),
-  attachSystem::ContainedGroup("Hutch", "WallShineREW"),
+  attachSystem::ContainedGroup("Hutch", "WallShineREW", "BackPlateOuter"),
   pSideWall(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -110,6 +110,9 @@ OpticsHutch::populate(const FuncDataBase& Control)
   if (frontPlateActive)
     throw ColErr::AbsObjMethod(keyName+": Front wall plate is not implemented for OpticsHutch yet");
 
+  if (backPlateInnerActive)
+    ELog::EM << keyName+": Back wall inner plate implementation for OpticsHutch is obsolete (and different from the updated implementation in OpticsStepHutch - see the DanMAX beamline)" << ELog::endWarn;
+
   return;
 }
 
@@ -126,7 +129,7 @@ OpticsHutch::createSurfaces()
   const double sideWallThick(pbWallThick+steelThick);
   const double roofThick(pbRoofThick+steelThick);
 
-  frontWall=ExternalCut::getValidRule("RingWall",Origin+Y*length);
+  frontWall=ExternalCut::getValidRule("RingWall",Origin+Y*length); // REW plane to optics hutch
   sideWall=ExternalCut::getValidRule("SideWall",Origin);
 
   // Inner void
@@ -181,6 +184,14 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(backPlateInnerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(backPlateInnerHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(backPlateInnerWidth/2.0),Z);
+
+  // Back plate outer
+  ModelSupport::buildPlane(SMap,buildIndex+2002,Origin+Y*(length+backPlateOuterThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2003,Origin-X*(backPlateOuterWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+2004,Origin+X*(backPlateOuterWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+2005,Origin-Z*(backPlateOuterHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2006,Origin+Z*(backPlateOuterWidth/2.0),Z);
+
 
   int BI(buildIndex);
   for(size_t i=0;i<holeRadius.size();i++)
@@ -451,6 +462,10 @@ OpticsHutch::createLinks()
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
   nameSideIndex(13,"innerLeftWall");
+
+  setConnect(14,Origin+Y*(length+backPlateOuterThick),Y);
+  setLinkSurf(14,SMap.realSurf(buildIndex+2002));
+  nameSideIndex(14,"backPlateOuter");
 
   return;
 }

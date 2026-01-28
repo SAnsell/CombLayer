@@ -3,7 +3,7 @@
 
  * File:   commonBeamInc/XRayHutchBase.h
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,11 @@ namespace xraySystem
       double backPlateInnerThick;        ///< Inner back plate thick
       double backPlateInnerWidth;        ///< Inner back plate width
       double backPlateInnerHeight;       ///< Inner back plate height
+
+      bool backPlateOuterActive;         ///< Outer back plate active flag
+      double backPlateOuterThick;        ///< Outer back plate thick
+      double backPlateOuterWidth;        ///< Outer back plate width
+      double backPlateOuterHeight;       ///< Outer back plate height
 
       double floorShineThick;       ///< Floor shine thickness
       double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface) - general length that is overriden by the particular lengths below

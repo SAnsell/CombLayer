@@ -442,7 +442,7 @@ danmaxOpticsLine::constructRevBeamStopTube
   revBeamStopTube->insertAllInCell(System,outerCell);
 
   revBeamStop->addInsertCell(revBeamStopTube->getCell("Void"));
-  ELog::EM<<"Orig -- "<<revBeamStopTube->getLinkPt("OrgOrigin")<<ELog::endDiag;
+  //  ELog::EM<<"Orig -- "<<revBeamStopTube->getLinkPt("OrgOrigin")<<ELog::endDiag;
   revBeamStop->createAll(System,*revBeamStopTube,"Origin");
 
   constructSystem::constructUnit

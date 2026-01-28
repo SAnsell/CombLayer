@@ -62,6 +62,11 @@ namespace setVariable
     double backPlateInnerWidth;        ///< Inner back plate width
     double backPlateInnerHeight;       ///< Inner back plate full height
 
+    int backPlateOuterActive;          ///< Outer back plate active flag
+    double backPlateOuterThick;        ///< Outer back plate thickness
+    double backPlateOuterWidth;        ///< Outer back plate width
+    double backPlateOuterHeight;       ///< Outer back plate full height
+
     double floorShineThick;       ///< Floor shine thickness
     double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface) - general length that is overriden by the particular lengths below
 
@@ -92,7 +97,8 @@ namespace setVariable
     virtual void setOuterBackExt(const double T) final { outerBackVoid=T; }
 
     virtual void setFrontPlate(const double T, const double W, const double H);
-    virtual void setBackPlate(const double T, const double W, const double H);
+    virtual void setBackPlateInner(const double T, const double W, const double H);
+    virtual void setBackPlateOuter(const double T, const double W, const double H);
 
     virtual void setFloorShine(const double T, const double L) final;
 

@@ -3,7 +3,7 @@
 
  * File:   commonBeam/XRayHutchBase.cxx
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,6 +86,10 @@ namespace xraySystem
     backPlateInnerThick = 0.0;
     backPlateInnerWidth = 0.0;
     backPlateInnerHeight= 0.0;
+
+    backPlateOuterThick = 0.0;
+    backPlateOuterWidth = 0.0;
+    backPlateOuterHeight= 0.0;
   }
 
   void
@@ -127,6 +131,13 @@ namespace xraySystem
       backPlateInnerHeight=Control.EvalVar<double>(keyName+"BackPlateInnerHeight");
     }
 
+    backPlateOuterActive=Control.EvalDefVar<int>(keyName+"BackPlateOuterActive",false);
+    if (backPlateOuterActive) {
+      backPlateOuterThick=Control.EvalVar<double>(keyName+"BackPlateOuterThick");
+      backPlateOuterWidth=Control.EvalVar<double>(keyName+"BackPlateOuterWidth");
+      backPlateOuterHeight=Control.EvalVar<double>(keyName+"BackPlateOuterHeight");
+    }
+
     floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");
     floorShineLength=Control.EvalVar<double>(keyName+"FloorShineLength");
     floorShineFrontLength=Control.EvalDefVar<double>(keyName+"FloorShineFrontLength", floorShineLength);
@@ -136,11 +147,11 @@ namespace xraySystem
     size_t holeIndex(0);
     do {
       const std::string iStr("Hole"+std::to_string(holeIndex));
-      const double holeXStep=Control.EvalDefVar<double>(keyName+iStr+"XStep",0.0);
-      const double holeZStep=Control.EvalDefVar<double>(keyName+iStr+"ZStep",0.0);
       holeRad=Control.EvalDefVar<double>(keyName+iStr+"Radius",-1.0);
 
       if (holeRad>Geometry::zeroTol) {
+	const double holeXStep=Control.EvalDefVar<double>(keyName+iStr+"XStep",0.0);
+	const double holeZStep=Control.EvalDefVar<double>(keyName+iStr+"ZStep",0.0);
 	holeOffset.push_back(Geometry::Vec3D(holeXStep,0.0,holeZStep));
 	holeRadius.push_back(holeRad);
 	holeIndex++;

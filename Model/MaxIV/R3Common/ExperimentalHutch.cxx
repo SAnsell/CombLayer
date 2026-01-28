@@ -120,7 +120,10 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   backVoid=Control.EvalVar<double>(keyName+"BackVoid");
 
   if (backPlateInnerActive)
-    throw ColErr::AbsObjMethod(keyName+": Back wall plate is not implemented for ExperimentalHutch yet");
+    throw ColErr::AbsObjMethod(keyName+": Back wall inner plate is not implemented for ExperimentalHutch yet");
+
+  if (backPlateOuterActive)
+    throw ColErr::AbsObjMethod(keyName+": Back wall outer plate is not implemented for ExperimentalHutch yet");
 
   return;
 }
@@ -432,7 +435,7 @@ ExperimentalHutch::createObjects(Simulation& System)
   }
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 4 -14");
-  makeCell("InnerRingWall",System,cellIndex++,skinMat,0.0,HR*innerWall*forkWallRing*tb);
+  makeCell("InnerSkinRingWall",System,cellIndex++,skinMat,0.0,HR*innerWall*forkWallRing*tb);
 
   // alt for corner cut
   if (pbBackThick>Geometry::zeroTol) {
@@ -516,8 +519,7 @@ ExperimentalHutch::createObjects(Simulation& System)
     {
       HR=ModelSupport::getSetHeadRule
 	(SMap,buildIndex,"-32 (-33:333) 1033 -36 -1333");
-      makeCell("OuterLeftVoid",System,cellIndex++,voidMat,
-	       0.0,HR*floor*frontWall);
+      makeCell("OuterLeftVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 34 -1034 -36");
       makeCell("OuterRightVoid",System,cellIndex++,voidMat,
@@ -719,7 +721,7 @@ ExperimentalHutch::createChicane(Simulation& System)
 	}
       else if (wallName=="Right" || wallName=="Ring")
 	{
-	  PItem->addInsertCell("Inner",getCell("InnerRingWall"));
+	  PItem->addInsertCell("Inner",getCell("InnerSkinRingWall"));
 	  PItem->addInsertCell("Inner",getCell("LeadRingWall"));
 	  PItem->addInsertCell("Inner",getCell("OuterSkinRingWall"));
 	  //PItem->addInsertCell("Main",getCell("RightWallVoid"));
@@ -801,7 +803,7 @@ ExperimentalHutch::splitChicane(Simulation& System,
 				    midPt,Axis);
 	  for(const std::string cellName :
 		{
-		  "InnerRingWall","LeadRingWall",
+		  "InnerSkinRingWall","LeadRingWall",
 		  "OuterSkinRingWall","OuterRightVoid"
 		})
 	    {

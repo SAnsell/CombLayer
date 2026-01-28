@@ -52,6 +52,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "AttachSupport.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
@@ -173,8 +174,6 @@ DANMAX::build(Simulation& System,
 
   // Inner space
 
-  if (stopPoint=="opticsHut") return;
-
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
   joinPipe->addInsertCell("FlangeA",wallLead->getCell("Void"));
@@ -192,6 +191,7 @@ DANMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+  if (stopPoint=="opticsHutch") return;
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
@@ -204,7 +204,34 @@ DANMAX::build(Simulation& System,
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut2->createAll(System,*opticsHut,"back");
 
-  //  joinPipeB->insertInCell("Main",System,exptHut2->getCell("FrontPlateHole"));
+  // Example:
+
+  // The outer back plate of the optics hutch (BackPlateOuter) needs
+  // to be inserted into some cells of the experimental hutch. This
+  // can be done either by manually inserting it into each cell, or by
+  // letting CombLayer search for all required cells using the
+  // addToInsertSurfCtrl method.
+
+  // Both approaches produce the same geometry, although the resulting
+  // files may differ in the order of the cell surfaces. In both
+  // cases, only the necessary surfaces are used; for example, when
+  // intersecting with LeadRingWall, only 3 out of the 6 surfaces of
+  // BackPlateOuter are involved.
+
+  // The automatic method does not always replace the manual one
+  // because there might be situations when you don't want to
+  // intersect all cells.
+
+  // Manually:
+  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("Void"));
+  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("FloorShineRingWallVoid"));
+  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("InnerSkinRingWall"));
+  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("LeadRingWall"));
+  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("OuterSkinRingWall"));
+  // opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell("OuterRightVoid"));
+
+  // Automatically:
+  attachSystem::addToInsertSurfCtrl(System, *exptHut2, opticsHut->getCC("BackPlateOuter"));
 
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(
@@ -214,7 +241,7 @@ DANMAX::build(Simulation& System,
       //      exptHut2->getCell("FrontVoid")
     }
   );
-  connectUnit->setFront(*opticsHut, "back");
+  connectUnit->setFront(*opticsHut, "backPlateOuter");
   connectUnit->setBack(*exptHut2,"innerBack");
   connectUnit->createAll(System,*joinPipeB,"back");
 
