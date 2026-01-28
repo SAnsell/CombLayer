@@ -336,7 +336,7 @@ opticsHutVariables(FuncDataBase& Control,
   // Section A-A [1]
   Control.addVariable(hutName+"RingStepWidth",566.7-opticsHutOuterWidth-120.2);
 
-  Control.addVariable(hutName+"BackPlateActive", 0);
+  Control.addVariable(hutName+"BackPlateInnerActive", 0);
 
   Control.addVariable(hutName+"NChicane",2);
   PortChicaneGenerator PGen;
@@ -595,10 +595,10 @@ exptHut2Variables(FuncDataBase& Control,
   EGen.setWallLead(0.2); // "Lead Thickness Side Wall", Section A-A [3]
   EGen.setFloorShine(0.6, 20.0); // Detail J [3]
 
-  // "Lead Thickness", back view [1]
-  ELog::EM << "TODO: set correct dimensions and intersect cells: 7x200x200" << ELog::endWarn;
-  ELog::EM << "TODO: Why thickness==7 ?" << ELog::endWarn;
-  EGen.setFrontPlate(7.0, 50.0, 80.0); // TODO: dummy. Set correct values.
+  // // "Lead Thickness", back view [1]
+  // ELog::EM << "TODO: set correct dimensions and intersect cells: 7x200x200" << ELog::endWarn;
+  // ELog::EM << "TODO: Why thickness==7 ?" << ELog::endWarn;
+  // EGen.setFrontPlate(7.0, 50.0, 80.0); // TODO: dummy. Set correct values.
 
   // The actual length of hutch 2 is 5366 mm as shown in [3].
   // However, to match the simplified model of the optics hutch, use the slightly

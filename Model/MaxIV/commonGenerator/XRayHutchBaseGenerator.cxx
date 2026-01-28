@@ -55,7 +55,7 @@ XRayHutchBaseGenerator::XRayHutchBaseGenerator() :
   innerThick(0.3),pbWallThick(1.6),pbBackThick(7.0),pbRoofThick(1.6),outerThick(0.3),
   innerOutVoid(10.0),outerOutVoid(10.0),outerBackVoid(0.0),
   frontPlateActive(false),frontPlateThick(0.0),frontPlateWidth(0.0),frontPlateHeight(0.0),
-  backPlateActive(false),backPlateThick(0.0),backPlateWidth(0.0),backPlateHeight(0.0),
+  backPlateInnerActive(false),backPlateInnerThick(0.0),backPlateInnerWidth(0.0),backPlateInnerHeight(0.0),
   floorShineThick(0.6), floorShineLength(50.0),
   voidMat("Void"),skinMat("SteelUnknownGrade"),pbMat("Lead"),
   floorShineMat("Lead")
@@ -88,10 +88,10 @@ XRayHutchBaseGenerator::setBackPlate(const double T, const double W, const doubl
   \param H :: full height
  */
 {
-  backPlateActive = true;
-  backPlateThick  = T;
-  backPlateWidth  = W;
-  backPlateHeight = H;
+  backPlateInnerActive = true;
+  backPlateInnerThick  = T;
+  backPlateInnerWidth  = W;
+  backPlateInnerHeight = H;
 }
 
 void
@@ -155,10 +155,10 @@ XRayHutchBaseGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"FrontPlateWidth", frontPlateWidth);
   Control.addVariable(keyName+"FrontPlateHeight",frontPlateHeight);
 
-  Control.addVariable(keyName+"BackPlateActive",backPlateActive);
-  Control.addVariable(keyName+"BackPlateThick", backPlateThick);
-  Control.addVariable(keyName+"BackPlateWidth", backPlateWidth);
-  Control.addVariable(keyName+"BackPlateHeight",backPlateHeight);
+  Control.addVariable(keyName+"BackPlateInnerActive",backPlateInnerActive);
+  Control.addVariable(keyName+"BackPlateInnerThick", backPlateInnerThick);
+  Control.addVariable(keyName+"BackPlateInnerWidth", backPlateInnerWidth);
+  Control.addVariable(keyName+"BackPlateInnerHeight",backPlateInnerHeight);
 
   Control.addVariable(keyName+"FloorShineThick",floorShineThick);
   Control.addVariable(keyName+"FloorShineLength",floorShineLength);

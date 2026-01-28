@@ -119,7 +119,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
 
   backVoid=Control.EvalVar<double>(keyName+"BackVoid");
 
-  if (backPlateActive)
+  if (backPlateInnerActive)
     throw ColErr::AbsObjMethod(keyName+": Back wall plate is not implemented for ExperimentalHutch yet");
 
   return;

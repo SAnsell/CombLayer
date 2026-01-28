@@ -62,10 +62,10 @@ OpticsHutchGenerator::OpticsHutchGenerator() :
   */
 {
   // by default the back wall plate is active in optics hutches:
-  backPlateActive = true;
-  backPlateThick = 7.0;
-  backPlateWidth = 200.0;
-  backPlateHeight = 200.0;
+  backPlateInnerActive = true;
+  backPlateInnerThick = 7.0;
+  backPlateInnerWidth = 200.0;
+  backPlateInnerHeight = 200.0;
 }
 
 void

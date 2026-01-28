@@ -83,9 +83,9 @@ namespace xraySystem
     frontPlateWidth = 0.0;
     frontPlateHeight= 0.0;
 
-    backPlateThick = 0.0;
-    backPlateWidth = 0.0;
-    backPlateHeight= 0.0;
+    backPlateInnerThick = 0.0;
+    backPlateInnerWidth = 0.0;
+    backPlateInnerHeight= 0.0;
   }
 
   void
@@ -120,11 +120,11 @@ namespace xraySystem
       frontPlateHeight=Control.EvalVar<double>(keyName+"FrontPlateHeight");
     }
 
-    backPlateActive=Control.EvalDefVar<int>(keyName+"BackPlateActive",false);
-    if (backPlateActive) {
-      backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
-      backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
-      backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
+    backPlateInnerActive=Control.EvalDefVar<int>(keyName+"BackPlateInnerActive",false);
+    if (backPlateInnerActive) {
+      backPlateInnerThick=Control.EvalVar<double>(keyName+"BackPlateInnerThick");
+      backPlateInnerWidth=Control.EvalVar<double>(keyName+"BackPlateInnerWidth");
+      backPlateInnerHeight=Control.EvalVar<double>(keyName+"BackPlateInnerHeight");
     }
 
     floorShineThick=Control.EvalVar<double>(keyName+"FloorShineThick");

@@ -44,8 +44,8 @@ namespace setVariable
     // walls
     double innerThick;            ///< Inner wall/roof skin
     double pbWallThick;           ///< Thickness of lead in walls
-    double pbBackThick;           ///< Thickness of lead in back plate
-    double pbRoofThick;           ///< Thickness of lead in Roof
+    double pbBackThick;           ///< Thickness of lead in the back wall
+    double pbRoofThick;           ///< Thickness of lead in roof
     double outerThick;            ///< Outer wall/roof skin
 
     double innerOutVoid;          ///< Extension for inner left void space
@@ -57,10 +57,10 @@ namespace setVariable
     double frontPlateWidth;       ///< Front plate width
     double frontPlateHeight;      ///< Front plate full height
 
-    int backPlateActive;          ///< Back plate active flag
-    double backPlateThick;        ///< Back plate thickness
-    double backPlateWidth;        ///< Back plate width
-    double backPlateHeight;       ///< Back plate full height
+    int backPlateInnerActive;          ///< Inner back plate active flag
+    double backPlateInnerThick;        ///< Inner back plate thickness
+    double backPlateInnerWidth;        ///< Inner back plate width
+    double backPlateInnerHeight;       ///< Inner back plate full height
 
     double floorShineThick;       ///< Floor shine thickness
     double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface) - general length that is overriden by the particular lengths below

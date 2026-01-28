@@ -173,14 +173,14 @@ OpticsHutch::createSurfaces()
   }
 
   ModelSupport::buildPlane(SMap,buildIndex+102,
-			   Origin+Y*(length+innerThick-backPlateThick-backWallThick),Y);
+			   Origin+Y*(length+innerThick-backPlateInnerThick-backWallThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+112,
-			   Origin+Y*(length-backWallThick-backPlateThick),Y);
+			   Origin+Y*(length-backWallThick-backPlateInnerThick),Y);
 
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(backPlateWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(backPlateWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(backPlateHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(backPlateWidth/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(backPlateInnerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(backPlateInnerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(backPlateInnerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(backPlateInnerWidth/2.0),Z);
 
   int BI(buildIndex);
   for(size_t i=0;i<holeRadius.size();i++)
@@ -312,8 +312,8 @@ OpticsHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33  26 -36");
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideWallCut);
 
-  // Back plate:
-  if (backPlateActive) {
+  // Inner back plate:
+  if (backPlateInnerActive) {
     HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
     makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
 
@@ -444,7 +444,7 @@ OpticsHutch::createLinks()
   nameSideIndex(11,"innerFront");
 
   // use
-  setConnect(12,Origin+Y*(length-backWallThick-backPlateThick),-Y);
+  setConnect(12,Origin+Y*(length-backWallThick-backPlateInnerThick),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+112));
   nameSideIndex(12,"innerBack");
 

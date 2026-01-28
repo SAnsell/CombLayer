@@ -189,7 +189,7 @@ OpticsStepHutch::createObjects(Simulation& System)
 
       // Big void cell
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 (-304:-301) -605");
-      if (floorShineLength-backPlateThick>Geometry::zeroTol)
+      if (floorShineLength-backPlateInnerThick>Geometry::zeroTol)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-302:305");
 
       if (floorShineLength-innerOutVoid>Geometry::zeroTol)
@@ -274,7 +274,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"222 -232 234 234 -36");
   makeCell("flatOWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
-  // Back plate:
+  // Inner back plate:
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
   makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
 
@@ -288,7 +288,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex, "302 -2 3 -204 -305");
   makeCell("BackPlateFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
 
-  if (floorShineLength-backPlateThick<Geometry::zeroTol) {
+  if (floorShineLength-backPlateInnerThick<Geometry::zeroTol) {
     HR=ModelSupport::getHeadRule(SMap,buildIndex, "112 -302 -2 1003 -304 -305");
     makeCell("BackPlateFloorShineVoid",System,cellIndex++,0,0.0,HR*floor);
   }

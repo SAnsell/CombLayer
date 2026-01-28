@@ -59,10 +59,10 @@ namespace xraySystem
       double frontPlateWidth;       ///< Front plate width
       double frontPlateHeight;      ///< Front plate full height
 
-      bool backPlateActive;         ///< Back plate active flag
-      double backPlateThick;        ///< Back plate thick
-      double backPlateWidth;        ///< Back plate width
-      double backPlateHeight;       ///< back plate Height
+      bool backPlateInnerActive;         ///< Inner back plate active flag
+      double backPlateInnerThick;        ///< Inner back plate thick
+      double backPlateInnerWidth;        ///< Inner back plate width
+      double backPlateInnerHeight;       ///< Inner back plate height
 
       double floorShineThick;       ///< Floor shine thickness
       double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface) - general length that is overriden by the particular lengths below
