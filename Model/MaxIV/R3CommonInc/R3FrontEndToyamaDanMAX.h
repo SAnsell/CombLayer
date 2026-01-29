@@ -47,7 +47,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class BremBlock;
-  class HeatAbsorberToyama;
+  class HeatAbsorberR3Toyama;
   class ProximityShielding;
   class CylGateValve;
   class HeatDump;
@@ -87,7 +87,7 @@ protected:
   std::shared_ptr<constructSystem::FlangePlate> flangePlateD;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateE;
   std::shared_ptr<constructSystem::Bellows> bellowPreHA;
-  std::shared_ptr<xraySystem::HeatAbsorberToyama> ha;
+  std::shared_ptr<xraySystem::HeatAbsorberR3Toyama> ha;
   std::shared_ptr<constructSystem::Bellows> bellowPostHA;
   std::shared_ptr<constructSystem::CrossPipe> ionPump3;
   std::shared_ptr<xraySystem::CylGateValve> valve2;

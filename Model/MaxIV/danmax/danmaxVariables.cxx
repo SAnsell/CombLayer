@@ -74,7 +74,7 @@
 #include "CrossGenerator.h"
 #include "BeamMountGenerator.h"
 #include "BremBlockGenerator.h"
-#include "HeatAbsorberToyamaGenerator.h"
+#include "HeatAbsorberR3ToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 
 
@@ -253,7 +253,7 @@ frontMaskVariables(FuncDataBase& Control,
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [4]
 
-  HeatAbsorberToyamaGenerator HAGen;
+  HeatAbsorberR3ToyamaGenerator HAGen;
 
   constexpr double heatAbsorberLength = 26.5;  // [4]
 

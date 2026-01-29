@@ -74,7 +74,7 @@ class HeatAbsorberR3ToyamaGenerator
   HeatAbsorberR3ToyamaGenerator& operator=(const HeatAbsorberR3ToyamaGenerator&);
   virtual ~HeatAbsorberR3ToyamaGenerator();
 
-  virtual void generate(FuncDataBase&,const std::string&) const;
+  virtual void generate(FuncDataBase&,const std::string&, const double) const;
 
 };
 

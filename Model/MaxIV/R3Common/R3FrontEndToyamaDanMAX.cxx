@@ -95,7 +95,7 @@
 #include "BremBlock.h"
 #include "LObjectSupport.h"
 #include "MovableSafetyMask.h"
-#include "HeatAbsorberToyama.h"
+#include "HeatAbsorberR3Toyama.h"
 #include "ProximityShielding.h"
 #include "FlangePlate.h"
 #include "R3FrontEnd.h"
@@ -118,7 +118,7 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   flangePlateD(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateD")),
   flangePlateE(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateE")),
   bellowPreHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPreHA")),
-  ha(std::make_shared<xraySystem::HeatAbsorberToyama>(newName+"HeatAbsorber")),
+  ha(std::make_shared<xraySystem::HeatAbsorberR3Toyama>(newName+"HeatAbsorber")),
   bellowPostHA(std::make_shared<constructSystem::Bellows>(newName+"BellowPostHA")),
   ionPump3(new constructSystem::CrossPipe(newName+"IonPump3")),
   valve2(std::make_shared<xraySystem::CylGateValve>(newName+"Valve2")),
