@@ -119,6 +119,7 @@ namespace danmaxVar
     const double MLMY = 2834.8; // Position of the view port on the top
     const double whiteBeamStopY = 2954.83;
     const double bremColl2Y = 2965.03;
+    const double monoSlitsY = 2987.56;
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -810,7 +811,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   setVariable::PortItemGenerator PItemGen;
   setVariable::DoublePortItemGenerator DItemGen;
   setVariable::BremBlockGenerator BremGen;
-  setVariable::JawValveGenerator JawGen;
+  setVariable::BeamPairGenerator BeamPairGen;
 
   const double port0Radius = 5.08; // [10]
   const double port0WallThick = 0.2; // [10]
@@ -892,14 +893,60 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   BremGen.generateBlock(Control,viewKey+"BeamStop",tubeLength/2.0-tubeLengthAboveOpticalAxis);
   Control.addVariable(viewKey+"BeamStopXAngle",90);
 
-   // Single slit pair
-  const double jawTubeWallThick = 1.5; // [10]
+  // Tube for Monochromatic Slits
+  const double monoSlitsTubeWallThick = 1.5; // [10]
   // CF150 to fit flange B of port 1 [10]
-  JawGen.setRadius(CF150::flangeRadius-jawTubeWallThick);
-  JawGen.setWallThick(jawTubeWallThick);
-  JawGen.setLength(10.5); // [10]
-  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
-  JawGen.generateSlits(Control,viewKey+"SlitsA",0.0,0.8,0.8);
+  SimpleTubeGen.setPipe(
+    CF150::flangeRadius-monoSlitsTubeWallThick,monoSlitsTubeWallThick,1.0,0.0); // [10]
+  pipeName = viewKey+"MonoSlitsTube";
+  SimpleTubeGen.generateTube(
+    Control,pipeName,
+    2.0*(danmaxVar::absY::monoSlitsY-danmaxVar::absY::bremColl2Y-port1Length));
+  Control.addVariable(pipeName+"NPorts",4);
+  PItemGen.setCF<CF16>(12.0);
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
+  const double bladeThick = 0.2; // [10]
+  const double bladeOffset = 0.1; // [10]
+  const double bladeXZDist = 3.1; // [10]
+  const double bladeWidth = 5.0; // [13]
+  const double innerBladePos = 0.5*(bladeXZDist-bladeOffset-bladeThick);
+  const double outerBladePos = 0.5*(bladeXZDist+bladeOffset+bladeThick);
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,-outerBladePos,0.5*bladeWidth),
+			Geometry::Vec3D(-1,0,0));
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,-innerBladePos,-0.5*bladeWidth),
+			Geometry::Vec3D(-1,0,0));
+  PItemGen.generatePort(Control,pipeName+"Port2",
+			Geometry::Vec3D(0.5*bladeWidth,innerBladePos,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(Control,pipeName+"Port3",
+			Geometry::Vec3D(-0.5*bladeWidth,outerBladePos,0),
+			Geometry::Vec3D(0,0,1));
+
+  // Slit width/height/material are the same as in Diagnostic Module 2, therefore 
+  // assume other properties are also similar if not indicated otherwise.
+  BeamPairGen.setLift(0.6, 0.6); // "Maximum aperture" given as 10 mm x 10 mm [13]
+  BeamPairGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
+  BeamPairGen.setThread(0.5*bladeThick,"Nickel"); // Estimated
+  // Height from [13]
+  // Material: TODO: Should be Tungsten Carbide [13]
+  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"Tungsten");
+  // Cooling is achieved through water-cooled fingers attached to the blades 
+  // (not modeled). This is different from Diagnostic Module 2.
+  BeamPairGen.setWaterPipes(0,0);
+
+  // Seen from upstream, the beam hits the jaws in the following order [10]:
+  // Right (MonoSlitsX A) -> Left (MonoSlitsX B)
+  // -> Bottom (MonoSlitsZ B) -> Top (MonoSlitsZ A)
+  BeamPairGen.setXYStep(
+    -0.5*bladeThick-2.0*bladeOffset,-0.5*bladeWidth,
+    0.0,-0.5*bladeWidth);
+  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsX",0);
+  BeamPairGen.setXYStep(
+    0.5*bladeWidth,-0.5*bladeThick-2.0*bladeOffset,
+    0.5*bladeWidth,0.0);
+  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsZ",0);
 
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();

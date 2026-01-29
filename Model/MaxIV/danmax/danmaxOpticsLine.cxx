@@ -148,7 +148,11 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   beamStopTube(new constructSystem::PipeTube(newName+"BeamStopTube")),
   beamStop(new xraySystem::BremBlock(newName+"BeamStop")),
   beamStopOutPipe(new constructSystem::VacuumPipe(newName+"BeamStopOutPipe")),
-  slitsA(new constructSystem::JawValveTube(newName+"SlitsA")),
+  monoSlitsTube(new constructSystem::PipeTube(newName+"MonoSlitsTube")),
+  monoSlits({
+      std::make_shared<xraySystem::BeamPair>(newName+"MonoSlitsX"),
+      std::make_shared<xraySystem::BeamPair>(newName+"MonoSlitsZ")
+	}),
   slitsAOut(new constructSystem::VacuumPipe(newName+"SlitsAOut")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   viewTubeB(new constructSystem::PortTube(newName+"ViewTubeB")),
@@ -211,7 +215,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(beamStopTube);
   OR.addObject(beamStop);
   OR.addObject(beamStopOutPipe);
-  OR.addObject(slitsA);
+  OR.addObject(monoSlitsTube);
+  OR.addObject(monoSlits[0]);
+  OR.addObject(monoSlits[1]);
   OR.addObject(slitsAOut);
   OR.addObject(bellowH);
   OR.addObject(viewTubeB);
@@ -599,10 +605,30 @@ danmaxOpticsLine::constructBeamStopTube
     (System,buildZone,VPB,"OuterPlate",*beamStopOutPipe);
 
   constructSystem::constructUnit
-    (System,buildZone,*beamStopOutPipe,"back",*slitsA);
+    (System,buildZone,*beamStopOutPipe,"back",*monoSlitsTube);
+
+  for(auto i: std::vector<size_t>{0,1}){
+    const constructSystem::portItem& port0=monoSlitsTube->getPort(2*i);
+    const constructSystem::portItem& port1=monoSlitsTube->getPort(2*i+1);
+    monoSlits[i]->addInsertCell("SupportA",port1.getCell("Void"));
+    monoSlits[i]->addInsertCell("SupportA",monoSlitsTube->getCell("Void"));
+    monoSlits[i]->addInsertCell("BlockA",monoSlitsTube->getCell("Void"));
+    monoSlits[i]->addInsertCell("SupportB",port0.getCell("Void"));
+    monoSlits[i]->addInsertCell("SupportB",monoSlitsTube->getCell("Void"));
+    monoSlits[i]->addInsertCell("BlockB",monoSlitsTube->getCell("Void"));
+    // Both BeamPair elements are actually supposed to be constructed within a single
+    // port. By setting the appropriate insert cells here and x- and y-step values 
+    // elsewhere, it will appear as if they were built in separate ports.
+    monoSlits[i]->createAll(System,*monoSlitsTube,0,port0,
+      port0.getSideIndex("InnerPlate"));
+  }
+
+  monoSlitsTube->insertAllInCell(System,buildZone.getLastCell("Unit")-1);
 
   constructSystem::constructUnit
-    (System,buildZone,*slitsA,"back",*slitsAOut);
+    (System,buildZone,*monoSlitsTube,"back",*slitsAOut);
+
+  monoSlitsTube->insertAllInCell(System,buildZone.getLastCell("Unit"));
 
   return;
 }

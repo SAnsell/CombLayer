@@ -160,7 +160,8 @@ class danmaxOpticsLine :
   // Connector from beamstop tube to slit tube
   std::shared_ptr<constructSystem::VacuumPipe> beamStopOutPipe;
   /// Slits after beamstop
-  std::shared_ptr<constructSystem::JawValveTube> slitsA;
+  std::shared_ptr<constructSystem::PipeTube> monoSlitsTube;
+  std::array<std::shared_ptr<xraySystem::BeamPair>,2> monoSlits;
   /// Flange converter
   std::shared_ptr<constructSystem::VacuumPipe> slitsAOut;
   /// Connector to next beam view
