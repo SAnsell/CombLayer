@@ -984,18 +984,16 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
     HDCMPortALength,HDCMTotalLength-HDCMPortALength
     -2.0*monoVesselWallThick-2.0*monoVesselRadius
   );
-  MBoxGen.setBPortOffset(-0.6,0.0); // note -1mm from crystal offset
-  // radius : Heigh / depth  [need heigh = 0]
+
+  // Although the HDCM shifts the beam axis, the front and back ports of 
+  // are collinear [10]. No call to MBoxGen.setBPortOffset() or similar needed.
+
+  // radius, height, depth
   MBoxGen.generateBox(Control,monoKey+"MonoVessel",monoVesselRadius,0.0,17.5); // [10]
   Control.addVariable(monoKey+"MonoVesselWallThick", 0.5);
 
-  //  Control.addVariable(monoKey+"MonoVesselPortAZStep",-7);   //
-  //  Control.addVariable(monoKey+"MonoVesselFlangeAZStep",-7);     //
-  //  Control.addVariable(monoKey+"MonoVesselFlangeBZStep",-7);     //
-  Control.addVariable(monoKey+"MonoVesselPortBXStep",-0.6);      // from primary
-
   const std::string portName=monoKey+"MonoVessel";
-  Control.addVariable(monoKey+"MonoVesselNPorts",0);   // beam ports (lots!!)
+  Control.addVariable(monoKey+"MonoVesselNPorts",0);
   PItemGen.setCF<setVariable::CF63>(5.0+31.2);
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
@@ -1037,6 +1035,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
   MBoxGen.setPortLength(MLMPortLength, MLMPortLength); // [10]
   const double MLMHeight = 47.0;
   const double MLMHeightAboveOpticalAxis = 11.55+CF40::innerRadius;
+  MBoxGen.setBPortOffset(-1.0, 0.0); // [10]
   // width / heigh / depth / length
   MBoxGen.generateBox
     (
@@ -1046,9 +1045,6 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
       MLMHeight-MLMHeightAboveOpticalAxis-MLMFloorThick,
       MLMTotalLength-2.0*MLMWallThick-2.0*MLMPortLength
     );
-
-  // No difference in offset between A and B ports in [10]
-  Control.addVariable(monoKey+"MLMVesselPortBXStep",0.0);
 
   const std::string portName=monoKey+"MLMVessel";
   Control.addVariable(monoKey+"MLMVesselNPorts",0);
