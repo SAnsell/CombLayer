@@ -835,6 +835,18 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
       +beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength-port0WallThick,0),
 			Geometry::Vec3D(1,0,0));
 
+  // Demonstrate explicitly that the code sets the position of the bremsstrahlung 
+  // collimator correctly by re-calculating the distance between the bremsstrahlung 
+  // collimator and the white beam stop using local variables.
+  assert(
+    fabs(
+      (
+        port0Length - (beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength)
+      ) // Calculated value
+    - (danmaxVar::absY::bremColl2Y-danmaxVar::absY::whiteBeamStopY) // Reference value [12]
+    ) < Geometry::zeroTol
+  );
+
   // will be rotated vertical
   pipeName=viewKey+"BeamStopTube";
   SimpleTubeGen.setCF<CF160>(); // [10]
@@ -1575,7 +1587,7 @@ support7DanMAX(FuncDataBase& Control,
   Control.addVariable(frontKey+"ProxiShieldBPipeFlangeARadius",7.5);
   Control.addVariable(frontKey+"ProxiShieldBYStep",setVariable::CF40::flangeLength+0.1); // approx
 
-  // Bremsstrahulung collimator
+  // Bremsstrahlung collimator
   std::string name;
   name=frontKey+"BremCollPipe";
   constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[6]
