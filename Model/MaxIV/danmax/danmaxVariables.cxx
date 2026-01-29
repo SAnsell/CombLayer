@@ -766,14 +766,19 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
   PTubeGen.setMat("SteelUnknownGrade");
   PTubeGen.setPipeCF<CF150>();
   PTubeGen.setPortCF<CF40>();
-  PTubeGen.setPortLength(3.0,3.0);
+  const double wallThick = 0.3; // [10]
+  PTubeGen.setWallThick(wallThick);
+  const double flangeLength = 3.0; // [10]
+  PTubeGen.setPortLength(flangeLength,flangeLength);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,pipeName,0.0,30.0);
+  const double totalLength = 36.0; // [10]
+  PTubeGen.generateTube(
+    Control,pipeName,0.0,totalLength-2.0*flangeLength-2.0*wallThick);
 
 
   // will be rotated vertical
 
-  Control.addVariable(pipeName+"NPorts",3);   // beam ports (lots!!)
+  Control.addVariable(pipeName+"NPorts",3);
 
   PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+5.0);
   PItemGen.generatePort(Control,pipeName+"Port0",
