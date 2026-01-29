@@ -3,7 +3,7 @@
 
  * File: danmax/DANMAX.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,7 +204,12 @@ DANMAX::build(Simulation& System,
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut2->createAll(System,*opticsHut,"back");
 
-  attachSystem::addToInsertSurfCtrl(System, *exptHut2, opticsHut->getCC("BackPlateOuter"));
+  // two ways to insert BackPlateOuter into expt. hutch2:
+  const std::set<std::string> cells = {"Void", "FloorShineRingWallVoid", "InnerSkinRingWall", "LeadRingWall", "OuterSkinRingWall", "OuterRightVoid"};
+  for (const auto& c : cells)
+    opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell(c));
+  // the same but ~x10 slower (~2.5 ms vs 250 us) since needs to check all cells:
+  //  attachSystem::addToInsertSurfCtrl(System, *exptHut2, opticsHut->getCC("BackPlateOuter"));
 
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(
