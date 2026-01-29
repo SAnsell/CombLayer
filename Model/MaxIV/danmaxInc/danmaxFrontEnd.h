@@ -43,7 +43,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class R3FrontEndToyama;
+  class R3FrontEndToyamaDanMAX;
   class HeatDump;
   class LCollimator;
   class SqrCollimator;
@@ -60,7 +60,7 @@ namespace xraySystem
   */
 
 class danmaxFrontEnd :
-  public R3FrontEndToyama
+  public R3FrontEndToyamaDanMAX
 {
  private:
 

@@ -69,7 +69,7 @@
 #include "ProximityShielding.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
-#include "R3FrontEndToyama.h"
+#include "R3FrontEndToyamaDanMAX.h"
 #include "danmaxFrontEnd.h"
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"

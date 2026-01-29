@@ -61,7 +61,7 @@
 #include "VacuumPipe.h"
 #include "Undulator.h"
 #include "R3FrontEnd.h"
-#include "R3FrontEndToyama.h"
+#include "R3FrontEndToyamaDanMAX.h"
 
 #include "danmaxFrontEnd.h"
 
@@ -71,7 +71,7 @@ namespace xraySystem
 // Note currently uncopied:
 
 danmaxFrontEnd::danmaxFrontEnd(const std::string& Key) :
-  R3FrontEndToyama(Key),
+  R3FrontEndToyamaDanMAX(Key),
   undulatorPipe(new xraySystem::UTubePipe(newName+"UPipe")),
   undulator(new xraySystem::Undulator(newName+"Undulator"))
   /*!
