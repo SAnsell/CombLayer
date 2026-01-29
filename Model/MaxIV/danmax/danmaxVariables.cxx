@@ -885,6 +885,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   PipeGen.generatePipe(Control,viewKey+"BeamStopOutPipe",
     port1Length-port1ArtificialSplitLength);
 
+  // TODO: Material currently set to pure tungsten (default), but should be DENSIMET [13].
   BremGen.centre();
   BremGen.setCube(10.0,10.0); // [13]
   BremGen.setAperature(0.4); // [13]
@@ -1320,6 +1321,7 @@ opticsVariables(FuncDataBase& Control,
 		Geometry::Vec3D(0,0,-1));
 
   const std::string bremColl1Name = opticsName+"BremColl1";
+  // TODO: Material currently set to pure tungsten (default), but should be DENSIMET [13].
   BremGen.centre();
   BremGen.setLength(8.0); // Sec. 2.1 in [13]
   BremGen.setCube(10.0,10.0); // Sec. 2.1 in [13]
