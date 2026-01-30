@@ -60,7 +60,7 @@ class HeatAbsorberR3Toyama:
  private:
 
   // Outer dimensions
-  double length; ///< Including flanges
+  double length;
   double flangeRadius;
 
   // Connector dimensions
