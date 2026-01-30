@@ -1497,7 +1497,7 @@ opticsVariables(FuncDataBase& Control,
   const double revMonoSlitsFrontToSlits = monoSlitsToBack;
   BellowGen.generateBellow(
     Control,opticsName+"BellowJ",danmaxVar::absY::monoSlits2Y
-    -danmaxVar::absY::CRLY-CRLCenterToBack-valve3Length-revMonoSlitsFrontToSlits);
+    -danmaxVar::absY::CRLY-CRLCenterToBack-CRLGateTotalLength-revMonoSlitsFrontToSlits);
 
   const double revMonoSlitsToBack = revBeamStopPackage(
     Control,opticsName,revMonoSlitsFrontToSlits);
