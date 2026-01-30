@@ -309,7 +309,7 @@ SingleItemVariables(FuncDataBase& Control)
   HAGen.generate(Control,"HA",30.0);
 
   HeatAbsorberR3ToyamaGenerator HAR3Gen;
-  HAR3Gen.generate(Control,"HAR3");
+  HAR3Gen.generate(Control,"HAR3",30.0);
 
   setVariable::EPSeparatorGenerator EPSGen;
   EPSGen.generatePipe(Control,"EPSeparator");

@@ -75,6 +75,7 @@ HeatAbsorberR3ToyamaGenerator::generate(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
+    \param length :: Length
   */
 {
   ELog::RegMethod RegA("HeatAbsorberR3ToyamaGenerator","generate");
