@@ -136,24 +136,6 @@ const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 const double hutchHeightAboveOpticalAxis = 411.0-opticalAxisHeight;
 const double exptHut1WallThick = 0.4; // "Lead Thickness Side Wall", Section A-A [2]
 
-void undulatorVariables(FuncDataBase&,const std::string&);
-void frontMaskVariables(FuncDataBase&,const std::string&);
-void monoShutterVariables(FuncDataBase&,const std::string&);
-void connectVariables(FuncDataBase&,const std::string&);
-void opticsHutVariables(FuncDataBase&,const std::string&);
-void exptHut1Variables(FuncDataBase&,const std::string&);
-void exptHut2Variables(FuncDataBase&,const std::string&);
-
-void lensPackage(FuncDataBase&,const std::string&);
-void mirrorMonoPackage(FuncDataBase&,const std::string&);
-double monoPackage(FuncDataBase&,const std::string&);
-void viewPackage(FuncDataBase&,const std::string&);
-void viewBPackage(FuncDataBase&,const std::string&);
-void beamStopPackage(FuncDataBase&,const std::string&);
-void revBeamStopPackage(FuncDataBase&,const std::string&);
-void support7DanMAX(FuncDataBase&,const std::string&);
-
-
 void
 undulatorVariables(FuncDataBase& Control,
 		   const std::string& frontKey)
