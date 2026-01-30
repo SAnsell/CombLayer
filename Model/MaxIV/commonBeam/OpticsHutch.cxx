@@ -234,14 +234,14 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+504, buildIndex+33, X, -wallShineOutThick);
 
   // Roof shine along the ring side wall
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+603, pSideWall, roofShineLength);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+605, buildIndex+6, Z, -roofShineThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+603, pSideWall, roofShineThick);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+605, buildIndex+6, Z, -roofShineLength);
 
   const HeadRule flatOuterCut=ExternalCut::getValidRule("FlatOuterCut",Origin);
   const Geometry::Plane *pFlatOuterCut=SMap.realPtr<Geometry::Plane>(flatOuterCut.getPrimarySurface());
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+604, pFlatOuterCut, roofShineLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+604, pFlatOuterCut, roofShineThick);
 
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+601, pFrontWall, roofShineLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+601, pFrontWall, roofShineThick);
 
 return;
 }
