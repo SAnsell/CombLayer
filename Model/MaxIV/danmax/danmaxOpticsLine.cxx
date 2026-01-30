@@ -158,8 +158,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   viewTubeB(new constructSystem::PortTube(newName+"ViewTubeB")),
   viewTubeBScreen(new xraySystem::FlangeMount(newName+"ViewTubeBScreen")),
   bellowI(new constructSystem::Bellows(newName+"BellowI")),
+  CRLGateIn(new constructSystem::GateValveCylinder(newName+"CRLGateIn")),
   lensBox(new xraySystem::MonoBox(newName+"LensBox")),
-  gateF(new constructSystem::GateValveCylinder(newName+"GateF")),
+  CRLGateOut(new constructSystem::GateValveCylinder(newName+"CRLGateOut")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
   slitsBOut(new constructSystem::VacuumPipe(newName+"SlitsBOut")),
   revBeamStopTube(new constructSystem::PipeTube(newName+"RevBeamStopTube")),
@@ -223,8 +224,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(viewTubeB);
   OR.addObject(viewTubeBScreen);
   OR.addObject(bellowI);
+  OR.addObject(CRLGateIn);
   OR.addObject(lensBox);
-  OR.addObject(gateF);
+  OR.addObject(CRLGateOut);
   OR.addObject(bellowJ);
   OR.addObject(revBeamStopTube);
   OR.addObject(revBeamStop);
@@ -743,13 +745,16 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*viewTubeB,"back",*bellowI);
 
   constructSystem::constructUnit
-    (System,buildZone,*bellowI,"back",*lensBox);
+    (System,buildZone,*bellowI,"back",*CRLGateIn);
 
   constructSystem::constructUnit
-    (System,buildZone,*lensBox,"back",*gateF);
+    (System,buildZone,*CRLGateIn,"back",*lensBox);
 
   constructSystem::constructUnit
-    (System,buildZone,*gateF,"back",*bellowJ);
+    (System,buildZone,*lensBox,"back",*CRLGateOut);
+
+  constructSystem::constructUnit
+    (System,buildZone,*CRLGateOut,"back",*bellowJ);
 
   constructRevBeamStopTube(System,*bellowJ,"back");
 

@@ -1481,15 +1481,19 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName,mainTubeFrontToBeamViewerPort);
 
   const double CRLFrontToCenter = 49.445/2.0; // [10]
+  const double CRLGateTotalLength = 3.5+2.0*CF40::flangeLength; // [10]
   BellowGen.generateBellow(Control,opticsName+"BellowI",
     danmaxVar::absY::CRLY-danmaxVar::absY::beamViewer3Y-mainTubeBeamViewerPortToBack
-    -CRLFrontToCenter);
+    -CRLFrontToCenter-CRLGateTotalLength);
+
+  GateGen.setCylCF<setVariable::CF40>(); // [10]
+  GateGen.setLength(CRLGateTotalLength-2.0*CF40::flangeLength);
+  GateGen.generateValve(Control,opticsName+"CRLGateIn",0.0,0);
 
   const double CRLCenterToBack = lensPackage(Control,opticsName,CRLFrontToCenter);
 
-  GateGen.setCylCF<setVariable::CF40>();
-  GateGen.setLength(3.1);
-  GateGen.generateValve(Control,opticsName+"GateF",0.0,0);
+  GateGen.generateValve(Control,opticsName+"CRLGateOut",0.0,0);
+
   const double revMonoSlitsFrontToSlits = monoSlitsToBack;
   BellowGen.generateBellow(
     Control,opticsName+"BellowJ",danmaxVar::absY::monoSlits2Y

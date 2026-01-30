@@ -170,14 +170,14 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PortTube> viewTubeB;
   /// Beam viewer [item]
   std::shared_ptr<xraySystem::FlangeMount> viewTubeBScreen;
-  /// Connector to next beam view
+  /// Connector to CRL
   std::shared_ptr<constructSystem::Bellows> bellowI;
-  /// Connector to next beam view
+  /// CRL with gate valves at front and back
+  std::shared_ptr<constructSystem::GateValveCylinder> CRLGateIn;
   std::shared_ptr<xraySystem::MonoBox> lensBox;
+  std::shared_ptr<constructSystem::GateValveCylinder> CRLGateOut;
 
-  /// gate valve from focus box
-  std::shared_ptr<constructSystem::GateValveCylinder> gateF;
-  /// Connector to review beamstop
+  /// Connector to reverse beamstop
   std::shared_ptr<constructSystem::Bellows> bellowJ;
 
   /// Flange convert
