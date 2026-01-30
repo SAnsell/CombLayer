@@ -698,7 +698,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey,
   return totalLength-beamViewerFrontToPort;
 }
 
-void
+double
 lensPackage(FuncDataBase& Control,const std::string& lensKey,
   const double CRLFrontToCenter)
   /*!
@@ -743,7 +743,7 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey,
       PItemGen.generatePort(Control,lensName+portName,Pt,Z);
       Pt+=YStep;
     }
-  return;
+  return totalLength-CRLFrontToCenter;
 }
 
 double
