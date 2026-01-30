@@ -180,15 +180,20 @@ class danmaxOpticsLine :
   /// Connector to reverse beamstop
   std::shared_ptr<constructSystem::Bellows> bellowJ;
 
-  /// Flange convert
-  std::shared_ptr<constructSystem::VacuumPipe> slitsBOut;
-
-  /// BeamStopTube
+  std::shared_ptr<constructSystem::VacuumPipe> revMonoSlitsIn;
+  std::shared_ptr<constructSystem::PipeTube> revMonoSlitsTube;
+  std::array<std::shared_ptr<xraySystem::BeamPair>,2> revMonoSlits;
   std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
-  /// BeamStopBlock
   std::shared_ptr<xraySystem::BremBlock> revBeamStop;
-  /// Slits after beamstop
-  std::shared_ptr<constructSystem::JawValveTube> slitsB;
+
+  // /// Flange convert
+  // std::shared_ptr<constructSystem::VacuumPipe> slitsBOut;
+
+  // /// BeamStopTube
+  // std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
+  // /// BeamStopBlock
+  // std::shared_ptr<xraySystem::BremBlock> revBeamStop;
+
   /// bellows from second mono
   std::shared_ptr<constructSystem::Bellows> bellowK;
   /// adaptor plate from CF63->CF40

@@ -807,7 +807,6 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::DoublePortItemGenerator DItemGen;
   setVariable::BremBlockGenerator BremGen;
   setVariable::BeamPairGenerator BeamPairGen;
 
@@ -888,11 +887,12 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   BremGen.centre();
   BremGen.setCube(10.0,10.0); // [13]
   BremGen.setAperature(0.4); // [13]
-  BremGen.generateBlock(Control,viewKey+"BeamStop",tubeLength/2.0-tubeLengthAboveOpticalAxis);
+  BremGen.generateBlock(Control,viewKey+"BeamStop",
+    tubeLength/2.0-tubeLengthAboveOpticalAxis);
   Control.addVariable(viewKey+"BeamStopXAngle",90);
 
   // Tube for Monochromatic Slits
-  const double monoSlitsTubeWallThick = 1.5; // [10]
+  const double monoSlitsTubeWallThick = 2.0; // [10]
   // CF150 to fit flange B of port 1 [10]
   SimpleTubeGen.setPipe(
     CF150::flangeRadius-monoSlitsTubeWallThick,monoSlitsTubeWallThick,1.0,0.0); // [10]
@@ -902,7 +902,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   SimpleTubeGen.generateTube(
     Control,pipeName,monoSlitsTubeLength);
   Control.addVariable(pipeName+"NPorts",4);
-  PItemGen.setCF<CF16>(12.0);
+  PItemGen.setCF<CF16>(12.0); // Estimated
   PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
   const double bladeThick = 0.2; // [10]
   const double bladeOffset = 0.1; // [10]
@@ -950,7 +950,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  const double slitsAOutLength = 4.0;
+  const double slitsAOutLength = 4.0; // Estimated
   PipeGen.generatePipe(Control,viewKey+"SlitsAOut",slitsAOutLength);
 
   return monoSlitsTubeLength/2.0+slitsAOutLength;
@@ -961,10 +961,14 @@ revBeamStopPackage(FuncDataBase& Control,
 		   const std::string& viewKey, const double revMonoSlitsFrontToSlits)
   /*!
     Builds the variables for the reversed slit tube/beamstop
+
+    The construction is largely analogous to Diagnostic Module 4.
+    See that one for more information.
+
     \param Control :: Database
     \param viewKey :: prename
     \param revMonoSlitsFrontToSlits :: Distance from the front surface to the 
-    slits that define the absolute position.
+    port that defines the absolute position.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","revBeamStopPackage");
@@ -972,55 +976,107 @@ revBeamStopPackage(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::DoublePortItemGenerator DItemGen;
   setVariable::BremBlockGenerator BremGen;
-  setVariable::JawValveGenerator JawGen;
-
-  // will be rotated vertical
-  const std::string pipeName=viewKey+"RevBeamStopTube";
-
-  SimpleTubeGen.setCF<CF150>();
-  SimpleTubeGen.setCap(1,1);
-  // up 15cm / 38.5cm down : Measured +1up clearance
-  SimpleTubeGen.generateTube(Control,pipeName,53.5);
-  Control.addVariable(pipeName+"YAngle",180.0);  // rotate
-  Control.addVariable(pipeName+"NPorts",2);   // beam ports (lots!!)
-
-  // BOTH PORTS COMPLETLEY NON-STANDARD:
-  // Ports 11cm + 15(inner)cm + 10cm   ==> 36.0
-  DItemGen.setDCF<CF63,CF40>(6.5,4.0);
-  DItemGen.setPlate(0.0,"Void");
-
-  DItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,10.75,0),  // 53.5/2-15.0
-			Geometry::Vec3D(0,0,1));
-
-  PItemGen.setCF<setVariable::CF150>(12.5);  // needs to be CF75
-  PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,pipeName+"Port1",
-			Geometry::Vec3D(0,10.75,0),
-			Geometry::Vec3D(0,0,-1));
-
-  BremGen.centre();
-  BremGen.setCube(10.0,10.0);
-  BremGen.setAperature(5.0, 0.4,0.4, 0.4,0.4, 0.4,0.4);  // WRONG
-  BremGen.generateBlock(Control,viewKey+"RevBeamStop",10.75);
-  Control.addVariable(viewKey+"RevBeamStopXAngle",90);
-
-   // Single slit pair
-  JawGen.setRadius(8.0);
-  JawGen.setWallThick(2.0);
-  JawGen.setLength(10.0);
-  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
-  JawGen.generateSlits(Control,viewKey+"SlitsB",0.0,0.8,0.8);
+  setVariable::BeamPairGenerator BeamPairGen;
 
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,viewKey+"SlitsBOut",4.0);
+  const double slitsInLength = 4.0; // Estimated
+  PipeGen.generatePipe(Control,viewKey+"RevMonoSlitsIn",slitsInLength);
 
-  return 0.0;
+  // Tube for Monochromatic Slits
+  const double monoSlitsTubeWallThick = 2.0; // [10]
+  // CF150 to fit flange B of port 1 [10]
+  SimpleTubeGen.setPipe(
+    CF150::flangeRadius-monoSlitsTubeWallThick,monoSlitsTubeWallThick,1.0,0.0); // [10]
+  std::string pipeName = viewKey+"RevMonoSlitsTube";
+  const double monoSlitsTubeLength = 2.0*(revMonoSlitsFrontToSlits-slitsInLength);
+  SimpleTubeGen.generateTube(
+    Control,pipeName,monoSlitsTubeLength);
+
+  Control.addVariable(pipeName+"NPorts",4);
+  PItemGen.setCF<CF16>(12.0); // Estimated
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
+  const double bladeThick = 0.2; // [10]
+  const double bladeOffset = 0.1; // [10]
+  const double bladeXZDist = 3.1; // [10]
+  const double bladeWidth = 5.0; // [13]
+  const double innerBladePos = 0.5*(bladeXZDist-bladeOffset-bladeThick);
+  const double outerBladePos = 0.5*(bladeXZDist+bladeOffset+bladeThick);
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,-outerBladePos,0.5*bladeWidth),
+			Geometry::Vec3D(-1,0,0));
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,-innerBladePos,-0.5*bladeWidth),
+			Geometry::Vec3D(-1,0,0));
+  PItemGen.generatePort(Control,pipeName+"Port2",
+			Geometry::Vec3D(0.5*bladeWidth,innerBladePos,0),
+			Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(Control,pipeName+"Port3",
+			Geometry::Vec3D(-0.5*bladeWidth,outerBladePos,0),
+			Geometry::Vec3D(0,0,1));
+
+  BeamPairGen.setLift(0.6, 0.6); // "Maximum aperture" given as 10 mm x 10 mm [13]
+  BeamPairGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
+  BeamPairGen.setThread(0.5*bladeThick,"Nickel"); // Estimated
+  // Height from [13]
+  // Material: TODO: Should be Tungsten Carbide [13]
+  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"Tungsten");
+  BeamPairGen.setWaterPipes(0,0);
+
+  // Seen from upstream, the beam hits the jaws in the following order [10]:
+  // Right (MonoSlitsX A) -> Left (MonoSlitsX B)
+  // -> Bottom (MonoSlitsZ B) -> Top (MonoSlitsZ A)
+  BeamPairGen.setXYStep(
+    -0.5*bladeThick-2.0*bladeOffset,-0.5*bladeWidth,
+    0.0,-0.5*bladeWidth);
+  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsX",0);
+  BeamPairGen.setXYStep(
+    0.5*bladeWidth,-0.5*bladeThick-2.0*bladeOffset,
+    0.5*bladeWidth,0.0);
+  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsZ",0);
+
+  // will be rotated vertical
+  pipeName=viewKey+"RevBeamStopTube";
+  SimpleTubeGen.setCF<CF160>(); // [10]
+  SimpleTubeGen.setWallThick(0.2); // [10]
+  SimpleTubeGen.setCap(1,1);
+  const double tubeLengthAboveOpticalAxis = 11.2; // [10]
+  const double tubeLengthBelowOpticalAxis = 32.8; // [10]
+  const double tubeLength = tubeLengthAboveOpticalAxis+tubeLengthBelowOpticalAxis;
+  SimpleTubeGen.generateTube(Control,pipeName,
+    tubeLengthAboveOpticalAxis+tubeLengthBelowOpticalAxis);
+
+  Control.addVariable(pipeName+"NPorts",2);
+
+  PItemGen.setCF<CF150>(
+    danmaxVar::absY::bremColl3Y-danmaxVar::absY::monoSlits2Y-0.5*monoSlitsTubeLength);
+  PItemGen.setOuterVoid(0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,pipeName+"Port0",
+			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),
+			Geometry::Vec3D(0,0,1));
+
+  const double port1Length = 13.5; // [10]
+  PItemGen.setCF<CF40>(port1Length);
+  PItemGen.setNoPlate();
+  PItemGen.setOuterVoid(1);
+  PItemGen.generatePort(Control,pipeName+"Port1",
+			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),
+			Geometry::Vec3D(0,0,-1));
+
+  // TODO: Material currently set to pure tungsten (default), but should be
+  // DENSIMET [13].
+  BremGen.centre();
+  BremGen.setCube(10.0,10.0); // [13]
+  BremGen.setAperature(0.5); // [13]
+  BremGen.generateBlock(Control,viewKey+"RevBeamStop",
+    tubeLength/2.0-tubeLengthAboveOpticalAxis);
+  Control.addVariable(viewKey+"RevBeamStopXAngle",90);
+
+  return port1Length;
 }
 
 double
@@ -1369,7 +1425,8 @@ opticsVariables(FuncDataBase& Control,
 		Geometry::Vec3D(0,0,-1));
 
   const std::string bremColl1Name = opticsName+"BremColl1";
-  // TODO: Material currently set to pure tungsten (default), but should be DENSIMET [13].
+  // TODO: Material currently set to pure tungsten (default), but should be
+  // DENSIMET [13].
   BremGen.centre();
   BremGen.setLength(8.0); // Sec. 2.1 in [13]
   BremGen.setCube(10.0,10.0); // Sec. 2.1 in [13]
@@ -1494,7 +1551,9 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.generateValve(Control,opticsName+"CRLGateOut",0.0,0);
 
-  const double revMonoSlitsFrontToSlits = monoSlitsToBack;
+  // Connector length (estimated) + half the length of the pipe that contains the
+  // monochromatic slits [10]
+  const double revMonoSlitsFrontToSlits = 4.0+5.25;
   BellowGen.generateBellow(
     Control,opticsName+"BellowJ",danmaxVar::absY::monoSlits2Y
     -danmaxVar::absY::CRLY-CRLCenterToBack-CRLGateTotalLength-revMonoSlitsFrontToSlits);
@@ -1503,7 +1562,6 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName,revMonoSlitsFrontToSlits);
 
   BellowGen.generateBellow(Control,opticsName+"BellowK",10.0);
-  Control.addVariable(opticsName+"BellowKYAngle",180.0);
 
   monoShutterVariables(Control,opticsName);
   GateGen.setBladeThick(0.3);

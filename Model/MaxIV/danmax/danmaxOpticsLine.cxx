@@ -162,10 +162,14 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   lensBox(new xraySystem::MonoBox(newName+"LensBox")),
   CRLGateOut(new constructSystem::GateValveCylinder(newName+"CRLGateOut")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  slitsBOut(new constructSystem::VacuumPipe(newName+"SlitsBOut")),
+  revMonoSlitsIn(new constructSystem::VacuumPipe(newName+"RevMonoSlitsIn")),
+  revMonoSlitsTube(new constructSystem::PipeTube(newName+"RevMonoSlitsTube")),
+  revMonoSlits({
+      std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlitsX"),
+      std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlitsZ")
+	}),
   revBeamStopTube(new constructSystem::PipeTube(newName+"RevBeamStopTube")),
   revBeamStop(new xraySystem::BremBlock(newName+"RevBeamStop")),
-  slitsB(new constructSystem::JawValveTube(newName+"SlitsB")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
@@ -228,10 +232,12 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(lensBox);
   OR.addObject(CRLGateOut);
   OR.addObject(bellowJ);
+  OR.addObject(revMonoSlitsIn);
+  OR.addObject(revMonoSlitsTube);
+  OR.addObject(revMonoSlits[0]);
+  OR.addObject(revMonoSlits[1]);
   OR.addObject(revBeamStopTube);
   OR.addObject(revBeamStop);
-  OR.addObject(slitsB);
-  OR.addObject(slitsBOut);
   OR.addObject(bellowK);
   OR.addObject(monoAdaptorA);
   OR.addObject(monoShutter);
@@ -419,6 +425,10 @@ danmaxOpticsLine::constructRevBeamStopTube
  const std::string& sideName)
 /*!
     Sub build of the beamstop tube [reversed]
+
+    The construction is largely analogous to Diagnostic Module 4.
+    See that one for more information.
+
     \param System :: Simulation to use
     \param initFC :: Start point
     \param sideName :: start link point
@@ -427,24 +437,33 @@ danmaxOpticsLine::constructRevBeamStopTube
   ELog::RegMethod RegA("danmaxOpticsLine","constructRevBeamStopTube");
 
   constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*slitsBOut);
+    (System,buildZone,initFC,sideName,*revMonoSlitsIn);
 
   constructSystem::constructUnit
-    (System,buildZone,*slitsBOut,"back",*slitsB);
+    (System,buildZone,*revMonoSlitsIn,"back",*revMonoSlitsTube);
 
-  // FAKE insertcell: required
-  revBeamStopTube->setPortRotation(4,Geometry::Vec3D(1,0,0));
-  revBeamStopTube->createAll(System,*slitsB,2);
+ for(auto i: std::vector<size_t>{0,1}){
+    const constructSystem::portItem& port0=revMonoSlitsTube->getPort(2*i);
+    const constructSystem::portItem& port1=revMonoSlitsTube->getPort(2*i+1);
+    revMonoSlits[i]->addInsertCell("SupportA",port1.getCell("Void"));
+    revMonoSlits[i]->addInsertCell("SupportA",revMonoSlitsTube->getCell("Void"));
+    revMonoSlits[i]->addInsertCell("BlockA",revMonoSlitsTube->getCell("Void"));
+    revMonoSlits[i]->addInsertCell("SupportB",port0.getCell("Void"));
+    revMonoSlits[i]->addInsertCell("SupportB",revMonoSlitsTube->getCell("Void"));
+    revMonoSlits[i]->addInsertCell("BlockB",revMonoSlitsTube->getCell("Void"));
+    revMonoSlits[i]->createAll(System,*revMonoSlitsTube,0,port0,
+      port0.getSideIndex("InnerPlate"));
+  }
 
-
-  const constructSystem::portItem& VPB=revBeamStopTube->getPort(0);
-  int outerCell=buildZone.createUnit
-    (System,VPB,VPB.getSideIndex("OuterPlate"));
-  revBeamStopTube->insertAllInCell(System,outerCell);
+  revBeamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  revBeamStopTube->createAll(System,*revMonoSlitsTube,"back");
 
   revBeamStop->addInsertCell(revBeamStopTube->getCell("Void"));
-  ELog::EM<<"Orig -- "<<revBeamStopTube->getLinkPt("OrgOrigin")<<ELog::endDiag;
   revBeamStop->createAll(System,*revBeamStopTube,"Origin");
+
+  const constructSystem::portItem& VPB=revBeamStopTube->getPort(1);
+  int outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
+  revBeamStopTube->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*bellowK);
@@ -574,15 +593,13 @@ danmaxOpticsLine::constructBeamStopTube
   constructSystem::constructUnit
     (System,buildZone,*beamStopInPipe,"back",*beamStopSection);
 
-  int outerCell;
-
   beamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   beamStopTube->createAll(System,*beamStopSection,sideName);
   beamStopTube->insertAllInCell(System,buildZone.getLastCell("Unit"));
 
   const constructSystem::portItem& VPB=beamStopTube->getPort(1);
 
-  outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
+  int outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
   beamStopSection->insertAllInCell(System,buildZone.getLastCell("Unit"));
   beamStopTube->insertAllInCell(System,outerCell);
 
