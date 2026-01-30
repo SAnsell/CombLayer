@@ -650,8 +650,7 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
     \return outerCell
    */
 {
-  ELog::RegMethod RegA("formaxOpticsLine","constructMonoShutter");
-
+  ELog::RegMethod RegA("danmaxOpticsLine","constructMonoShutter");
 
   constructSystem::constructUnit
     (System,buildZone,FC,linkName,*monoAdaptorA);
@@ -659,14 +658,6 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*monoAdaptorA,"back",*monoShutter);
 
-  /*
-  monoShutter->splitObject(System,"-PortACut",outerCell);
-  const Geometry::Vec3D midPoint(monoShutter->getLinkPt(3));
-  const Geometry::Vec3D midAxis(monoShutter->getLinkAxis(-3));
-  monoShutter->splitObjectAbsolute(System,2001,outerCell,midPoint,midAxis);
-  monoShutter->splitObject(System,"PortBCut",outerCell);
-  cellIndex+=3;
-  */
   constructSystem::constructUnit
     (System,buildZone,*monoShutter,"back",*monoAdaptorB);
 
