@@ -745,14 +745,9 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*bellowI,"back",*lensBox);
 
-  // adds a portset to an object:
-  /*
-  constructSystem::portSet lensBoxPort(*lensBox);
-  lensBoxPort.createPorts(System,"MainWall",lensBox->getInsertCells());
-  lensBoxPort.splitVoidPorts(System,"OuterVoid",1501,CN);
-  */
   constructSystem::constructUnit
     (System,buildZone,*lensBox,"back",*gateF);
+
   constructSystem::constructUnit
     (System,buildZone,*gateF,"back",*bellowJ);
 

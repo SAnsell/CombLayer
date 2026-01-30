@@ -712,7 +712,6 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey,
   ELog::RegMethod RegA("danmaxVariables[F]","lensPackage");
 
   setVariable::MonoBoxGenerator MBoxGen;
-  setVariable::PortItemGenerator PItemGen;
 
   const double totalLength = 2.0*CRLFrontToCenter;
   const std::string lensName=lensKey+"LensBox";
@@ -730,19 +729,6 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey,
     21.0,12.0-2.0*topThick,8.2-2.0*bottomThick,
     totalLength-2.0*(wallThick+portABLength));
 
-  const size_t NPorts(6);
-  Control.addVariable(lensName+"NPorts",NPorts);
-
-  PItemGen.setCF<setVariable::CF40>(0.5);
-  const Geometry::Vec3D Z(0,0,1);
-  const Geometry::Vec3D YStep(0,48.0/6.5,0);
-  Geometry::Vec3D Pt(-YStep*2.5);
-  for(size_t i=0;i<NPorts;i++)
-    {
-      const std::string portName("Port"+std::to_string(i));
-      PItemGen.generatePort(Control,lensName+portName,Pt,Z);
-      Pt+=YStep;
-    }
   return totalLength-CRLFrontToCenter;
 }
 
