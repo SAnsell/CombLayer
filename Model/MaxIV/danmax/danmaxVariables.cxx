@@ -1793,7 +1793,7 @@ DANMAXvariables(FuncDataBase& Control)
 
   PipeGen.setCF<setVariable::CF40>();
   // dummy, adjusted such that JoinPipeB extends 100 mm into Experimental Hutch 2.
-  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",64.8);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",38.93);
 
   danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
