@@ -121,6 +121,7 @@ namespace danmaxVar
     const double bremColl2Y = 2965.03;
     const double monoSlitsY = 2987.56;
     const double beamViewer3Y = 3036.92;
+    const double CRLY = 3091.77;
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -698,11 +699,14 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey,
 }
 
 void
-lensPackage(FuncDataBase& Control,const std::string& lensKey)
+lensPackage(FuncDataBase& Control,const std::string& lensKey,
+  const double CRLFrontToCenter)
   /*!
     Builds the variables for the ViewTube
     \param Control :: Database
     \param lensKey :: prename including view
+    \param CRLFrontToCenter :: Distance from the front surface to the center, which 
+    defines the absolute position.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","lensPackage");
@@ -710,15 +714,24 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey)
   setVariable::MonoBoxGenerator MBoxGen;
   setVariable::PortItemGenerator PItemGen;
 
+  const double totalLength = 2.0*CRLFrontToCenter;
   const std::string lensName=lensKey+"LensBox";
 
   MBoxGen.setCF<CF40>();
-  //W/H/D/L
-  MBoxGen.generateBox(Control,lensName,20.0,12.5,8.0,48.0);
-
+  const double wallThick = 1.0; // [10]
+  MBoxGen.setWallThick(wallThick);
+  const double portABLength = 4.5; // [10]
+  MBoxGen.setPortLength(portABLength, portABLength);
+  const double bottomThick = 2.0;
+  const double topThick = 2.4;
+  MBoxGen.setLids(3.5,bottomThick, topThick); // [10]
+  // All dimensions from [10]
+  MBoxGen.generateBox(Control,lensName,
+    21.0,12.0-2.0*topThick,8.2-2.0*bottomThick,
+    totalLength-2.0*(wallThick+portABLength));
 
   const size_t NPorts(6);
-  Control.addVariable(lensName+"NPorts",NPorts);   // beam ports (lots!!)
+  Control.addVariable(lensName+"NPorts",NPorts);
 
   PItemGen.setCF<setVariable::CF40>(0.5);
   const Geometry::Vec3D Z(0,0,1);
@@ -733,7 +746,7 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey)
   return;
 }
 
-void
+double
 viewBPackage(FuncDataBase& Control,const std::string& viewKey,
   const double mainTubeFrontToBeamViewerPort)
   /*!
@@ -787,7 +800,7 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey,
   FlangeGen.setBlade(0.7,0.7,0.02,-45.0,"Diamond",1); // [13]
   FlangeGen.generateMount(Control,pipeName+"Screen",1);
 
-  return;
+  return totalLength-mainTubeFrontToBeamViewerPort;
 }
 
 double
@@ -1466,18 +1479,23 @@ opticsVariables(FuncDataBase& Control,
   // Angle estimated from [10]
   // Control.addVariable(opticsName+"Valve9YAngle", 135.0);
 
-  const double monoSlitsToBack = beamStopPackage(Control,opticsName,beamStopFrontToWBPort);
+  const double monoSlitsToBack = beamStopPackage(
+    Control,opticsName,beamStopFrontToWBPort);
 
   const double mainTubeFrontToBeamViewerPort = 26.0; // [10]
   BellowGen.generateBellow(Control,opticsName+"BellowH",
     danmaxVar::absY::beamViewer3Y-danmaxVar::absY::monoSlitsY
     -mainTubeFrontToBeamViewerPort-monoSlitsToBack);
 
-  viewBPackage(Control,opticsName, mainTubeFrontToBeamViewerPort);
+  const double mainTubeBeamViewerPortToBack = viewBPackage(
+    Control,opticsName,mainTubeFrontToBeamViewerPort);
 
-  BellowGen.generateBellow(Control,opticsName+"BellowI",10.0);
+  const double CRLFrontToCenter = 49.445/2.0; // [10]
+  BellowGen.generateBellow(Control,opticsName+"BellowI",
+    danmaxVar::absY::CRLY-danmaxVar::absY::beamViewer3Y-mainTubeBeamViewerPortToBack
+    -CRLFrontToCenter);
 
-  lensPackage(Control,opticsName);
+  lensPackage(Control,opticsName,CRLFrontToCenter);
 
   GateGen.setCylCF<setVariable::CF40>();
   GateGen.setLength(3.1);
