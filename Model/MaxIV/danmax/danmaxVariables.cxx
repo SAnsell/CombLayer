@@ -251,8 +251,6 @@ frontMaskVariables(FuncDataBase& Control,
 
   HAGen.generate(Control,preName+"HeatAbsorber",heatAbsorberLength);
   Control.addVariable(preName+"HeatAbsorberYStep",danmaxVar::absY::heatAbsorberY);
-  Control.addVariable(preName+"HeatAbsorberDumpLength",heatAbsorberLength - 1.0); // dummy - HA geometry for DanMAX is anyway dummy
-
 
   // NOT PRESENT :::
   // FMaskGen.setFrontGap(0.84,0.582);
