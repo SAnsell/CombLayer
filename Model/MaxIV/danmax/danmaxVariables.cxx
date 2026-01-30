@@ -120,6 +120,7 @@ namespace danmaxVar
     const double whiteBeamStopY = 2954.83;
     const double bremColl2Y = 2965.03;
     const double monoSlitsY = 2987.56;
+    const double beamViewer3Y = 3036.92;
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -749,7 +750,8 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey)
 }
 
 void
-viewBPackage(FuncDataBase& Control,const std::string& viewKey)
+viewBPackage(FuncDataBase& Control,const std::string& viewKey,
+  const double mainTubeFrontToBeamViewerPort)
   /*!
     Builds the variables for the ViewTube
     \param Control :: Database
@@ -766,7 +768,7 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
   PTubeGen.setMat("SteelUnknownGrade");
   PTubeGen.setPipeCF<CF150>();
   PTubeGen.setPortCF<CF40>();
-  const double wallThick = 0.3; // [10]
+  const double wallThick = 0.2; // [10]
   PTubeGen.setWallThick(wallThick);
   const double flangeLength = 3.0; // [10]
   PTubeGen.setPortLength(flangeLength,flangeLength);
@@ -780,27 +782,29 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
 
   Control.addVariable(pipeName+"NPorts",3);
 
-  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+5.0);
+  PItemGen.setCF<setVariable::CF100>(14.0); // [10]
+  PItemGen.setPlate(CF100::flangeLength, "SteelUnknownGrade");
   PItemGen.generatePort(Control,pipeName+"Port0",
 			Geometry::Vec3D(0,-9,0),
 			Geometry::Vec3D(0,0,1));
-  PItemGen.setCF<setVariable::CF100>(CF150::outerRadius+7.0);
+  PItemGen.setCF<setVariable::CF100>(18.0); // [10]
   PItemGen.generatePort(Control,pipeName+"Port1",
-			Geometry::Vec3D(0,9,0),
+			Geometry::Vec3D(0,-totalLength/2.0+mainTubeFrontToBeamViewerPort,0),
 			Geometry::Vec3D(0,0,1));
-  PItemGen.setCF<setVariable::CF40>(sqrt(2.0)*CF150::outerRadius+5.0);
+  PItemGen.setPlate(CF40::flangeLength, "SteelUnknownGrade");
+  PItemGen.setCF<setVariable::CF40>(12.056/cos(M_PI_4)); // [10]
   PItemGen.generatePort(Control,pipeName+"Port2",
-			Geometry::Vec3D(0,4.5,0),
+			Geometry::Vec3D(0,-totalLength/2.0+mainTubeFrontToBeamViewerPort,0),
 			Geometry::Vec3D(-1,-1,0));
 
   FlangeGen.setNoPlate();
-  FlangeGen.setBlade(2.0,2.0,0.3,-45.0,"Graphite",1);
-  FlangeGen.generateMount(Control,pipeName+"Screen",1);  // in beam
+  FlangeGen.setBlade(0.7,0.7,0.02,-45.0,"Diamond",1); // [13]
+  FlangeGen.generateMount(Control,pipeName+"Screen",1);
 
   return;
 }
 
-void
+double
 beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   const double beamStopFrontToWBPort)
   /*!
@@ -904,9 +908,10 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   SimpleTubeGen.setPipe(
     CF150::flangeRadius-monoSlitsTubeWallThick,monoSlitsTubeWallThick,1.0,0.0); // [10]
   pipeName = viewKey+"MonoSlitsTube";
+  const double monoSlitsTubeLength = 2.0*(
+    danmaxVar::absY::monoSlitsY-danmaxVar::absY::bremColl2Y-port1Length);
   SimpleTubeGen.generateTube(
-    Control,pipeName,
-    2.0*(danmaxVar::absY::monoSlitsY-danmaxVar::absY::bremColl2Y-port1Length));
+    Control,pipeName,monoSlitsTubeLength);
   Control.addVariable(pipeName+"NPorts",4);
   PItemGen.setCF<CF16>(12.0);
   PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
@@ -956,9 +961,10 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF150>();
-  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",4.0);
+  const double slitsAOutLength = 4.0;
+  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",slitsAOutLength);
 
-  return;
+  return monoSlitsTubeLength/2.0+slitsAOutLength;
 }
 
 void
@@ -1474,11 +1480,14 @@ opticsVariables(FuncDataBase& Control,
   // Angle estimated from [10]
   // Control.addVariable(opticsName+"Valve9YAngle", 135.0);
 
-  beamStopPackage(Control,opticsName,beamStopFrontToWBPort);
+  const double monoSlitsToBack = beamStopPackage(Control,opticsName,beamStopFrontToWBPort);
 
-  BellowGen.generateBellow(Control,opticsName+"BellowH",10.0);
+  const double mainTubeFrontToBeamViewerPort = 26.0; // [10]
+  BellowGen.generateBellow(Control,opticsName+"BellowH",
+    danmaxVar::absY::beamViewer3Y-danmaxVar::absY::monoSlitsY
+    -mainTubeFrontToBeamViewerPort-monoSlitsToBack);
 
-  viewBPackage(Control,opticsName);
+  viewBPackage(Control,opticsName, mainTubeFrontToBeamViewerPort);
 
   BellowGen.generateBellow(Control,opticsName+"BellowI",10.0);
 

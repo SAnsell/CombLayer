@@ -403,22 +403,10 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
   outerCell=constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*viewTubeB);
 
-  // Two port -- 3 splits
-  viewTubeB->splitVoidPorts(System,"SplitVoid",1001,
-			    viewTubeB->getCell("Void"),
-			    Geometry::Vec3D(0,1,0));
-
-  viewTubeB->splitObject(System,1501,outerCell,
-			Geometry::Vec3D(0,0,0),
-			Geometry::Vec3D(0,1,0));
-  cellIndex++;  // remember creates an extra cell in  primary
-
   const constructSystem::portItem& VPI=viewTubeB->getPort(1);
   viewTubeBScreen->addInsertCell("Body",VPI.getCell("Void"));
-  viewTubeBScreen->addInsertCell("Body",viewTubeB->getCell("SplitVoid",2));
-  viewTubeBScreen->addInsertCell("Blade",VPI.getCell("Void"));
-  viewTubeBScreen->addInsertCell("Blade",viewTubeB->getCell("SplitVoid",2));
-  viewTubeBScreen->setBladeCentre(*viewTubeB,0);
+  viewTubeBScreen->addInsertCell("Body",viewTubeB->getCell("Void"));
+  viewTubeBScreen->addInsertCell("Blade",viewTubeB->getCell("Void"));
   viewTubeBScreen->createAll(System,VPI,"-InnerPlate");
 
   return;
