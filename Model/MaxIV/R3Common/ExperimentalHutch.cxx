@@ -111,8 +111,19 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   fHoleXStep=Control.EvalDefVar<double>(keyName+"FHoleXStep",0.0);
   fHoleZStep=Control.EvalDefVar<double>(keyName+"FHoleZStep",0.0);
 
-  frontVoid=Control.EvalDefVar<double>(keyName+"FrontVoid",voidMat);
-  backVoid=Control.EvalDefVar<double>(keyName+"BackVoid",voidMat);
+  frontVoid=Control.EvalVar<double>(keyName+"FrontVoid");
+
+  if (frontVoid+Geometry::zeroTol<frontPlateThick)
+    ELog::EM << "Warning in " << keyName << ": frontVoid < frontPlateThick - can cause geometric problems" << ELog::endWarn;
+
+
+  backVoid=Control.EvalVar<double>(keyName+"BackVoid");
+
+  if (backPlateInnerActive)
+    throw ColErr::AbsObjMethod(keyName+": Back wall inner plate is not implemented for ExperimentalHutch yet");
+
+  if (backPlateOuterActive)
+    throw ColErr::AbsObjMethod(keyName+": Back wall outer plate is not implemented for ExperimentalHutch yet");
 
   return;
 }
@@ -122,6 +133,7 @@ ExperimentalHutch::createSurfaces()
 {
   ELog::RegMethod RegA("ExperimentalHutch","createSurfaces");
 
+  const double steelThick(innerThick+outerThick);
 
   // ROTATION for Corner
 
@@ -140,29 +152,32 @@ ExperimentalHutch::createSurfaces()
 
   if (pbFrontThick>Geometry::zeroTol)
     {
-      const Geometry::Vec3D holeOrg(Origin+X*fHoleXStep+Z*fHoleZStep);
-
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+11,Y,innerThick);
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+21,Y,pbFrontThick+innerThick);
       makeShiftedSurf(SMap,"frontWall",
 		      buildIndex+31,Y,outerThick+pbFrontThick+innerThick);
-      if (fHoleRadius>Geometry::zeroTol)
-	makeCylinder("frontHole",SMap,buildIndex+7,holeOrg,Y,fHoleRadius);
     }
+
+  if (fHoleRadius>Geometry::zeroTol) {
+    const Geometry::Vec3D holeOrg(Origin+X*fHoleXStep+Z*fHoleZStep);
+    makeCylinder("frontHole",SMap,buildIndex+7,holeOrg,Y,fHoleRadius);
+  }
 
   if (frontVoid>Geometry::zeroTol)
     {
       const double T((pbFrontThick>Geometry::zeroTol) ?
-		     innerThick+pbFrontThick+outerThick :  0.0);
+		     steelThick+pbFrontThick :  0.0);
       makeShiftedSurf(SMap,"frontWall",buildIndex+41,Y,T+frontVoid);
     }
 
-  const double steelThick(innerThick+outerThick);
-
   // Inner void
-  SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*(length-steelThick-pbBackThick),Y);
+  if (pbBackThick>Geometry::zeroTol)
+    SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*(length-steelThick-pbBackThick),Y);
+  else
+    SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*(length),Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outWidth-steelThick-pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(ringWidth-steelThick-pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-steelThick-pbRoofThick),Z);
@@ -178,8 +193,11 @@ ExperimentalHutch::createSurfaces()
 
   // Steel inner layer
 
-  ModelSupport::buildPlane(SMap,buildIndex+12,
-			   Origin+Y*(length-outerThick-pbBackThick),Y);
+  if (pbBackThick>Geometry::zeroTol)
+    ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-outerThick-pbBackThick),Y);
+  else
+    ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length),Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(outWidth-outerThick-pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+14,
@@ -189,8 +207,11 @@ ExperimentalHutch::createSurfaces()
 
 
   // Lead
-  ModelSupport::buildPlane(SMap,buildIndex+22,
-			   Origin+Y*(length-outerThick),Y);
+  if (pbBackThick>Geometry::zeroTol)
+    ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(length-outerThick),Y);
+  else
+    ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(length),Y);
+
   ModelSupport::buildPlane(SMap,buildIndex+23,
 			   Origin-X*(outWidth-outerThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+24,
@@ -242,6 +263,18 @@ ExperimentalHutch::createSurfaces()
     ModelSupport::buildShiftedPlane(SMap, buildIndex+62, buildIndex+32, Y, -floorShineBackLength);
   else // make plane 62 to be the same as 2
     ModelSupport::buildShiftedPlane(SMap, buildIndex+62, buildIndex+2, Y, 0.0); // TODO: use the appropriate surface clone method
+
+  // Front plate
+  if (frontPlateActive) {
+    const double T = (pbFrontThick>Geometry::zeroTol) ?
+      steelThick+pbFrontThick + frontPlateThick : frontPlateThick;
+    makeShiftedSurf(SMap,"frontWall", buildIndex+101, Y, T);
+    ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(frontPlateWidth/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(frontPlateWidth/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(frontPlateHeight/2.0),Z);
+    ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(frontPlateHeight/2.0),Z);
+  }
+
 
   // INNER / OUTER BACK VOID
 
@@ -378,9 +411,10 @@ ExperimentalHutch::createObjects(Simulation& System)
 
   if (frontVoid>Geometry::zeroTol)
     {
-      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-41 1003A 3B -6");
-      HR*=ModelSupport::getAltHeadRule(SMap,buildIndex,"-1004A -4B");
-      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*floor*innerWall);
+      HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"-41 43 3B 15 -6");
+      HR*=ModelSupport::getAltHeadRule(SMap,buildIndex,"-44 -4B");
+      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(101:-103:104:-105:106)");
+      makeCell("Void",System,cellIndex++,voidMat,0.0,HR*innerWall);
       CellMap::addCell("FrontVoid",cellIndex-1);
     }
 
@@ -401,11 +435,13 @@ ExperimentalHutch::createObjects(Simulation& System)
   }
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-2 4 -14");
-  makeCell("InnerRingWall",System,cellIndex++,skinMat,0.0,HR*innerWall*forkWallRing*tb);
+  makeCell("InnerSkinRingWall",System,cellIndex++,skinMat,0.0,HR*innerWall*forkWallRing*tb);
 
   // alt for corner cut
-  HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"2 -12 -313A 13B -14");
-  makeCell("InnerBackWall",System,cellIndex++,skinMat,0.0,HR*tb*innerWall*holeCut*forkWallBack);
+  if (pbBackThick>Geometry::zeroTol) {
+    HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"2 -12 -313A 13B -14");
+    makeCell("InnerBackWall",System,cellIndex++,skinMat,0.0,HR*tb*innerWall*holeCut*forkWallBack);
+  }
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -333 -34 6 -16");
   makeCell("InnerRoof",System,cellIndex++,skinMat,0.0,HR*innerWall);
@@ -440,8 +476,10 @@ ExperimentalHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-22 24 -34 -6");
   makeCell("OuterSkinRingWall",System,cellIndex++,skinMat,0.0,HR*floor*innerWall*forkWallRing);
 
-  HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"22 -32 -34 -333A 33B");
-  makeCell("OuterSkinBackWall",System,cellIndex++,skinMat,0.0,HR*tb*innerWall*holeCut*forkWallBack);
+  if (pbBackThick>Geometry::zeroTol) {
+    HR=ModelSupport::getAltHeadRule(SMap,buildIndex,"22 -32 -34 -333A 33B");
+    makeCell("OuterSkinBackWall",System,cellIndex++,skinMat,0.0,HR*tb*innerWall*holeCut*forkWallBack);
+  }
 
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 33 -333 -34 26 -36");
   makeCell("OuterRoof",System,cellIndex++,skinMat,0.0,HR*innerWall);
@@ -460,6 +498,13 @@ ExperimentalHutch::createObjects(Simulation& System)
       makeCell("EntranceHole",System,cellIndex++,voidMat,0.0,HR*frontWall);
     }
 
+  if (frontPlateActive) {
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-101 -7");
+    makeCell("FrontPlateHole",System,cellIndex++,voidMat,0.0,HR*frontWall);
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-101 103 -104 105 -106 7");
+    makeCell("FrontPlate",System,cellIndex++,pbMat,0.0,HR*frontWall);
+  }
+
   // Outer void for pipe(s)
   BI=buildIndex+1000;
   for(size_t i=0;i<holeRadius.size();i++)
@@ -474,8 +519,7 @@ ExperimentalHutch::createObjects(Simulation& System)
     {
       HR=ModelSupport::getSetHeadRule
 	(SMap,buildIndex,"-32 (-33:333) 1033 -36 -1333");
-      makeCell("OuterLeftVoid",System,cellIndex++,voidMat,
-	       0.0,HR*floor*frontWall);
+      makeCell("OuterLeftVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 34 -1034 -36");
       makeCell("OuterRightVoid",System,cellIndex++,voidMat,
@@ -616,6 +660,16 @@ ExperimentalHutch::createLinks()
   setLinkSurf(14,-SMap.realSurf(buildIndex+4));
   nameSideIndex(14,"innerRightWall");
 
+  if (frontPlateActive) {
+    const double T = (pbFrontThick>Geometry::zeroTol) ?
+      steelThick+pbFrontThick + frontPlateThick : frontPlateThick;
+    setConnect(15,Origin+Y*(T),Y);
+    setLinkSurf(15,SMap.realSurf(buildIndex+101));
+    nameSideIndex(15,"frontPlate");
+  }
+
+
+
   return;
 }
 
@@ -667,10 +721,10 @@ ExperimentalHutch::createChicane(Simulation& System)
 	}
       else if (wallName=="Right" || wallName=="Ring")
 	{
-	  PItem->addInsertCell("Inner",getCell("InnerRingWall"));
+	  PItem->addInsertCell("Inner",getCell("InnerSkinRingWall"));
 	  PItem->addInsertCell("Inner",getCell("LeadRingWall"));
-	  PItem->addInsertCell("Inner",getCell("OuterRingWall"));
-	  PItem->addInsertCell("Main",getCell("RightWallVoid"));
+	  PItem->addInsertCell("Inner",getCell("OuterSkinRingWall"));
+	  //PItem->addInsertCell("Main",getCell("RightWallVoid"));
 	  PItem->addInsertCell("Main",getCell("OuterRightVoid",0));
 	  PItem->setCutSurf("innerWall",*this,"innerRightWall");
 	  PItem->setCutSurf("outerWall",*this,"rightWall");
@@ -749,8 +803,8 @@ ExperimentalHutch::splitChicane(Simulation& System,
 				    midPt,Axis);
 	  for(const std::string cellName :
 		{
-		  "InnerRingWall","LeadRingWall",
-		  "OuterRingWall","OuterRightVoid"
+		  "InnerSkinRingWall","LeadRingWall",
+		  "OuterSkinRingWall","OuterRightVoid"
 		})
 	    {
 	      this->splitObject(System,buildIndex+5001,getCell(cellName));

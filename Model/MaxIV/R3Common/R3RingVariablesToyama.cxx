@@ -123,7 +123,6 @@ moveApertureTableToyama(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowF",8); //14.0); // [2]
 
-  // Stepped 420mm from pipeB so bellows/aperturePipe can move freely
   CrossGen.setMat("SteelUnknownGrade");
   CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
   CrossGen.setTotalPorts(7.5,7.5);     // len of ports (after main)
@@ -359,7 +358,7 @@ heatDumpTableToyama(FuncDataBase& Control,
 
   setVariable::CylGateValveGenerator GVGen;
   std::string name=frontKey+"Valve2";
-  // TODO: At the moment, this uses many default values. Check dimensions and compare 
+  // TODO: At the moment, this uses many default values. Check dimensions and compare
   // to Valve 3.
   GVGen.generateGate(Control,name,false);
   Control.addVariable(name+"PortThick",1.1-1); // to make 7.2 cm length as in [5]

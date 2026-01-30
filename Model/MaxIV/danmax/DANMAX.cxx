@@ -3,7 +3,7 @@
 
  * File: danmax/DANMAX.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "AttachSupport.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
@@ -68,7 +69,7 @@
 #include "ProximityShielding.h"
 #include "WallLead.h"
 #include "R3FrontEnd.h"
-#include "R3FrontEndToyama.h"
+#include "R3FrontEndToyamaDanMAX.h"
 #include "danmaxFrontEnd.h"
 #include "danmaxOpticsLine.h"
 #include "danmaxConnectLine.h"
@@ -173,8 +174,6 @@ DANMAX::build(Simulation& System,
 
   // Inner space
 
-  if (stopPoint=="opticsHut") return;
-
   joinPipe->addAllInsertCell(frontBeam->getCell("MasterVoid"));
   joinPipe->addInsertCell("Main",wallLead->getCell("Void"));
   joinPipe->addInsertCell("FlangeA",wallLead->getCell("Void"));
@@ -192,6 +191,7 @@ DANMAX::build(Simulation& System,
   opticsBeam->setPreInsert(joinPipe);
   opticsBeam->createAll(System,*joinPipe,2);
 
+  if (stopPoint=="opticsHutch") return;
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
@@ -204,14 +204,22 @@ DANMAX::build(Simulation& System,
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut2->createAll(System,*opticsHut,"back");
 
+  // two ways to insert BackPlateOuter into expt. hutch2:
+  const std::set<std::string> cells = {"Void", "FloorShineRingWallVoid", "InnerSkinRingWall", "LeadRingWall", "OuterSkinRingWall", "OuterRightVoid"};
+  for (const auto& c : cells)
+    opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell(c));
+  // the same but ~x10 slower (~2.5 ms vs 250 us) since needs to check all cells:
+  //  attachSystem::addToInsertSurfCtrl(System, *exptHut2, opticsHut->getCC("BackPlateOuter"));
+
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(
     {
       exptHut2->getCell("Void"),
-      exptHut2->getCell("FloorShineRingWallVoid")
+      exptHut2->getCell("FloorShineRingWallVoid"),
+      //      exptHut2->getCell("FrontVoid")
     }
   );
-  connectUnit->setFront(*opticsHut,2);
+  connectUnit->setFront(*opticsHut, "backPlateOuter");
   connectUnit->setBack(*exptHut2,"innerBack");
   connectUnit->createAll(System,*joinPipeB,"back");
 
@@ -225,12 +233,12 @@ DANMAX::build(Simulation& System,
   exptHut1->createAll(System,*exptHut2,"back");
 
   joinPipeC->insertAllInCell(System,exptHut1->getCell("Void"));
-  joinPipeC->insertInCell("Main",System,exptHut2->getCell("ExitHole"));
+  joinPipeC->insertInCell("Main",System,exptHut1->getCell("EntranceHole"));
 
   // pipe shield goes around joinPipeC:
   guillotine->addAllInsertCell(exptHut1->getCell("Void"));
   guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
-  guillotine->createAll(System,*exptHut2,"back");
+  guillotine->createAll(System,*exptHut1,"innerFront");
 
   exptBeam->addInsertCell(exptHut1->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);

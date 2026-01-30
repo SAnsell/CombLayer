@@ -43,10 +43,6 @@ class OpticsHutch :
     public attachSystem::ContainedGroup
 {
  protected:
-  double backPlateThick;        ///< Back plate thick
-  double backPlateWidth;        ///< Back plate width
-  double backPlateHeight;       ///< back plate Height
-
   double wallShineThick;        ///< Wall shine thickness (same value for the both wall shine plates)
   double wallShineLength;       ///< Wall shine full length (starting from the wall outer surface, same value for the both wall shine plates)
   double wallShineOutThick;     ///< Thickness of the wall shine outside of REW

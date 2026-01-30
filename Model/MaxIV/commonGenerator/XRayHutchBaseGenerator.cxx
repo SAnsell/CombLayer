@@ -54,6 +54,9 @@ XRayHutchBaseGenerator::XRayHutchBaseGenerator() :
   height(279.2),length(1010.0),outWidth(261.8),
   innerThick(0.3),pbWallThick(1.6),pbBackThick(7.0),pbRoofThick(1.6),outerThick(0.3),
   innerOutVoid(10.0),outerOutVoid(10.0),outerBackVoid(0.0),
+  frontPlateActive(false),frontPlateThick(0.0),frontPlateWidth(0.0),frontPlateHeight(0.0),
+  backPlateInnerActive(false),backPlateInnerThick(0.0),backPlateInnerWidth(0.0),backPlateInnerHeight(0.0),
+  backPlateOuterActive(false),backPlateOuterThick(0.0),backPlateOuterWidth(0.0),backPlateOuterHeight(0.0),
   floorShineThick(0.6), floorShineLength(50.0),
   voidMat("Void"),skinMat("SteelUnknownGrade"),pbMat("Lead"),
   floorShineMat("Lead")
@@ -61,6 +64,51 @@ XRayHutchBaseGenerator::XRayHutchBaseGenerator() :
     Constructor and defaults
   */
 {}
+
+void
+XRayHutchBaseGenerator::setFrontPlate(const double T, const double W, const double H)
+/*!
+  Set front wall plate
+  \param T :: thickness
+  \param W :: width
+  \param H :: full height
+ */
+{
+  frontPlateActive = true;
+  frontPlateThick  = T;
+  frontPlateWidth  = W;
+  frontPlateHeight = H;
+}
+
+void
+XRayHutchBaseGenerator::setBackPlateInner(const double T, const double W, const double H)
+/*!
+  Set the back wall inner plate
+  \param T :: thickness
+  \param W :: width
+  \param H :: full height
+ */
+{
+  backPlateInnerActive = true;
+  backPlateInnerThick  = T;
+  backPlateInnerWidth  = W;
+  backPlateInnerHeight = H;
+}
+
+void
+XRayHutchBaseGenerator::setBackPlateOuter(const double T, const double W, const double H)
+/*!
+  Set the back wall outer plate
+  \param T :: thickness
+  \param W :: width
+  \param H :: full height
+ */
+{
+  backPlateOuterActive = true;
+  backPlateOuterThick  = T;
+  backPlateOuterWidth  = W;
+  backPlateOuterHeight = H;
+}
 
 void
 XRayHutchBaseGenerator::setFloorShine(const double T, const double L)
@@ -117,6 +165,21 @@ XRayHutchBaseGenerator::generateHut(FuncDataBase& Control,
   Control.addVariable(keyName+"InnerOutVoid",innerOutVoid);
   Control.addVariable(keyName+"OuterOutVoid",outerOutVoid);
   Control.addVariable(keyName+"OuterBackVoid",outerBackVoid);
+
+  Control.addVariable(keyName+"FrontPlateActive",frontPlateActive);
+  Control.addVariable(keyName+"FrontPlateThick", frontPlateThick);
+  Control.addVariable(keyName+"FrontPlateWidth", frontPlateWidth);
+  Control.addVariable(keyName+"FrontPlateHeight",frontPlateHeight);
+
+  Control.addVariable(keyName+"BackPlateInnerActive",backPlateInnerActive);
+  Control.addVariable(keyName+"BackPlateInnerThick", backPlateInnerThick);
+  Control.addVariable(keyName+"BackPlateInnerWidth", backPlateInnerWidth);
+  Control.addVariable(keyName+"BackPlateInnerHeight",backPlateInnerHeight);
+
+  Control.addVariable(keyName+"BackPlateOuterActive",backPlateOuterActive);
+  Control.addVariable(keyName+"BackPlateOuterThick", backPlateOuterThick);
+  Control.addVariable(keyName+"BackPlateOuterWidth", backPlateOuterWidth);
+  Control.addVariable(keyName+"BackPlateOuterHeight",backPlateOuterHeight);
 
   Control.addVariable(keyName+"FloorShineThick",floorShineThick);
   Control.addVariable(keyName+"FloorShineLength",floorShineLength);

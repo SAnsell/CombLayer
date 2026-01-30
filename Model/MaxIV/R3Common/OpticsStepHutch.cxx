@@ -189,7 +189,7 @@ OpticsStepHutch::createObjects(Simulation& System)
 
       // Big void cell
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 (-304:-301) -605");
-      if (floorShineLength-backPlateThick>Geometry::zeroTol)
+      if (floorShineLength-backPlateInnerThick>Geometry::zeroTol)
 	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-302:305");
 
       if (floorShineLength-innerOutVoid>Geometry::zeroTol)
@@ -274,7 +274,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"222 -232 234 234 -36");
   makeCell("flatOWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
-  // Back plate:
+  // Inner back plate:
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
   makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
 
@@ -288,7 +288,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex, "302 -2 3 -204 -305");
   makeCell("BackPlateFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
 
-  if (floorShineLength-backPlateThick<Geometry::zeroTol) {
+  if (floorShineLength-backPlateInnerThick<Geometry::zeroTol) {
     HR=ModelSupport::getHeadRule(SMap,buildIndex, "112 -302 -2 1003 -304 -305");
     makeCell("BackPlateFloorShineVoid",System,cellIndex++,0,0.0,HR*floor);
   }
@@ -320,12 +320,19 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex, "3 -601 605 -6");
   makeCell("RingSideWallRoofShineREW",System,cellIndex++,floorShineMat,0.0,HR*frontWall*flatOuterCut);
 
+  // BackPlateOuter
+  if (backPlateOuterActive) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex, "32 -2002 2003 -2004 2005 -2006");
+    makeCell("BackPlateOuter",System,cellIndex++,pbMat,0.0,HR*holeCut);
+    addOuterSurf("BackPlateOuter", HR);
+  }
+
 
   // Outer void for pipe(s)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI,"112 -32 -107");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI,"112 -2002 -107");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
       BI+=100;
     }
@@ -333,7 +340,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   OpticsHutch::createForkCut(System);
 
   // EXCLUDE:
-  if (outerOutVoid>Geometry::zeroTol)
+  if (outerOutVoid>Geometry::zeroTol) // void behind the outer wall from the ring
     {
       HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-32 1033 -33 -36");
       makeCell("OuterVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
@@ -374,9 +381,9 @@ OpticsStepHutch::createLinks()
 
   OpticsHutch::createLinks();
 
-  FixedComp::setLinkSurf(14,-SMap.realSurf(buildIndex+305));
-  FixedComp::addLinkSurf(14,SMap.realSurf(buildIndex+302));
-  FixedComp::nameSideIndex(14,"BackPlateFloorShine");
+  FixedComp::setLinkSurf(15,-SMap.realSurf(buildIndex+305));
+  FixedComp::addLinkSurf(15,SMap.realSurf(buildIndex+302));
+  FixedComp::nameSideIndex(15,"BackPlateFloorShine");
 
   return;
 }

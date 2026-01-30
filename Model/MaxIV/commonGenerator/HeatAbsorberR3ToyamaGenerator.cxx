@@ -48,7 +48,7 @@ HeatAbsorberR3ToyamaGenerator::HeatAbsorberR3ToyamaGenerator() :
   absorberLength(22.0), // [1]
   absorberWidth(8.0), // [1]
   absorberHeight(8.0), // [1]
-  absorberConnectorLength(1.0), // measured in [1] 
+  absorberConnectorLength(1.0), // measured in [1]
   gapWidth(1.0), // [1]
   gapMinHeight(0.9), // [1]
   gapMaxHeight(2.6), // [1]
@@ -70,7 +70,7 @@ HeatAbsorberR3ToyamaGenerator::~HeatAbsorberR3ToyamaGenerator()
 
 void
 HeatAbsorberR3ToyamaGenerator::generate(FuncDataBase& Control,
-				     const std::string& keyName) const
+					const std::string& keyName, const double length) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables

@@ -34,6 +34,7 @@
 #include <memory>
 #include <array>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "OutputLog.h"
 #include "Vec3D.h"
@@ -71,7 +72,7 @@ namespace xraySystem
 
 OpticsHutch::OpticsHutch(const std::string& Key) :
   xraySystem::XRayHutchBase(Key),
-  attachSystem::ContainedGroup("Hutch", "WallShineREW"),
+  attachSystem::ContainedGroup("Hutch", "WallShineREW", "BackPlateOuter"),
   pSideWall(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -97,10 +98,6 @@ OpticsHutch::populate(const FuncDataBase& Control)
 
   XRayHutchBase::populate(Control);
 
-  backPlateThick=Control.EvalVar<double>(keyName+"BackPlateThick");
-  backPlateWidth=Control.EvalVar<double>(keyName+"BackPlateWidth");
-  backPlateHeight=Control.EvalVar<double>(keyName+"BackPlateHeight");
-
   wallShineThick=Control.EvalVar<double>(keyName+"WallShineThick");
   wallShineLength=Control.EvalVar<double>(keyName+"WallShineLength");
   wallShineOutThick=Control.EvalVar<double>(keyName+"WallShineOutThick");
@@ -108,8 +105,13 @@ OpticsHutch::populate(const FuncDataBase& Control)
   roofShineLength=Control.EvalVar<double>(keyName+"RoofShineLength");
   roofShineThick=Control.EvalVar<double>(keyName+"RoofShineThick");
 
-
   wallShineMat=ModelSupport::EvalDefMat(Control,keyName+"WallShineMat",pbMat);
+
+  if (frontPlateActive)
+    throw ColErr::AbsObjMethod(keyName+": Front wall plate is not implemented for OpticsHutch yet");
+
+  if (backPlateInnerActive)
+    ELog::EM << keyName+": Back wall inner plate implementation for OpticsHutch is obsolete (and different from the updated implementation in OpticsStepHutch - see the DanMAX beamline)" << ELog::endWarn;
 
   return;
 }
@@ -127,7 +129,7 @@ OpticsHutch::createSurfaces()
   const double sideWallThick(pbWallThick+steelThick);
   const double roofThick(pbRoofThick+steelThick);
 
-  frontWall=ExternalCut::getValidRule("RingWall",Origin+Y*length);
+  frontWall=ExternalCut::getValidRule("RingWall",Origin+Y*length); // REW plane to optics hutch
   sideWall=ExternalCut::getValidRule("SideWall",Origin);
 
   // Inner void
@@ -168,19 +170,28 @@ OpticsHutch::createSurfaces()
   SurfMap::makePlane("roof",SMap,buildIndex+36,
 		     Origin+Z*(height),Z);
 
-  if (outerBackVoid>Geometry::zeroTol)
+  if (outerBackVoid>Geometry::zeroTol) {
     SurfMap::makePlane("outerBackVoid",SMap,buildIndex+52,
 		       Origin+Y*(length+outerBackVoid),Y);
-
+  }
 
   ModelSupport::buildPlane(SMap,buildIndex+102,
-		      Origin+Y*(length+innerThick-backPlateThick-backWallThick),Y);
+			   Origin+Y*(length+innerThick-backPlateInnerThick-backWallThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+112,
-		      Origin+Y*(length-backWallThick-backPlateThick),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(backPlateWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(backPlateWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(backPlateHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(backPlateWidth/2.0),Z);
+			   Origin+Y*(length-backWallThick-backPlateInnerThick),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(backPlateInnerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(backPlateInnerWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(backPlateInnerHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(backPlateInnerWidth/2.0),Z);
+
+  // Back plate outer
+  ModelSupport::buildPlane(SMap,buildIndex+2002,Origin+Y*(length+backPlateOuterThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2003,Origin-X*(backPlateOuterWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+2004,Origin+X*(backPlateOuterWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+2005,Origin-Z*(backPlateOuterHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+2006,Origin+Z*(backPlateOuterWidth/2.0),Z);
+
 
   int BI(buildIndex);
   for(size_t i=0;i<holeRadius.size();i++)
@@ -312,17 +323,19 @@ OpticsHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 33  26 -36");
   makeCell("RoofOuterWall",System,cellIndex++,skinMat,0.0,HR*frontWall*sideWallCut);
 
-  // Back plate:
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
-  makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
+  // Inner back plate:
+  if (backPlateInnerActive) {
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"102 -12 103 -104 105 -106");
+    makeCell("BackPlate",System,cellIndex++,pbMat,0.0,HR*holeCut);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
-  makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"112 -102 103 -104 105 -106");
+    makeCell("BackPlateSkin",System,cellIndex++,skinMat,0.0,HR*holeCut);
 
-  HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
-				  "112 -2 3 -6 (-103:104:-105:106)");
-  makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,
-	   HR*floor*sideWall);
+    HR=ModelSupport::getSetHeadRule(SMap,buildIndex,
+				    "112 -2 3 -6 (-103:104:-105:106)");
+    makeCell("BackPlateVoid",System,cellIndex++,voidMat,0.0,
+	     HR*floor*sideWall);
+  }
 
   // Outer void for pipe(s)
   BI=buildIndex;
@@ -442,13 +455,17 @@ OpticsHutch::createLinks()
   nameSideIndex(11,"innerFront");
 
   // use
-  setConnect(12,Origin+Y*(length-backWallThick-backPlateThick),-Y);
+  setConnect(12,Origin+Y*(length-backWallThick-backPlateInnerThick),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+112));
   nameSideIndex(12,"innerBack");
 
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
   nameSideIndex(13,"innerLeftWall");
+
+  setConnect(14,Origin+Y*(length+backPlateOuterThick),Y);
+  setLinkSurf(14,SMap.realSurf(buildIndex+2002));
+  nameSideIndex(14,"backPlateOuter");
 
   return;
 }

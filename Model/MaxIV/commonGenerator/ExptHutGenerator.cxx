@@ -103,6 +103,18 @@ ExptHutGenerator::setFrontHole(const double XS,const double ZS,
   return;
 }
 
+void
+ExptHutGenerator::setFrontPlate(const double T, const double W, const double H)
+/*!
+  Set front plate
+  \param T :: thickness
+  \param W :: width
+  \param H :: full height
+ */
+{
+  XRayHutchBaseGenerator::setFrontPlate(T, W, H);
+  frontVoid = std::max(frontPlateThick, frontVoid);
+}
 
 
 void

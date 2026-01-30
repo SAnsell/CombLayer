@@ -3,7 +3,7 @@
 
  * File:   commonBeamInc/XRayHutchBase.h
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,13 +46,28 @@ namespace xraySystem
       // walls
       double innerThick;            ///< Inner wall/roof skin
       double pbWallThick;           ///< Thickness of lead in walls
-      double pbBackThick;           ///< Thickness of lead in back plate
+      double pbBackThick;           ///< Thickness of lead in back wall
       double pbRoofThick;           ///< Thickness of lead in Roof
       double outerThick;            ///< Outer wall/roof skin
 
       double innerOutVoid;          ///< Extension for inner left void space
       double outerOutVoid;          ///< Extension for outer left void space
       double outerBackVoid;         ///< Extension for outer back void space
+
+      bool frontPlateActive;        ///< Front plate active flag
+      double frontPlateThick;       ///< Front plate thickness
+      double frontPlateWidth;       ///< Front plate width
+      double frontPlateHeight;      ///< Front plate full height
+
+      bool backPlateInnerActive;         ///< Inner back plate active flag
+      double backPlateInnerThick;        ///< Inner back plate thick
+      double backPlateInnerWidth;        ///< Inner back plate width
+      double backPlateInnerHeight;       ///< Inner back plate height
+
+      bool backPlateOuterActive;         ///< Outer back plate active flag
+      double backPlateOuterThick;        ///< Outer back plate thick
+      double backPlateOuterWidth;        ///< Outer back plate width
+      double backPlateOuterHeight;       ///< Outer back plate height
 
       double floorShineThick;       ///< Floor shine thickness
       double floorShineLength;      ///< Floor shine full length (starting from the wall outer surface) - general length that is overriden by the particular lengths below
