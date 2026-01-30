@@ -122,6 +122,8 @@ namespace danmaxVar
     const double monoSlitsY = 2987.56;
     const double beamViewer3Y = 3036.92;
     const double CRLY = 3091.77;
+    const double monoSlits2Y = 3143.94;
+    const double bremColl3Y = 3166.47;
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -954,13 +956,15 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   return monoSlitsTubeLength/2.0+slitsAOutLength;
 }
 
-void
+double
 revBeamStopPackage(FuncDataBase& Control,
-		   const std::string& viewKey)
+		   const std::string& viewKey, const double revMonoSlitsFrontToSlits)
   /*!
     Builds the variables for the reversed slit tube/beamstop
     \param Control :: Database
     \param viewKey :: prename
+    \param revMonoSlitsFrontToSlits :: Distance from the front surface to the 
+    slits that define the absolute position.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","revBeamStopPackage");
@@ -1016,7 +1020,7 @@ revBeamStopPackage(FuncDataBase& Control,
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,viewKey+"SlitsBOut",4.0);
 
-  return;
+  return 0.0;
 }
 
 double
@@ -1481,14 +1485,18 @@ opticsVariables(FuncDataBase& Control,
     danmaxVar::absY::CRLY-danmaxVar::absY::beamViewer3Y-mainTubeBeamViewerPortToBack
     -CRLFrontToCenter);
 
-  lensPackage(Control,opticsName,CRLFrontToCenter);
+  const double CRLCenterToBack = lensPackage(Control,opticsName,CRLFrontToCenter);
 
   GateGen.setCylCF<setVariable::CF40>();
   GateGen.setLength(3.1);
   GateGen.generateValve(Control,opticsName+"GateF",0.0,0);
-  BellowGen.generateBellow(Control,opticsName+"BellowJ",10.0);
+  const double revMonoSlitsFrontToSlits = monoSlitsToBack;
+  BellowGen.generateBellow(
+    Control,opticsName+"BellowJ",danmaxVar::absY::monoSlits2Y
+    -danmaxVar::absY::CRLY-CRLCenterToBack-valve3Length-revMonoSlitsFrontToSlits);
 
-  revBeamStopPackage(Control,opticsName);
+  const double revMonoSlitsToBack = revBeamStopPackage(
+    Control,opticsName,revMonoSlitsFrontToSlits);
 
   BellowGen.generateBellow(Control,opticsName+"BellowK",10.0);
   Control.addVariable(opticsName+"BellowKYAngle",180.0);
