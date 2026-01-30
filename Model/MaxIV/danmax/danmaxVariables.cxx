@@ -639,20 +639,21 @@ exptHut2Variables(FuncDataBase& Control,
   return;
 }
 
-void
-viewPackage(FuncDataBase& Control,const std::string& viewKey, const double totalLength)
+double
+viewPackage(FuncDataBase& Control,const std::string& viewKey,
+  const double beamViewerFrontToPort)
   /*!
     Builds the variables for the ViewTube
     \param Control :: Database
     \param viewKey :: prename including view
+    \param beamViewerFrontToPort :: Distance from the front surface to the port that 
+    defines the absolute position.
   */
 {
-  ELog::RegMethod RegA("speciesVariables[F]","viewPackage");
+  ELog::RegMethod RegA("danmaxVariables[F]","viewPackage");
 
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
-  setVariable::BellowGenerator BellowGen;
-  setVariable::GateValveGenerator GateGen;
   setVariable::FlangeMountGenerator FlangeGen;
 
   // will be rotated vertical
@@ -668,6 +669,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey, const double total
 
   Control.addVariable(pipeName+"NPorts",3);
 
+  const double totalLength = 2.0*beamViewerFrontToPort; // [10]
   const double connectPortLength = (totalLength-2.0*CF100::outerRadius)/2.0;
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+connectPortLength);
   PItemGen.setPlate(0.0,"Void");
@@ -692,7 +694,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey, const double total
   FlangeGen.setBlade(3.3,1.3,0.2,-45.0,"Diamond",1);
   FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);
 
-  return;
+  return totalLength-beamViewerFrontToPort;
 }
 
 void
@@ -738,6 +740,8 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey,
     Builds the variables for the ViewTube
     \param Control :: Database
     \param viewKey :: prename including view
+    \param mainTubeFrontToBeamViewerPort :: Distance from the front surface to the 
+    port that defines the absolute position.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","viewBPackage");
@@ -793,6 +797,8 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
     Builds the variables for the ViewTube 2
     \param Control :: Database
     \param viewKey :: prename
+    \param beamStopFrontToWBPort :: Distance from the front surface to the 
+    port that defines the absolute position.
   */
 {
   ELog::RegMethod RegA("speciesVariables[F]","beamStopPackage");
@@ -1068,6 +1074,8 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
     Builds the variables for the mirror mono package (MLM)
     \param Control :: Database
     \param monoKey :: prename
+    \param MLMFrontToTopViewPort :: Distance from the front surface to the 
+    port that defines the absolute position.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","mirrorMonoPackage");
@@ -1110,7 +1118,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
   // crystals gap 4mm
   MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
 
-  return MLMTotalLength;
+  return MLMTotalLength-MLMFrontToTopViewPort;
 }
 
 void
@@ -1193,17 +1201,14 @@ shieldVariables(FuncDataBase& Control)
 
 double
 opticsSlitPackage(FuncDataBase& Control,
-		  const std::string& opticsName, const double topPortOffsetY)
+		  const std::string& opticsName, const double slitTubeFrontToTopPort)
   /*!
     Builds the DM2 slit package
 
-    The parameter topPortOffsetY determines the position of the center of the top port
-    by adjusting the lenght of the front port. This parameter was introduced because 
-    the drawings give the absolute position of the top-port center [12].
-
     \param Control :: Function data base for variables
     \param opticsName :: PreName
-    \param topPortOffsetY :: Distance of the top port center from the front plane
+    \param slitTubeFrontToTopPort :: Distance from the front surface to the 
+    port that defines the absolute position.
    */
 {
   setVariable::PortTubeGenerator PortTubeGen;
@@ -1223,7 +1228,7 @@ opticsSlitPackage(FuncDataBase& Control,
   PortTubeGen.setPortCF<CF40>(); // [10]
   const double topPortPipeToSlitTubeFront = 4.4; // [10]
   // Front port length determined by the Y offset.
-  const double frontPortLength = topPortOffsetY-CF150::outerRadius-topPortPipeToSlitTubeFront; 
+  const double frontPortLength = slitTubeFrontToTopPort-CF150::outerRadius-topPortPipeToSlitTubeFront; 
   const double backPortLength = 2.5; // [10] 
   PortTubeGen.setPortLength(frontPortLength, backPortLength);
   const double totalLength = tubeLength+frontPortLength+backPortLength;
@@ -1281,13 +1286,13 @@ opticsSlitPackage(FuncDataBase& Control,
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
   BeamMGen.generateMount(Control,opticsName+"JawZ",0);
 
-  return totalLength;
+  return totalLength-slitTubeFrontToTopPort;
 }
 
 void
 opticsVariables(FuncDataBase& Control,
 		const std::string& beamName)
-  /*
+  /*!
     Vacuum optics components in the optics hutch
     \param Control :: Function data base
     \param beamName :: beamline name
@@ -1392,13 +1397,11 @@ opticsVariables(FuncDataBase& Control,
 
   const double bellowCDLength = 8.0; // Dummy
   // Offset of the slit tube along the Y axis.
-  // Adjusts the front port length of the slit tube such that the center of the top
-  // port is at the given offset.
   //
   // Front Port Length 
   // + Distance Top Port Pipe to Slit Tube Front 
   // + Top Port Radius
-  const double slitTubeTopPortOffsetY = 2.5+4.4+CF150::outerRadius; // [10]
+  const double slitTubeFrontToTopPort = 2.5+4.4+CF150::outerRadius; // [10]
 
   // Laue monochromator
   PipeGen.setNoWindow();
@@ -1407,12 +1410,12 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName+"LauePipe",
     danmaxVar::absY::whiteBeamSlitsTopJawY-danmaxVar::absY::highPassFilterY
     -0.5*highPassFilterLength-valve3Length
-    -2.0*bellowCDLength-slitTubeTopPortOffsetY
+    -2.0*bellowCDLength-slitTubeFrontToTopPort
   );
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
-  const double slitTubeTotalLength = opticsSlitPackage(
-    Control,opticsName,slitTubeTopPortOffsetY);
+  const double slitTubeTopPortToBack = opticsSlitPackage(
+    Control,opticsName,slitTubeFrontToTopPort);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [10]
   // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [10]
@@ -1423,39 +1426,40 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(
     Control,opticsName+"BellowE",
     danmaxVar::absY::HDCMY-danmaxVar::absY::whiteBeamSlitsTopJawY
-    -(slitTubeTotalLength-slitTubeTopPortOffsetY)-valve3Length-HDCMOffsetY
+    -slitTubeTopPortToBack-valve3Length-HDCMOffsetY
   );
 
   const double HDCMCenterToBack = monoPackage(Control,opticsName);
 
-  const double beamViewer2Length = 19.8; // [10]
+  const double beamViewer2FrontToPort = 9.9; // [10]
   BellowGen.generateBellow(
     Control,opticsName+"BellowAfterMono",
     danmaxVar::absY::beamViewer2Y-danmaxVar::absY::HDCMY
-    -valve3Length-beamViewer2Length/2.0-HDCMCenterToBack
+    -valve3Length-beamViewer2FrontToPort-HDCMCenterToBack
   );
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [10]
   // Angle roughly adjusted to [10]. Found it difficult to read off from the model.
   // Control.addVariable(opticsName+"Valve7YAngle", -20.0);
 
-  viewPackage(Control,opticsName,beamViewer2Length);
+  const double beamViewer2PortToBack = viewPackage(
+    Control,opticsName,beamViewer2FrontToPort);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [10]
   // Control.addVariable(opticsName+"Valve8YAngle", 90.0); // [10]
 
   const double MLMFrontToTopViewPort = 21.95; // [10]
   BellowGen.generateBellow(Control,opticsName+"BellowF",
-    danmaxVar::absY::MLMY-danmaxVar::absY::beamViewer2Y-0.5*beamViewer2Length
+    danmaxVar::absY::MLMY-danmaxVar::absY::beamViewer2Y-beamViewer2PortToBack
     -valve3Length-MLMFrontToTopViewPort
   );
 
-  const double MLMTotalLength = mirrorMonoPackage(
+  const double MLMTopViewPortToBack = mirrorMonoPackage(
     Control,opticsName, MLMFrontToTopViewPort);
   const double beamStopFrontToWBPort = 2.5+CF40::flangeLength+5.2;
   BellowGen.generateBellow(Control,opticsName+"BellowG",
     danmaxVar::absY::whiteBeamStopY-danmaxVar::absY::MLMY
-    -(MLMTotalLength-MLMFrontToTopViewPort)-valve3Length-beamStopFrontToWBPort
+    -MLMTopViewPortToBack-valve3Length-beamStopFrontToWBPort
   );
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve9"); // [10]
