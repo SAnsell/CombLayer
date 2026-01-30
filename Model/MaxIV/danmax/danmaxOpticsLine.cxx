@@ -398,9 +398,7 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructViewScreenB");
 
-  int outerCell;
-
-  outerCell=constructSystem::constructUnit
+  constructSystem::constructUnit
     (System,buildZone,initFC,sideName,*viewTubeB);
 
   const constructSystem::portItem& VPI=viewTubeB->getPort(1);
