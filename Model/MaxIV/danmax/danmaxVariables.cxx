@@ -1163,7 +1163,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
   MBoxGen.setPortLength(MLMPortLength, MLMPortLength); // [10]
   const double MLMHeight = 47.0;
   const double MLMHeightAboveOpticalAxis = 11.55+CF40::innerRadius;
-  MBoxGen.setBPortOffset(-1.0, 0.0); // [10]
+  MBoxGen.setBPortOffset(danmaxVar::beamMirrorShift, 0.0); // [10]
   // width / heigh / depth / length
   MBoxGen.generateBox
     (
