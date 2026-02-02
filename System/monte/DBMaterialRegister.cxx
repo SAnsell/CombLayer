@@ -1787,6 +1787,20 @@ DBMaterial::initMaterial()
 			 "",MLib);
   Mptr->setDensity(-17.58);
 
+  // Tungsten Carbide (WC)
+  // Reference: https://en.wikipedia.org/wiki/Tungsten_carbide
+  // MatMCNP: TungstenCarbide
+  Mptr = &createMaterial("TungstenCarbide",
+			 " 74180.80c   0.000600 "
+			 " 74182.80c   0.132500 "
+			 " 74183.80c   0.071550 "
+			 " 74184.80c   0.153200 "
+			 " 74186.80c   0.142150 "
+			 " 06000.80c   0.500000 ", "", MLib);
+  Mptr->setMXitem(6000, 80, 'c', "h", "06012");
+  Mptr->setDensity(-15.6);
+
+
   return;
 }
 
