@@ -317,9 +317,8 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6); // Section D-D [1]
   const double opticsHutLength = 1010.0; // Section A-A in [1]
 
-  // "Lead Thickness", back view [1]
-  ELog::EM << "TODO: Reference for " << hutName << "BackPlateOuterThick==7 ???" << ELog::endWarn;
-  OGen.setBackPlateOuter(7.0, 200.0, 200.0);
+  // Section D-D or back view in [1] show all dimensions
+  OGen.setBackPlateOuter(7.0, 200.0, 200.0); 
 
   OGen.generateHut(Control,hutName, opticsHutLength);
   const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
