@@ -93,6 +93,7 @@
 // [12] DanMAX Beamline, FMB Oxford Drawing ABM0070
 // [13] DanMAX Diagnostics, Functional Specification, FMB Oxford S3716, Rev. 5.0
 // [14] DanMAX HDCM, Funcation Specification, FMB Oxford S3716, Rev. 6.0
+// [15] Detailed Design Report for DanMAX, v2.0, Dec. 2017
 
 namespace setVariable
 {
@@ -138,6 +139,11 @@ const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // It was decided to use the value from [1] for all heights.
 const double hutchHeightAboveOpticalAxis = 411.0-opticalAxisHeight;
 const double exptHut1WallThick = 0.4; // "Lead Thickness Side Wall", Section A-A [2]
+// DanMAX has a horizontal double crystal monochromator (HDCM) and a multilayer 
+// monochromator (MLM). It is possible to use either the HDCM, or the MLM, or both in 
+// combination. In all cases, the nominal offset of the beam as it exits the MLM is 
+// 10 mm [15].
+const double beamMirrorShift = -1.0;
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -301,8 +307,6 @@ opticsHutVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables","opticsHutVariables");
 
-  const double beamMirrorShift(-0.6);
-
   OpticsHutchGenerator OGen;
 
   // Not given in [1]. Use same value as in other beamlines (where this value is also
@@ -311,10 +315,11 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setSkin(skinThick);
   const double backLead = 5.0; // "Lead Thickness Back Wall" Section A-A [1]
   OGen.setBackLead(backLead);
-  const double opticsHutchWallThick = 1.2; // "Lead Thickness Side Wall", Section A-A [1]
+  // "Lead Thickness Side Wall", Section A-A [1]
+  const double opticsHutchWallThick = 1.2;
   OGen.setWallLead(opticsHutchWallThick);
   OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
-  OGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6); // Section D-D [1]
+  OGen.addHole(Geometry::Vec3D(danmaxVar::beamMirrorShift,0,0),3.6); // Section D-D [1]
   const double opticsHutLength = 1010.0; // Section A-A in [1]
 
   // Section D-D or back view in [1] show all dimensions
@@ -463,12 +468,11 @@ exptHut1Variables(FuncDataBase& Control,
 
   setVariable::ExptHutGenerator EGen;
 
-  const double beamMirrorShift(0.6); // will be adjusted later when the beamline is built
   const std::string hutName(beamName+"ExptHut1");
 
   // See the comment for EGen.setBackLead in exptHut1Variables
   EGen.setFrontLead(0.4); // "Lead Thickness Upstream Wall", Section A-A [2]
-  EGen.setFrontHole(beamMirrorShift,0.0,3.6); // Coupe C-C [2]
+  EGen.setFrontHole(danmaxVar::beamMirrorShift,0.0,3.6); // Coupe C-C [2]
   EGen.setCorner(atan(167.4/281.5)*180.0/M_PI,281.5); // Section A-A [2]
   const double backLead = 0.6; // "Lead Thickness Downstream Wall", Section A-A [2]
   EGen.setBackLead(backLead);
@@ -568,13 +572,7 @@ exptHut2Variables(FuncDataBase& Control,
 
   setVariable::ExptHutGenerator EGen;
 
-  const double beamMirrorShift(0.6); // will be adjusted later when the beamline is built
   const std::string hutName(beamName+"ExptHut2");
-
-  // Section D-D [1] (coordinates will be adjusted later)
-  EGen.setFrontHole(beamMirrorShift,0.0,3.6);
-  // Exit hole, Coupe C-C [2] (coordinates will be adjusted later)
-  EGen.addHole(Geometry::Vec3D(beamMirrorShift,0,0),3.6);
 
   // Both experimental hutches share the same wall: it is the back
   // wall of hutch 1 and the front wall of hutch 2. Since hutch 2 is
