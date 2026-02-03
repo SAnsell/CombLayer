@@ -1799,9 +1799,21 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::opticsHutVariables(Control,beamLineName+"OpticsHut");
   danmaxVar::opticsVariables(Control,beamLineName);
 
-  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setCF<setVariable::CF40>(); // [10]
   // dummy, adjusted such that JoinPipeB extends 100 mm into Experimental Hutch 2.
   PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",38.93);
+
+  const std::string guillotineName = beamLineName + "GuillotineOHToEH2";
+  // All dimensions from Section D-D in [1] if not indicated otherwise.
+  Control.addVariable(guillotineName+"Length",12.0);
+  Control.addVariable(guillotineName+"Width",40.0);
+  Control.addVariable(guillotineName+"Height",40.0);
+  // Roughly estimated from drawing. Uncertainty +- 2 mm.
+  Control.addVariable(guillotineName+"WallThick",2.0);
+  // Hole diameter of 41 mm is the same as JoinPipeB outer diameter.
+  Control.addVariable(guillotineName+"ClearGap",0.0);
+  Control.addVariable(guillotineName+"WallMat","SteelUnknownGrade");
+  Control.addVariable(guillotineName+"Mat","Lead");
 
   danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");

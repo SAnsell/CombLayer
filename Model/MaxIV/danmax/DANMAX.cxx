@@ -91,6 +91,7 @@ DANMAX::DANMAX(const std::string& KN) :
   opticsHut(new OpticsStepHutch(newName+"OpticsHut")),
   opticsBeam(new danmaxOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  guillotineOHToEH2(new xraySystem::PipeShield(newName+"GuillotineOHToEH2")),
   connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut1(new xraySystem::ExperimentalHutch(newName+"ExptHut1")),
@@ -112,6 +113,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
+  OR.addObject(guillotineOHToEH2);
   OR.addObject(connectUnit);
   OR.addObject(joinPipeC);
   OR.addObject(exptHut1);
@@ -197,6 +199,10 @@ DANMAX::build(Simulation& System,
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
   joinPipeB->setFront(*opticsBeam,2);
   joinPipeB->createAll(System,*opticsBeam,2);
+
+  guillotineOHToEH2->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  guillotineOHToEH2->setCutSurf("inner",*joinPipeB,"outerPipe");
+  guillotineOHToEH2->createAll(System,*opticsHut,"innerBack");
 
   exptHut2->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut2->setCutSurf("frontWall",*opticsHut,"back");
