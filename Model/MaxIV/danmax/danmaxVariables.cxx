@@ -104,6 +104,7 @@ namespace danmaxVar
     const double FM1Y = 1104.75; // [4]
     const double FM2Y = 1597.08; // [4]
     const double heatAbsorberY = 1673.33; // [4]
+    const double opticsHutFrontY = 2250.0; // [4]
     // Absolute position of the downstream side of Valve4 [4].
     // This value is used to determine the lengths of elements in the optics hutch that
     // are not shown in [12].
@@ -295,7 +296,7 @@ frontMaskVariables(FuncDataBase& Control,
 }
 
 
-void
+double
 opticsHutVariables(FuncDataBase& Control,
 		   const std::string& hutName)
   /*!
@@ -377,7 +378,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"WallShineOutThick", 1.2); // measured by UFG 251201
   Control.addVariable(hutName+"WallShineOutLength", 20.0); // measured by UFG 251201
 
-  return;
+  return opticsHutLength;
 }
 
 void
@@ -1188,7 +1189,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
   return MLMTotalLength-MLMFrontToTopViewPort;
 }
 
-void
+double
 monoShutterVariables(FuncDataBase& Control,
 		     const std::string& preName)
   /*!
@@ -1203,8 +1204,14 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterGenerator MShutterGen;
 
-  // up / up (true)
+  const double pipeLength = 20.0;
+  const double wallThick = 0.5;
+  const double portABLength = 3.0;
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
+  Control.addVariable(preName+"MonoShutterPipeLength",pipeLength);
+  Control.addVariable(preName+"MonoShutterPipeWallThick",wallThick);
+  Control.addVariable(preName+"MonoShutterPipePortALen",portABLength);
+  Control.addVariable(preName+"MonoShutterPipePortBLen",portABLength);
 
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();
@@ -1213,11 +1220,12 @@ monoShutterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"MonoAdaptorA",CF63::flangeLength); // [10]
   PipeGen.generatePipe(Control,preName+"MonoAdaptorB",CF63::flangeLength); // [10]
 
+  const double bellowLength = 12.0;
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowL",12.0); // [10]
+  BellowGen.generateBellow(Control,preName+"BellowL",bellowLength); // [10]
 
 
-  return;
+  return bellowLength+2.0*portABLength+2.0*wallThick+pipeLength+2.0*CF63::flangeLength;
 }
 
 template<typename JoinPipeCCF>
@@ -1350,13 +1358,17 @@ opticsSlitPackage(FuncDataBase& Control,
   return totalLength-slitTubeFrontToTopPort;
 }
 
-void
+double
 opticsVariables(FuncDataBase& Control,
-		const std::string& beamName)
+		const std::string& beamName,
+    const double opticsHutLength
+)
   /*!
     Vacuum optics components in the optics hutch
     \param Control :: Function data base
     \param beamName :: beamline name
+    \param opticsHutLength :: Total length of the Optics Hutch, to be able to calculate
+      distance to the end of the optics hutch after building all components.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","opticsVariables");
@@ -1561,13 +1573,18 @@ opticsVariables(FuncDataBase& Control,
     -danmaxVar::absY::CRLY-CRLCenterToBack
     -CRLGateTotalLength-revMonoSlitsFrontToSlits);
 
-  revBeamStopPackage(Control,opticsName,revMonoSlitsFrontToSlits);
+  const double bremColl3ToBack = revBeamStopPackage(
+    Control,opticsName,revMonoSlitsFrontToSlits);
 
-  BellowGen.generateBellow(Control,opticsName+"BellowK",16.0); // [10]
+  const double bellowKLength = 16.0; // [10]
+  BellowGen.generateBellow(Control,opticsName+"BellowK",bellowKLength);
 
-  monoShutterVariables(Control,opticsName);
+  const double monoShuttersLength = monoShutterVariables(Control,opticsName);
 
-  return;
+  return (
+    opticsHutLength-(danmaxVar::absY::bremColl3Y-danmaxVar::absY::opticsHutFrontY)
+    -bremColl3ToBack-bellowKLength-monoShuttersLength
+  );
 }
 
 }  // NAMESPACE danmaxVar
@@ -1781,19 +1798,22 @@ DANMAXvariables(FuncDataBase& Control)
 
   danmaxVar::frontMaskVariables(Control,frontKey);
 
-  Control.addVariable(frontKey+"ProxiShieldAWallMat","Void"); // [AR 251104: checked by JR 251103]
-  Control.addVariable(frontKey+"ProxiShieldBWallMat","Void"); // [AR 251104: checked by JR 251103]
+  // [AR 251104: checked by JR 251103]
+  Control.addVariable(frontKey+"ProxiShieldAWallMat","Void");
+  // [AR 251104: checked by JR 251103]
+  Control.addVariable(frontKey+"ProxiShieldBWallMat","Void");
 
   PipeGen.setMat("SteelUnknownGrade");
-  PipeGen.setCF<setVariable::CF40>();
+  PipeGen.setCF<setVariable::CF40>(); // [10]
   PipeGen.generatePipe(Control,beamLineName+"JoinPipe",146.0); // [4]
 
-  danmaxVar::opticsHutVariables(Control,beamLineName+"OpticsHut");
-  danmaxVar::opticsVariables(Control,beamLineName);
+  const double opticsHutLength = danmaxVar::opticsHutVariables(
+    Control,beamLineName+"OpticsHut");
+  const double lastOHElementToBack = danmaxVar::opticsVariables(
+    Control,beamLineName,opticsHutLength);
 
-  PipeGen.setCF<setVariable::CF40>(); // [10]
-  // dummy, adjusted such that JoinPipeB extends 100 mm into Experimental Hutch 2.
-  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",38.93);
+  // Adjusted such that JoinPipeB extends 100 mm into Experimental Hutch 2.
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",lastOHElementToBack+10.0);
 
   const std::string guillotineName = beamLineName + "GuillotineOHToEH2";
   // All dimensions from Section D-D in [1] if not indicated otherwise.
