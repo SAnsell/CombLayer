@@ -39,13 +39,16 @@ class BladeBPMGenerator
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double length;                ///< Total length including XBPM insert and vacuum chamber
+  double chamberLength;         ///< Vacuum chamber length including flanges
+  double chamberRadius;         ///< Vacuum chamber radius (inner)
+  double chamberWallThick;      ///< Vacuum chamber wall thickness
+  double chamberFlangeRadius;   ///< Vacuum chamber flange radius
+  double chamberFlangeLength;   ///< Vacuum chamber flange length
 
-  std::string mainMat;          ///< Main material
-  std::string wallMat;          ///< Wall material
+  std::string chamberFlangeMat; ///< Vacuum chamber flange material
+  std::string chamberWallMat;   ///< Vacuum chamber wall material
+  std::string voidMat;          ///< Void material
 
  public:
 

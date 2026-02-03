@@ -44,13 +44,16 @@ class BladeBPM :
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< Height
-  double wallThick;             ///< Wall thickness
+  double length;                ///< Total length including XBPM insert and vacuum chamber
+  double chamberLength;         ///< Vacuum chamber length including flanges
+  double chamberRadius;         ///< Vacuum chamber radius (inner)
+  double chamberWallThick;      ///< Vacuum chamber wall thickness
+  double chamberFlangeRadius;   ///< Vacuum chamber flange radius
+  double chamberFlangeLength;   ///< Vacuum chamber flange length
 
-  int mainMat;                  ///< Main material
-  int wallMat;                  ///< Wall material
+  int chamberFlangeMat;         ///< Vacuum chamber flange material
+  int chamberWallMat;           ///< Vacuum chamber wall material
+  int voidMat;                  ///< Void material
 
   void populate(const FuncDataBase&);
 

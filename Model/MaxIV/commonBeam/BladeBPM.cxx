@@ -83,9 +83,12 @@ BladeBPM::BladeBPM(const BladeBPM& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),width(A.width),height(A.height),
-  wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  length(A.length),chamberRadius(A.chamberRadius),chamberFlangeRadius(A.chamberFlangeRadius),
+  chamberLength(A.chamberLength),
+  chamberWallThick(A.chamberWallThick),
+  chamberFlangeLength(A.chamberFlangeLength),
+  chamberFlangeMat(A.chamberFlangeMat),chamberWallMat(A.chamberWallMat),
+  voidMat(A.voidMat)
   /*!
     Copy constructor
     \param A :: BladeBPM to copy
@@ -108,11 +111,14 @@ BladeBPM::operator=(const BladeBPM& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       length=A.length;
-      width=A.width;
-      height=A.height;
-      wallThick=A.wallThick;
-      mainMat=A.mainMat;
-      wallMat=A.wallMat;
+      chamberLength=A.chamberLength;
+      chamberRadius=A.chamberRadius;
+      chamberWallThick=A.chamberWallThick;
+      chamberFlangeRadius=A.chamberFlangeRadius;
+      chamberFlangeLength=A.chamberFlangeLength;
+      chamberFlangeMat=A.chamberFlangeMat;
+      chamberWallMat=A.chamberWallMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -145,12 +151,15 @@ BladeBPM::populate(const FuncDataBase& Control)
   FixedRotate::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  chamberLength=Control.EvalVar<double>(keyName+"ChamberLength");
+  chamberRadius=Control.EvalVar<double>(keyName+"ChamberRadius");
+  chamberWallThick=Control.EvalVar<double>(keyName+"ChamberWallThick");
+  chamberFlangeRadius=Control.EvalVar<double>(keyName+"ChamberFlangeRadius");
+  chamberFlangeLength=Control.EvalVar<double>(keyName+"ChamberFlangeLength");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  chamberFlangeMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberFlangeMat");
+  chamberWallMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberWallMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   return;
 }
@@ -165,41 +174,37 @@ BladeBPM::createSurfaces()
 
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+11,Origin,Y);
-      FrontBackCut::setFront(SMap.realSurf(buildIndex+11));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
 
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin+Y*(wallThick),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(chamberFlangeLength),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
 	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
-				      wallThick);
+				      chamberFlangeLength);
     }
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length+wallThick),Y);
-      FrontBackCut::setBack(-SMap.realSurf(buildIndex+12));
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+chamberFlangeLength),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
 
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
 	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
-				      -wallThick);
+				      -chamberFlangeLength);
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,chamberRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,chamberRadius+chamberWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,chamberFlangeRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
+  // ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(chamberRadius/2.0),X);
+  // ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(chamberRadius/2.0),X);
 
-  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(width/2.0+wallThick),X);
-
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0+wallThick),Z);
 
   return;
 }
@@ -214,18 +219,30 @@ BladeBPM::createObjects(Simulation& System)
   ELog::RegMethod RegA("BladeBPM","createObjects");
 
   HeadRule HR;
-  const HeadRule frontStr(frontRule());
-  const HeadRule backStr(backRule());
+  const HeadRule front(frontRule());
+  const HeadRule back(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 1 -2 3 -4 5 -6 ");
-  makeCell("MainCell",System,cellIndex++,mainMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
+  makeCell("ChamberVoid",System,cellIndex++,voidMat,0.0,HR*front*back);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  makeCell("Wall",System,cellIndex++,wallMat,0.0,HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 7 -17 ");
+  makeCell("ChamberWall",System,cellIndex++,chamberWallMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 13 -14 15 -16");
-  addOuterSurf(HR*frontStr*backStr);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 7 -27 ");
+  makeCell("FlangeA",System,cellIndex++,chamberFlangeMat,0.0,HR*front);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 17 -27 ");
+  makeCell("FlangeBetween",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 7 -27 ");
+  makeCell("FlangeB",System,cellIndex++,chamberFlangeMat,0.0,HR*back);
+
+  // HR=ModelSupport::getHeadRule(SMap,buildIndex,
+  // 				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
+  // makeCell("Wall",System,cellIndex++,chamberWallMat,0.0,HR*front*back);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -27 ");
+  addOuterSurf(HR*front*back);
 
   return;
 }
@@ -241,17 +258,6 @@ BladeBPM::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

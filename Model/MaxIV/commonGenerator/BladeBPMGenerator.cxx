@@ -50,8 +50,15 @@ namespace setVariable
 {
 
 BladeBPMGenerator::BladeBPMGenerator() :
-  length(26.0),width(5.0),height(15.0),wallThick(1.0),
-  mainMat("Void"),wallMat("SteelUnknownGrade")
+  length(26.0),
+  chamberLength(17.0),
+  chamberRadius(4.8),
+  chamberWallThick(0.3),
+  chamberFlangeRadius(10.0),
+  chamberFlangeLength(2.0),
+  chamberFlangeMat("SteelUnknownGrade"),
+  chamberWallMat("SteelUnknownGrade"),
+  voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -75,11 +82,14 @@ BladeBPMGenerator::generate(FuncDataBase& Control,
   ELog::RegMethod RegA("BladeBPMGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"Width",width);
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"WallThick",wallThick);
-  Control.addVariable(keyName+"MainMat",mainMat);
-  Control.addVariable(keyName+"WallMat",wallMat);
+  Control.addVariable(keyName+"ChamberLength",chamberLength);
+  Control.addVariable(keyName+"ChamberRadius",chamberRadius);
+  Control.addVariable(keyName+"ChamberWallThick",chamberWallThick);
+  Control.addVariable(keyName+"ChamberFlangeRadius",chamberFlangeRadius);
+  Control.addVariable(keyName+"ChamberFlangeLength",chamberFlangeLength);
+  Control.addVariable(keyName+"ChamberFlangeMat",chamberFlangeMat);
+  Control.addVariable(keyName+"ChamberWallMat",chamberWallMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
 
   return;
 
