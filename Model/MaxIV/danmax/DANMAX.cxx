@@ -236,19 +236,20 @@ DANMAX::build(Simulation& System,
   joinPipeC->insertAllInCell(System,exptHut1->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut1->getCell("EntranceHole"));
 
-  // pipe shield goes around joinPipeC:
-  guillotine->addAllInsertCell(
-    {
-      exptHut2->getCell("Void"),
-      connectUnit->getConnectShieldCell("BackOuterVoid"),
-      connectUnit->getConnectShieldCell("BackOuterSkin"),
-      connectUnit->getConnectShieldCell("BackWall"),
-      connectUnit->getConnectShieldCell("BackInnerSkin"),
-      connectUnit->getBuildZone().getLastCell("Unit")
-    }
-  );
-  guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
-  guillotine->createAll(System,*exptHut1,"front");
+  // TODO: The following guillotine probably does not exist, therefore the code is
+  // commented.
+  // guillotine->addAllInsertCell(
+  //   {
+  //     exptHut2->getCell("Void"),
+  //     connectUnit->getConnectShieldCell("BackOuterVoid"),
+  //     connectUnit->getConnectShieldCell("BackOuterSkin"),
+  //     connectUnit->getConnectShieldCell("BackWall"),
+  //     connectUnit->getConnectShieldCell("BackInnerSkin"),
+  //     connectUnit->getBuildZone().getLastCell("Unit")
+  //   }
+  // );
+  // guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
+  // guillotine->createAll(System,*exptHut1,"front");
 
   exptBeam->addInsertCell(exptHut1->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);
