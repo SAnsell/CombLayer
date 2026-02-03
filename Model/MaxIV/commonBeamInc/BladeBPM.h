@@ -32,7 +32,7 @@ namespace xraySystem
   \version 1.0
   \author Konstantin Batkov
   \date February 2026
-  \brief Photoemission Blade Beam Position Monitor (XBPM)
+  \brief Photoemission Blade Beam Position Monitor (XBPM) by Toyama
 */
 
 class BladeBPM :
@@ -50,10 +50,19 @@ class BladeBPM :
   double chamberWallThick;      ///< Vacuum chamber wall thickness
   double chamberFlangeRadius;   ///< Vacuum chamber flange radius
   double chamberFlangeLength;   ///< Vacuum chamber flange length
+  double insertFlangeRadius;    ///< Insert flange radius
+  double insertFlangeLength;    ///< Insert flange length
+  double insertInnerRadius;     ///< Insert inner radius
+  double insertOuterRadius;     ///< Insert outer radius
+  double insertPreOuterRadius;  ///< Outer radius of the insert part containing blades (in the vacuum chamber)
+  double insertLength;          ///< Insert length
 
   int chamberFlangeMat;         ///< Vacuum chamber flange material
   int chamberWallMat;           ///< Vacuum chamber wall material
+  int insertMat;                ///< Insert material
+  int insertFlangeMat;          ///< Insert flange material
   int voidMat;                  ///< Void material
+  int airMat;                   ///< Air material
 
   void populate(const FuncDataBase&);
 

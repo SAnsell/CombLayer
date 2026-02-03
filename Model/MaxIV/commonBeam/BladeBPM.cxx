@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "FileReport.h"
+#include "Exception.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
@@ -87,8 +88,17 @@ BladeBPM::BladeBPM(const BladeBPM& A) :
   chamberLength(A.chamberLength),
   chamberWallThick(A.chamberWallThick),
   chamberFlangeLength(A.chamberFlangeLength),
+  insertFlangeRadius(A.insertFlangeRadius),
+  insertFlangeLength(A.insertFlangeLength),
+  insertInnerRadius(A.insertInnerRadius),
+  insertOuterRadius(A.insertOuterRadius),
+  insertPreOuterRadius(A.insertPreOuterRadius),
+  insertLength(A.insertLength),
   chamberFlangeMat(A.chamberFlangeMat),chamberWallMat(A.chamberWallMat),
-  voidMat(A.voidMat)
+  insertMat(A.insertMat),
+  insertFlangeMat(A.insertFlangeMat),
+  voidMat(A.voidMat),
+  airMat(A.airMat)
   /*!
     Copy constructor
     \param A :: BladeBPM to copy
@@ -116,9 +126,18 @@ BladeBPM::operator=(const BladeBPM& A)
       chamberWallThick=A.chamberWallThick;
       chamberFlangeRadius=A.chamberFlangeRadius;
       chamberFlangeLength=A.chamberFlangeLength;
+      insertFlangeRadius=A.insertFlangeRadius;
+      insertFlangeLength=A.insertFlangeLength;
+      insertInnerRadius=A.insertInnerRadius;
+      insertOuterRadius=A.insertOuterRadius;
+      insertPreOuterRadius=A.insertPreOuterRadius;
+      insertLength=A.insertLength;
       chamberFlangeMat=A.chamberFlangeMat;
       chamberWallMat=A.chamberWallMat;
+      insertMat=A.insertMat;
+      insertFlangeMat=A.insertFlangeMat;
       voidMat=A.voidMat;
+      airMat=A.airMat;
     }
   return *this;
 }
@@ -157,9 +176,22 @@ BladeBPM::populate(const FuncDataBase& Control)
   chamberFlangeRadius=Control.EvalVar<double>(keyName+"ChamberFlangeRadius");
   chamberFlangeLength=Control.EvalVar<double>(keyName+"ChamberFlangeLength");
 
+  insertFlangeRadius=Control.EvalVar<double>(keyName+"InsertFlangeRadius");
+  if (insertFlangeRadius + Geometry::zeroTol > chamberFlangeRadius)
+    throw ColErr::RangeError<double>(insertFlangeRadius,0.0,chamberFlangeRadius,"insertFlangeRadius");
+
+  insertFlangeLength=Control.EvalVar<double>(keyName+"InsertFlangeLength");
+  insertInnerRadius=Control.EvalVar<double>(keyName+"InsertInnerRadius");
+  insertOuterRadius=Control.EvalVar<double>(keyName+"InsertOuterRadius");
+  insertPreOuterRadius=Control.EvalVar<double>(keyName+"InsertPreOuterRadius");
+  insertLength=Control.EvalVar<double>(keyName+"InsertLength");
+
   chamberFlangeMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberFlangeMat");
   chamberWallMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberWallMat");
+  insertMat=ModelSupport::EvalMat<int>(Control,keyName+"InsertMat");
+  insertFlangeMat=ModelSupport::EvalMat<int>(Control,keyName+"InsertFlangeMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
 
   return;
 }
@@ -187,10 +219,10 @@ BladeBPM::createSurfaces()
 
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length+chamberFlangeLength),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length),Y);
       FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
 
-      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(chamberLength-chamberFlangeLength),Y);
     } else
     {
       ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
@@ -198,9 +230,22 @@ BladeBPM::createSurfaces()
 				      -chamberFlangeLength);
     }
 
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+21, buildIndex+12, Y, chamberFlangeLength);
+
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+22,
+	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
+				      -insertFlangeLength);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,chamberRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,chamberRadius+chamberWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,chamberFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin,Y,insertFlangeRadius);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,insertInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,insertPreOuterRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+127,Origin,Y,insertOuterRadius);
+
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+101, buildIndex+2, Y, -insertLength);
+  ModelSupport::buildShiftedPlane(SMap, buildIndex+111, buildIndex+21, Y,  chamberFlangeLength);
 
   // ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(chamberRadius/2.0),X);
   // ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(chamberRadius/2.0),X);
@@ -222,8 +267,20 @@ BladeBPM::createObjects(Simulation& System)
   const HeadRule front(frontRule());
   const HeadRule back(backRule());
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 ");
-  makeCell("ChamberVoid",System,cellIndex++,voidMat,0.0,HR*front*back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 -101 ");
+  makeCell("ChamberVoid",System,cellIndex++,voidMat,0.0,HR*front);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 117 -7 101 -21");
+  makeCell("ChamberVoidInsert",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," -107 101 ");
+  makeCell("InsertVoid",System,cellIndex++,voidMat,0.0,HR*back);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 107 -117 101 -21 ");
+  makeCell("InsertPre",System,cellIndex++,insertMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 107 -127 21 ");
+  makeCell("Insert",System,cellIndex++,insertMat,0.0,HR*back);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 7 -17 ");
   makeCell("ChamberWall",System,cellIndex++,chamberWallMat,0.0,HR);
@@ -232,10 +289,22 @@ BladeBPM::createObjects(Simulation& System)
   makeCell("FlangeA",System,cellIndex++,chamberFlangeMat,0.0,HR*front);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 17 -27 ");
-  makeCell("FlangeBetween",System,cellIndex++,voidMat,0.0,HR);
+  makeCell("ChamberOuterVoid",System,cellIndex++,airMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 7 -27 ");
-  makeCell("FlangeB",System,cellIndex++,chamberFlangeMat,0.0,HR*back);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -21 7 -27 ");
+  makeCell("FlangeB",System,cellIndex++,chamberFlangeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 111 -22 127 -27 ");
+  makeCell("InsertOuterVoid",System,cellIndex++,airMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 37 -27 ");
+  makeCell("InsertOuterVoid",System,cellIndex++,airMat,0.0,HR*back);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -111 127 -27 ");
+  makeCell("InsertFrontFlange",System,cellIndex++,insertFlangeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 127 -37 ");
+  makeCell("InsertBackFlange",System,cellIndex++,insertFlangeMat,0.0,HR*back);
 
   // HR=ModelSupport::getHeadRule(SMap,buildIndex,
   // 				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");

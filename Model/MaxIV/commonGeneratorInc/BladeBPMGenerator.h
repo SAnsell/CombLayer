@@ -45,10 +45,19 @@ class BladeBPMGenerator
   double chamberWallThick;      ///< Vacuum chamber wall thickness
   double chamberFlangeRadius;   ///< Vacuum chamber flange radius
   double chamberFlangeLength;   ///< Vacuum chamber flange length
+  double insertFlangeRadius;    ///< Insert flange radius
+  double insertFlangeLength;    ///< Insert flange length
+  double insertInnerRadius;     ///< Insert inner radius
+  double insertOuterRadius;     ///< Insert outer radius
+  double insertPreOuterRadius;  ///< Outer radius of the insert part containing blades (in the vacuum chamber)
+  double insertLength;          ///< Insert length
 
   std::string chamberFlangeMat; ///< Vacuum chamber flange material
   std::string chamberWallMat;   ///< Vacuum chamber wall material
+  std::string insertMat;        ///< Insert material
+  std::string insertFlangeMat;  ///< Insert flange material
   std::string voidMat;          ///< Void material
+  std::string airMat;           ///< Air material
 
  public:
 
