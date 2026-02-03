@@ -955,9 +955,9 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   BeamPairGen.generateMount(Control,viewKey+"MonoSlitsZ",0);
 
   PipeGen.setNoWindow();
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setAFlangeCF<setVariable::CF150>();
-  const double slitsAOutLength = 4.0; // Estimated
+  PipeGen.setFlangeLength(0.0, 0.0);
+  PipeGen.setPipe(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius); // [10]
+  const double slitsAOutLength = CF150::flangeLength; // [10]
   PipeGen.generatePipe(Control,viewKey+"SlitsAOut",slitsAOutLength);
 
   return monoSlitsTubeLength/2.0+slitsAOutLength;
@@ -988,9 +988,9 @@ revBeamStopPackage(FuncDataBase& Control,
 
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setBFlangeCF<setVariable::CF150>();
-  const double slitsInLength = 4.0; // Estimated
+  PipeGen.setFlangeLength(0.0, 0.0);
+  PipeGen.setPipe(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius); // [10]
+  const double slitsInLength = CF150::flangeLength; // [10]]
   PipeGen.generatePipe(Control,viewKey+"RevMonoSlitsIn",slitsInLength);
 
   // Tube for Monochromatic Slits
@@ -1208,12 +1208,10 @@ monoShutterVariables(FuncDataBase& Control,
 
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setNoWindow();
-  PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setBFlangeCF<setVariable::CF63>();
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",4.0);
-  PipeGen.setAFlangeCF<setVariable::CF63>();
-  PipeGen.setBFlangeCF<setVariable::CF40>();
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",4.0);
+  PipeGen.setFlangeLength(0.0, 0.0);
+  PipeGen.setPipe(CF40::innerRadius, CF63::flangeRadius-CF40::innerRadius); // [10]
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",CF63::flangeLength); // [10]
+  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",CF63::flangeLength); // [10]
 
 
   // bellows on shield block
@@ -1558,12 +1556,13 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.generateValve(Control,opticsName+"CRLGateOut",0.0,0);
 
-  // Connector length (estimated) + half the length of the pipe that contains the
+  // Connector length + half the length of the pipe that contains the
   // monochromatic slits [10]
-  const double revMonoSlitsFrontToSlits = 4.0+5.25;
+  const double revMonoSlitsFrontToSlits = CF150::flangeLength+5.25;
   BellowGen.generateBellow(
     Control,opticsName+"BellowJ",danmaxVar::absY::monoSlits2Y
-    -danmaxVar::absY::CRLY-CRLCenterToBack-CRLGateTotalLength-revMonoSlitsFrontToSlits);
+    -danmaxVar::absY::CRLY-CRLCenterToBack
+    -CRLGateTotalLength-revMonoSlitsFrontToSlits);
 
   revBeamStopPackage(Control,opticsName,revMonoSlitsFrontToSlits);
 
