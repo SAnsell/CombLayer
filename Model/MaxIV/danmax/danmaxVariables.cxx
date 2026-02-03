@@ -1057,6 +1057,8 @@ revBeamStopPackage(FuncDataBase& Control,
 
   Control.addVariable(pipeName+"NPorts",2);
 
+  // The length of this port could also have been read from [10], but here it is 
+  // calculated to place the main tube exactly at the given absolute position.
   PItemGen.setCF<CF150>(
     danmaxVar::absY::bremColl3Y-danmaxVar::absY::monoSlits2Y-0.5*monoSlitsTubeLength);
   PItemGen.setOuterVoid(0);
