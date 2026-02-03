@@ -1815,8 +1815,6 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
 
   PipeGen.setCF<setVariable::CF40>();
-  PipeGen.setWindow(2.7, 0.005);
-  PipeGen.setWindowMat("Diamond");
   PipeGen.generatePipe(Control,beamLineName+"JoinPipeC",94.0);
 
   danmaxVar::exptHut1Variables(Control,beamLineName);
