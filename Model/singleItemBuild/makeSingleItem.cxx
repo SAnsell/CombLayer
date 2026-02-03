@@ -114,6 +114,7 @@
 #include "GateValveCylinder.h"
 #include "GTFGateValve.h"
 #include "StriplineBPM.h"
+#include "BladeBPM.h"
 #include "BeamDivider.h"
 #include "CeramicGap.h"
 #include "DipoleDIBMag.h"
@@ -250,7 +251,7 @@ makeSingleItem::build(Simulation& System,
 	"FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
 	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
-	"StriplineBPM","BeamDivider","BeamScrapper",
+	"StriplineBPM","BladeBPM","BeamDivider","BeamScrapper",
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
 	"HalfElectronPipe","HeimdalCave","LegoBrick",
@@ -590,6 +591,18 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
+  if (item == "BladeBPM")
+    {
+      const auto xbpm = std::make_shared<xraySystem::BladeBPM>("XBPM");
+      OR.addObject(xbpm);
+
+      xbpm->addInsertCell(voidCell);
+      xbpm->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
   if (item == "MainBeamDump")
     {
       std::shared_ptr<tdcSystem::MainBeamDump>
@@ -1916,7 +1929,7 @@ makeSingleItem::build(Simulation& System,
   blockZone.setInnerMat(sqrShield->getInnerMat());
   blockZone.createUnit(System);
   blockZone.createAll(System,World::masterOrigin(),0);
-  
+
 	return;
       }
 
