@@ -173,8 +173,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-  monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
-  gateG(new constructSystem::GateValveCylinder(newName+"GateG"))
+  monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB"))
  /*!
     Constructor
     \param Key :: Name of construction key
@@ -242,7 +241,6 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(monoAdaptorA);
   OR.addObject(monoShutter);
   OR.addObject(monoAdaptorB);
-  OR.addObject(gateG);
 }
 
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -768,9 +766,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructMonoShutter(System,*bellowK,"back");
 
-  constructSystem::constructUnit
-    (System,buildZone,*monoAdaptorB,"back",*gateG);
-
   outerCell = buildZone.createUnit(System);
   for (int i=0; i<4; ++i) {
     MonteCarlo::Object* OPtr = System.findObject(outerCell-i);
@@ -779,7 +774,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=gateG;
+  lastComp=monoAdaptorB;
 
   return;
 
