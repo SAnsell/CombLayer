@@ -205,7 +205,9 @@ DANMAX::build(Simulation& System,
   exptHut2->createAll(System,*opticsHut,"back");
 
   // two ways to insert BackPlateOuter into expt. hutch2:
-  const std::set<std::string> cells = {"Void", "FloorShineRingWallVoid", "InnerSkinRingWall", "LeadRingWall", "OuterSkinRingWall", "OuterRightVoid"};
+  const std::set<std::string> cells = {
+    "Void", "FloorShineRingWallVoid", "InnerSkinRingWall", "LeadRingWall",
+    "OuterSkinRingWall", "OuterRightVoid"};
   for (const auto& c : cells)
     opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell(c));
   // the same but ~x10 slower (~2.5 ms vs 250 us) since needs to check all cells:
@@ -216,7 +218,6 @@ DANMAX::build(Simulation& System,
     {
       exptHut2->getCell("Void"),
       exptHut2->getCell("FloorShineRingWallVoid"),
-      //      exptHut2->getCell("FrontVoid")
     }
   );
   connectUnit->setFront(*opticsHut, "backPlateOuter");
@@ -236,9 +237,18 @@ DANMAX::build(Simulation& System,
   joinPipeC->insertInCell("Main",System,exptHut1->getCell("EntranceHole"));
 
   // pipe shield goes around joinPipeC:
-  guillotine->addAllInsertCell(exptHut1->getCell("Void"));
+  guillotine->addAllInsertCell(
+    {
+      exptHut2->getCell("Void"),
+      connectUnit->getConnectShieldCell("BackOuterVoid"),
+      connectUnit->getConnectShieldCell("BackOuterSkin"),
+      connectUnit->getConnectShieldCell("BackWall"),
+      connectUnit->getConnectShieldCell("BackInnerSkin"),
+      connectUnit->getBuildZone().getLastCell("Unit")
+    }
+  );
   guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
-  guillotine->createAll(System,*exptHut1,"innerFront");
+  guillotine->createAll(System,*exptHut1,"front");
 
   exptBeam->addInsertCell(exptHut1->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);

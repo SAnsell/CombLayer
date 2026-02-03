@@ -89,7 +89,8 @@ class danmaxConnectLine :
   void registerJoinPipe(const std::shared_ptr<constructSystem::VacuumPipe>& JP)
     { JPipe=JP; }
   
-  void insertFirstRegion(Simulation&,const int);
+  int getConnectShieldCell(const std::string cell) const;
+  attachSystem::BlockZone getBuildZone(){return buildZone;};
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

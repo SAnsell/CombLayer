@@ -112,6 +112,10 @@ danmaxConnectLine::~danmaxConnectLine()
     Destructor
    */
 {}
+
+int danmaxConnectLine::getConnectShieldCell(const std::string cell) const {
+  return connectShield->getCell(cell);
+};
   
 void
 danmaxConnectLine::buildObjects(Simulation& System,
