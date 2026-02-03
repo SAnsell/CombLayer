@@ -1213,11 +1213,8 @@ monoShutterVariables(FuncDataBase& Control,
   PipeGen.generatePipe(Control,preName+"MonoAdaptorA",CF63::flangeLength); // [10]
   PipeGen.generatePipe(Control,preName+"MonoAdaptorB",CF63::flangeLength); // [10]
 
-
-  // bellows on shield block
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setAFlangeCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,preName+"BellowL",10.0);
+  BellowGen.generateBellow(Control,preName+"BellowL",12.0); // [10]
 
 
   return;

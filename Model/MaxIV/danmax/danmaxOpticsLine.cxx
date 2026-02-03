@@ -173,7 +173,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-  monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB"))
+  monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
+  bellowL(new constructSystem::Bellows(newName+"BellowL"))
  /*!
     Constructor
     \param Key :: Name of construction key
@@ -241,6 +242,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(monoAdaptorA);
   OR.addObject(monoShutter);
   OR.addObject(monoAdaptorB);
+  OR.addObject(bellowL);
 }
 
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -659,6 +661,9 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
   constructSystem::constructUnit
     (System,buildZone,*monoShutter,"back",*monoAdaptorB);
 
+  constructSystem::constructUnit
+    (System,buildZone,*monoAdaptorB,"back",*bellowL);
+
   return;
 }
 
@@ -774,7 +779,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   buildZone.rebuildInsertCells(System);
   setCell("LastVoid",buildZone.getCells("Unit").back());
-  lastComp=monoAdaptorB;
+  lastComp=bellowL;
 
   return;
 

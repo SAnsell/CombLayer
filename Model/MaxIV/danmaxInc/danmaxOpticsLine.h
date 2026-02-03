@@ -202,6 +202,8 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::MonoShutter> monoShutter;
   /// adaptor plate from CF63->CF40
   std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
+  /// Bellows from Mono Shutter
+  std::shared_ptr<constructSystem::Bellows> bellowL;
 
 
   double outerLeft;    ///< Left Width for cut rectangle
