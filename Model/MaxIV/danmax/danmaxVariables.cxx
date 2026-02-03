@@ -1567,7 +1567,7 @@ opticsVariables(FuncDataBase& Control,
 
   revBeamStopPackage(Control,opticsName,revMonoSlitsFrontToSlits);
 
-  BellowGen.generateBellow(Control,opticsName+"BellowK",10.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowK",16.0); // [10]
 
   monoShutterVariables(Control,opticsName);
 
