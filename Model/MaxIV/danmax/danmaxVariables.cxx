@@ -139,9 +139,9 @@ const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // It was decided to use the value from [1] for all heights.
 const double hutchHeightAboveOpticalAxis = 411.0-opticalAxisHeight;
 const double exptHut1WallThick = 0.4; // "Lead Thickness Side Wall", Section A-A [2]
-// DanMAX has a horizontal double crystal monochromator (HDCM) and a multilayer 
-// monochromator (MLM). It is possible to use either the HDCM, or the MLM, or both in 
-// combination. In all cases, the nominal offset of the beam as it exits the MLM is 
+// DanMAX has a horizontal double crystal monochromator (HDCM) and a multilayer
+// monochromator (MLM). It is possible to use either the HDCM, or the MLM, or both in
+// combination. In all cases, the nominal offset of the beam as it exits the MLM is
 // 10 mm [15].
 const double beamMirrorShift = -1.0;
 
@@ -323,7 +323,7 @@ opticsHutVariables(FuncDataBase& Control,
   const double opticsHutLength = 1010.0; // Section A-A in [1]
 
   // Section D-D or back view in [1] show all dimensions
-  OGen.setBackPlateOuter(7.0, 200.0, 200.0); 
+  OGen.setBackPlateOuter(7.0, 200.0, 200.0);
 
   OGen.generateHut(Control,hutName, opticsHutLength);
   const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
@@ -657,7 +657,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey,
     Builds the variables for the ViewTube
     \param Control :: Database
     \param viewKey :: prename including view
-    \param beamViewerFrontToPort :: Distance from the front surface to the port that 
+    \param beamViewerFrontToPort :: Distance from the front surface to the port that
     defines the absolute position.
   */
 {
@@ -715,7 +715,7 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey,
     Builds the variables for the ViewTube
     \param Control :: Database
     \param lensKey :: prename including view
-    \param CRLFrontToCenter :: Distance from the front surface to the center, which 
+    \param CRLFrontToCenter :: Distance from the front surface to the center, which
     defines the absolute position.
   */
 {
@@ -749,7 +749,7 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey,
     Builds the variables for the ViewTube
     \param Control :: Database
     \param viewKey :: prename including view
-    \param mainTubeFrontToBeamViewerPort :: Distance from the front surface to the 
+    \param mainTubeFrontToBeamViewerPort :: Distance from the front surface to the
     port that defines the absolute position.
   */
 {
@@ -806,7 +806,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
     Builds the variables for the ViewTube 2
     \param Control :: Database
     \param viewKey :: prename
-    \param beamStopFrontToWBPort :: Distance from the front surface to the 
+    \param beamStopFrontToWBPort :: Distance from the front surface to the
     port that defines the absolute position.
   */
 {
@@ -841,8 +841,8 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
       +beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength-port0WallThick,0),
 			Geometry::Vec3D(1,0,0));
 
-  // Demonstrate explicitly that the code sets the position of the bremsstrahlung 
-  // collimator correctly by re-calculating the distance between the bremsstrahlung 
+  // Demonstrate explicitly that the code sets the position of the bremsstrahlung
+  // collimator correctly by re-calculating the distance between the bremsstrahlung
   // collimator and the white beam stop using local variables.
   assert(
     fabs(
@@ -931,15 +931,14 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
 			Geometry::Vec3D(-0.5*bladeWidth,outerBladePos,0),
 			Geometry::Vec3D(0,0,1));
 
-  // Slit width/height/material are the same as in Diagnostic Module 2, therefore 
+  // Slit width/height/material are the same as in Diagnostic Module 2, therefore
   // assume other properties are also similar if not indicated otherwise.
   BeamPairGen.setLift(0.6, 0.6); // "Maximum aperture" given as 10 mm x 10 mm [13]
   BeamPairGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
   BeamPairGen.setThread(0.5*bladeThick,"Nickel"); // Estimated
   // Height from [13]
-  // Material: TODO: Should be Tungsten Carbide [13]
-  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"Tungsten");
-  // Cooling is achieved through water-cooled fingers attached to the blades 
+  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenCarbide"); // [13]
+  // Cooling is achieved through water-cooled fingers attached to the blades
   // (not modeled). This is different from Diagnostic Module 2.
   BeamPairGen.setWaterPipes(0,0);
 
@@ -975,7 +974,7 @@ revBeamStopPackage(FuncDataBase& Control,
 
     \param Control :: Database
     \param viewKey :: prename
-    \param revMonoSlitsFrontToSlits :: Distance from the front surface to the 
+    \param revMonoSlitsFrontToSlits :: Distance from the front surface to the
     port that defines the absolute position.
   */
 {
@@ -1030,8 +1029,7 @@ revBeamStopPackage(FuncDataBase& Control,
   BeamPairGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
   BeamPairGen.setThread(0.5*bladeThick,"Nickel"); // Estimated
   // Height from [13]
-  // Material: TODO: Should be Tungsten Carbide [13]
-  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"Tungsten");
+  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenCarbide");
   BeamPairGen.setWaterPipes(0,0);
 
   // Seen from upstream, the beam hits the jaws in the following order [10]:
@@ -1111,7 +1109,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
     -2.0*monoVesselWallThick-2.0*monoVesselRadius
   );
 
-  // Although the HDCM shifts the beam axis, the front and back ports of 
+  // Although the HDCM shifts the beam axis, the front and back ports of
   // are collinear [10]. No call to MBoxGen.setBPortOffset() or similar needed.
 
   // radius, height, depth
@@ -1141,7 +1139,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
     Builds the variables for the mirror mono package (MLM)
     \param Control :: Database
     \param monoKey :: prename
-    \param MLMFrontToTopViewPort :: Distance from the front surface to the 
+    \param MLMFrontToTopViewPort :: Distance from the front surface to the
     port that defines the absolute position.
   */
 {
@@ -1274,7 +1272,7 @@ opticsSlitPackage(FuncDataBase& Control,
 
     \param Control :: Function data base for variables
     \param opticsName :: PreName
-    \param slitTubeFrontToTopPort :: Distance from the front surface to the 
+    \param slitTubeFrontToTopPort :: Distance from the front surface to the
     port that defines the absolute position.
    */
 {
@@ -1287,7 +1285,7 @@ opticsSlitPackage(FuncDataBase& Control,
   const double tubeLength = 48.5; // Outer length [10]
   PortTubeGen.setPipeCF<CF200>(); // [10]
   // [10] TODO: This is only the thickness of the hull.
-  // The front and back walls are actually 1 mm thicker, but the present 
+  // The front and back walls are actually 1 mm thicker, but the present
   // PortTubeGenerator does not distinguish between these walls.
   const double wallThick = 0.2;
   PortTubeGen.setWallThick(0.2);
@@ -1295,8 +1293,8 @@ opticsSlitPackage(FuncDataBase& Control,
   PortTubeGen.setPortCF<CF40>(); // [10]
   const double topPortPipeToSlitTubeFront = 4.4; // [10]
   // Front port length determined by the Y offset.
-  const double frontPortLength = slitTubeFrontToTopPort-CF150::outerRadius-topPortPipeToSlitTubeFront; 
-  const double backPortLength = 2.5; // [10] 
+  const double frontPortLength = slitTubeFrontToTopPort-CF150::outerRadius-topPortPipeToSlitTubeFront;
+  const double backPortLength = 2.5; // [10]
   PortTubeGen.setPortLength(frontPortLength, backPortLength);
   const double totalLength = tubeLength+frontPortLength+backPortLength;
   PortTubeGen.generateTube(Control,sName,0.0,tubeLength-2.0*wallThick);
@@ -1341,8 +1339,7 @@ opticsSlitPackage(FuncDataBase& Control,
   BeamMGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
   // Width, height, and angle from [13]
   // Thickness: Estimated from the given coolant-connection radius of 8 mm in [13]
-  // Material: TODO: Should be Tungsten Carbide [13]
-  BeamMGen.setBlock(5.0,3.5,1.0,0.0,"Tungsten"); // [13]
+  BeamMGen.setBlock(5.0,3.5,1.0,0.0,"TungstenCarbide"); // [13]
   BeamMGen.setWaterPipes(2, 1);
 
   // Seen from upstream, the beam hits the jaws in the following order [10]:
@@ -1413,7 +1410,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowA",
     danmaxVar::absY::bremColl1Y-bremColl1Length/2.0-danmaxVar::absY::valve4BackY);
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
-  // Reset bellow step to default value [10]. Large bellow step of InitBellow and 
+  // Reset bellow step to default value [10]. Large bellow step of InitBellow and
   // BellowA looked odd on the short bellows.
   BellowGen.setBellowStep(1.0);
   BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
@@ -1566,8 +1563,7 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName+"BellowJ",danmaxVar::absY::monoSlits2Y
     -danmaxVar::absY::CRLY-CRLCenterToBack-CRLGateTotalLength-revMonoSlitsFrontToSlits);
 
-  const double revMonoSlitsToBack = revBeamStopPackage(
-    Control,opticsName,revMonoSlitsFrontToSlits);
+  revBeamStopPackage(Control,opticsName,revMonoSlitsFrontToSlits);
 
   BellowGen.generateBellow(Control,opticsName+"BellowK",10.0);
 
