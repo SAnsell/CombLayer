@@ -126,6 +126,83 @@ VirtualTube::populate(const FuncDataBase& Control)
 }
 
 void
+VirtualTube::createPort(Simulation& System,
+			 MonteCarlo::Object* insertObj,
+       std::shared_ptr<constructSystem::portItem> port,
+       const Geometry::Vec3D portCentre,
+       const Geometry::Vec3D portAxis,
+			 const HeadRule& innerSurf,
+			 const HeadRule& outerSurf)
+{
+  ELog::RegMethod RegA("VirtualTube","createPort(Obj,HR,HR)");
+
+  const attachSystem::ContainedComp& CC=getCC("Main");
+  for(const int CN : CC.getInsertCells())
+	  port->addInsertCell(CN);
+
+  for(const int CN : portCells)
+	  port->addInsertCell(CN);
+
+  port->setCentLine(*this,portCentre,portAxis);
+  port->constructTrack(System,insertObj,innerSurf,outerSurf);
+
+  if (zNorm)
+	  port->reNormZ(postZAxis);
+  
+  if (outerVoid && CellMap::hasCell("OuterVoid"))
+    port->addPortCut(CellMap::getCellObject(System,"OuterVoid"));
+  port->insertObjects(System);
+
+}
+
+void
+VirtualTube::createPortsForce(Simulation& System,
+			 const std::vector<MonteCarlo::Object*> insertObj,
+			 const std::vector<HeadRule> innerSurf,
+			 const std::vector<HeadRule> outerSurf)
+  /*!
+    Simple function to create ports
+    \param System :: Simulation to use
+    \param insertObj :: Object to insert port cut into
+    \param innerSurf :: HeadRule to inner surf [outward]
+    \param outerSurf :: HeadRule to outer surf [outward]
+   */
+{
+  ELog::RegMethod RegA("VirtualTube","createPortsForce(Obj,HR,HR)");
+
+  size_t iSurf;
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      iSurf = std::min(i,innerSurf.size());
+      std::cout << "Inner: " << innerSurf[iSurf] << std::endl;
+      std::cout << "Outer: " << outerSurf[iSurf] << std::endl;
+      createPort(
+        System,insertObj[i],Ports[i],PCentre[i],
+        PAxis[i],innerSurf[iSurf],outerSurf[iSurf]
+      );
+    }
+
+  return;
+}
+
+void VirtualTube::createPorts(Simulation& System,
+  const std::vector<MonteCarlo::Object*> insertObj,
+  const std::vector<HeadRule> innerSurf,const std::vector<HeadRule> outerSurf)
+{
+  ELog::RegMethod RegA("VirtualTube","createPorts(Obj,HR,HR)");
+  if(innerSurf.size() != outerSurf.size()){
+	  ELog::EM<<"Number of inner (" << innerSurf.size() << ") and outer (" 
+    << outerSurf.size() << ") surfaces does not match. Not creating any ports."
+    << ELog::endDiag;
+  }
+  if(innerSurf.size() < Ports.size()){
+    ELog::EM<<"More ports than inner/outer surfaces given."
+    <<"Using the last inner/outer surface for all remaining ports."<<ELog::endDiag;
+  }
+  createPortsForce(System,insertObj,innerSurf,outerSurf);
+};
+
+void
 VirtualTube::createPorts(Simulation& System,
 			 MonteCarlo::Object* insertObj,
 			 const HeadRule& innerSurf,
@@ -142,22 +219,9 @@ VirtualTube::createPorts(Simulation& System,
 
   for(size_t i=0;i<Ports.size();i++)
     {
-      const attachSystem::ContainedComp& CC=getCC("Main");
-      for(const int CN : CC.getInsertCells())
-	Ports[i]->addInsertCell(CN);
-
-      for(const int CN : portCells)
-	Ports[i]->addInsertCell(CN);
-
-      Ports[i]->setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i]->constructTrack(System,insertObj,innerSurf,outerSurf);
-
-      if (zNorm)
-	Ports[i]->reNormZ(postZAxis);
-  
-      if (outerVoid && CellMap::hasCell("OuterVoid"))
-       	Ports[i]->addPortCut(CellMap::getCellObject(System,"OuterVoid"));
-      Ports[i]->insertObjects(System);
+      createPort(
+        System,insertObj,Ports[i],PCentre[i],PAxis[i],innerSurf,outerSurf
+      );
     }
 
   return;
