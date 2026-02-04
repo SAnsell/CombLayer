@@ -55,6 +55,7 @@ class BladeBPMGenerator
   std::string chamberFlangeMat; ///< Vacuum chamber flange material
   std::string chamberWallMat;   ///< Vacuum chamber wall material
   std::string insertMat;        ///< Insert material
+  std::string insertPreMat;     ///< Homogenised material of the insert part with blades
   std::string insertFlangeMat;  ///< Insert flange material
   std::string voidMat;          ///< Void material
   std::string airMat;           ///< Air material

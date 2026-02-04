@@ -96,6 +96,7 @@ BladeBPM::BladeBPM(const BladeBPM& A) :
   insertLength(A.insertLength),
   chamberFlangeMat(A.chamberFlangeMat),chamberWallMat(A.chamberWallMat),
   insertMat(A.insertMat),
+  insertPreMat(A.insertPreMat),
   insertFlangeMat(A.insertFlangeMat),
   voidMat(A.voidMat),
   airMat(A.airMat)
@@ -135,6 +136,7 @@ BladeBPM::operator=(const BladeBPM& A)
       chamberFlangeMat=A.chamberFlangeMat;
       chamberWallMat=A.chamberWallMat;
       insertMat=A.insertMat;
+      insertPreMat=A.insertPreMat;
       insertFlangeMat=A.insertFlangeMat;
       voidMat=A.voidMat;
       airMat=A.airMat;
@@ -189,6 +191,7 @@ BladeBPM::populate(const FuncDataBase& Control)
   chamberFlangeMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberFlangeMat");
   chamberWallMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberWallMat");
   insertMat=ModelSupport::EvalMat<int>(Control,keyName+"InsertMat");
+  insertPreMat=ModelSupport::EvalMat<int>(Control,keyName+"InsertPreMat");
   insertFlangeMat=ModelSupport::EvalMat<int>(Control,keyName+"InsertFlangeMat");
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
@@ -277,7 +280,7 @@ BladeBPM::createObjects(Simulation& System)
   makeCell("InsertVoid",System,cellIndex++,voidMat,0.0,HR*back);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 107 -117 101 -21 ");
-  makeCell("InsertPre",System,cellIndex++,insertMat,0.0,HR);
+  makeCell("InsertPre",System,cellIndex++,insertPreMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 107 -127 21 ");
   makeCell("Insert",System,cellIndex++,insertMat,0.0,HR*back);

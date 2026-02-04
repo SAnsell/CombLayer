@@ -60,6 +60,7 @@ class BladeBPM :
   int chamberFlangeMat;         ///< Vacuum chamber flange material
   int chamberWallMat;           ///< Vacuum chamber wall material
   int insertMat;                ///< Insert material
+  int insertPreMat;             ///< Homogenised material of the insert part with blades
   int insertFlangeMat;          ///< Insert flange material
   int voidMat;                  ///< Void material
   int airMat;                   ///< Air material

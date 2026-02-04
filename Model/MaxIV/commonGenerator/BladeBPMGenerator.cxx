@@ -67,7 +67,8 @@ BladeBPMGenerator::BladeBPMGenerator() :
   insertLength(16.35), // [2]
   chamberFlangeMat("Stainless304L"), // [1]: ICF152 => SS304L
   chamberWallMat("SteelUnknownGrade"),
-  insertMat("Copper"), // [2] C1020
+  insertMat("Copper"), // [2] C1020,
+  insertPreMat("Copper%Void%50.0"), // approx, see [2]
   insertFlangeMat("Stainless304L"), // [2]: SUS304L
   voidMat("Void"),
   airMat("Void")
@@ -108,6 +109,7 @@ BladeBPMGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"ChamberFlangeMat",chamberFlangeMat);
   Control.addVariable(keyName+"ChamberWallMat",chamberWallMat);
   Control.addVariable(keyName+"InsertMat",insertMat);
+  Control.addVariable(keyName+"InsertPreMat",insertPreMat);
   Control.addVariable(keyName+"InsertFlangeMat",insertFlangeMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"AirMat",airMat);
