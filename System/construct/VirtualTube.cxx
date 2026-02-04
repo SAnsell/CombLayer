@@ -174,8 +174,6 @@ VirtualTube::createPortsForce(Simulation& System,
   for(size_t i=0;i<Ports.size();i++)
     {
       iSurf = std::min(i,innerSurf.size());
-      std::cout << "Inner: " << innerSurf[iSurf] << std::endl;
-      std::cout << "Outer: " << outerSurf[iSurf] << std::endl;
       createPort(
         System,insertObj[i],Ports[i],PCentre[i],
         PAxis[i],innerSurf[iSurf],outerSurf[iSurf]
