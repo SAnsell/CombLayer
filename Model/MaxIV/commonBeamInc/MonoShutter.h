@@ -70,8 +70,6 @@ class MonoShutter :
  public:
 
   MonoShutter(const std::string&);
-  MonoShutter(const MonoShutter&);
-  MonoShutter& operator=(const MonoShutter&);
   ~MonoShutter() override;
 
   using FixedComp::createAll;
