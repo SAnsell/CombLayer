@@ -55,6 +55,7 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -67,7 +68,7 @@ namespace xraySystem
 {
 
 BladeBPM::BladeBPM(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Base", "Feedthrough"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -79,14 +80,16 @@ BladeBPM::BladeBPM(const std::string& Key)  :
 {}
 
 BladeBPM::BladeBPM(const BladeBPM& A) :
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  length(A.length),chamberRadius(A.chamberRadius),chamberFlangeRadius(A.chamberFlangeRadius),
+  length(A.length),
   chamberLength(A.chamberLength),
+  chamberRadius(A.chamberRadius),
   chamberWallThick(A.chamberWallThick),
+  chamberFlangeRadius(A.chamberFlangeRadius),
   chamberFlangeLength(A.chamberFlangeLength),
   insertFlangeRadius(A.insertFlangeRadius),
   insertFlangeLength(A.insertFlangeLength),
@@ -94,6 +97,14 @@ BladeBPM::BladeBPM(const BladeBPM& A) :
   insertOuterRadius(A.insertOuterRadius),
   insertPreOuterRadius(A.insertPreOuterRadius),
   insertLength(A.insertLength),
+  portLength(A.portLength),
+  portWallThick(A.portWallThick),
+  portRadius(A.portRadius),
+  portCapLength(A.portCapLength),
+  portCapCentralLength(A.portCapCentralLength),
+  portCapCentralRadius(A.portCapCentralRadius),
+  portFlangeLength(A.portFlangeLength),
+  portFlangeRadius(A.portFlangeRadius),
   chamberFlangeMat(A.chamberFlangeMat),chamberWallMat(A.chamberWallMat),
   insertMat(A.insertMat),
   insertPreMat(A.insertPreMat),
@@ -116,7 +127,7 @@ BladeBPM::operator=(const BladeBPM& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedRotate::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
@@ -133,6 +144,14 @@ BladeBPM::operator=(const BladeBPM& A)
       insertOuterRadius=A.insertOuterRadius;
       insertPreOuterRadius=A.insertPreOuterRadius;
       insertLength=A.insertLength;
+      portLength=A.portLength;
+      portWallThick=A.portWallThick;
+      portRadius=A.portRadius;
+      portFlangeLength=A.portFlangeLength;
+      portCapLength=A.portCapLength;
+      portCapCentralLength=A.portCapCentralLength;
+      portCapCentralRadius=A.portCapCentralRadius;
+      portFlangeRadius=A.portFlangeRadius;
       chamberFlangeMat=A.chamberFlangeMat;
       chamberWallMat=A.chamberWallMat;
       insertMat=A.insertMat;
@@ -187,6 +206,14 @@ BladeBPM::populate(const FuncDataBase& Control)
   insertOuterRadius=Control.EvalVar<double>(keyName+"InsertOuterRadius");
   insertPreOuterRadius=Control.EvalVar<double>(keyName+"InsertPreOuterRadius");
   insertLength=Control.EvalVar<double>(keyName+"InsertLength");
+  portLength=Control.EvalVar<double>(keyName+"PortLength");
+  portWallThick=Control.EvalVar<double>(keyName+"PortWallThick");
+  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
+  portFlangeLength=Control.EvalVar<double>(keyName+"PortFlangeLength");
+  portCapLength=Control.EvalVar<double>(keyName+"PortCapLength");
+  portCapCentralLength=Control.EvalVar<double>(keyName+"PortCapCentralLength");
+  portCapCentralRadius=Control.EvalVar<double>(keyName+"PortCapCentralRadius");
+  portFlangeRadius=Control.EvalVar<double>(keyName+"PortFlangeRadius");
 
   chamberFlangeMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberFlangeMat");
   chamberWallMat=ModelSupport::EvalMat<int>(Control,keyName+"ChamberWallMat");
@@ -250,8 +277,17 @@ BladeBPM::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, buildIndex+101, buildIndex+2, Y, -insertLength);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+111, buildIndex+21, Y,  chamberFlangeLength);
 
-  // ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(chamberRadius/2.0),X);
-  // ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(chamberRadius/2.0),X);
+  // Feedthrough port
+
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin+Z*(portLength-portFlangeLength),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(portLength),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+215,Origin+Z*(portLength+portCapCentralLength),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+216,Origin+Z*(portLength+portCapLength),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin+Y*(chamberLength/2.0),Z,portRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin+Y*(chamberLength/2.0),Z,portRadius+portWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+227,Origin+Y*(chamberLength/2.0),Z,portFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+237,Origin+Y*(chamberLength/2.0),Z,portCapCentralRadius);
+
 
 
   return;
@@ -285,13 +321,13 @@ BladeBPM::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 107 -127 21 ");
   makeCell("Insert",System,cellIndex++,insertMat,0.0,HR*back);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 7 -17 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,0," 11 -12 7 -17 (217:-60000M)");
   makeCell("ChamberWall",System,cellIndex++,chamberWallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -11 7 -27 ");
   makeCell("FlangeA",System,cellIndex++,chamberFlangeMat,0.0,HR*front);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 11 -12 17 -27 ");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,0," 11 -12 17 -27 (217:-60000M) ");
   makeCell("ChamberOuterVoid",System,cellIndex++,airMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 12 -21 7 -27 ");
@@ -309,12 +345,34 @@ BladeBPM::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 127 -37 ");
   makeCell("InsertBackFlange",System,cellIndex++,insertFlangeMat,0.0,HR*back);
 
-  // HR=ModelSupport::getHeadRule(SMap,buildIndex,
-  // 				 " 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  // makeCell("Wall",System,cellIndex++,chamberWallMat,0.0,HR*front*back);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,0," 7 -207 60000M -206 ");
+  makeCell("FeedthroughPortVoid",System,cellIndex++,voidMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,0," 7 207 -217 60000M -206 ");
+  makeCell("FeedthroughPortWall",System,cellIndex++,chamberWallMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 217 -227 205 -206");
+  makeCell("FeedthroughPortFlange",System,cellIndex++,chamberFlangeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,0," 217 -227 -205 27 60000M ");
+  makeCell("FeedthroughPortFlangeAirBelow",System,cellIndex++,airMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 206 -215 -227 ");
+  makeCell("FeedthroughPortCapLower",System,cellIndex++,chamberFlangeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 215 -216 237 -227 ");
+  makeCell("FeedthroughPortCapUpper",System,cellIndex++,chamberFlangeMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 215 -216 -237 ");
+  makeCell("FeedthroughPortCapUpper",System,cellIndex++,airMat,0.0,HR);
+
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,0," -227 -216 27 60000M ");
+  addOuterSurf("Feedthrough", HR);
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -27 ");
-  addOuterSurf(HR*front*back);
+  addOuterSurf("Base", HR*front*back);
 
   return;
 }

@@ -45,18 +45,26 @@ class BladeBPMGenerator
   double chamberWallThick;      ///< Vacuum chamber wall thickness
   double chamberFlangeRadius;   ///< Vacuum chamber flange radius
   double chamberFlangeLength;   ///< Vacuum chamber flange length
-  double insertFlangeRadius;    ///< Insert flange radius
-  double insertFlangeLength;    ///< Insert flange length
-  double insertInnerRadius;     ///< Insert inner radius
-  double insertOuterRadius;     ///< Insert outer radius
+  double insertFlangeRadius;    ///< Blades insert flange radius
+  double insertFlangeLength;    ///< Blades insert flange length
+  double insertInnerRadius;     ///< Blades insert inner radius
+  double insertOuterRadius;     ///< Blades insert outer radius
   double insertPreOuterRadius;  ///< Outer radius of the insert part containing blades (in the vacuum chamber)
-  double insertLength;          ///< Insert length
+  double insertLength;          ///< Blades insert length
+  double portLength;            ///< Feedthrough port length (distance between beam axis and flange upper plane, without its cap)
+  double portWallThick;         ///< Feedthrough port wall thickness
+  double portRadius;            ///< Feedthrough port inner radius
+  double portCapLength;         ///< Feedthrough port cap length
+  double portCapCentralLength;  ///< Feedthrough port cap central part length
+  double portCapCentralRadius;  ///< Feedthrough port cap central part radius
+  double portFlangeLength;      ///< Feedthrough port flange length
+  double portFlangeRadius;      ///< Feedthrough port flange radius
 
   std::string chamberFlangeMat; ///< Vacuum chamber flange material
   std::string chamberWallMat;   ///< Vacuum chamber wall material
-  std::string insertMat;        ///< Insert material
+  std::string insertMat;        ///< Blades insert material
   std::string insertPreMat;     ///< Homogenised material of the insert part with blades
-  std::string insertFlangeMat;  ///< Insert flange material
+  std::string insertFlangeMat;  ///< Blades insert flange material
   std::string voidMat;          ///< Void material
   std::string airMat;           ///< Air material
 

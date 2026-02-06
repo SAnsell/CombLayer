@@ -43,11 +43,13 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "DNFlanges.h"
 
 #include "BladeBPMGenerator.h"
 
 // [1] S3-4-1AB01568.pdf
 // [2] S3-5-2AJ00851.pdf
+// [3] FE_02.STEP
 
 namespace setVariable
 {
@@ -55,16 +57,24 @@ namespace setVariable
 BladeBPMGenerator::BladeBPMGenerator() :
   length(26.0), // [1]
   chamberLength(17.0), // [1]
-  chamberRadius(4.8), // CAD measured
-  chamberWallThick(0.3), // CAD measured
-  chamberFlangeRadius(7.6), // CAD measured
-  chamberFlangeLength(2.0), // CAD measured,
-  insertFlangeRadius(5.715), // [1] (DN63 = 4.5 inch  = 11.43 cm diameter),
-  insertFlangeLength(1.7), // CAD measured,
+  chamberRadius(4.8), // [3]
+  chamberWallThick(0.3), // [3]
+  chamberFlangeRadius(7.6), // [3]
+  chamberFlangeLength(2.0), // [3],
+  insertFlangeRadius(DN63::flangeRadius), // [1] (DN63 = 4.5 inch  = 11.43 cm diameter),
+  insertFlangeLength(DN63::flangeLength), // [3],
   insertInnerRadius(1.0), // [2]
   insertOuterRadius(3.4), // [2],
   insertPreOuterRadius(2.75), // [2]
-  insertLength(16.35), // [2]
+  insertLength(16.35), // [2],
+  portLength(10.0), // [1],
+  portWallThick(DN63::wallThick), // [3]
+  portRadius(DN63::innerRadius), // [3],
+  portCapLength(DN63::flangeLength), // [3],
+  portCapCentralLength(0.6), // [4],
+  portCapCentralRadius(3.8), // [4]
+  portFlangeLength(DN63::flangeLength), // [3],
+  portFlangeRadius(DN63::flangeRadius), // [1]
   chamberFlangeMat("Stainless304L"), // [1]: ICF152 => SS304L
   chamberWallMat("SteelUnknownGrade"),
   insertMat("Copper"), // [2] C1020,
@@ -106,6 +116,14 @@ BladeBPMGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"InsertOuterRadius",insertOuterRadius);
   Control.addVariable(keyName+"InsertPreOuterRadius",insertPreOuterRadius);
   Control.addVariable(keyName+"InsertLength",insertLength);
+  Control.addVariable(keyName+"PortLength",portLength);
+  Control.addVariable(keyName+"PortWallThick",portWallThick);
+  Control.addVariable(keyName+"PortRadius",portRadius);
+  Control.addVariable(keyName+"PortFlangeLength",portFlangeLength);
+  Control.addVariable(keyName+"PortCapLength",portCapLength);
+  Control.addVariable(keyName+"PortCapCentralLength",portCapCentralLength);
+  Control.addVariable(keyName+"PortCapCentralRadius",portCapCentralRadius);
+  Control.addVariable(keyName+"PortFlangeRadius",portFlangeRadius);
   Control.addVariable(keyName+"ChamberFlangeMat",chamberFlangeMat);
   Control.addVariable(keyName+"ChamberWallMat",chamberWallMat);
   Control.addVariable(keyName+"InsertMat",insertMat);

@@ -597,7 +597,7 @@ makeSingleItem::build(Simulation& System,
       const auto xbpm = std::make_shared<xraySystem::BladeBPM>("XBPM");
       OR.addObject(xbpm);
 
-      xbpm->addInsertCell(voidCell);
+      xbpm->addAllInsertCell(voidCell);
       xbpm->createAll(System,World::masterOrigin(),0);
 
       return;
