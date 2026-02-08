@@ -105,6 +105,7 @@ class VirtualTube :
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
+  size_t getNPorts() const {return Ports.size();};
 
   virtual void createPort(Simulation&,MonteCarlo::Object*,
     std::shared_ptr<constructSystem::portItem>,const Geometry::Vec3D portCentre,
