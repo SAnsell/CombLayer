@@ -134,6 +134,7 @@
 #include "DomeConnectorGenerator.h"
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "MonoShutterR3Generator.h"
 #include "FocusGenerator.h"
 #include "MLMDetailGenerator.h"
 #include "M1DetailGenerator.h"
@@ -400,6 +401,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::MonoShutterGenerator MSGen;
   MSGen.generateShutter(Control,"MS",1,1);
+
+  setVariable::MonoShutterR3Generator MSR3Gen;
+  MSR3Gen.generateShutter(Control,"MonoShutterR3",1,1);
 
   setVariable::RoundShutterGenerator RMSGen;
   RMSGen.generateShutter(Control,"RMS",1,1);
