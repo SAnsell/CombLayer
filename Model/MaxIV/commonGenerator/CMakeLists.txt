@@ -25,9 +25,10 @@ set (commonGeneratorSources
     MagnetBlockGenerator.cxx MagnetGenerator.cxx MagnetM1Generator.cxx
     MagnetU1Generator.cxx MainBeamDumpGenerator.cxx MazeGenerator.cxx
     MirrorGenerator.cxx MLMDetailGenerator.cxx MLMonoGenerator.cxx
-    MonoBlockXstalsGenerator.cxx MonoBoxGenerator.cxx MonoShutterGenerator.cxx
-    MultiPipeGenerator.cxx MovableSafetyMaskGenerator.cxx NBeamStopGenerator.cxx OctupoleGenerator.cxx
-    OpticsHutchGenerator.cxx XRayHutchBaseGenerator.cxx PipeShieldGenerator.cxx PortChicaneGenerator.cxx
+    MonoBlockXstalsGenerator.cxx MonoBoxGenerator.cxx MonoShutterGenerator.cxx 
+    MonoShutterR3Generator.cxx MultiPipeGenerator.cxx MovableSafetyMaskGenerator.cxx 
+    NBeamStopGenerator.cxx OctupoleGenerator.cxx OpticsHutchGenerator.cxx 
+    XRayHutchBaseGenerator.cxx PipeShieldGenerator.cxx PortChicaneGenerator.cxx
     PowerFilterGenerator.cxx
     ProximityShieldingGenerator.cxx
     PreDipoleGenerator.cxx PrismaChamberGenerator.cxx QuadrupoleGenerator.cxx
@@ -135,6 +136,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MonoBlockXstalsGenerator.cxx
   ${tarDIR}/MonoBoxGenerator.cxx
   ${tarDIR}/MonoShutterGenerator.cxx
+  ${tarDIR}/MonoShutterR3Generator.cxx
   ${tarDIR}/MultiPipeGenerator.cxx
   ${tarDIR}/MovableSafetyMaskGenerator.cxx
   ${tarDIR}/NBeamStopGenerator.cxx
@@ -252,6 +254,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/MonoBlockXstalsGenerator.h
   ${tarINC}/MonoBoxGenerator.h
   ${tarINC}/MonoShutterGenerator.h
+  ${tarINC}/MonoShutterR3Generator.h
   ${tarINC}/MultiPipeGenerator.h
   ${tarINC}/MovableSafetyMaskGenerator.h
   ${tarINC}/NBeamStopGenerator.h
