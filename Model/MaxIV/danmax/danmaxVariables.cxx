@@ -76,6 +76,7 @@
 #include "BremBlockGenerator.h"
 #include "HeatAbsorberR3ToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
+#include "BladeBPMToyamaGenerator.h"
 
 
 // References
@@ -1781,6 +1782,13 @@ DANMAXvariables(FuncDataBase& Control)
   CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main): 14 in total [4]
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
     (Control,frontKey+"IonPump4",0.0,15.74,28.70);   // height/depth
+
+
+  PipeGen.setCF<CF40>();
+  PipeGen.generatePipe(Control,frontKey+"PipeA",24+11.0); // [4] - replacement for pumping unit
+  setVariable::BladeBPMToyamaGenerator XBPMGen;
+
+  XBPMGen.generate(Control,frontKey+"XBPM1");
 
 
   danmaxVar::frontMaskVariables(Control,frontKey);
