@@ -594,11 +594,25 @@ makeSingleItem::build(Simulation& System,
 
   if (item == "BladeBPMToyama")
     {
+      constexpr bool makePipes = false;
+
       const auto xbpm = std::make_shared<xraySystem::BladeBPMToyama>("XBPM");
       OR.addObject(xbpm);
-
       xbpm->addAllInsertCell(voidCell);
-      xbpm->createAll(System,World::masterOrigin(),0);
+
+      if (makePipes) {
+	const auto pipeFront = std::make_shared<constructSystem::VacuumPipe>("PipeFront");
+	const auto pipeBack = std::make_shared<constructSystem::VacuumPipe>("PipeBack");
+	OR.addObject(pipeFront);
+	OR.addObject(pipeBack);
+	pipeFront->addAllInsertCell(voidCell);
+	pipeFront->createAll(System,World::masterOrigin(),0);
+	xbpm->createAll(System,*pipeFront,"back");
+	pipeBack->addAllInsertCell(voidCell);
+	pipeBack->createAll(System,*xbpm,"back");
+      } else {
+	xbpm->createAll(System,World::masterOrigin(),0);
+      }
 
       return;
     }

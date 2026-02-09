@@ -568,6 +568,11 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::StriplineBPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
 
+  // XBPM
+  RPipeGen.setCF<CF100>();
+  RPipeGen.generatePipe(Control,"PipeFront",10.0);
+  RPipeGen.setCF<CF63>();
+  RPipeGen.generatePipe(Control,"PipeBack",10.0);
   setVariable::BladeBPMToyamaGenerator XBPMGen;
   XBPMGen.generate(Control,"XBPM");
 
