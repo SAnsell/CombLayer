@@ -57,8 +57,9 @@ MonoShutterR3Generator::MonoShutterR3Generator() :
   PTubeGen(new PipeTubeGenerator()),
   PItemGen(new PortItemGenerator()),
   SUnitGen(new ShutterUnitGenerator()),
-  apertureInnerRadius(1.0),apertureMat("Tungsten"),apertureOuterRadius(5.15),
-  apertureThick(1.0),apertureToBlockGap(0.4),apertureBackLength(7.0),
+  apertureBackLength(7.0),apertureInnerRadius(1.0),apertureMat("Tungsten"),
+  apertureOuterRadius(5.15),
+  apertureThick(1.0),apertureToBlockGap(0.4),
   blockHeight(5.0),blockLength(5.0),blockWidth(5.0),flangeThick(1.225),height(25.4),
   length(35.0),shutterDistance(7.1)
   /*!
