@@ -46,6 +46,12 @@ namespace xraySystem
     * Between shutter 1 and 2
     * Downstream from shutter 2. This last aperture has an additional part that 
       extends into the exit flange.
+
+  References:
+  [1] Technical Specifications of mono beam shutter for MAX-IV, AXILON, Rp-3669-1173-0, 2025-07-25
+  [2] Drawing of shutter block, 15-01-999952, AXILON, 2025-08-21
+  [3] Drawing of standard aperture, 25-01-1120795, AXILON, 2025-08-21
+  [4] Drawing of downstream aperture, 25-01-1120798, AXILON, 2025-08-21
 */
 
 class MonoShutterR3 :
