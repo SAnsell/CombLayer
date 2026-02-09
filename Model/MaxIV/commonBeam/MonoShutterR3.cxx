@@ -207,12 +207,9 @@ MonoShutterR3::createObjects(Simulation& System)
     *apertureBackPlug.complement()*mainVoid
 	   );
   makeCell("Void8",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-7 32")
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7 32 -22")
     *apertureBackPlug*shutterPipe->getSurfRules("VoidCyl").complement()
 	   );
-  std::cout << shutterPipe->getPort(1).getLinkSurf(1) << std::endl;
-  std::cout << shutterPipe->getPort(1).getLinkSurf(2) << std::endl;
-  std::cout << shutterPipe->getPort(1).getLinkSurf(3) << std::endl;
   makeCell("Void9",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-32")
     *apertureBackPlug*HeadRule(shutterPipe->getPort(1).getLinkSurf(2)).complement()
