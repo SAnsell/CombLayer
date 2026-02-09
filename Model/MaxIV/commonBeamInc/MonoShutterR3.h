@@ -33,6 +33,19 @@ namespace xraySystem
   \version 1.0
   \date February 2026
   \brief Monochromatic shutter system for hard x-ray beamlines at the R3 ring of MAX IV
+
+  The shutter system consists of the following elements:
+  * PipeTube with the following four ports
+    * Port0: Entry ("front") including a flange adapter
+    * Port1: Exit ("back") including a flange adapter
+    * Port2: Shutter 1 on entry side
+    * Port3: Shutter 2 on exit side
+  * Two shutter units at the respective ports
+  * Three disk-shaped fixed apertures at the following positions
+    * Upstream from shutter 1
+    * Between shutter 1 and 2
+    * Downstream from shutter 2. This last aperture has an additional part that 
+      extends into the exit flange.
 */
 
 class MonoShutterR3 :
