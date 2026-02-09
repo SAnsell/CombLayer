@@ -402,7 +402,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::MonoShutterGenerator MSGen;
   MSGen.generateShutter(Control,"MS",1,1);
 
-  setVariable::MonoShutterR3Generator<CF200,CF63,CF40> MSR3Gen;
+  setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MSR3Gen;
   MSR3Gen.generateShutter(Control,"MonoShutterR3",1,1);
 
   setVariable::RoundShutterGenerator RMSGen;
