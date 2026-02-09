@@ -242,7 +242,7 @@ BladeBPMToyama::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(chamberFlangeLength),Y);
     } else
     {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+1,
+      ModelSupport::buildShiftedPlane(SMap, buildIndex+11,
 	      SMap.realPtr<Geometry::Plane>(getFrontRule().getPrimarySurface()),
 				      chamberFlangeLength);
     }
@@ -255,7 +255,7 @@ BladeBPMToyama::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(chamberLength-chamberFlangeLength),Y);
     } else
     {
-      ModelSupport::buildShiftedPlane(SMap, buildIndex+2,
+      ModelSupport::buildShiftedPlane(SMap, buildIndex+12,
 	      SMap.realPtr<Geometry::Plane>(getBackRule().getPrimarySurface()),
 				      -chamberFlangeLength);
     }
