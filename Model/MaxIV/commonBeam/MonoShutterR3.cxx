@@ -265,10 +265,8 @@ MonoShutterR3::buildComponents(Simulation& System)
     *exitAdapter->getBackRule()
   );
 
-  for(size_t n = 2; n < shutterPipe->getNPorts(); ++n){
-    ContainedGroup::addOuterSurf(
-      "Port"+std::to_string(n),shutterPipe->getPort(n).getOuterSurf());
-  }
+  ContainedGroup::addOuterSurf("Port2",shutterPipe->getPort(2).getOuterSurf());
+  ContainedGroup::addOuterSurf("Port3",shutterPipe->getPort(3).getOuterSurf());
   ContainedGroup::addOuterSurf("ShutterA",monoShutterA->getCC("Outer"));
   ContainedGroup::addOuterSurf("ShutterB",monoShutterB->getCC("Outer"));
   
