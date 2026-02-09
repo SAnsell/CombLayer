@@ -52,6 +52,7 @@ namespace xraySystem
   [2] Drawing of shutter block, 15-01-999952, AXILON, 2025-08-21
   [3] Drawing of standard aperture, 25-01-1120795, AXILON, 2025-08-21
   [4] Drawing of downstream aperture, 25-01-1120798, AXILON, 2025-08-21
+  [5] CAD model of ForMAX/MicroMAX/DanMAX mono shutters
 */
 
 class MonoShutterR3 :

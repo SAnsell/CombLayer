@@ -59,11 +59,19 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   PTubeGen(new PipeTubeGenerator()),
   PItemGen(new PortItemGenerator()),
   SUnitGen(new ShutterUnitGenerator()),
-  apertureBackLength(7.0),apertureInnerRadius(1.0),apertureMat("Tungsten"),
-  apertureOuterRadius(5.15),
-  apertureThick(1.0),apertureToBlockGap(0.4),
-  blockHeight(5.0),blockLength(5.0),blockWidth(5.0),flangeThick(1.225),height(25.4),
-  length(30.5),shutterDistance(7.05)
+  apertureBackLength(7.0), // [4]
+  apertureInnerRadius(1.0), // [3,4]
+  apertureMat("Tungsten"), // [3,4]
+  apertureOuterRadius(5.15), // [3,4]
+  apertureThick(1.0), // [3,4]
+  apertureToBlockGap(0.4), // [1]
+  blockHeight(5.0), // [2]
+  blockLength(5.0), // [2]
+  blockWidth(5.0), // [2]
+  flangeThick(1.225), // [5]
+  height(25.4), // [5]
+  length(30.5), // [1]
+  shutterDistance(7.05) // [5]
   /*!
     Constructor and defaults
   */
@@ -123,7 +131,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
 			Geometry::Vec3D(0,0,0),Z);
   PItemGen->generatePort(Control,keyName+"PipePort1",
 			 Geometry::Vec3D(0,0,0),-Z);
-  PItemGen->setCF<ShutterFlange>(0.5*height+5.0);
+  PItemGen->setCF<ShutterFlange>(0.5*height+5.0); // [5]
   PItemGen->setNoPlate();
   PItemGen->generatePort(Control,keyName+"PipePort2",
 			Geometry::Vec3D(0,0,0.5*shutterDistance),Y);
