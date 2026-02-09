@@ -37,7 +37,7 @@ namespace setVariable
   \date Feburary 2026
   \brief MonoShutterR3Generator for variables
 */
-
+template<typename MainFlange,typename EntryExitFlange,typename ShutterFlange>
 class MonoShutterR3Generator
 {
  private:

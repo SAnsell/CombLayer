@@ -52,8 +52,8 @@
 
 namespace setVariable
 {
-
-MonoShutterR3Generator::MonoShutterR3Generator() :
+template<typename MainFlange,typename EntryExitFlange, typename ShutterFlange>
+MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::MonoShutterR3Generator() :
   PTubeGen(new PipeTubeGenerator()),
   PItemGen(new PortItemGenerator()),
   SUnitGen(new ShutterUnitGenerator()),
@@ -61,21 +61,22 @@ MonoShutterR3Generator::MonoShutterR3Generator() :
   apertureOuterRadius(5.15),
   apertureThick(1.0),apertureToBlockGap(0.4),
   blockHeight(5.0),blockLength(5.0),blockWidth(5.0),flangeThick(1.225),height(25.4),
-  length(35.0),shutterDistance(7.1)
+  length(30.5),shutterDistance(7.05)
   /*!
     Constructor and defaults
   */
 {}
 
-
-MonoShutterR3Generator::~MonoShutterR3Generator() 
+template<typename MainFlange,typename EntryExitFlange, typename ShutterFlange>
+MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::~MonoShutterR3Generator() 
  /*!
    Destructor
  */
 {}
- 
+
+template<typename MainFlange,typename EntryExitFlange, typename ShutterFlange>
 void
-MonoShutterR3Generator::generateShutter(FuncDataBase& Control,
+MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::generateShutter(FuncDataBase& Control,
 				      const std::string& keyName,
 				      const bool upFlagA,
 				      const bool upFlagB) const
@@ -89,14 +90,14 @@ MonoShutterR3Generator::generateShutter(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("MonoShutterR3Generator","generateShutter");
 
-  SUnitGen->setCF<CF40>();
+  SUnitGen->setCF<ShutterFlange>();
   SUnitGen->setBlock(blockHeight,blockLength,blockWidth);
   SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
   SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
   
-  PTubeGen->setCF<CF200>();
-  PTubeGen->setAFlange(CF200::flangeRadius,flangeThick);
-  PTubeGen->setBFlange(CF200::flangeRadius,flangeThick);
+  PTubeGen->setCF<MainFlange>();
+  PTubeGen->setAFlange(MainFlange::flangeRadius,flangeThick);
+  PTubeGen->setBFlange(MainFlange::flangeRadius,flangeThick);
   PTubeGen->setCap(1,1);
   PTubeGen->generateTube(Control,keyName+"Pipe",
     height-2.0*flangeThick);
@@ -104,13 +105,13 @@ MonoShutterR3Generator::generateShutter(FuncDataBase& Control,
   
   const Geometry::Vec3D Y(0,1,0);
   const Geometry::Vec3D Z(0,0,1);
-  PItemGen->setCF<CF63>(0.5*length);
+  PItemGen->setCF<EntryExitFlange>(0.5*length);
   PItemGen->setNoPlate();
   PItemGen->generatePort(Control,keyName+"PipePort0",
 			Geometry::Vec3D(0,0,0),Z);
   PItemGen->generatePort(Control,keyName+"PipePort1",
 			 Geometry::Vec3D(0,0,0),-Z);
-  PItemGen->setCF<CF40>(0.5*height+5.0);
+  PItemGen->setCF<ShutterFlange>(0.5*height+5.0);
   PItemGen->setNoPlate();
   PItemGen->generatePort(Control,keyName+"PipePort2",
 			Geometry::Vec3D(0,0,0.5*shutterDistance),Y);
@@ -132,5 +133,10 @@ MonoShutterR3Generator::generateShutter(FuncDataBase& Control,
   return;
 }
 
-  
+template MonoShutterR3Generator<CF200,CF63,CF40>::MonoShutterR3Generator();
+template MonoShutterR3Generator<CF200,CF63,CF40>::~MonoShutterR3Generator();
+template void MonoShutterR3Generator<CF200,CF63,CF40>::generateShutter(
+  FuncDataBase& Control,const std::string& keyName,const bool upFlagA,
+  const bool upFlagB) const;
+
 }  // NAMESPACE setVariable
