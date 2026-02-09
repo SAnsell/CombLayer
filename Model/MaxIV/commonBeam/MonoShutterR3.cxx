@@ -132,14 +132,26 @@ MonoShutterR3::createSurfaces()
   const int Z0 = shutterPipe->getPort(0).getLinkSurf(1);
   const Geometry::Vec3D Z = shutterPipe->getPort(0).getZ();
 
+  // Upstream and downstream aperture have the nominal 4 mm distance to the shutter 
+  // blocks (Fig. 2.5 in [1]).
+  // For the central aperture, the distance is slightly larger by default, because 
+  // it is determined by the distance of the two shutter blocks. In order to position
+  // them at 4 mm distance, the blocks would need to be so close to each other that 
+  // their flanges overlap.
+  // In Tab. 2.3 in Ref. [1], "clearance between blocks and apertures in z-dir <= 5 mm"
+  // is given, showing that the uncertainty of the 4 mm is relatively large.
+
+  // Upstream aperture
   ModelSupport::buildShiftedPlane(
     SMap,buildIndex+1,Z0,Z,
     0.5*(shutterDistance+blockLength)+apertureToBlockGap+apertureThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+2,buildIndex+1,Z,-apertureThick);
 
+  // Central aperture
   ModelSupport::buildShiftedPlane(SMap,buildIndex+11,Z0,Z,+0.5*apertureThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+12,Z0,Z,-0.5*apertureThick);
 
+  // Downstream aperture
   ModelSupport::buildShiftedPlane(
     SMap,buildIndex+21,Z0,Z,-0.5*(blockLength+shutterDistance)-apertureToBlockGap);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Z,-apertureThick);
