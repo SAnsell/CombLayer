@@ -414,7 +414,7 @@ PipeTube::createPorts(Simulation& System)
       {
         const Geometry::Vec3D Pt = Ports[i]->getLinkPt("FlangePlate");
         if (OVoidHR.isValid(Pt))
-          Ports[i]->addFlangeCut(CellMap::getCellObject(System,"OuterVoid"));
+          Ports[i]->addFlangeCut(CellMap::getCellObject(System,"OuterVoid"),true);
       }
     }
 }

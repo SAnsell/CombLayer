@@ -556,14 +556,15 @@ portItem::addPortCut(MonteCarlo::Object* mainTube) const
 }
 
 void
-portItem::addFlangeCut(MonteCarlo::Object* obj) const
+portItem::addFlangeCut(MonteCarlo::Object* obj, const bool force) const
   /*!
     Adds the port exclude to the main tube
     \param mainTube :: object for main tube
+    \param force :: Ignore own outer void.
   */
 {
   ELog::RegMethod RegA("portItem","addFlangeCut");
-  if (!outerFlag)
+  if (force || !outerFlag)
     {
       const HeadRule HR=
 	ModelSupport::getHeadRule(SMap,buildIndex,"(27 : -102)");
