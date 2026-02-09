@@ -69,6 +69,8 @@ class MonoShutterR3 :
   double blockWidth;
   double shutterDistance;
   
+  std::shared_ptr<constructSystem::PipeTube> entryAdapter;
+  std::shared_ptr<constructSystem::PipeTube> exitAdapter;
   std::shared_ptr<constructSystem::PipeTube> shutterPipe;
   std::shared_ptr<xraySystem::ShutterUnit> monoShutterA;
   std::shared_ptr<xraySystem::ShutterUnit> monoShutterB;

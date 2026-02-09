@@ -74,11 +74,13 @@ namespace xraySystem
 MonoShutterR3::MonoShutterR3(const std::string& Key) :
   attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedGroup(
-    {"Main","Port0", "Port1","Port2","Port3","ShutterA","ShutterB"}),
+    std::vector<std::string>{"Main","Port01","Port2","Port3","ShutterA","ShutterB"}),
   attachSystem::ExternalCut(),
   attachSystem::SurfMap(),
   attachSystem::CellMap(),
   
+  entryAdapter(new constructSystem::PipeTube(keyName+"EntryAdapter")),
+  exitAdapter(new constructSystem::PipeTube(keyName+"ExitAdapter")),
   shutterPipe(new constructSystem::PipeTube(keyName+"Pipe")),
   monoShutterA(new xraySystem::ShutterUnit(keyName+"UnitA")),
   monoShutterB(new xraySystem::ShutterUnit(keyName+"UnitB"))
@@ -230,14 +232,18 @@ MonoShutterR3::buildComponents(Simulation& System)
   */
 {
   ELog::RegMethod RegA("MonoShutterR3","buildComponents");
- 
+
+  entryAdapter->createAll(System,*this,0);
+
   shutterPipe->setOuterVoid();
   shutterPipe->addInsertCell("Main",getCC("Main").getInsertCells());
 	shutterPipe->setPortRotation(3,Geometry::Vec3D(0,0,1));
 
   if (isActive("front"))
-    shutterPipe->setFront(this->getRuleStr("front"));  
-  shutterPipe->createAll(System,*this,0);
+    shutterPipe->setFront(this->getRuleStr("front"));
+  shutterPipe->createAll(System,*entryAdapter,"back");
+
+  exitAdapter->createAll(System,shutterPipe->getPort(1),2);
 
   constructSystem::portItem shutterPort = shutterPipe->getPort(2);
   monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
@@ -252,7 +258,14 @@ MonoShutterR3::buildComponents(Simulation& System)
   monoShutterB->createAll(System,shutterPipe->getPort(1),0,shutterPort,2);
 
   ContainedGroup::addOuterSurf("Main",shutterPipe->getCC("Main"));
-  for(size_t n = 0; n < shutterPipe->getNPorts(); ++n){
+  ContainedGroup::addOuterSurf("Port01",
+    shutterPipe->getSurfRules("VoidCyl").complement()
+    *entryAdapter->getSurfRules("OuterCyl").complement()
+    *entryAdapter->getFrontRule()
+    *exitAdapter->getBackRule()
+  );
+
+  for(size_t n = 2; n < shutterPipe->getNPorts(); ++n){
     ContainedGroup::addOuterSurf(
       "Port"+std::to_string(n),shutterPipe->getPort(n).getOuterSurf());
   }
