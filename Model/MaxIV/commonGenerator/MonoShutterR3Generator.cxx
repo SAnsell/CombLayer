@@ -52,8 +52,10 @@
 
 namespace setVariable
 {
-template<typename MainFlange,typename EntryExitFlange, typename ShutterFlange>
-MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::MonoShutterR3Generator() :
+template<typename MainFlange,typename EntryExitFlange,
+typename ShutterFlange,typename AdapterFlange>
+MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
+::MonoShutterR3Generator() :
   PTubeGen(new PipeTubeGenerator()),
   PItemGen(new PortItemGenerator()),
   SUnitGen(new ShutterUnitGenerator()),
@@ -67,16 +69,19 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::MonoShutterR3G
   */
 {}
 
-template<typename MainFlange,typename EntryExitFlange, typename ShutterFlange>
-MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::~MonoShutterR3Generator() 
+template<typename MainFlange,typename EntryExitFlange,
+typename ShutterFlange,typename AdapterFlange>
+MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
+::~MonoShutterR3Generator() 
  /*!
    Destructor
  */
 {}
 
-template<typename MainFlange,typename EntryExitFlange, typename ShutterFlange>
-void
-MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::generateShutter(FuncDataBase& Control,
+template<typename MainFlange,typename EntryExitFlange,
+typename ShutterFlange,typename AdapterFlange>
+void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
+::generateShutter(FuncDataBase& Control,
 				      const std::string& keyName,
 				      const bool upFlagA,
 				      const bool upFlagB) const
@@ -102,10 +107,17 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::generateShutte
   PTubeGen->generateTube(Control,keyName+"Pipe",
     height-2.0*flangeThick);
   Control.addVariable(keyName+"PipeNPorts",4);
+
+  PTubeGen->setPipe(AdapterFlange::innerRadius,
+    EntryExitFlange::flangeRadius-AdapterFlange::innerRadius,1.0,0.0);
+  PTubeGen->generateTube(Control,keyName+"EntryAdapter",EntryExitFlange::flangeLength);
+  Control.addVariable(keyName+"EntryAdapterNPorts",0);
+  PTubeGen->generateTube(Control,keyName+"ExitAdapter",EntryExitFlange::flangeLength);
+  Control.addVariable(keyName+"ExitAdapterNPorts",0);
   
   const Geometry::Vec3D Y(0,1,0);
   const Geometry::Vec3D Z(0,0,1);
-  PItemGen->setCF<EntryExitFlange>(0.5*length);
+  PItemGen->setCF<EntryExitFlange>(0.5*length-EntryExitFlange::flangeLength);
   PItemGen->setNoPlate();
   PItemGen->generatePort(Control,keyName+"PipePort0",
 			Geometry::Vec3D(0,0,0),Z);
@@ -133,9 +145,9 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange>::generateShutte
   return;
 }
 
-template MonoShutterR3Generator<CF200,CF63,CF40>::MonoShutterR3Generator();
-template MonoShutterR3Generator<CF200,CF63,CF40>::~MonoShutterR3Generator();
-template void MonoShutterR3Generator<CF200,CF63,CF40>::generateShutter(
+template MonoShutterR3Generator<CF200,CF63,CF40,CF40>::MonoShutterR3Generator();
+template MonoShutterR3Generator<CF200,CF63,CF40,CF40>::~MonoShutterR3Generator();
+template void MonoShutterR3Generator<CF200,CF63,CF40,CF40>::generateShutter(
   FuncDataBase& Control,const std::string& keyName,const bool upFlagA,
   const bool upFlagB) const;
 
