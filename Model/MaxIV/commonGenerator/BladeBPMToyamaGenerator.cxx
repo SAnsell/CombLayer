@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/BladeBPMGenerator.cxx
+ * File:   commonBeam/BladeBPMToyamaGenerator.cxx
  *
  * Copyright (c) 2004-2026 by Konstantin Batkov
  *
@@ -45,7 +45,7 @@
 #include "FuncDataBase.h"
 #include "DNFlanges.h"
 
-#include "BladeBPMGenerator.h"
+#include "BladeBPMToyamaGenerator.h"
 
 // [1] S3-4-1AB01568.pdf
 // [2] S3-5-2AJ00851.pdf
@@ -54,7 +54,7 @@
 namespace setVariable
 {
 
-BladeBPMGenerator::BladeBPMGenerator() :
+BladeBPMToyamaGenerator::BladeBPMToyamaGenerator() :
   length(26.0), // [1]
   chamberLength(17.0), // [1]
   chamberRadius(4.8), // [3]
@@ -87,14 +87,14 @@ BladeBPMGenerator::BladeBPMGenerator() :
   */
 {}
 
-BladeBPMGenerator::~BladeBPMGenerator()
+BladeBPMToyamaGenerator::~BladeBPMToyamaGenerator()
  /*!
    Destructor
  */
 {}
 
 void
-BladeBPMGenerator::generate(FuncDataBase& Control,
+BladeBPMToyamaGenerator::generate(FuncDataBase& Control,
 			       const std::string& keyName) const
 /*!
     Primary funciton for setting the variables
@@ -102,7 +102,7 @@ BladeBPMGenerator::generate(FuncDataBase& Control,
     \param keyName :: Head name for variable
   */
 {
-  ELog::RegMethod RegA("BladeBPMGenerator","generate");
+  ELog::RegMethod RegA("BladeBPMToyamaGenerator","generate");
 
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"ChamberLength",chamberLength);

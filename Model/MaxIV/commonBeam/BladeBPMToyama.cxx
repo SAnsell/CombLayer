@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/commonBeam/BladeBPM.cxx
+ * File:   Model/MaxIV/commonBeam/BladeBPMToyama.cxx
  *
  * Copyright (c) 2004-2026 by Konstantin Batkov
  *
@@ -62,12 +62,12 @@
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
 
-#include "BladeBPM.h"
+#include "BladeBPMToyama.h"
 
 namespace xraySystem
 {
 
-BladeBPM::BladeBPM(const std::string& Key)  :
+BladeBPMToyama::BladeBPMToyama(const std::string& Key)  :
   attachSystem::ContainedGroup("Base", "Feedthrough"),
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
@@ -79,7 +79,7 @@ BladeBPM::BladeBPM(const std::string& Key)  :
   */
 {}
 
-BladeBPM::BladeBPM(const BladeBPM& A) :
+BladeBPMToyama::BladeBPMToyama(const BladeBPMToyama& A) :
   attachSystem::ContainedGroup(A),
   attachSystem::FixedRotate(A),
   attachSystem::CellMap(A),
@@ -113,15 +113,15 @@ BladeBPM::BladeBPM(const BladeBPM& A) :
   airMat(A.airMat)
   /*!
     Copy constructor
-    \param A :: BladeBPM to copy
+    \param A :: BladeBPMToyama to copy
   */
 {}
 
-BladeBPM&
-BladeBPM::operator=(const BladeBPM& A)
+BladeBPMToyama&
+BladeBPMToyama::operator=(const BladeBPMToyama& A)
   /*!
     Assignment operator
-    \param A :: BladeBPM to copy
+    \param A :: BladeBPMToyama to copy
     \return *this
   */
 {
@@ -163,30 +163,30 @@ BladeBPM::operator=(const BladeBPM& A)
   return *this;
 }
 
-BladeBPM*
-BladeBPM::clone() const
+BladeBPMToyama*
+BladeBPMToyama::clone() const
 /*!
   Clone self
   \return new (this)
  */
 {
-    return new BladeBPM(*this);
+    return new BladeBPMToyama(*this);
 }
 
-BladeBPM::~BladeBPM()
+BladeBPMToyama::~BladeBPMToyama()
   /*!
     Destructor
   */
 {}
 
 void
-BladeBPM::populate(const FuncDataBase& Control)
+BladeBPMToyama::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("BladeBPM","populate");
+  ELog::RegMethod RegA("BladeBPMToyama","populate");
 
   FixedRotate::populate(Control);
 
@@ -227,12 +227,12 @@ BladeBPM::populate(const FuncDataBase& Control)
 }
 
 void
-BladeBPM::createSurfaces()
+BladeBPMToyama::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("BladeBPM","createSurfaces");
+  ELog::RegMethod RegA("BladeBPMToyama","createSurfaces");
 
   if (!frontActive())
     {
@@ -294,13 +294,13 @@ BladeBPM::createSurfaces()
 }
 
 void
-BladeBPM::createObjects(Simulation& System)
+BladeBPMToyama::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("BladeBPM","createObjects");
+  ELog::RegMethod RegA("BladeBPMToyama","createObjects");
 
   HeadRule HR;
   const HeadRule front(frontRule());
@@ -379,12 +379,12 @@ BladeBPM::createObjects(Simulation& System)
 
 
 void
-BladeBPM::createLinks()
+BladeBPMToyama::createLinks()
   /*!
     Create all the links
   */
 {
-  ELog::RegMethod RegA("BladeBPM","createLinks");
+  ELog::RegMethod RegA("BladeBPMToyama","createLinks");
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
@@ -393,7 +393,7 @@ BladeBPM::createLinks()
 }
 
 void
-BladeBPM::createAll(Simulation& System,
+BladeBPMToyama::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -403,7 +403,7 @@ BladeBPM::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("BladeBPM","createAll");
+  ELog::RegMethod RegA("BladeBPMToyama","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/commonBeamInc/BladeBPM.h
+ * File:   Model/MaxIV/commonBeamInc/BladeBPMToyama.h
  *
  * Copyright (c) 2004-2026 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_BladeBPM_h
-#define xraySystem_BladeBPM_h
+#ifndef xraySystem_BladeBPMToyama_h
+#define xraySystem_BladeBPMToyama_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace xraySystem
 {
 
 /*!
-  \class BladeBPM
+  \class BladeBPMToyama
   \version 1.0
   \author Konstantin Batkov
   \date February 2026
   \brief Photoemission Blade Beam Position Monitor (XBPM) by Toyama
 */
 
-class BladeBPM :
+class BladeBPMToyama :
     public attachSystem::ContainedGroup,
     public attachSystem::FixedRotate,
     public attachSystem::CellMap,
@@ -82,11 +82,11 @@ class BladeBPM :
 
  public:
 
-  BladeBPM(const std::string&);
-  BladeBPM(const BladeBPM&);
-  BladeBPM& operator=(const BladeBPM&);
-  virtual BladeBPM* clone() const;
-  virtual ~BladeBPM();
+  BladeBPMToyama(const std::string&);
+  BladeBPMToyama(const BladeBPMToyama&);
+  BladeBPMToyama& operator=(const BladeBPMToyama&);
+  virtual BladeBPMToyama* clone() const;
+  virtual ~BladeBPMToyama();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);

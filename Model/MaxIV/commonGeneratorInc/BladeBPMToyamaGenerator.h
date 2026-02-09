@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/commonBeamInc/BladeBPMGenerator.h
+ * File:   Model/MaxIV/commonBeamInc/BladeBPMToyamaGenerator.h
  *
  * Copyright (c) 2004-2026 by Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_BladeBPMGenerator_h
-#define setVariable_BladeBPMGenerator_h
+#ifndef setVariable_BladeBPMToyamaGenerator_h
+#define setVariable_BladeBPMToyamaGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class BladeBPMGenerator
+  \class BladeBPMToyamaGenerator
   \version 1.0
   \author Konstantin Batkov
   \date February 2026
-  \brief BladeBPMGenerator for variables
+  \brief BladeBPMToyamaGenerator for variables
 */
 
-class BladeBPMGenerator
+class BladeBPMToyamaGenerator
 {
  private:
 
@@ -70,10 +70,10 @@ class BladeBPMGenerator
 
  public:
 
-  BladeBPMGenerator();
-  BladeBPMGenerator(const BladeBPMGenerator&);
-  BladeBPMGenerator& operator=(const BladeBPMGenerator&);
-  virtual ~BladeBPMGenerator();
+  BladeBPMToyamaGenerator();
+  BladeBPMToyamaGenerator(const BladeBPMToyamaGenerator&);
+  BladeBPMToyamaGenerator& operator=(const BladeBPMToyamaGenerator&);
+  virtual ~BladeBPMToyamaGenerator();
 
   virtual void generate(FuncDataBase&,const std::string&) const;
 

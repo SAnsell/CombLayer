@@ -79,7 +79,7 @@
 #include "DipoleDIBMagGenerator.h"
 #include "EArrivalMonGenerator.h"
 #include "StriplineBPMGenerator.h"
-#include "BladeBPMGenerator.h"
+#include "BladeBPMToyamaGenerator.h"
 #include "ButtonBPMGenerator.h"
 #include "CeramicGapGenerator.h"
 #include "BeamDividerGenerator.h"
@@ -568,7 +568,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::StriplineBPMGenerator BPMGen;
   BPMGen.generateBPM(Control,"BPM",0.0);
 
-  setVariable::BladeBPMGenerator XBPMGen;
+  setVariable::BladeBPMToyamaGenerator XBPMGen;
   XBPMGen.generate(Control,"XBPM");
 
   setVariable::UndVacGenerator UVGen;

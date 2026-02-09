@@ -114,7 +114,7 @@
 #include "GateValveCylinder.h"
 #include "GTFGateValve.h"
 #include "StriplineBPM.h"
-#include "BladeBPM.h"
+#include "BladeBPMToyama.h"
 #include "BeamDivider.h"
 #include "CeramicGap.h"
 #include "DipoleDIBMag.h"
@@ -251,7 +251,7 @@ makeSingleItem::build(Simulation& System,
 	"FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
 	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
-	"StriplineBPM","BladeBPM","BeamDivider","BeamScrapper",
+	"StriplineBPM","BladeBPMToyama","BeamDivider","BeamScrapper",
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
 	"HalfElectronPipe","HeimdalCave","LegoBrick",
@@ -592,9 +592,9 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-  if (item == "BladeBPM")
+  if (item == "BladeBPMToyama")
     {
-      const auto xbpm = std::make_shared<xraySystem::BladeBPM>("XBPM");
+      const auto xbpm = std::make_shared<xraySystem::BladeBPMToyama>("XBPM");
       OR.addObject(xbpm);
 
       xbpm->addAllInsertCell(voidCell);
