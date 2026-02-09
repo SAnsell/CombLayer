@@ -61,6 +61,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   SUnitGen(new ShutterUnitGenerator()),
   apertureBackLength(7.0), // [4]
   apertureInnerRadius(1.0), // [3,4]
+  // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
   apertureMat("Tungsten"), // [3,4]
   apertureOuterRadius(5.15), // [3,4]
   apertureThick(1.0), // [3,4]
@@ -104,7 +105,8 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   ELog::RegMethod RegA("MonoShutterR3Generator","generateShutter");
 
   SUnitGen->setCF<ShutterFlange>();
-  SUnitGen->setBlock(blockHeight,blockLength,blockWidth);
+  // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
+  SUnitGen->setBlock(blockHeight,blockLength,blockWidth,"Tungsten");
   SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
   SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
   
