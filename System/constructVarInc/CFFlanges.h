@@ -3,7 +3,8 @@
 
  * File:   constructVarInc/CFFlanges.h
  *
- * Copyright (c) 2004-2026 by Stuart Ansell and Udo Friman-Gayer
+ * Copyright (c) 2004-2026 by
+ * Stuart Ansell, Konstantin Batkov and Udo Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

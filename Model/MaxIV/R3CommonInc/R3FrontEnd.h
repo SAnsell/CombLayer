@@ -79,11 +79,11 @@ namespace xraySystem
   class R3ChokeInsert;
 
   /*!
-    \class balderFrontEnd
+    \class R3FrontEnd
     \version 1.0
     \author S. Ansell
     \date March 2018
-    \brief General constructor front end optics
+    \brief General R3 front end optics constructor
   */
 
 class R3FrontEnd :

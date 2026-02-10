@@ -21,7 +21,7 @@ set (commonBeamSources
     SqrCollimator.cxx SquareFMask.cxx Table.cxx
     TankMonoVessel.cxx TriggerTube.cxx TwinPipe.cxx
     Undulator.cxx UTubePipe.cxx ViewScreenTube.cxx
-    WallLead.cxx XrayInputs.cxx XRayHutchBase.cxx FixedMaskHybrid.cxx
+    WallLead.cxx XrayInputs.cxx XRayHutchBase.cxx FixedMaskHybrid.cxx BladeBPMToyama.cxx
 )
 
 add_library (commonBeam SHARED
@@ -97,6 +97,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/OpticsHutch.cxx
   ${tarDIR}/XRayHutchBase.cxx
   ${tarDIR}/FixedMaskHybrid.cxx
+  ${tarDIR}/BladeBPMToyama.cxx
   ${tarDIR}/PipeShield.cxx
   ${tarDIR}/PortChicane.cxx
   ${tarDIR}/PowerFilter.cxx
@@ -175,6 +176,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/OpticsHutch.h
   ${tarINC}/XRayHutchBase.h
   ${tarINC}/FixedMaskHybrid.h
+  ${tarINC}/BladeBPMToyama.h
   ${tarINC}/PipeShield.h
   ${tarINC}/PortChicane.h
   ${tarINC}/PowerFilter.h

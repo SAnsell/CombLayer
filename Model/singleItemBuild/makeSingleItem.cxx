@@ -114,6 +114,7 @@
 #include "GateValveCylinder.h"
 #include "GTFGateValve.h"
 #include "StriplineBPM.h"
+#include "BladeBPMToyama.h"
 #include "BeamDivider.h"
 #include "CeramicGap.h"
 #include "DipoleDIBMag.h"
@@ -251,7 +252,7 @@ makeSingleItem::build(Simulation& System,
 	"FlatPipe","TriPipe","TriGroup","SixPort","CrossWay","CrossBlank",
 	"GaugeTube","BremBlock","DipoleDIBMag","EArrivalMon","YagScreen",
 	"YAG","YagUnit","YagUnitBig","CooledScreen","CooledUnit",
-	"StriplineBPM","BeamDivider","BeamScrapper",
+	"StriplineBPM","BladeBPMToyama","BeamDivider","BeamScrapper",
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
 	"HalfElectronPipe","HeimdalCave","LegoBrick",
@@ -591,6 +592,32 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
+
+  if (item == "BladeBPMToyama")
+    {
+      constexpr bool makePipes = false;
+
+      const auto xbpm = std::make_shared<xraySystem::BladeBPMToyama>("XBPM");
+      OR.addObject(xbpm);
+      xbpm->addAllInsertCell(voidCell);
+
+      if (makePipes) {
+	const auto pipeFront = std::make_shared<constructSystem::VacuumPipe>("PipeFront");
+	const auto pipeBack = std::make_shared<constructSystem::VacuumPipe>("PipeBack");
+	OR.addObject(pipeFront);
+	OR.addObject(pipeBack);
+	pipeFront->addAllInsertCell(voidCell);
+	pipeFront->createAll(System,World::masterOrigin(),0);
+	xbpm->createAll(System,*pipeFront,"back");
+	pipeBack->addAllInsertCell(voidCell);
+	pipeBack->createAll(System,*xbpm,"back");
+      } else {
+	xbpm->createAll(System,World::masterOrigin(),0);
+      }
+
+      return;
+    }
+
   if (item == "MainBeamDump")
     {
       std::shared_ptr<tdcSystem::MainBeamDump>
@@ -1928,7 +1955,7 @@ makeSingleItem::build(Simulation& System,
   blockZone.setInnerMat(sqrShield->getInnerMat());
   blockZone.createUnit(System);
   blockZone.createAll(System,World::masterOrigin(),0);
-  
+
 	return;
       }
 

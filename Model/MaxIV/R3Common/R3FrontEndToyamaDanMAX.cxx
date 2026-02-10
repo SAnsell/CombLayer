@@ -98,6 +98,8 @@
 #include "HeatAbsorberR3Toyama.h"
 #include "ProximityShielding.h"
 #include "FlangePlate.h"
+#include "BladeBPMToyama.h"
+
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyamaDanMAX.h"
 
@@ -108,6 +110,9 @@ namespace xraySystem
 
 R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   R3FrontEnd(Key),
+  pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PipeA")), // TODO: PipeA currently replaces PumpingUnit1
+  xbpm1(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM1")),
+  flangePlateAA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateAA")),
   flangePlateA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateA")),
   flangePlateB(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateB")),
   bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
@@ -185,6 +190,9 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(pipeA);
+  OR.addObject(xbpm1);
+  OR.addObject(flangePlateAA);
   OR.addObject(flangePlateA);
   OR.addObject(flangePlateB);
   OR.addObject(bellowPreMSM);
@@ -687,6 +695,20 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*fm1,"back",*flangePlateB);
   constructSystem::constructUnit(System,buildZone,*flangePlateB,"back",*bellowB);
 
+  xbpm1->createAll(System,*this,0);
+  flangePlateAA->createAll(System,*xbpm1,"front");
+  pipeA->setBack(*flangePlateAA,"back");
+  pipeA->createAll(System,*bellowB,"back");
+
+  outerCell=buildZone.createUnit(System,*pipeA,"back");
+  pipeA->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*flangePlateAA,"front");
+  flangePlateAA->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*xbpm1,"back");
+  xbpm1->insertAllInCell(System,outerCell);
+
   // FM2 Built relateive to MASTER coordinate
 
   fm2->createAll(System,*this,0);
@@ -694,9 +716,9 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   bellowC->createAll(System,*flangePlateC,"back");
 
   // pipe before bellowC (between FM1 and FM2)
-  collABPipe->setFront(*bellowB,"back");
+  collABPipe->setFront(*xbpm1,"back");
   collABPipe->setBack(*bellowC,"back");
-  collABPipe->createAll(System,*bellowB,"back");
+  collABPipe->createAll(System,*xbpm1,"back");
 
   // permanent magnet (e/p separator) in the middle of this pipe
   constructSystem::pipeMagUnit(System,buildZone,collABPipe,"#front","outerPipe",pMag);

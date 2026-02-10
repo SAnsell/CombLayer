@@ -36,7 +36,7 @@ set (commonGeneratorSources
     RingDoorGenerator.cxx RoundShutterGenerator.cxx ScrapperGenerator.cxx
     ScreenGenerator.cxx SexupoleGenerator.cxx ShutterUnitGenerator.cxx
     SimpleChicaneGenerator.cxx SixPortGenerator.cxx SolenoidGenerator.cxx
-    SPFCameraShieldGenerator.cxx SqrFMaskGenerator.cxx StriplineBPMGenerator.cxx
+    SPFCameraShieldGenerator.cxx SqrFMaskGenerator.cxx StriplineBPMGenerator.cxx BladeBPMToyamaGenerator.cxx
     TableGenerator.cxx TankMonoVesselGenerator.cxx TDCBeamDumpGenerator.cxx
     TriggerGenerator.cxx TriGroupGenerator.cxx TriPipeGenerator.cxx
     TWCavityGenerator.cxx TwinPipeGenerator.cxx UndVacGenerator.cxx
@@ -165,6 +165,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/SPFCameraShieldGenerator.cxx
   ${tarDIR}/SqrFMaskGenerator.cxx
   ${tarDIR}/StriplineBPMGenerator.cxx
+  ${tarDIR}/BladeBPMToyamaGenerator.cxx
   ${tarDIR}/TableGenerator.cxx
   ${tarDIR}/TankMonoVesselGenerator.cxx
   ${tarDIR}/TDCBeamDumpGenerator.cxx
@@ -283,6 +284,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/SPFCameraShieldGenerator.h
   ${tarINC}/SqrFMaskGenerator.h
   ${tarINC}/StriplineBPMGenerator.h
+  ${tarINC}/BladeBPMToyamaGenerator.h
   ${tarINC}/TableGenerator.h
   ${tarINC}/TankMonoVesselGenerator.h
   ${tarINC}/TDCBeamDumpGenerator.h
