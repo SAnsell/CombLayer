@@ -204,15 +204,9 @@ frontMaskVariables(FuncDataBase& Control,
 
   setVariable::SqrFMaskGenerator FMaskGen;
   setVariable::BellowGenerator BellowGen;
+  setVariable::FlangePlateGenerator FPGen;
 
   Control.addVariable(preName+"BellowALength",10.0); // [4]
-
-  setVariable::FlangePlateGenerator FPGen;
-  FPGen.setFlange(CF100::flangeRadius, 1.99); // [4]
-  FPGen.setWindow(0.0, 0.0, "Void"); // [4]
-  FPGen.setMat("SteelUnknownGrade"); // guess
-  FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
-  FPGen.generateFlangePlate(Control,preName+"FlangePlateAA"); // TODO: move to Toyama DanMAX front-end
 
   constexpr double FM1Length(40.0); // [4]
   constexpr double FM2Length(50.5); // [5]
@@ -232,6 +226,16 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
+
+
+  FPGen.setFlange(CF100::flangeRadius, 1.99); // [4]
+  FPGen.setWindow(0.0, 0.0, "Void"); // [4]
+  FPGen.setMat("SteelUnknownGrade"); // guess
+  FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateAA"); // TODO: move to Toyama DanMAX front-end
+
+
+
 
   Control.addVariable(preName+"BellowBLength",10.0); // [4]
   Control.addVariable(preName+"BellowCLength",10.0); // [4]
@@ -1795,7 +1799,7 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,frontKey+"PipeA",24+11.0); // [4] - replacement for pumping unit
   setVariable::BladeBPMToyamaGenerator XBPMGen;
 
-  XBPMGen.generate(Control,frontKey+"XBPM1");
+  XBPMGen.generate(Control,frontKey+"XBPM1", 1193.4900000000007); // TODO: fix yStep
 
 
   danmaxVar::frontMaskVariables(Control,frontKey);

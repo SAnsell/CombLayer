@@ -110,7 +110,7 @@ namespace xraySystem
 
 R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   R3FrontEnd(Key),
-  pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PipeA")),
+  pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PipeA")), // TODO: PipeA currently replaces PumpingUnit1
   xbpm1(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM1")),
   flangePlateAA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateAA")),
   flangePlateA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateA")),
@@ -694,9 +694,20 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*fm1,"back",*flangePlateB);
   constructSystem::constructUnit(System,buildZone,*flangePlateB,"back",*bellowB);
-  constructSystem::constructUnit(System,buildZone,*bellowB,"back",*pipeA);
-  constructSystem::constructUnit(System,buildZone,*pipeA,"back",*flangePlateAA);
-  constructSystem::constructUnit(System,buildZone,*flangePlateAA,"back",*xbpm1);
+
+  xbpm1->createAll(System,*this,0);
+  flangePlateAA->createAll(System,*xbpm1,"front");
+  pipeA->setBack(*flangePlateAA,"back");
+  pipeA->createAll(System,*bellowB,"back");
+
+  outerCell=buildZone.createUnit(System,*pipeA,"back");
+  pipeA->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*flangePlateAA,"front");
+  flangePlateAA->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*xbpm1,"back");
+  xbpm1->insertAllInCell(System,outerCell);
 
   // FM2 Built relateive to MASTER coordinate
 
