@@ -129,8 +129,8 @@ MonoShutterR3::createSurfaces()
 {
   ELog::RegMethod RegA("MonoShutterR3","createSurfaces");
 
-  const int Z0 = shutterPipe->getPort(0).getLinkSurf(1);
-  const Geometry::Vec3D Z = shutterPipe->getPort(0).getZ();
+  const int Z0 = shutterPipe->getPort(1).getLinkSurf(1);
+  const Geometry::Vec3D Z = shutterPipe->getPort(1).getZ();
 
   // Upstream and downstream aperture have the nominal 4 mm distance to the shutter 
   // blocks (Fig. 2.5 in [1]).
@@ -251,8 +251,6 @@ MonoShutterR3::buildComponents(Simulation& System)
   shutterPipe->addInsertCell("Main",getCC("Main").getInsertCells());
 	shutterPipe->setPortRotation(3,Geometry::Vec3D(0,0,1));
 
-  if (isActive("front"))
-    shutterPipe->setFront(this->getRuleStr("front"));
   shutterPipe->createAll(System,*entryAdapter,"back");
 
   exitAdapter->createAll(System,shutterPipe->getPort(1),2);
@@ -289,7 +287,17 @@ void
 MonoShutterR3::createLinks()
 {
   ELog::RegMethod RControl("MonoShutterR3","createLinks");
-  
+
+  if(!isActive("front")){
+    ExternalCut::setCutSurf("front",entryAdapter->getFrontRule());
+  }
+  if(!isActive("back")){
+    ExternalCut::setCutSurf("back",exitAdapter->getBackRule());
+  }
+
+  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("back",*this,1,Origin,Y);
+
   return;
 }
 
