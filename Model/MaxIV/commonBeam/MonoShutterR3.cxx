@@ -130,7 +130,6 @@ MonoShutterR3::createSurfaces()
   ELog::RegMethod RegA("MonoShutterR3","createSurfaces");
 
   const int Z0 = shutterPipe->getPort(1).getLinkSurf(1);
-  const Geometry::Vec3D Z = shutterPipe->getPort(1).getZ();
 
   // Upstream and downstream aperture have the nominal 4 mm distance to the shutter 
   // blocks (Fig. 2.5 in [1]).
@@ -164,6 +163,8 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildCylinder(
     SMap,buildIndex+17,shutterPipe->getPort(0).getLinkPt(0),
     shutterPipe->getPort(0).getY(),apertureOuterRadius);
+
+  
 
   return; 
 }
