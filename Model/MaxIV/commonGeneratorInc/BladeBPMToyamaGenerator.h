@@ -75,7 +75,7 @@ class BladeBPMToyamaGenerator
   BladeBPMToyamaGenerator& operator=(const BladeBPMToyamaGenerator&);
   virtual ~BladeBPMToyamaGenerator();
 
-  virtual void generate(FuncDataBase&,const std::string&) const;
+  virtual void generate(FuncDataBase&,const std::string&,const double) const;
 
 };
 

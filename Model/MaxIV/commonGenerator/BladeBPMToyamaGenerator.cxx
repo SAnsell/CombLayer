@@ -95,15 +95,18 @@ BladeBPMToyamaGenerator::~BladeBPMToyamaGenerator()
 
 void
 BladeBPMToyamaGenerator::generate(FuncDataBase& Control,
-			       const std::string& keyName) const
+				  const std::string& keyName,
+				  const double yStep) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
+    \param yStep :: Step along beam centre
   */
 {
   ELog::RegMethod RegA("BladeBPMToyamaGenerator","generate");
 
+  Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"ChamberLength",chamberLength);
   Control.addVariable(keyName+"ChamberRadius",chamberRadius);
