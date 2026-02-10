@@ -1799,7 +1799,7 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,frontKey+"PipeA",24+11.0); // [4] - replacement for pumping unit
   setVariable::BladeBPMToyamaGenerator XBPMGen;
 
-  XBPMGen.generate(Control,frontKey+"XBPM1", 1193.4900000000007); // TODO: fix yStep
+  XBPMGen.generate(Control,frontKey+"XBPM1", danmaxVar::absY::XBPM1);
 
 
   danmaxVar::frontMaskVariables(Control,frontKey);
