@@ -1204,16 +1204,13 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MShutterGen;
 
-  const double pipeLength = 20.0;
-  const double wallThick = 0.5;
-  const double portABLength = 3.0;
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
 
   const double bellowLength = 12.0; // [10]
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowL",bellowLength);
 
-  return bellowLength+2.0*portABLength+2.0*wallThick+pipeLength+2.0*CF63::flangeLength;
+  return bellowLength+MShutterGen.getLength();
 }
 
 template<typename JoinPipeCCF>
