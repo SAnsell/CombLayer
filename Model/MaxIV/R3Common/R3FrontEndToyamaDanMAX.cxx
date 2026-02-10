@@ -112,6 +112,7 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   R3FrontEnd(Key),
   pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PipeA")),
   xbpm1(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM1")),
+  flangePlateAA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateAA")),
   flangePlateA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateA")),
   flangePlateB(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateB")),
   bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
@@ -191,6 +192,7 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   // OR.addObject(offPipeB);
   OR.addObject(pipeA);
   OR.addObject(xbpm1);
+  OR.addObject(flangePlateAA);
   OR.addObject(flangePlateA);
   OR.addObject(flangePlateB);
   OR.addObject(bellowPreMSM);
@@ -693,7 +695,8 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*fm1,"back",*flangePlateB);
   constructSystem::constructUnit(System,buildZone,*flangePlateB,"back",*bellowB);
   constructSystem::constructUnit(System,buildZone,*bellowB,"back",*pipeA);
-  constructSystem::constructUnit(System,buildZone,*pipeA,"back",*xbpm1);
+  constructSystem::constructUnit(System,buildZone,*pipeA,"back",*flangePlateAA);
+  constructSystem::constructUnit(System,buildZone,*flangePlateAA,"back",*xbpm1);
 
   // FM2 Built relateive to MASTER coordinate
 

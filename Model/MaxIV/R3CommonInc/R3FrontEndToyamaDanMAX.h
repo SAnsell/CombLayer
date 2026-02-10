@@ -80,6 +80,7 @@ class R3FrontEndToyamaDanMAX :
 protected:
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<xraySystem::BladeBPMToyama> xbpm1;
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateAA;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateA;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateB;
   std::shared_ptr<constructSystem::Bellows> bellowPreMSM;

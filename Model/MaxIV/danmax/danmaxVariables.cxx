@@ -77,7 +77,7 @@
 #include "HeatAbsorberR3ToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 #include "BladeBPMToyamaGenerator.h"
-
+#include "FlangePlateGenerator.h"
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
@@ -102,6 +102,7 @@ namespace setVariable
 namespace danmaxVar
 {
   namespace absY{
+    constexpr double XBPM1 = 1201.99; // [4]
     const double FM1Y = 1104.75; // [4]
     const double FM2Y = 1597.08; // [4]
     const double heatAbsorberY = 1673.33; // [4]
@@ -206,6 +207,12 @@ frontMaskVariables(FuncDataBase& Control,
 
   Control.addVariable(preName+"BellowALength",10.0); // [4]
 
+  setVariable::FlangePlateGenerator FPGen;
+  FPGen.setFlange(CF100::flangeRadius, 1.99); // [4]
+  FPGen.setWindow(0.0, 0.0, "Void"); // [4]
+  FPGen.setMat("SteelUnknownGrade"); // guess
+  FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateAA"); // TODO: move to Toyama DanMAX front-end
 
   constexpr double FM1Length(40.0); // [4]
   constexpr double FM2Length(50.5); // [5]
