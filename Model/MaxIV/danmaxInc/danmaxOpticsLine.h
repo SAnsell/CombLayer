@@ -62,7 +62,7 @@ namespace xraySystem
   class FlangeMount;
   class Mirror;
   class MonoBlockXstals;
-  class MonoShutter;
+  class MonoShutterR3;
   class DCMTank;
   class MLMono;
   class MLMVessel;
@@ -196,12 +196,8 @@ class danmaxOpticsLine :
 
   /// bellows from second mono
   std::shared_ptr<constructSystem::Bellows> bellowK;
-  /// adaptor plate from CF63->CF40
-  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
   /// The main mono shutter
-  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
-  /// adaptor plate from CF63->CF40
-  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
+  std::shared_ptr<xraySystem::MonoShutterR3> monoShutter;
   /// Bellows from Mono Shutter
   std::shared_ptr<constructSystem::Bellows> bellowL;
 

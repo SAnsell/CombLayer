@@ -58,7 +58,7 @@
 #include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
-#include "MonoShutterGenerator.h"
+#include "MonoShutterR3Generator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "PortChicaneGenerator.h"
@@ -1202,28 +1202,16 @@ monoShutterVariables(FuncDataBase& Control,
 
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
-  setVariable::MonoShutterGenerator MShutterGen;
+  setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MShutterGen;
 
   const double pipeLength = 20.0;
   const double wallThick = 0.5;
   const double portABLength = 3.0;
   MShutterGen.generateShutter(Control,preName+"MonoShutter",1,1);
-  Control.addVariable(preName+"MonoShutterPipeLength",pipeLength);
-  Control.addVariable(preName+"MonoShutterPipeWallThick",wallThick);
-  Control.addVariable(preName+"MonoShutterPipePortALen",portABLength);
-  Control.addVariable(preName+"MonoShutterPipePortBLen",portABLength);
 
-  PipeGen.setMat("SteelUnknownGrade");
-  PipeGen.setNoWindow();
-  PipeGen.setFlangeLength(0.0, 0.0);
-  PipeGen.setPipe(CF40::innerRadius, CF63::flangeRadius-CF40::innerRadius); // [10]
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorA",CF63::flangeLength); // [10]
-  PipeGen.generatePipe(Control,preName+"MonoAdaptorB",CF63::flangeLength); // [10]
-
-  const double bellowLength = 12.0;
+  const double bellowLength = 12.0; // [10]
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,preName+"BellowL",bellowLength); // [10]
-
+  BellowGen.generateBellow(Control,preName+"BellowL",bellowLength);
 
   return bellowLength+2.0*portABLength+2.0*wallThick+pipeLength+2.0*CF63::flangeLength;
 }

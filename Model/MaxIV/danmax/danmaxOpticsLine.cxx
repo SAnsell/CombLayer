@@ -87,7 +87,7 @@
 #include "JawValveTube.h"
 #include "FlangeMount.h"
 #include "MonoBox.h"
-#include "MonoShutter.h"
+#include "MonoShutterR3.h"
 #include "BeamPair.h"
 #include "DCMTank.h"
 #include "MonoBlockXstals.h"
@@ -171,9 +171,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   revBeamStopTube(new constructSystem::PipeTube(newName+"RevBeamStopTube")),
   revBeamStop(new xraySystem::BremBlock(newName+"RevBeamStop")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
-  monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
-  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-  monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
+  monoShutter(new xraySystem::MonoShutterR3(newName+"MonoShutter")),
   bellowL(new constructSystem::Bellows(newName+"BellowL"))
  /*!
     Constructor
@@ -239,9 +237,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(revBeamStopTube);
   OR.addObject(revBeamStop);
   OR.addObject(bellowK);
-  OR.addObject(monoAdaptorA);
   OR.addObject(monoShutter);
-  OR.addObject(monoAdaptorB);
   OR.addObject(bellowL);
 }
 
@@ -653,16 +649,10 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
   ELog::RegMethod RegA("danmaxOpticsLine","constructMonoShutter");
 
   constructSystem::constructUnit
-    (System,buildZone,FC,linkName,*monoAdaptorA);
+    (System,buildZone,FC,linkName,*monoShutter);
 
   constructSystem::constructUnit
-    (System,buildZone,*monoAdaptorA,"back",*monoShutter);
-
-  constructSystem::constructUnit
-    (System,buildZone,*monoShutter,"back",*monoAdaptorB);
-
-  constructSystem::constructUnit
-    (System,buildZone,*monoAdaptorB,"back",*bellowL);
+    (System,buildZone,*monoShutter,"back",*bellowL);
 
   return;
 }
