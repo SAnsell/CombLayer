@@ -406,7 +406,7 @@ BladeBPMToyama::createAll(Simulation& System,
   ELog::RegMethod RegA("BladeBPMToyama","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
+  createCentredUnitVector(FC,sideIndex,-length/2.0);
   createSurfaces();
   createObjects(System);
   createLinks();
