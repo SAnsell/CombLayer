@@ -147,6 +147,15 @@ const double exptHut1WallThick = 0.4; // "Lead Thickness Side Wall", Section A-A
 // combination. In all cases, the nominal offset of the beam as it exits the MLM is
 // 10 mm [15].
 const double beamMirrorShift = -1.0;
+// Drawings give the following values for the "outer width" of the DanMAX hutches:
+// Optics Hutch  : 2957 mm (see below)
+// Expt. Hutch 2 : 2602 mm (Section A-A in [3])
+// Expt. Hutch 1 : 2602 mm (Section A-A in [2])
+// As can be seen, there is a discrepancy that would create a gap.
+// For simplicity, it was decided to use the outer width of the Optics Hutch for all
+// hutches.
+const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
+
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -339,7 +348,6 @@ opticsHutVariables(FuncDataBase& Control,
   OGen.setBackPlateOuter(7.0, 200.0, 200.0);
 
   OGen.generateHut(Control,hutName, opticsHutLength);
-  const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
   Control.addVariable(hutName+"OutWidth", opticsHutOuterWidth);
   Control.addVariable(hutName+"Height", hutchHeightAboveOpticalAxis);
 
@@ -498,7 +506,7 @@ exptHut1Variables(FuncDataBase& Control,
   const double hutchLength = 1401.3; // Section A-A [2]
   EGen.generateHut(Control,hutName,0.0, hutchLength);
   Control.addVariable(hutName+"RingWidth",204.8); // Section A-A [2]
-  Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [2]
+  Control.addVariable(hutName+"OutWidth",opticsHutOuterWidth);
   Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
   // In [2], the floor-shine length is measured from the outside of the wall, i.e. the
   // wall thickness is included. In this case here, where the front wall is the back
@@ -612,7 +620,7 @@ exptHut2Variables(FuncDataBase& Control,
   EGen.generateHut(Control,hutName,0.0,hutchLength);
 
   Control.addVariable(hutName+"RingWidth",47.3); // Section A-A [3]
-  Control.addVariable(hutName+"OutWidth",260.2); // Section A-A [3]
+  Control.addVariable(hutName+"OutWidth",opticsHutOuterWidth);
   Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
 
   // No floor shine at the front/back wall inside Expt. Hutch 2 shown in [1-3] or [8].
