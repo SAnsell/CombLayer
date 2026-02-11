@@ -73,8 +73,7 @@ namespace xraySystem
 
 MonoShutterR3::MonoShutterR3(const std::string& Key) :
   attachSystem::FixedRotate(Key,3),
-  attachSystem::ContainedGroup(
-    std::vector<std::string>{"Main","Port01","Port2","Port3","ShutterA","ShutterB"}),
+  attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::SurfMap(),
   attachSystem::CellMap(),
@@ -164,7 +163,17 @@ MonoShutterR3::createSurfaces()
     SMap,buildIndex+17,shutterPipe->getPort(0).getLinkPt(0),
     shutterPipe->getPort(0).getY(),apertureOuterRadius);
 
-  
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+101,Z0,Y,0.0);
+  ModelSupport::buildPlane(SMap,buildIndex+103,
+    shutterPipe->getLinkPt(0),
+    shutterPipe->getPort(2).getLinkPt(0),
+    shutterPipe->getPort(2).getLinkPt(2),
+    X
+  );
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+3,buildIndex+103,X,14.0);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+4,buildIndex+103,X,-14.0);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+5,
+    shutterPipe->getPort(2).getLinkSurf(1),Z,40.0);
 
   return; 
 }
@@ -234,6 +243,68 @@ MonoShutterR3::createObjects(Simulation& System)
   System.removeCell(shutterPipe->getPort(1).getCell("Void"));
   monoShutterA->insertInCell("Inner",System,getCell("Void2"));
   monoShutterB->insertInCell("Inner",System,getCell("Void4"));
+
+  addOuterSurf(
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5")
+    *shutterPipe->getFrontRule()
+    *entryAdapter->getFrontRule()
+    *exitAdapter->getBackRule());
+  makeCell("EntryAdapterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5")
+    *shutterPipe->getFrontRule()
+    *entryAdapter->getFrontRule()
+    *entryAdapter->getBackRule()
+	);
+  entryAdapter->insertAllInCell(System,getCell("EntryAdapterVoid"));
+
+  makeCell("ShutterPipeVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4")
+    *shutterPipe->getFrontRule()
+    *shutterPipe->getBackRule()
+    *entryAdapter->getBackRule().complement()
+    *exitAdapter->getFrontRule().complement()
+	);
+  shutterPipe->insertAllInCell(System,getCell("ShutterPipeVoid"));
+  makeCell("ShutterPipeTopPortsFrontVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -101")
+    *shutterPipe->getBackRule().complement()
+    *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))
+    *entryAdapter->getBackRule().complement()
+    *exitAdapter->getFrontRule().complement()
+	);
+  shutterPipe->getPort(2).insertInCell(System,getCell("ShutterPipeTopPortsFrontVoid"));
+  makeCell("ShutterPipeTopPortsBackVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 101")
+    *shutterPipe->getBackRule().complement()
+    *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))
+    *entryAdapter->getBackRule().complement()
+    *exitAdapter->getFrontRule().complement()
+	);
+  shutterPipe->getPort(3).insertInCell(System,getCell("ShutterPipeTopPortsBackVoid"));
+
+  makeCell("ShutterVoidFront",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5 -101")
+    *HeadRule(shutterPipe->getPort(2).getLinkSurf(2))
+    *entryAdapter->getBackRule().complement()
+    *exitAdapter->getFrontRule().complement()
+	);
+  monoShutterA->insertInCell("Outer",System,getCell("ShutterVoidFront"));
+  makeCell("ShutterVoidBack",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5 101")
+    *HeadRule(shutterPipe->getPort(2).getLinkSurf(2))
+    *entryAdapter->getBackRule().complement()
+    *exitAdapter->getFrontRule().complement()
+	);
+  monoShutterB->insertInCell("Outer",System,getCell("ShutterVoidBack"));
+
+  makeCell("ExitAdapterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5")
+    *shutterPipe->getFrontRule()
+    *exitAdapter->getFrontRule()
+    *exitAdapter->getBackRule()
+	);
+  exitAdapter->insertAllInCell(System,getCell("ExitAdapterVoid"));
+
   return; 
 }
 
@@ -249,7 +320,6 @@ MonoShutterR3::buildComponents(Simulation& System)
   entryAdapter->createAll(System,*this,0);
 
   shutterPipe->setOuterVoid();
-  shutterPipe->addInsertCell("Main",getCC("Main").getInsertCells());
 	shutterPipe->setPortRotation(3,Geometry::Vec3D(0,0,1));
 
   shutterPipe->createAll(System,*entryAdapter,"back");
@@ -259,27 +329,12 @@ MonoShutterR3::buildComponents(Simulation& System)
   constructSystem::portItem shutterPort = shutterPipe->getPort(2);
   monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
   monoShutterA->addInsertCell("Inner",shutterPort.getCell("Void"));
-  monoShutterA->addInsertCell("Outer",getCC("Main").getInsertCells());
   monoShutterA->createAll(System,shutterPipe->getPort(1),0,shutterPort,2);
 
   shutterPort = shutterPipe->getPort(3);
   monoShutterB->addInsertCell("Inner",shutterPipe->getCell("Void"));
   monoShutterB->addInsertCell("Inner",shutterPort.getCell("Void"));
-  monoShutterB->addInsertCell("Outer",getCC("Main").getInsertCells());
   monoShutterB->createAll(System,shutterPipe->getPort(1),0,shutterPort,2);
-
-  ContainedGroup::addOuterSurf("Main",shutterPipe->getCC("Main"));
-  ContainedGroup::addOuterSurf("Port01",
-    shutterPipe->getSurfRules("VoidCyl").complement()
-    *entryAdapter->getSurfRules("OuterCyl").complement()
-    *entryAdapter->getFrontRule()
-    *exitAdapter->getBackRule()
-  );
-
-  ContainedGroup::addOuterSurf("Port2",shutterPipe->getPort(2).getOuterSurf());
-  ContainedGroup::addOuterSurf("Port3",shutterPipe->getPort(3).getOuterSurf());
-  ContainedGroup::addOuterSurf("ShutterA",monoShutterA->getCC("Outer"));
-  ContainedGroup::addOuterSurf("ShutterB",monoShutterB->getCC("Outer"));
   
   return;
 }
@@ -323,6 +378,7 @@ MonoShutterR3::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
+  insertObjects(System);
 
   return;
 }
