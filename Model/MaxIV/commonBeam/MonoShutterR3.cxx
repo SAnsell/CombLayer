@@ -261,11 +261,6 @@ MonoShutterR3::createObjects(Simulation& System)
   // the optical axis.
   const HeadRule frontPartHR = ModelSupport::getHeadRule(SMap,buildIndex,"-101");
   const HeadRule backPartHR = ModelSupport::getHeadRule(SMap,buildIndex,"101");
-  // Void enclosed between the two adapters.
-  const HeadRule shutterPipeFrontBackHR = (
-    entryAdapter->getBackRule().complement()
-    *exitAdapter->getFrontRule().complement()
-  );
 
   addOuterSurf(frontHR*backHR*bottomHR*topHR*leftRightHR);
   makeCell("EntryAdapterVoid",System,cellIndex++,0,0.0,
@@ -274,27 +269,30 @@ MonoShutterR3::createObjects(Simulation& System)
   entryAdapter->insertAllInCell(System,getCell("EntryAdapterVoid"));
 
   makeCell("ShutterPipeVoid",System,cellIndex++,0,0.0,
-    shutterPipeFrontBackHR*bottomHR*shutterPipe->getBackRule()*leftRightHR
+    entryAdapter->getBackRule().complement()*exitAdapter->getFrontRule().complement()
+    *bottomHR*shutterPipe->getBackRule()*leftRightHR
 	);
   shutterPipe->insertAllInCell(System,getCell("ShutterPipeVoid"));
   makeCell("ShutterPipeTopPortsFrontVoid",System,cellIndex++,0,0.0,
-    shutterPipeFrontBackHR*shutterPipe->getBackRule().complement()
+    entryAdapter->getBackRule().complement()*shutterPipe->getBackRule().complement()
     *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))*leftRightHR*frontPartHR
 	);
   shutterPipe->getPort(2).insertInCell(System,getCell("ShutterPipeTopPortsFrontVoid"));
   makeCell("ShutterPipeTopPortsBackVoid",System,cellIndex++,0,0.0,
-    shutterPipeFrontBackHR*shutterPipe->getBackRule().complement()
+    exitAdapter->getFrontRule().complement()*shutterPipe->getBackRule().complement()
     *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))*leftRightHR*backPartHR
 	);
   shutterPipe->getPort(3).insertInCell(System,getCell("ShutterPipeTopPortsBackVoid"));
 
   makeCell("ShutterVoidFront",System,cellIndex++,0,0.0,
-    shutterPipeFrontBackHR*HeadRule(shutterPipe->getPort(2).getLinkSurf(2))
+    entryAdapter->getBackRule().complement()
+    *HeadRule(shutterPipe->getPort(2).getLinkSurf(2))
     *topHR*leftRightHR*frontPartHR
 	);
   monoShutterA->insertInCell("Outer",System,getCell("ShutterVoidFront"));
   makeCell("ShutterVoidBack",System,cellIndex++,0,0.0,
-    shutterPipeFrontBackHR*HeadRule(shutterPipe->getPort(2).getLinkSurf(2))*topHR
+    exitAdapter->getFrontRule().complement()
+    *HeadRule(shutterPipe->getPort(2).getLinkSurf(2))*topHR
     *leftRightHR*backPartHR
 	);
   monoShutterB->insertInCell("Outer",System,getCell("ShutterVoidBack"));
