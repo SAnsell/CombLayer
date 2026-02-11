@@ -45,6 +45,7 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
+#include "FlangePlateGenerator.h"
 #include "PipeTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "ShutterUnitGenerator.h"
@@ -56,6 +57,7 @@ template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
 MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
 ::MonoShutterR3Generator() :
+  FPGen(std::make_unique<FlangePlateGenerator>()),
   PTubeGen(new PipeTubeGenerator()),
   PItemGen(new PortItemGenerator()),
   SUnitGen(new ShutterUnitGenerator()),
@@ -118,12 +120,10 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
     height-2.0*flangeThick);
   Control.addVariable(keyName+"PipeNPorts",4);
 
-  PTubeGen->setPipe(AdapterFlange::innerRadius,
-    EntryExitFlange::flangeRadius-AdapterFlange::innerRadius,1.0,0.0);
-  PTubeGen->generateTube(Control,keyName+"EntryAdapter",EntryExitFlange::flangeLength);
-  Control.addVariable(keyName+"EntryAdapterNPorts",0);
-  PTubeGen->generateTube(Control,keyName+"ExitAdapter",EntryExitFlange::flangeLength);
-  Control.addVariable(keyName+"ExitAdapterNPorts",0);
+  FPGen->setFlange(EntryExitFlange::flangeRadius,EntryExitFlange::flangeLength);
+  FPGen->setInnerRadius(AdapterFlange::innerRadius);
+  FPGen->generateFlangePlate(Control,keyName+"EntryAdapter");
+  FPGen->generateFlangePlate(Control,keyName+"ExitAdapter");
   
   const Geometry::Vec3D Y(0,1,0);
   const Geometry::Vec3D Z(0,0,1);

@@ -65,6 +65,7 @@
 #include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
+#include "FlangePlate.h"
 #include "ShutterUnit.h"
 #include "MonoShutterR3.h"
 
@@ -78,8 +79,8 @@ MonoShutterR3::MonoShutterR3(const std::string& Key) :
   attachSystem::SurfMap(),
   attachSystem::CellMap(),
   
-  entryAdapter(std::make_shared<constructSystem::PipeTube>(keyName+"EntryAdapter")),
-  exitAdapter(std::make_shared<constructSystem::PipeTube>(keyName+"ExitAdapter")),
+  entryAdapter(std::make_shared<constructSystem::FlangePlate>(keyName+"EntryAdapter")),
+  exitAdapter(std::make_shared<constructSystem::FlangePlate>(keyName+"ExitAdapter")),
   shutterPipe(std::make_shared<constructSystem::PipeTube>(keyName+"Pipe")),
   monoShutterA(std::make_shared<xraySystem::ShutterUnit>(keyName+"UnitA")),
   monoShutterB(std::make_shared<xraySystem::ShutterUnit>(keyName+"UnitB"))
@@ -266,7 +267,7 @@ MonoShutterR3::createObjects(Simulation& System)
   makeCell("EntryAdapterVoid",System,cellIndex++,0,0.0,
     frontHR*entryAdapter->getBackRule()*bottomHR*topHR*leftRightHR
 	);
-  entryAdapter->insertAllInCell(System,getCell("EntryAdapterVoid"));
+  entryAdapter->insertInCell(System,getCell("EntryAdapterVoid"));
 
   makeCell("ShutterPipeVoid",System,cellIndex++,0,0.0,
     entryAdapter->getBackRule().complement()*exitAdapter->getFrontRule().complement()
@@ -300,7 +301,7 @@ MonoShutterR3::createObjects(Simulation& System)
   makeCell("ExitAdapterVoid",System,cellIndex++,0,0.0,
     exitAdapter->getFrontRule()*exitAdapter->getBackRule()*bottomHR*topHR*leftRightHR
 	);
-  exitAdapter->insertAllInCell(System,getCell("ExitAdapterVoid"));
+  exitAdapter->insertInCell(System,getCell("ExitAdapterVoid"));
 
   return; 
 }

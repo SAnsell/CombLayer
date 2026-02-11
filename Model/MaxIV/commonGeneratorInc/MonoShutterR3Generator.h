@@ -26,6 +26,7 @@ class FuncDataBase;
 
 namespace setVariable
 {
+  class FlangePlateGenerator;
   class PipeTubeGenerator;
   class PortItemGenerator;
   class ShutterUnitGenerator;
@@ -43,6 +44,7 @@ class MonoShutterR3Generator
 {
  private:
 
+  std::unique_ptr<FlangePlateGenerator> FPGen;
   std::unique_ptr<PipeTubeGenerator> PTubeGen;
   std::unique_ptr<PortItemGenerator> PItemGen;
   std::unique_ptr<ShutterUnitGenerator> SUnitGen;
