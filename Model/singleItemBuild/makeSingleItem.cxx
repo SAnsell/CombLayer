@@ -1780,7 +1780,7 @@ makeSingleItem::build(Simulation& System,
 	OR.addObject(msr3);
 
 	msr3->createAll(System,World::masterOrigin(),0);
-	msr3->insertAllInCell(System,voidCell);
+	msr3->insertInCell(System,voidCell);
 	return;
       }
     if (item == "RoundMonoShutter" )
