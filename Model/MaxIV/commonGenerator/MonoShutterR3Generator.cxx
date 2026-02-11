@@ -90,7 +90,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
 template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
 void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
-::generateShutter(FuncDataBase& Control,
+::generate(FuncDataBase& Control,
 				      const std::string& keyName,
 				      const bool upFlagA,
 				      const bool upFlagB) const
@@ -102,7 +102,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
     \param upFlagB :: Second Shutter up
   */
 {
-  ELog::RegMethod RegA("MonoShutterR3Generator","generateShutter");
+  ELog::RegMethod RegA("MonoShutterR3Generator","generate");
 
   SUnitGen->setCF<ShutterFlange>();
   // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
@@ -157,7 +157,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
 
 template MonoShutterR3Generator<CF200,CF63,CF40,CF40>::MonoShutterR3Generator();
 template MonoShutterR3Generator<CF200,CF63,CF40,CF40>::~MonoShutterR3Generator();
-template void MonoShutterR3Generator<CF200,CF63,CF40,CF40>::generateShutter(
+template void MonoShutterR3Generator<CF200,CF63,CF40,CF40>::generate(
   FuncDataBase& Control,const std::string& keyName,const bool upFlagA,
   const bool upFlagB) const;
 

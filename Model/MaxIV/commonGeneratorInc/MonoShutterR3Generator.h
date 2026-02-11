@@ -70,7 +70,7 @@ class MonoShutterR3Generator
 
   double getLength() const {return length;};
     
-  void generateShutter(FuncDataBase&,const std::string&,
+  void generate(FuncDataBase&,const std::string&,
 		       const bool,const bool) const;
   
 };
