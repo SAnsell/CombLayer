@@ -348,7 +348,7 @@ MonoShutterR3::createLinks()
     ExternalCut::setCutSurf("back",exitAdapter->getBackRule());
   }
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("front",*this,0,Origin,-Y);
   ExternalCut::createLink("back",*this,1,Origin,Y);
 
   return;
