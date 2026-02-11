@@ -128,7 +128,9 @@ MonoShutterR3::createSurfaces()
 {
   ELog::RegMethod RegA("MonoShutterR3","createSurfaces");
 
-  const int Z0 = shutterPipe->getPort(1).getLinkSurf(1);
+  // Plane along the optical axis that divides the shutter into two (almost equal)
+  // parts.
+  const int optAxisCentralPlane = shutterPipe->getPort(1).getLinkSurf(1);
 
   // Upstream and downstream aperture have the nominal 4 mm distance to the shutter 
   // blocks (Fig. 2.5 in [1]).
@@ -141,17 +143,20 @@ MonoShutterR3::createSurfaces()
 
   // Upstream aperture
   ModelSupport::buildShiftedPlane(
-    SMap,buildIndex+1,Z0,Z,
+    SMap,buildIndex+1,optAxisCentralPlane,Z,
     0.5*(shutterDistance+blockLength)+apertureToBlockGap+apertureThick);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+2,buildIndex+1,Z,-apertureThick);
 
   // Central aperture
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+11,Z0,Z,+0.5*apertureThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+12,Z0,Z,-0.5*apertureThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+11,
+    optAxisCentralPlane,Z,+0.5*apertureThick);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+12,
+    optAxisCentralPlane,Z,-0.5*apertureThick);
 
   // Downstream aperture
   ModelSupport::buildShiftedPlane(
-    SMap,buildIndex+21,Z0,Z,-0.5*(blockLength+shutterDistance)-apertureToBlockGap);
+    SMap,buildIndex+21,optAxisCentralPlane,
+    Z,-0.5*(blockLength+shutterDistance)-apertureToBlockGap);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Z,-apertureThick);
   ModelSupport::buildShiftedPlane(
     SMap,buildIndex+32,buildIndex+21,Z,-apertureBackLength);
@@ -163,7 +168,9 @@ MonoShutterR3::createSurfaces()
     SMap,buildIndex+17,shutterPipe->getPort(0).getLinkPt(0),
     shutterPipe->getPort(0).getY(),apertureOuterRadius);
 
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+101,Z0,Y,0.0);
+  // For simplicity, build a plane with no shift to create a new index.
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+101,
+    optAxisCentralPlane,Y,0.0);
   ModelSupport::buildPlane(SMap,buildIndex+103,
     shutterPipe->getLinkPt(0),
     shutterPipe->getPort(2).getLinkPt(0),
@@ -244,64 +251,56 @@ MonoShutterR3::createObjects(Simulation& System)
   monoShutterA->insertInCell("Inner",System,getCell("Void2"));
   monoShutterB->insertInCell("Inner",System,getCell("Void4"));
 
-  addOuterSurf(
-    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5")
-    *shutterPipe->getFrontRule()
-    *entryAdapter->getFrontRule()
-    *exitAdapter->getBackRule());
+  // Planes that define the outer void
+  const HeadRule frontHR = entryAdapter->getFrontRule();
+  const HeadRule backHR = exitAdapter->getBackRule();
+  const HeadRule bottomHR = shutterPipe->getFrontRule();
+  const HeadRule topHR = ModelSupport::getHeadRule(SMap,buildIndex,"-5");
+  const HeadRule leftRightHR = ModelSupport::getHeadRule(SMap,buildIndex,"-3 4");
+  // Planes that split the shutter into two (almost) symmetric parts along 
+  // the optical axis.
+  const HeadRule frontPartHR = ModelSupport::getHeadRule(SMap,buildIndex,"-101");
+  const HeadRule backPartHR = ModelSupport::getHeadRule(SMap,buildIndex,"101");
+  // Void enclosed between the two adapters.
+  const HeadRule shutterPipeFrontBackHR = (
+    entryAdapter->getBackRule().complement()
+    *exitAdapter->getFrontRule().complement()
+  );
+
+  addOuterSurf(frontHR*backHR*bottomHR*topHR*leftRightHR);
   makeCell("EntryAdapterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5")
-    *shutterPipe->getFrontRule()
-    *entryAdapter->getFrontRule()
-    *entryAdapter->getBackRule()
+    frontHR*entryAdapter->getBackRule()*bottomHR*topHR*leftRightHR
 	);
   entryAdapter->insertAllInCell(System,getCell("EntryAdapterVoid"));
 
   makeCell("ShutterPipeVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4")
-    *shutterPipe->getFrontRule()
-    *shutterPipe->getBackRule()
-    *entryAdapter->getBackRule().complement()
-    *exitAdapter->getFrontRule().complement()
+    shutterPipeFrontBackHR*bottomHR*shutterPipe->getBackRule()*leftRightHR
 	);
   shutterPipe->insertAllInCell(System,getCell("ShutterPipeVoid"));
   makeCell("ShutterPipeTopPortsFrontVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -101")
-    *shutterPipe->getBackRule().complement()
-    *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))
-    *entryAdapter->getBackRule().complement()
-    *exitAdapter->getFrontRule().complement()
+    shutterPipeFrontBackHR*shutterPipe->getBackRule().complement()
+    *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))*leftRightHR*frontPartHR
 	);
   shutterPipe->getPort(2).insertInCell(System,getCell("ShutterPipeTopPortsFrontVoid"));
   makeCell("ShutterPipeTopPortsBackVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 101")
-    *shutterPipe->getBackRule().complement()
-    *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))
-    *entryAdapter->getBackRule().complement()
-    *exitAdapter->getFrontRule().complement()
+    shutterPipeFrontBackHR*shutterPipe->getBackRule().complement()
+    *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))*leftRightHR*backPartHR
 	);
   shutterPipe->getPort(3).insertInCell(System,getCell("ShutterPipeTopPortsBackVoid"));
 
   makeCell("ShutterVoidFront",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5 -101")
-    *HeadRule(shutterPipe->getPort(2).getLinkSurf(2))
-    *entryAdapter->getBackRule().complement()
-    *exitAdapter->getFrontRule().complement()
+    shutterPipeFrontBackHR*HeadRule(shutterPipe->getPort(2).getLinkSurf(2))
+    *topHR*leftRightHR*frontPartHR
 	);
   monoShutterA->insertInCell("Outer",System,getCell("ShutterVoidFront"));
   makeCell("ShutterVoidBack",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5 101")
-    *HeadRule(shutterPipe->getPort(2).getLinkSurf(2))
-    *entryAdapter->getBackRule().complement()
-    *exitAdapter->getFrontRule().complement()
+    shutterPipeFrontBackHR*HeadRule(shutterPipe->getPort(2).getLinkSurf(2))*topHR
+    *leftRightHR*backPartHR
 	);
   monoShutterB->insertInCell("Outer",System,getCell("ShutterVoidBack"));
 
   makeCell("ExitAdapterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5")
-    *shutterPipe->getFrontRule()
-    *exitAdapter->getFrontRule()
-    *exitAdapter->getBackRule()
+    exitAdapter->getFrontRule()*exitAdapter->getBackRule()*bottomHR*topHR*leftRightHR
 	);
   exitAdapter->insertAllInCell(System,getCell("ExitAdapterVoid"));
 
