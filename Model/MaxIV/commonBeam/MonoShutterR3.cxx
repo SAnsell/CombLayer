@@ -78,11 +78,11 @@ MonoShutterR3::MonoShutterR3(const std::string& Key) :
   attachSystem::SurfMap(),
   attachSystem::CellMap(),
   
-  entryAdapter(new constructSystem::PipeTube(keyName+"EntryAdapter")),
-  exitAdapter(new constructSystem::PipeTube(keyName+"ExitAdapter")),
-  shutterPipe(new constructSystem::PipeTube(keyName+"Pipe")),
-  monoShutterA(new xraySystem::ShutterUnit(keyName+"UnitA")),
-  monoShutterB(new xraySystem::ShutterUnit(keyName+"UnitB"))
+  entryAdapter(std::make_shared<constructSystem::PipeTube>(keyName+"EntryAdapter")),
+  exitAdapter(std::make_shared<constructSystem::PipeTube>(keyName+"ExitAdapter")),
+  shutterPipe(std::make_shared<constructSystem::PipeTube>(keyName+"Pipe")),
+  monoShutterA(std::make_shared<xraySystem::ShutterUnit>(keyName+"UnitA")),
+  monoShutterB(std::make_shared<xraySystem::ShutterUnit>(keyName+"UnitB"))
   /*!
     Constructor
     \param Key :: Name of construction key
