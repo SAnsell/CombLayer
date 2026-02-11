@@ -35,7 +35,7 @@ namespace xraySystem
 /*!
   \class MonoShutterR3
   \author U. Friman-Gayer
-  \version 1.0
+  \version 1.1
   \date February 2026
   \brief Monochromatic shutter system for hard x-ray beamlines at the R3 ring of MAX IV
 
@@ -58,6 +58,12 @@ namespace xraySystem
   [3] Drawing of standard aperture, 25-01-1120795, AXILON, 2025-08-21
   [4] Drawing of downstream aperture, 25-01-1120798, AXILON, 2025-08-21
   [5] CAD model of ForMAX/MicroMAX/DanMAX mono shutters
+
+  Version history:
+  1.1 - 2026-11-02
+    - Derive from ContainedComp instead of ContainedGroup
+    - Simplified outer volume
+  1.0 - 2026-10-02
 */
 
 class MonoShutterR3 :

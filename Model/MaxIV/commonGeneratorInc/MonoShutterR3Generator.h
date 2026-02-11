@@ -33,10 +33,15 @@ namespace setVariable
 
 /*!
   \class MonoShutterR3Generator
-  \version 1.0
+  \version 1.1
   \author Udo Friman-Gayer
   \date Feburary 2026
   \brief MonoShutterR3Generator for variables
+
+  Version history:
+  1.1 - 2026-11-02
+    - Update for MonoShutterR3 v1.0
+  1.0 - 2026-10-02
 */
 template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
