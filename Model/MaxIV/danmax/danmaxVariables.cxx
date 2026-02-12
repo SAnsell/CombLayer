@@ -95,6 +95,8 @@
 // [13] DanMAX Diagnostics, Functional Specification, FMB Oxford S3716, Rev. 5.0
 // [14] DanMAX HDCM, Funcation Specification, FMB Oxford S3716, Rev. 6.0
 // [15] Detailed Design Report for DanMAX, v2.0, Dec. 2017
+// [16] S1-6-1AB01567.pdf
+// [17] S7-2-1AB01538.pdf
 
 namespace setVariable
 {
@@ -272,11 +274,13 @@ frontMaskVariables(FuncDataBase& Control,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
 
-  FPGen.setFlange(CF100::flangeRadius, 1.99); // [4]
+  // Radius adjusted to XBPM flange [16], Thickness from [4]
+  FPGen.setFlange(7.6, 1.99);
   FPGen.setWindow(0.0, 0.0, "Void"); // [4]
-  FPGen.setMat("SteelUnknownGrade"); // guess
-  FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
-  FPGen.generateFlangePlate(Control,preName+"FlangePlateAA"); // TODO: move to Toyama DanMAX front-end
+  FPGen.setMat("SteelUnknownGrade");
+  FPGen.setInnerRadius(CF40::innerRadius);  // guess (same as BellowA)
+  // TODO: move to Toyama DanMAX front-end
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateAA");
 
   Control.addVariable(preName+"BellowBLength",10.0); // [4]
   Control.addVariable(preName+"BellowCLength",10.0); // [4]
@@ -301,8 +305,15 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"FM2Height", 6.8); // [5]
 
   BellowGen.setCF<setVariable::CF40>();
-  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
   BellowGen.generateBellow(Control,preName+"BellowCA",10.0); // [4]
+
+  FPGen.setCF<CF63>(CF40::innerRadius); // [4]
+  FPGen.setFlangeLen(1.75); // [10]
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateD");
+  BellowGen.setCF<setVariable::CF63>(); // [10]
+  BellowGen.generateBellow(Control,preName+"BellowPreHA",14.0); // [4]
+  BellowGen.generateBellow(Control,preName+"BellowPostHA",14.0); // [4]
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateE"); // [4]
 
   HeatAbsorberR3ToyamaGenerator HAGen;
 
@@ -311,37 +322,8 @@ frontMaskVariables(FuncDataBase& Control,
   HAGen.generate(Control,preName+"HeatAbsorber",heatAbsorberLength);
   Control.addVariable(preName+"HeatAbsorberYStep",danmaxVar::absY::heatAbsorberY);
 
-  // NOT PRESENT :::
-  // FMaskGen.setFrontGap(0.84,0.582);
-  // FMaskGen.setBackGap(0.750,0.357);
-
-  // FMaskGen.setMinAngleSize(12.0,1600.0, 100.0, 100.0);
-  // FMaskGen.generateColl(Control,preName+"CollC",17/2.0,17.0);
-
-  // approx for 100uRad x 100uRad
-  FMaskGen.setFrontAngleSize(FM2dist,150.0,150.0);
-  FMaskGen.setMinAngleSize(12.0,FM2dist, 100.0, 100.0 );
-  FMaskGen.setBackAngleSize(FM2dist, 160.0,160.0 );
-  FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
-
-  PipeGen.setNoWindow();
-  PipeGen.setCF<setVariable::CF40>(); // dummy
-  PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy
-
-
-  // Movable Safety Mask (not used)
-  // BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
-  // BellowGen.setCF<setVariable::CF40>();
-  // BellowGen.generateBellow(Control,preName+"BellowPreMSM",14.0); // guess
-
-  // MovableSafetyMaskGenerator MSMGen;
-  // MSMGen.generate(Control,preName+"MSM",MSMLength, "undulator"); //
-  // Control.addVariable(preName+"MSMYStep",MSMdist);
-
-  // BellowGen.generateBellow(Control,preName+"BellowPostMSM",14.0); // guess
-
-  // PipeGen.setMat("SteelUnknownGradeL"); // dummy
-  // PipeGen.generatePipe(Control,preName+"MSMExitPipe",100.0); // dummy
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateF"); // [4]
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateG"); // [4]
 
   return;
 }
@@ -1652,7 +1634,7 @@ support7DanMAX(FuncDataBase& Control,
   constexpr double proxiShieldBPipeLength = 20.0; // [4]
   // safety shutter
   constexpr double shutterLength = 57.8; // [4]
-  constexpr double offPipeALength = 6.8; // approx
+  constexpr double offPipeALength = 6.8; // [7]
   constexpr double shutterBoxLength = shutterLength - offPipeALength;
 
   constexpr double bremCollTotalLength = 21.0; //[4] (OffPipeB + BremCollPipe)
@@ -1661,8 +1643,8 @@ support7DanMAX(FuncDataBase& Control,
 
   constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [4, page1]
   constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
-    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - danmaxVar::valve3Length -
-    bellowJLength - florTubeALength - bellowILength;
+    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - 
+    danmaxVar::valve3Length - bellowJLength - florTubeALength - bellowILength;
   // same as counting from Movable Mask 2
   // 18692.8 + 300 + 140 + 17.5 + 340 = 19490.3
   assert(std::abs(bellowIYstep - 1949.03)<Geometry::zeroTol && "Wrong shutter table length."); // [4]
@@ -1672,10 +1654,11 @@ support7DanMAX(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowI",bellowILength);
   Control.addVariable(frontKey+"BellowIYStep",bellowIYstep);
 
-  SimpleTubeGen.setCF<CF66_TDC>();
-  SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
-  Control.addVariable(frontKey+"FlorTubeARadius",7.63/2-0.2);
+  SimpleTubeGen.setCF<CF63>(); // Closest match with ICF114 given in [17]
+  SimpleTubeGen.setCap(1,1);
+  SimpleTubeGen.setAFlange(CF63::outerRadius, 0.0);
+  const double florTubeATotalHeight = 15.0; // [10]
+  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",florTubeATotalHeight);
 
   // beam ports
   const std::string florName(frontKey+"FlorTubeA");
@@ -1683,24 +1666,27 @@ support7DanMAX(FuncDataBase& Control,
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
+  const double florTubeAHeight = 11.0; // [17]
+  const Geometry::Vec3D portPos(0,0.5*florTubeATotalHeight-florTubeAHeight,0);
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.setOuterVoid(1);
-  PItemGen.generatePort(Control,florName+"Port0",Geometry::Vec3D(0,0,0),ZVec);
-  PItemGen.generatePort(Control,florName+"Port1",Geometry::Vec3D(0,0,0),-ZVec);
+  PItemGen.generatePort(Control,florName+"Port0",portPos,ZVec);
+  PItemGen.generatePort(Control,florName+"Port1",portPos,-ZVec);
   PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
-  PItemGen.generatePort(Control,florName+"Port2",Geometry::Vec3D(0,0,0),XVec);
-  PItemGen.generatePort(Control,florName+"Port3",Geometry::Vec3D(0,0,0),-XVec);
+  PItemGen.generatePort(Control,florName+"Port2",portPos,XVec);
+  PItemGen.generatePort(Control,florName+"Port3",portPos,-XVec);
 
-  Control.addVariable(florName+"Port0Length",6);
-  Control.addVariable(florName+"Port1Length",6);
+  Control.addVariable(florName+"Port0Length",0.5*florTubeALength);
+  Control.addVariable(florName+"Port1Length",0.5*florTubeALength);
+  Control.addVariable(florName+"Port2Length",5.85); // [17]
+  Control.addVariable(florName+"Port3Length",5.85); // [17]
 
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,frontKey+"BellowJ",bellowJLength);
 
-  PipeGen.setMat("Stainless304");
-  PipeGen.setNoWindow();   // no window
+  PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setBFlangeCF<setVariable::CF150>();
   PipeGen.generatePipe(Control,frontKey+"OffPipeA",offPipeALength);
@@ -1713,8 +1699,10 @@ support7DanMAX(FuncDataBase& Control,
   SimpleTubeGen.setFlangeLength(0.0, 0.0); // Remove flanges [7]
   SimpleTubeGen.generateTube(Control,shutterName,shutterBoxLength);
   Control.addVariable(shutterName+"NPorts",2);
-  Control.addVariable(shutterName+"WallThick",0.3); // [7]
-  Control.addVariable(shutterName+"Radius",9.85); // [7]
+  const double shutterBoxWallThick = 0.3; // [7]
+  Control.addVariable(shutterName+"WallThick",shutterBoxWallThick); // [7]
+  Control.addVariable(shutterName+"Radius",
+    CF150::flangeRadius-shutterBoxWallThick); // [7]
 
   // 20cm above port tube
   PItemGen.setCF<setVariable::CF50>(14.0);
@@ -1736,24 +1724,32 @@ support7DanMAX(FuncDataBase& Control,
       CPos+=Geometry::Vec3D(0,25.0,0); // [7]
     }
 
-  PipeGen.setCF<setVariable::CF63>();
-  PipeGen.setAFlangeCF<setVariable::CF150>();
+  // Off Pipe B is built from the same class as Off Pipe A for simplicity.
+  // Due to its shortness, could also be simplified to a FlangePlate.
+  PipeGen.setCF<setVariable::CF63>(); // [7]
+  PipeGen.setMat("SteelUnknownGrade");
+  PipeGen.setAFlangeCF<setVariable::CF150>(); // 
+  PipeGen.setBFlange(1.0, 0.0);
+  constexpr double bremCollPipeInnerRadius = 4.35; // [6]
+  // Built to match Bremsstrahlung Collimator pipe
+  PipeGen.setPipe(CF63::innerRadius,bremCollPipeInnerRadius
+    +CF100::wallThick-CF63::innerRadius);
   PipeGen.generatePipe(Control,frontKey+"OffPipeB",offPipeBLength);
-  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0);
-  Control.addVariable(frontKey+"OffPipeBZStep",-3.0);
-  Control.addVariable(frontKey+"OffPipeBFlangeBType",0);
+  Control.addVariable(frontKey+"OffPipeBFlangeAZStep",3.0); // [7]
+  Control.addVariable(frontKey+"OffPipeBZStep",-3.0); // [7]
 
-  Control.addVariable(frontKey+"BremBlockRadius",3.0);
-  Control.addVariable(frontKey+"BremBlockLength",20.0);
-  Control.addVariable(frontKey+"BremBlockHoleWidth",2.0);
-  Control.addVariable(frontKey+"BremBlockHoleHeight",2.0);
-  Control.addVariable(frontKey+"BremBlockMainMat","Tungsten");
+  Control.addVariable(frontKey+"BremBlockRadius",3.0); // [6]
+  Control.addVariable(frontKey+"BremBlockLength",20.0); // [6]
+  Control.addVariable(frontKey+"BremBlockHoleWidth",1.5); // [6]
+  Control.addVariable(frontKey+"BremBlockHoleHeight",0.7); // [6]
+  Control.addVariable(frontKey+"BremBlockMainMat","Tungsten"); // [6]
 
   PSGen.generate(Control,frontKey+"ProxiShieldA", 10.0); // CAD
   Control.addVariable(frontKey+"ProxiShieldAYStep",3.53); // CAD
   Control.addVariable(frontKey+"ProxiShieldABoreRadius",0.0);
 
   PipeGen.setCF<setVariable::CF40>();
+
   PipeGen.generatePipe(Control,frontKey+"ProxiShieldAPipe",proxiShieldAPipeLength);
 
   Control.copyVarSet(frontKey+"ProxiShieldAPipe", frontKey+"ProxiShieldBPipe");
@@ -1768,9 +1764,8 @@ support7DanMAX(FuncDataBase& Control,
   constexpr double bremCollLength(20.0); // collimator block inside BremCollPipe:  CAD+[6]
 
   constexpr double bremCollRadius(3.0); // CAD and [6]
-  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.setCF<setVariable::CF100>(); // ICF152 in [6]
   PipeGen.generatePipe(Control,name,bremCollPipeLength);
-  constexpr double bremCollPipeInnerRadius = 4.35; // [6]
   Control.addVariable(name+"Radius",bremCollPipeInnerRadius);
   Control.addVariable(name+"FlangeARadius",bremCollPipeInnerRadius+CF100::wallThick);
   Control.addVariable(name+"FlangeALength",1.0); // Estimated from [6]
@@ -1828,11 +1823,13 @@ DANMAXvariables(FuncDataBase& Control)
   CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
   CrossGen.setTotalPorts(7.0,7.0);     // len of ports (after main): 14 in total [4]
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
-    (Control,frontKey+"IonPump4",0.0,15.74,28.70);   // height/depth
+    (Control,frontKey+"IonPump4",0.0,10.4,55.0);   // height/depth
 
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"PipeA",24+11.0); // [4] - replacement for pumping unit
+  // [4] - replacement for pumping unit and downstream bellows
+  PipeGen.setMat("SteelUnknownGrade");
+  PipeGen.generatePipe(Control,frontKey+"PipeA",24.0+11.0);
   setVariable::BladeBPMToyamaGenerator XBPMGen;
 
   XBPMGen.generate(Control,frontKey+"XBPM1", danmaxVar::absY::XBPM1);
