@@ -121,6 +121,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bremColl1(new xraySystem::BremBlock(newName+"BremColl1")),
   highPassFilter(new constructSystem::VacuumPipe(newName+"HighPassFilter")),
   valve5(new xraySystem::CylGateValve(newName+"Valve5")),
+  pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
@@ -194,6 +195,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bremColl1);
   OR.addObject(highPassFilter);
   OR.addObject(valve5);
+  OR.addObject(pipeA);
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
   OR.addObject(bellowD);
@@ -549,7 +551,7 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
 			Geometry::Vec3D(0,0,1));
   cellIndex++;  // remember creates an extra cell in primary
 
-  // Since the jaws have large xy offsets, they partially end up in the void cells of 
+  // Since the jaws have large xy offsets, they partially end up in the void cells of
   // the other ports.
   const constructSystem::portItem& port0=slitTube->getPort(0);
   jaws[0]->addInsertCell("SupportA",port0.getCell("Void"));
@@ -622,7 +624,7 @@ danmaxOpticsLine::constructBeamStopTube
     monoSlits[i]->addInsertCell("SupportB",monoSlitsTube->getCell("Void"));
     monoSlits[i]->addInsertCell("BlockB",monoSlitsTube->getCell("Void"));
     // Both BeamPair elements are actually supposed to be constructed within a single
-    // port. By setting the appropriate insert cells here and x- and y-step values 
+    // port. By setting the appropriate insert cells here and x- and y-step values
     // elsewhere, it will appear as if they were built in separate ports.
     monoSlits[i]->createAll(System,*monoSlitsTube,0,port0,
       port0.getSideIndex("InnerPlate"));
@@ -704,8 +706,8 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*highPassFilter,"back",*valve5);
 
-  constructSystem::constructUnit
-    (System,buildZone,*valve5,"back",*bellowC);
+  constructSystem::constructUnit(System,buildZone,*valve5,"back",*pipeA);
+  constructSystem::constructUnit(System,buildZone,*pipeA,"back",*bellowC);
 
   constructSystem::constructUnit
     (System,buildZone,*bellowC,"back",*lauePipe);

@@ -95,6 +95,7 @@
 // [13] DanMAX Diagnostics, Functional Specification, FMB Oxford S3716, Rev. 5.0
 // [14] DanMAX HDCM, Funcation Specification, FMB Oxford S3716, Rev. 6.0
 // [15] Detailed Design Report for DanMAX, v2.0, Dec. 2017
+// [16] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
 
 namespace setVariable
 {
@@ -1421,7 +1422,6 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,opticsName+"BellowA",
     danmaxVar::absY::bremColl1Y-bremColl1Length/2.0-danmaxVar::absY::valve4BackY);
-  PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
   // Reset bellow step to default value [10]. Large bellow step of InitBellow and
   // BellowA looked odd on the short bellows.
   BellowGen.setBellowStep(1.0);
@@ -1480,9 +1480,12 @@ opticsVariables(FuncDataBase& Control,
   // + Top Port Radius
   const double slitTubeFrontToTopPort = 2.5+4.4+CF150::outerRadius; // [10]
 
+  PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
+  BellowGen.generateBellow(Control,opticsName+"BellowC",11.8); // [16]
+
+
   // Laue monochromator
   PipeGen.setNoWindow();
-  BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
   PipeGen.generatePipe(
     Control,opticsName+"LauePipe",
     danmaxVar::absY::whiteBeamSlitsTopJawY-danmaxVar::absY::highPassFilterY
