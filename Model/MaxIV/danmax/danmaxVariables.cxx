@@ -216,7 +216,8 @@ frontMaskVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::FlangePlateGenerator FPGen;
 
-  Control.addVariable(preName+"BellowALength",10.0); // [4]
+  Control.addVariable(preName+"BellowALength",10.5); // [10]
+  Control.addVariable(preName+"BellowABellowStep",2.5); // [10]
 
   constexpr double FM1Length(40.0); // [4]
   constexpr double FM2Length(50.5); // [5]
