@@ -102,8 +102,9 @@ namespace setVariable
 namespace danmaxVar
 {
   namespace absY{
-    constexpr double XBPM1 = 1201.99; // [4]
+    const double beamPipe2Port = 1048.9; // [4]
     const double FM1Y = 1104.75; // [4]
+    const double XBPM1 = 1201.99; // [4]
     const double FM2Y = 1597.08; // [4]
     const double heatAbsorberY = 1673.33; // [4]
     const double opticsHutFrontY = 2250.0; // [4]
@@ -212,12 +213,45 @@ frontMaskVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PipeTubeGenerator PTGen;
+  setVariable::PortItemGenerator PItemGen;
   setVariable::SqrFMaskGenerator FMaskGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::FlangePlateGenerator FPGen;
 
-  Control.addVariable(preName+"BellowALength",10.0); // [4]
+  PipeGen.setCF<CF40>();
+  PipeGen.setMat("SteelUnknownGrade");
+  PipeGen.generatePipe(Control,preName+"BeamPipe1",165.5); // [4]
+
+  PTGen.setCF<CF40>(); // [4]
+  PTGen.setMat("SteelUnknownGrade");
+  const std::string pipeName = preName+"BeamPipe2";
+  const double flangePlateAThick = CF63::flangeLength; // [10]
+  const double bellowALength = 10.0; // [4]
+  const double beamPipe2Length = 51.5; // [4]
+  PTGen.generateTube(Control,pipeName,beamPipe2Length);
+  Control.addVariable(pipeName+"NPorts",1);
+  PItemGen.setCF<CF40>(7.0); // [4]
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
+  PItemGen.generatePort(Control,pipeName+"Port0",
+    Geometry::Vec3D(
+      0,
+      -0.5*beamPipe2Length+danmaxVar::absY::FM1Y-danmaxVar::absY::beamPipe2Port
+      -flangePlateAThick-bellowALength,
+      0
+    ),
+    Geometry::Vec3D(1,0,0)
+  );
+
+  Control.addVariable(preName+"BellowALength",bellowALength);
   Control.addVariable(preName+"BellowABellowStep",2.5); // [10]
+
+  FPGen.setFlange(CF100::flangeRadius, flangePlateAThick); // [4]
+  FPGen.setWindow(0.0, 0.0, "Void"); // [4]
+  FPGen.setMat("SteelUnknownGrade");
+  FPGen.setInnerRadius(CF40::innerRadius); // [4]
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateA");
 
   constexpr double FM1Length(40.0); // [4]
   constexpr double FM2Length(50.5); // [5]
@@ -238,15 +272,11 @@ frontMaskVariables(FuncDataBase& Control,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
 
-
   FPGen.setFlange(CF100::flangeRadius, 1.99); // [4]
   FPGen.setWindow(0.0, 0.0, "Void"); // [4]
   FPGen.setMat("SteelUnknownGrade"); // guess
   FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
   FPGen.generateFlangePlate(Control,preName+"FlangePlateAA"); // TODO: move to Toyama DanMAX front-end
-
-
-
 
   Control.addVariable(preName+"BellowBLength",10.0); // [4]
   Control.addVariable(preName+"BellowCLength",10.0); // [4]
@@ -294,7 +324,6 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setBackAngleSize(FM2dist, 160.0,160.0 );
   FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
 
-  setVariable::PipeGenerator PipeGen;
   PipeGen.setNoWindow();
   PipeGen.setCF<setVariable::CF40>(); // dummy
   PipeGen.generatePipe(Control,preName+"MSMEntrancePipe",5.0); // dummy

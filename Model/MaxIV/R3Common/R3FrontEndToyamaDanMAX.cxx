@@ -110,6 +110,8 @@ namespace xraySystem
 
 R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   R3FrontEnd(Key),
+  beamPipe1(std::make_shared<constructSystem::VacuumPipe>(newName+"BeamPipe1")),
+  beamPipe2(std::make_shared<constructSystem::PipeTube>(newName+"BeamPipe2")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PipeA")), // TODO: PipeA currently replaces PumpingUnit1
   xbpm1(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM1")),
   flangePlateAA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateAA")),
@@ -190,6 +192,8 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(beamPipe1),
+  OR.addObject(beamPipe2),
   OR.addObject(pipeA);
   OR.addObject(xbpm1);
   OR.addObject(flangePlateAA);
@@ -613,13 +617,15 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
     fm1->createAll(System,*this,0);
     flangePlateA->createAll(System,*fm1,"front");
     bellowA->createAll(System,*flangePlateA,"back");
+    beamPipe2->createAll(System,*bellowA,"back");
+    beamPipe1->createAll(System,*beamPipe2,"back");
   }
 
   magBlockU1->createAll(System,*epSeparator,"Electron");
 
   dipolePipe->setFront(*chokeChamber,"photon");
   if (stopPoint != "U1Block")
-    dipolePipe->setBack(*bellowA,"back");
+    dipolePipe->setBack(*beamPipe1,"back");
   else {
     dipolePipe->setBack(*magBlockU1,-4);
     dipolePipe->insertInCell("FlangeB",System,magBlockU1->getCell("BackVoid"));
@@ -670,12 +676,13 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   eTransPipe->insertInCell("Main",System,chokeChamber->getCell("BlockOuter"));
   eTransPipe->insertInCell("Main",System,buildZone.getCell("preM1"));
 
-  outerCell=buildZone.createUnit(System,*bellowA,"#back");
+  outerCell=buildZone.createUnit(System,*beamPipe1,"#back");
   dipolePipe->insertInCell("Main",System,outerCell);
   dipolePipe->insertInCell("FlangeB",System,outerCell);
+  beamPipe1->insertAllInCell(System,buildZone.createUnit(System,*beamPipe1,"front"));
 
-  outerCell=buildZone.createUnit(System,*bellowA,"front");
-  bellowA->insertAllInCell(System,outerCell);
+  beamPipe2->insertAllInCell(System,buildZone.createUnit(System,*beamPipe2,"front"));
+  bellowA->insertAllInCell(System,buildZone.createUnit(System,*bellowA,"front"));
 
   outerCell=buildZone.createUnit(System,*flangePlateA,"front");
   flangePlateA->insertInCell(System,outerCell);
