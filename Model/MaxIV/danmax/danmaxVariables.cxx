@@ -241,7 +241,7 @@ frontMaskVariables(FuncDataBase& Control,
       -flangePlateAThick-bellowALength,
       0
     ),
-    Geometry::Vec3D(1,0,0)
+    Geometry::Vec3D(1,0,0) // [4] and [10] show different orientations. Using [10].
   );
 
   Control.addVariable(preName+"BellowALength",bellowALength);
