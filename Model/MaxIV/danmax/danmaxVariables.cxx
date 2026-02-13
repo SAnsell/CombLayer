@@ -105,32 +105,32 @@ namespace danmaxVar
 {
   namespace absY{
     const double beamPipe2Port = 1048.9; // [4]
-    const double FM1Y = 1104.75; // [4]
+    const double FM1 = 1104.75; // [4]
     const double XBPM1 = 1201.99; // [4]
-    const double FM2Y = 1597.08; // [4]
-    const double heatAbsorberY = 1673.33; // [4]
-    const double opticsHutFrontY = 2250.0; // [4]
+    const double FM2 = 1597.08; // [4]
+    const double heatAbsorber = 1673.33; // [4]
+    const double opticsHutFront = 2250.0; // [4]
     // Absolute position of the downstream side of Valve4 [4].
     // This value is used to determine the lengths of elements in the optics hutch that
     // are not shown in [12].
-    double valve4BackY = 2290.23; // [4]
+    double valve4Back = 2290.23; // [4]
     // All following absolute coordinates taken from [12]
-    const double bremColl1Y = 2330.0;
-    const double highPassFilterY = 2347.48;
+    const double bremColl1 = 2330.0;
+    const double highPassFilter = 2347.48;
     // Assume that the Y coordinate given there is the central axis of the top-jaw
     // port.
-    const double whiteBeamSlitsTopJawY = 2622.75;
-    const double beamViewer1Y = 2647.72;
-    const double HDCMY = 2715.50;
-    const double beamViewer2Y = 2784.0;
-    const double MLMY = 2834.8; // Position of the view port on the top
-    const double whiteBeamStopY = 2954.83;
-    const double bremColl2Y = 2965.03;
-    const double monoSlitsY = 2987.56;
-    const double beamViewer3Y = 3036.92;
-    const double CRLY = 3091.77;
-    const double monoSlits2Y = 3143.94;
-    const double bremColl3Y = 3166.47;
+    const double whiteBeamSlitsTopJaw = 2622.75;
+    const double beamViewer1 = 2647.72;
+    const double HDCM = 2715.50;
+    const double beamViewer2 = 2784.0;
+    const double MLM = 2834.8; // Position of the view port on the top
+    const double whiteBeamStop = 2954.83;
+    const double bremColl2 = 2965.03;
+    const double monoSlits = 2987.56;
+    const double beamViewer3 = 3036.92;
+    const double CRL = 3091.77;
+    const double monoSlits2 = 3143.94;
+    const double bremColl3 = 3166.47;
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -239,7 +239,7 @@ frontMaskVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,pipeName+"Port0",
     Geometry::Vec3D(
       0,
-      -0.5*beamPipe2Length+danmaxVar::absY::FM1Y-danmaxVar::absY::beamPipe2Port
+      -0.5*beamPipe2Length+danmaxVar::absY::FM1-danmaxVar::absY::beamPipe2Port
       -flangePlateAThick-bellowALength,
       0
     ),
@@ -260,8 +260,8 @@ frontMaskVariables(FuncDataBase& Control,
   // MSM not used
   // constexpr double MSMLength(40.0);
 
-  const double FM1dist(danmaxVar::absY::FM1Y+FM1Length/2.0); // [4]
-  const double FM2dist(danmaxVar::absY::FM2Y+FM2Length/2.0); // [4]
+  const double FM1dist(danmaxVar::absY::FM1+FM1Length/2.0); // [4]
+  const double FM2dist(danmaxVar::absY::FM2+FM2Length/2.0); // [4]
   // MSM not used
   // const double MSMdist(1600.0);
 
@@ -320,7 +320,7 @@ frontMaskVariables(FuncDataBase& Control,
   constexpr double heatAbsorberLength = 26.5;  // [4]
 
   HAGen.generate(Control,preName+"HeatAbsorber",heatAbsorberLength);
-  Control.addVariable(preName+"HeatAbsorberYStep",danmaxVar::absY::heatAbsorberY);
+  Control.addVariable(preName+"HeatAbsorberYStep",danmaxVar::absY::heatAbsorber);
 
   FPGen.generateFlangePlate(Control,preName+"FlangePlateF"); // [4]
   FPGen.generateFlangePlate(Control,preName+"FlangePlateG"); // [4]
@@ -882,7 +882,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
       (
         port0Length - (beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength)
       ) // Calculated value
-    - (danmaxVar::absY::bremColl2Y-danmaxVar::absY::whiteBeamStopY) // Reference value [12]
+    - (danmaxVar::absY::bremColl2-danmaxVar::absY::whiteBeamStop) // Reference value [12]
     ) < Geometry::zeroTol
   );
 
@@ -939,7 +939,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
     CF150::flangeRadius-monoSlitsTubeWallThick,monoSlitsTubeWallThick,1.0,0.0); // [10]
   pipeName = viewKey+"MonoSlitsTube";
   const double monoSlitsTubeLength = 2.0*(
-    danmaxVar::absY::monoSlitsY-danmaxVar::absY::bremColl2Y-port1Length);
+    danmaxVar::absY::monoSlits-danmaxVar::absY::bremColl2-port1Length);
   SimpleTubeGen.generateTube(
     Control,pipeName,monoSlitsTubeLength);
   Control.addVariable(pipeName+"NPorts",4);
@@ -1093,7 +1093,7 @@ revBeamStopPackage(FuncDataBase& Control,
   // The length of this port could also have been read from [10], but here it is 
   // calculated to place the main tube exactly at the given absolute position.
   PItemGen.setCF<CF150>(
-    danmaxVar::absY::bremColl3Y-danmaxVar::absY::monoSlits2Y-0.5*monoSlitsTubeLength);
+    danmaxVar::absY::bremColl3-danmaxVar::absY::monoSlits2-0.5*monoSlitsTubeLength);
   PItemGen.setOuterVoid(0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pipeName+"Port0",
@@ -1339,8 +1339,8 @@ opticsSlitPackage(FuncDataBase& Control,
   const Geometry::Vec3D beamViewer1(
     0.0,
     frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius
-    +danmaxVar::absY::beamViewer1Y
-    -danmaxVar::absY::whiteBeamSlitsTopJawY-totalLength/2.0,
+    +danmaxVar::absY::beamViewer1
+    -danmaxVar::absY::whiteBeamSlitsTopJaw-totalLength/2.0,
     0.0
   );
 
@@ -1434,7 +1434,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF40>();
 
   BellowGen.generateBellow(Control,opticsName+"BellowA",
-    danmaxVar::absY::bremColl1Y-bremColl1Length/2.0-danmaxVar::absY::valve4BackY);
+    danmaxVar::absY::bremColl1-bremColl1Length/2.0-danmaxVar::absY::valve4Back);
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
   // Reset bellow step to default value [10]. Large bellow step of InitBellow and
   // BellowA looked odd on the short bellows.
@@ -1479,7 +1479,7 @@ opticsVariables(FuncDataBase& Control,
   // Length adjusted to fit the position given in [12]
   const double highPassFilterLength =
     2.0*(
-      danmaxVar::absY::highPassFilterY-danmaxVar::absY::bremColl1Y-bremColl1Length/2.0
+      danmaxVar::absY::highPassFilter-danmaxVar::absY::bremColl1-bremColl1Length/2.0
   );
   PipeGen.generatePipe(Control,opticsName+"HighPassFilter",
     highPassFilterLength);
@@ -1499,7 +1499,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
   PipeGen.generatePipe(
     Control,opticsName+"LauePipe",
-    danmaxVar::absY::whiteBeamSlitsTopJawY-danmaxVar::absY::highPassFilterY
+    danmaxVar::absY::whiteBeamSlitsTopJaw-danmaxVar::absY::highPassFilter
     -0.5*highPassFilterLength-valve3Length
     -2.0*bellowCDLength-slitTubeFrontToTopPort
   );
@@ -1516,7 +1516,7 @@ opticsVariables(FuncDataBase& Control,
   const double HDCMOffsetY = 4.5 + 30.0 + 0.5;
   BellowGen.generateBellow(
     Control,opticsName+"BellowE",
-    danmaxVar::absY::HDCMY-danmaxVar::absY::whiteBeamSlitsTopJawY
+    danmaxVar::absY::HDCM-danmaxVar::absY::whiteBeamSlitsTopJaw
     -slitTubeTopPortToBack-valve3Length-HDCMOffsetY
   );
 
@@ -1525,7 +1525,7 @@ opticsVariables(FuncDataBase& Control,
   const double beamViewer2FrontToPort = 9.9; // [10]
   BellowGen.generateBellow(
     Control,opticsName+"BellowAfterMono",
-    danmaxVar::absY::beamViewer2Y-danmaxVar::absY::HDCMY
+    danmaxVar::absY::beamViewer2-danmaxVar::absY::HDCM
     -valve3Length-beamViewer2FrontToPort-HDCMCenterToBack
   );
 
@@ -1541,7 +1541,7 @@ opticsVariables(FuncDataBase& Control,
 
   const double MLMFrontToTopViewPort = 21.95; // [10]
   BellowGen.generateBellow(Control,opticsName+"BellowF",
-    danmaxVar::absY::MLMY-danmaxVar::absY::beamViewer2Y-beamViewer2PortToBack
+    danmaxVar::absY::MLM-danmaxVar::absY::beamViewer2-beamViewer2PortToBack
     -valve3Length-MLMFrontToTopViewPort
   );
 
@@ -1549,7 +1549,7 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName, MLMFrontToTopViewPort);
   const double beamStopFrontToWBPort = 2.5+CF40::flangeLength+5.2;
   BellowGen.generateBellow(Control,opticsName+"BellowG",
-    danmaxVar::absY::whiteBeamStopY-danmaxVar::absY::MLMY
+    danmaxVar::absY::whiteBeamStop-danmaxVar::absY::MLM
     -MLMTopViewPortToBack-valve3Length-beamStopFrontToWBPort
   );
 
@@ -1562,7 +1562,7 @@ opticsVariables(FuncDataBase& Control,
 
   const double mainTubeFrontToBeamViewerPort = 26.0; // [10]
   BellowGen.generateBellow(Control,opticsName+"BellowH",
-    danmaxVar::absY::beamViewer3Y-danmaxVar::absY::monoSlitsY
+    danmaxVar::absY::beamViewer3-danmaxVar::absY::monoSlits
     -mainTubeFrontToBeamViewerPort-monoSlitsToBack);
 
   const double mainTubeBeamViewerPortToBack = viewBPackage(
@@ -1571,7 +1571,7 @@ opticsVariables(FuncDataBase& Control,
   const double CRLFrontToCenter = 49.445/2.0; // [10]
   const double CRLGateTotalLength = 3.5+2.0*CF40::flangeLength; // [10]
   BellowGen.generateBellow(Control,opticsName+"BellowI",
-    danmaxVar::absY::CRLY-danmaxVar::absY::beamViewer3Y-mainTubeBeamViewerPortToBack
+    danmaxVar::absY::CRL-danmaxVar::absY::beamViewer3-mainTubeBeamViewerPortToBack
     -CRLFrontToCenter-CRLGateTotalLength);
 
   GateGen.setCylCF<setVariable::CF40>(); // [10]
@@ -1586,8 +1586,8 @@ opticsVariables(FuncDataBase& Control,
   // monochromatic slits [10]
   const double revMonoSlitsFrontToSlits = CF150::flangeLength+5.25;
   BellowGen.generateBellow(
-    Control,opticsName+"BellowJ",danmaxVar::absY::monoSlits2Y
-    -danmaxVar::absY::CRLY-CRLCenterToBack
+    Control,opticsName+"BellowJ",danmaxVar::absY::monoSlits2
+    -danmaxVar::absY::CRL-CRLCenterToBack
     -CRLGateTotalLength-revMonoSlitsFrontToSlits);
 
   const double bremColl3ToBack = revBeamStopPackage(
@@ -1599,7 +1599,7 @@ opticsVariables(FuncDataBase& Control,
   const double monoShuttersLength = monoShutterVariables(Control,opticsName);
 
   return (
-    opticsHutLength-(danmaxVar::absY::bremColl3Y-danmaxVar::absY::opticsHutFrontY)
+    opticsHutLength-(danmaxVar::absY::bremColl3-danmaxVar::absY::opticsHutFront)
     -bremColl3ToBack-bellowKLength-monoShuttersLength
   );
 }
