@@ -697,20 +697,33 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   int outerCell;
 
-  splitter->createAll(System,initFC,sideName);
-  bellowAA->createAll(System,*splitter,2); // SinCrys
-  bellowBA->createAll(System,*splitter,3); // DanMAX
+  cm1->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  cm1->createAll(System,initFC,2);
+  cm1->intersectPorts(System,1,2);
+
+  const constructSystem::portItem& cm1PortDanMAX=cm1->getPort(1);
+  // outerCell=buildZone.createUnit
+  //   (System,cm1PortDanMAX,cm1PortDanMAX.getSideIndex("OuterPlate"));
+  // cm1->insertAllInCell(System,outerCell-1);
+
+  const constructSystem::portItem& cm1PortSinCrys=cm1->getPort(2);
+
+
+  //  splitter->createAll(System,cm1PortDanMAX,"OuterPlate");
+  bellowAA->createAll(System,cm1PortSinCrys,"OuterPlate"); // SinCrys
+  bellowBA->createAll(System,cm1PortDanMAX,"OuterPlate"); // DanMAX
   //  lauePipe->createAll(System,*splitter,3); // DanMAX
 
   buildZoneSinCrys=buildZone;
   buildZoneDanMAX=buildZone;
 
-  const Geometry::Vec3D DPoint(initFC.getLinkPt(sideName));
+  const Geometry::Vec3D DPoint(cm1->getLinkPt(0));
   Geometry::Vec3D crossX,crossY,crossZ;
 
-  initFC.calcLinkAxis(2,crossX,crossY,crossZ);
+  cm1->calcLinkAxis(2,crossX,crossY,crossZ);
   //  SurfMap::makePlane("midDivider",SMap,buildIndex+5003,DPoint,crossX);
-  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+5003,DPoint,crossX,-Z,-10.0); // mid divider
+  const double midDividerAngle = 11.0;
+  ModelSupport::buildPlaneRotAxis(SMap,buildIndex+5003,DPoint,crossX,-Z,-midDividerAngle);
 
   HeadRule HSurroundA=buildZone.getSurround();
   HeadRule HSurroundB=buildZone.getSurround();
@@ -722,18 +735,21 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   buildZoneSinCrys.setSurround(HSurroundA);
   buildZoneDanMAX.setSurround(HSurroundB);
+  // buildZoneSinCrys.setFront(cm1PortSinCrys.getFullRule("OuterPlate"));
+  // buildZoneDanMAX.setFront(cm1PortDanMAX.getFullRule("OuterPlate"));
   buildZoneSinCrys.setFront(initFC.getFullRule(sideName));
   buildZoneDanMAX.setFront(initFC.getFullRule(sideName));
   buildZoneSinCrys.clearInsertCells();
   buildZoneDanMAX.clearInsertCells();
 
   outerCell=buildZoneSinCrys.createUnit(System,*bellowAA,"back");
-  splitter->insertAllInCell(System,outerCell);
+  cm1->insertAllInCell(System,outerCell);
   bellowAA->insertAllInCell(System,outerCell);
-  outerCell=buildZoneDanMAX.createUnit(System,*bellowBA,"back");
 
-  splitter->insertAllInCell(System,outerCell);
+  outerCell=buildZoneDanMAX.createUnit(System,*bellowBA,"back");
+  cm1->insertAllInCell(System,outerCell);
   bellowBA->insertAllInCell(System,outerCell);
+  bellowAA->insertAllInCell(System,outerCell);
 
   // // LEFT SIDE:
 
@@ -741,7 +757,6 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   outerCell=buildZoneSinCrys.createUnit(System);
   pipeSinCrys->createAll(System,*bellowAA,"back");
   pipeSinCrys->insertAllInCell(System,outerCell);
-
 
 
   constructSystem::constructUnit(System,buildZoneDanMAX,*bellowBA,"back",*lauePipe);
@@ -796,13 +811,18 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
     OPtr->addIntersection(getRule("BackPlateFloorShine"));
   }
 
-  // buildZone.rebuildInsertCells(System);
+  //  buildZone.rebuildInsertCells(System);
 
     // FINAL:
     // Get last two cells
   // setCell("LeftVoid",buildZoneSinCrys.getLastCell("Unit"));
   // setCell("RightVoid",buildZoneDanMAX.getLastCell("Unit"));
 
+
+  // Intersect 2nd SinCrys zone cell (tilted plane) with the previous one
+  const int n = buildZoneSinCrys.getCell("Unit", 12);
+  MonteCarlo::Object* SUnit=System.findObject(n);
+  SUnit->addIntersection(buildZoneSinCrys.getFront());
 
   return;
 }
@@ -850,29 +870,14 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*valve5,"back",*pipeA);
   constructSystem::constructUnit(System,buildZone,*pipeA,"back",*bellowC);
-  //  constructSystem::constructUnit(System,buildZone,*bellowC,"back",*offPipeD);
-
-  cm1->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  cm1->createAll(System,*bellowC,2);
-  cm1->intersectPorts(System,1,2);
-
-  const constructSystem::portItem& CPI1=cm1->getPort(1);
-  outerCell=buildZone.createUnit
-    (System,CPI1,CPI1.getSideIndex("OuterPlate"));
-  cm1->insertAllInCell(System,outerCell);
-  // constructSystem::constructUnit
-  //   (System,buildZone,CPI1,"OuterPlate",*bremCollA);
-
-
-
-
 
   buildZone.createUnit(System);         // build to end (removed later)
   buildZone.rebuildInsertCells(System); // rebuild the whole track
 
-  buildSplitter(System,CPI1,"OuterPlate");
+  buildSplitter(System,*bellowC,"back");
   setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
   System.removeCell(buildZone.getLastCell("Unit"));  // remove cell built above
+
 
   lastComp=gateG;
 

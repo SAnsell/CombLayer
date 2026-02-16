@@ -1553,7 +1553,7 @@ opticsVariables(FuncDataBase& Control,
     danmaxVar::absY::whiteBeamSlitsTopJawY-danmaxVar::absY::highPassFilterY
     -0.5*highPassFilterLength-valve3Length
     -2.0*bellowCDLength-slitTubeFrontToTopPort
-    -78.3 // dummy. TODO: use absolute YStep
+    -78.3+16.8 // dummy. TODO: use absolute YStep
   );
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
