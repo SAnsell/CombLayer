@@ -1433,8 +1433,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setCF<setVariable::CF40>();
 
-  BellowGen.generateBellow(Control,opticsName+"BellowA",
-    danmaxVar::absY::bremColl1Y-bremColl1Length/2.0-danmaxVar::absY::valve4BackY);
+  BellowGen.generateBellow(Control,opticsName+"BellowA",0.0);
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
   // Reset bellow step to default value [10]. Large bellow step of InitBellow and
   // BellowA looked odd on the short bellows.
