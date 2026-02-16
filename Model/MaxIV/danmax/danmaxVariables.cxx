@@ -1454,6 +1454,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control, bremColl1TubeName+"Port1",
     Geometry::Vec3D(0,bremColl1Z,0),
 		Geometry::Vec3D(0,0,-1));
+  Control.addVariable(bremColl1TubeName+"YStep", danmaxVar::absY::bremColl1Y);
 
   const std::string bremColl1Name = opticsName+"BremColl1";
   // TODO: Material currently set to pure tungsten (default), but should be

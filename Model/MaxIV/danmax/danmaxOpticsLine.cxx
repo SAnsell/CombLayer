@@ -310,7 +310,7 @@ danmaxOpticsLine::constructBremColl1Tube
   int outerCell;
 
   bremColl1Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  bremColl1Tube->createAll(System,initFC,sideName);
+  bremColl1Tube->createAll(System,*frontEnd,0);
 
   const constructSystem::portItem& VPB=bremColl1Tube->getPort(1);
 

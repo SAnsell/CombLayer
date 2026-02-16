@@ -87,7 +87,9 @@ class danmaxOpticsLine :
 {
  private:
 
-  /// string for pre-insertion into mastercell:0
+  /// Pointer to front end for use in absolute positioning.
+  std::shared_ptr<attachSystem::FixedComp> frontEnd;
+  /// Object that needs to be inserted into the first build zone of the optics line.
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::BlockZone buildZone;
@@ -251,6 +253,9 @@ class danmaxOpticsLine :
 
   /// Assignment to inner void
   void setInnerMat(const int M) { innerMat=M; }
+  void setFrontEnd(const std::shared_ptr<attachSystem::FixedComp>& FE){
+    frontEnd = FE;
+  }
   /// Assignment to extra for first volume
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }

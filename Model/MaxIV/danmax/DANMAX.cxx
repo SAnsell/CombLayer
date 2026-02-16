@@ -191,6 +191,7 @@ DANMAX::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setCutSurf("BackPlateFloorShine",opticsHut->getFullRule("#BackPlateFloorShine"));
   opticsBeam->setPreInsert(joinPipe);
+  opticsBeam->setFrontEnd(frontBeam);
   opticsBeam->createAll(System,*joinPipe,2);
 
   if (stopPoint=="opticsHutch") return;
