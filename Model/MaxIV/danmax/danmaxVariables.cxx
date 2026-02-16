@@ -1480,12 +1480,12 @@ opticsVariables(FuncDataBase& Control,
   // + Top Port Radius
   const double slitTubeFrontToTopPort = 2.5+4.4+CF150::outerRadius; // [10]
 
+  PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
   BellowGen.generateBellow(Control,opticsName+"BellowC",11.8); // [16]
 
 
   // Laue monochromator
-  PipeGen.setNoWindow();
   PipeGen.generatePipe(
     Control,opticsName+"LauePipe",
     danmaxVar::absY::whiteBeamSlitsTopJawY-danmaxVar::absY::highPassFilterY
