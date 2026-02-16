@@ -68,7 +68,7 @@ namespace xraySystem
   class MLMVessel;
   class MonoBox;
   class TriggerTube;
-
+  class TwinPipe;
 
   /*!
     \class danmaxOpticsLine
@@ -83,16 +83,17 @@ class danmaxOpticsLine :
   public attachSystem::ContainedComp,
   public attachSystem::FixedRotate,
   public attachSystem::ExternalCut,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
 
   /// string for pre-insertion into mastercell:0
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
-  attachSystem::BlockZone buildZone;
-  attachSystem::BlockZone IZLeft;       ///< Left section after divider
-  attachSystem::BlockZone IZRight;      ///< Right section after divider
+  attachSystem::BlockZone buildZone;           ///< Common section before divider
+  attachSystem::BlockZone buildZoneSinCrys;    ///< SinCrys section after divider
+  attachSystem::BlockZone buildZoneDanMAX;     ///< DanMAX section after divider
 
   int innerMat;                         ///< inner material if used
 
@@ -115,7 +116,11 @@ class danmaxOpticsLine :
   /// First gate valve
   std::shared_ptr<xraySystem::CylGateValve> valve5;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // dummy
+  std::shared_ptr<constructSystem::VacuumPipe> offPipeD; // dummy
+  std::shared_ptr<xraySystem::TwinPipe> splitter;
+  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  std::shared_ptr<constructSystem::Bellows> bellowBA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeSinCrys;
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe for laue mono
@@ -244,6 +249,8 @@ class danmaxOpticsLine :
   void constructMonoShutter(Simulation&,
 			    const attachSystem::FixedComp&,
 			    const std::string&);
+
+  void buildSplitter(Simulation&,const attachSystem::FixedComp&,const std::string&);
 
 
   void populate(const FuncDataBase&) override;

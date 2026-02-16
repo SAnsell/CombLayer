@@ -78,6 +78,7 @@
 #include "ProximityShieldingGenerator.h"
 #include "BladeBPMToyamaGenerator.h"
 #include "FlangePlateGenerator.h"
+#include "TwinPipeGenerator.h"
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
@@ -147,6 +148,9 @@ const double exptHut1WallThick = 0.4; // "Lead Thickness Side Wall", Section A-A
 // combination. In all cases, the nominal offset of the beam as it exits the MLM is
 // 10 mm [15].
 const double beamMirrorShift = -1.0;
+
+  void splitterVariables(FuncDataBase&,const std::string&);
+
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -1367,6 +1371,27 @@ opticsSlitPackage(FuncDataBase& Control,
 }
 
 void
+splitterVariables(FuncDataBase& Control,
+		  const std::string& splitKey)
+  /*!
+    Builds the variables for the splitter at
+    the end of the opticsHut/opticsBeam
+    \param Control :: Database
+    \param splitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","splitVariables");
+  setVariable::TwinPipeGenerator TwinGen;
+
+  TwinGen.setCF<CF40>();
+  TwinGen.setJoinFlangeCF<CF100>();
+  TwinGen.setAPos(-2.7*2,0);
+  TwinGen.setBPos(0.0, 0.0);
+  TwinGen.setXYAngle(15.0,0.0);
+  TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,42.0);
+}
+
+void
 opticsVariables(FuncDataBase& Control,
 		const std::string& beamName)
   /*!
@@ -1379,7 +1404,7 @@ opticsVariables(FuncDataBase& Control,
 
   const std::string opticsName(beamName+"OpticsLine");
 
-  Control.addVariable(opticsName+"OuterLeft",70.0);
+  Control.addVariable(opticsName+"OuterLeft",190.0);
   Control.addVariable(opticsName+"OuterRight",60.0);
   Control.addVariable(opticsName+"OuterTop",70.0);
 
@@ -1483,8 +1508,11 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
   BellowGen.generateBellow(Control,opticsName+"BellowC",11.8); // [16]
-  PipeGen.generatePipe(Control,opticsName+"PipeB",10.0); // dummy
+  PipeGen.generatePipe(Control,opticsName+"OffPipeD",10.0); // dummy
 
+  BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
+  BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
+  PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",100.0); // dummy SinCrys pipe
 
   // Laue monochromator
   PipeGen.generatePipe(
@@ -1492,7 +1520,7 @@ opticsVariables(FuncDataBase& Control,
     danmaxVar::absY::whiteBeamSlitsTopJawY-danmaxVar::absY::highPassFilterY
     -0.5*highPassFilterLength-valve3Length
     -2.0*bellowCDLength-slitTubeFrontToTopPort
-    -10.0 // dummy. TODO: use absolute YStep
+    -78.3 // dummy. TODO: use absolute YStep
   );
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
@@ -1587,6 +1615,8 @@ opticsVariables(FuncDataBase& Control,
   monoShutterVariables(Control,opticsName);
   GateGen.setBladeThick(0.3);
   GateGen.generateValve(Control,opticsName+"GateG",0.0,0);
+
+  splitterVariables(Control,opticsName);
 
   return;
 }
