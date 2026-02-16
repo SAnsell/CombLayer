@@ -127,7 +127,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   highPassFilter(new constructSystem::VacuumPipe(newName+"HighPassFilter")),
   valve5(new xraySystem::CylGateValve(newName+"Valve5")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
-  offPipeD(new constructSystem::VacuumPipe(newName+"OffPipeD")),
+  cm1(new constructSystem::PipeTube(newName+"CM1")),
   splitter(new xraySystem::TwinPipe(newName+"Splitter")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
@@ -207,7 +207,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(highPassFilter);
   OR.addObject(valve5);
   OR.addObject(pipeA);
-  OR.addObject(offPipeD);
+  OR.addObject(cm1);
   OR.addObject(splitter);
   OR.addObject(bellowAA);
   OR.addObject(bellowBA);
@@ -850,12 +850,27 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit(System,buildZone,*valve5,"back",*pipeA);
   constructSystem::constructUnit(System,buildZone,*pipeA,"back",*bellowC);
-  constructSystem::constructUnit(System,buildZone,*bellowC,"back",*offPipeD);
+  //  constructSystem::constructUnit(System,buildZone,*bellowC,"back",*offPipeD);
+
+  cm1->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  cm1->createAll(System,*bellowC,2);
+  cm1->intersectPorts(System,1,2);
+
+  const constructSystem::portItem& CPI1=cm1->getPort(1);
+  outerCell=buildZone.createUnit
+    (System,CPI1,CPI1.getSideIndex("OuterPlate"));
+  cm1->insertAllInCell(System,outerCell);
+  // constructSystem::constructUnit
+  //   (System,buildZone,CPI1,"OuterPlate",*bremCollA);
+
+
+
+
 
   buildZone.createUnit(System);         // build to end (removed later)
   buildZone.rebuildInsertCells(System); // rebuild the whole track
 
-  buildSplitter(System,*offPipeD,"back");
+  buildSplitter(System,CPI1,"OuterPlate");
   setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
   System.removeCell(buildZone.getLastCell("Unit"));  // remove cell built above
 

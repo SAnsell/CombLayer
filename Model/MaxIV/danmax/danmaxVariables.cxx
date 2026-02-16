@@ -1508,7 +1508,40 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
   BellowGen.generateBellow(Control,opticsName+"BellowC",11.8); // [16]
-  PipeGen.generatePipe(Control,opticsName+"OffPipeD",10.0); // dummy
+
+  //////// CM1
+  const Geometry::Vec3D ZVec(0,0,1);
+  const Geometry::Vec3D vDanMAX = -ZVec;
+  const double sinCrysBranchAngle = 17.0 * M_PI/180.0;
+  const Geometry::Vec3D vSinCrys(-sin(sinCrysBranchAngle),0.0,-cos(sinCrysBranchAngle));
+
+  // will be rotated vertical
+  std::string name=opticsName+"CM1";
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,name,30.8);
+  Control.addVariable(name+"NPorts",3);   // beam ports
+
+  // Front
+  // add outerRadius to count port length from the outer surface
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+4.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  // Back: DanMAX branch
+  // add outerRadius to count port length from the outer surface
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),vDanMAX);
+
+  // Back: SinCrys branch
+  // add outerRadius to count port length from the outer surface
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,0,0),vSinCrys);
+
+  ///////////
+
 
   BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length

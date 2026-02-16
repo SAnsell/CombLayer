@@ -116,7 +116,7 @@ class danmaxOpticsLine :
   /// First gate valve
   std::shared_ptr<xraySystem::CylGateValve> valve5;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  std::shared_ptr<constructSystem::VacuumPipe> offPipeD; // dummy
+  std::shared_ptr<constructSystem::PipeTube> cm1; // CM1
   std::shared_ptr<xraySystem::TwinPipe> splitter;
   std::shared_ptr<constructSystem::Bellows> bellowAA;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
