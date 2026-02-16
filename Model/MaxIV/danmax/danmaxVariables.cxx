@@ -1483,6 +1483,7 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
   BellowGen.generateBellow(Control,opticsName+"BellowC",11.8); // [16]
+  PipeGen.generatePipe(Control,opticsName+"PipeB",10.0); // dummy
 
 
   // Laue monochromator
@@ -1491,6 +1492,7 @@ opticsVariables(FuncDataBase& Control,
     danmaxVar::absY::whiteBeamSlitsTopJawY-danmaxVar::absY::highPassFilterY
     -0.5*highPassFilterLength-valve3Length
     -2.0*bellowCDLength-slitTubeFrontToTopPort
+    -10.0 // dummy. TODO: use absolute YStep
   );
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 

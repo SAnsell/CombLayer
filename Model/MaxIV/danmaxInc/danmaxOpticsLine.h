@@ -115,6 +115,7 @@ class danmaxOpticsLine :
   /// First gate valve
   std::shared_ptr<xraySystem::CylGateValve> valve5;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB; // dummy
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe for laue mono
