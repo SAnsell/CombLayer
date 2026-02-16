@@ -111,6 +111,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(Key+"BuildZone"),
+  IZLeft(newName+"IZLeft"),
+  IZRight(newName+"IZRight"),
   innerMat(0),
 
   pipeInit(new constructSystem::Bellows(newName+"InitBellow")),

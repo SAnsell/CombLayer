@@ -91,6 +91,9 @@ class danmaxOpticsLine :
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::BlockZone buildZone;
+  attachSystem::BlockZone IZLeft;       ///< Left section after divider
+  attachSystem::BlockZone IZRight;      ///< Right section after divider
+
   int innerMat;                         ///< inner material if used
 
   /// Shared point to use for last component:
