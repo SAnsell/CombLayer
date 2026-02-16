@@ -419,6 +419,44 @@ PipeTube::createPorts(Simulation& System)
     }
 }
 
+void
+PipeTube::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int FIndex, const size_t portIndex)
+  /*!
+    By default, a PipeTube -or its base class VirtualTube- is placed with respect to 
+    its front surface.
+    This overload of PipeTube::createAll provides the possibility to shift the tube's
+    position by the length of a given port, i.e. to place the center of the pipe at 
+    the given coordinate.
+
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp
+    \param FIndex :: Fixed Index
+    \param portIndex :: Port Index
+  */
+{
+  ELog::RegMethod RegA("VirtualTube","createAll(FC)");
+  
+  populate(System.getDataBase());
+  // The term
+  //
+  // length/2 - portLength
+  //
+  // below is the difference between default front surface that uses the main tube and
+  // the desired front surface that uses an arbitrary port.
+  createCentredUnitVector(FC,FIndex,length/2.0-getPort(portIndex).getLength());
+  applyPortRotation();
+  createSurfaces();
+  createObjects(System);
+
+  createLinks();
+  createPorts(System);
+  insertObjects(System);
+    
+  return;
+}
   
   
 }  // NAMESPACE constructSystem

@@ -65,7 +65,9 @@ class PipeTube :
 
   using VirtualTube::createPorts;
   void createPorts(Simulation&) override;
-  
+  using VirtualTube::createAll;
+  void createAll(Simulation& System,const attachSystem::FixedComp& FC,
+    const long int FIndex, const size_t portIndex);
 };
 
 }
