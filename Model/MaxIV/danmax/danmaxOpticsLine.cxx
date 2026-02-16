@@ -692,8 +692,9 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);
 
-  constructSystem::constructUnit
-    (System,buildZone,*triggerPipe,"back",*valve4);
+  valve4->createAll(System,*frontEnd,0,true);
+  outerCell=buildZone.createUnit(System,*valve4,"back");
+  valve4->insertInCell(System,outerCell);
 
   constructBremColl1Tube(System, *bellowA, "back");
 
