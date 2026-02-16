@@ -310,9 +310,15 @@ danmaxOpticsLine::constructBremColl1Tube
   int outerCell;
 
   bremColl1Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  bremColl1Tube->createAll(System,*frontEnd,0);
+  bremColl1Tube->createAll(System,*frontEnd,0,0);
 
+  const constructSystem::portItem& VPA=bremColl1Tube->getPort(0);
   const constructSystem::portItem& VPB=bremColl1Tube->getPort(1);
+
+  outerCell=buildZone.createUnit(System,VPA,VPA.getSideIndex("#OuterPlate"));
+  bellowA->setBack(VPA.getLinkSurf(2));
+  bellowA->createAll(System,*valve4,"back");
+  bellowA->insertAllInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
   bremColl1Tube->insertAllInCell(System,outerCell);
@@ -688,9 +694,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*triggerPipe,"back",*valve4);
-
-  constructSystem::constructUnit
-    (System,buildZone,*valve4,"back",*bellowA);
 
   constructBremColl1Tube(System, *bellowA, "back");
 
