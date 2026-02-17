@@ -751,10 +751,15 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   bellowBA->insertAllInCell(System,outerCell);
   bellowAA->insertAllInCell(System,outerCell);
 
-  // // LEFT SIDE:
 
   //  constructSystem::constructUnit(System,buildZoneSinCrys,*bellowAA,"back",*pipeSinCrys);
   outerCell=buildZoneSinCrys.createUnit(System);
+  for (int i=0; i<1; ++i) {
+    MonteCarlo::Object* OPtr = System.findObject(outerCell-i);
+    OPtr->addIntersection(getRule("BackPlateFloorShine"));
+  }
+
+
   pipeSinCrys->createAll(System,*bellowAA,"back");
   pipeSinCrys->insertAllInCell(System,outerCell);
 
