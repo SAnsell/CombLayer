@@ -248,9 +248,8 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BellowHLength",14.0); // [4]
   Control.addVariable(preName+"PipeCLength",34.0); // [4]
 
-  Control.addVariable(preName+"PermanentMagnetYStep",250.0); // dummy
   // magnet center to FM2 front: 170.5 cm, measured by AR
-  // TODO: Define position with absolute coordinates or relative to FM2.
+  Control.addVariable(preName+"PermanentMagnetYStep",-170.5); // 170.5 cm, measured by AR
 
   FMaskGen.setFrontGap(2.1, 2.1); // [5]
   backWidth = 0.16; // [5]

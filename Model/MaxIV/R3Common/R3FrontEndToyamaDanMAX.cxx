@@ -722,14 +722,6 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   collABPipe->setBack(*flangePlateXBPM2,"back");
   collABPipe->createAll(System,*xbpm1,"back");
 
-  outerCell=buildZone.createUnit(System,*collABPipe,"back");
-  collABPipe->insertAllInCell(System,outerCell);
-
-  outerCell=buildZone.createUnit(System,*flangePlateXBPM2,"front");
-  flangePlateXBPM2->insertInCell(System,outerCell);
-
-  outerCell=buildZone.createUnit(System,*xbpm2,"back");
-  xbpm2->insertAllInCell(System,outerCell);
   ////////
 
 
@@ -741,13 +733,31 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
 
   pipePump2->setBack(*bellowC, "back");
   pipePump2->createAll(System, *xbpm2, "back");
+
+  // Permanent magnet
+
+  pMag->setCutSurf("Inner", *collABPipe, "outerPipe");
+  pMag->createAll(System,*fm2, "#front");
+
+  outerCell = buildZone.createUnit(System,*pMag,"#front");
+  collABPipe->insertAllInCell(System,outerCell);
+
+  outerCell = buildZone.createUnit(System,*pMag,"back");
+  pMag->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*collABPipe,"back");
+  collABPipe->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*flangePlateXBPM2,"front");
+  flangePlateXBPM2->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*xbpm2,"back");
+  xbpm2->insertAllInCell(System,outerCell);
+
   outerCell=buildZone.createUnit(System,*pipePump2,"back");
   pipePump2->insertAllInCell(System,outerCell);
 
-
-  // permanent magnet (e/p separator) in the middle of this pipe
-  // constructSystem::pipeMagUnit(System,buildZone,collABPipe,"#front","outerPipe",pMag);
-  // constructSystem::pipeTerminate(System,buildZone,collABPipe);
+  /////
 
   outerCell=buildZone.createUnit(System,*bellowC,"front");
   bellowC->insertAllInCell(System,outerCell);
