@@ -74,7 +74,9 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   flangeThick(1.225), // [5]
   height(25.4), // [5]
   length(30.5), // [1]
-  shutterDistance(7.05) // [5]
+  shutterDistance(7.05), // [5]
+  baseLift(0.0), // [5]
+  lift(5.0) // [5]
   /*!
     Constructor and defaults
   */
@@ -108,6 +110,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
 
   SUnitGen->setCF<ShutterFlange>();
   // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
+  SUnitGen->setLift(baseLift,lift);
   SUnitGen->setBlock(blockHeight,blockLength,blockWidth,"Tungsten");
   SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
   SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
