@@ -445,6 +445,7 @@ connectVariables(FuncDataBase& Control,
   //    - BellowA length (16.0 cm)
   //
   // (*) see comment there
+  PipeGen.setOuterVoid(true);
   PipeGen.generatePipe(Control,beamName+"PipeA",225.605);
 
   BellowGen.setCF<setVariable::CF40>();
@@ -1485,6 +1486,7 @@ opticsVariables(FuncDataBase& Control,
 
   // High Pass Filter
   // Simplified to a pipe with two 'windows' corresponding to the two diamond filters.
+  PipeGen.setOuterVoid(true);
   PipeGen.setRectWindow(0.6,0.6,0.06,0.6,0.6,0.04); // [13]
   PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
   // Length adjusted to fit the position given in [12]
