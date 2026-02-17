@@ -111,8 +111,11 @@ namespace xraySystem
 R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   R3FrontEnd(Key),
   pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PumpingUnit1ReplacementPipe")), // TODO: pipeA currently replaces PumpingUnit1
-  xbpm1(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM1")),
   flangePlateAA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateAA")),
+  xbpm1(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM1")),
+  flangePlateXBPM2(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateXBPM2")),
+  xbpm2(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM2")),
+  pipePump2(std::make_shared<constructSystem::VacuumPipe>(newName+"PumpingUnit2ReplacementPipe")), // TODO: pipeAA currently replaces PumpingUnit2
   flangePlateA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateA")),
   flangePlateB(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateB")),
   bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
@@ -191,8 +194,11 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
   OR.addObject(pipeA);
-  OR.addObject(xbpm1);
   OR.addObject(flangePlateAA);
+  OR.addObject(xbpm1);
+  OR.addObject(flangePlateXBPM2);
+  OR.addObject(xbpm2);
+  OR.addObject(pipePump2);
   OR.addObject(flangePlateA);
   OR.addObject(flangePlateB);
   OR.addObject(bellowPreMSM);
@@ -709,20 +715,39 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*xbpm1,"back");
   xbpm1->insertAllInCell(System,outerCell);
 
+  // XBPM2
+  xbpm2->createAll(System,*this,0);
+  flangePlateXBPM2->createAll(System,*xbpm2,"front");
+  collABPipe->setFront(*xbpm1,"back");
+  collABPipe->setBack(*flangePlateXBPM2,"back");
+  collABPipe->createAll(System,*xbpm1,"back");
+
+  outerCell=buildZone.createUnit(System,*collABPipe,"back");
+  collABPipe->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*flangePlateXBPM2,"front");
+  flangePlateXBPM2->insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*xbpm2,"back");
+  xbpm2->insertAllInCell(System,outerCell);
+  ////////
+
+
   // FM2 Built relateive to MASTER coordinate
 
   fm2->createAll(System,*this,0);
   flangePlateC->createAll(System,*fm2,"front");
   bellowC->createAll(System,*flangePlateC,"back");
 
-  // pipe before bellowC (between FM1 and FM2)
-  collABPipe->setFront(*xbpm1,"back");
-  collABPipe->setBack(*bellowC,"back");
-  collABPipe->createAll(System,*xbpm1,"back");
+  pipePump2->setBack(*bellowC, "back");
+  pipePump2->createAll(System, *xbpm2, "back");
+  outerCell=buildZone.createUnit(System,*pipePump2,"back");
+  pipePump2->insertAllInCell(System,outerCell);
+
 
   // permanent magnet (e/p separator) in the middle of this pipe
-  constructSystem::pipeMagUnit(System,buildZone,collABPipe,"#front","outerPipe",pMag);
-  constructSystem::pipeTerminate(System,buildZone,collABPipe);
+  // constructSystem::pipeMagUnit(System,buildZone,collABPipe,"#front","outerPipe",pMag);
+  // constructSystem::pipeTerminate(System,buildZone,collABPipe);
 
   outerCell=buildZone.createUnit(System,*bellowC,"front");
   bellowC->insertAllInCell(System,outerCell);

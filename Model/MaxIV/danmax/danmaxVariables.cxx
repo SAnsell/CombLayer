@@ -105,6 +105,7 @@ namespace danmaxVar
 {
   namespace absY{
     constexpr double XBPM1 = 1201.99; // [4]
+    constexpr double XBPM2 = 1510.63; // [4]
     const double FM1Y = 1104.75; // [4]
     const double FM2Y = 1597.08; // [4]
     const double heatAbsorberY = 1673.33; // [4]
@@ -238,6 +239,7 @@ frontMaskVariables(FuncDataBase& Control,
   FPGen.setMat("SteelUnknownGrade"); // guess
   FPGen.setInnerRadius(1.9);  // guess (same as BellowA)
   FPGen.generateFlangePlate(Control,preName+"FlangePlateAA"); // TODO: move to Toyama DanMAX front-end
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateXBPM2"); // TODO: move to Toyama DanMAX front-end
 
 
   Control.addVariable(preName+"BellowBLength",10.0); // [4]
@@ -246,7 +248,7 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BellowHLength",14.0); // [4]
   Control.addVariable(preName+"PipeCLength",34.0); // [4]
 
-  Control.addVariable(preName+"PermanentMagnetYStep",270.0); // Distance permanent
+  Control.addVariable(preName+"PermanentMagnetYStep",250.0); // dummy
   // magnet center to FM2 front: 170.5 cm, measured by AR
   // TODO: Define position with absolute coordinates or relative to FM2.
 
@@ -1872,9 +1874,12 @@ DANMAXvariables(FuncDataBase& Control)
 
   PipeGen.setCF<CF40>();
   PipeGen.generatePipe(Control,frontKey+"PumpingUnit1ReplacementPipe",35.0); // [4] - replacement for pumping unit, length is dummy (defined by FM1 absolute y-offset)
+  PipeGen.generatePipe(Control,frontKey+"PumpingUnit2ReplacementPipe",35.0); // [4] - replacement for pumping unit, length is dummy (defined by FM1 absolute y-offset)
+
   setVariable::BladeBPMToyamaGenerator XBPMGen;
 
   XBPMGen.generate(Control,frontKey+"XBPM1", danmaxVar::absY::XBPM1);
+  XBPMGen.generate(Control,frontKey+"XBPM2", danmaxVar::absY::XBPM2);
 
 
   danmaxVar::frontMaskVariables(Control,frontKey);
