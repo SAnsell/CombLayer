@@ -70,6 +70,9 @@ class MonoShutterR3Generator
   double length;
   double shutterDistance;
 
+  double baseLift;
+  double lift;
+
  public:
 
   MonoShutterR3Generator();
