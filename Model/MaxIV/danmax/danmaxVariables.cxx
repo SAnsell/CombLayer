@@ -714,6 +714,13 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey,
 			Geometry::Vec3D(0,offsetZ,0),
 			Geometry::Vec3D(-1,0,1));
 
+  // Otherwise geometric error between port 0 and 2, even though we
+  // intersect them in constructViewScreen.  If BuildZone cells become
+  // too comples, will have to do more sophisticated (manual)
+  // intersection
+  Control.addVariable(pipeName+"Port0OuterVoid",0);
+  Control.addVariable(pipeName+"Port2OuterVoid",0);
+
   FlangeGen.setNoPlate();
   // Most blade data from [13].
   //
