@@ -92,8 +92,6 @@ class CylGateValve :
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int) override;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool useBackSurface);
 
 
 };

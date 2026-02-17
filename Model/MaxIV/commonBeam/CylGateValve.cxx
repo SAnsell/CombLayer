@@ -327,26 +327,8 @@ CylGateValve::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("CylGateValve","createAll(FC)");
 
-  createAll(System,FC,FIndex,false);
-}
-
-void
-CylGateValve::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC,
-			const long int FIndex, const bool useBackSurface)
-/*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param FC :: FixedComp
-    \param FIndex :: Fixed Index
-    \param useBackSurface :: Use back surface instead of front for positioning
-  */
-{
-  ELog::RegMethod RegA("CylGateValve","createAll(FC)");
-
   populate(System.getDataBase());
-  const double sign = useBackSurface ? -1.0: 1.0;
-  createCentredUnitVector(FC,FIndex,sign*(radius+wallThick+portThick));
+  createCentredUnitVector(FC,FIndex,radius+wallThick+portThick);
   createSurfaces();    
   createObjects(System);
   createLinks();
