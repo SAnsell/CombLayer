@@ -1431,7 +1431,10 @@ opticsVariables(FuncDataBase& Control,
   TGen.generateTube(Control,opticsName+"TriggerUnit");
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve4"); // [28]
-  Control.addVariable(opticsName+"Valve4YStep",danmaxVar::absY::valve4Back);
+  // - Valve 4 is positioned w.r.t. its back surface.
+  // - Valve 4 length = Valve 3 length.
+  Control.addVariable(opticsName+"Valve4YStep",
+    danmaxVar::absY::valve4Back-valve3Length);
 
 
   const double bremColl1Length = 29.0; // [29]

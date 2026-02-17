@@ -692,7 +692,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*pipeInit,"back",*triggerPipe);
 
-  valve4->createAll(System,*frontEnd,0,true);
+  valve4->createAll(System,*frontEnd,0);
   outerCell=buildZone.createUnit(System,*valve4,"back");
   valve4->insertInCell(System,outerCell);
 
