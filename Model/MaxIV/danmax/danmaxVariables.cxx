@@ -240,8 +240,6 @@ frontMaskVariables(FuncDataBase& Control,
   FPGen.generateFlangePlate(Control,preName+"FlangePlateAA"); // TODO: move to Toyama DanMAX front-end
 
 
-
-
   Control.addVariable(preName+"BellowBLength",10.0); // [4]
   Control.addVariable(preName+"BellowCLength",10.0); // [4]
   Control.addVariable(preName+"BellowFLength",14.0); // [4]
@@ -1873,7 +1871,7 @@ DANMAXvariables(FuncDataBase& Control)
 
 
   PipeGen.setCF<CF40>();
-  PipeGen.generatePipe(Control,frontKey+"PipeA",24+11.0); // [4] - replacement for pumping unit
+  PipeGen.generatePipe(Control,frontKey+"PumpingUnit1ReplacementPipe",35.0); // [4] - replacement for pumping unit, length is dummy (defined by FM1 absolute y-offset)
   setVariable::BladeBPMToyamaGenerator XBPMGen;
 
   XBPMGen.generate(Control,frontKey+"XBPM1", danmaxVar::absY::XBPM1);

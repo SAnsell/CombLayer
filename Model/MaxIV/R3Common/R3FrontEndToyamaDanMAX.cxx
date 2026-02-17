@@ -110,7 +110,7 @@ namespace xraySystem
 
 R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   R3FrontEnd(Key),
-  pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PipeA")), // TODO: PipeA currently replaces PumpingUnit1
+  pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PumpingUnit1ReplacementPipe")), // TODO: pipeA currently replaces PumpingUnit1
   xbpm1(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM1")),
   flangePlateAA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateAA")),
   flangePlateA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateA")),
