@@ -1420,7 +1420,8 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.setMat("SteelUnknownGrade");
   BellowGen.setCF<setVariable::CF40>(); // [28]
   BellowGen.setBellowStep(2.5); // [28]
-  BellowGen.generateBellow(Control,opticsName+"InitBellow",10.0); // [4]
+  // dummy length, but length is also given in [4]
+  BellowGen.generateBellow(Control,opticsName+"InitBellow",10.0);
 
   TGen.setCF<CF100>();
   TGen.setVertical(15.0,25.0);

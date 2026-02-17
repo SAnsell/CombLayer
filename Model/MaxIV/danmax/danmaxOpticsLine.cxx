@@ -677,22 +677,21 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   buildZone.addInsertCells(this->getInsertCells());
 
-  // dummy space for first item
-  // This is a mess but want to preserve insert items already
-  // in the hut beam port
+  valve4->createAll(System,*frontEnd,0);
+  triggerPipe->createAll(System,*valve4,"#front");
+  pipeInit->setBack(*triggerPipe,"back");
   pipeInit->createAll(System,*this,0);
+
   outerCell=buildZone.createUnit(System,*pipeInit,"#front");
-
-
-  if (preInsert)
+  if(preInsert)
     preInsert->insertAllInCell(System,outerCell);
+
   outerCell=buildZone.createUnit(System,*pipeInit,"back");
   pipeInit->insertAllInCell(System,outerCell);
 
-  constructSystem::constructUnit
-    (System,buildZone,*pipeInit,"back",*triggerPipe);
+  outerCell=buildZone.createUnit(System,*triggerPipe,"front");
+  triggerPipe->insertInCell(System,outerCell);
 
-  valve4->createAll(System,*frontEnd,0);
   outerCell=buildZone.createUnit(System,*valve4,"back");
   valve4->insertInCell(System,outerCell);
 
