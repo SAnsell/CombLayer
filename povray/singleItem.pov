@@ -133,6 +133,11 @@
     #declare cameraLookAt   = <0.0, 10.43, 4.12>;
     #declare cameraAngle = 50;
   #break
+  #case (strcmp(ITEM,"FixedMaskHybrid"))
+    #declare cameraLocation = <50, -30.0, 7.0>;
+    #declare cameraLookAt   = <0.0, 15, 0>;
+    #declare cameraAngle = 40;
+  #break
 #else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;
