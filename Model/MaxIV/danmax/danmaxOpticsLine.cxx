@@ -678,6 +678,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   buildZone.addInsertCells(this->getInsertCells());
 
   valve4->createAll(System,*frontEnd,0);
+  triggerPipe->setRotation(0.0, 180.0, 0.0);
   triggerPipe->createAll(System,*valve4,"#front");
   pipeInit->setBack(*triggerPipe,"back");
   pipeInit->createAll(System,*this,0);
