@@ -357,16 +357,26 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
 
   viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   viewTube->setOuterVoid();
-  viewTube->createAll(System,initFC,sideName);
+  viewTube->createAll(System,*frontEnd,0);
   viewTube->intersectPorts(System,0,2);
 
   const constructSystem::portItem& VPA=viewTube->getPort(0);
   const constructSystem::portItem& VPB=viewTube->getPort(1);
   const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
 
-  VPC.insertInCell(System,buildZone.getLastCell("Unit"));
+  valve7->createAll(System,VPA,VPA.getSideIndex("OuterPlate"));
 
-  int outerCell=buildZone.createUnit
+  bellowAfterMono->setBack(*monoVessel,"back");
+  bellowAfterMono->createAll(System,*valve7,"back");
+
+  int outerCell=buildZone.createUnit(System,*bellowAfterMono,"front");
+  bellowAfterMono->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*valve7,"front");
+  valve7->insertInCell(System,outerCell);
+  VPC.insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit
     (System,VPB,VPB.getSideIndex("OuterPlate"));
   this->addCell("OuterVoid",outerCell);
 
@@ -737,12 +747,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*slitTube,"back",*valve6);
 
   constructMono(System,*bellowE,"back");
-
-  constructSystem::constructUnit
-    (System,buildZone,*monoVessel,"back",*bellowAfterMono);
-
-  constructSystem::constructUnit
-    (System,buildZone,*bellowAfterMono,"back",*valve7);
 
   constructViewScreen(System,*valve7,"back");
 

@@ -692,13 +692,11 @@ exptHut2Variables(FuncDataBase& Control,
 }
 
 double
-viewPackage(FuncDataBase& Control,const std::string& viewKey,
-  const double beamViewerFrontToPort)
+viewPackage(FuncDataBase& Control,const std::string& viewKey)
   /*!
     Builds the variables for the ViewTube
     \param Control :: Database
     \param viewKey :: prename including view
-    \param beamViewerFrontToPort :: Distance from the front surface to the port that
     defines the absolute position.
   */
 {
@@ -709,6 +707,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey,
   setVariable::FlangeMountGenerator FlangeGen;
 
   // will be rotated vertical
+  const double beamViewerFrontToPort = 9.9; // [19]
   const std::string pipeName=viewKey+"ViewTube";
   SimpleTubeGen.setCF<CF100>(); // [19]
   SimpleTubeGen.setCap();
@@ -718,7 +717,7 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey,
   SimpleTubeGen.generateTube(
     Control,pipeName,mainTubeAboveOpticalAxis+mainTubeBelowOpticalAxis);
 
-
+  Control.addVariable(pipeName+"YStep",danmaxVar::absY::beamViewer2);
   Control.addVariable(pipeName+"NPorts",3);
 
   const double totalLength = 2.0*beamViewerFrontToPort; // [19]
@@ -1514,19 +1513,14 @@ opticsVariables(FuncDataBase& Control,
 
   monoPackage(Control,opticsName);
 
-  const double beamViewer2FrontToPort = 9.9; // [19]
-  BellowGen.generateBellow(
-    Control,opticsName+"BellowAfterMono",
-    danmaxVar::absY::beamViewer2-danmaxVar::absY::HDCM
-    -valve3Length-beamViewer2FrontToPort-40.0
-  );
+  // Dummy length
+  BellowGen.generateBellow(Control,opticsName+"BellowAfterMono",10.0);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [28]
   // Angle roughly adjusted to [28]. Found it difficult to read off from the model.
   // Control.addVariable(opticsName+"Valve7YAngle", -20.0);
 
-  const double beamViewer2PortToBack = viewPackage(
-    Control,opticsName,beamViewer2FrontToPort);
+  const double beamViewer2PortToBack = viewPackage(Control,opticsName);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [28]
   // Control.addVariable(opticsName+"Valve8YAngle", 90.0); // [28]
