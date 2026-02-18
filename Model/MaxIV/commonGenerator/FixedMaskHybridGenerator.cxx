@@ -43,10 +43,12 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 
 #include "FixedMaskHybridGenerator.h"
 
 // [1] S1-2-2AG00580.pdf
+// [2] FE_03.STEP
 
 namespace setVariable
 {
@@ -54,15 +56,15 @@ namespace setVariable
 FixedMaskHybridGenerator::FixedMaskHybridGenerator() :
   length(40.0), // [1]
   radius(2.9), // [1]: diameter = 5.8, in the middle the max diameter is 6.0, but use conservative
-  flangeLength(2.0),  // TODO: guess
-  flangeRadius(7.7), // TODO: guess,
+  flangeLength(CF63::flangeLength),  // [2]
+  flangeRadius(CF63::flangeRadius), // [2]
   flangeGrooveLength(0.4), // [1]
   inAngle(6.6), // [1]
   inRadius(1.8), // [1]
   coneLength(19.26), // [1]
-  outWidth(1.12), // TODO: guess
-  outHeight(1.12), // TODO: guess,
-  outAngle(0.7), // [1],
+  outWidth(1.1), // [2]
+  outHeight(1.1), // [2]
+  outAngle(0.7), // [1]
   outStraightLength(5.0), // AR, not displayed in [1] (TODO: clarify)
   mat("Copper"), // TODO: use GLIDCOP
   flangeMat("Stainless304L") // [1]: SUS304L
