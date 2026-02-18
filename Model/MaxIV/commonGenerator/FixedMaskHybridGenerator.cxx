@@ -61,7 +61,6 @@ FixedMaskHybridGenerator::FixedMaskHybridGenerator() :
   flangeGrooveLength(0.4), // [1]
   inAngle(6.6), // [1]
   inRadius(1.8), // [1]
-  coneLength(19.26), // [1]
   outWidth(1.1), // [2]
   outHeight(1.1), // [2]
   outAngle(0.7), // [1]
@@ -102,7 +101,6 @@ FixedMaskHybridGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"FlangeGrooveLength",flangeGrooveLength);
   Control.addVariable(keyName+"InAngle",inAngle);
   Control.addVariable(keyName+"InRadius",inRadius);
-  Control.addVariable(keyName+"ConeLength",coneLength);
   Control.addVariable(keyName+"OutWidth",outWidth);
   Control.addVariable(keyName+"OutHeight",outHeight);
   Control.addVariable(keyName+"OutAngle",outAngle);

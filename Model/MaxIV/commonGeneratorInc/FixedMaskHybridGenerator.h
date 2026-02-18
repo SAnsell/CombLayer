@@ -47,7 +47,6 @@ class FixedMaskHybridGenerator
   double flangeGrooveLength;    ///< Start/end flange groove length
   double inAngle;               ///< Entrance aperture full angle
   double inRadius;              ///< Entrance aperture max radius
-  double coneLength;            ///< Entrance conic aperture length
   double outWidth;              ///< Exit aperture min full width
   double outHeight;             ///< Exit aperture min full height
   double outAngle;              ///< Exit aperture full angle
