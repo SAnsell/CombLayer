@@ -262,8 +262,10 @@ FixedMaskHybrid::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -32 27 -7 (-33:34:-35:36)");
   makeCell("MainCell",System,cellIndex++,mat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 -7 (-43:44:-45:46)");
-  makeCell("MainCellStraight",System,cellIndex++,mat,0.0,HR);
+  if (outStraightLength>Geometry::zeroTol) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 -7 (-43:44:-45:46)");
+    makeCell("MainCellStraight",System,cellIndex++,mat,0.0,HR);
+  }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 43 -44 45 -46 ");
   makeCell("VoidStraight",System,cellIndex++,voidMat,0.0,HR);
