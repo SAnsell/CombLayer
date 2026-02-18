@@ -1128,7 +1128,7 @@ revBeamStopPackage(FuncDataBase& Control,
   return port1Length;
 }
 
-double
+void
 monoPackage(FuncDataBase& Control,const std::string& monoKey)
   /*!
     Builds the variables for the mono packge
@@ -1156,8 +1156,11 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   // are collinear [24]. No call to MBoxGen.setBPortOffset() or similar needed.
 
   // radius, height, depth
-  MBoxGen.generateBox(Control,monoKey+"MonoVessel",monoVesselRadius,0.0,17.5); // [24]
-  Control.addVariable(monoKey+"MonoVesselWallThick", 0.5);
+  const std::string monoVesselKey = monoKey+"MonoVessel";
+  MBoxGen.generateBox(Control,monoVesselKey,monoVesselRadius,0.0,17.5); // [24]
+  Control.addVariable(monoVesselKey+"WallThick", 0.5);
+  Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::HDCM
+    -HDCMPortALength-monoVesselRadius-monoVesselWallThick);
 
   const std::string portName=monoKey+"MonoVessel";
   Control.addVariable(monoKey+"MonoVesselNPorts",0);
@@ -1169,10 +1172,6 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   // crystals gap 7mm
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
-
-
-  return HDCMTotalLength-HDCMPortALength
-    -monoVesselWallThick-monoVesselRadius;
 }
 
 double
@@ -1294,7 +1293,7 @@ shieldVariables(FuncDataBase& Control)
 }
 
 
-double
+void
 opticsSlitPackage(FuncDataBase& Control,
 		  const std::string& opticsName)
   /*!
@@ -1325,7 +1324,6 @@ opticsSlitPackage(FuncDataBase& Control,
   const double frontPortLength = 2.7; // [27]
   const double backPortLength = 2.5; // [27]
   PortTubeGen.setPortLength(frontPortLength, backPortLength);
-  const double totalLength = tubeLength+frontPortLength+backPortLength;
   PortTubeGen.generateTube(Control,sName,0.0,tubeLength-2.0*wallThick);
 
   Control.addVariable(sName+"NPorts",4);
@@ -1375,8 +1373,6 @@ opticsSlitPackage(FuncDataBase& Control,
   BeamMGen.generateMount(Control,opticsName+"JawX",0);
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
   BeamMGen.generateMount(Control,opticsName+"JawZ",0);
-
-  return totalLength;
 }
 
 double
@@ -1508,28 +1504,21 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName+"LauePipe",234.14);
   BellowGen.generateBellow(Control,opticsName+"BellowD",bellowCDLength);
 
-  const double slitTubeTopPortToBack = opticsSlitPackage(
-    Control,opticsName);
+  opticsSlitPackage(Control,opticsName);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [28]
   // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [28]
 
-  // Distance from the front plane to the center of the mono vessel:
-  // port A length + vessel radius + vessel wall thickness
-  const double HDCMOffsetY = 4.5 + 30.0 + 0.5;
-  BellowGen.generateBellow(
-    Control,opticsName+"BellowE",
-    danmaxVar::absY::HDCM-danmaxVar::absY::whiteBeamSlitsTopJaw
-    -slitTubeTopPortToBack-valve3Length-HDCMOffsetY
-  );
+  // Dummy length
+  BellowGen.generateBellow(Control,opticsName+"BellowE",10.0);
 
-  const double HDCMCenterToBack = monoPackage(Control,opticsName);
+  monoPackage(Control,opticsName);
 
   const double beamViewer2FrontToPort = 9.9; // [19]
   BellowGen.generateBellow(
     Control,opticsName+"BellowAfterMono",
     danmaxVar::absY::beamViewer2-danmaxVar::absY::HDCM
-    -valve3Length-beamViewer2FrontToPort-HDCMCenterToBack
+    -valve3Length-beamViewer2FrontToPort-40.0
   );
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [28]

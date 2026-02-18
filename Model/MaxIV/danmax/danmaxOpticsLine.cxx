@@ -494,8 +494,15 @@ danmaxOpticsLine::constructMono(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMono");
 
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*monoVessel);
+  monoVessel->createAll(System,*frontEnd,0);
+
+  bellowE->setBack(*valve6,"back");
+  bellowE->createAll(System,*monoVessel,"front");
+  int outerCell=buildZone.createUnit(System,*bellowE,"front");
+  bellowE->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*monoVessel,"back");
+  monoVessel->insertInCell(System,outerCell);
 
   mbXstals->addInsertCell(monoVessel->getCell("Void"));
   mbXstals->createAll(System,*monoVessel,0);
@@ -728,9 +735,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*slitTube,"back",*valve6);
-
-  constructSystem::constructUnit
-    (System,buildZone,*valve6,"back",*bellowE);
 
   constructMono(System,*bellowE,"back");
 
