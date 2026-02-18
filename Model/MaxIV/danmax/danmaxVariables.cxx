@@ -1200,23 +1200,25 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   const double MLMHeight = 47.0;
   const double MLMHeightAboveOpticalAxis = 11.55+CF40::innerRadius;
   MBoxGen.setBPortOffset(danmaxVar::beamMirrorShift, 0.0); // [25]
+  const std::string monoVesselKey=monoKey+"MLMVessel";
   // width / heigh / depth / length
   MBoxGen.generateBox
     (
-      Control,monoKey+"MLMVessel",
+      Control,monoVesselKey,
       59.0-2.0*MLMWallThick, // [25]
       MLMHeightAboveOpticalAxis-MLMRoofThick,
       MLMHeight-MLMHeightAboveOpticalAxis-MLMFloorThick,
       MLMTotalLength-2.0*MLMWallThick-2.0*MLMPortLength
     );
 
-  const std::string portName=monoKey+"MLMVessel";
-  Control.addVariable(monoKey+"MLMVesselNPorts",0);
+  Control.addVariable(monoVesselKey+"NPorts",0);
   PItemGen.setCF<setVariable::CF63>(5.0);
   PItemGen.setPlate(4.0,"LeadGlass");
-  PItemGen.generatePort(Control,portName+"Port0",
+  PItemGen.generatePort(Control,monoVesselKey+"Port0",
 			Geometry::Vec3D(0,5.0,-10.0),
 			Geometry::Vec3D(1,0,0));
+  Control.addVariable(monoVesselKey+"YStep",
+    danmaxVar::absY::MLM-MLMFrontToTopViewPort);
 
   // crystals gap 4mm
   MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);

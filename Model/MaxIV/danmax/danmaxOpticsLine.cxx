@@ -534,13 +534,18 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMirrorMono");
 
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*MLMVessel);
+  MLMVessel->createAll(System,*frontEnd,0);
+
+  bellowF->setBack(*valve8,"back");
+  bellowF->createAll(System,*MLMVessel,"front");
+  int outerCell = buildZone.createUnit(System,*bellowF,"front");
+  bellowF->insertAllInCell(System,outerCell);
+
+  outerCell = buildZone.createUnit(System,*MLMVessel,"back");
+  MLMVessel->insertInCell(System,outerCell);
 
   MLM->addInsertCell(MLMVessel->getCell("Void"));
-  //  MLM->copyCutSurf("innerCylinder",*MLMVessel,"innerRadius");
   MLM->createAll(System,*MLMVessel,0);
-
 
   return;
 }
@@ -749,9 +754,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructMono(System,*bellowE,"back");
 
   constructViewScreen(System,*valve7,"back");
-
-  constructSystem::constructUnit
-    (System,buildZone,*valve8,"back",*bellowF);
 
   constructMirrorMono(System,*bellowF,"back");
 
