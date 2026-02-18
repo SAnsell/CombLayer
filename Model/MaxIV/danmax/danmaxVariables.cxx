@@ -1323,9 +1323,6 @@ opticsSlitPackage(FuncDataBase& Control,
   PortTubeGen.setPortCF<CF40>(); // [27]
   const double topPortPipeToSlitTubeFront = 4.4; // [27]
   const double frontPortLength = 2.7; // [27]
-  const double slitTubeFrontToTopPort = 
-    frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius; // [27]
-  // Front port length determined by the Y offset.
   const double backPortLength = 2.5; // [27]
   PortTubeGen.setPortLength(frontPortLength, backPortLength);
   const double totalLength = tubeLength+frontPortLength+backPortLength;
@@ -1337,24 +1334,19 @@ opticsSlitPackage(FuncDataBase& Control,
   PItemGen.setPlate(setVariable::CF150::flangeLength,"SteelUnknownGrade");
 
   const Geometry::Vec3D topJaw(
-    0.0,
-    slitTubeFrontToTopPort-totalLength/2.0,
-    0.0
-  );
+    0.0,CF150::outerRadius+topPortPipeToSlitTubeFront-tubeLength/2.0,0.0);
   const Geometry::Vec3D sideJaw(
-    0.0,
-    frontPortLength+7.9+CF150::outerRadius-totalLength/2.0,
-    0.0); // [27]
+    0.0,7.9+CF150::outerRadius-tubeLength/2.0,0.0); // [27]
   const Geometry::Vec3D vacPort(0.0,0.0,0.0); // [27]
   const Geometry::Vec3D beamViewer1(
     0.0,
-    frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius
+    topPortPipeToSlitTubeFront+CF150::outerRadius
     +danmaxVar::absY::beamViewer1
-    -danmaxVar::absY::whiteBeamSlitsTopJaw-totalLength/2.0,
+    -danmaxVar::absY::whiteBeamSlitsTopJaw-tubeLength/2.0,
     0.0
   );
   Control.addVariable(sName+"YStep",
-    danmaxVar::absY::whiteBeamSlitsTopJaw-slitTubeFrontToTopPort);
+    danmaxVar::absY::whiteBeamSlitsTopJaw-frontPortLength-topPortPipeToSlitTubeFront-CF150::outerRadius);
 
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
@@ -1384,7 +1376,7 @@ opticsSlitPackage(FuncDataBase& Control,
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
   BeamMGen.generateMount(Control,opticsName+"JawZ",0);
 
-  return totalLength-slitTubeFrontToTopPort;
+  return totalLength;
 }
 
 double
