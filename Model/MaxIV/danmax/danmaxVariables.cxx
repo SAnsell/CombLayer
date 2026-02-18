@@ -1498,6 +1498,8 @@ opticsVariables(FuncDataBase& Control,
   );
   PipeGen.generatePipe(Control,opticsName+"HighPassFilter",
     highPassFilterLength);
+  // When using absolute positioning, YStep variables needs to be adjusted.
+  Control.addVariable(opticsName+"HighPassFilterYStep",0.0);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5"); // [28]
 

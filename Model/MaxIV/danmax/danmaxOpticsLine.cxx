@@ -326,9 +326,16 @@ danmaxOpticsLine::constructBremColl1Tube
   bremColl1->addInsertCell(bremColl1Tube->getCell("Void"));
   bremColl1->createAll(System,*bremColl1Tube,"Origin");
 
+  // When using absolute positioning, YStep variables needs to be adjusted.
+  const bool useHighPassFilterAbsY = false;
+  if(!useHighPassFilterAbsY){
   constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*highPassFilter);
-
+  } else {
+    highPassFilter->createAll(System,*frontEnd,0);
+    outerCell=buildZone.createUnit(System,*highPassFilter,"back");
+    highPassFilter->insertAllInCell(System,outerCell);
+  }
   return;
 }
 
