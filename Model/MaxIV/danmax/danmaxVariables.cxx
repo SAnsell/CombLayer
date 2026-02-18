@@ -1296,7 +1296,7 @@ shieldVariables(FuncDataBase& Control)
 
 double
 opticsSlitPackage(FuncDataBase& Control,
-		  const std::string& opticsName, const double slitTubeFrontToTopPort)
+		  const std::string& opticsName)
   /*!
     Builds the DM2 slit package
 
@@ -1322,8 +1322,10 @@ opticsSlitPackage(FuncDataBase& Control,
 
   PortTubeGen.setPortCF<CF40>(); // [27]
   const double topPortPipeToSlitTubeFront = 4.4; // [27]
+  const double frontPortLength = 2.7; // [27]
+  const double slitTubeFrontToTopPort = 
+    frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius; // [27]
   // Front port length determined by the Y offset.
-  const double frontPortLength = slitTubeFrontToTopPort-CF150::outerRadius-topPortPipeToSlitTubeFront;
   const double backPortLength = 2.5; // [27]
   PortTubeGen.setPortLength(frontPortLength, backPortLength);
   const double totalLength = tubeLength+frontPortLength+backPortLength;
@@ -1336,7 +1338,7 @@ opticsSlitPackage(FuncDataBase& Control,
 
   const Geometry::Vec3D topJaw(
     0.0,
-    frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius-totalLength/2.0,
+    slitTubeFrontToTopPort-totalLength/2.0,
     0.0
   );
   const Geometry::Vec3D sideJaw(
@@ -1352,8 +1354,7 @@ opticsSlitPackage(FuncDataBase& Control,
     0.0
   );
   Control.addVariable(sName+"YStep",
-    danmaxVar::absY::whiteBeamSlitsTopJaw
-    -(frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius));
+    danmaxVar::absY::whiteBeamSlitsTopJaw-slitTubeFrontToTopPort);
 
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
@@ -1507,23 +1508,16 @@ opticsVariables(FuncDataBase& Control,
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5"); // [28]
 
   const double bellowCDLength = 8.0; // Dummy
-  // Offset of the slit tube along the Y axis.
-  //
-  // Front Port Length
-  // + Distance Top Port Pipe to Slit Tube Front
-  // + Top Port Radius
-  const double slitTubeFrontToTopPort = 2.5+4.4+CF150::outerRadius; // [27]
-
   // Laue monochromator
   PipeGen.setNoWindow();
-  BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowC",bellowCDLength);
   // Dummy length
   PipeGen.generatePipe(
     Control,opticsName+"LauePipe",234.14);
-  BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowD",bellowCDLength);
 
   const double slitTubeTopPortToBack = opticsSlitPackage(
-    Control,opticsName,slitTubeFrontToTopPort);
+    Control,opticsName);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [28]
   // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [28]
