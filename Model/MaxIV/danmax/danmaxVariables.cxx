@@ -61,6 +61,7 @@
 #include "MonoShutterGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
+#include "FixedMaskHybridGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
@@ -208,6 +209,7 @@ frontMaskVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
+  setVariable::FixedMaskHybridGenerator FMHGen;
   setVariable::SqrFMaskGenerator FMaskGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::FlangePlateGenerator FPGen;
@@ -224,14 +226,16 @@ frontMaskVariables(FuncDataBase& Control,
   // MSM not used
   // const double MSMdist(1600.0);
 
-  FMaskGen.setCF<CF100>();
-  FMaskGen.setFrontGap(2.53, 2.53); //
+  // FMHGen.setCF<CF100>();
+  // FMHGen.setFrontGap(2.53, 2.53); //
   double backWidth = 1.19; //
   double backHeight = backWidth;
-  FMaskGen.setBackGap(backWidth, backHeight);
-  FMaskGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
-		      backWidth, backHeight);
-  FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
+  // FMHGen.setBackGap(backWidth, backHeight);
+  // FMHGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
+  // 		      backWidth, backHeight);
+  FMHGen.generate(Control,preName+"FM1H"); //,FM1dist,FM1Length);
+  Control.addVariable(preName+"FM1HYStep",FM1dist);
+  Control.addVariable(preName+"FM1HYLength",FM1Length);
 
 
   FPGen.setFlange(CF100::flangeRadius, 1.99); // [4]
@@ -1423,7 +1427,6 @@ opticsVariables(FuncDataBase& Control,
   setVariable::PortItemGenerator PItemGen;
   setVariable::TriggerGenerator TGen;
   setVariable::CylGateValveGenerator GVGen;
-  setVariable::SqrFMaskGenerator FMaskGen;
 
   setVariable::GateValveGenerator GateGen;
 

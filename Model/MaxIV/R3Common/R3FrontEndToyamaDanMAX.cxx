@@ -83,6 +83,7 @@
 #include "PipeTube.h"
 #include "CrossPipe.h"
 #include "SquareFMask.h"
+#include "FixedMaskHybrid.h"
 #include "BeamMount.h"
 #include "HeatDump.h"
 #include "EPSeparator.h"
@@ -110,6 +111,7 @@ namespace xraySystem
 
 R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   R3FrontEnd(Key),
+  fm1h(std::make_shared<xraySystem::FixedMaskHybrid>(newName+"FM1H")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PumpingUnit1ReplacementPipe")), // TODO: pipeA currently replaces PumpingUnit1
   flangePlateAA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateAA")),
   xbpm1(std::make_shared<xraySystem::BladeBPMToyama>(newName+"XBPM1")),
@@ -193,6 +195,7 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(fm1h);
   OR.addObject(pipeA);
   OR.addObject(flangePlateAA);
   OR.addObject(xbpm1);
@@ -616,8 +619,8 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
 
   if (stopPoint != "U1Block") {
   // FM1 Built relateive to MASTER coordinate
-    fm1->createAll(System,*this,0);
-    flangePlateA->createAll(System,*fm1,"front");
+    fm1h->createAll(System,*this,0);
+    flangePlateA->createAll(System,*fm1h,"front");
     bellowA->createAll(System,*flangePlateA,"back");
   }
 
@@ -686,8 +689,8 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*flangePlateA,"front");
   flangePlateA->insertInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*fm1,"back");
-  fm1->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*fm1h,"back");
+  fm1h->insertInCell(System,outerCell);
 
 
   if (stopPoint=="Dipole")
@@ -698,7 +701,7 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
       return;
     }
 
-  constructSystem::constructUnit(System,buildZone,*fm1,"back",*flangePlateB);
+  constructSystem::constructUnit(System,buildZone,*fm1h,"back",*flangePlateB);
   constructSystem::constructUnit(System,buildZone,*flangePlateB,"back",*bellowB);
 
   xbpm1->createAll(System,*this,0);
