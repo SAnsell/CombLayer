@@ -547,7 +547,7 @@ safetyUnit(FuncDataBase& Control,
   BBGen.setMaterial("Tungsten", "Void");
   BBGen.setLength(bremCollLength);
   BBGen.setRadius(bremCollRadius);
-  // 1 mrad -> 2.2 + 0.6 cm safety margin
+  // 1 mrad -> 3.2 + 0.6 cm safety margin
   BBGen.setAperature(-1.0, 3.8, 0.7,  3.8, 0.7,   3.8, 0.7);
   BBGen.generateBlock(Control,preName+"BremColl",0);
   Control.addVariable(preName+"BremCollYStep",(bremCollPipeLength-bremCollLength)/2.0);
