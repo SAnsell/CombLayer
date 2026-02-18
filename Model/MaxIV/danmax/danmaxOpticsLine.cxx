@@ -364,6 +364,7 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   const constructSystem::portItem& VPB=viewTube->getPort(1);
   const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
 
+  valve7->setRotation(0.0,180.0,0.0);
   valve7->createAll(System,VPA,VPA.getSideIndex("OuterPlate"));
 
   bellowAfterMono->setBack(*monoVessel,"back");
