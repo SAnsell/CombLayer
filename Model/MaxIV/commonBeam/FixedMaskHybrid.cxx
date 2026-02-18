@@ -222,6 +222,8 @@ FixedMaskHybrid::createSurfaces()
   const double x = inRadius / tan(inAngle*std::numbers::pi_v<double>/360.0);
   Geometry::Vec3D dY(Y*x);
   ModelSupport::buildCone(SMap,buildIndex+27,Origin+dY,Y,inAngle/2.0);
+  // aux plane
+  ModelSupport::buildPlane(SMap,buildIndex+41,Origin+dY,Y);
 
   // Exit aperture - tilted segment
   dY = Y*(length-outStraightLength);
@@ -261,14 +263,12 @@ FixedMaskHybrid::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 27 -7");
   makeCell("MainCellCone",System,cellIndex++,mat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -31 -27 ");
-  makeCell("VoidCone",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 33 -34 35 -36 : (21 -41 -27)");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -7 (-33:34:-35:36)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"27 31 -32 -7 (-33:34:-35:36)");
   makeCell("MainCellRecTilted",System,cellIndex++,mat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 33 -34 35 -36 ");
-  makeCell("VoidRecTilted",System,cellIndex++,voidMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 -7 (-43:44:-45:46)");
   makeCell("MainCellStraight",System,cellIndex++,mat,0.0,HR);
