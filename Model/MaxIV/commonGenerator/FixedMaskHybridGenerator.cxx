@@ -88,6 +88,8 @@ FixedMaskHybridGenerator::generate(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: Head name for variable
+    \param ystep :: y-offset
+    \param length :: total length
   */
 {
   ELog::RegMethod RegA("FixedMaskHybridGenerator","generate");

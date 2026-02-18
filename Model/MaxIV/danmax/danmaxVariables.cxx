@@ -226,13 +226,10 @@ frontMaskVariables(FuncDataBase& Control,
   // MSM not used
   // const double MSMdist(1600.0);
 
-  // FMHGen.setCF<CF100>();
-  // FMHGen.setFrontGap(2.53, 2.53); //
-  double backWidth = 1.19; //
+  double backWidth = 1.1; // ???
   double backHeight = backWidth;
-  // FMHGen.setBackGap(backWidth, backHeight);
-  // FMHGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
-  // 		      backWidth, backHeight);
+  FMHGen.setFrontRadius(2.9);
+  FMHGen.setBackGap(backWidth, backHeight);
   FMHGen.generate(Control,preName+"FM1H",FM1dist,FM1Length);
 
 

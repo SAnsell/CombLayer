@@ -63,6 +63,9 @@ class FixedMaskHybridGenerator
   FixedMaskHybridGenerator& operator=(const FixedMaskHybridGenerator&);
   virtual ~FixedMaskHybridGenerator();
 
+  void setFrontRadius(const double R) {radius = R;}
+  void setBackGap(const double w, const double h) {outWidth = w; outHeight = h;}
+
   virtual void generate(FuncDataBase&,const std::string&,const double,const double) const;
 
 };
