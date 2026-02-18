@@ -839,13 +839,11 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey,
 }
 
 double
-beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
-  const double beamStopFrontToWBPort)
+beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   /*!
     Builds the variables for the ViewTube 2
     \param Control :: Database
     \param viewKey :: prename
-    \param beamStopFrontToWBPort :: Distance from the front surface to the
     port that defines the absolute position.
   */
 {
@@ -866,6 +864,8 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",
     beamStopInPipeLength+CF40::flangeLength+port0WallThick); // [22]
   Control.addVariable(viewKey+"BeamStopInPipeXStep",danmaxVar::beamMirrorShift);
+  const double beamStopFrontToWBPort = 
+    beamStopInPipeLength+CF40::flangeLength+5.2; // [22]
   Control.addVariable(viewKey+"BeamStopInPipeYStep",
     danmaxVar::absY::whiteBeamStop-beamStopFrontToWBPort);
 
@@ -1163,8 +1163,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
 }
 
-double
-mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
+void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   /*!
     Builds the variables for the mirror mono package (MLM)
     \param Control :: Database
@@ -1213,8 +1212,6 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   // crystals gap 4mm
   MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
-
-  return MLMTotalLength-MLMFrontToTopViewPort;
 }
 
 double
@@ -1518,25 +1515,18 @@ opticsVariables(FuncDataBase& Control,
   // Dummy length
   BellowGen.generateBellow(Control,opticsName+"BellowF",10.0);
 
-  const double MLMTopViewPortToBack = mirrorMonoPackage(
+  mirrorMonoPackage(
     Control,opticsName);
-  const double beamStopFrontToWBPort = 2.5+CF40::flangeLength+5.2;
-  BellowGen.generateBellow(Control,opticsName+"BellowG",
-    danmaxVar::absY::whiteBeamStop-danmaxVar::absY::MLM
-    -MLMTopViewPortToBack-valve3Length-beamStopFrontToWBPort
-  );
+  BellowGen.generateBellow(Control,opticsName+"BellowG",10.0); // Dummy length
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve9"); // [26]
   // Angle estimated from [26]
   // Control.addVariable(opticsName+"Valve9YAngle", 135.0);
 
-  const double monoSlitsToBack = beamStopPackage(
-    Control,opticsName,beamStopFrontToWBPort);
+  beamStopPackage(Control,opticsName);
 
   const double mainTubeFrontToBeamViewerPort = 26.0; // [21]
-  BellowGen.generateBellow(Control,opticsName+"BellowH",
-    danmaxVar::absY::beamViewer3-danmaxVar::absY::monoSlits
-    -mainTubeFrontToBeamViewerPort-monoSlitsToBack);
+  BellowGen.generateBellow(Control,opticsName+"BellowH",10.0); // Dummy length
 
   const double mainTubeBeamViewerPortToBack = viewBPackage(
     Control,opticsName,mainTubeFrontToBeamViewerPort);
