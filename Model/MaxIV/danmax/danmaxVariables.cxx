@@ -865,6 +865,9 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
   PipeGen.setBFlange(port0Radius+port0WallThick, port0WallThick);
   PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",
     beamStopInPipeLength+CF40::flangeLength+port0WallThick); // [22]
+  Control.addVariable(viewKey+"BeamStopInPipeXStep",danmaxVar::beamMirrorShift);
+  Control.addVariable(viewKey+"BeamStopInPipeYStep",
+    danmaxVar::absY::whiteBeamStop-beamStopFrontToWBPort);
 
   const double port0Length=15.4; // [22]
   const double port0SplitLength=8.0;
@@ -879,18 +882,6 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey,
 			Geometry::Vec3D(0,-(port0Length-port0SplitLength)/2.0
       +beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength-port0WallThick,0),
 			Geometry::Vec3D(1,0,0));
-
-  // Demonstrate explicitly that the code sets the position of the bremsstrahlung
-  // collimator correctly by re-calculating the distance between the bremsstrahlung
-  // collimator and the white beam stop using local variables.
-  assert(
-    fabs(
-      (
-        port0Length - (beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength)
-      ) // Calculated value
-    - (danmaxVar::absY::bremColl2-danmaxVar::absY::whiteBeamStop) // Reference value [12]
-    ) < Geometry::zeroTol
-  );
 
   // will be rotated vertical
   pipeName=viewKey+"BeamStopTube";
