@@ -543,8 +543,21 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
 
   int outerCell;
 
-  outerCell=constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*slitTube);
+  slitTube->createAll(System,*frontEnd,0);
+
+  bellowD->createAll(System,*slitTube,"front");
+
+  lauePipe->setBack(*bellowC,"back");
+  lauePipe->createAll(System,*bellowD,"back");
+
+  outerCell=buildZone.createUnit(System,*lauePipe,"front");
+  lauePipe->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*bellowD,"front");
+  bellowD->insertAllInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit(System,*slitTube,"back");
+  slitTube->insertAllInCell(System,outerCell);
 
   slitTube->intersectPorts(System,0,1);
   slitTube->intersectPorts(System,1,2);
@@ -710,12 +723,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*valve5,"back",*bellowC);
-
-  constructSystem::constructUnit
-    (System,buildZone,*bellowC,"back",*lauePipe);
-
-  constructSystem::constructUnit
-    (System,buildZone,*lauePipe,"back",*bellowD);
 
   constructSlitTube(System,*bellowD,"back");
 

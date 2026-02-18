@@ -1351,6 +1351,9 @@ opticsSlitPackage(FuncDataBase& Control,
     -danmaxVar::absY::whiteBeamSlitsTopJaw-totalLength/2.0,
     0.0
   );
+  Control.addVariable(sName+"YStep",
+    danmaxVar::absY::whiteBeamSlitsTopJaw
+    -(frontPortLength+topPortPipeToSlitTubeFront+CF150::outerRadius));
 
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
@@ -1514,12 +1517,9 @@ opticsVariables(FuncDataBase& Control,
   // Laue monochromator
   PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",8.0);
+  // Dummy length
   PipeGen.generatePipe(
-    Control,opticsName+"LauePipe",
-    danmaxVar::absY::whiteBeamSlitsTopJaw-danmaxVar::absY::highPassFilter
-    -0.5*highPassFilterLength-valve3Length
-    -2.0*bellowCDLength-slitTubeFrontToTopPort
-  );
+    Control,opticsName+"LauePipe",234.14);
   BellowGen.generateBellow(Control,opticsName+"BellowD",8.0);
 
   const double slitTubeTopPortToBack = opticsSlitPackage(
