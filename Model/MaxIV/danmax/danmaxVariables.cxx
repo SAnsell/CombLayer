@@ -221,7 +221,6 @@ frontMaskVariables(FuncDataBase& Control,
   // MSM not used
   // constexpr double MSMLength(40.0);
 
-  const double FM1dist(danmaxVar::absY::FM1Y+FM1Length/2.0); // [4]
   const double FM2dist(danmaxVar::absY::FM2Y+FM2Length/2.0); // [4]
   // MSM not used
   // const double MSMdist(1600.0);
@@ -230,7 +229,7 @@ frontMaskVariables(FuncDataBase& Control,
   double backHeight = backWidth;
   FMHGen.setFrontRadius(2.9);
   FMHGen.setBackGap(backWidth, backHeight);
-  FMHGen.generate(Control,preName+"FM1H",FM1dist,FM1Length);
+  FMHGen.generate(Control,preName+"FM1H",danmaxVar::absY::FM1Y,FM1Length);
 
 
   FPGen.setFlange(CF100::flangeRadius, 1.99); // [4]
