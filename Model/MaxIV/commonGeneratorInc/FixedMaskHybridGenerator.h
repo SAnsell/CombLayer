@@ -63,7 +63,7 @@ class FixedMaskHybridGenerator
   FixedMaskHybridGenerator& operator=(const FixedMaskHybridGenerator&);
   virtual ~FixedMaskHybridGenerator();
 
-  virtual void generate(FuncDataBase&,const std::string&) const;
+  virtual void generate(FuncDataBase&,const std::string&,const double,const double) const;
 
 };
 

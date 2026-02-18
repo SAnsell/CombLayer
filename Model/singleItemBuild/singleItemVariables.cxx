@@ -1030,7 +1030,7 @@ m1chamberDetails(FuncDataBase& Control)
   Control.addVariable(name+"PreCoreLength",65.0);
 
   setVariable::FixedMaskHybridGenerator FMHGen;
-  FMHGen.generate(Control, "FMH");
+  FMHGen.generate(Control, "FMH", 0.0, 40.0);
 }
 
 

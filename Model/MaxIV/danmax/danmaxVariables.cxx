@@ -233,9 +233,7 @@ frontMaskVariables(FuncDataBase& Control,
   // FMHGen.setBackGap(backWidth, backHeight);
   // FMHGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
   // 		      backWidth, backHeight);
-  FMHGen.generate(Control,preName+"FM1H"); //,FM1dist,FM1Length);
-  Control.addVariable(preName+"FM1HYStep",FM1dist);
-  Control.addVariable(preName+"FM1HYLength",FM1Length);
+  FMHGen.generate(Control,preName+"FM1H",FM1dist,FM1Length);
 
 
   FPGen.setFlange(CF100::flangeRadius, 1.99); // [4]

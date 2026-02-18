@@ -48,7 +48,7 @@
 #include "FixedMaskHybridGenerator.h"
 
 // [1] S1-2-2AG00580.pdf
-// [2] FE_03.STEP
+// [2] FE_03.STEP (DanMAX front-end)
 
 namespace setVariable
 {
@@ -81,7 +81,9 @@ FixedMaskHybridGenerator::~FixedMaskHybridGenerator()
 
 void
 FixedMaskHybridGenerator::generate(FuncDataBase& Control,
-			       const std::string& keyName) const
+				   const std::string& keyName,
+				   const double ystep,
+				   const double length) const
 /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
@@ -90,6 +92,7 @@ FixedMaskHybridGenerator::generate(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("FixedMaskHybridGenerator","generate");
 
+  Control.addVariable(keyName+"YStep",ystep);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
