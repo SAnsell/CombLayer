@@ -691,8 +691,7 @@ exptHut2Variables(FuncDataBase& Control,
   return;
 }
 
-double
-viewPackage(FuncDataBase& Control,const std::string& viewKey)
+void viewPackage(FuncDataBase& Control,const std::string& viewKey)
   /*!
     Builds the variables for the ViewTube
     \param Control :: Database
@@ -717,11 +716,13 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   SimpleTubeGen.generateTube(
     Control,pipeName,mainTubeAboveOpticalAxis+mainTubeBelowOpticalAxis);
 
-  Control.addVariable(pipeName+"YStep",danmaxVar::absY::beamViewer2);
+
+  Control.addVariable(pipeName+"YStep",
+    danmaxVar::absY::beamViewer2-beamViewerFrontToPort);
   Control.addVariable(pipeName+"NPorts",3);
 
-  const double totalLength = 2.0*beamViewerFrontToPort; // [19]
-  const double connectPortLength = (totalLength-2.0*CF100::outerRadius)/2.0;
+    const double connectPortLength = beamViewerFrontToPort-CF100::outerRadius;
+
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+connectPortLength);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,pipeName+"Port0",
@@ -744,8 +745,6 @@ viewPackage(FuncDataBase& Control,const std::string& viewKey)
   // Material is actually given as "pCVD Diamond" in [13].
   FlangeGen.setBlade(3.3,1.3,0.2,-45.0,"Diamond",1);
   FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);
-
-  return totalLength-beamViewerFrontToPort;
 }
 
 double
@@ -1174,14 +1173,11 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 }
 
 double
-mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
-  const double MLMFrontToTopViewPort)
+mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   /*!
     Builds the variables for the mirror mono package (MLM)
     \param Control :: Database
     \param monoKey :: prename
-    \param MLMFrontToTopViewPort :: Distance from the front surface to the
-    port that defines the absolute position.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","mirrorMonoPackage");
@@ -1190,6 +1186,7 @@ mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey,
   setVariable::VacBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
 
+  const double MLMFrontToTopViewPort = 21.95; // [25]
   MBoxGen.setCF<CF40>();   // set ports
   const double MLMWallThick = 1.2; // Walls: front, side, back [25]
   // Roof/Base/Width/Front/Back
@@ -1520,19 +1517,16 @@ opticsVariables(FuncDataBase& Control,
   // Angle roughly adjusted to [28]. Found it difficult to read off from the model.
   // Control.addVariable(opticsName+"Valve7YAngle", -20.0);
 
-  const double beamViewer2PortToBack = viewPackage(Control,opticsName);
+  viewPackage(Control,opticsName);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [28]
   // Control.addVariable(opticsName+"Valve8YAngle", 90.0); // [28]
 
-  const double MLMFrontToTopViewPort = 21.95; // [25]
-  BellowGen.generateBellow(Control,opticsName+"BellowF",
-    danmaxVar::absY::MLM-danmaxVar::absY::beamViewer2-beamViewer2PortToBack
-    -valve3Length-MLMFrontToTopViewPort
-  );
+  // Dummy length
+  BellowGen.generateBellow(Control,opticsName+"BellowF",10.0);
 
   const double MLMTopViewPortToBack = mirrorMonoPackage(
-    Control,opticsName, MLMFrontToTopViewPort);
+    Control,opticsName);
   const double beamStopFrontToWBPort = 2.5+CF40::flangeLength+5.2;
   BellowGen.generateBellow(Control,opticsName+"BellowG",
     danmaxVar::absY::whiteBeamStop-danmaxVar::absY::MLM
