@@ -65,8 +65,6 @@ class danmaxConnectLine :
   /// Main system
   std::shared_ptr<xraySystem::SqrShield> connectShield;
 
-  /// Pipe out
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;    
   std::shared_ptr<constructSystem::Bellows> bellowA;    ///< Bellow to pump
   std::shared_ptr<constructSystem::VacuumPipe> flangeA;  ///< adaptor flange
 
@@ -98,6 +96,7 @@ class danmaxConnectLine :
   
   int getConnectShieldCell(const std::string cell) const;
   attachSystem::BlockZone getBuildZone(){return buildZone;};
+  std::shared_ptr<attachSystem::FixedComp> getFirstElement();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

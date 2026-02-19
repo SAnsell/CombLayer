@@ -460,8 +460,6 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"SkinMat", "SteelUnknownGrade");
   Control.addVariable(connectName+"VoidMat", "Void");
 
-  PipeGen.generatePipe(Control,beamName+"PipeA",10.0); // Dummy length
-
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
 
@@ -1401,7 +1399,7 @@ opticsVariables(FuncDataBase& Control,const std::string& beamName)
 
   PipeGen.setCF<setVariable::CF40>();
 
-  BellowGen.generateBellow(Control,opticsName+"BellowA",0.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowA",0.0); // Dummy length
   PipeGen.generatePipe(Control,opticsName+"PipeA",38.3);
   // Reset bellow step to default value [28]. Large bellow step of InitBellow and
   // BellowA looked odd on the short bellows.
@@ -1771,7 +1769,7 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::opticsHutVariables(Control,beamLineName+"OpticsHut");
   danmaxVar::opticsVariables(Control,beamLineName);
 
-  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",31.53);
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",10.0); // Dummy length
 
   const std::string guillotineName = beamLineName + "GuillotineOHToEH2";
   // All dimensions from Section D-D in [1] if not indicated otherwise.

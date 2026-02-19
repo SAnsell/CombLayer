@@ -82,7 +82,6 @@ danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
   attachSystem::CellMap(),
   buildZone(Key+"BuildZone"),
   connectShield(new xraySystem::SqrShield(keyName+"ConnectShield")),
-  pipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
   bellowA(new constructSystem::Bellows(keyName+"BellowA")),
   flangeA(new constructSystem::VacuumPipe(keyName+"FlangeA")),
   ionPumpA(new constructSystem::VacuumPipe(keyName+"IonPumpA")),
@@ -98,7 +97,6 @@ danmaxConnectLine::danmaxConnectLine(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(pipeA);
   OR.addObject(flangeA);
   OR.addObject(bellowA);
   OR.addObject(ionPumpA);
@@ -116,7 +114,11 @@ danmaxConnectLine::~danmaxConnectLine()
 int danmaxConnectLine::getConnectShieldCell(const std::string cell) const {
   return connectShield->getCell(cell);
 };
-  
+
+std::shared_ptr<attachSystem::FixedComp> danmaxConnectLine::getFirstElement(){
+  return bellowA;
+}
+
 void
 danmaxConnectLine::buildObjects(Simulation& System,
 				const attachSystem::FixedComp& beamFC,
@@ -150,11 +152,6 @@ danmaxConnectLine::buildObjects(Simulation& System,
   flangeA->createAll(System,*ionPumpA,"front");
 
   bellowA->createAll(System,*flangeA,"back");
-
-  pipeA->setBack(beamFC,"back");
-  pipeA->createAll(System,*bellowA,"back");
-
-  pipeA->insertAllInCell(System,buildZone.createUnit(System,*pipeA,"front"));
 
   bellowA->insertAllInCell(System,buildZone.createUnit(System,*bellowA,"front"));
 
