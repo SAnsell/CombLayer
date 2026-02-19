@@ -123,7 +123,6 @@ namespace danmaxVar
     constexpr double XBPM2 = 1510.63; // [4]
     const double beamPipe2Port = 1048.9; // [4]
     const double FM1 = 1104.75; // [4]
-    const double XBPM1 = 1201.99; // [4]
     const double FM2 = 1597.08; // [4]
     const double heatAbsorber = 1673.33; // [4]
     const double opticsHutFront = 2250.0; // [4]
@@ -282,7 +281,7 @@ frontMaskVariables(FuncDataBase& Control,
   constexpr double FM1Length(40.0); // [4]
   constexpr double FM2Length(50.5); // [5]
 
-  const double FM2dist(danmaxVar::absY::FM2Y+FM2Length/2.0); // [4]
+  const double FM2dist(danmaxVar::absY::FM2+FM2Length/2.0); // [4]
   // MSM not used
   // const double MSMdist(1600.0);
 
@@ -290,7 +289,7 @@ frontMaskVariables(FuncDataBase& Control,
   double backHeight = backWidth;
   FMHGen.setFrontRadius(2.9);
   FMHGen.setBackGap(backWidth, backHeight);
-  FMHGen.generate(Control,preName+"FM1H",danmaxVar::absY::FM1Y,FM1Length);
+  FMHGen.generate(Control,preName+"FM1H",danmaxVar::absY::FM1,FM1Length);
 
   // Radius adjusted to XBPM flange [30], Thickness from [4]
   FPGen.setFlange(7.6, 1.99);
