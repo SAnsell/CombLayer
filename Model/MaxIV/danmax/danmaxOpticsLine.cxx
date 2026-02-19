@@ -781,14 +781,18 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructViewScreenB(System,*bellowH,"back");
 
-  constructSystem::constructUnit
-    (System,buildZone,*viewTubeB,"back",*bellowI);
+  lensBox->createAll(System,*frontEnd,0);
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowI,"back",*CRLGateIn);
+  CRLGateIn->createAll(System,*lensBox,"front");
 
-  constructSystem::constructUnit
-    (System,buildZone,*CRLGateIn,"back",*lensBox);
+  bellowI->setBack(*viewTubeB,"back");
+  bellowI->createAll(System,*CRLGateIn,"back");
+  
+  bellowI->insertAllInCell(System,buildZone.createUnit(System,*bellowI,"front"));
+
+  CRLGateIn->insertInCell(System,buildZone.createUnit(System,*CRLGateIn,"front"));
+
+  lensBox->insertInCell(System,buildZone.createUnit(System,*lensBox,"back"));
 
   constructSystem::constructUnit
     (System,buildZone,*lensBox,"back",*CRLGateOut);
