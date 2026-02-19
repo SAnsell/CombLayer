@@ -976,8 +976,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   flangePlateGen.generateFlangePlate(Control,viewKey+"SlitsAOut");
 }
 
-double
-revBeamStopPackage(FuncDataBase& Control,
+void revBeamStopPackage(FuncDataBase& Control,
 		   const std::string& viewKey)
   /*!
     Builds the variables for the reversed slit tube/beamstop
@@ -1097,8 +1096,6 @@ revBeamStopPackage(FuncDataBase& Control,
   BremGen.generateBlock(Control,viewKey+"RevBeamStop",
     tubeLength/2.0-tubeLengthAboveOpticalAxis);
   Control.addVariable(viewKey+"RevBeamStopXAngle",90);
-
-  return port1Length;
 }
 
 void
@@ -1519,7 +1516,7 @@ opticsVariables(FuncDataBase& Control,const std::string& beamName)
 
   BellowGen.generateBellow(Control,opticsName+"BellowJ",10.0); // Dummy length
 
-  const double bremColl3ToBack = revBeamStopPackage(Control,opticsName);
+  revBeamStopPackage(Control,opticsName);
 
   const double bellowKLength = 16.0; // [26]
   BellowGen.generateBellow(Control,opticsName+"BellowK",bellowKLength);
