@@ -460,17 +460,7 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"SkinMat", "SteelUnknownGrade");
   Control.addVariable(connectName+"VoidMat", "Void");
 
-  // dummy, adjusted such that ion pump is centered in Experimental Hutch 2.
-  // (Note that the shielding box around it is not exactly centered in the hutch)
-  // PipeA length =
-  //    Expt. Hutch 2 length (545.8 cm) / 2.0
-  //    - length of JoinPipeB inside Expt. Hutch 2 (10.0 cm) (*)
-  //    - ion pump length (32.59 cm) / 2.0
-  //    - FlangeA length (5.0 cm)
-  //    - BellowA length (16.0 cm)
-  //
-  // (*) see comment there
-  PipeGen.generatePipe(Control,beamName+"PipeA",225.605);
+  PipeGen.generatePipe(Control,beamName+"PipeA",10.0); // Dummy length
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
