@@ -314,7 +314,7 @@ danmaxOpticsLine::constructBremColl1Tube
   const constructSystem::portItem& VPB=bremColl1Tube->getPort(1);
 
   bellowA->setBack(VPA.getLinkSurf(2));
-  bellowA->createAll(System,*valve4,"back");
+  bellowA->createAll(System,initFC,sideName);
   bellowA->insertAllInCell(System,
     buildZone.createUnit(System,VPA,VPA.getSideIndex("#OuterPlate")));
 
@@ -365,7 +365,7 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   valve7->setRotation(0.0,180.0,0.0);
   valve7->createAll(System,VPA,VPA.getSideIndex("OuterPlate"));
 
-  bellowAfterMono->setBack(*monoVessel,"back");
+  bellowAfterMono->setBack(initFC,sideName);
   bellowAfterMono->createAll(System,*valve7,"back");
 
   bellowAfterMono->insertAllInCell(System,buildZone.createUnit(System,*bellowAfterMono,"front"));
@@ -425,7 +425,7 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
 
   viewTubeB->createAll(System,*frontEnd,0);
 
-  bellowH->setBack(*slitsAOut,"back");
+  bellowH->setBack(initFC,sideName);
   bellowH->createAll(System,*viewTubeB,"front");
 
   bellowH->insertAllInCell(System,buildZone.createUnit(System,*bellowH,"front"));
@@ -463,7 +463,7 @@ danmaxOpticsLine::constructRevBeamStopTube
 
   revMonoSlitsIn->createAll(System,*revMonoSlitsTube,"front");
 
-  bellowJ->setBack(*CRLGateOut,"back");
+  bellowJ->setBack(initFC,sideName);
   bellowJ->createAll(System,*revMonoSlitsIn,"back");
 
   bellowJ->insertAllInCell(
@@ -522,7 +522,7 @@ danmaxOpticsLine::constructMono(Simulation& System,
 
   monoVessel->createAll(System,*frontEnd,0);
 
-  bellowE->setBack(*valve6,"back");
+  bellowE->setBack(initFC,sideName);
   bellowE->createAll(System,*monoVessel,"front");
   bellowE->insertAllInCell(System,buildZone.createUnit(System,*bellowE,"front"));
 
@@ -550,7 +550,7 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
 
   MLMVessel->createAll(System,*frontEnd,0);
 
-  bellowF->setBack(*valve8,"back");
+  bellowF->setBack(initFC,sideName);
   bellowF->createAll(System,*MLMVessel,"front");
   bellowF->insertAllInCell(System,buildZone.createUnit(System,*bellowF,"front"));
 
@@ -579,7 +579,7 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
 
   bellowD->createAll(System,*slitTube,"front");
 
-  lauePipe->setBack(*bellowC,"back");
+  lauePipe->setBack(initFC,sideName);
   lauePipe->createAll(System,*bellowD,"back");
 
   lauePipe->insertAllInCell(System,
@@ -644,7 +644,7 @@ danmaxOpticsLine::constructBeamStopTube
   beamStopInPipe->createAll(System,*frontEnd,0);
 
   valve9->createAll(System,*beamStopInPipe,"front");
-  bellowG->setBack(*MLMVessel,"back");
+  bellowG->setBack(initFC,sideName);
   bellowG->createAll(System,*valve9,"back");
   
   bellowG->insertAllInCell(System,buildZone.createUnit(System,*bellowG,"front"));
@@ -703,20 +703,20 @@ danmaxOpticsLine::constructBeamStopTube
 
 void
 danmaxOpticsLine::constructMonoShutter(Simulation& System,
-				       const attachSystem::FixedComp& FC,
-				       const std::string& linkName)
+				       const attachSystem::FixedComp& initFC,
+				       const std::string& sideName)
   /*!
     Construct a monoshutter system
     \param System :: Simulation for building
-    \param FC :: FixedComp for start point
-    \param linkName :: side index
+    \param initFC :: FixedComp for start point
+    \param sideName :: side index
     \return outerCell
    */
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMonoShutter");
 
   constructSystem::constructUnit
-    (System,buildZone,FC,linkName,*monoShutter);
+    (System,buildZone,initFC,sideName,*monoShutter);
 
   constructSystem::constructUnit
     (System,buildZone,*monoShutter,"back",*bellowL);
@@ -751,7 +751,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   valve4->insertInCell(System,buildZone.createUnit(System,*valve4,"back"));
 
-  constructBremColl1Tube(System, *bellowA, "back");
+  constructBremColl1Tube(System, *valve4, "back");
 
   constructSystem::constructUnit
     (System,buildZone,*highPassFilter,"back",*valve5);
@@ -759,20 +759,20 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*valve5,"back",*bellowC);
 
-  constructSlitTube(System,*bellowD,"back");
+  constructSlitTube(System,*bellowC,"back");
 
   constructSystem::constructUnit
     (System,buildZone,*slitTube,"back",*valve6);
 
-  constructMono(System,*bellowE,"back");
+  constructMono(System,*valve6,"back");
 
-  constructViewScreen(System,*valve7,"back");
+  constructViewScreen(System,*monoVessel,"back");
 
-  constructMirrorMono(System,*bellowF,"back");
+  constructMirrorMono(System,*valve8,"back");
 
-  constructBeamStopTube(System,*valve9,"back");
+  constructBeamStopTube(System,*MLMVessel,"back");
 
-  constructViewScreenB(System,*bellowH,"back");
+  constructViewScreenB(System,*slitsAOut,"back");
 
   lensBox->createAll(System,*frontEnd,0);
 
@@ -790,7 +790,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit
     (System,buildZone,*lensBox,"back",*CRLGateOut);
 
-  constructRevBeamStopTube(System,*bellowJ,"back");
+  constructRevBeamStopTube(System,*CRLGateOut,"back");
 
   constructMonoShutter(System,*bellowK,"back");
 
