@@ -459,6 +459,7 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"Mat", "Lead"); // [9]
   Control.addVariable(connectName+"SkinMat", "SteelUnknownGrade");
   Control.addVariable(connectName+"VoidMat", "Void");
+  Control.addVariable(connectName+"XStep",danmaxVar::beamMirrorShift);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
