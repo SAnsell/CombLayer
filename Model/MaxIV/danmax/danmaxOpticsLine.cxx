@@ -765,17 +765,10 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   cm1->intersectPorts(System,1,2);
 
   const constructSystem::portItem& cm1PortDanMAX=cm1->getPort(1);
-  // outerCell=buildZone.createUnit
-  //   (System,cm1PortDanMAX,cm1PortDanMAX.getSideIndex("OuterPlate"));
-  // cm1->insertAllInCell(System,outerCell-1);
-
   const constructSystem::portItem& cm1PortSinCrys=cm1->getPort(2);
 
-
-  //  splitter->createAll(System,cm1PortDanMAX,"OuterPlate");
   bellowAA->createAll(System,cm1PortSinCrys,"OuterPlate"); // SinCrys
   bellowBA->createAll(System,cm1PortDanMAX,"OuterPlate"); // DanMAX
-  //  lauePipe->createAll(System,*splitter,3); // DanMAX
 
   buildZoneSinCrys=buildZone;
   buildZoneDanMAX=buildZone;
@@ -784,7 +777,6 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   Geometry::Vec3D crossX,crossY,crossZ;
 
   cm1->calcLinkAxis(2,crossX,crossY,crossZ);
-  //  SurfMap::makePlane("midDivider",SMap,buildIndex+5003,DPoint,crossX);
   const double midDividerAngle = 11.0;
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+5003,DPoint,crossX,-Z,-midDividerAngle);
 
@@ -798,8 +790,6 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   buildZoneSinCrys.setSurround(HSurroundA);
   buildZoneDanMAX.setSurround(HSurroundB);
-  // buildZoneSinCrys.setFront(cm1PortSinCrys.getFullRule("OuterPlate"));
-  // buildZoneDanMAX.setFront(cm1PortDanMAX.getFullRule("OuterPlate"));
   buildZoneSinCrys.setFront(initFC.getFullRule(sideName));
   buildZoneDanMAX.setFront(initFC.getFullRule(sideName));
   buildZoneSinCrys.clearInsertCells();
@@ -814,7 +804,6 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   bellowBA->insertAllInCell(System,outerCell);
   bellowAA->insertAllInCell(System,outerCell);
 
-  //  constructSystem::constructUnit(System,buildZoneSinCrys,*bellowAA,"back",*pipeSinCrys);
   outerCell=buildZoneSinCrys.createUnit(System);
   for (int i=0; i<1; ++i) {
     MonteCarlo::Object* OPtr = System.findObject(outerCell-i);
@@ -829,19 +818,13 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
 
   constructSystem::constructUnit(System,buildZoneDanMAX,*slitTube,"back",*valve6);
-  //  constructSystem::constructUnit(System,buildZoneDanMAX,*valve6,"back",*bellowE);
 
   constructMono(System,*valve6,"back");
   constructViewScreen(System,*monoVessel,"back");
   constructMirrorMono(System,*valve8,"back");
   constructBeamStopTube(System,*MLMVessel,"back");
 
-  // return;
-
-  //constructSystem::constructUnit(System,buildZoneDanMAX,*slitsAOut,"back",*bellowH);
-
   constructViewScreenB(System,*slitsAOut,"back");
-
 
   lensBox->createAll(System,*frontEnd,0);
 
@@ -915,72 +898,12 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*valve5,"back",*pipeA);
   constructSystem::constructUnit(System,buildZone,*pipeA,"back",*bellowC);
 
-    buildZone.createUnit(System);         // build to end (removed later)
+  buildZone.createUnit(System);         // build to end (removed later)
   buildZone.rebuildInsertCells(System); // rebuild the whole track
 
   buildSplitter(System,*bellowC,"back");
-  //  setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
   System.removeCell(buildZone.getLastCell("Unit"));  // remove cell built above
 
-
-  lastComp=bellowL;
-
-  return;
-
-
-  constructSlitTube(System,*bellowC,"back");
-
-  constructSystem::constructUnit
-    (System,buildZone,*slitTube,"back",*valve6);
-
-  constructMono(System,*valve6,"back");
-
-  /////
-  buildZone.rebuildInsertCells(System);
-  //  setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
-  lastComp=pipeInit;
-  return;
-  /////
-
-  constructViewScreen(System,*monoVessel,"back");
-
-
-  constructMirrorMono(System,*valve8,"back");
-
-  constructBeamStopTube(System,*MLMVessel,"back");
-
-  constructViewScreenB(System,*slitsAOut,"back");
-
-
-
-  lensBox->createAll(System,*frontEnd,0);
-
-  CRLGateIn->createAll(System,*lensBox,"front");
-
-  bellowI->setBack(*viewTubeB,"back");
-  bellowI->createAll(System,*CRLGateIn,"back");
-
-  bellowI->insertAllInCell(System,buildZone.createUnit(System,*bellowI,"front"));
-
-  CRLGateIn->insertInCell(System,buildZone.createUnit(System,*CRLGateIn,"front"));
-
-  lensBox->insertInCell(System,buildZone.createUnit(System,*lensBox,"back"));
-
-  constructSystem::constructUnit
-    (System,buildZone,*lensBox,"back",*CRLGateOut);
-
-  constructRevBeamStopTube(System,*CRLGateOut,"back");
-
-  constructMonoShutter(System,*bellowK,"back");
-
-  int outerCell = buildZone.createUnit(System);
-  for (int i=0; i<4; ++i) {
-    MonteCarlo::Object* OPtr = System.findObject(outerCell-i);
-    OPtr->addIntersection(getRule("BackPlateFloorShine"));
-  }
-
-  buildZone.rebuildInsertCells(System);
-  setCell("LastVoid",buildZone.getCells("Unit").back());
   lastComp=bellowL;
 
   return;
