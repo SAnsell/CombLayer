@@ -987,7 +987,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
 
 double
 revBeamStopPackage(FuncDataBase& Control,
-		   const std::string& viewKey, const double revMonoSlitsFrontToSlits)
+		   const std::string& viewKey)
   /*!
     Builds the variables for the reversed slit tube/beamstop
 
@@ -996,8 +996,6 @@ revBeamStopPackage(FuncDataBase& Control,
 
     \param Control :: Database
     \param viewKey :: prename
-    \param revMonoSlitsFrontToSlits :: Distance from the front surface to the
-    port that defines the absolute position.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","revBeamStopPackage");
@@ -1018,9 +1016,15 @@ revBeamStopPackage(FuncDataBase& Control,
   SimpleTubeGen.setPipe(
     CF150::flangeRadius-monoSlitsTubeWallThick,monoSlitsTubeWallThick,1.0,0.0); // [23]
   std::string pipeName = viewKey+"RevMonoSlitsTube";
+  // Connector length + half the length of the pipe that contains the
+  // monochromatic slits [23]
+  const double revMonoSlitsFrontToSlits = CF150::flangeLength+5.25;
   const double monoSlitsTubeLength = 2.0*(revMonoSlitsFrontToSlits-slitsInLength);
-  SimpleTubeGen.generateTube(
-    Control,pipeName,monoSlitsTubeLength);
+  SimpleTubeGen.generateTube(Control,pipeName,monoSlitsTubeLength);
+
+  Control.addVariable(pipeName+"XStep", danmaxVar::beamMirrorShift);
+  Control.addVariable(pipeName+"YStep", danmaxVar::absY::monoSlits2-monoSlitsTubeLength*0.5);
+  Control.addVariable(pipeName+"NPorts",4);
 
   Control.addVariable(pipeName+"NPorts",4);
   PItemGen.setCF<CF16>(12.0); // Estimated
@@ -1529,14 +1533,9 @@ opticsVariables(FuncDataBase& Control,
 
   GateGen.generateValve(Control,opticsName+"CRLGateOut",0.0,0);
 
-  // Connector length + half the length of the pipe that contains the
-  // monochromatic slits [23]
-  const double revMonoSlitsFrontToSlits = CF150::flangeLength+5.25;
-  BellowGen.generateBellow(
-    Control,opticsName+"BellowJ",10.0); // Dummy length
+  BellowGen.generateBellow(Control,opticsName+"BellowJ",10.0); // Dummy length
 
-  const double bremColl3ToBack = revBeamStopPackage(
-    Control,opticsName,revMonoSlitsFrontToSlits);
+  const double bremColl3ToBack = revBeamStopPackage(Control,opticsName);
 
   const double bellowKLength = 16.0; // [26]
   BellowGen.generateBellow(Control,opticsName+"BellowK",bellowKLength);

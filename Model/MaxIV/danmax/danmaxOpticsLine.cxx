@@ -463,11 +463,23 @@ danmaxOpticsLine::constructRevBeamStopTube
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructRevBeamStopTube");
 
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*revMonoSlitsIn);
+  revMonoSlitsTube->createAll(System,*frontEnd,0);
 
-  constructSystem::constructUnit
-    (System,buildZone,*revMonoSlitsIn,"back",*revMonoSlitsTube);
+  revMonoSlitsIn->createAll(System,*revMonoSlitsTube,"front");
+
+  bellowJ->setBack(*CRLGateOut,"back");
+  bellowJ->createAll(System,*revMonoSlitsIn,"back");
+
+  bellowJ->insertAllInCell(
+    System,buildZone.createUnit(System,*bellowJ,"front")
+  );
+
+  revMonoSlitsIn->insertInCell(
+    System,buildZone.createUnit(System,*revMonoSlitsIn,"front")
+  );
+
+  revMonoSlitsTube->insertAllInCell(
+    System,buildZone.createUnit(System,*revMonoSlitsTube,"back"));
 
  for(auto i: std::vector<size_t>{0,1}){
     const constructSystem::portItem& port0=revMonoSlitsTube->getPort(2*i);
@@ -796,9 +808,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*lensBox,"back",*CRLGateOut);
-
-  constructSystem::constructUnit
-    (System,buildZone,*CRLGateOut,"back",*bellowJ);
 
   constructRevBeamStopTube(System,*bellowJ,"back");
 
