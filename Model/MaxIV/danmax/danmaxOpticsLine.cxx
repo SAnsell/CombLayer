@@ -95,7 +95,7 @@
 #include "generalConstruct.h"
 #include "SquareFMask.h"
 #include "danmaxOpticsLine.h"
-
+#include "FlangePlate.h"
 
 
 namespace xraySystem
@@ -153,7 +153,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
       std::make_shared<xraySystem::BeamPair>(newName+"MonoSlitsX"),
       std::make_shared<xraySystem::BeamPair>(newName+"MonoSlitsZ")
 	}),
-  slitsAOut(new constructSystem::VacuumPipe(newName+"SlitsAOut")),
+  slitsAOut(new constructSystem::FlangePlate(newName+"SlitsAOut")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   viewTubeB(new constructSystem::PortTube(newName+"ViewTubeB")),
   viewTubeBScreen(new xraySystem::FlangeMount(newName+"ViewTubeBScreen")),
@@ -162,7 +162,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   lensBox(new xraySystem::MonoBox(newName+"LensBox")),
   CRLGateOut(new constructSystem::GateValveCylinder(newName+"CRLGateOut")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  revMonoSlitsIn(new constructSystem::VacuumPipe(newName+"RevMonoSlitsIn")),
+  revMonoSlitsIn(new constructSystem::FlangePlate(newName+"RevMonoSlitsIn")),
   revMonoSlitsTube(new constructSystem::PipeTube(newName+"RevMonoSlitsTube")),
   revMonoSlits({
       std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlitsX"),

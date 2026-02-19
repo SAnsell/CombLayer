@@ -42,7 +42,7 @@ namespace constructSystem
   class JawValveCube;
   class JawValveTube;
   class JawFlange;
-
+  class FlangePlate;
 }
 
 /*!
@@ -165,7 +165,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> monoSlitsTube;
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> monoSlits;
   /// Flange converter
-  std::shared_ptr<constructSystem::VacuumPipe> slitsAOut;
+  std::shared_ptr<constructSystem::FlangePlate> slitsAOut;
   /// Connector to next beam view
   std::shared_ptr<constructSystem::Bellows> bellowH;
   /// Beam viewer 2
@@ -182,7 +182,7 @@ class danmaxOpticsLine :
   /// Connector to reverse beamstop
   std::shared_ptr<constructSystem::Bellows> bellowJ;
 
-  std::shared_ptr<constructSystem::VacuumPipe> revMonoSlitsIn;
+  std::shared_ptr<constructSystem::FlangePlate> revMonoSlitsIn;
   std::shared_ptr<constructSystem::PipeTube> revMonoSlitsTube;
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> revMonoSlits;
   std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;

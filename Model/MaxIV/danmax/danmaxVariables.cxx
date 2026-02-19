@@ -982,10 +982,10 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
     0.5*bladeWidth,0.0);
   BeamPairGen.generateMount(Control,viewKey+"MonoSlitsZ",0);
 
-  PipeGen.setNoWindow();
-  PipeGen.setFlangeLength(0.0, 0.0);
-  PipeGen.setPipe(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius); // [22]
-  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",CF150::flangeLength); // [22]
+  FlangePlateGenerator flangePlateGen;
+  flangePlateGen.setFlangeLen(CF150::flangeLength); // [22]
+  flangePlateGen.setFlange(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius);
+  flangePlateGen.generateFlangePlate(Control,viewKey+"SlitsAOut");
 }
 
 double
@@ -1005,18 +1005,16 @@ revBeamStopPackage(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","revBeamStopPackage");
 
-  setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::BremBlockGenerator BremGen;
   setVariable::BeamPairGenerator BeamPairGen;
+  FlangePlateGenerator flangePlateGen;
 
-  PipeGen.setMat("SteelUnknownGrade");
-  PipeGen.setNoWindow();
-  PipeGen.setFlangeLength(0.0, 0.0);
-  PipeGen.setPipe(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius); // [23]
   const double slitsInLength = CF150::flangeLength; // [23]
-  PipeGen.generatePipe(Control,viewKey+"RevMonoSlitsIn",slitsInLength);
+  flangePlateGen.setFlangeLen(slitsInLength); // [23]
+  flangePlateGen.setFlange(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius); // [23]
+  flangePlateGen.generateFlangePlate(Control,viewKey+"RevMonoSlitsIn");
 
   // Tube for Monochromatic Slits
   const double monoSlitsTubeWallThick = 2.0; // [23]
