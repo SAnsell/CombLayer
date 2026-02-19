@@ -426,8 +426,15 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructViewScreenB");
 
-  constructSystem::constructUnit
-    (System,buildZone,initFC,sideName,*viewTubeB);
+  viewTubeB->createAll(System,*frontEnd,0);
+
+  bellowH->setBack(*slitsAOut,"back");
+  bellowH->createAll(System,*viewTubeB,"front");
+
+  bellowH->insertAllInCell(System,buildZone.createUnit(System,*bellowH,"front"));
+
+  int outerCell=buildZone.createUnit(System,*viewTubeB,"back");
+  viewTubeB->insertAllInCell(System,outerCell);
 
   const constructSystem::portItem& VPI=viewTubeB->getPort(1);
   viewTubeBScreen->addInsertCell("Body",VPI.getCell("Void"));
@@ -771,9 +778,6 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructMirrorMono(System,*bellowF,"back");
 
   constructBeamStopTube(System,*valve9,"back");
-
-  constructSystem::constructUnit
-    (System,buildZone,*slitsAOut,"back",*bellowH);
 
   constructViewScreenB(System,*bellowH,"back");
 

@@ -782,14 +782,11 @@ lensPackage(FuncDataBase& Control,const std::string& lensKey,
 }
 
 double
-viewBPackage(FuncDataBase& Control,const std::string& viewKey,
-  const double mainTubeFrontToBeamViewerPort)
+viewBPackage(FuncDataBase& Control,const std::string& viewKey)
   /*!
     Builds the variables for the ViewTube
     \param Control :: Database
     \param viewKey :: prename including view
-    \param mainTubeFrontToBeamViewerPort :: Distance from the front surface to the
-    port that defines the absolute position.
   */
 {
   ELog::RegMethod RegA("danmaxVariables[F]","viewBPackage");
@@ -811,9 +808,10 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey,
   PTubeGen.generateTube(
     Control,pipeName,0.0,totalLength-2.0*flangeLength-2.0*wallThick);
 
-
-  // will be rotated vertical
-
+  const double mainTubeFrontToBeamViewerPort = 26.0; // [21]
+  Control.addVariable(pipeName+"XStep",danmaxVar::beamMirrorShift);
+  Control.addVariable(pipeName+"YStep",
+    danmaxVar::absY::beamViewer3-mainTubeFrontToBeamViewerPort);
   Control.addVariable(pipeName+"NPorts",3);
 
   PItemGen.setCF<setVariable::CF100>(14.0); // [21]
@@ -838,7 +836,7 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey,
   return totalLength-mainTubeFrontToBeamViewerPort;
 }
 
-double
+void
 beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   /*!
     Builds the variables for the ViewTube 2
@@ -987,10 +985,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.setNoWindow();
   PipeGen.setFlangeLength(0.0, 0.0);
   PipeGen.setPipe(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius); // [22]
-  const double slitsAOutLength = CF150::flangeLength; // [22]
-  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",slitsAOutLength);
-
-  return monoSlitsTubeLength/2.0+slitsAOutLength;
+  PipeGen.generatePipe(Control,viewKey+"SlitsAOut",CF150::flangeLength); // [22]
 }
 
 double
@@ -1525,11 +1520,10 @@ opticsVariables(FuncDataBase& Control,
 
   beamStopPackage(Control,opticsName);
 
-  const double mainTubeFrontToBeamViewerPort = 26.0; // [21]
   BellowGen.generateBellow(Control,opticsName+"BellowH",10.0); // Dummy length
 
   const double mainTubeBeamViewerPortToBack = viewBPackage(
-    Control,opticsName,mainTubeFrontToBeamViewerPort);
+    Control,opticsName);
 
   const double CRLFrontToCenter = 49.445/2.0; // [20]
   const double CRLGateTotalLength = 3.5+2.0*CF40::flangeLength; // [26]
