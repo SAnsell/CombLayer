@@ -146,6 +146,17 @@ ContainedGroup::ContainedGroup(const std::string& A,const std::string& B,
   CMap.insert(CTYPE::value_type(F,ContainedComp()));
 }
 
+ContainedGroup::ContainedGroup(const std::vector<std::string> keys)
+  /*!
+    Constructor 
+    \param keys :: List of keys
+  */
+{
+  for(auto key: keys){
+    CMap.insert(CTYPE::value_type(key,ContainedComp()));
+  }
+}
+
 ContainedGroup::ContainedGroup(const ContainedGroup& A) : 
   CMap(A.CMap)
   /*!

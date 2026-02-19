@@ -313,8 +313,7 @@ CylGateValve::createLinks()
 
   return;
 }
-  
-  
+
 void
 CylGateValve::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
@@ -329,8 +328,7 @@ CylGateValve::createAll(Simulation& System,
   ELog::RegMethod RegA("CylGateValve","createAll(FC)");
 
   populate(System.getDataBase());
-  const double offset(radius+wallThick+portThick);
-  createCentredUnitVector(FC,FIndex,offset);
+  createCentredUnitVector(FC,FIndex,radius+wallThick+portThick);
   createSurfaces();    
   createObjects(System);
   createLinks();

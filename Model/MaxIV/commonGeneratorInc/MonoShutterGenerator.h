@@ -44,23 +44,16 @@ class MonoShutterGenerator
 
   std::unique_ptr<PortTubeGenerator> PTubeGen;   ///< Main port tube
   std::unique_ptr<PortItemGenerator> PItemGen;   ///< port items
-  
+
   /// Shutter units [both the same]
-  std::unique_ptr<ShutterUnitGenerator> SUnitGen;  
+  std::unique_ptr<ShutterUnitGenerator> SUnitGen;
 
  public:
 
   MonoShutterGenerator();
-  MonoShutterGenerator(const MonoShutterGenerator&);
-  MonoShutterGenerator& operator=(const MonoShutterGenerator&);
   virtual ~MonoShutterGenerator();
-
-  template<typename CF> void setCF();
-  template<typename CF> void setOutCF();
-  template<typename CF> void setTopCF();
   
   void setMat(const std::string&,const double);
-  void setLift(const double,const double);
   
   void generateShutter(FuncDataBase&,const std::string&,
 		       const bool,const bool) const;

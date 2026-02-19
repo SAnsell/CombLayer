@@ -28,7 +28,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/singleItemVariables.cxx
   ${tarINC}/DefUnitsSingleItem.h
   ${tarINC}/makeSingleItem.h
-  ${tarINC}/singleItemVariables.h
   ${tarINC}/singleVariableSetup.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
 

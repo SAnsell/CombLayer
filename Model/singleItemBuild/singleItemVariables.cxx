@@ -135,6 +135,7 @@
 #include "DomeConnectorGenerator.h"
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
+#include "MonoShutterR3Generator.h"
 #include "FocusGenerator.h"
 #include "MLMDetailGenerator.h"
 #include "M1DetailGenerator.h"
@@ -401,6 +402,9 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::MonoShutterGenerator MSGen;
   MSGen.generateShutter(Control,"MS",1,1);
+
+  setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MSR3Gen;
+  MSR3Gen.generate(Control,"MonoShutterR3",1,1);
 
   setVariable::RoundShutterGenerator RMSGen;
   RMSGen.generateShutter(Control,"RMS",1,1);
@@ -680,9 +684,10 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::PipeTubeGenerator SimpleTubeGen;
   setVariable::PortItemGenerator PItemGen;
   SimpleTubeGen.setCF<CF63>();
+  SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.generateTube(Control,"PipeTube",20.0);
 
-  Control.addVariable("PipeTubeNPorts",1);
+  Control.addVariable("PipeTubeNPorts",4);
   PItemGen.setCF<setVariable::CF40>(10.0);
   PItemGen.setNoPlate();
   PItemGen.generatePort(Control,"PipeTubePort0",
@@ -693,6 +698,16 @@ SingleItemVariables(FuncDataBase& Control)
   PItemGen.generatePort(Control,"PipeTubePort1",
 			Geometry::Vec3D(0.0, 3.0, 0.0),
 			Geometry::Vec3D(0.5, -0.5, 0.866));
+
+  PItemGen.setCF<setVariable::CF16>(20.0);
+  PItemGen.generatePort(Control,"PipeTubePort2",
+			Geometry::Vec3D(0.0, 0.0, 0.0),
+			Geometry::Vec3D(0.0, 1.0, 0.0));
+
+  PItemGen.setCF<setVariable::CF16>(15.0);
+  PItemGen.generatePort(Control,"PipeTubePort3",
+			Geometry::Vec3D(1.0, 0.0, 2.0),
+			Geometry::Vec3D(0.0, -1.0, 0.0));
 
   // PortTube
   setVariable::PortTubeGenerator PortTubeGen;

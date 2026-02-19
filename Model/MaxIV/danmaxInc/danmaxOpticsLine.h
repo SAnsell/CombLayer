@@ -42,7 +42,7 @@ namespace constructSystem
   class JawValveCube;
   class JawValveTube;
   class JawFlange;
-
+  class FlangePlate;
 }
 
 /*!
@@ -62,7 +62,7 @@ namespace xraySystem
   class FlangeMount;
   class Mirror;
   class MonoBlockXstals;
-  class MonoShutter;
+  class MonoShutterR3;
   class DCMTank;
   class MLMono;
   class MLMVessel;
@@ -88,7 +88,9 @@ class danmaxOpticsLine :
 {
  private:
 
-  /// string for pre-insertion into mastercell:0
+  /// Pointer to front end for use in absolute positioning.
+  std::shared_ptr<attachSystem::FixedComp> frontEnd;
+  /// Object that needs to be inserted into the first build zone of the optics line.
   std::shared_ptr<attachSystem::ContainedGroup> preInsert;
   /// construction space for main object
   attachSystem::BlockZone buildZone;           ///< Common section before divider
@@ -173,7 +175,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> monoSlitsTube;
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> monoSlits;
   /// Flange converter
-  std::shared_ptr<constructSystem::VacuumPipe> slitsAOut;
+  std::shared_ptr<constructSystem::FlangePlate> slitsAOut;
   /// Connector to next beam view
   std::shared_ptr<constructSystem::Bellows> bellowH;
   /// Beam viewer 2
@@ -190,7 +192,7 @@ class danmaxOpticsLine :
   /// Connector to reverse beamstop
   std::shared_ptr<constructSystem::Bellows> bellowJ;
 
-  std::shared_ptr<constructSystem::VacuumPipe> revMonoSlitsIn;
+  std::shared_ptr<constructSystem::FlangePlate> revMonoSlitsIn;
   std::shared_ptr<constructSystem::PipeTube> revMonoSlitsTube;
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> revMonoSlits;
   std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
@@ -206,15 +208,10 @@ class danmaxOpticsLine :
 
   /// bellows from second mono
   std::shared_ptr<constructSystem::Bellows> bellowK;
-  /// adaptor plate from CF63->CF40
-  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorA;
   /// The main mono shutter
-  std::shared_ptr<xraySystem::MonoShutter> monoShutter;
-  /// adaptor plate from CF63->CF40
-  std::shared_ptr<constructSystem::VacuumPipe> monoAdaptorB;
-  /// bellows from second mono
-  std::shared_ptr<constructSystem::GateValveCylinder> gateG;
-
+  std::shared_ptr<xraySystem::MonoShutterR3> monoShutter;
+  /// Bellows from Mono Shutter
+  std::shared_ptr<constructSystem::Bellows> bellowL;
 
 
   double outerLeft;    ///< Left Width for cut rectangle
@@ -268,6 +265,9 @@ class danmaxOpticsLine :
 
   /// Assignment to inner void
   void setInnerMat(const int M) { innerMat=M; }
+  void setFrontEnd(const std::shared_ptr<attachSystem::FixedComp>& FE){
+    frontEnd = FE;
+  }
   /// Assignment to extra for first volume
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }

@@ -178,6 +178,7 @@
 #include "FlangeDome.h"
 #include "DomeConnector.h"
 #include "MonoShutter.h"
+#include "MonoShutterR3.h"
 #include "RoundMonoShutter.h"
 #include "GuideUnit.h"
 #include "PlateUnit.h"
@@ -262,7 +263,7 @@ makeSingleItem::build(Simulation& System,
 	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
 	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
-	"MonoShutter","RoundMonoShutter","TubeDetBox", "TDCBeamDump",
+	"MonoShutter","MonoShutterR3","RoundMonoShutter","TubeDetBox", "TDCBeamDump",
 	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama",
@@ -1769,6 +1770,17 @@ makeSingleItem::build(Simulation& System,
 
 	ms->createAll(System,World::masterOrigin(),0);
 	ms->insertAllInCell(System,voidCell);
+	return;
+      }
+    if (item == "MonoShutterR3" )
+      {
+	std::shared_ptr<xraySystem::MonoShutterR3>
+	  msr3(new xraySystem::MonoShutterR3("MonoShutterR3"));
+
+	OR.addObject(msr3);
+
+	msr3->createAll(System,World::masterOrigin(),0);
+	msr3->insertInCell(System,voidCell);
 	return;
       }
     if (item == "RoundMonoShutter" )

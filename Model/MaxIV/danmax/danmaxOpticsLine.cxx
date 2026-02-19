@@ -87,7 +87,7 @@
 #include "JawValveTube.h"
 #include "FlangeMount.h"
 #include "MonoBox.h"
-#include "MonoShutter.h"
+#include "MonoShutterR3.h"
 #include "BeamPair.h"
 #include "DCMTank.h"
 #include "MonoBlockXstals.h"
@@ -97,7 +97,7 @@
 #include "TwinPipe.h"
 
 #include "danmaxOpticsLine.h"
-
+#include "FlangePlate.h"
 
 
 namespace xraySystem
@@ -165,7 +165,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
       std::make_shared<xraySystem::BeamPair>(newName+"MonoSlitsX"),
       std::make_shared<xraySystem::BeamPair>(newName+"MonoSlitsZ")
 	}),
-  slitsAOut(new constructSystem::VacuumPipe(newName+"SlitsAOut")),
+  slitsAOut(new constructSystem::FlangePlate(newName+"SlitsAOut")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   viewTubeB(new constructSystem::PortTube(newName+"ViewTubeB")),
   viewTubeBScreen(new xraySystem::FlangeMount(newName+"ViewTubeBScreen")),
@@ -174,7 +174,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   lensBox(new xraySystem::MonoBox(newName+"LensBox")),
   CRLGateOut(new constructSystem::GateValveCylinder(newName+"CRLGateOut")),
   bellowJ(new constructSystem::Bellows(newName+"BellowJ")),
-  revMonoSlitsIn(new constructSystem::VacuumPipe(newName+"RevMonoSlitsIn")),
+  revMonoSlitsIn(new constructSystem::FlangePlate(newName+"RevMonoSlitsIn")),
   revMonoSlitsTube(new constructSystem::PipeTube(newName+"RevMonoSlitsTube")),
   revMonoSlits({
       std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlitsX"),
@@ -183,10 +183,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   revBeamStopTube(new constructSystem::PipeTube(newName+"RevBeamStopTube")),
   revBeamStop(new xraySystem::BremBlock(newName+"RevBeamStop")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
-  monoAdaptorA(new constructSystem::VacuumPipe(newName+"MonoAdaptorA")),
-  monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-  monoAdaptorB(new constructSystem::VacuumPipe(newName+"MonoAdaptorB")),
-  gateG(new constructSystem::GateValveCylinder(newName+"GateG"))
+  monoShutter(new xraySystem::MonoShutterR3(newName+"MonoShutter")),
+  bellowL(new constructSystem::Bellows(newName+"BellowL"))
  /*!
     Constructor
     \param Key :: Name of construction key
@@ -257,10 +255,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(revBeamStopTube);
   OR.addObject(revBeamStop);
   OR.addObject(bellowK);
-  OR.addObject(monoAdaptorA);
   OR.addObject(monoShutter);
-  OR.addObject(monoAdaptorB);
-  OR.addObject(gateG);
+  OR.addObject(bellowL);
 }
 
 danmaxOpticsLine::~danmaxOpticsLine()
@@ -329,22 +325,33 @@ danmaxOpticsLine::constructBremColl1Tube
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructBremColl1Tube");
 
-  int outerCell;
-
   bremColl1Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  bremColl1Tube->createAll(System,initFC,sideName);
+  bremColl1Tube->createAll(System,*frontEnd,0);
 
+  const constructSystem::portItem& VPA=bremColl1Tube->getPort(0);
   const constructSystem::portItem& VPB=bremColl1Tube->getPort(1);
 
-  outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
+  bellowA->setBack(VPA.getLinkSurf(2));
+  bellowA->createAll(System,initFC,sideName);
+  bellowA->insertAllInCell(System,
+    buildZone.createUnit(System,VPA,VPA.getSideIndex("#OuterPlate")));
+
+  int outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
   bremColl1Tube->insertAllInCell(System,outerCell);
 
   bremColl1->addInsertCell(bremColl1Tube->getCell("Void"));
   bremColl1->createAll(System,*bremColl1Tube,"Origin");
 
+  // When using absolute positioning, YStep variables needs to be adjusted.
+  const bool useHighPassFilterAbsY = false;
+  if(!useHighPassFilterAbsY){
   constructSystem::constructUnit
     (System,buildZone,VPB,"OuterPlate",*highPassFilter);
-
+  } else {
+    highPassFilter->createAll(System,*frontEnd,0);
+    outerCell=buildZone.createUnit(System,*highPassFilter,"back");
+    highPassFilter->insertAllInCell(System,outerCell);
+  }
   return;
 }
 
@@ -366,16 +373,27 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
 
   viewTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   viewTube->setOuterVoid();
-  viewTube->createAll(System,initFC,sideName);
+  viewTube->createAll(System,*frontEnd,0);
   viewTube->intersectPorts(System,0,2);
 
   const constructSystem::portItem& VPA=viewTube->getPort(0);
   const constructSystem::portItem& VPB=viewTube->getPort(1);
   const constructSystem::portItem& VPC=viewTube->getPort(2); // screen)
 
-  VPC.insertInCell(System,buildZoneDanMAX.getLastCell("Unit"));
+  valve7->setRotation(0.0,180.0,0.0);
+  valve7->createAll(System,VPA,VPA.getSideIndex("OuterPlate"));
 
-  int outerCell=buildZoneDanMAX.createUnit
+  bellowAfterMono->setBack(initFC,sideName);
+  bellowAfterMono->createAll(System,*valve7,"back");
+
+  bellowAfterMono->insertAllInCell(System,buildZone.createUnit(System,*bellowAfterMono,"front"));
+
+  int outerCell=buildZone.createUnit(System,*valve7,"front");
+  valve7->insertInCell(System,outerCell);
+  VPC.insertInCell(System,outerCell);
+
+  outerCell=buildZone.createUnit
+
     (System,VPB,VPB.getSideIndex("OuterPlate"));
   this->addCell("OuterVoid",outerCell);
 
@@ -424,8 +442,14 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructViewScreenB");
 
-  constructSystem::constructUnit
-    (System,buildZoneDanMAX,initFC,sideName,*viewTubeB);
+  viewTubeB->createAll(System,*frontEnd,0);
+
+  bellowH->setBack(initFC,sideName);
+  bellowH->createAll(System,*viewTubeB,"front");
+
+  bellowH->insertAllInCell(System,buildZone.createUnit(System,*bellowH,"front"));
+
+  viewTubeB->insertAllInCell(System,buildZone.createUnit(System,*viewTubeB,"back"));
 
   const constructSystem::portItem& VPI=viewTubeB->getPort(1);
   viewTubeBScreen->addInsertCell("Body",VPI.getCell("Void"));
@@ -454,11 +478,23 @@ danmaxOpticsLine::constructRevBeamStopTube
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructRevBeamStopTube");
 
-  constructSystem::constructUnit
-    (System,buildZoneDanMAX,initFC,sideName,*revMonoSlitsIn);
+  revMonoSlitsTube->createAll(System,*frontEnd,0);
 
-  constructSystem::constructUnit
-    (System,buildZoneDanMAX,*revMonoSlitsIn,"back",*revMonoSlitsTube);
+  revMonoSlitsIn->createAll(System,*revMonoSlitsTube,"front");
+
+  bellowJ->setBack(initFC,sideName);
+  bellowJ->createAll(System,*revMonoSlitsIn,"back");
+
+  bellowJ->insertAllInCell(
+    System,buildZone.createUnit(System,*bellowJ,"front")
+  );
+
+  revMonoSlitsIn->insertInCell(
+    System,buildZone.createUnit(System,*revMonoSlitsIn,"front")
+  );
+
+  revMonoSlitsTube->insertAllInCell(
+    System,buildZone.createUnit(System,*revMonoSlitsTube,"back"));
 
  for(auto i: std::vector<size_t>{0,1}){
     const constructSystem::portItem& port0=revMonoSlitsTube->getPort(2*i);
@@ -480,8 +516,8 @@ danmaxOpticsLine::constructRevBeamStopTube
   revBeamStop->createAll(System,*revBeamStopTube,"Origin");
 
   const constructSystem::portItem& VPB=revBeamStopTube->getPort(1);
-  int outerCell=buildZoneDanMAX.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
-  revBeamStopTube->insertAllInCell(System,outerCell);
+  revBeamStopTube->insertAllInCell(System,
+    buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate")));
 
   constructSystem::constructUnit
     (System,buildZoneDanMAX,VPB,"OuterPlate",*bellowK);
@@ -503,8 +539,13 @@ danmaxOpticsLine::constructMono(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMono");
 
-  constructSystem::constructUnit
-    (System,buildZoneDanMAX,initFC,sideName,*monoVessel);
+  monoVessel->createAll(System,*frontEnd,0);
+
+  bellowE->setBack(initFC,sideName);
+  bellowE->createAll(System,*monoVessel,"front");
+  bellowE->insertAllInCell(System,buildZone.createUnit(System,*bellowE,"front"));
+
+  monoVessel->insertInCell(System,buildZone.createUnit(System,*monoVessel,"back"));
 
   mbXstals->addInsertCell(monoVessel->getCell("Void"));
   mbXstals->createAll(System,*monoVessel,0);
@@ -526,12 +567,16 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMirrorMono");
 
-  constructSystem::constructUnit(System,buildZoneDanMAX,initFC,sideName,*MLMVessel);
+  MLMVessel->createAll(System,*frontEnd,0);
+
+  bellowF->setBack(initFC,sideName);
+  bellowF->createAll(System,*MLMVessel,"front");
+  bellowF->insertAllInCell(System,buildZone.createUnit(System,*bellowF,"front"));
+
+  MLMVessel->insertInCell(System,buildZone.createUnit(System,*MLMVessel,"back"));
 
   MLM->addInsertCell(MLMVessel->getCell("Void"));
-  //  MLM->copyCutSurf("innerCylinder",*MLMVessel,"innerRadius");
   MLM->createAll(System,*MLMVessel,0);
-
 
   return;
 }
@@ -549,10 +594,21 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constrcutSlitTube");
 
-  int outerCell;
+  slitTube->createAll(System,*frontEnd,0);
 
-  outerCell=constructSystem::constructUnit
-    (System,buildZoneDanMAX,initFC,sideName,*slitTube);
+  bellowD->createAll(System,*slitTube,"front");
+
+  lauePipe->setBack(initFC,sideName);
+  lauePipe->createAll(System,*bellowD,"back");
+
+  lauePipe->insertAllInCell(System,
+    buildZone.createUnit(System,*lauePipe,"front"));
+
+  bellowD->insertAllInCell(System,
+    buildZone.createUnit(System,*bellowD,"front"));
+
+  int outerCell=buildZone.createUnit(System,*slitTube,"back");
+  slitTube->insertAllInCell(System,outerCell);
 
   slitTube->intersectPorts(System,0,1);
   slitTube->intersectPorts(System,1,2);
@@ -604,8 +660,18 @@ danmaxOpticsLine::constructBeamStopTube
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructBeamStopTube");
 
-  constructSystem::constructUnit
-    (System,buildZoneDanMAX,initFC,sideName,*beamStopInPipe);
+  beamStopInPipe->createAll(System,*frontEnd,0);
+
+  valve9->createAll(System,*beamStopInPipe,"front");
+  bellowG->setBack(initFC,sideName);
+  bellowG->createAll(System,*valve9,"back");
+
+  bellowG->insertAllInCell(System,buildZone.createUnit(System,*bellowG,"front"));
+
+  valve9->insertInCell(System,buildZone.createUnit(System,*valve9,"front"));
+
+  int outerCell=buildZone.createUnit(System,*beamStopInPipe,"back");
+  beamStopInPipe->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,buildZoneDanMAX,*beamStopInPipe,"back",*beamStopSection);
@@ -616,9 +682,8 @@ danmaxOpticsLine::constructBeamStopTube
 
   const constructSystem::portItem& VPB=beamStopTube->getPort(1);
 
-  int outerCell=buildZoneDanMAX.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
-  beamStopSection->insertAllInCell(System,buildZoneDanMAX.getLastCell("Unit"));
-  beamStopTube->insertAllInCell(System,outerCell);
+  beamStopTube->insertAllInCell(System,buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate")));
+  beamStopSection->insertAllInCell(System,buildZone.getLastCell("Unit"));
 
   beamStop->addInsertCell(beamStopTube->getCell("Void"));
   beamStop->createAll(System,*beamStopTube,"Origin");
@@ -657,26 +722,23 @@ danmaxOpticsLine::constructBeamStopTube
 
 void
 danmaxOpticsLine::constructMonoShutter(Simulation& System,
-				       const attachSystem::FixedComp& FC,
-				       const std::string& linkName)
+				       const attachSystem::FixedComp& initFC,
+				       const std::string& sideName)
   /*!
     Construct a monoshutter system
     \param System :: Simulation for building
-    \param FC :: FixedComp for start point
-    \param linkName :: side index
+    \param initFC :: FixedComp for start point
+    \param sideName :: side index
     \return outerCell
    */
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMonoShutter");
 
   constructSystem::constructUnit
-    (System,buildZoneDanMAX,FC,linkName,*monoAdaptorA);
+    (System,buildZone,initFC,sideName,*monoShutter);
 
   constructSystem::constructUnit
-    (System,buildZoneDanMAX,*monoAdaptorA,"back",*monoShutter);
-
-  constructSystem::constructUnit
-    (System,buildZoneDanMAX,*monoShutter,"back",*monoAdaptorB);
+    (System,buildZone,*monoShutter,"back",*bellowL);
 
   return;
 }
@@ -843,32 +905,24 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("danmaxOpticsLine","buildObjects");
 
-  int outerCell;
-
   buildZone.addInsertCells(this->getInsertCells());
 
-  // dummy space for first item
-  // This is a mess but want to preserve insert items already
-  // in the hut beam port
+  valve4->createAll(System,*frontEnd,0);
+  triggerPipe->setRotation(0.0, 180.0, 0.0);
+  triggerPipe->createAll(System,*valve4,"#front");
+  pipeInit->setBack(*triggerPipe,"back");
   pipeInit->createAll(System,*this,0);
-  outerCell=buildZone.createUnit(System,*pipeInit,"#front");
 
+  if(preInsert)
+    preInsert->insertAllInCell(System,buildZone.createUnit(System,*pipeInit,"#front"));
 
-  if (preInsert)
-    preInsert->insertAllInCell(System,outerCell);
-  outerCell=buildZone.createUnit(System,*pipeInit,"back");
-  pipeInit->insertAllInCell(System,outerCell);
+  pipeInit->insertAllInCell(System,buildZone.createUnit(System,*pipeInit,"back"));
 
-  constructSystem::constructUnit
-    (System,buildZone,*pipeInit,"back",*triggerPipe);
+  triggerPipe->insertInCell(System,buildZone.createUnit(System,*triggerPipe,"front"));
 
-  constructSystem::constructUnit
-    (System,buildZone,*triggerPipe,"back",*valve4);
+  valve4->insertInCell(System,buildZone.createUnit(System,*valve4,"back"));
 
-  constructSystem::constructUnit
-    (System,buildZone,*valve4,"back",*bellowA);
-
-  constructBremColl1Tube(System, *bellowA, "back");
+  constructBremColl1Tube(System, *valve4, "back");
 
   constructSystem::constructUnit
     (System,buildZone,*highPassFilter,"back",*valve5);
@@ -876,15 +930,50 @@ danmaxOpticsLine::buildObjects(Simulation& System)
   constructSystem::constructUnit(System,buildZone,*valve5,"back",*pipeA);
   constructSystem::constructUnit(System,buildZone,*pipeA,"back",*bellowC);
 
-  buildZone.createUnit(System);         // build to end (removed later)
-  buildZone.rebuildInsertCells(System); // rebuild the whole track
+  constructSlitTube(System,*bellowC,"back");
 
-  buildSplitter(System,*bellowC,"back");
-  setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
-  System.removeCell(buildZone.getLastCell("Unit"));  // remove cell built above
+  constructSystem::constructUnit
+    (System,buildZone,*slitTube,"back",*valve6);
 
+  constructMono(System,*valve6,"back");
 
-  lastComp=gateG;
+  constructViewScreen(System,*monoVessel,"back");
+
+  constructMirrorMono(System,*valve8,"back");
+
+  constructBeamStopTube(System,*MLMVessel,"back");
+
+  constructViewScreenB(System,*slitsAOut,"back");
+
+  lensBox->createAll(System,*frontEnd,0);
+
+  CRLGateIn->createAll(System,*lensBox,"front");
+
+  bellowI->setBack(*viewTubeB,"back");
+  bellowI->createAll(System,*CRLGateIn,"back");
+
+  bellowI->insertAllInCell(System,buildZone.createUnit(System,*bellowI,"front"));
+
+  CRLGateIn->insertInCell(System,buildZone.createUnit(System,*CRLGateIn,"front"));
+
+  lensBox->insertInCell(System,buildZone.createUnit(System,*lensBox,"back"));
+
+  constructSystem::constructUnit
+    (System,buildZone,*lensBox,"back",*CRLGateOut);
+
+  constructRevBeamStopTube(System,*CRLGateOut,"back");
+
+  constructMonoShutter(System,*bellowK,"back");
+
+  int outerCell = buildZone.createUnit(System);
+  for (int i=0; i<4; ++i) {
+    MonteCarlo::Object* OPtr = System.findObject(outerCell-i);
+    OPtr->addIntersection(getRule("BackPlateFloorShine"));
+  }
+
+  buildZone.rebuildInsertCells(System);
+  setCell("LastVoid",buildZone.getCells("Unit").back());
+  lastComp=bellowL;
 
   return;
 

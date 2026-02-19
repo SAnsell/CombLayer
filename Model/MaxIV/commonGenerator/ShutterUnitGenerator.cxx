@@ -193,6 +193,7 @@ template void ShutterUnitGenerator::setCF<CF63>();
 template void ShutterUnitGenerator::setCF<CF100>();
 template void ShutterUnitGenerator::setCF<CF120>();
 template void ShutterUnitGenerator::setCF<CF150>();
+template void ShutterUnitGenerator::setCF<CF200>();
 
 template void ShutterUnitGenerator::setOutCF<CF40>();
 template void ShutterUnitGenerator::setOutCF<CF63>();

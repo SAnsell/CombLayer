@@ -149,8 +149,10 @@ PipeTube::createSurfaces()
 
   ExternalCut::makeShiftedSurf(SMap,"front",buildIndex+201,Y,
 			       flangeACapThick);
+  SurfMap::addSurf("FlangeACapInside",-SMap.realSurf(buildIndex+201));
   ExternalCut::makeShiftedSurf(SMap,"back",buildIndex+202,Y,
 			       -(flangeBCapThick));
+  SurfMap::addSurf("FlangeBCapInside",-SMap.realSurf(buildIndex+202));
   
   // void space:
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
@@ -355,6 +357,10 @@ PipeTube::createLinks()
   return;
 }
 
+bool PipeTube::portIsOnCap(const Geometry::Vec3D v){
+  return (v.X() == 0.0 && v.Z() == 0.0);
+}
+
 void
 PipeTube::createPorts(Simulation& System)
   /*!
@@ -363,31 +369,55 @@ PipeTube::createPorts(Simulation& System)
    */
 {
   ELog::RegMethod RegA("PipeTube","createPorts");
-  // both OUTWARD
-  MonteCarlo::Object* OPtr=
-    CellMap::getCellObject(System,"MainTube");
 
-  const HeadRule innerSurf(SurfMap::getSurfRules("#VoidCyl"));
-  const HeadRule outerSurf(SurfMap::getSurfRules("OuterCyl"));
+  std::vector<MonteCarlo::Object*> insertObj;
+  std::vector<HeadRule> innerSurf, outerSurf;
+  for(auto pA: PAxis){
+    if(portIsOnCap(pA)){
+      if(pA.Y() > 0.0){
+        if(flangeBCapThick>Geometry::zeroTol){
+          insertObj.push_back(CellMap::getCellObject(System,"BackCap"));
+          innerSurf.push_back(SurfMap::getSurfRules("#FlangeBCapInside"));
+          outerSurf.push_back(getBackComplement());
+        } else {
+          ELog::EM<<"Attempt to build a port on a flange without a cap."<<ELog::endErr;
+          return;
+        }
+      } else {
+        if(flangeACapThick>Geometry::zeroTol){
+          insertObj.push_back(CellMap::getCellObject(System,"FrontCap"));
+          innerSurf.push_back(SurfMap::getSurfRules("FlangeACapInside"));
+          outerSurf.push_back(getFrontComplement());
+        } else {
+          ELog::EM<<"Attempt to build a port on a flange without a cap."<<ELog::endErr;
+          return;
+        }
+      }
+    } else {
+      insertObj.push_back(CellMap::getCellObject(System,"MainTube"));
+      innerSurf.push_back(SurfMap::getSurfRules("#VoidCyl"));
+      if(outerVoid){
+        outerSurf.push_back(SurfMap::getSurfRules("FlangeACyl"));
+      } else {
+        outerSurf.push_back(SurfMap::getSurfRules("OuterCyl"));
+      }
+    }
+  }
+
+  createPorts(System,insertObj,innerSurf,outerSurf);
 
   if (outerVoid)
     {
-      const HeadRule flangeSurf(SurfMap::getSurfRules("FlangeACyl"));
-      createPorts(System,OPtr,innerSurf,flangeSurf);
       HeadRule OVoidHR=SurfMap::getSurfRule("#OuterRadius");
       OVoidHR.populateSurf();
       for(size_t i=0;i<Ports.size();i++)
-	{
-	  const Geometry::Vec3D Pt = Ports[i]->getLinkPt("FlangePlate");
-	  if (OVoidHR.isValid(Pt))
-	    Ports[i]->addFlangeCut(CellMap::getCellObject(System,"OuterVoid"));
-
-	}
+      {
+        const Geometry::Vec3D Pt = Ports[i]->getLinkPt("FlangePlate");
+        if (OVoidHR.isValid(Pt))
+          Ports[i]->addFlangeCut(CellMap::getCellObject(System,"OuterVoid"),true);
+      }
     }
-  else
-    createPorts(System,OPtr,innerSurf,outerSurf);
 }
 
-  
   
 }  // NAMESPACE constructSystem

@@ -73,7 +73,15 @@ class ShutterUnitGenerator
   template<typename CF> void setOutCF();
   template<typename CF> void setTopCF();
 
-  /// assginment to thread length
+  void setBlock(const double h, const double l, const double w){
+    height=h;
+    thick=l;
+    width=w;
+  }
+  void setBlock(const double h, const double l, const double w, const std::string bM){
+    setBlock(h,l,w);
+    mat=bM;
+  }
   void setThreadLength(const double L) { threadLength=L; }
   void setLift(const double,const double);
   void setMat(const std::string&,const double);

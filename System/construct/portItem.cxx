@@ -556,14 +556,22 @@ portItem::addPortCut(MonteCarlo::Object* mainTube) const
 }
 
 void
-portItem::addFlangeCut(MonteCarlo::Object* obj) const
+portItem::addFlangeCut(MonteCarlo::Object* obj, const bool force) const
   /*!
-    Adds the port exclude to the main tube
+    Adds the flange exclude to the main tube.
+
+    By default, this operation is not performed when the port has an outer void of its 
+    own because it may be more efficient to subtract the entire outer void from the 
+    main tube.
+    Depending on the geometry or build order, this may not always be efficient or 
+    possible. Therefore, the default behavior can be overridden with the "force" option.
+
     \param mainTube :: object for main tube
+    \param force :: Ignore own outer void.
   */
 {
   ELog::RegMethod RegA("portItem","addFlangeCut");
-  if (!outerFlag)
+  if (force || !outerFlag)
     {
       const HeadRule HR=
 	ModelSupport::getHeadRule(SMap,buildIndex,"(27 : -102)");

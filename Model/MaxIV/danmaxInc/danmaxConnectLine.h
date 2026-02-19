@@ -56,14 +56,15 @@ class danmaxConnectLine :
 {
  private:
 
+  /// Pointer to hutch for use in positioning.
+  std::shared_ptr<attachSystem::FixedComp> exptHut2;
+
   /// build unit for divisions
   attachSystem::BlockZone buildZone;
 
   /// Main system
   std::shared_ptr<xraySystem::SqrShield> connectShield;
 
-  /// Pipe out
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;    
   std::shared_ptr<constructSystem::Bellows> bellowA;    ///< Bellow to pump
   std::shared_ptr<constructSystem::VacuumPipe> flangeA;  ///< adaptor flange
 
@@ -88,8 +89,14 @@ class danmaxConnectLine :
   /// Register pipe
   void registerJoinPipe(const std::shared_ptr<constructSystem::VacuumPipe>& JP)
     { JPipe=JP; }
+
+  void setExptHut2(const std::shared_ptr<attachSystem::FixedComp>& EH2){
+    exptHut2 = EH2;
+  }
   
-  void insertFirstRegion(Simulation&,const int);
+  int getConnectShieldCell(const std::string cell) const;
+  attachSystem::BlockZone getBuildZone(){return buildZone;};
+  std::shared_ptr<attachSystem::FixedComp> getFirstElement();
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

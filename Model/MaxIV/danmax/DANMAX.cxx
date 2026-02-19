@@ -91,6 +91,7 @@ DANMAX::DANMAX(const std::string& KN) :
   opticsHut(new OpticsStepHutch(newName+"OpticsHut")),
   opticsBeam(new danmaxOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  guillotineOHToEH2(new xraySystem::PipeShield(newName+"GuillotineOHToEH2")),
   connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut1(new xraySystem::ExperimentalHutch(newName+"ExptHut1")),
@@ -112,6 +113,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
+  OR.addObject(guillotineOHToEH2);
   OR.addObject(connectUnit);
   OR.addObject(joinPipeC);
   OR.addObject(exptHut1);
@@ -189,14 +191,13 @@ DANMAX::build(Simulation& System,
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setCutSurf("BackPlateFloorShine",opticsHut->getFullRule("#BackPlateFloorShine"));
   opticsBeam->setPreInsert(joinPipe);
+  opticsBeam->setFrontEnd(frontBeam);
   opticsBeam->createAll(System,*joinPipe,2);
 
   if (stopPoint=="opticsHutch") return;
 
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
-  joinPipeB->setFront(*opticsBeam,2);
-  joinPipeB->createAll(System,*opticsBeam,2);
 
   exptHut2->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut2->setCutSurf("frontWall",*opticsHut,"back");
@@ -205,25 +206,34 @@ DANMAX::build(Simulation& System,
   exptHut2->createAll(System,*opticsHut,"back");
 
   // two ways to insert BackPlateOuter into expt. hutch2:
-  const std::set<std::string> cells = {"Void", "FloorShineRingWallVoid", "InnerSkinRingWall", "LeadRingWall", "OuterSkinRingWall", "OuterRightVoid"};
+  const std::set<std::string> cells = {
+    "Void", "FloorShineRingWallVoid", "InnerSkinRingWall", "LeadRingWall",
+    "OuterSkinRingWall", "OuterRightVoid"};
   for (const auto& c : cells)
     opticsHut->insertInCell("BackPlateOuter", System, exptHut2->getCell(c));
   // the same but ~x10 slower (~2.5 ms vs 250 us) since needs to check all cells:
   //  attachSystem::addToInsertSurfCtrl(System, *exptHut2, opticsHut->getCC("BackPlateOuter"));
 
+  connectUnit->setExptHut2(exptHut2);
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(
     {
       exptHut2->getCell("Void"),
       exptHut2->getCell("FloorShineRingWallVoid"),
-      //      exptHut2->getCell("FrontVoid")
     }
   );
-  connectUnit->setFront(*opticsHut, "backPlateOuter");
+  connectUnit->setFront(*opticsHut,"backPlateOuter");
   connectUnit->setBack(*exptHut2,"innerBack");
-  connectUnit->createAll(System,*joinPipeB,"back");
 
+  connectUnit->createAll(System,*exptHut2,"#front");
+
+  joinPipeB->setBack(*connectUnit->getFirstElement(),"back");
+  joinPipeB->createAll(System,*opticsBeam,2);
   joinPipeB->insertAllInCell(System,connectUnit->getCell("FirstVoid"));
+
+  guillotineOHToEH2->addAllInsertCell(opticsBeam->getCell("LastVoid"));
+  guillotineOHToEH2->setCutSurf("inner",*joinPipeB,"outerPipe");
+  guillotineOHToEH2->createAll(System,*opticsHut,"innerBack");
 
   if (stopPoint=="exptHut2") return;
 
@@ -235,10 +245,20 @@ DANMAX::build(Simulation& System,
   joinPipeC->insertAllInCell(System,exptHut1->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut1->getCell("EntranceHole"));
 
-  // pipe shield goes around joinPipeC:
-  guillotine->addAllInsertCell(exptHut1->getCell("Void"));
-  guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
-  guillotine->createAll(System,*exptHut1,"innerFront");
+  // TODO: The following guillotine probably does not exist, therefore the code is
+  // commented.
+  // guillotine->addAllInsertCell(
+  //   {
+  //     exptHut2->getCell("Void"),
+  //     connectUnit->getConnectShieldCell("BackOuterVoid"),
+  //     connectUnit->getConnectShieldCell("BackOuterSkin"),
+  //     connectUnit->getConnectShieldCell("BackWall"),
+  //     connectUnit->getConnectShieldCell("BackInnerSkin"),
+  //     connectUnit->getBuildZone().getLastCell("Unit")
+  //   }
+  // );
+  // guillotine->setCutSurf("inner",*joinPipeC,"outerPipe");
+  // guillotine->createAll(System,*exptHut1,"front");
 
   exptBeam->addInsertCell(exptHut1->getCell("Void"));
   exptBeam->createAll(System,*joinPipeC,2);

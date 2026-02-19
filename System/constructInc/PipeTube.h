@@ -54,6 +54,7 @@ class PipeTube :
   void createObjects(Simulation&) override;
   void createLinks() override;
 
+  bool portIsOnCap(Geometry::Vec3D);
   
  public:
 
@@ -64,7 +65,6 @@ class PipeTube :
 
   using VirtualTube::createPorts;
   void createPorts(Simulation&) override;
-  
 };
 
 }

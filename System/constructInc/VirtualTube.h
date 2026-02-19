@@ -67,7 +67,7 @@ class VirtualTube :
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
   /// Vector of ports FixedComp
-  std::vector<std::shared_ptr<portItem>> Ports;     
+  std::vector<std::shared_ptr<portItem>> Ports;
 
   virtual void applyPortRotation();
 
@@ -105,9 +105,17 @@ class VirtualTube :
   void intersectPorts(Simulation&,const size_t,const size_t) const;
   void intersectVoidPorts(Simulation&,const size_t,const size_t) const;
   const portItem& getPort(const size_t) const;
+  size_t getNPorts() const {return Ports.size();};
 
+  virtual void createPort(Simulation&,MonteCarlo::Object*,
+    std::shared_ptr<constructSystem::portItem>,const Geometry::Vec3D portCentre,
+    const Geometry::Vec3D portAxis,const HeadRule&,const HeadRule&);
   virtual void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
+  virtual void createPorts(Simulation&,const std::vector<MonteCarlo::Object*>,
+		   const std::vector<HeadRule>,const std::vector<HeadRule>);
+  virtual void createPortsForce(Simulation&,const std::vector<MonteCarlo::Object*>,
+		   const std::vector<HeadRule>,const std::vector<HeadRule>);
   virtual void createPorts(Simulation&) =0;
 
   void insertAllInCell(Simulation&,const int) const override;

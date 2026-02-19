@@ -68,6 +68,7 @@ class ContainedGroup
   ContainedGroup(const std::string&,const std::string&,
 		 const std::string&,const std::string&,
 		 const std::string&,const std::string&);
+  ContainedGroup(const std::vector<std::string>);
   ContainedGroup(const ContainedGroup&);
   ContainedGroup& operator=(const ContainedGroup&);
   virtual ~ContainedGroup();
