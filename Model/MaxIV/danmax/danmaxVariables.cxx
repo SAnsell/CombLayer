@@ -981,8 +981,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BeamPairGen.generateMount(Control,viewKey+"MonoSlitsZ",0);
 
   FlangePlateGenerator flangePlateGen;
-  flangePlateGen.setFlangeLen(CF150::flangeLength); // [22]
-  flangePlateGen.setFlange(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius);
+  flangePlateGen.setCF<CF150>(CF40::innerRadius); // [22]
   flangePlateGen.generateFlangePlate(Control,viewKey+"SlitsAOut");
 }
 
@@ -1010,8 +1009,7 @@ revBeamStopPackage(FuncDataBase& Control,
   FlangePlateGenerator flangePlateGen;
 
   const double slitsInLength = CF150::flangeLength; // [23]
-  flangePlateGen.setFlangeLen(slitsInLength); // [23]
-  flangePlateGen.setFlange(CF40::innerRadius, CF150::flangeRadius-CF40::innerRadius); // [23]
+  flangePlateGen.setCF<CF150>(CF40::innerRadius); // [23]
   flangePlateGen.generateFlangePlate(Control,viewKey+"RevMonoSlitsIn");
 
   // Tube for Monochromatic Slits
