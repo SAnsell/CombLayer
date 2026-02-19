@@ -56,6 +56,9 @@ class danmaxConnectLine :
 {
  private:
 
+  /// Pointer to hutch for use in positioning.
+  std::shared_ptr<attachSystem::FixedComp> exptHut2;
+
   /// build unit for divisions
   attachSystem::BlockZone buildZone;
 
@@ -88,6 +91,10 @@ class danmaxConnectLine :
   /// Register pipe
   void registerJoinPipe(const std::shared_ptr<constructSystem::VacuumPipe>& JP)
     { JPipe=JP; }
+
+  void setExptHut2(const std::shared_ptr<attachSystem::FixedComp>& EH2){
+    exptHut2 = EH2;
+  }
   
   int getConnectShieldCell(const std::string cell) const;
   attachSystem::BlockZone getBuildZone(){return buildZone;};

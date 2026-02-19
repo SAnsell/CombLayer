@@ -220,6 +220,7 @@ DANMAX::build(Simulation& System,
   // the same but ~x10 slower (~2.5 ms vs 250 us) since needs to check all cells:
   //  attachSystem::addToInsertSurfCtrl(System, *exptHut2, opticsHut->getCC("BackPlateOuter"));
 
+  connectUnit->setExptHut2(exptHut2);
   connectUnit->registerJoinPipe(joinPipeC);
   connectUnit->setInsertCell(
     {

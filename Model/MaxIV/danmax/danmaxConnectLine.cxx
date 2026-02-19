@@ -145,19 +145,22 @@ danmaxConnectLine::buildObjects(Simulation& System,
   buildZone.setSurround(connectShield->getSurround());
   buildZone.setInnerMat(connectShield->getInnerMat());
 
-      
-  // insert first tube:
-  constructSystem::constructUnit
-    (System,buildZone,beamFC,beamFC.getSideName(sideIndex),*pipeA);
+  ionPumpA->createAll(System,*exptHut2,0);
 
-  constructSystem::constructUnit
-    (System,buildZone,*pipeA,"back",*bellowA);
+  flangeA->createAll(System,*ionPumpA,"front");
 
-  constructSystem::constructUnit
-    (System,buildZone,*bellowA,"back",*flangeA);
+  bellowA->createAll(System,*flangeA,"back");
 
-  constructSystem::constructUnit
-    (System,buildZone,*flangeA,"back",*ionPumpA);
+  pipeA->setBack(beamFC,"back");
+  pipeA->createAll(System,*bellowA,"back");
+
+  pipeA->insertAllInCell(System,buildZone.createUnit(System,*pipeA,"front"));
+
+  bellowA->insertAllInCell(System,buildZone.createUnit(System,*bellowA,"front"));
+
+  flangeA->insertAllInCell(System,buildZone.createUnit(System,*flangeA,"front"));
+
+  ionPumpA->insertAllInCell(System,buildZone.createUnit(System,*ionPumpA,"back"));
 
   constructSystem::constructUnit
     (System,buildZone,*ionPumpA,"back",*flangeB);

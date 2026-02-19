@@ -170,7 +170,10 @@ const double beamMirrorShift = -1.0;
 // For simplicity, it was decided to use the outer width of the Optics Hutch for all
 // hutches.
 const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
-
+  // The actual length of hutch 2 is 5366 mm as shown in [3].
+  // However, to match the simplified model of the optics hutch, use the slightly
+  // larger value given in [8].
+const double exptHut2Length = 545.8;
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -472,14 +475,17 @@ connectVariables(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
 
-  PipeGen.setBFlangeCF<setVariable::CF100>();
+  PipeGen.setAFlangeCF<setVariable::CF100>();
   PipeGen.generatePipe(Control,beamName+"FlangeA",5.0);
 
   // Gamma Vacuum 100L TiTan Ion Pump [9-11]
   // Geometry simplified to a single pipe with the appropriate standard.
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<setVariable::CF100>();
-  PipeGen.generatePipe(Control,beamName+"IonPumpA", 32.59);
+  const double ionPumpALength = 32.59;
+  PipeGen.generatePipe(Control,beamName+"IonPumpA", ionPumpALength);
+  Control.addVariable(beamName+"IonPumpAYStep",
+    (danmaxVar::exptHut2Length-ionPumpALength)/2.0);
 
   PipeGen.setCF<setVariable::CF40>();
   PipeGen.setAFlangeCF<setVariable::CF100>();
@@ -631,11 +637,7 @@ exptHut2Variables(FuncDataBase& Control,
   // ELog::EM << "TODO: Why thickness==7 ?" << ELog::endWarn;
   // EGen.setFrontPlate(7.0, 50.0, 80.0); // TODO: dummy. Set correct values.
 
-  // The actual length of hutch 2 is 5366 mm as shown in [3].
-  // However, to match the simplified model of the optics hutch, use the slightly
-  // larger value given in [8].
-  const double hutchLength = 545.8;
-  EGen.generateHut(Control,hutName,0.0,hutchLength);
+  EGen.generateHut(Control,hutName,0.0,danmaxVar::exptHut2Length);
 
   Control.addVariable(hutName+"RingWidth",47.3); // Section A-A [3]
   Control.addVariable(hutName+"OutWidth",opticsHutOuterWidth);
@@ -660,7 +662,7 @@ exptHut2Variables(FuncDataBase& Control,
   PGen.setSkin(skinThick); // Measured on site.
 
   // Reference x value for all chicanes
-  const double x0 = (hutchLength-2.0*skinThick-backLead)/2.0;
+  const double x0 = (danmaxVar::exptHut2Length*skinThick-backLead)/2.0;
   // Chicane0 and Chicane1 are within 1828 mm from the back wall of Expt. Hutch 2
   // (Section A-A [3]). Assume that their centers are located at 1/4*1828 and 3/4*1828.
   // Positioning uncertainty estimate from the drawing: += 50 mm.
