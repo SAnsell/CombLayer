@@ -472,6 +472,8 @@ connectVariables(FuncDataBase& Control,
   PipeGen.setCF<setVariable::CF100>();
   const double ionPumpALength = 32.59;
   PipeGen.generatePipe(Control,beamName+"IonPumpA", ionPumpALength);
+  Control.addVariable(beamName+"IonPumpAXStep",
+    danmaxVar::beamMirrorShift);
   Control.addVariable(beamName+"IonPumpAYStep",
     (danmaxVar::exptHut2Length-ionPumpALength)/2.0);
 
