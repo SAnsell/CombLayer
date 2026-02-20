@@ -71,6 +71,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   vesselWallThick(MainFlange::wallThick),
   vesselFlangeRadius(MainFlange::flangeRadius),
   vesselFlangeLength(MainFlange::flangeLength),
+  vesselMat("SteelUnknownGrade"),
   apertureBackLength(7.0), // [4]
   apertureInnerRadius(1.0), // [3,4]
   // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
@@ -81,6 +82,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   blockHeight(5.0), // [2]
   blockLength(5.0), // [2]
   blockWidth(5.0), // [2]
+  blockMat("Tungsten"), // [2] see comment on tungsten material above
   flangeThick(1.225), // [5]
   shutterDistance(7.05), // [5]
   baseLift(0.0), // [5]
@@ -163,10 +165,11 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   Control.addVariable(keyName+"VesselWallThick",vesselWallThick);
   Control.addVariable(keyName+"VesselFlangeRadius",vesselFlangeRadius);
   Control.addVariable(keyName+"VesselFlangeLength",vesselFlangeLength);
+  Control.addVariable(keyName+"VesselMat",vesselMat);
 
   Control.addVariable(keyName+"ApertureBackLength",apertureBackLength);
   Control.addVariable(keyName+"ApertureInnerRadius",apertureInnerRadius);
-  Control.addVariable(keyName+"ApertureMat","Tungsten");
+  Control.addVariable(keyName+"ApertureMat",apertureMat);
   Control.addVariable(keyName+"ApertureOuterRadius",apertureOuterRadius);
   Control.addVariable(keyName+"ApertureThick",apertureThick);
   Control.addVariable(keyName+"ApertureToBlockGap",apertureToBlockGap);
@@ -174,6 +177,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   Control.addVariable(keyName+"BlockHeight",blockHeight);
   Control.addVariable(keyName+"BlockLength",blockLength);
   Control.addVariable(keyName+"BlockWidth",blockWidth);
+  Control.addVariable(keyName+"BlockMat",blockMat);
   Control.addVariable(keyName+"ShutterDistance",shutterDistance);
 
   return;

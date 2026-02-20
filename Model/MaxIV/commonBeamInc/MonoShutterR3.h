@@ -87,6 +87,7 @@ class MonoShutterR3 :
   double vesselWallThick;
   double vesselFlangeRadius;
   double vesselFlangeLength;
+  int vesselMat;
 
   double apertureBackLength;
   double apertureInnerRadius;
@@ -98,6 +99,7 @@ class MonoShutterR3 :
   double blockHeight;
   double blockLength;
   double blockWidth;
+  int blockMat;
   double shutterDistance;
   
   std::shared_ptr<constructSystem::FlangePlate> entryAdapter;

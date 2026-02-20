@@ -120,6 +120,7 @@ MonoShutterR3::populate(const FuncDataBase& Control)
   vesselWallThick=Control.EvalVar<double>(keyName+"VesselWallThick");
   vesselFlangeRadius=Control.EvalVar<double>(keyName+"VesselFlangeRadius");
   vesselFlangeLength=Control.EvalVar<double>(keyName+"VesselFlangeLength");
+  vesselMat=ModelSupport::EvalMat<int>(Control,keyName+"VesselMat");
 
   apertureBackLength=Control.EvalVar<double>(keyName+"ApertureBackLength");
   apertureInnerRadius=Control.EvalVar<double>(keyName+"ApertureInnerRadius");
@@ -131,6 +132,7 @@ MonoShutterR3::populate(const FuncDataBase& Control)
   blockHeight=Control.EvalVar<double>(keyName+"BlockHeight");
   blockLength=Control.EvalVar<double>(keyName+"BlockLength");
   blockWidth=Control.EvalVar<double>(keyName+"BlockWidth");
+  blockMat=ModelSupport::EvalMat<int>(Control,keyName+"BlockMat");
   shutterDistance=Control.EvalVar<double>(keyName+"ShutterDistance");
 
   return;
@@ -239,54 +241,54 @@ MonoShutterR3::createObjects(Simulation& System)
     *frontBack*bottom*top
   );
 
-  makeCell("EntryFlange",System,cellIndex++,0,0.0,
+  makeCell("EntryFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 27")*front);
-  makeCell("EntryExitPipe",System,cellIndex++,0,0.0,
+  makeCell("EntryExitPipe",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17 27 117"));
   makeCell("EntryPipeVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-21 -27 127")*front);
   makeCell("ExitPipeVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"52 -27 127")*back);
-  makeCell("ExitFlange",System,cellIndex++,0,0.0,
+  makeCell("ExitFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"12 -7 27")*back);
   makeCell("EntryExitPipeOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-7 17 11 -12 117"));
 
-  makeCell("VesselBottomFlange",System,cellIndex++,0,0.0,
+  makeCell("VesselBottomFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-15 -107")*bottom);
-  makeCell("VesselBottomVoid",System,cellIndex++,0,0.0,
+  makeCell("VesselBottomVoid",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-15 107")
     *leftRight*bottom*frontBack
   );
-  makeCell("VesselTopFlange",System,cellIndex++,0,0.0,
+  makeCell("VesselTopFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"16 -107")*top);
-  makeCell("VesselTopVoid",System,cellIndex++,0,0.0,
+  makeCell("VesselTopVoid",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"16 107")
     *leftRight*top*frontBack
   );
   
-  makeCell("Vessel",System,cellIndex++,0,0.0,
+  makeCell("Vessel",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -117 127 27"));
   makeCell("VesselOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 7 117")*leftRight*frontBack);
   makeCell("VesselFrontVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-21 15 -16 -127"));
 
-  makeCell("EntryAperture",System,cellIndex++,0,0.0,
+  makeCell("EntryAperture",System,cellIndex++,apertureMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -207 217"));
   makeCell("EntryApertureHole",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -217"));
   makeCell("EntryApertureOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 21 -22 207 -127"));
-  makeCell("CenterAperture",System,cellIndex++,0,0.0,
+  makeCell("CenterAperture",System,cellIndex++,apertureMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -207 217"));
   makeCell("CenterApertureHole",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -217"));
   makeCell("CenterApertureOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 31 -32 207 -127"));
-  makeCell("ExitAperture",System,cellIndex++,0,0.0,
+  makeCell("ExitAperture",System,cellIndex++,apertureMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 -207 217"));
-  makeCell("ExitAperture",System,cellIndex++,0,0.0,
+  makeCell("ExitAperture",System,cellIndex++,apertureMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"42 -52 -27 217"));
   makeCell("ExitApertureHole",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"41 -52 -217"));
@@ -295,7 +297,7 @@ MonoShutterR3::createObjects(Simulation& System)
   makeCell("ExitApertureOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 42 -52 27 -127"));
 
-  makeCell("EntryBlock",System,cellIndex++,0,0.0,
+  makeCell("EntryBlock",System,cellIndex++,blockMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 303 -304 305 -306"));
   makeCell("EntryBlockFrontBackVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"22 -31 15 -16 (-301:302) -127"));
@@ -306,7 +308,7 @@ MonoShutterR3::createObjects(Simulation& System)
   makeCell("EntryBlockTopVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -16 306 -127"));
 
-  makeCell("ExitBlock",System,cellIndex++,0,0.0,
+  makeCell("ExitBlock",System,cellIndex++,blockMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 303 -304 305 -306"));
   makeCell("EntryBlockFrontBackVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"32 -41 15 -16 (-311:312) -127"));

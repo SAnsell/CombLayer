@@ -66,6 +66,7 @@ class MonoShutterR3Generator
   double vesselWallThick;
   double vesselFlangeRadius;
   double vesselFlangeLength;
+  std::string vesselMat;
 
   double apertureBackLength;
   double apertureInnerRadius;
@@ -77,6 +78,7 @@ class MonoShutterR3Generator
   double blockHeight;
   double blockLength;
   double blockWidth;
+  std::string blockMat;
 
   double flangeThick;
   double shutterDistance;
