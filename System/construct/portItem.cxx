@@ -3,7 +3,7 @@
 
  * File:   construct/portItem.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@
 namespace constructSystem
 {
 
-portItem::portItem(std::string  baseKey,
+portItem::portItem(std::string baseKey,
 		   const std::string& Key) :
   attachSystem::FixedComp(Key,8),
   attachSystem::ContainedComp(),
@@ -556,22 +556,14 @@ portItem::addPortCut(MonteCarlo::Object* mainTube) const
 }
 
 void
-portItem::addFlangeCut(MonteCarlo::Object* obj, const bool force) const
+portItem::addFlangeCut(MonteCarlo::Object* obj) const
   /*!
-    Adds the flange exclude to the main tube.
-
-    By default, this operation is not performed when the port has an outer void of its 
-    own because it may be more efficient to subtract the entire outer void from the 
-    main tube.
-    Depending on the geometry or build order, this may not always be efficient or 
-    possible. Therefore, the default behavior can be overridden with the "force" option.
-
+    Adds the port exclude to the main tube
     \param mainTube :: object for main tube
-    \param force :: Ignore own outer void.
   */
 {
   ELog::RegMethod RegA("portItem","addFlangeCut");
-  if (force || !outerFlag)
+  if (!outerFlag)
     {
       const HeadRule HR=
 	ModelSupport::getHeadRule(SMap,buildIndex,"(27 : -102)");
