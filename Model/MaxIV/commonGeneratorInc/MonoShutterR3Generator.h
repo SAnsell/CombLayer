@@ -57,6 +57,8 @@ class MonoShutterR3Generator
   double height;
   double length;
 
+  double adapterInnerRadius;
+
   double beamPortInnerRadius;
   double beamPortWallThick;
   double beamPortFlangeRadius;

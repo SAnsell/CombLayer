@@ -78,6 +78,8 @@ class MonoShutterR3 :
   double height;
   double length;
 
+  double adapterInnerRadius;
+
   double beamPortInnerRadius;
   double beamPortWallThick;
   double beamPortFlangeRadius;

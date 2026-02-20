@@ -112,6 +112,8 @@ MonoShutterR3::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
 
+  adapterInnerRadius=Control.EvalVar<double>(keyName+"AdapterInnerRadius");
+
   beamPortInnerRadius=Control.EvalVar<double>(keyName+"BeamPortInnerRadius");
   beamPortWallThick=Control.EvalVar<double>(keyName+"BeamPortWallThick");
   beamPortFlangeRadius=Control.EvalVar<double>(keyName+"BeamPortFlangeRadius");
@@ -209,9 +211,13 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+52,
     Origin+Y*((length+shutterDistance+blockLength)/2.0+apertureToBlockGap+apertureBackLength),Y);
 
+  ModelSupport::buildPlane(SMap,buildIndex+61,Origin+Y*(beamPortFlangeLength*2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+62,Origin+Y*(length-beamPortFlangeLength*2.0),Y);
+
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin+Y,Y,beamPortFlangeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin+Y,Y,beamPortInnerRadius+beamPortWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin+Y,Y,beamPortInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin+Y,Y,adapterInnerRadius);
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0-vesselFlangeLength),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0-vesselFlangeLength),Z);
@@ -275,18 +281,27 @@ MonoShutterR3::createObjects(Simulation& System)
     *frontBack*bottom
   );
 
+  makeCell("EntryAdapter",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 37")*front);
+  makeCell("EntryAdapterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -37")*front);  
   makeCell("EntryFlange",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 27")*front);
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -61 -7 27"));
   makeCell("EntryExitPipe",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17 27 117"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"61 -62 -17 27 117"));
   makeCell("EntryPipeVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-21 -27 127")*front);
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -27 127"));
+
+  makeCell("ExitAdapter",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"12 -7 37")*back);
   makeCell("ExitPipeVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"52 -27 127")*back);
+    ModelSupport::getHeadRule(SMap,buildIndex,"52 -37 127")*back);
+  makeCell("ExitPipeVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-12 52 -27 37"));
   makeCell("ExitFlange",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"12 -7 27")*back);
+    ModelSupport::getHeadRule(SMap,buildIndex,"-12 62 -7 27"));
   makeCell("EntryExitPipeOuterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-7 17 11 -12 117"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7 17 61 -62 117"));
 
   makeCell("VesselBottomFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-15 -107")*bottom);

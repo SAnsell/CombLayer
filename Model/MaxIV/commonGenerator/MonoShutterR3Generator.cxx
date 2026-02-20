@@ -63,6 +63,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   SUnitGen(new ShutterUnitGenerator()),
   height(29.8), // [5]
   length(30.5), // [1]
+  adapterInnerRadius(AdapterFlange::innerRadius),
   beamPortInnerRadius(EntryExitFlange::innerRadius),
   beamPortWallThick(EntryExitFlange::wallThick),
   beamPortFlangeRadius(EntryExitFlange::flangeRadius),
@@ -147,6 +148,8 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
 
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Length",length);
+
+  Control.addVariable(keyName+"AdapterInnerRadius",adapterInnerRadius);
 
   Control.addVariable(keyName+"BeamPortInnerRadius",beamPortInnerRadius);
   Control.addVariable(keyName+"BeamPortWallThick",beamPortWallThick);
