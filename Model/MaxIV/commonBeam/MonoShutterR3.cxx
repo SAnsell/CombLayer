@@ -174,18 +174,37 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0-beamPortFlangeLength),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(length/2.0-beamPortFlangeLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0-beamPortFlangeLength),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+21,
+    Origin-Y*(0.5*shutterDistance+apertureThick+apertureToBlockGap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+22,
+    Origin-Y*(0.5*shutterDistance+apertureToBlockGap),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+31,
+    Origin-Y*(0.5*apertureThick),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+32,
+    Origin+Y*(0.5*apertureThick),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+41,
+    Origin+Y*(0.5*shutterDistance+apertureToBlockGap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+42,
+    Origin+Y*(0.5*shutterDistance+apertureThick+apertureToBlockGap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+52,
+    Origin+Y*(0.5*shutterDistance+apertureToBlockGap+apertureBackLength),Y);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Y,Y,beamPortFlangeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Y,Y,beamPortInnerRadius+beamPortWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Y,Y,beamPortInnerRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+37,Y,Y,apertureInnerRadius);
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0-vesselFlangeLength),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0-vesselFlangeLength),Z);
   ModelSupport::buildCylinder(SMap,buildIndex+107,Z,Z,vesselFlangeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+117,Z,Z,vesselInnerRadius+vesselWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+127,Z,Z,vesselInnerRadius);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Y,Y,apertureOuterRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Y,Y,apertureInnerRadius);
 
   return; 
 }
@@ -199,38 +218,52 @@ MonoShutterR3::createObjects(Simulation& System)
   ELog::RegMethod RegA("MonoShutterR3","createObjects");
 
   const HeadRule front = ExternalCut::getRule("front");
-  const HeadRule back = ExternalCut::getRule("back");
+  const HeadRule back = ExternalCut::getRule("back").complement();
+  const HeadRule frontBack = front*back;
+  const HeadRule leftRight = ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
   const HeadRule bottom = ModelSupport::getHeadRule(SMap,buildIndex,"5");
-  const HeadRule top = ModelSupport::getHeadRule(SMap,buildIndex,"6");
+  const HeadRule top = ModelSupport::getHeadRule(SMap,buildIndex,"-6");
   
   addOuterSurf(
     ModelSupport::getHeadRule(SMap,buildIndex,"3 -4")
-    *front*back.complement()*bottom*top.complement()
+    *frontBack*bottom*top
   );
 
   makeCell("EntryFlange",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 27")*front);
   makeCell("EntryExitPipe",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"11 -22 -17 27 117"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17 27 117"));
   makeCell("ExitFlange",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"22 -7 27")*back.complement());
+    ModelSupport::getHeadRule(SMap,buildIndex,"12 -7 27")*back);
+  makeCell("EntryExitPipeVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7 17 11 -12 117"));
 
   makeCell("VesselBottomFlange",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-15 -107")*bottom);
   makeCell("VesselBottomVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -15 107")
-    *bottom*front*back.complement()
+    ModelSupport::getHeadRule(SMap,buildIndex,"-15 107")
+    *leftRight*bottom*frontBack
   );
   makeCell("VesselTopFlange",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"16 -107")*top.complement());
+    ModelSupport::getHeadRule(SMap,buildIndex,"16 -107")*top);
   makeCell("VesselTopVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 16 107")
-    *top.complement()*front*back.complement()
+    ModelSupport::getHeadRule(SMap,buildIndex,"16 107")
+    *leftRight*top*frontBack
   );
   
-
   makeCell("Vessel",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -117 127 27"));
+  makeCell("VesselVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 7 117")*leftRight*frontBack);
+
+  makeCell("EntryAperture",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -207 217"));
+  makeCell("CenterAperture",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -207 217"));
+  makeCell("ExitAperture",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 -207 217"));
+  makeCell("ExitAperture",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"42 -52 -27 217"));
 
   return; 
 }
