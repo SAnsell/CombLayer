@@ -421,7 +421,8 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
   viewTubeScreen->addInsertCell("Blade",viewTube->getCell("Void"));
   viewTubeScreen->setBladeCentre(Geometry::Vec3D(0.0,0.0,0.0));
-  viewTubeScreen->createAll(System,*viewTube,"InnerBackOnCap");
+  // TODO: If built on "InnerBack" surface, the thread is not attached to the cap.
+  viewTubeScreen->createAll(System,*viewTube,"InnerBack");
 
   outerCell=constructSystem::constructUnit
     (System,buildZoneDanMAX,VPB,"OuterPlate",*valve8);
