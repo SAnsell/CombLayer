@@ -80,8 +80,14 @@ class MonoShutterR3Generator
   double blockWidth;
   std::string blockMat;
 
-  double flangeThick;
   double shutterDistance;
+  double shutterPortLength;
+  double shutterPortInnerRadius;
+  double shutterPortWallThick;
+  double shutterPortFlangeRadius;
+  double shutterPortFlangeLength;
+  double threadLength;
+  double threadRadius;
 
   double baseLift;
   double lift;

@@ -100,7 +100,15 @@ class MonoShutterR3 :
   double blockLength;
   double blockWidth;
   int blockMat;
+
   double shutterDistance;
+  double shutterPortLength;
+  double shutterPortInnerRadius;
+  double shutterPortWallThick;
+  double shutterPortFlangeRadius;
+  double shutterPortFlangeLength;
+  double threadLength;
+  double threadRadius;
   
   std::shared_ptr<constructSystem::FlangePlate> entryAdapter;
   std::shared_ptr<constructSystem::FlangePlate> exitAdapter;

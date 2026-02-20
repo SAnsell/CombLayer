@@ -61,7 +61,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   PTubeGen(new PipeTubeGenerator()),
   PItemGen(new PortItemGenerator()),
   SUnitGen(new ShutterUnitGenerator()),
-  height(25.4), // [5]
+  height(29.8), // [5]
   length(30.5), // [1]
   beamPortInnerRadius(EntryExitFlange::innerRadius),
   beamPortWallThick(EntryExitFlange::wallThick),
@@ -70,7 +70,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   vesselInnerRadius(MainFlange::innerRadius),
   vesselWallThick(MainFlange::wallThick),
   vesselFlangeRadius(MainFlange::flangeRadius),
-  vesselFlangeLength(MainFlange::flangeLength),
+  vesselFlangeLength(4.8), // [5]
   vesselMat("SteelUnknownGrade"),
   apertureBackLength(7.0), // [4]
   apertureInnerRadius(1.0), // [3,4]
@@ -83,8 +83,14 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   blockLength(5.0), // [2]
   blockWidth(5.0), // [2]
   blockMat("Tungsten"), // [2] see comment on tungsten material above
-  flangeThick(1.225), // [5]
   shutterDistance(7.05), // [5]
+  shutterPortLength(19.0), // [5]
+  shutterPortInnerRadius(ShutterFlange::innerRadius), // [5]
+  shutterPortWallThick(ShutterFlange::wallThick), // [5]
+  shutterPortFlangeRadius(ShutterFlange::flangeRadius), // [5]
+  shutterPortFlangeLength(ShutterFlange::flangeLength), // [5]
+  threadLength(28.0), // [5]
+  threadRadius(1.5), // [5]
   baseLift(0.0), // [5]
   lift(5.0) // [5]
   /*!
@@ -124,14 +130,6 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   SUnitGen->setBlock(blockHeight,blockLength,blockWidth,"Tungsten");
   SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
   SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
-  
-  PTubeGen->setCF<MainFlange>();
-  PTubeGen->setAFlange(MainFlange::flangeRadius,flangeThick);
-  PTubeGen->setBFlange(MainFlange::flangeRadius,flangeThick);
-  PTubeGen->setCap(1,1);
-  PTubeGen->generateTube(Control,keyName+"Pipe",
-    height-2.0*flangeThick);
-  Control.addVariable(keyName+"PipeNPorts",4);
 
   FPGen->setFlange(EntryExitFlange::flangeRadius,EntryExitFlange::flangeLength);
   FPGen->setInnerRadius(AdapterFlange::innerRadius);
@@ -178,7 +176,15 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   Control.addVariable(keyName+"BlockLength",blockLength);
   Control.addVariable(keyName+"BlockWidth",blockWidth);
   Control.addVariable(keyName+"BlockMat",blockMat);
+
   Control.addVariable(keyName+"ShutterDistance",shutterDistance);
+  Control.addVariable(keyName+"ShutterPortLength",shutterPortLength);
+  Control.addVariable(keyName+"ShutterPortInnerRadius",shutterPortInnerRadius);
+  Control.addVariable(keyName+"ShutterPortWallThick",shutterPortWallThick);
+  Control.addVariable(keyName+"ShutterPortFlangeRadius",shutterPortFlangeRadius);
+  Control.addVariable(keyName+"ShutterPortFlangeLength",shutterPortFlangeLength);
+  Control.addVariable(keyName+"ThreadLength",threadLength);
+  Control.addVariable(keyName+"ThreadRadius",threadRadius);
 
   return;
 }
