@@ -153,8 +153,10 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   Control.addVariable(keyName+"ThreadMat",threadMat);
   Control.addVariable(keyName+"Lift",lift);
 
-  Control.addVariable(keyName+"EntryShutterUpFlag",static_cast<int>(entryShutterUpFlag));
-  Control.addVariable(keyName+"ExitShutterUpFlag",static_cast<int>(exitShutterUpFlag));
+  Control.addVariable(keyName+"EntryShutterUpFlag",
+    static_cast<int>(entryShutterUpFlag));
+  Control.addVariable(keyName+"ExitShutterUpFlag",
+    static_cast<int>(exitShutterUpFlag));
 
   return;
 }
