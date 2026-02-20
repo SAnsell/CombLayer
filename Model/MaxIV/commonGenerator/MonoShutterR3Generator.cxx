@@ -45,10 +45,6 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "FlangePlateGenerator.h"
-#include "PipeTubeGenerator.h"
-#include "PortItemGenerator.h"
-#include "ShutterUnitGenerator.h"
 #include "MonoShutterR3Generator.h"
 
 namespace setVariable
@@ -57,10 +53,6 @@ template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
 MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
 ::MonoShutterR3Generator() :
-  FPGen(std::make_unique<FlangePlateGenerator>()),
-  PTubeGen(new PipeTubeGenerator()),
-  PItemGen(new PortItemGenerator()),
-  SUnitGen(new ShutterUnitGenerator()),
   height(29.8), // [5]
   length(30.5), // [1]
   adapterInnerRadius(AdapterFlange::innerRadius),
@@ -121,30 +113,6 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   */
 {
   ELog::RegMethod RegA("MonoShutterR3Generator","generate");
-
-  SUnitGen->setCF<ShutterFlange>();
-  // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
-  SUnitGen->setBlock(blockHeight,blockLength,blockWidth,"Tungsten");
-
-  FPGen->setFlange(EntryExitFlange::flangeRadius,EntryExitFlange::flangeLength);
-  FPGen->setInnerRadius(AdapterFlange::innerRadius);
-  FPGen->generateFlangePlate(Control,keyName+"EntryAdapter");
-  FPGen->generateFlangePlate(Control,keyName+"ExitAdapter");
-  
-  const Geometry::Vec3D Y(0,1,0);
-  const Geometry::Vec3D Z(0,0,1);
-  PItemGen->setCF<EntryExitFlange>(0.5*length-EntryExitFlange::flangeLength);
-  PItemGen->setNoPlate();
-  PItemGen->generatePort(Control,keyName+"PipePort0",
-			Geometry::Vec3D(0,0,0),Z);
-  PItemGen->generatePort(Control,keyName+"PipePort1",
-			 Geometry::Vec3D(0,0,0),-Z);
-  PItemGen->setCF<ShutterFlange>(0.5*height+5.0); // [5]
-  PItemGen->setNoPlate();
-  PItemGen->generatePort(Control,keyName+"PipePort2",
-			Geometry::Vec3D(0,0,0.5*shutterDistance),Y);
-  PItemGen->generatePort(Control,keyName+"PipePort3",
-			Geometry::Vec3D(0,0,-0.5*shutterDistance),Y);
 
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Length",length);

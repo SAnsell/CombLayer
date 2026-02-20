@@ -24,14 +24,8 @@
 
 class Simulation;
 
-namespace constructSystem{
-  class FlangePlate;
-  class PipeTube;
-}
-
 namespace xraySystem
 {
-  class ShutterUnit;
 /*!
   \class MonoShutterR3
   \author U. Friman-Gayer
@@ -116,12 +110,6 @@ class MonoShutterR3 :
 
   bool entryShutterUpFlag;
   bool exitShutterUpFlag;
-  
-  std::shared_ptr<constructSystem::FlangePlate> entryAdapter;
-  std::shared_ptr<constructSystem::FlangePlate> exitAdapter;
-  std::shared_ptr<constructSystem::PipeTube> shutterPipe;
-  std::shared_ptr<xraySystem::ShutterUnit> monoShutterA;
-  std::shared_ptr<xraySystem::ShutterUnit> monoShutterB;
 
  protected:
   void populate(const FuncDataBase&) override;
@@ -129,8 +117,6 @@ class MonoShutterR3 :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
-  void buildComponents(Simulation&);
   
  public:
 

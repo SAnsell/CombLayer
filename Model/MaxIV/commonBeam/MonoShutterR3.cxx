@@ -54,21 +54,13 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedRotateGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
-#include "FlangePlate.h"
-#include "ShutterUnit.h"
 #include "MonoShutterR3.h"
-#include "FrontBackCut.h"
 
 namespace xraySystem
 {
@@ -78,25 +70,12 @@ MonoShutterR3::MonoShutterR3(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::SurfMap(),
-  attachSystem::CellMap(),
-  
-  entryAdapter(std::make_shared<constructSystem::FlangePlate>(keyName+"EntryAdapter")),
-  exitAdapter(std::make_shared<constructSystem::FlangePlate>(keyName+"ExitAdapter")),
-  shutterPipe(std::make_shared<constructSystem::PipeTube>(keyName+"Pipe")),
-  monoShutterA(std::make_shared<xraySystem::ShutterUnit>(keyName+"UnitA")),
-  monoShutterB(std::make_shared<xraySystem::ShutterUnit>(keyName+"UnitB"))
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
   */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  
-  OR.addObject(shutterPipe);
-  OR.addObject(monoShutterA);
-  OR.addObject(monoShutterB);
-}
+{}
 
 void
 MonoShutterR3::populate(const FuncDataBase& Control)
@@ -411,17 +390,6 @@ MonoShutterR3::createObjects(Simulation& System)
 }
 
 void
-MonoShutterR3::buildComponents(Simulation& System)
-  /*!
-    Construct the object to be built
-    \param System :: Simulation
-  */
-{
-  ELog::RegMethod RegA("MonoShutterR3","buildComponents");
-  return;
-}
-
-void
 MonoShutterR3::createLinks()
 {
   ELog::RegMethod RControl("MonoShutterR3","createLinks");
@@ -446,8 +414,6 @@ MonoShutterR3::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
-  buildComponents(System);
 
   createSurfaces();
   createObjects(System);
