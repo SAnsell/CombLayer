@@ -69,7 +69,7 @@ namespace xraySystem
 class MonoShutterR3 :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
+  public attachSystem::FrontBackCut,
   public attachSystem::SurfMap,
   public attachSystem::CellMap
 {

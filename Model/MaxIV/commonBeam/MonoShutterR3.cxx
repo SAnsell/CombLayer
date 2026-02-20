@@ -68,6 +68,7 @@
 #include "FlangePlate.h"
 #include "ShutterUnit.h"
 #include "MonoShutterR3.h"
+#include "FrontBackCut.h"
 
 namespace xraySystem
 {
@@ -75,7 +76,7 @@ namespace xraySystem
 MonoShutterR3::MonoShutterR3(const std::string& Key) :
   attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
-  attachSystem::ExternalCut(),
+  attachSystem::FrontBackCut(),
   attachSystem::SurfMap(),
   attachSystem::CellMap(),
   
@@ -169,13 +170,13 @@ MonoShutterR3::createSurfaces()
 
   if (!isActive("front"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*length/2.0,Y);
-      ExternalCut::setCutSurf("front",buildIndex+1);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setFront(SMap.realSurf(buildIndex+1));
     }
   if (!isActive("back"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length/2.0,Y);
-      ExternalCut::setCutSurf("back",buildIndex+2);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+      setBack(SMap.realSurf(buildIndex+2));
     }
 
   const double width = 28.0;
@@ -185,43 +186,43 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(length/2.0-beamPortFlangeLength),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0-beamPortFlangeLength),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*beamPortFlangeLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length-beamPortFlangeLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+21,
-    Origin-Y*((shutterDistance+blockLength)/2.0+apertureToBlockGap+apertureThick),Y);
+    Origin+Y*((length-shutterDistance-blockLength)/2.0-apertureToBlockGap-apertureThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,
-    Origin-Y*((shutterDistance+blockLength)/2.0+apertureToBlockGap),Y);
+    Origin+Y*((length-shutterDistance-blockLength)/2.0-apertureToBlockGap),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+31,
-    Origin-Y*(0.5*apertureThick),Y);
+    Origin+Y*(length-apertureThick)/2.0,Y);
   ModelSupport::buildPlane(SMap,buildIndex+32,
-    Origin+Y*(0.5*apertureThick),Y);
+    Origin+Y*(length+apertureThick)/2.0,Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+41,
-    Origin+Y*((shutterDistance+blockLength)/2.0+apertureToBlockGap),Y);
+    Origin+Y*((length+shutterDistance+blockLength)/2.0+apertureToBlockGap),Y);
   ModelSupport::buildPlane(SMap,buildIndex+42,
-    Origin+Y*((shutterDistance+blockLength)/2.0+apertureThick+apertureToBlockGap),Y);
+    Origin+Y*((length+shutterDistance+blockLength)/2.0+apertureThick+apertureToBlockGap),Y);
   ModelSupport::buildPlane(SMap,buildIndex+52,
-    Origin+Y*((shutterDistance+blockLength)/2.0+apertureToBlockGap+apertureBackLength),Y);
+    Origin+Y*((length+shutterDistance+blockLength)/2.0+apertureToBlockGap+apertureBackLength),Y);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,Y,Y,beamPortFlangeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,Y,Y,beamPortInnerRadius+beamPortWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+27,Y,Y,beamPortInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin+Y,Y,beamPortFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin+Y,Y,beamPortInnerRadius+beamPortWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin+Y,Y,beamPortInnerRadius);
 
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(height/2.0-vesselFlangeLength),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height/2.0-vesselFlangeLength),Z);
-  ModelSupport::buildCylinder(SMap,buildIndex+107,Z,Z,vesselFlangeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+117,Z,Z,vesselInnerRadius+vesselWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+127,Z,Z,vesselInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin+Y*length/2.0+Z,Z,vesselFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin+Y*length/2.0+Z,Z,vesselInnerRadius+vesselWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+127,Origin+Y*length/2.0+Z,Z,vesselInnerRadius);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+207,Y,Y,apertureOuterRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+217,Y,Y,apertureInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin+Y,Y,apertureOuterRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin+Y,Y,apertureInnerRadius);
 
-  ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*((shutterDistance+blockLength)/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+302,Origin-Y*((shutterDistance-blockLength)/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+311,Origin+Y*((shutterDistance-blockLength)/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+312,Origin+Y*((shutterDistance+blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+301,Origin+Y*((length-shutterDistance-blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+302,Origin+Y*((length-shutterDistance+blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+311,Origin+Y*((length+shutterDistance-blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+312,Origin+Y*((length+shutterDistance+blockLength)/2.0),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*blockWidth/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*blockWidth/2.0,X);
@@ -231,15 +232,15 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(blockHeight/2.0+lift+threadLength),Z);
   ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*shutterPortLength,Z);
   ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(shutterPortLength-shutterPortFlangeLength),Z);
-  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin-Y*shutterDistance/2.0,Z,shutterPortFlangeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+317,Origin-Y*shutterDistance/2.0,Z,shutterPortInnerRadius+shutterPortWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin-Y*shutterDistance/2.0,Z,shutterPortInnerRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+337,Origin-Y*shutterDistance/2.0,Z,threadRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Y*(length-shutterDistance)/2.0,Z,shutterPortFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+317,Origin+Y*(length-shutterDistance)/2.0,Z,shutterPortInnerRadius+shutterPortWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+327,Origin+Y*(length-shutterDistance)/2.0,Z,shutterPortInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+337,Origin+Y*(length-shutterDistance)/2.0,Z,threadRadius);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+407,Origin+Y*shutterDistance/2.0,Z,shutterPortFlangeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+417,Origin+Y*shutterDistance/2.0,Z,shutterPortInnerRadius+shutterPortWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+427,Origin+Y*shutterDistance/2.0,Z,shutterPortInnerRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+437,Origin+Y*shutterDistance/2.0,Z,threadRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+407,Origin+Y*(length+shutterDistance)/2.0,Z,shutterPortFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+417,Origin+Y*(length+shutterDistance)/2.0,Z,shutterPortInnerRadius+shutterPortWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+427,Origin+Y*(length+shutterDistance)/2.0,Z,shutterPortInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+437,Origin+Y*(length+shutterDistance)/2.0,Z,threadRadius);
 
   return; 
 }
@@ -385,6 +386,8 @@ void
 MonoShutterR3::createLinks()
 {
   ELog::RegMethod RControl("MonoShutterR3","createLinks");
+
+  FrontBackCut::createLinks(*this,Origin,Y);
 
   return;
 }
