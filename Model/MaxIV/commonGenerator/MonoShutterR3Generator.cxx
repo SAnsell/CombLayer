@@ -92,7 +92,9 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   threadLength(28.0), // [5]
   threadRadius(1.5), // [5]
   threadMat("SteelUnknownGrade"), // [1]
-  lift(5.0) // [5]
+  lift(5.0), // [5]
+  entryShutterUpFlag(false),
+  exitShutterUpFlag(false)
   /*!
     Constructor and defaults
   */
@@ -110,16 +112,11 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
 template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
 void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
-::generate(FuncDataBase& Control,
-				      const std::string& keyName,
-				      const bool upFlagA,
-				      const bool upFlagB) const
+::generate(FuncDataBase& Control,const std::string& keyName) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param upFlagA :: First Shutter up
-    \param upFlagB :: Second Shutter up
   */
 {
   ELog::RegMethod RegA("MonoShutterR3Generator","generate");
@@ -127,8 +124,6 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   SUnitGen->setCF<ShutterFlange>();
   // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
   SUnitGen->setBlock(blockHeight,blockLength,blockWidth,"Tungsten");
-  SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
-  SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
 
   FPGen->setFlange(EntryExitFlange::flangeRadius,EntryExitFlange::flangeLength);
   FPGen->setInnerRadius(AdapterFlange::innerRadius);
@@ -187,13 +182,15 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   Control.addVariable(keyName+"ThreadMat",threadMat);
   Control.addVariable(keyName+"Lift",lift);
 
+  Control.addVariable(keyName+"EntryShutterUpFlag",static_cast<int>(entryShutterUpFlag));
+  Control.addVariable(keyName+"ExitShutterUpFlag",static_cast<int>(exitShutterUpFlag));
+
   return;
 }
 
 template MonoShutterR3Generator<CF200,CF63,CF40,CF40>::MonoShutterR3Generator();
 template MonoShutterR3Generator<CF200,CF63,CF40,CF40>::~MonoShutterR3Generator();
 template void MonoShutterR3Generator<CF200,CF63,CF40,CF40>::generate(
-  FuncDataBase& Control,const std::string& keyName,const bool upFlagA,
-  const bool upFlagB) const;
+  FuncDataBase& Control,const std::string& keyName) const;
 
 }  // NAMESPACE setVariable

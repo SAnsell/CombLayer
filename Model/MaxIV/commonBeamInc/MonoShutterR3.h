@@ -111,6 +111,9 @@ class MonoShutterR3 :
   double threadRadius;
   int threadMat;
   double lift;
+
+  bool entryShutterUpFlag;
+  bool exitShutterUpFlag;
   
   std::shared_ptr<constructSystem::FlangePlate> entryAdapter;
   std::shared_ptr<constructSystem::FlangePlate> exitAdapter;

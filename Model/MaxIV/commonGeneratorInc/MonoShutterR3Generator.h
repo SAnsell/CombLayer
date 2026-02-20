@@ -91,6 +91,9 @@ class MonoShutterR3Generator
   std::string threadMat;
   double lift;
 
+  bool entryShutterUpFlag;
+  bool exitShutterUpFlag;
+
  public:
 
   MonoShutterR3Generator();
@@ -98,8 +101,7 @@ class MonoShutterR3Generator
 
   double getLength() const {return length;};
     
-  void generate(FuncDataBase&,const std::string&,
-		       const bool,const bool) const;
+  void generate(FuncDataBase&,const std::string&) const;
   
 };
 

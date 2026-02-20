@@ -146,6 +146,9 @@ MonoShutterR3::populate(const FuncDataBase& Control)
   threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
   lift=Control.EvalVar<double>(keyName+"Lift");
 
+  entryShutterUpFlag=Control.EvalVar<int>(keyName+"EntryShutterUpFlag");
+  exitShutterUpFlag=Control.EvalVar<int>(keyName+"ExitShutterUpFlag");
+
   return;
 }
 
@@ -224,10 +227,12 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+311,Origin+Y*((length+shutterDistance-blockLength)/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+312,Origin+Y*((length+shutterDistance+blockLength)/2.0),Y);
 
+  double blockLift = entryShutterUpFlag ? lift : 0.0;
+
   ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*blockWidth/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*blockWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+305,Origin-Z*blockHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*blockHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+305,Origin-Z*(blockHeight/2.0+blockLift),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(blockHeight/2.0+blockLift),Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(blockHeight/2.0+lift+threadLength),Z);
   ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*shutterPortLength,Z);
