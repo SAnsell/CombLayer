@@ -160,7 +160,7 @@ MonoShutterR3::createSurfaces()
   if (!isActive("back"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
-      setBack(SMap.realSurf(buildIndex+2));
+      setBack(-SMap.realSurf(buildIndex+2));
     }
 
   const double width = 28.0;
@@ -249,7 +249,7 @@ MonoShutterR3::createObjects(Simulation& System)
   ELog::RegMethod RegA("MonoShutterR3","createObjects");
 
   const HeadRule front = ExternalCut::getRule("front");
-  const HeadRule back = ExternalCut::getRule("back").complement();
+  const HeadRule back = ExternalCut::getRule("back");
   const HeadRule frontBack = front*back;
   const HeadRule leftRight = ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
   const HeadRule bottom = ModelSupport::getHeadRule(SMap,buildIndex,"5");
