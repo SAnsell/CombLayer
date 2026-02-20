@@ -227,16 +227,21 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+311,Origin+Y*((length+shutterDistance-blockLength)/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+312,Origin+Y*((length+shutterDistance+blockLength)/2.0),Y);
 
-  double blockLift = entryShutterUpFlag ? lift : 0.0;
 
   ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*blockWidth/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*blockWidth/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+305,Origin-Z*(blockHeight/2.0+blockLift),Z);
+  double blockLift = entryShutterUpFlag ? lift : 0.0;
+  ModelSupport::buildPlane(SMap,buildIndex+305,Origin+Z*(-blockHeight/2.0+blockLift),Z);
   ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(blockHeight/2.0+blockLift),Z);
+
+  blockLift = exitShutterUpFlag ? lift : 0.0;
+  ModelSupport::buildPlane(SMap,buildIndex+315,Origin+Z*(-blockHeight/2.0+blockLift),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+316,Origin+Z*(blockHeight/2.0+blockLift),Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*(blockHeight/2.0+lift+threadLength),Z);
   ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*shutterPortLength,Z);
   ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*(shutterPortLength-shutterPortFlangeLength),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+56,Origin+Z*(blockHeight/2.0+threadLength),Z);
   ModelSupport::buildCylinder(SMap,buildIndex+307,Origin+Y*(length-shutterDistance)/2.0,Z,shutterPortFlangeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+317,Origin+Y*(length-shutterDistance)/2.0,Z,shutterPortInnerRadius+shutterPortWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+327,Origin+Y*(length-shutterDistance)/2.0,Z,shutterPortInnerRadius);
@@ -345,8 +350,15 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 15 -305 -127"));
   makeCell("EntryBlockTopVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -16 306 -127 337"));
-  makeCell("EntryBlockThread",System,cellIndex++,threadMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-26 306 -337"));
+  if(entryShutterUpFlag){
+    makeCell("EntryBlockThread",System,cellIndex++,threadMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-26 306 -337"));
+  } else {
+    makeCell("EntryBlockThread",System,cellIndex++,threadMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-56 306 -337"));
+    makeCell("EntryBlockThreadTopVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-26 56 306 -337"));
+  }
 
   makeCell("ExitShutterPortFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-36 46 -407 437"));
@@ -363,17 +375,24 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"-26 36 337 437")*frontBack*leftRight);
 
   makeCell("ExitBlock",System,cellIndex++,blockMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 303 -304 305 -306"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 303 -304 315 -316"));
   makeCell("ExitBlockFrontBackVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"32 -41 15 -16 (-311:312) -127"));
   makeCell("ExitBlockLeftRightVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 (-303:304) 305 -306 -127"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 (-303:304) 315 -316 -127"));
   makeCell("ExitBlockBottomVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 15 -305 -127"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 15 -315 -127"));
   makeCell("ExitBlockTopVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 -16 306 -127 437"));
-  makeCell("ExitBlockThread",System,cellIndex++,threadMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-26 306 -437"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 -16 316 -127 437"));
+  if(exitShutterUpFlag){
+    makeCell("ExitBlockThread",System,cellIndex++,threadMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-26 316 -437"));
+  } else {
+    makeCell("ExitBlockThread",System,cellIndex++,threadMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-56 316 -437"));
+    makeCell("ExitBlockThreadTopVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-26 56 316 -437"));
+  }
 }
 
 void
