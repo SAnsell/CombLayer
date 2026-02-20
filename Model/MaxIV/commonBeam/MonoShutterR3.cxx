@@ -177,9 +177,9 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(length/2.0-beamPortFlangeLength),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+21,
-    Origin-Y*(0.5*shutterDistance+apertureThick+apertureToBlockGap),Y);
+    Origin-Y*((shutterDistance+blockLength)/2.0+apertureToBlockGap+apertureThick),Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,
-    Origin-Y*(0.5*shutterDistance+apertureToBlockGap),Y);
+    Origin-Y*((shutterDistance+blockLength)/2.0+apertureToBlockGap),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+31,
     Origin-Y*(0.5*apertureThick),Y);
@@ -187,11 +187,11 @@ MonoShutterR3::createSurfaces()
     Origin+Y*(0.5*apertureThick),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+41,
-    Origin+Y*(0.5*shutterDistance+apertureToBlockGap),Y);
+    Origin+Y*((shutterDistance+blockLength)/2.0+apertureToBlockGap),Y);
   ModelSupport::buildPlane(SMap,buildIndex+42,
-    Origin+Y*(0.5*shutterDistance+apertureThick+apertureToBlockGap),Y);
+    Origin+Y*((shutterDistance+blockLength)/2.0+apertureThick+apertureToBlockGap),Y);
   ModelSupport::buildPlane(SMap,buildIndex+52,
-    Origin+Y*(0.5*shutterDistance+apertureToBlockGap+apertureBackLength),Y);
+    Origin+Y*((shutterDistance+blockLength)/2.0+apertureToBlockGap+apertureBackLength),Y);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,Y,Y,beamPortFlangeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Y,Y,beamPortInnerRadius+beamPortWallThick);
@@ -205,6 +205,16 @@ MonoShutterR3::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,buildIndex+207,Y,Y,apertureOuterRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,Y,Y,apertureInnerRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+301,Origin-Y*((shutterDistance+blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+302,Origin-Y*((shutterDistance-blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+311,Origin+Y*((shutterDistance-blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+312,Origin+Y*((shutterDistance+blockLength)/2.0),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*blockWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*blockWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+305,Origin-Z*blockHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*blockHeight/2.0,Z);
 
   return; 
 }
@@ -233,9 +243,13 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 27")*front);
   makeCell("EntryExitPipe",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 -17 27 117"));
+  makeCell("EntryPipeVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-21 -27 127")*front);
+  makeCell("ExitPipeVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"52 -27 127")*back);
   makeCell("ExitFlange",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"12 -7 27")*back);
-  makeCell("EntryExitPipeVoid",System,cellIndex++,0,0.0,
+  makeCell("EntryExitPipeOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-7 17 11 -12 117"));
 
   makeCell("VesselBottomFlange",System,cellIndex++,0,0.0,
@@ -253,17 +267,56 @@ MonoShutterR3::createObjects(Simulation& System)
   
   makeCell("Vessel",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -117 127 27"));
-  makeCell("VesselVoid",System,cellIndex++,0,0.0,
+  makeCell("VesselOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 7 117")*leftRight*frontBack);
+  makeCell("VesselFrontVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-21 15 -16 -127"));
 
   makeCell("EntryAperture",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -207 217"));
+  makeCell("EntryApertureHole",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -217"));
+  makeCell("EntryApertureOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 21 -22 207 -127"));
   makeCell("CenterAperture",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -207 217"));
+  makeCell("CenterApertureHole",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -217"));
+  makeCell("CenterApertureOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 31 -32 207 -127"));
   makeCell("ExitAperture",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 -207 217"));
   makeCell("ExitAperture",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"42 -52 -27 217"));
+  makeCell("ExitApertureHole",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"41 -52 -217"));
+  makeCell("ExitApertureOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 41 -42 207 -127"));
+  makeCell("ExitApertureOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 42 -52 27 -127"));
+
+  makeCell("EntryBlock",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 303 -304 305 -306"));
+  makeCell("EntryBlockFrontBackVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"22 -31 15 -16 (-301:302) -127"));
+  makeCell("EntryBlockLeftRightVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 (-303:304) 305 -306 -127"));
+  makeCell("EntryBlockBottomVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 15 -305 -127"));
+  makeCell("EntryBlockTopVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -16 306 -127"));
+
+  makeCell("ExitBlock",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 303 -304 305 -306"));
+  makeCell("EntryBlockFrontBackVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"32 -41 15 -16 (-311:312) -127"));
+  makeCell("EntryBlockLeftRightVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 (-303:304) 305 -306 -127"));
+  makeCell("EntryBlockBottomVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 15 -305 -127"));
+  makeCell("EntryBlockTopVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 -16 306 -127"));
+
 
   return; 
 }
