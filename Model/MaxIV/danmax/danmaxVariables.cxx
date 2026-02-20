@@ -1210,7 +1210,7 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MShutterGen;
 
-  MShutterGen.generate(Control,preName+"MonoShutter",1,1);
+  MShutterGen.generate(Control,preName+"MonoShutter");
 
   const double bellowLength = 12.0; // [26]
   BellowGen.setCF<setVariable::CF40>();
