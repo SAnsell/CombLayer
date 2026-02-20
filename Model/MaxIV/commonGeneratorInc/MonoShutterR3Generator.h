@@ -88,8 +88,6 @@ class MonoShutterR3Generator
   double shutterPortFlangeLength;
   double threadLength;
   double threadRadius;
-
-  double baseLift;
   double lift;
 
  public:
