@@ -186,7 +186,7 @@ frontMaskVariables(FuncDataBase& Control,
     \param preName :: Beamline name
   */
 {
-  ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
+  ELog::RegMethod RegA("tomowiseVariables[F]","frontMaskVariables");
 
   setVariable::SqrFMaskGenerator FMaskGen;
   setVariable::BellowGenerator BellowGen;
@@ -217,9 +217,6 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setMinSize(FM2Length-CF100::flangeLength-Geometry::zeroTol,
 		      backWidth, backHeight);
   FMaskGen.generateColl(Control,preName+"FM2",FM2dist,FM2Length);
-
-;
-
 
   // NOT PRESENT :::
   // FMaskGen.setFrontGap(0.84,0.582);
@@ -433,7 +430,7 @@ void
 safetyUnit(FuncDataBase& Control,
 	     const std::string& preName)
   /*!
-    Builds the variables for the second diagnostice/slit packge
+    Builds the variables for the safety unit
     \param Control :: Database
     \param preName :: prename
   */
@@ -1542,7 +1539,6 @@ void
 TOMOWISEvariables(FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
-    -- This version is for Photon Moderator
     \param Control :: Function data base to add constants too
   */
 {

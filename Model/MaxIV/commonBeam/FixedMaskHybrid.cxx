@@ -89,7 +89,6 @@ FixedMaskHybrid::FixedMaskHybrid(const FixedMaskHybrid& A) :
   flangeGrooveLength(A.flangeGrooveLength),
   inAngle(A.inAngle),
   inRadius(A.inRadius),
-  coneLength(A.coneLength),
   outWidth(A.outWidth),
   outHeight(A.outHeight),
   outAngle(A.outAngle),
@@ -125,7 +124,6 @@ FixedMaskHybrid::operator=(const FixedMaskHybrid& A)
       flangeGrooveLength=A.flangeGrooveLength;
       inAngle=A.inAngle;
       inRadius=A.inRadius;
-      coneLength=A.coneLength;
       outWidth=A.outWidth;
       outHeight=A.outHeight;
       outAngle=A.outAngle;
@@ -176,7 +174,6 @@ FixedMaskHybrid::populate(const FuncDataBase& Control)
   flangeGrooveLength=Control.EvalVar<double>(keyName+"FlangeGrooveLength");
   inAngle=Control.EvalVar<double>(keyName+"InAngle");
   inRadius=Control.EvalVar<double>(keyName+"InRadius");
-  coneLength=Control.EvalVar<double>(keyName+"ConeLength");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
   outHeight=Control.EvalVar<double>(keyName+"OutHeight");
   outAngle=Control.EvalVar<double>(keyName+"OutAngle");
@@ -211,7 +208,6 @@ FixedMaskHybrid::createSurfaces()
 
   makeShiftedSurf(SMap, "front", buildIndex+11, Y, flangeLength);
   makeShiftedSurf(SMap, "front", buildIndex+21, Y, flangeGrooveLength);
-  makeShiftedSurf(SMap, "front", buildIndex+31, Y, flangeGrooveLength+coneLength);
   makeShiftedSurf(SMap, "back", buildIndex+12, Y, -flangeLength);
   makeShiftedSurf(SMap, "back", buildIndex+22, Y, -flangeGrooveLength);
   makeShiftedSurf(SMap, "back", buildIndex+32, Y, -outStraightLength);
@@ -222,6 +218,8 @@ FixedMaskHybrid::createSurfaces()
   const double x = inRadius / tan(inAngle*std::numbers::pi_v<double>/360.0);
   Geometry::Vec3D dY(Y*x);
   ModelSupport::buildCone(SMap,buildIndex+27,Origin+dY,Y,inAngle/2.0);
+  // aux plane
+  ModelSupport::buildPlane(SMap,buildIndex+41,Origin+dY,Y);
 
   // Exit aperture - tilted segment
   dY = Y*(length-outStraightLength);
@@ -258,20 +256,16 @@ FixedMaskHybrid::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-21 -7");
   makeCell("StartGroove",System,cellIndex++,voidMat,0.0,HR*front);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -31 27 -7");
-  makeCell("MainCellCone",System,cellIndex++,mat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -32 33 -34 35 -36 : (21 -41 -27)");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 21 -31 -27 ");
-  makeCell("VoidCone",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"21 -32 27 -7 (-33:34:-35:36)");
+  makeCell("MainCell",System,cellIndex++,mat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -7 (-33:34:-35:36)");
-  makeCell("MainCellRecTilted",System,cellIndex++,mat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 31 -32 33 -34 35 -36 ");
-  makeCell("VoidRecTilted",System,cellIndex++,voidMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 -7 (-43:44:-45:46)");
-  makeCell("MainCellStraight",System,cellIndex++,mat,0.0,HR);
+  if (outStraightLength>Geometry::zeroTol) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 -7 (-43:44:-45:46)");
+    makeCell("MainCellStraight",System,cellIndex++,mat,0.0,HR);
+  }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 43 -44 45 -46 ");
   makeCell("VoidStraight",System,cellIndex++,voidMat,0.0,HR);

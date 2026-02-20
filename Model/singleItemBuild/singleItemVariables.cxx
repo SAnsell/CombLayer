@@ -585,7 +585,7 @@ SingleItemVariables(FuncDataBase& Control)
   RPipeGen.setCF<CF63>();
   RPipeGen.generatePipe(Control,"PipeBack",10.0);
   setVariable::BladeBPMToyamaGenerator XBPMGen;
-  XBPMGen.generate(Control,"XBPM",0.0);
+  XBPMGen.generate(Control,"XBPM", 0.0);
 
   setVariable::UndVacGenerator UVGen;
   UVGen.generateUndVac(Control,"UVac");
@@ -1052,7 +1052,7 @@ m1chamberDetails(FuncDataBase& Control)
   Control.addVariable(name+"PreCoreLength",65.0);
 
   setVariable::FixedMaskHybridGenerator FMHGen;
-  FMHGen.generate(Control, "FMH");
+  FMHGen.generate(Control, "FMH", 0.0, 40.0);
 }
 
 

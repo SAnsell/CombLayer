@@ -61,6 +61,7 @@
 #include "MonoShutterR3Generator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
+#include "FixedMaskHybridGenerator.h"
 #include "PortChicaneGenerator.h"
 #include "TriggerGenerator.h"
 #include "CylGateValveGenerator.h"
@@ -78,6 +79,7 @@
 #include "ProximityShieldingGenerator.h"
 #include "BladeBPMToyamaGenerator.h"
 #include "FlangePlateGenerator.h"
+#include "TwinPipeGenerator.h"
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
@@ -109,6 +111,7 @@
 // [27] /mxn/groups/rad/Beamlines/DanMAX/Drawings/DanMAX/Optics/FDR_Diagnostics/Stp Files/DM2/aqm0217.stp
 // [28] /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.STEP, see also [10]
 // [29] /mxn/groups/rad/Beamlines/DanMAX/Drawings/DanMAX/Optics/FDR_Diagnostics/Stp Files/DM1/AQM0214.stp
+// [30] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
 
 namespace setVariable
 {
@@ -116,9 +119,10 @@ namespace setVariable
 namespace danmaxVar
 {
   namespace absY{
+    constexpr double XBPM1 = 1201.99; // [4]
+    constexpr double XBPM2 = 1510.63; // [4]
     const double beamPipe2Port = 1048.9; // [4]
     const double FM1 = 1104.75; // [4]
-    const double XBPM1 = 1201.99; // [4]
     const double FM2 = 1597.08; // [4]
     const double heatAbsorber = 1673.33; // [4]
     const double opticsHutFront = 2250.0; // [4]
@@ -175,6 +179,9 @@ const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
   // larger value given in [8].
 const double exptHut2Length = 545.8;
 
+  void splitterVariables(FuncDataBase&,const std::string&);
+
+
 void
 undulatorVariables(FuncDataBase& Control,
 		   const std::string& frontKey)
@@ -230,6 +237,7 @@ frontMaskVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("danmaxVariables[F]","frontMaskVariables");
 
+  setVariable::FixedMaskHybridGenerator FMHGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::PipeTubeGenerator PTGen;
   setVariable::PortItemGenerator PItemGen;
@@ -273,25 +281,23 @@ frontMaskVariables(FuncDataBase& Control,
   constexpr double FM1Length(40.0); // [4]
   constexpr double FM2Length(50.5); // [5]
 
-  const double FM1dist(danmaxVar::absY::FM1+FM1Length/2.0); // [4]
   const double FM2dist(danmaxVar::absY::FM2+FM2Length/2.0); // [4]
+  // MSM not used
+  // const double MSMdist(1600.0);
 
-  FMaskGen.setCF<CF100>();
-  FMaskGen.setFrontGap(2.53, 2.53); //
-  double backWidth = 1.19; //
+  double backWidth = 1.1; // ???
   double backHeight = backWidth;
-  FMaskGen.setBackGap(backWidth, backHeight);
-  FMaskGen.setMinSize(FM1Length-CF100::flangeLength-Geometry::zeroTol,
-		      backWidth, backHeight);
-  FMaskGen.generateColl(Control,preName+"FM1",FM1dist,FM1Length);
+  FMHGen.setFrontRadius(2.9);
+  FMHGen.setBackGap(backWidth, backHeight);
+  FMHGen.generate(Control,preName+"FM1H",danmaxVar::absY::FM1,FM1Length);
 
-  // Radius adjusted to XBPM flange [16], Thickness from [4]
+  // Radius adjusted to XBPM flange [30], Thickness from [4]
   FPGen.setFlange(7.6, 1.99);
   FPGen.setWindow(0.0, 0.0, "Void"); // [4]
-  FPGen.setMat("SteelUnknownGrade");
+  FPGen.setMat("SteelUnknownGrade"); // guess
   FPGen.setInnerRadius(CF40::innerRadius);  // guess (same as BellowA)
-  // TODO: move to Toyama DanMAX front-end
-  FPGen.generateFlangePlate(Control,preName+"FlangePlateAA");
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateAA"); // TODO: move to Toyama DanMAX front-end
+  FPGen.generateFlangePlate(Control,preName+"FlangePlateXBPM2"); // TODO: move to Toyama DanMAX front-end
 
   Control.addVariable(preName+"BellowBLength",10.0); // [4]
   Control.addVariable(preName+"BellowCLength",10.0); // [4]
@@ -299,9 +305,8 @@ frontMaskVariables(FuncDataBase& Control,
   Control.addVariable(preName+"BellowHLength",14.0); // [4]
   Control.addVariable(preName+"PipeCLength",34.0); // [4]
 
-  Control.addVariable(preName+"PermanentMagnetYStep",270.0); // Distance permanent
   // magnet center to FM2 front: 170.5 cm, measured by AR
-  // TODO: Define position with absolute coordinates or relative to FM2.
+  Control.addVariable(preName+"PermanentMagnetYStep",-170.5); // 170.5 cm, measured by AR
 
   FMaskGen.setFrontGap(2.1, 2.1); // [5]
   backWidth = 0.16; // [5]
@@ -728,6 +733,13 @@ void viewPackage(FuncDataBase& Control,const std::string& viewKey)
 			Geometry::Vec3D(0,offsetZ,0),
 			Geometry::Vec3D(-1,0,1));
 
+  // Otherwise geometric error between port 0 and 2, even though we
+  // intersect them in constructViewScreen.  If BuildZone cells become
+  // too comples, will have to do more sophisticated (manual)
+  // intersection
+  Control.addVariable(pipeName+"Port0OuterVoid",0);
+  Control.addVariable(pipeName+"Port2OuterVoid",0);
+
   FlangeGen.setNoPlate();
   // Most blade data from [13].
   //
@@ -851,7 +863,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",
     beamStopInPipeLength+CF40::flangeLength+port0WallThick); // [22]
   Control.addVariable(viewKey+"BeamStopInPipeXStep",danmaxVar::beamMirrorShift);
-  const double beamStopFrontToWBPort = 
+  const double beamStopFrontToWBPort =
     beamStopInPipeLength+CF40::flangeLength+5.2; // [22]
   Control.addVariable(viewKey+"BeamStopInPipeYStep",
     danmaxVar::absY::whiteBeamStop-beamStopFrontToWBPort);
@@ -1070,7 +1082,7 @@ void revBeamStopPackage(FuncDataBase& Control,
 
   Control.addVariable(pipeName+"NPorts",2);
 
-  // The length of this port could also have been read from [23], but here it is 
+  // The length of this port could also have been read from [23], but here it is
   // calculated to place the main tube exactly at the given absolute position.
   PItemGen.setCF<CF150>(
     danmaxVar::absY::bremColl3-danmaxVar::absY::monoSlits2-0.5*monoSlitsTubeLength);
@@ -1341,7 +1353,29 @@ opticsSlitPackage(FuncDataBase& Control,
 }
 
 void
-opticsVariables(FuncDataBase& Control,const std::string& beamName)
+splitterVariables(FuncDataBase& Control,
+		  const std::string& splitKey)
+  /*!
+    Builds the variables for the splitter at
+    the end of the opticsHut/opticsBeam
+    \param Control :: Database
+    \param splitKey :: prename
+  */
+{
+  ELog::RegMethod RegA("danmaxVariables[F]","splitVariables");
+  setVariable::TwinPipeGenerator TwinGen;
+
+  TwinGen.setCF<CF40>();
+  TwinGen.setJoinFlangeCF<CF100>();
+  TwinGen.setAPos(-2.7*2,0);
+  TwinGen.setBPos(0.0, 0.0);
+  TwinGen.setXYAngle(15.0,0.0);
+  TwinGen.generateTwin(Control,splitKey+"Splitter",0.0,42.0);
+}
+
+void
+opticsVariables(FuncDataBase& Control,
+		const std::string& beamName)
   /*!
     Vacuum optics components in the optics hutch
     \param Control :: Function data base
@@ -1352,7 +1386,7 @@ opticsVariables(FuncDataBase& Control,const std::string& beamName)
 
   const std::string opticsName(beamName+"OpticsLine");
 
-  Control.addVariable(opticsName+"OuterLeft",70.0);
+  Control.addVariable(opticsName+"OuterLeft",190.0);
   Control.addVariable(opticsName+"OuterRight",60.0);
   Control.addVariable(opticsName+"OuterTop",70.0);
 
@@ -1364,7 +1398,6 @@ opticsVariables(FuncDataBase& Control,const std::string& beamName)
   setVariable::PortItemGenerator PItemGen;
   setVariable::TriggerGenerator TGen;
   setVariable::CylGateValveGenerator GVGen;
-  setVariable::SqrFMaskGenerator FMaskGen;
 
   setVariable::GateValveGenerator GateGen;
 
@@ -1441,6 +1474,7 @@ opticsVariables(FuncDataBase& Control,const std::string& beamName)
 
   // High Pass Filter
   // Simplified to a pipe with two 'windows' corresponding to the two diamond filters.
+  PipeGen.setOuterVoid(true);
   PipeGen.setRectWindow(0.6,0.6,0.06,0.6,0.6,0.04); // [13]
   PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
   // Length adjusted to fit the position given in [12]
@@ -1456,6 +1490,55 @@ opticsVariables(FuncDataBase& Control,const std::string& beamName)
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5"); // [28]
 
   const double bellowCDLength = 8.0; // Dummy
+  // Offset of the slit tube along the Y axis.
+  //
+  // Front Port Length
+  // + Distance Top Port Pipe to Slit Tube Front
+  // + Top Port Radius
+  const double slitTubeFrontToTopPort = 2.5+4.4+CF150::outerRadius; // [10]
+
+  PipeGen.setNoWindow();
+  PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
+  BellowGen.generateBellow(Control,opticsName+"BellowC",11.8); // [16]
+
+  //////// CM1
+  const Geometry::Vec3D ZVec(0,0,1);
+  const Geometry::Vec3D vDanMAX = -ZVec;
+  const double sinCrysBranchAngle = 17.0 * M_PI/180.0;
+  const Geometry::Vec3D vSinCrys(-sin(sinCrysBranchAngle),0.0,-cos(sinCrysBranchAngle));
+
+  // will be rotated vertical
+  std::string name=opticsName+"CM1";
+  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,name,30.8);
+  Control.addVariable(name+"NPorts",3);   // beam ports
+
+  // Front
+  // add outerRadius to count port length from the outer surface
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+4.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+
+  // Back: DanMAX branch
+  // add outerRadius to count port length from the outer surface
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),vDanMAX);
+
+  // Back: SinCrys branch
+  // add outerRadius to count port length from the outer surface
+  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,0,0),vSinCrys);
+
+  ///////////
+
+
+  BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
+  BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
+  PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",100.0); // dummy SinCrys pipe
+
   // Laue monochromator
   PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",bellowCDLength);
@@ -1522,6 +1605,14 @@ opticsVariables(FuncDataBase& Control,const std::string& beamName)
   BellowGen.generateBellow(Control,opticsName+"BellowK",bellowKLength);
 
   monoShutterVariables(Control,opticsName);
+
+  // GateGen.setBladeThick(0.3);
+  // GateGen.generateValve(Control,opticsName+"GateG",0.0,0);
+
+  // splitterVariables(Control,opticsName);
+
+  // return;
+
 }
 
 }  // NAMESPACE danmaxVar
@@ -1563,7 +1654,7 @@ support7DanMAX(FuncDataBase& Control,
 
   constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [4, page1]
   constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
-    bremCollTotalLength - shutterLength - proxiShieldAPipeLength - 
+    bremCollTotalLength - shutterLength - proxiShieldAPipeLength -
     danmaxVar::valve3Length - bellowJLength - florTubeALength - bellowILength;
   // same as counting from Movable Mask 2
   // 18692.8 + 300 + 140 + 17.5 + 340 = 19490.3
@@ -1648,7 +1739,7 @@ support7DanMAX(FuncDataBase& Control,
   // Due to its shortness, could also be simplified to a FlangePlate.
   PipeGen.setCF<setVariable::CF63>(); // [7]
   PipeGen.setMat("SteelUnknownGrade");
-  PipeGen.setAFlangeCF<setVariable::CF150>(); // 
+  PipeGen.setAFlangeCF<setVariable::CF150>(); //
   PipeGen.setBFlange(1.0, 0.0);
   constexpr double bremCollPipeInnerRadius = 4.35; // [6]
   // Built to match Bremsstrahlung Collimator pipe
@@ -1747,12 +1838,13 @@ DANMAXvariables(FuncDataBase& Control)
 
 
   PipeGen.setCF<CF40>();
-  // [4] - replacement for pumping unit and downstream bellows
-  PipeGen.setMat("SteelUnknownGrade");
-  PipeGen.generatePipe(Control,frontKey+"PipeA",24.0+11.0);
+  PipeGen.generatePipe(Control,frontKey+"PumpingUnit1ReplacementPipe",35.0); // [4] - replacement for pumping unit, length is dummy (defined by FM1 absolute y-offset)
+  PipeGen.generatePipe(Control,frontKey+"PumpingUnit2ReplacementPipe",35.0); // [4] - replacement for pumping unit, length is dummy (defined by FM1 absolute y-offset)
+
   setVariable::BladeBPMToyamaGenerator XBPMGen;
 
   XBPMGen.generate(Control,frontKey+"XBPM1", danmaxVar::absY::XBPM1);
+  XBPMGen.generate(Control,frontKey+"XBPM2", danmaxVar::absY::XBPM2);
 
 
   danmaxVar::frontMaskVariables(Control,frontKey);

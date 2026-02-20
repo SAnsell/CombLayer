@@ -65,6 +65,7 @@ namespace xraySystem
   class R3ChokeChamber;
   class R3ChokeInsert;
   class BladeBPMToyama;
+  class FixedMaskHybrid;
 
   /*!
     \class R3FrontEndToyamaDanMAX
@@ -78,11 +79,15 @@ class R3FrontEndToyamaDanMAX :
   public R3FrontEnd
 {
 protected:
+  std::shared_ptr<xraySystem::FixedMaskHybrid> fm1h;
   std::shared_ptr<constructSystem::VacuumPipe> beamPipe1;
   std::shared_ptr<constructSystem::PipeTube> beamPipe2;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  std::shared_ptr<xraySystem::BladeBPMToyama> xbpm1;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateAA;
+  std::shared_ptr<xraySystem::BladeBPMToyama> xbpm1;
+  std::shared_ptr<constructSystem::FlangePlate> flangePlateXBPM2;
+  std::shared_ptr<xraySystem::BladeBPMToyama> xbpm2;
+  std::shared_ptr<constructSystem::VacuumPipe> pipePump2;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateA;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateB;
   std::shared_ptr<constructSystem::Bellows> bellowPreMSM;

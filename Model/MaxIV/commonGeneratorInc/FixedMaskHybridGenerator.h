@@ -47,7 +47,6 @@ class FixedMaskHybridGenerator
   double flangeGrooveLength;    ///< Start/end flange groove length
   double inAngle;               ///< Entrance aperture full angle
   double inRadius;              ///< Entrance aperture max radius
-  double coneLength;            ///< Entrance conic aperture length
   double outWidth;              ///< Exit aperture min full width
   double outHeight;             ///< Exit aperture min full height
   double outAngle;              ///< Exit aperture full angle
@@ -63,7 +62,10 @@ class FixedMaskHybridGenerator
   FixedMaskHybridGenerator& operator=(const FixedMaskHybridGenerator&);
   virtual ~FixedMaskHybridGenerator();
 
-  virtual void generate(FuncDataBase&,const std::string&) const;
+  void setFrontRadius(const double R) {radius = R;}
+  void setBackGap(const double w, const double h) {outWidth = w; outHeight = h;}
+
+  virtual void generate(FuncDataBase&,const std::string&,const double,const double) const;
 
 };
 
