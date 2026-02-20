@@ -71,6 +71,7 @@ class MonoShutterR3 :
 
   double height;
   double length;
+  double width;
 
   double adapterInnerRadius;
 

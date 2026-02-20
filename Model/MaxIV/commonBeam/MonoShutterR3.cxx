@@ -90,6 +90,7 @@ MonoShutterR3::populate(const FuncDataBase& Control)
 
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
+  width=Control.EvalVar<double>(keyName+"Width");
 
   adapterInnerRadius=Control.EvalVar<double>(keyName+"AdapterInnerRadius");
 
@@ -158,8 +159,6 @@ MonoShutterR3::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
       setBack(-SMap.realSurf(buildIndex+2));
     }
-
-  const double width = 28.0;
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);

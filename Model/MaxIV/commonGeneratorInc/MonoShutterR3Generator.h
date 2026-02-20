@@ -46,6 +46,7 @@ class MonoShutterR3Generator
 
   double height;
   double length;
+  double width;
 
   double adapterInnerRadius;
 
