@@ -256,13 +256,13 @@ MonoShutterR3::createObjects(Simulation& System)
 
   makeCell("VesselBottomFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-15 -107")*bottom);
-  makeCell("VesselBottomVoid",System,cellIndex++,vesselMat,0.0,
+  makeCell("VesselBottomVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-15 107")
     *leftRight*bottom*frontBack
   );
   makeCell("VesselTopFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"16 -107")*top);
-  makeCell("VesselTopVoid",System,cellIndex++,vesselMat,0.0,
+  makeCell("VesselTopVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"16 107")
     *leftRight*top*frontBack
   );
