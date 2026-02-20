@@ -1775,12 +1775,17 @@ makeSingleItem::build(Simulation& System,
     if (item == "MonoShutterR3" )
       {
 	std::shared_ptr<xraySystem::MonoShutterR3>
-	  msr3(new xraySystem::MonoShutterR3("MonoShutterR3"));
+	  msr3Closed(new xraySystem::MonoShutterR3("MonoShutterR3Closed"));
+	std::shared_ptr<xraySystem::MonoShutterR3>
+	  msr3Open(new xraySystem::MonoShutterR3("MonoShutterR3Open"));
 
-	OR.addObject(msr3);
+	OR.addObject(msr3Closed);
+	OR.addObject(msr3Open);
 
-	msr3->createAll(System,World::masterOrigin(),0);
-	msr3->insertInCell(System,voidCell);
+	msr3Closed->createAll(System,World::masterOrigin(),0);
+	msr3Closed->insertInCell(System,voidCell);
+	msr3Open->createAll(System,*msr3Closed,"back");
+	msr3Open->insertInCell(System,voidCell);
 	return;
       }
     if (item == "RoundMonoShutter" )
