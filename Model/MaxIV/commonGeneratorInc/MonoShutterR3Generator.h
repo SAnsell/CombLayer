@@ -28,13 +28,13 @@ namespace setVariable
 {
 /*!
   \class MonoShutterR3Generator
-  \version 1.1
+  \version 2.0
   \author Udo Friman-Gayer
   \date Feburary 2026
   \brief MonoShutterR3Generator for variables
 
   Version history:
-  1.1 - 2026-02-20
+  2.0 - 2026-02-20
     - Update for MonoShutterR3 v2.0
   1.1 - 2026-02-11
     - Update for MonoShutterR3 v1.1
