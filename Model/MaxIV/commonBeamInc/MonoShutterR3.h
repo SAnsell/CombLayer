@@ -109,6 +109,7 @@ class MonoShutterR3 :
   double shutterPortFlangeLength;
   double threadLength;
   double threadRadius;
+  int threadMat;
   double lift;
   
   std::shared_ptr<constructSystem::FlangePlate> entryAdapter;

@@ -142,6 +142,7 @@ MonoShutterR3::populate(const FuncDataBase& Control)
   shutterPortFlangeLength=Control.EvalVar<double>(keyName+"ShutterPortFlangeLength");
   threadLength=Control.EvalVar<double>(keyName+"ThreadLength");
   threadRadius=Control.EvalVar<double>(keyName+"ThreadRadius");
+  threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
   lift=Control.EvalVar<double>(keyName+"Lift");
 
   return;
@@ -338,7 +339,7 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 15 -305 -127"));
   makeCell("EntryBlockTopVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -16 306 -127 337"));
-  makeCell("EntryBlockThread",System,cellIndex++,0,0.0,
+  makeCell("EntryBlockThread",System,cellIndex++,threadMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-26 306 -337"));
 
   makeCell("ExitShutterPortFlange",System,cellIndex++,vesselMat,0.0,
@@ -365,10 +366,8 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 15 -305 -127"));
   makeCell("ExitBlockTopVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 -16 306 -127 437"));
-  makeCell("ExitBlockThread",System,cellIndex++,0,0.0,
+  makeCell("ExitBlockThread",System,cellIndex++,threadMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-26 306 -437"));
-
-  return; 
 }
 
 void

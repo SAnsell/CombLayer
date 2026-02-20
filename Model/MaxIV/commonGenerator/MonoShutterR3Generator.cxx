@@ -71,7 +71,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   vesselWallThick(MainFlange::wallThick),
   vesselFlangeRadius(MainFlange::flangeRadius),
   vesselFlangeLength(4.8), // [5]
-  vesselMat("SteelUnknownGrade"),
+  vesselMat("SteelUnknownGrade"), // [1]
   apertureBackLength(7.0), // [4]
   apertureInnerRadius(1.0), // [3,4]
   // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
@@ -91,6 +91,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   shutterPortFlangeLength(ShutterFlange::flangeLength), // [5]
   threadLength(28.0), // [5]
   threadRadius(1.5), // [5]
+  threadMat("SteelUnknownGrade"), // [1]
   lift(5.0) // [5]
   /*!
     Constructor and defaults
@@ -183,6 +184,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   Control.addVariable(keyName+"ShutterPortFlangeLength",shutterPortFlangeLength);
   Control.addVariable(keyName+"ThreadLength",threadLength);
   Control.addVariable(keyName+"ThreadRadius",threadRadius);
+  Control.addVariable(keyName+"ThreadMat",threadMat);
   Control.addVariable(keyName+"Lift",lift);
 
   return;
