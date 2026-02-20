@@ -61,6 +61,16 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   PTubeGen(new PipeTubeGenerator()),
   PItemGen(new PortItemGenerator()),
   SUnitGen(new ShutterUnitGenerator()),
+  height(25.4), // [5]
+  length(30.5), // [1]
+  beamPortInnerRadius(EntryExitFlange::innerRadius),
+  beamPortWallThick(EntryExitFlange::wallThick),
+  beamPortFlangeRadius(EntryExitFlange::flangeRadius),
+  beamPortFlangeLength(EntryExitFlange::flangeLength),
+  vesselInnerRadius(MainFlange::innerRadius),
+  vesselWallThick(MainFlange::wallThick),
+  vesselFlangeRadius(MainFlange::flangeRadius),
+  vesselFlangeLength(MainFlange::flangeLength),
   apertureBackLength(7.0), // [4]
   apertureInnerRadius(1.0), // [3,4]
   // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
@@ -72,8 +82,6 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   blockLength(5.0), // [2]
   blockWidth(5.0), // [2]
   flangeThick(1.225), // [5]
-  height(25.4), // [5]
-  length(30.5), // [1]
   shutterDistance(7.05), // [5]
   baseLift(0.0), // [5]
   lift(5.0) // [5]
@@ -142,6 +150,19 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
 			Geometry::Vec3D(0,0,0.5*shutterDistance),Y);
   PItemGen->generatePort(Control,keyName+"PipePort3",
 			Geometry::Vec3D(0,0,-0.5*shutterDistance),Y);
+
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Length",length);
+
+  Control.addVariable(keyName+"BeamPortInnerRadius",beamPortInnerRadius);
+  Control.addVariable(keyName+"BeamPortWallThick",beamPortWallThick);
+  Control.addVariable(keyName+"BeamPortFlangeRadius",beamPortFlangeRadius);
+  Control.addVariable(keyName+"BeamPortFlangeLength",beamPortFlangeLength);
+
+  Control.addVariable(keyName+"VesselInnerRadius",vesselInnerRadius);
+  Control.addVariable(keyName+"VesselWallThick",vesselWallThick);
+  Control.addVariable(keyName+"VesselFlangeRadius",vesselFlangeRadius);
+  Control.addVariable(keyName+"VesselFlangeLength",vesselFlangeLength);
 
   Control.addVariable(keyName+"ApertureBackLength",apertureBackLength);
   Control.addVariable(keyName+"ApertureInnerRadius",apertureInnerRadius);

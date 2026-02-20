@@ -75,6 +75,19 @@ class MonoShutterR3 :
 {
  private:
 
+  double height;
+  double length;
+
+  double beamPortInnerRadius;
+  double beamPortWallThick;
+  double beamPortFlangeRadius;
+  double beamPortFlangeLength;
+
+  double vesselInnerRadius;
+  double vesselWallThick;
+  double vesselFlangeRadius;
+  double vesselFlangeLength;
+
   double apertureBackLength;
   double apertureInnerRadius;
   double apertureOuterRadius;

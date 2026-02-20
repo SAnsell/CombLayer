@@ -54,6 +54,19 @@ class MonoShutterR3Generator
   std::unique_ptr<PortItemGenerator> PItemGen;
   std::unique_ptr<ShutterUnitGenerator> SUnitGen;
 
+  double height;
+  double length;
+
+  double beamPortInnerRadius;
+  double beamPortWallThick;
+  double beamPortFlangeRadius;
+  double beamPortFlangeLength;
+
+  double vesselInnerRadius;
+  double vesselWallThick;
+  double vesselFlangeRadius;
+  double vesselFlangeLength;
+
   double apertureBackLength;
   double apertureInnerRadius;
   std::string apertureMat;
@@ -66,8 +79,6 @@ class MonoShutterR3Generator
   double blockWidth;
 
   double flangeThick;
-  double height;
-  double length;
   double shutterDistance;
 
   double baseLift;
