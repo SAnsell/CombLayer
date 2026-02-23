@@ -151,7 +151,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
   valve8(new xraySystem::CylGateValve(newName+"Valve8")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
-  MLMVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
+  mlmVessel(new constructSystem::VacuumBox(newName+"MLMVessel")),
   MLM(new xraySystem::MLMono(newName+"MLM")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   valve9(new xraySystem::CylGateValve(newName+"Valve9")),
@@ -227,7 +227,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(viewTubeScreen);
   OR.addObject(valve8);
   OR.addObject(bellowF);
-  OR.addObject(MLMVessel);
+  OR.addObject(mlmVessel);
   OR.addObject(MLM);
   OR.addObject(bellowG);
   OR.addObject(valve9);
@@ -567,16 +567,16 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMirrorMono");
 
-  MLMVessel->createAll(System,*frontEnd,0);
+  mlmVessel->createAll(System,*frontEnd,0);
 
   bellowF->setBack(initFC,sideName);
-  bellowF->createAll(System,*MLMVessel,"front");
+  bellowF->createAll(System,*mlmVessel,"front");
   bellowF->insertAllInCell(System,buildZoneDanMAX.createUnit(System,*bellowF,"front"));
 
-  MLMVessel->insertInCell(System,buildZoneDanMAX.createUnit(System,*MLMVessel,"back"));
+  mlmVessel->insertInCell(System,buildZoneDanMAX.createUnit(System,*mlmVessel,"back"));
 
-  MLM->addInsertCell(MLMVessel->getCell("Void"));
-  MLM->createAll(System,*MLMVessel,0);
+  MLM->addInsertCell(mlmVessel->getCell("Void"));
+  MLM->createAll(System,*mlmVessel,0);
 
   return;
 }
@@ -822,7 +822,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   constructHDCM(System,*valve6,"back");
   constructViewScreen(System,*hdcmVessel,"back");
   constructMirrorMono(System,*valve8,"back");
-  constructBeamStopTube(System,*MLMVessel,"back");
+  constructBeamStopTube(System,*mlmVessel,"back");
 
   constructViewScreenB(System,*slitsAOut,"back");
 

@@ -154,7 +154,7 @@ class danmaxOpticsLine :
   /// bellows to second mono
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// MirrorMonoBox
-  std::shared_ptr<constructSystem::VacuumBox> MLMVessel;
+  std::shared_ptr<constructSystem::VacuumBox> mlmVessel;
   /// Mirror-Mono system
   std::shared_ptr<xraySystem::MLMono> MLM;
   /// bellows from second mono
