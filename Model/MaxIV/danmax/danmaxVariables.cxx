@@ -112,6 +112,7 @@
 // [28] /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.STEP, see also [10]
 // [29] /mxn/groups/rad/Beamlines/DanMAX/Drawings/DanMAX/Optics/FDR_Diagnostics/Stp Files/DM1/AQM0214.stp
 // [30] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
+// [31] SINCRYS layout CM1, Drawing 256569, 2025-05-06
 
 namespace setVariable
 {
@@ -178,9 +179,6 @@ const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
   // However, to match the simplified model of the optics hutch, use the slightly
   // larger value given in [8].
 const double exptHut2Length = 545.8;
-
-  void splitterVariables(FuncDataBase&,const std::string&);
-
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -1280,9 +1278,7 @@ opticsSlitPackage(FuncDataBase& Control,
 
     \param Control :: Function data base for variables
     \param opticsName :: PreName
-    \param slitTubeFrontToTopPort :: Distance from the front surface to the
-    port that defines the absolute position.
-   */
+*/
 {
   setVariable::PortTubeGenerator PortTubeGen;
   setVariable::JawValveGenerator JawGen;
@@ -1492,12 +1488,6 @@ opticsVariables(FuncDataBase& Control,
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5"); // [28]
 
   const double bellowCDLength = 8.0; // Dummy
-  // Offset of the slit tube along the Y axis.
-  //
-  // Front Port Length
-  // + Distance Top Port Pipe to Slit Tube Front
-  // + Top Port Radius
-  const double slitTubeFrontToTopPort = 2.5+4.4+CF150::outerRadius; // [10]
 
   PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
@@ -1551,36 +1541,43 @@ opticsVariables(FuncDataBase& Control,
 
   opticsSlitPackage(Control,opticsName);
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [28]
-  // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [28]
+  const std::string valve6Name = opticsName+"Valve6";
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve6Name); // [28]
+  const double valve6Angle = 90.0;
+  Control.addVariable(valve6Name+"YAngle", 90.0); // [28]
 
-  // Dummy length
-  BellowGen.generateBellow(Control,opticsName+"BellowE",10.0);
+  const std::string bellowEName = opticsName+"BellowE";
+  BellowGen.generateBellow(Control,bellowEName,10.0);  // Dummy length
+  Control.addVariable(bellowEName+"YAngle", -valve6Angle);
 
   monoPackage(Control,opticsName);
 
   // Dummy length
   BellowGen.generateBellow(Control,opticsName+"BellowAfterMono",10.0);
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [28]
+  const std::string valve7Name = opticsName+"Valve7";
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve7Name); // [28]
   // Angle roughly adjusted to [28]. Found it difficult to read off from the model.
-  // Control.addVariable(opticsName+"Valve7YAngle", -20.0);
+  Control.addVariable(valve7Name+"YAngle", -160.0);
 
   viewPackage(Control,opticsName);
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [28]
-  // Control.addVariable(opticsName+"Valve8YAngle", 90.0); // [28]
+  std::string valve8Name = opticsName+"Valve8";
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve8Name); // [31]
+  // Neither visible on [26] or [28] as the other valves of this type, but the angle 
+  // can be seen in [31].
+  Control.addVariable(valve8Name+"YAngle", 90.0);
 
   // Dummy length
   BellowGen.generateBellow(Control,opticsName+"BellowF",10.0);
 
-  mirrorMonoPackage(
-    Control,opticsName);
+  mirrorMonoPackage(Control,opticsName);
   BellowGen.generateBellow(Control,opticsName+"BellowG",10.0); // Dummy length
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve9"); // [26]
+  const std::string valve9Name = opticsName+"Valve9";
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve9Name); // [26]
   // Angle estimated from [26]
-  // Control.addVariable(opticsName+"Valve9YAngle", 135.0);
+  Control.addVariable(valve9Name+"YAngle", -135.0);
 
   beamStopPackage(Control,opticsName);
 
