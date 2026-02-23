@@ -61,8 +61,8 @@ FixedMaskHybridGenerator::FixedMaskHybridGenerator() :
   flangeGrooveLength(0.4), // [1]
   inAngle(6.6), // [1]
   inRadius(1.8), // [1]
-  outWidth(1.1), // [2]
-  outHeight(1.1), // [2]
+  outWidth(1.12), // [1]
+  outHeight(1.12), // [1]
   outAngle(0.7), // [1]
   outStraightLength(0.0), // [1]: 0.0, but initial guess was 5 cm
   mat("Copper"), // TODO: use GLIDCOP
