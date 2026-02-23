@@ -747,7 +747,7 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   // Permanent magnet
 
   pMag->setCutSurf("Inner", *collABPipe, "outerPipe");
-  pMag->createAll(System,*this,0);
+  pMag->createAll(System,*fm2, "#front");
 
   outerCell = buildZone.createUnit(System,*pMag,"#front");
   collABPipe->insertAllInCell(System,outerCell);
