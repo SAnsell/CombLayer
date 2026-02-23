@@ -421,7 +421,8 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
   viewTubeScreen->addInsertCell("Blade",viewTube->getCell("Void"));
   viewTubeScreen->setBladeCentre(Geometry::Vec3D(0.0,0.0,0.0));
-  viewTubeScreen->createAll(System,*viewTube,"InnerBackOnCap");
+  // TODO: If built on "InnerBack" surface, the thread is not attached to the cap.
+  viewTubeScreen->createAll(System,*viewTube,"InnerBack");
 
   outerCell=constructSystem::constructUnit
     (System,buildZoneDanMAX,VPB,"OuterPlate",*valve8);
@@ -518,9 +519,6 @@ danmaxOpticsLine::constructRevBeamStopTube
   const constructSystem::portItem& VPB=revBeamStopTube->getPort(1);
   revBeamStopTube->insertAllInCell(System,
     buildZoneDanMAX.createUnit(System,VPB,VPB.getSideIndex("OuterPlate")));
-
-  constructSystem::constructUnit
-    (System,buildZoneDanMAX,VPB,"OuterPlate",*bellowK);
 
   return;
 }
@@ -735,8 +733,16 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMonoShutter");
 
-  constructSystem::constructUnit
-    (System,buildZoneDanMAX,initFC,sideName,*monoShutter);
+  monoShutter->createAll(System,*frontEnd,0);
+
+  bellowK->setBack(initFC,initFC.getSideIndex(sideName));
+  bellowK->createAll(System,*monoShutter,"front");
+
+  bellowK->insertAllInCell(System,
+    buildZoneDanMAX.createUnit(System,*bellowK,"front"));
+
+  monoShutter->insertInCell(System,
+    buildZoneDanMAX.createUnit(System,*monoShutter,"back"));
 
   constructSystem::constructUnit
     (System,buildZoneDanMAX,*monoShutter,"back",*bellowL);
@@ -842,7 +848,8 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   constructSystem::constructUnit(System,buildZoneDanMAX,*lensBox,"back",*CRLGateOut);
 
   constructRevBeamStopTube(System,*CRLGateOut,"back");
-  constructMonoShutter(System,*bellowK,"back");
+  
+  constructMonoShutter(System,revBeamStopTube->getPort(1),"OuterPlate");
 
   outerCell = buildZoneDanMAX.createUnit(System);
   for (int i=0; i<4; ++i) {

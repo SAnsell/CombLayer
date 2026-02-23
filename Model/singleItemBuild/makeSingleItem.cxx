@@ -1775,12 +1775,27 @@ makeSingleItem::build(Simulation& System,
     if (item == "MonoShutterR3" )
       {
 	std::shared_ptr<xraySystem::MonoShutterR3>
-	  msr3(new xraySystem::MonoShutterR3("MonoShutterR3"));
+	  msr3Closed(new xraySystem::MonoShutterR3("MonoShutterR3Closed"));
+	std::shared_ptr<xraySystem::MonoShutterR3>
+	  msr3Open(new xraySystem::MonoShutterR3("MonoShutterR3Open"));
+	std::shared_ptr<xraySystem::MonoShutterR3>
+	  msr3FrontOpen(new xraySystem::MonoShutterR3("MonoShutterR3FrontOpen"));
+	std::shared_ptr<xraySystem::MonoShutterR3>
+	  msr3BackOpen(new xraySystem::MonoShutterR3("MonoShutterR3BackOpen"));
 
-	OR.addObject(msr3);
+	OR.addObject(msr3Closed);
+	OR.addObject(msr3Open);
+	OR.addObject(msr3FrontOpen);
+	OR.addObject(msr3BackOpen);
 
-	msr3->createAll(System,World::masterOrigin(),0);
-	msr3->insertInCell(System,voidCell);
+	msr3Closed->createAll(System,World::masterOrigin(),0);
+	msr3Closed->insertInCell(System,voidCell);
+	msr3Open->createAll(System,*msr3Closed,"back");
+	msr3Open->insertInCell(System,voidCell);
+	msr3FrontOpen->createAll(System,*msr3Open,"back");
+	msr3FrontOpen->insertInCell(System,voidCell);
+	msr3BackOpen->createAll(System,*msr3FrontOpen,"back");
+	msr3BackOpen->insertInCell(System,voidCell);
 	return;
       }
     if (item == "RoundMonoShutter" )

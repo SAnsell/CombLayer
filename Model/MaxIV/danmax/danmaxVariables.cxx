@@ -112,6 +112,7 @@
 // [28] /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.STEP, see also [10]
 // [29] /mxn/groups/rad/Beamlines/DanMAX/Drawings/DanMAX/Optics/FDR_Diagnostics/Stp Files/DM1/AQM0214.stp
 // [30] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
+// [31] SINCRYS layout CM1, Drawing 256569, 2025-05-06
 
 namespace setVariable
 {
@@ -147,6 +148,7 @@ namespace danmaxVar
     const double CRL = 3091.77;
     const double monoSlits2 = 3143.94;
     const double bremColl3 = 3166.47;
+    const double monoShutter = 3211.25; // [31]
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -178,9 +180,6 @@ const double opticsHutOuterWidth = 259.7; // Section A-A in [1]
   // However, to match the simplified model of the optics hutch, use the slightly
   // larger value given in [8].
 const double exptHut2Length = 545.8;
-
-  void splitterVariables(FuncDataBase&,const std::string&);
-
 
 void
 undulatorVariables(FuncDataBase& Control,
@@ -1222,7 +1221,11 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MShutterGen;
 
-  MShutterGen.generate(Control,preName+"MonoShutter",1,1);
+  const std::string monoShutterName = preName+"MonoShutter";
+  MShutterGen.generate(Control,monoShutterName);
+  Control.addVariable(monoShutterName+"XStep",danmaxVar::beamMirrorShift);
+  Control.addVariable(monoShutterName+"YStep",
+    danmaxVar::absY::monoShutter-MShutterGen.getLength()/2.0);
 
   const double bellowLength = 12.0; // [26]
   BellowGen.setCF<setVariable::CF40>();
@@ -1278,9 +1281,7 @@ opticsSlitPackage(FuncDataBase& Control,
 
     \param Control :: Function data base for variables
     \param opticsName :: PreName
-    \param slitTubeFrontToTopPort :: Distance from the front surface to the
-    port that defines the absolute position.
-   */
+*/
 {
   setVariable::PortTubeGenerator PortTubeGen;
   setVariable::JawValveGenerator JawGen;
@@ -1543,36 +1544,43 @@ opticsVariables(FuncDataBase& Control,
 
   opticsSlitPackage(Control,opticsName);
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve6"); // [28]
-  // Control.addVariable(opticsName+"Valve6YAngle", 90.0); // [28]
+  const std::string valve6Name = opticsName+"Valve6";
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve6Name); // [28]
+  const double valve6Angle = 90.0;
+  Control.addVariable(valve6Name+"YAngle", 90.0); // [28]
 
-  // Dummy length
-  BellowGen.generateBellow(Control,opticsName+"BellowE",10.0);
+  const std::string bellowEName = opticsName+"BellowE";
+  BellowGen.generateBellow(Control,bellowEName,10.0);  // Dummy length
+  Control.addVariable(bellowEName+"YAngle", -valve6Angle);
 
   monoPackage(Control,opticsName);
 
   // Dummy length
   BellowGen.generateBellow(Control,opticsName+"BellowAfterHDCM",10.0);
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [28]
+  const std::string valve7Name = opticsName+"Valve7";
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve7Name); // [28]
   // Angle roughly adjusted to [28]. Found it difficult to read off from the model.
-  // Control.addVariable(opticsName+"Valve7YAngle", -20.0);
+  Control.addVariable(valve7Name+"YAngle", -160.0);
 
   viewPackage(Control,opticsName);
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve8"); // [28]
-  // Control.addVariable(opticsName+"Valve8YAngle", 90.0); // [28]
+  std::string valve8Name = opticsName+"Valve8";
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve8Name); // [31]
+  // Neither visible on [26] or [28] as the other valves of this type, but the angle 
+  // can be seen in [31].
+  Control.addVariable(valve8Name+"YAngle", 90.0);
 
   // Dummy length
   BellowGen.generateBellow(Control,opticsName+"BellowF",10.0);
 
-  mirrorMonoPackage(
-    Control,opticsName);
+  mirrorMonoPackage(Control,opticsName);
   BellowGen.generateBellow(Control,opticsName+"BellowG",10.0); // Dummy length
 
-  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve9"); // [26]
+  const std::string valve9Name = opticsName+"Valve9";
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve9Name); // [26]
   // Angle estimated from [26]
-  // Control.addVariable(opticsName+"Valve9YAngle", 135.0);
+  Control.addVariable(valve9Name+"YAngle", -135.0);
 
   beamStopPackage(Control,opticsName);
 
@@ -1585,18 +1593,20 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCylCF<setVariable::CF40>(); // [26]
   const double CRLGateTotalLength = 3.5+2.0*CF40::flangeLength; // [26]
   GateGen.setLength(CRLGateTotalLength-2.0*CF40::flangeLength);
-  GateGen.generateValve(Control,opticsName+"CRLGateIn",0.0,0);
+  const std::string CRLGatePrefix = opticsName+"CRLGate";
+  GateGen.generateValve(Control,CRLGatePrefix+"In",0.0,0);
+  Control.addVariable(CRLGatePrefix+"InYAngle",20.0); // Angle estimated from [26]
 
   lensPackage(Control,opticsName);
 
-  GateGen.generateValve(Control,opticsName+"CRLGateOut",0.0,0);
+  GateGen.generateValve(Control,CRLGatePrefix+"Out",0.0,0);
+  Control.addVariable(CRLGatePrefix+"OutYAngle",-20.0); // Angle estimated from [26]
 
   BellowGen.generateBellow(Control,opticsName+"BellowJ",10.0); // Dummy length
 
   revBeamStopPackage(Control,opticsName);
 
-  const double bellowKLength = 16.0; // [26]
-  BellowGen.generateBellow(Control,opticsName+"BellowK",bellowKLength);
+  BellowGen.generateBellow(Control,opticsName+"BellowK",10.0); // Dummy length
 
   monoShutterVariables(Control,opticsName);
 
@@ -1811,7 +1821,6 @@ DANMAXvariables(FuncDataBase& Control)
 
   danmaxVar::undulatorVariables(Control,frontKey);
   setVariable::R3FrontEndToyamaVariables(Control,beamLineName);
-  //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
 
   support7DanMAX(Control,frontKey);
 

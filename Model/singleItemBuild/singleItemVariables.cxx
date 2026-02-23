@@ -404,7 +404,14 @@ SingleItemVariables(FuncDataBase& Control)
   MSGen.generateShutter(Control,"MS",1,1);
 
   setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MSR3Gen;
-  MSR3Gen.generate(Control,"MonoShutterR3",1,1);
+  MSR3Gen.generate(Control,"MonoShutterR3Closed");
+  MSR3Gen.generate(Control,"MonoShutterR3Open");
+  Control.addVariable("MonoShutterR3OpenEntryShutterUpFlag",1);
+  Control.addVariable("MonoShutterR3OpenExitShutterUpFlag",1);
+  MSR3Gen.generate(Control,"MonoShutterR3FrontOpen");
+  Control.addVariable("MonoShutterR3FrontOpenEntryShutterUpFlag",1);
+  MSR3Gen.generate(Control,"MonoShutterR3BackOpen");
+  Control.addVariable("MonoShutterR3BackOpenExitShutterUpFlag",1);
 
   setVariable::RoundShutterGenerator RMSGen;
   RMSGen.generateShutter(Control,"RMS",1,1);

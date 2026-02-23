@@ -45,10 +45,6 @@
 #include "FuncDataBase.h"
 
 #include "CFFlanges.h"
-#include "FlangePlateGenerator.h"
-#include "PipeTubeGenerator.h"
-#include "PortItemGenerator.h"
-#include "ShutterUnitGenerator.h"
 #include "MonoShutterR3Generator.h"
 
 namespace setVariable
@@ -57,10 +53,18 @@ template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
 MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
 ::MonoShutterR3Generator() :
-  FPGen(std::make_unique<FlangePlateGenerator>()),
-  PTubeGen(new PipeTubeGenerator()),
-  PItemGen(new PortItemGenerator()),
-  SUnitGen(new ShutterUnitGenerator()),
+  height(29.8), // [5]
+  length(30.5), // [1]
+  adapterInnerRadius(AdapterFlange::innerRadius),
+  beamPortInnerRadius(EntryExitFlange::innerRadius),
+  beamPortWallThick(EntryExitFlange::wallThick),
+  beamPortFlangeRadius(EntryExitFlange::flangeRadius),
+  beamPortFlangeLength(EntryExitFlange::flangeLength),
+  vesselInnerRadius(MainFlange::innerRadius),
+  vesselWallThick(MainFlange::wallThick),
+  vesselFlangeRadius(MainFlange::flangeRadius),
+  vesselFlangeLength(4.8), // [5]
+  vesselMat("SteelUnknownGrade"), // [1]
   apertureBackLength(7.0), // [4]
   apertureInnerRadius(1.0), // [3,4]
   apertureMat("TungstenK1800"), // [3,4]
@@ -70,12 +74,19 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   blockHeight(5.0), // [2]
   blockLength(5.0), // [2]
   blockWidth(5.0), // [2]
-  flangeThick(1.225), // [5]
-  height(25.4), // [5]
-  length(30.5), // [1]
+  blockMat("Tungsten"), // [2] see comment on tungsten material above
   shutterDistance(7.05), // [5]
-  baseLift(0.0), // [5]
-  lift(5.0) // [5]
+  shutterPortLength(19.0), // [5]
+  shutterPortInnerRadius(ShutterFlange::innerRadius), // [5]
+  shutterPortWallThick(ShutterFlange::wallThick), // [5]
+  shutterPortFlangeRadius(ShutterFlange::flangeRadius), // [5]
+  shutterPortFlangeLength(ShutterFlange::flangeLength), // [5]
+  threadLength(28.0), // [5]
+  threadRadius(1.5), // [5]
+  threadMat("SteelUnknownGrade"), // [1]
+  lift(5.0), // [5]
+  entryShutterUpFlag(false),
+  exitShutterUpFlag(false)
   /*!
     Constructor and defaults
   */
@@ -93,54 +104,30 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
 template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
 void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
-::generate(FuncDataBase& Control,
-				      const std::string& keyName,
-				      const bool upFlagA,
-				      const bool upFlagB) const
+::generate(FuncDataBase& Control,const std::string& keyName) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param upFlagA :: First Shutter up
-    \param upFlagB :: Second Shutter up
   */
 {
   ELog::RegMethod RegA("MonoShutterR3Generator","generate");
 
-  SUnitGen->setCF<ShutterFlange>();
-  // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
-  SUnitGen->setLift(baseLift,lift);
-  SUnitGen->setBlock(blockHeight,blockLength,blockWidth,"Tungsten");
-  SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
-  SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Length",length);
 
-  PTubeGen->setCF<MainFlange>();
-  PTubeGen->setAFlange(MainFlange::flangeRadius,flangeThick);
-  PTubeGen->setBFlange(MainFlange::flangeRadius,flangeThick);
-  PTubeGen->setCap(1,1);
-  PTubeGen->generateTube(Control,keyName+"Pipe",
-    height-2.0*flangeThick);
-  Control.addVariable(keyName+"PipeNPorts",4);
+  Control.addVariable(keyName+"AdapterInnerRadius",adapterInnerRadius);
 
-  FPGen->setFlange(EntryExitFlange::flangeRadius,EntryExitFlange::flangeLength);
-  FPGen->setInnerRadius(AdapterFlange::innerRadius);
-  FPGen->generateFlangePlate(Control,keyName+"EntryAdapter");
-  FPGen->generateFlangePlate(Control,keyName+"ExitAdapter");
+  Control.addVariable(keyName+"BeamPortInnerRadius",beamPortInnerRadius);
+  Control.addVariable(keyName+"BeamPortWallThick",beamPortWallThick);
+  Control.addVariable(keyName+"BeamPortFlangeRadius",beamPortFlangeRadius);
+  Control.addVariable(keyName+"BeamPortFlangeLength",beamPortFlangeLength);
 
-  const Geometry::Vec3D Y(0,1,0);
-  const Geometry::Vec3D Z(0,0,1);
-  PItemGen->setCF<EntryExitFlange>(0.5*length-EntryExitFlange::flangeLength);
-  PItemGen->setNoPlate();
-  PItemGen->generatePort(Control,keyName+"PipePort0",
-			Geometry::Vec3D(0,0,0),Z);
-  PItemGen->generatePort(Control,keyName+"PipePort1",
-			 Geometry::Vec3D(0,0,0),-Z);
-  PItemGen->setCF<ShutterFlange>(0.5*height+5.0); // [5]
-  PItemGen->setNoPlate();
-  PItemGen->generatePort(Control,keyName+"PipePort2",
-			Geometry::Vec3D(0,0,0.5*shutterDistance),Y);
-  PItemGen->generatePort(Control,keyName+"PipePort3",
-			Geometry::Vec3D(0,0,-0.5*shutterDistance),Y);
+  Control.addVariable(keyName+"VesselInnerRadius",vesselInnerRadius);
+  Control.addVariable(keyName+"VesselWallThick",vesselWallThick);
+  Control.addVariable(keyName+"VesselFlangeRadius",vesselFlangeRadius);
+  Control.addVariable(keyName+"VesselFlangeLength",vesselFlangeLength);
+  Control.addVariable(keyName+"VesselMat",vesselMat);
 
   Control.addVariable(keyName+"ApertureBackLength",apertureBackLength);
   Control.addVariable(keyName+"ApertureInnerRadius",apertureInnerRadius);
@@ -152,7 +139,23 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   Control.addVariable(keyName+"BlockHeight",blockHeight);
   Control.addVariable(keyName+"BlockLength",blockLength);
   Control.addVariable(keyName+"BlockWidth",blockWidth);
+  Control.addVariable(keyName+"BlockMat",blockMat);
+
   Control.addVariable(keyName+"ShutterDistance",shutterDistance);
+  Control.addVariable(keyName+"ShutterPortLength",shutterPortLength);
+  Control.addVariable(keyName+"ShutterPortInnerRadius",shutterPortInnerRadius);
+  Control.addVariable(keyName+"ShutterPortWallThick",shutterPortWallThick);
+  Control.addVariable(keyName+"ShutterPortFlangeRadius",shutterPortFlangeRadius);
+  Control.addVariable(keyName+"ShutterPortFlangeLength",shutterPortFlangeLength);
+  Control.addVariable(keyName+"ThreadLength",threadLength);
+  Control.addVariable(keyName+"ThreadRadius",threadRadius);
+  Control.addVariable(keyName+"ThreadMat",threadMat);
+  Control.addVariable(keyName+"Lift",lift);
+
+  Control.addVariable(keyName+"EntryShutterUpFlag",
+    static_cast<int>(entryShutterUpFlag));
+  Control.addVariable(keyName+"ExitShutterUpFlag",
+    static_cast<int>(exitShutterUpFlag));
 
   return;
 }
@@ -160,7 +163,6 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
 template MonoShutterR3Generator<CF200,CF63,CF40,CF40>::MonoShutterR3Generator();
 template MonoShutterR3Generator<CF200,CF63,CF40,CF40>::~MonoShutterR3Generator();
 template void MonoShutterR3Generator<CF200,CF63,CF40,CF40>::generate(
-  FuncDataBase& Control,const std::string& keyName,const bool upFlagA,
-  const bool upFlagB) const;
+  FuncDataBase& Control,const std::string& keyName) const;
 
 }  // NAMESPACE setVariable

@@ -24,33 +24,26 @@
 
 class Simulation;
 
-namespace constructSystem{
-  class FlangePlate;
-  class PipeTube;
-}
-
 namespace xraySystem
 {
-  class ShutterUnit;
 /*!
   \class MonoShutterR3
   \author U. Friman-Gayer
-  \version 1.1
+  \version 2.0
   \date February 2026
   \brief Monochromatic shutter system for hard x-ray beamlines at the R3 ring of MAX IV
 
   The shutter system consists of the following elements:
-  * PipeTube with the following four ports
-    * Port0: Entry ("front") including a flange adapter
-    * Port1: Exit ("back") including a flange adapter
-    * Port2: Shutter 1 on entry side
-    * Port3: Shutter 2 on exit side
-  * Two shutter units at the respective ports
-  * Three disk-shaped fixed apertures at the following positions
+  * Main vessel with the following four ports
+    * Entry ("front") including a flange adapter
+    * Exit ("back") including a flange adapter
+    * Entry hutter 1
+    * Exit shutter 2
+  * Three disk-shaped fixed apertures at the following positions:
     * Upstream from shutter 1
     * Between shutter 1 and 2
     * Downstream from shutter 2. This last aperture has an additional part that 
-      extends into the exit flange.
+      extends into the exit port.
 
   References:
   [1] Technical Specifications of mono beam shutter for MAX-IV, AXILON, Rp-3669-1173-0, 2025-07-25
@@ -60,20 +53,41 @@ namespace xraySystem
   [5] CAD model of ForMAX/MicroMAX/DanMAX mono shutters
 
   Version history:
-  1.1 - 2026-11-02
+  2.1 - 2026-02-23
+    - Optimize outer surface
+    - Remove now-unnecessary width parameter
+  2.0 - 2026-02-20
+    - Self-contained rebuild with no dependencies on other components
+  1.1 - 2026-02-11
     - Derive from ContainedComp instead of ContainedGroup
     - Simplified outer volume
-  1.0 - 2026-10-02
+  1.0 - 2026-02-10
 */
 
 class MonoShutterR3 :
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
-  public attachSystem::ExternalCut,
+  public attachSystem::FrontBackCut,
   public attachSystem::SurfMap,
   public attachSystem::CellMap
 {
  private:
+
+  double height;
+  double length;
+
+  double adapterInnerRadius;
+
+  double beamPortInnerRadius;
+  double beamPortWallThick;
+  double beamPortFlangeRadius;
+  double beamPortFlangeLength;
+
+  double vesselInnerRadius;
+  double vesselWallThick;
+  double vesselFlangeRadius;
+  double vesselFlangeLength;
+  int vesselMat;
 
   double apertureBackLength;
   double apertureInnerRadius;
@@ -85,13 +99,21 @@ class MonoShutterR3 :
   double blockHeight;
   double blockLength;
   double blockWidth;
+  int blockMat;
+
   double shutterDistance;
-  
-  std::shared_ptr<constructSystem::FlangePlate> entryAdapter;
-  std::shared_ptr<constructSystem::FlangePlate> exitAdapter;
-  std::shared_ptr<constructSystem::PipeTube> shutterPipe;
-  std::shared_ptr<xraySystem::ShutterUnit> monoShutterA;
-  std::shared_ptr<xraySystem::ShutterUnit> monoShutterB;
+  double shutterPortLength;
+  double shutterPortInnerRadius;
+  double shutterPortWallThick;
+  double shutterPortFlangeRadius;
+  double shutterPortFlangeLength;
+  double threadLength;
+  double threadRadius;
+  int threadMat;
+  double lift;
+
+  bool entryShutterUpFlag;
+  bool exitShutterUpFlag;
 
  protected:
   void populate(const FuncDataBase&) override;
@@ -99,8 +121,6 @@ class MonoShutterR3 :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
-  void buildComponents(Simulation&);
   
  public:
 

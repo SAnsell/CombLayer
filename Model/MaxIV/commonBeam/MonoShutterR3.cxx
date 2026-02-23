@@ -54,19 +54,12 @@
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "FixedGroup.h"
-#include "FixedRotateGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "portItem.h"
-#include "VirtualTube.h"
-#include "PipeTube.h"
-#include "FlangePlate.h"
-#include "ShutterUnit.h"
 #include "MonoShutterR3.h"
 
 namespace xraySystem
@@ -75,27 +68,14 @@ namespace xraySystem
 MonoShutterR3::MonoShutterR3(const std::string& Key) :
   attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
-  attachSystem::ExternalCut(),
+  attachSystem::FrontBackCut(),
   attachSystem::SurfMap(),
-  attachSystem::CellMap(),
-  
-  entryAdapter(std::make_shared<constructSystem::FlangePlate>(keyName+"EntryAdapter")),
-  exitAdapter(std::make_shared<constructSystem::FlangePlate>(keyName+"ExitAdapter")),
-  shutterPipe(std::make_shared<constructSystem::PipeTube>(keyName+"Pipe")),
-  monoShutterA(std::make_shared<xraySystem::ShutterUnit>(keyName+"UnitA")),
-  monoShutterB(std::make_shared<xraySystem::ShutterUnit>(keyName+"UnitB"))
+  attachSystem::CellMap()
   /*!
     Constructor
     \param Key :: Name of construction key
   */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  
-  OR.addObject(shutterPipe);
-  OR.addObject(monoShutterA);
-  OR.addObject(monoShutterB);
-}
+{}
 
 void
 MonoShutterR3::populate(const FuncDataBase& Control)
@@ -108,6 +88,22 @@ MonoShutterR3::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
+  height=Control.EvalVar<double>(keyName+"Height");
+  length=Control.EvalVar<double>(keyName+"Length");
+
+  adapterInnerRadius=Control.EvalVar<double>(keyName+"AdapterInnerRadius");
+
+  beamPortInnerRadius=Control.EvalVar<double>(keyName+"BeamPortInnerRadius");
+  beamPortWallThick=Control.EvalVar<double>(keyName+"BeamPortWallThick");
+  beamPortFlangeRadius=Control.EvalVar<double>(keyName+"BeamPortFlangeRadius");
+  beamPortFlangeLength=Control.EvalVar<double>(keyName+"BeamPortFlangeLength");
+
+  vesselInnerRadius=Control.EvalVar<double>(keyName+"VesselInnerRadius");
+  vesselWallThick=Control.EvalVar<double>(keyName+"VesselWallThick");
+  vesselFlangeRadius=Control.EvalVar<double>(keyName+"VesselFlangeRadius");
+  vesselFlangeLength=Control.EvalVar<double>(keyName+"VesselFlangeLength");
+  vesselMat=ModelSupport::EvalMat<int>(Control,keyName+"VesselMat");
+
   apertureBackLength=Control.EvalVar<double>(keyName+"ApertureBackLength");
   apertureInnerRadius=Control.EvalVar<double>(keyName+"ApertureInnerRadius");
   apertureOuterRadius=Control.EvalVar<double>(keyName+"ApertureOuterRadius");
@@ -118,7 +114,21 @@ MonoShutterR3::populate(const FuncDataBase& Control)
   blockHeight=Control.EvalVar<double>(keyName+"BlockHeight");
   blockLength=Control.EvalVar<double>(keyName+"BlockLength");
   blockWidth=Control.EvalVar<double>(keyName+"BlockWidth");
+  blockMat=ModelSupport::EvalMat<int>(Control,keyName+"BlockMat");
+
   shutterDistance=Control.EvalVar<double>(keyName+"ShutterDistance");
+  shutterPortLength=Control.EvalVar<double>(keyName+"ShutterPortLength");
+  shutterPortInnerRadius=Control.EvalVar<double>(keyName+"ShutterPortInnerRadius");
+  shutterPortWallThick=Control.EvalVar<double>(keyName+"ShutterPortWallThick");
+  shutterPortFlangeRadius=Control.EvalVar<double>(keyName+"ShutterPortFlangeRadius");
+  shutterPortFlangeLength=Control.EvalVar<double>(keyName+"ShutterPortFlangeLength");
+  threadLength=Control.EvalVar<double>(keyName+"ThreadLength");
+  threadRadius=Control.EvalVar<double>(keyName+"ThreadRadius");
+  threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
+  lift=Control.EvalVar<double>(keyName+"Lift");
+
+  entryShutterUpFlag=Control.EvalVar<int>(keyName+"EntryShutterUpFlag");
+  exitShutterUpFlag=Control.EvalVar<int>(keyName+"ExitShutterUpFlag");
 
   return;
 }
@@ -129,10 +139,6 @@ MonoShutterR3::createSurfaces()
 {
   ELog::RegMethod RegA("MonoShutterR3","createSurfaces");
 
-  // Plane along the optical axis that divides the shutter into two (almost equal)
-  // parts.
-  const int optAxisCentralPlane = shutterPipe->getPort(1).getLinkSurf(1);
-
   // Upstream and downstream aperture have the nominal 4 mm distance to the shutter 
   // blocks (Fig. 2.5 in [1]).
   // For the central aperture, the distance is slightly larger by default, because 
@@ -142,46 +148,118 @@ MonoShutterR3::createSurfaces()
   // In Tab. 2.3 in Ref. [1], "clearance between blocks and apertures in z-dir <= 5 mm"
   // is given, showing that the uncertainty of the 4 mm is relatively large.
 
-  // Upstream aperture
-  ModelSupport::buildShiftedPlane(
-    SMap,buildIndex+1,optAxisCentralPlane,Z,
-    0.5*(shutterDistance+blockLength)+apertureToBlockGap+apertureThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+2,buildIndex+1,Z,-apertureThick);
+  if (!isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      setFront(SMap.realSurf(buildIndex+1));
+    }
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
+      setBack(-SMap.realSurf(buildIndex+2));
+    }
 
-  // Central aperture
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+11,
-    optAxisCentralPlane,Z,+0.5*apertureThick);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+12,
-    optAxisCentralPlane,Z,-0.5*apertureThick);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
-  // Downstream aperture
-  ModelSupport::buildShiftedPlane(
-    SMap,buildIndex+21,optAxisCentralPlane,
-    Z,-0.5*(blockLength+shutterDistance)-apertureToBlockGap);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+22,buildIndex+21,Z,-apertureThick);
-  ModelSupport::buildShiftedPlane(
-    SMap,buildIndex+32,buildIndex+21,Z,-apertureBackLength);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*beamPortFlangeLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,
+    Origin+Y*(length-beamPortFlangeLength),Y);
 
-  ModelSupport::buildCylinder(
-    SMap,buildIndex+7,shutterPipe->getPort(0).getLinkPt(0),
-    shutterPipe->getPort(0).getY(),apertureInnerRadius);
-  ModelSupport::buildCylinder(
-    SMap,buildIndex+17,shutterPipe->getPort(0).getLinkPt(0),
-    shutterPipe->getPort(0).getY(),apertureOuterRadius);
+  ModelSupport::buildPlane(SMap,buildIndex+21,
+    Origin+Y*(
+      (length-shutterDistance-blockLength)/2.0
+      -apertureToBlockGap-apertureThick
+    ),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+22,
+    Origin+Y*((length-shutterDistance-blockLength)/2.0-apertureToBlockGap),Y);
 
-  // For simplicity, build a plane with no shift to create a new index.
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+101,
-    optAxisCentralPlane,Y,0.0);
-  ModelSupport::buildPlane(SMap,buildIndex+103,
-    shutterPipe->getLinkPt(0),
-    shutterPipe->getPort(2).getLinkPt(0),
-    shutterPipe->getPort(2).getLinkPt(2),
-    X
-  );
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+3,buildIndex+103,X,14.0);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+4,buildIndex+103,X,-14.0);
-  ModelSupport::buildShiftedPlane(SMap,buildIndex+5,
-    shutterPipe->getPort(2).getLinkSurf(1),Z,40.0);
+  ModelSupport::buildPlane(SMap,buildIndex+31,
+    Origin+Y*(length-apertureThick)/2.0,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+32,
+    Origin+Y*(length+apertureThick)/2.0,Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+41,
+    Origin+Y*((length+shutterDistance+blockLength)/2.0+apertureToBlockGap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+42,
+    Origin+Y*(
+      (length+shutterDistance+blockLength)/2.0+apertureThick+apertureToBlockGap),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+52,
+    Origin+Y*(
+      (length+shutterDistance+blockLength)/2.0+apertureToBlockGap+apertureBackLength),Y);
+
+  ModelSupport::buildPlane(SMap,buildIndex+61,Origin+Y*(beamPortFlangeLength*2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+62,
+    Origin+Y*(length-beamPortFlangeLength*2.0),Y);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin+Y,Y,beamPortFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,
+    Origin+Y,Y,beamPortInnerRadius+beamPortWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin+Y,Y,beamPortInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin+Y,Y,adapterInnerRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+15,
+    Origin-Z*(height/2.0-vesselFlangeLength),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,
+    Origin+Z*(height/2.0-vesselFlangeLength),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,
+    Origin+Y*length/2.0+Z,Z,vesselFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,
+    Origin+Y*length/2.0+Z,Z,vesselInnerRadius+vesselWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+127,
+    Origin+Y*length/2.0+Z,Z,vesselInnerRadius);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin+Y,Y,apertureOuterRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin+Y,Y,apertureInnerRadius);
+
+  ModelSupport::buildPlane(SMap,buildIndex+301,
+    Origin+Y*((length-shutterDistance-blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+302,
+    Origin+Y*((length-shutterDistance+blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+311,
+    Origin+Y*((length+shutterDistance-blockLength)/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+312,
+    Origin+Y*((length+shutterDistance+blockLength)/2.0),Y);
+
+
+  ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*blockWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*blockWidth/2.0,X);
+  double blockLift = entryShutterUpFlag ? lift : 0.0;
+  ModelSupport::buildPlane(SMap,buildIndex+305,
+    Origin+Z*(-blockHeight/2.0+blockLift),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(blockHeight/2.0+blockLift),Z);
+
+  blockLift = exitShutterUpFlag ? lift : 0.0;
+  ModelSupport::buildPlane(SMap,buildIndex+315,
+    Origin+Z*(-blockHeight/2.0+blockLift),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+316,Origin+Z*(blockHeight/2.0+blockLift),Z);
+
+  ModelSupport::buildPlane(SMap,buildIndex+26,
+    Origin+Z*(blockHeight/2.0+lift+threadLength),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+36,Origin+Z*shutterPortLength,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+46,
+    Origin+Z*(shutterPortLength-shutterPortFlangeLength),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+56,
+    Origin+Z*(blockHeight/2.0+threadLength),Z);
+  ModelSupport::buildCylinder(SMap,buildIndex+307,
+    Origin+Y*(length-shutterDistance)/2.0,Z,shutterPortFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+317,
+    Origin+Y*(length-shutterDistance)/2.0,Z,
+    shutterPortInnerRadius+shutterPortWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+327,
+    Origin+Y*(length-shutterDistance)/2.0,Z,shutterPortInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+337,
+    Origin+Y*(length-shutterDistance)/2.0,Z,threadRadius);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+407,
+    Origin+Y*(length+shutterDistance)/2.0,Z,shutterPortFlangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+417,
+    Origin+Y*(length+shutterDistance)/2.0,Z,
+    shutterPortInnerRadius+shutterPortWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+427,
+    Origin+Y*(length+shutterDistance)/2.0,Z,shutterPortInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+437,
+    Origin+Y*(length+shutterDistance)/2.0,Z,threadRadius);
 
   return; 
 }
@@ -194,147 +272,138 @@ MonoShutterR3::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MonoShutterR3","createObjects");
 
-  makeCell("ApertureFront",System,cellIndex++,apertureMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-1 2 7 -17"));
-
-  makeCell("ApertureCenter",System,cellIndex++,apertureMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-11 12 7 -17"));
-
-  makeCell("ApertureBack",System,cellIndex++,apertureMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-21 22 7 -17"));
-
-  const HeadRule apertureBackPlug = HeadRule(shutterPipe->getPort(0).getLinkSurf(3));
-  makeCell("ApertureBack",System,cellIndex++,apertureMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22 32 7")
-    *apertureBackPlug);
-
-  HeadRule mainVoid = (
-    shutterPipe->getSurfRules("VoidCyl")
-    *shutterPipe->getSurfRules("-FlangeACapInside")
-    *shutterPipe->getSurfRules("FlangeBCapInside"));
-
-  makeCell("Void0",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"1")*mainVoid
-	   );
-  makeCell("Void1",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-1 2 (-7:17)")*mainVoid
-	   );
-  makeCell("Void2",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-2 11")*mainVoid
-	   );
-  makeCell("Void3",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-11 12 (-7:17)")*mainVoid
-	   );
-  makeCell("Void4",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-12 21")*mainVoid
-	   );
-  makeCell("Void5",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-21 22 (-7:17)")*mainVoid
-	   );
-  makeCell("Void6",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22 -7")*mainVoid
-	   );
-  makeCell("Void7",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-22")
-    *apertureBackPlug.complement()*mainVoid
-	   );
-  makeCell("Void8",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-7 32 -22")
-    *apertureBackPlug*shutterPipe->getSurfRules("VoidCyl").complement()
-	   );
-  makeCell("Void9",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-32")
-    *apertureBackPlug*HeadRule(shutterPipe->getPort(1).getLinkSurf(2)).complement()
-	   );
+  const HeadRule front = ExternalCut::getRule("front");
+  const HeadRule back = ExternalCut::getRule("back");
+  const HeadRule bottom = ModelSupport::getHeadRule(SMap,buildIndex,"5");
+  const HeadRule top = ModelSupport::getHeadRule(SMap,buildIndex,"-6");
+  const HeadRule entryExitFlangeOuter = ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  const HeadRule mainVesselOuter = ModelSupport::getHeadRule(SMap,buildIndex,"-107");
   
-  System.removeCell(shutterPipe->getCell("Void"));
-  System.removeCell(shutterPipe->getPort(1).getCell("Void"));
-  monoShutterA->insertInCell("Inner",System,getCell("Void2"));
-  monoShutterB->insertInCell("Inner",System,getCell("Void4"));
+  addOuterSurf(
+    entryExitFlangeOuter*front*back
+    +mainVesselOuter*ModelSupport::getHeadRule(SMap,buildIndex,"-26")*bottom
+  );
 
-  // Planes that define the outer void
-  const HeadRule frontHR = entryAdapter->getFrontRule();
-  const HeadRule backHR = exitAdapter->getBackRule();
-  const HeadRule bottomHR = shutterPipe->getFrontRule();
-  const HeadRule topHR = ModelSupport::getHeadRule(SMap,buildIndex,"-5");
-  const HeadRule leftRightHR = ModelSupport::getHeadRule(SMap,buildIndex,"-3 4");
-  // Planes that split the shutter into two (almost) symmetric parts along 
-  // the optical axis.
-  const HeadRule frontPartHR = ModelSupport::getHeadRule(SMap,buildIndex,"-101");
-  const HeadRule backPartHR = ModelSupport::getHeadRule(SMap,buildIndex,"101");
-
-  addOuterSurf(frontHR*backHR*bottomHR*topHR*leftRightHR);
+  makeCell("EntryAdapter",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 37")*front*entryExitFlangeOuter);
   makeCell("EntryAdapterVoid",System,cellIndex++,0,0.0,
-    frontHR*entryAdapter->getBackRule()*bottomHR*topHR*leftRightHR
-	);
-  entryAdapter->insertInCell(System,getCell("EntryAdapterVoid"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -37")*front);  
+  makeCell("EntryFlange",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -61 27")*entryExitFlangeOuter);
+  makeCell("EntryExitPipe",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"61 -62 -17 27 117"));
+  makeCell("EntryPipeVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -27 127"));
 
-  makeCell("ShutterPipeVoid",System,cellIndex++,0,0.0,
-    entryAdapter->getBackRule().complement()*exitAdapter->getFrontRule().complement()
-    *bottomHR*shutterPipe->getBackRule()*leftRightHR
-	);
-  shutterPipe->insertAllInCell(System,getCell("ShutterPipeVoid"));
-  makeCell("ShutterPipeTopPortsFrontVoid",System,cellIndex++,0,0.0,
-    entryAdapter->getBackRule().complement()*shutterPipe->getBackRule().complement()
-    *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))*leftRightHR*frontPartHR
-	);
-  shutterPipe->getPort(2).insertInCell(System,getCell("ShutterPipeTopPortsFrontVoid"));
-  makeCell("ShutterPipeTopPortsBackVoid",System,cellIndex++,0,0.0,
-    exitAdapter->getFrontRule().complement()*shutterPipe->getBackRule().complement()
-    *HeadRule(-shutterPipe->getPort(2).getLinkSurf(2))*leftRightHR*backPartHR
-	);
-  shutterPipe->getPort(3).insertInCell(System,getCell("ShutterPipeTopPortsBackVoid"));
+  makeCell("ExitAdapter",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"12 37")*back*entryExitFlangeOuter);
+  makeCell("ExitPipeVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"52 -37 127")*back);
+  makeCell("ExitPipeVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-12 52 -27 37"));
+  makeCell("ExitFlange",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-12 62 27")*entryExitFlangeOuter);
+  makeCell("EntryExitPipeOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"17 61 -62 117")*entryExitFlangeOuter);
 
-  makeCell("ShutterVoidFront",System,cellIndex++,0,0.0,
-    entryAdapter->getBackRule().complement()
-    *HeadRule(shutterPipe->getPort(2).getLinkSurf(2))
-    *topHR*leftRightHR*frontPartHR
-	);
-  monoShutterA->insertInCell("Outer",System,getCell("ShutterVoidFront"));
-  makeCell("ShutterVoidBack",System,cellIndex++,0,0.0,
-    exitAdapter->getFrontRule().complement()
-    *HeadRule(shutterPipe->getPort(2).getLinkSurf(2))*topHR
-    *leftRightHR*backPartHR
-	);
-  monoShutterB->insertInCell("Outer",System,getCell("ShutterVoidBack"));
-
-  makeCell("ExitAdapterVoid",System,cellIndex++,0,0.0,
-    exitAdapter->getFrontRule()*exitAdapter->getBackRule()*bottomHR*topHR*leftRightHR
-	);
-  exitAdapter->insertInCell(System,getCell("ExitAdapterVoid"));
-
-  return; 
-}
-
-void
-MonoShutterR3::buildComponents(Simulation& System)
-  /*!
-    Construct the object to be built
-    \param System :: Simulation
-  */
-{
-  ELog::RegMethod RegA("MonoShutterR3","buildComponents");
-
-  entryAdapter->createAll(System,*this,0);
-
-  shutterPipe->setOuterVoid();
-	shutterPipe->setPortRotation(3,Geometry::Vec3D(0,0,1));
-
-  shutterPipe->createAll(System,*entryAdapter,"back");
-
-  exitAdapter->createAll(System,shutterPipe->getPort(1),2);
-
-  constructSystem::portItem shutterPort = shutterPipe->getPort(2);
-  monoShutterA->addInsertCell("Inner",shutterPipe->getCell("Void"));
-  monoShutterA->addInsertCell("Inner",shutterPort.getCell("Void"));
-  monoShutterA->createAll(System,shutterPipe->getPort(1),0,shutterPort,2);
-
-  shutterPort = shutterPipe->getPort(3);
-  monoShutterB->addInsertCell("Inner",shutterPipe->getCell("Void"));
-  monoShutterB->addInsertCell("Inner",shutterPort.getCell("Void"));
-  monoShutterB->createAll(System,shutterPipe->getPort(1),0,shutterPort,2);
+  makeCell("VesselBottomFlange",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-15")*mainVesselOuter*bottom);
+  makeCell("VesselTopFlange",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"16 337 437")*mainVesselOuter*top);
   
-  return;
+  makeCell("Vessel",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -117 127 27"));
+  makeCell("VesselOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 117")
+    *mainVesselOuter*entryExitFlangeOuter.complement());
+  makeCell("VesselFrontVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-21 15 -16 -127"));
+
+  makeCell("EntryAperture",System,cellIndex++,apertureMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -207 217"));
+  makeCell("EntryApertureHole",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -217"));
+  makeCell("EntryApertureOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 21 -22 207 -127"));
+  makeCell("CenterAperture",System,cellIndex++,apertureMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -207 217"));
+  makeCell("CenterApertureHole",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"31 -32 -217"));
+  makeCell("CenterApertureOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 31 -32 207 -127"));
+  makeCell("ExitAperture",System,cellIndex++,apertureMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"41 -42 -207 217"));
+  makeCell("ExitAperture",System,cellIndex++,apertureMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"42 -52 -27 217"));
+  makeCell("ExitApertureHole",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"41 -52 -217"));
+  makeCell("ExitApertureOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 41 -42 207 -127"));
+  makeCell("ExitApertureOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 42 -52 27 -127"));
+
+  makeCell("EntryShutterPortFlange",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-36 46 -307 337"));
+  makeCell("EntryShutterPort",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -46 -317 327"));
+  makeCell("EntryShutterPortOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -46 -327 337"));
+  makeCell("EntryShutterPortOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -46 -307 317"));
+
+  makeCell("EntryBlock",System,cellIndex++,blockMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 303 -304 305 -306"));
+  makeCell("EntryBlockFrontBackVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"22 -31 15 -16 (-301:302) -127"));
+  makeCell("EntryBlockLeftRightVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 (-303:304) 305 -306 -127"));
+  makeCell("EntryBlockBottomVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 15 -305 -127"));
+  makeCell("EntryBlockTopVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -16 306 -127 337"));
+  if(entryShutterUpFlag){
+    makeCell("EntryBlockThread",System,cellIndex++,threadMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-26 306 -337"));
+  } else {
+    makeCell("EntryBlockThread",System,cellIndex++,threadMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-56 306 -337"));
+    makeCell("EntryBlockThreadTopVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-26 56 306 -337"));
+  }
+
+  makeCell("ExitShutterPortFlange",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-36 46 -407 437"));
+  makeCell("ExitShutterPort",System,cellIndex++,vesselMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -46 -417 427"));
+  makeCell("EntryShutterPortOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -46 -427 437"));
+  makeCell("EntryShutterPortOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -46 -407 417"));
+
+  makeCell("EntryExitShutterPortVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -36 -107 307 407"));
+  makeCell("ThreadVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-26 36 -107 337 437"));
+
+  makeCell("ExitBlock",System,cellIndex++,blockMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 303 -304 315 -316"));
+  makeCell("ExitBlockFrontBackVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"32 -41 15 -16 (-311:312) -127"));
+  makeCell("ExitBlockLeftRightVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 (-303:304) 315 -316 -127"));
+  makeCell("ExitBlockBottomVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 15 -315 -127"));
+  makeCell("ExitBlockTopVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 -16 316 -127 437"));
+  if(exitShutterUpFlag){
+    makeCell("ExitBlockThread",System,cellIndex++,threadMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-26 316 -437"));
+  } else {
+    makeCell("ExitBlockThread",System,cellIndex++,threadMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-56 316 -437"));
+    makeCell("ExitBlockThreadTopVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-26 56 316 -437"));
+  }
 }
 
 void
@@ -342,15 +411,7 @@ MonoShutterR3::createLinks()
 {
   ELog::RegMethod RControl("MonoShutterR3","createLinks");
 
-  if(!isActive("front")){
-    ExternalCut::setCutSurf("front",entryAdapter->getFrontRule());
-  }
-  if(!isActive("back")){
-    ExternalCut::setCutSurf("back",exitAdapter->getBackRule());
-  }
-
-  ExternalCut::createLink("front",*this,0,Origin,-Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
+  FrontBackCut::createLinks(*this,Origin,Y);
 
   return;
 }
@@ -370,8 +431,6 @@ MonoShutterR3::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
-  buildComponents(System);
 
   createSurfaces();
   createObjects(System);

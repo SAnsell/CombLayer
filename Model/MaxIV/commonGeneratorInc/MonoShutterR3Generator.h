@@ -26,22 +26,21 @@ class FuncDataBase;
 
 namespace setVariable
 {
-  class FlangePlateGenerator;
-  class PipeTubeGenerator;
-  class PortItemGenerator;
-  class ShutterUnitGenerator;
-
 /*!
   \class MonoShutterR3Generator
-  \version 1.1
+  \version 2.0
   \author Udo Friman-Gayer
   \date Feburary 2026
   \brief MonoShutterR3Generator for variables
 
   Version history:
-  1.1 - 2026-11-02
-    - Update for MonoShutterR3 v1.0
-  1.0 - 2026-10-02
+  2.1 - 2026-02-23
+    - Remove 'width' parameter.
+  2.0 - 2026-02-20
+    - Update for MonoShutterR3 v2.0
+  1.1 - 2026-02-11
+    - Update for MonoShutterR3 v1.1
+  1.0 - 2026-02-10
 */
 template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
@@ -49,10 +48,21 @@ class MonoShutterR3Generator
 {
  private:
 
-  std::unique_ptr<FlangePlateGenerator> FPGen;
-  std::unique_ptr<PipeTubeGenerator> PTubeGen;
-  std::unique_ptr<PortItemGenerator> PItemGen;
-  std::unique_ptr<ShutterUnitGenerator> SUnitGen;
+  double height;
+  double length;
+
+  double adapterInnerRadius;
+
+  double beamPortInnerRadius;
+  double beamPortWallThick;
+  double beamPortFlangeRadius;
+  double beamPortFlangeLength;
+
+  double vesselInnerRadius;
+  double vesselWallThick;
+  double vesselFlangeRadius;
+  double vesselFlangeLength;
+  std::string vesselMat;
 
   double apertureBackLength;
   double apertureInnerRadius;
@@ -64,14 +74,21 @@ class MonoShutterR3Generator
   double blockHeight;
   double blockLength;
   double blockWidth;
+  std::string blockMat;
 
-  double flangeThick;
-  double height;
-  double length;
   double shutterDistance;
-
-  double baseLift;
+  double shutterPortLength;
+  double shutterPortInnerRadius;
+  double shutterPortWallThick;
+  double shutterPortFlangeRadius;
+  double shutterPortFlangeLength;
+  double threadLength;
+  double threadRadius;
+  std::string threadMat;
   double lift;
+
+  bool entryShutterUpFlag;
+  bool exitShutterUpFlag;
 
  public:
 
@@ -80,8 +97,7 @@ class MonoShutterR3Generator
 
   double getLength() const {return length;};
     
-  void generate(FuncDataBase&,const std::string&,
-		       const bool,const bool) const;
+  void generate(FuncDataBase&,const std::string&) const;
   
 };
 

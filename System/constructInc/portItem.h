@@ -125,7 +125,7 @@ class portItem :
 		     const long int);
 
   void addPortCut(MonteCarlo::Object*) const;
-  void addFlangeCut(MonteCarlo::Object*, const bool force=false) const;
+  void addFlangeCut(MonteCarlo::Object*) const;
   
   using FixedComp::createAll;
   void createAll(Simulation&,
