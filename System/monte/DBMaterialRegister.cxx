@@ -1800,6 +1800,26 @@ DBMaterial::initMaterial()
   Mptr->setMXitem(6000, 80, 'c', "h", "06012");
   Mptr->setDensity(-15.6);
 
+  // HPM 1800 / Kulite K1800 Tungsten Alloy
+  // Reference: https://www.tungsten.com/material-info/tungsten-heavy-alloy-w-ni-fe-cu
+  // Also known as: HA180, HD 18D, SD180, CMW 3950, K1800, M3950
+  // MatMCNP: TungstenK1800.inp
+  Mptr = &createMaterial("TungstenK1800",
+		 " 26054.80c   0.002603 "
+		 " 26056.80c   0.040855 "
+		 " 26057.80c   0.000944 "
+		 " 26058.80c   0.000126 "
+		 " 28058.80c   0.067296 "
+		 " 28060.80c   0.025922 "
+		 " 28061.80c   0.001127 "
+		 " 28062.80c   0.003593 "
+		 " 28064.80c   0.000915 "
+		 " 74180.80c   0.001028 "
+		 " 74182.80c   0.227005 "
+		 " 74183.80c   0.122582 "
+		 " 74184.80c   0.262469 "
+		 " 74186.80c   0.243537 ", "", MLib);
+  Mptr->setDensity(-18.0);
 
   return;
 }
