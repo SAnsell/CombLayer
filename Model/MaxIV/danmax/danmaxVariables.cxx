@@ -1490,12 +1490,6 @@ opticsVariables(FuncDataBase& Control,
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5"); // [28]
 
   const double bellowCDLength = 8.0; // Dummy
-  // Offset of the slit tube along the Y axis.
-  //
-  // Front Port Length
-  // + Distance Top Port Pipe to Slit Tube Front
-  // + Top Port Radius
-  const double slitTubeFrontToTopPort = 2.5+4.4+CF150::outerRadius; // [10]
 
   PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
