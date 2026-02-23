@@ -283,8 +283,10 @@ MonoShutterR3::createObjects(Simulation& System)
   const HeadRule top = ModelSupport::getHeadRule(SMap,buildIndex,"-6");
   
   addOuterSurf(
-    ModelSupport::getHeadRule(SMap,buildIndex,"3 -4 -26")
-    *frontBack*bottom
+    ModelSupport::getHeadRule(SMap,buildIndex,"-7")
+    *frontBack
+    +ModelSupport::getHeadRule(SMap,buildIndex,"-107 -26")
+    *bottom
   );
 
   makeCell("EntryAdapter",System,cellIndex++,vesselMat,0.0,
