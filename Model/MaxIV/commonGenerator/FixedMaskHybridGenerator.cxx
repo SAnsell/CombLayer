@@ -64,7 +64,7 @@ FixedMaskHybridGenerator::FixedMaskHybridGenerator() :
   outWidth(1.1), // [2]
   outHeight(1.1), // [2]
   outAngle(0.7), // [1]
-  outStraightLength(5.0), // AR, not displayed in [1] (TODO: clarify)
+  outStraightLength(0.0), // [1]: 0.0, but initial guess was 5 cm
   mat("Copper"), // TODO: use GLIDCOP
   flangeMat("Stainless304L") // [1]: SUS304L
   /*!
