@@ -145,7 +145,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   hdcmVessel(new xraySystem::DCMTank(newName+"HDCMVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
-  bellowAfterMono(new constructSystem::Bellows(newName+"BellowAfterMono")),
+  bellowAfterHDCM(new constructSystem::Bellows(newName+"BellowAfterHDCM")),
   valve7(new xraySystem::CylGateValve(newName+"Valve7")),
   viewTube(new constructSystem::PipeTube(newName+"ViewTube")),
   viewTubeScreen(new xraySystem::FlangeMount(newName+"ViewTubeScreen")),
@@ -221,7 +221,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(bellowE);
   OR.addObject(hdcmVessel);
   OR.addObject(mbXstals);
-  OR.addObject(bellowAfterMono),
+  OR.addObject(bellowAfterHDCM),
   OR.addObject(valve7);
   OR.addObject(viewTube);
   OR.addObject(viewTubeScreen);
@@ -383,10 +383,10 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   valve7->setRotation(0.0,180.0,0.0);
   valve7->createAll(System,VPA,VPA.getSideIndex("OuterPlate"));
 
-  bellowAfterMono->setBack(initFC,sideName);
-  bellowAfterMono->createAll(System,*valve7,"back");
+  bellowAfterHDCM->setBack(initFC,sideName);
+  bellowAfterHDCM->createAll(System,*valve7,"back");
 
-  bellowAfterMono->insertAllInCell(System,buildZoneDanMAX.createUnit(System,*bellowAfterMono,"front"));
+  bellowAfterHDCM->insertAllInCell(System,buildZoneDanMAX.createUnit(System,*bellowAfterHDCM,"front"));
 
   int outerCell=buildZoneDanMAX.createUnit(System,*valve7,"front");
   valve7->insertInCell(System,outerCell);

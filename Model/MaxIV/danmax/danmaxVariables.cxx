@@ -1558,7 +1558,7 @@ opticsVariables(FuncDataBase& Control,
   monoPackage(Control,opticsName);
 
   // Dummy length
-  BellowGen.generateBellow(Control,opticsName+"BellowAfterMono",10.0);
+  BellowGen.generateBellow(Control,opticsName+"BellowAfterHDCM",10.0);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve7"); // [28]
   // Angle roughly adjusted to [28]. Found it difficult to read off from the model.
