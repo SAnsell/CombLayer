@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/MonoShutterR3Generator.cxx
  *
  * Copyright (c) 2026 by Udo Friman-Gayer
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -63,8 +63,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   SUnitGen(new ShutterUnitGenerator()),
   apertureBackLength(7.0), // [4]
   apertureInnerRadius(1.0), // [3,4]
-  // TODO: Should be an alloy with > 95% tungsten, not pure tungsten.
-  apertureMat("Tungsten"), // [3,4]
+  apertureMat("TungstenK1800"), // [3,4]
   apertureOuterRadius(5.15), // [3,4]
   apertureThick(1.0), // [3,4]
   apertureToBlockGap(0.4), // [1]
@@ -85,7 +84,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
 template<typename MainFlange,typename EntryExitFlange,
 typename ShutterFlange,typename AdapterFlange>
 MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
-::~MonoShutterR3Generator() 
+::~MonoShutterR3Generator()
  /*!
    Destructor
  */
@@ -100,7 +99,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
 				      const bool upFlagB) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param upFlagA :: First Shutter up
     \param upFlagB :: Second Shutter up
@@ -114,7 +113,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   SUnitGen->setBlock(blockHeight,blockLength,blockWidth,"Tungsten");
   SUnitGen->generateShutter(Control,keyName+"UnitA",upFlagA);
   SUnitGen->generateShutter(Control,keyName+"UnitB",upFlagB);
-  
+
   PTubeGen->setCF<MainFlange>();
   PTubeGen->setAFlange(MainFlange::flangeRadius,flangeThick);
   PTubeGen->setBFlange(MainFlange::flangeRadius,flangeThick);
@@ -127,7 +126,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   FPGen->setInnerRadius(AdapterFlange::innerRadius);
   FPGen->generateFlangePlate(Control,keyName+"EntryAdapter");
   FPGen->generateFlangePlate(Control,keyName+"ExitAdapter");
-  
+
   const Geometry::Vec3D Y(0,1,0);
   const Geometry::Vec3D Z(0,0,1);
   PItemGen->setCF<EntryExitFlange>(0.5*length-EntryExitFlange::flangeLength);
@@ -145,7 +144,7 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
 
   Control.addVariable(keyName+"ApertureBackLength",apertureBackLength);
   Control.addVariable(keyName+"ApertureInnerRadius",apertureInnerRadius);
-  Control.addVariable(keyName+"ApertureMat","Tungsten");
+  Control.addVariable(keyName+"ApertureMat",apertureMat);
   Control.addVariable(keyName+"ApertureOuterRadius",apertureOuterRadius);
   Control.addVariable(keyName+"ApertureThick",apertureThick);
   Control.addVariable(keyName+"ApertureToBlockGap",apertureToBlockGap);
