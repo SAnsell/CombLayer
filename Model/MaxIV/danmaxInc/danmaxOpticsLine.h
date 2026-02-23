@@ -224,7 +224,7 @@ class danmaxOpticsLine :
   void constructSlitTube(Simulation&,
 			 const attachSystem::FixedComp&,const std::string&);
 
-  void constructMono(Simulation&,
+  void constructHDCM(Simulation&,
 		     const attachSystem::FixedComp&,const std::string&);
 
   void constructMirrorMono(Simulation&,

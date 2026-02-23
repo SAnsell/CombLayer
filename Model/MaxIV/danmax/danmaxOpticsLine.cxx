@@ -527,11 +527,11 @@ danmaxOpticsLine::constructRevBeamStopTube
 
 
 void
-danmaxOpticsLine::constructMono(Simulation& System,
+danmaxOpticsLine::constructHDCM(Simulation& System,
 				const attachSystem::FixedComp& initFC,
 				const std::string& sideName)
   /*!
-    Sub build of the slit package unit
+    Construct hDCM (double crystal monochromator with horisontal beam deflection)
     \param System :: Simulation to use
     \param initFC :: Start point
     \param sideName :: start link point
@@ -819,7 +819,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   constructSystem::constructUnit(System,buildZoneDanMAX,*slitTube,"back",*valve6);
 
-  constructMono(System,*valve6,"back");
+  constructHDCM(System,*valve6,"back");
   constructViewScreen(System,*hdcmVessel,"back");
   constructMirrorMono(System,*valve8,"back");
   constructBeamStopTube(System,*MLMVessel,"back");
