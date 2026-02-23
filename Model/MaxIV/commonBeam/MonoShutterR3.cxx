@@ -313,21 +313,13 @@ MonoShutterR3::createObjects(Simulation& System)
 
   makeCell("VesselBottomFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-15 -107")*bottom);
-  makeCell("VesselBottomVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-15 107")
-    *leftRight*bottom*frontBack
-  );
   makeCell("VesselTopFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"16 -107 337 437")*top);
-  makeCell("VesselTopVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"16 107")
-    *leftRight*top*frontBack
-  );
   
   makeCell("Vessel",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -117 127 27"));
   makeCell("VesselOuterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 7 117")*leftRight*frontBack);
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 7 -107 117"));
   makeCell("VesselFrontVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-21 15 -16 -127"));
 
@@ -393,9 +385,9 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"6 -46 -407 417"));
 
   makeCell("EntryExitShutterPortVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"6 -36 307 407")*frontBack*leftRight);
+    ModelSupport::getHeadRule(SMap,buildIndex,"6 -36 -107 307 407"));
   makeCell("ThreadVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-26 36 337 437")*frontBack*leftRight);
+    ModelSupport::getHeadRule(SMap,buildIndex,"-26 36 -107 337 437"));
 
   makeCell("ExitBlock",System,cellIndex++,blockMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 303 -304 315 -316"));
