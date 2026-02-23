@@ -148,6 +148,7 @@ namespace danmaxVar
     const double CRL = 3091.77;
     const double monoSlits2 = 3143.94;
     const double bremColl3 = 3166.47;
+    const double monoShutter = 3211.25; // [31]
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
@@ -1220,7 +1221,11 @@ monoShutterVariables(FuncDataBase& Control,
   setVariable::BellowGenerator BellowGen;
   setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MShutterGen;
 
-  MShutterGen.generate(Control,preName+"MonoShutter");
+  const std::string monoShutterName = preName+"MonoShutter";
+  MShutterGen.generate(Control,monoShutterName);
+  Control.addVariable(monoShutterName+"XStep",danmaxVar::beamMirrorShift);
+  Control.addVariable(monoShutterName+"YStep",
+    danmaxVar::absY::monoShutter-MShutterGen.getLength()/2.0);
 
   const double bellowLength = 12.0; // [26]
   BellowGen.setCF<setVariable::CF40>();
@@ -1601,8 +1606,7 @@ opticsVariables(FuncDataBase& Control,
 
   revBeamStopPackage(Control,opticsName);
 
-  const double bellowKLength = 16.0; // [26]
-  BellowGen.generateBellow(Control,opticsName+"BellowK",bellowKLength);
+  BellowGen.generateBellow(Control,opticsName+"BellowK",10.0); // Dummy length
 
   monoShutterVariables(Control,opticsName);
 
@@ -1817,7 +1821,6 @@ DANMAXvariables(FuncDataBase& Control)
 
   danmaxVar::undulatorVariables(Control,frontKey);
   setVariable::R3FrontEndToyamaVariables(Control,beamLineName);
-  //  Control.addVariable("DanmaxFrontBeamXStep",beamXStep);
 
   support7DanMAX(Control,frontKey);
 
