@@ -735,8 +735,7 @@ danmaxOpticsLine::constructMonoShutter(Simulation& System,
 
   monoShutter->createAll(System,*frontEnd,0);
 
-  const constructSystem::portItem& VPB=revBeamStopTube->getPort(1);
-  bellowK->setBack(VPB,VPB.getSideIndex("OuterPlate"));
+  bellowK->setBack(initFC,initFC.getSideIndex(sideName));
   bellowK->createAll(System,*monoShutter,"front");
 
   bellowK->insertAllInCell(System,
@@ -850,7 +849,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   constructRevBeamStopTube(System,*CRLGateOut,"back");
   
-  constructMonoShutter(System,*revBeamStopTube,"back");
+  constructMonoShutter(System,revBeamStopTube->getPort(1),"OuterPlate");
 
   outerCell = buildZoneDanMAX.createUnit(System);
   for (int i=0; i<4; ++i) {
