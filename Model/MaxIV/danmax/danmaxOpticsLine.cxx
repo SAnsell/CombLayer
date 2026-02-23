@@ -143,7 +143,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
 	}),
   valve6(new xraySystem::CylGateValve(newName+"Valve6")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  monoVessel(new xraySystem::DCMTank(newName+"MonoVessel")),
+  hdcmVessel(new xraySystem::DCMTank(newName+"HDCMVessel")),
   mbXstals(new xraySystem::MonoBlockXstals(newName+"MBXstals")),
   bellowAfterMono(new constructSystem::Bellows(newName+"BellowAfterMono")),
   valve7(new xraySystem::CylGateValve(newName+"Valve7")),
@@ -219,7 +219,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
 
   OR.addObject(valve6);
   OR.addObject(bellowE);
-  OR.addObject(monoVessel);
+  OR.addObject(hdcmVessel);
   OR.addObject(mbXstals);
   OR.addObject(bellowAfterMono),
   OR.addObject(valve7);
@@ -539,16 +539,16 @@ danmaxOpticsLine::constructMono(Simulation& System,
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructMono");
 
-  monoVessel->createAll(System,*frontEnd,0);
+  hdcmVessel->createAll(System,*frontEnd,0);
 
   bellowE->setBack(initFC,sideName);
-  bellowE->createAll(System,*monoVessel,"front");
+  bellowE->createAll(System,*hdcmVessel,"front");
   bellowE->insertAllInCell(System,buildZoneDanMAX.createUnit(System,*bellowE,"front"));
 
-  monoVessel->insertInCell(System,buildZoneDanMAX.createUnit(System,*monoVessel,"back"));
+  hdcmVessel->insertInCell(System,buildZoneDanMAX.createUnit(System,*hdcmVessel,"back"));
 
-  mbXstals->addInsertCell(monoVessel->getCell("Void"));
-  mbXstals->createAll(System,*monoVessel,0);
+  mbXstals->addInsertCell(hdcmVessel->getCell("Void"));
+  mbXstals->createAll(System,*hdcmVessel,0);
 
   return;
 }
@@ -820,7 +820,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   constructSystem::constructUnit(System,buildZoneDanMAX,*slitTube,"back",*valve6);
 
   constructMono(System,*valve6,"back");
-  constructViewScreen(System,*monoVessel,"back");
+  constructViewScreen(System,*hdcmVessel,"back");
   constructMirrorMono(System,*valve8,"back");
   constructBeamStopTube(System,*MLMVessel,"back");
 

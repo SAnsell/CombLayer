@@ -137,8 +137,8 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::CylGateValve> valve6;
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowE;
-  /// Main mono vessel
-  std::shared_ptr<xraySystem::DCMTank> monoVessel;
+  /// hDCM vessel
+  std::shared_ptr<xraySystem::DCMTank> hdcmVessel;
   /// Grating
   std::shared_ptr<xraySystem::MonoBlockXstals> mbXstals;
   /// Bellows between monochromator and Valve7

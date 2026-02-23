@@ -1138,14 +1138,14 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   // are collinear [24]. No call to MBoxGen.setBPortOffset() or similar needed.
 
   // radius, height, depth
-  const std::string monoVesselKey = monoKey+"MonoVessel";
+  const std::string monoVesselKey = monoKey+"HDCMVessel";
   MBoxGen.generateBox(Control,monoVesselKey,monoVesselRadius,0.0,17.5); // [24]
   Control.addVariable(monoVesselKey+"WallThick", 0.5);
   Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::HDCM
     -HDCMPortALength-monoVesselRadius-monoVesselWallThick);
 
-  const std::string portName=monoKey+"MonoVessel";
-  Control.addVariable(monoKey+"MonoVesselNPorts",0);
+  const std::string portName=monoKey+"HDCMVessel";
+  Control.addVariable(monoKey+"HDCMVesselNPorts",0);
   PItemGen.setCF<setVariable::CF63>(5.0+31.2);
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass");
   PItemGen.generatePort(Control,portName+"Port0",
