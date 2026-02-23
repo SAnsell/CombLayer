@@ -53,6 +53,9 @@ namespace xraySystem
   [5] CAD model of ForMAX/MicroMAX/DanMAX mono shutters
 
   Version history:
+  2.1 - 2026-02-23
+    - Optimize outer surface
+    - Remove now-unnecessary width parameter
   2.0 - 2026-02-20
     - Self-contained rebuild with no dependencies on other components
   1.1 - 2026-02-11
@@ -72,7 +75,6 @@ class MonoShutterR3 :
 
   double height;
   double length;
-  double width;
 
   double adapterInnerRadius;
 

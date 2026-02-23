@@ -90,7 +90,6 @@ MonoShutterR3::populate(const FuncDataBase& Control)
 
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
 
   adapterInnerRadius=Control.EvalVar<double>(keyName+"AdapterInnerRadius");
 

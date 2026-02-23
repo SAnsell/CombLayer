@@ -34,6 +34,8 @@ namespace setVariable
   \brief MonoShutterR3Generator for variables
 
   Version history:
+  2.1 - 2026-02-23
+    - Remove 'width' parameter.
   2.0 - 2026-02-20
     - Update for MonoShutterR3 v2.0
   1.1 - 2026-02-11
@@ -48,7 +50,6 @@ class MonoShutterR3Generator
 
   double height;
   double length;
-  double width;
 
   double adapterInnerRadius;
 
