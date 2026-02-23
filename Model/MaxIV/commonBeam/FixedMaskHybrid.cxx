@@ -210,7 +210,7 @@ FixedMaskHybrid::createSurfaces()
   makeShiftedSurf(SMap, "front", buildIndex+21, Y, flangeGrooveLength);
   makeShiftedSurf(SMap, "back", buildIndex+12, Y, -flangeLength);
   makeShiftedSurf(SMap, "back", buildIndex+22, Y, -flangeGrooveLength);
-  makeShiftedSurf(SMap, "back", buildIndex+32, Y, -outStraightLength);
+  makeShiftedSurf(SMap, "back", buildIndex+32, Y, -flangeGrooveLength-outStraightLength);
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,flangeRadius);
 
@@ -222,7 +222,7 @@ FixedMaskHybrid::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+41,Origin+dY,Y);
 
   // Exit aperture - tilted segment
-  dY = Y*(length-outStraightLength);
+  dY = Y*(length-flangeGrooveLength-outStraightLength);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+33,Origin-X*(outWidth/2.0)+dY,X,Z,-outAngle/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+34,Origin+X*(outWidth/2.0)+dY,X,Z,outAngle/2.0);
 
@@ -265,10 +265,10 @@ FixedMaskHybrid::createObjects(Simulation& System)
   if (outStraightLength>Geometry::zeroTol) {
     HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 -7 (-43:44:-45:46)");
     makeCell("MainCellStraight",System,cellIndex++,mat,0.0,HR);
-  }
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 43 -44 45 -46 ");
-  makeCell("VoidStraight",System,cellIndex++,voidMat,0.0,HR);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 32 -22 43 -44 45 -46 ");
+    makeCell("VoidStraight",System,cellIndex++,voidMat,0.0,HR);
+  }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 22 -7 ");
   makeCell("EndGroove",System,cellIndex++,voidMat,0.0,HR*back);
