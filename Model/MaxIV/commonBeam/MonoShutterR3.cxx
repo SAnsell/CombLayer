@@ -160,8 +160,6 @@ MonoShutterR3::createSurfaces()
       setBack(-SMap.realSurf(buildIndex+2));
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*height/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height/2.0,Z);
 
@@ -277,49 +275,48 @@ MonoShutterR3::createObjects(Simulation& System)
 
   const HeadRule front = ExternalCut::getRule("front");
   const HeadRule back = ExternalCut::getRule("back");
-  const HeadRule frontBack = front*back;
-  const HeadRule leftRight = ModelSupport::getHeadRule(SMap,buildIndex,"3 -4");
   const HeadRule bottom = ModelSupport::getHeadRule(SMap,buildIndex,"5");
   const HeadRule top = ModelSupport::getHeadRule(SMap,buildIndex,"-6");
+  const HeadRule entryExitFlangeOuter = ModelSupport::getHeadRule(SMap,buildIndex,"-7");
+  const HeadRule mainVesselOuter = ModelSupport::getHeadRule(SMap,buildIndex,"-107");
   
   addOuterSurf(
-    ModelSupport::getHeadRule(SMap,buildIndex,"-7")
-    *frontBack
-    +ModelSupport::getHeadRule(SMap,buildIndex,"-107 -26")
-    *bottom
+    entryExitFlangeOuter*front*back
+    +mainVesselOuter*ModelSupport::getHeadRule(SMap,buildIndex,"-26")*bottom
   );
 
   makeCell("EntryAdapter",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 37")*front);
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 37")*front*entryExitFlangeOuter);
   makeCell("EntryAdapterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-11 -37")*front);  
   makeCell("EntryFlange",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"11 -61 -7 27"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -61 27")*entryExitFlangeOuter);
   makeCell("EntryExitPipe",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"61 -62 -17 27 117"));
   makeCell("EntryPipeVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -27 127"));
 
   makeCell("ExitAdapter",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"12 -7 37")*back);
+    ModelSupport::getHeadRule(SMap,buildIndex,"12 37")*back*entryExitFlangeOuter);
   makeCell("ExitPipeVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"52 -37 127")*back);
   makeCell("ExitPipeVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-12 52 -27 37"));
   makeCell("ExitFlange",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-12 62 -7 27"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-12 62 27")*entryExitFlangeOuter);
   makeCell("EntryExitPipeOuterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-7 17 61 -62 117"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"17 61 -62 117")*entryExitFlangeOuter);
 
   makeCell("VesselBottomFlange",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-15 -107")*bottom);
+    ModelSupport::getHeadRule(SMap,buildIndex,"-15")*mainVesselOuter*bottom);
   makeCell("VesselTopFlange",System,cellIndex++,vesselMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"16 -107 337 437")*top);
+    ModelSupport::getHeadRule(SMap,buildIndex,"16 337 437")*mainVesselOuter*top);
   
   makeCell("Vessel",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -117 127 27"));
   makeCell("VesselOuterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 7 -107 117"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 117")
+    *mainVesselOuter*entryExitFlangeOuter.complement());
   makeCell("VesselFrontVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-21 15 -16 -127"));
 
