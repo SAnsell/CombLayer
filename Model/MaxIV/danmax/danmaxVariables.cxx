@@ -1590,11 +1590,14 @@ opticsVariables(FuncDataBase& Control,
   GateGen.setCylCF<setVariable::CF40>(); // [26]
   const double CRLGateTotalLength = 3.5+2.0*CF40::flangeLength; // [26]
   GateGen.setLength(CRLGateTotalLength-2.0*CF40::flangeLength);
-  GateGen.generateValve(Control,opticsName+"CRLGateIn",0.0,0);
+  const std::string CRLGatePrefix = opticsName+"CRLGate";
+  GateGen.generateValve(Control,CRLGatePrefix+"In",0.0,0);
+  Control.addVariable(CRLGatePrefix+"InYAngle",20.0); // Angle estimated from [26]
 
   lensPackage(Control,opticsName);
 
-  GateGen.generateValve(Control,opticsName+"CRLGateOut",0.0,0);
+  GateGen.generateValve(Control,CRLGatePrefix+"Out",0.0,0);
+  Control.addVariable(CRLGatePrefix+"OutYAngle",-20.0); // Angle estimated from [26]
 
   BellowGen.generateBellow(Control,opticsName+"BellowJ",10.0); // Dummy length
 
