@@ -786,7 +786,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   Geometry::Vec3D crossX,crossY,crossZ;
 
   cm1->calcLinkAxis(2,crossX,crossY,crossZ);
-  const double midDividerAngle = 11.0;
+  const double midDividerAngle = 10.0;
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+5003,DPoint,crossX,-Z,-midDividerAngle);
 
   HeadRule HSurroundA=buildZone.getSurround();
