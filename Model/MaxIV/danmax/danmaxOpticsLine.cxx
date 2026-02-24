@@ -872,11 +872,13 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
   lastComp=bellowL;
 
-  // Intersect the 2nd buildZoneSinCrys cell (tilted plane, contains CM1 and BellowAA, 
-  // BellowAA defines the "back" surface) with the previous one.
-  const int n = buildZoneSinCrys.getCell("Unit", 10);
-  MonteCarlo::Object* SUnit=System.findObject(n);
-  SUnit->addIntersection(bellowAA->getBackRule());
+  // Intersect the 2nd buildZoneSinCrys cell (tilted plane, contains CM1) with cells 
+  // from the SINCRYS and common build zone.
+  for(int n = 0; n < 3; ++n){
+    MonteCarlo::Object* SUnit=System.findObject(buildZoneSinCrys.getCell("Unit",10-n));
+    SUnit->addIntersection(
+      HeadRule(cm1PortSinCrys.getLinkSurf("OuterPlate")).complement());
+  }
 
   return;
 }
