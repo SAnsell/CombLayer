@@ -1503,7 +1503,8 @@ opticsVariables(FuncDataBase& Control,
   //////// CM1
   const Geometry::Vec3D ZVec(0,0,1);
   const Geometry::Vec3D vDanMAX = -ZVec;
-  const double sinCrysBranchAngle = 17.0 * M_PI/180.0;
+  const double sinCrysBranchAngleDeg = 17.0;
+  const double sinCrysBranchAngle = sinCrysBranchAngleDeg * M_PI/180.0;
   const Geometry::Vec3D vSinCrys(-sin(sinCrysBranchAngle),0.0,-cos(sinCrysBranchAngle));
 
   // will be rotated vertical
@@ -1538,6 +1539,7 @@ opticsVariables(FuncDataBase& Control,
   ///////////
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"ValveS1"); // [30]
+  Control.addVariable(opticsName+"ValveS1YAngle",sinCrysBranchAngleDeg);
 
   BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
