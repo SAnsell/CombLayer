@@ -1537,6 +1537,7 @@ opticsVariables(FuncDataBase& Control,
 
   ///////////
 
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"ValveS1"); // [30]
 
   BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length

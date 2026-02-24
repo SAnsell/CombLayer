@@ -128,6 +128,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   valve5(new xraySystem::CylGateValve(newName+"Valve5")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   cm1(new constructSystem::PipeTube(newName+"CM1")),
+  valveS1(new xraySystem::CylGateValve(newName+"ValveS1")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   pipeSinCrys(new constructSystem::VacuumPipe(newName+"PipeSinCrys")),
@@ -205,7 +206,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(valve5);
   OR.addObject(pipeA);
   OR.addObject(cm1);
-  OR.addObject(splitter);
+  OR.addObject(valveS1);
   OR.addObject(bellowAA);
   OR.addObject(bellowBA);
   OR.addObject(pipeSinCrys);
@@ -776,7 +777,6 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   const constructSystem::portItem& cm1PortDanMAX=cm1->getPort(1);
   const constructSystem::portItem& cm1PortSinCrys=cm1->getPort(2);
 
-  bellowAA->createAll(System,cm1PortSinCrys,"OuterPlate"); // SinCrys
   bellowBA->createAll(System,cm1PortDanMAX,"OuterPlate"); // DanMAX
 
   buildZoneSinCrys=buildZone;
@@ -809,14 +809,17 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   bellowC->insertAllInCell(System,
     buildZoneDanMAX.createUnit(System,*bellowC,"front"));
 
-  outerCell=buildZoneSinCrys.createUnit(System,*bellowAA,"back");
+  outerCell=buildZoneSinCrys.createUnit(System,cm1PortSinCrys,"OuterPlate");
   cm1->insertAllInCell(System,outerCell);
-  bellowAA->insertAllInCell(System,outerCell);
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,cm1PortSinCrys,"OuterPlate",*valveS1
+  );
 
   outerCell=buildZoneDanMAX.createUnit(System,*bellowBA,"back");
   cm1->insertAllInCell(System,outerCell);
   bellowBA->insertAllInCell(System,outerCell);
-  bellowAA->insertAllInCell(System,outerCell);
+  valveS1->insertInCell(System,outerCell);
+  bellowBA->insertAllInCell(System,valveS1->getCell("LowSpace"));
 
   outerCell=buildZoneSinCrys.createUnit(System);
   for (int i=0; i<1; ++i) {
@@ -825,7 +828,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   }
 
 
-  pipeSinCrys->createAll(System,*bellowAA,"back");
+  pipeSinCrys->createAll(System,*valveS1,"back");
   pipeSinCrys->insertAllInCell(System,outerCell);
 
   constructSlitTube(System,*bellowBA,"back");
