@@ -128,7 +128,6 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   valve5(new xraySystem::CylGateValve(newName+"Valve5")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   cm1(new constructSystem::PipeTube(newName+"CM1")),
-  splitter(new xraySystem::TwinPipe(newName+"Splitter")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   pipeSinCrys(new constructSystem::VacuumPipe(newName+"PipeSinCrys")),

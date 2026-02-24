@@ -1617,14 +1617,6 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowK",10.0); // Dummy length
 
   monoShutterVariables(Control,opticsName);
-
-  // GateGen.setBladeThick(0.3);
-  // GateGen.generateValve(Control,opticsName+"GateG",0.0,0);
-
-  // splitterVariables(Control,opticsName);
-
-  // return;
-
 }
 
 }  // NAMESPACE danmaxVar
