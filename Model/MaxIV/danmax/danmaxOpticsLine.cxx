@@ -767,7 +767,11 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   int outerCell;
 
   cm1->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  cm1->createAll(System,initFC,2);
+  cm1->createAll(System,*frontEnd,0);
+
+  bellowC->setBack(initFC,sideName);
+  bellowC->createAll(System,cm1->getPort(0),"OuterPlate");
+
   cm1->intersectPorts(System,1,2);
 
   const constructSystem::portItem& cm1PortDanMAX=cm1->getPort(1);
@@ -800,6 +804,11 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   buildZoneDanMAX.setFront(initFC.getFullRule(sideName));
   buildZoneSinCrys.clearInsertCells();
   buildZoneDanMAX.clearInsertCells();
+
+  bellowC->insertAllInCell(System,
+    buildZoneSinCrys.createUnit(System,*bellowC,"front"));
+  bellowC->insertAllInCell(System,
+    buildZoneDanMAX.createUnit(System,*bellowC,"front"));
 
   outerCell=buildZoneSinCrys.createUnit(System,*bellowAA,"back");
   cm1->insertAllInCell(System,outerCell);
@@ -861,10 +870,11 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
   lastComp=bellowL;
 
-  // Intersect the 2nd buildZoneSinCrys cell (tilted plane) with the previous one
-  const int n = buildZoneSinCrys.getCell("Unit", 12);
+  // Intersect the 2nd buildZoneSinCrys cell (tilted plane, contains CM1 and BellowAA, 
+  // BellowAA defines the "back" surface) with the previous one.
+  const int n = buildZoneSinCrys.getCell("Unit", 10);
   MonteCarlo::Object* SUnit=System.findObject(n);
-  SUnit->addIntersection(buildZoneSinCrys.getFront());
+  SUnit->addIntersection(bellowAA->getBackRule());
 
   return;
 }
@@ -903,12 +913,11 @@ danmaxOpticsLine::buildObjects(Simulation& System)
     (System,buildZone,*highPassFilter,"back",*valve5);
 
   constructSystem::constructUnit(System,buildZone,*valve5,"back",*pipeA);
-  constructSystem::constructUnit(System,buildZone,*pipeA,"back",*bellowC);
 
   buildZone.createUnit(System);         // build to end (removed later)
   buildZone.rebuildInsertCells(System); // rebuild the whole track
 
-  buildSplitter(System,*bellowC,"back");
+  buildSplitter(System,*pipeA,"back");
   System.removeCell(buildZone.getLastCell("Unit"));  // remove cell built above
 
   lastComp=bellowL;

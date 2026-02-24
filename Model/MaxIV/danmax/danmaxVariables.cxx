@@ -131,9 +131,12 @@ namespace danmaxVar
     // This value is used to determine the lengths of elements in the optics hutch that
     // are not shown in [12].
     double valve4Back = 2290.23; // [4]
-    // All following absolute coordinates taken from [12]
+    // All following absolute coordinates taken from [12] if not indicated otherwise.
     const double bremColl1 = 2330.0;
     const double highPassFilter = 2347.48;
+    // Using information from [12] and [31]. In the latter, the distance of CM1 from 
+    // the bremsstrahlung collimator is shown.
+    const double CM1 = bremColl1 + 62.26;
     // Assume that the Y coordinate given there is the central axis of the top-jaw
     // port.
     const double whiteBeamSlitsTopJaw = 2622.75;
@@ -1494,7 +1497,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
-  BellowGen.generateBellow(Control,opticsName+"BellowC",11.8); // [16]
+  BellowGen.generateBellow(Control,opticsName+"BellowC",10.0); // Dummy length
 
   //////// CM1
   const Geometry::Vec3D ZVec(0,0,1);
@@ -1511,7 +1514,8 @@ opticsVariables(FuncDataBase& Control,
 
   // Front
   // add outerRadius to count port length from the outer surface
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+4.0);
+  const double CM1FrontPortLength = CF100::outerRadius+4.0;
+  PItemGen.setCF<setVariable::CF40>(CM1FrontPortLength);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),ZVec);
 
@@ -1526,6 +1530,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,0,0),vSinCrys);
+  Control.addVariable(name+"YStep",danmaxVar::absY::CM1-CM1FrontPortLength);
 
   ///////////
 
