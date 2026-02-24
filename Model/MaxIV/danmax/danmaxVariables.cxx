@@ -113,6 +113,7 @@
 // [29] /mxn/groups/rad/Beamlines/DanMAX/Drawings/DanMAX/Optics/FDR_Diagnostics/Stp Files/DM1/AQM0214.stp
 // [30] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
 // [31] SINCRYS layout CM1, Drawing 256569, 2025-05-06
+// [32] JJ X-RAY, SINCRY beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
 
 namespace setVariable
 {
@@ -1507,29 +1508,31 @@ opticsVariables(FuncDataBase& Control,
 
   // will be rotated vertical
   std::string name=opticsName+"CM1";
-  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCF<CF100>(); // [32]
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,name,30.8);
-  Control.addVariable(name+"NPorts",3);   // beam ports
+  const double CM1MainTubeLength = 36.0; // [30]
+  SimpleTubeGen.generateTube(Control,name,CM1MainTubeLength);
+  Control.addVariable(name+"NPorts",3);
 
   // Front
-  // add outerRadius to count port length from the outer surface
-  const double CM1FrontPortLength = CF100::outerRadius+4.0;
+  // Port lengths measured in [30], using the information that CM1 is centered on the 
+  // granite block whose length is given in [31].
+  const double CM1FrontPortLength = 10.9;
+  const double CM1Port12Length = 26.0;
   PItemGen.setCF<setVariable::CF40>(CM1FrontPortLength);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  const double CM1PortY = CM1MainTubeLength/2.0-12.0; // [32]
+  PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,CM1PortY,0),ZVec);
 
   // Back: DanMAX branch
-  // add outerRadius to count port length from the outer surface
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
+  PItemGen.setCF<setVariable::CF40>(CM1Port12Length);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),vDanMAX);
+  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,CM1PortY,0),vDanMAX);
 
   // Back: SinCrys branch
-  // add outerRadius to count port length from the outer surface
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
+  PItemGen.setCF<setVariable::CF40>(CM1Port12Length);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,0,0),vSinCrys);
+  PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,CM1PortY,0),vSinCrys);
   Control.addVariable(name+"YStep",danmaxVar::absY::CM1-CM1FrontPortLength);
 
   ///////////
