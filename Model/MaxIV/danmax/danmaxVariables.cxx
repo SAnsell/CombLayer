@@ -1503,9 +1503,16 @@ opticsVariables(FuncDataBase& Control,
   //////// CM1
   const Geometry::Vec3D ZVec(0,0,1);
   const Geometry::Vec3D vDanMAX = -ZVec;
-  const double sinCrysBranchAngleDeg = 17.0;
-  const double sinCrysBranchAngle = sinCrysBranchAngleDeg * M_PI/180.0;
-  const Geometry::Vec3D vSinCrys(-sin(sinCrysBranchAngle),0.0,-cos(sinCrysBranchAngle));
+  // Starting with the SINCRYS-side port of CM1 and ending with SINCRYS beam viewer 1,
+  // all beamline elements are at a fixed angle of 16.177 deg, which is the center of 
+  // motion between the two extreme angles 15.041 deg and 17.313 deg:
+  // (17.313 deg - 15.041 deg) / 2 = 16.177 deg
+  // Refs. [31] and [32] only contain evidence that this must be the fixed angle, but 
+  // I have not found a reference that states this explicitly.
+  const double sinCrysBranchCenterAngleDeg = 16.177;
+  const double sinCrysBranchCenterAngle = sinCrysBranchCenterAngleDeg * M_PI/180.0;
+  const Geometry::Vec3D vSinCrys(
+    -sin(sinCrysBranchCenterAngle),0.0,-cos(sinCrysBranchCenterAngle));
 
   // will be rotated vertical
   std::string name=opticsName+"CM1";
@@ -1539,7 +1546,7 @@ opticsVariables(FuncDataBase& Control,
   ///////////
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"ValveS1"); // [30]
-  Control.addVariable(opticsName+"ValveS1YAngle",sinCrysBranchAngleDeg);
+  Control.addVariable(opticsName+"ValveS1YAngle",sinCrysBranchCenterAngleDeg);
 
   BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
