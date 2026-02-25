@@ -1139,7 +1139,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   // radius, height, depth
   const std::string monoVesselKey = monoKey+"HDCMVessel";
   MBoxGen.generateBox(Control,monoVesselKey,monoVesselRadius,0.0,17.5); // [24]
-  Control.addVariable(monoVesselKey+"WallThick", 0.5);
+  Control.addVariable(monoVesselKey+"WallThick", 0.3); // [24]
   Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::HDCM
     -HDCMPortALength-monoVesselRadius-monoVesselWallThick);
 
@@ -1567,7 +1567,7 @@ opticsVariables(FuncDataBase& Control,
 
   std::string valve8Name = opticsName+"Valve8";
   Control.copyVarSet(beamName+"FrontBeamValve3",valve8Name); // [31]
-  // Neither visible on [26] or [28] as the other valves of this type, but the angle 
+  // Neither visible on [26] or [28] as the other valves of this type, but the angle
   // can be seen in [31].
   Control.addVariable(valve8Name+"YAngle", 90.0);
 
