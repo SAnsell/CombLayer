@@ -129,6 +129,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   cm1(new constructSystem::PipeTube(newName+"CM1")),
   valveS1(new xraySystem::CylGateValve(newName+"ValveS1")),
+  beamViewerS1(new constructSystem::PipeTube(newName+"BeamViewerS1")),
+  beamViewerS1Screen(new xraySystem::FlangeMount(newName+"BeamViewerS1Screen")),
   bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   pipeSinCrys(new constructSystem::VacuumPipe(newName+"PipeSinCrys")),
@@ -207,6 +209,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(cm1);
   OR.addObject(valveS1);
+  OR.addObject(beamViewerS1);
+  OR.addObject(beamViewerS1Screen);
   OR.addObject(bellowAA);
   OR.addObject(bellowBA);
   OR.addObject(pipeSinCrys);
@@ -416,7 +420,6 @@ danmaxOpticsLine::constructViewScreen(Simulation& System,
   viewTube->insertPortInCell(System,2,cellUnit[1]);
 
   cellIndex+=3;
-
 
   viewTubeScreen->addInsertCell("Body",viewTube->getCell("Void"));
   viewTubeScreen->addInsertCell("Blade",viewTube->getCell("Void"));
@@ -815,6 +818,17 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
     System,buildZoneSinCrys,cm1PortSinCrys,"OuterPlate",*valveS1
   );
 
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*valveS1,"back",*beamViewerS1
+  );
+  beamViewerS1->intersectPorts(System,0,2);
+  beamViewerS1->intersectPorts(System,1,2);
+  beamViewerS1Screen->addInsertCell("Body",beamViewerS1->getCell("Void"));
+  beamViewerS1Screen->addInsertCell("Blade",beamViewerS1->getCell("Void"));
+  beamViewerS1Screen->addInsertCell("Body",beamViewerS1->getPort(2).getCell("Void"));
+  beamViewerS1Screen->setBladeCentre(beamViewerS1->getLinkPt(0));
+  beamViewerS1Screen->createAll(System,beamViewerS1->getPort(2),"#InnerPlate");
+
   outerCell=buildZoneDanMAX.createUnit(System,*bellowBA,"back");
   cm1->insertAllInCell(System,outerCell);
   bellowBA->insertAllInCell(System,outerCell);
@@ -827,8 +841,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
     OPtr->addIntersection(getRule("BackPlateFloorShine"));
   }
 
-
-  pipeSinCrys->createAll(System,*valveS1,"back");
+  pipeSinCrys->createAll(System,*beamViewerS1,"back");
   pipeSinCrys->insertAllInCell(System,outerCell);
 
   constructSlitTube(System,*bellowBA,"back");

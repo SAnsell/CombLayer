@@ -1548,6 +1548,41 @@ opticsVariables(FuncDataBase& Control,
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"ValveS1"); // [30]
   Control.addVariable(opticsName+"ValveS1YAngle",sinCrysBranchCenterAngleDeg);
 
+  name=opticsName+"BeamViewerS1";
+  // [30] In a good approximation (+- 1 mm), all ports have the same length,
+  // no matter what one considers a port or a part of the main tube.
+  const double beamViewerS1PortLength = 6.25;
+  SimpleTubeGen.setCF<CF40>(); // [32]
+  SimpleTubeGen.setCap(false, false);
+  SimpleTubeGen.generateTube(Control,name,2.0*beamViewerS1PortLength);
+  Control.addVariable(name+"NPorts",3);
+
+  PItemGen.setCF<setVariable::CF40>(beamViewerS1PortLength);
+  // Build ports with slightly smaller outer radius than the main pipe to avoid 
+  // geometry errors.
+  PItemGen.setPort(beamViewerS1PortLength,CF40::innerRadius-1e-3,CF40::wallThick);
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
+  PItemGen.generatePort(
+    Control,name+"Port0",Geometry::Vec3D(),Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(
+    Control,name+"Port1",Geometry::Vec3D(),Geometry::Vec3D(0,0,-1));
+  PItemGen.generatePort(
+    Control,name+"Port2",Geometry::Vec3D(),Geometry::Vec3D(-1,0,0));
+
+  // Screen dimensions from [30].
+  const double beamViewerS1ScreenThick = 0.015; // [30]
+  const double beamViewerS1ScreenSideLength = 1.0; // [30]
+  FlangeGen.setNoPlate();
+  // Thread is a conservative approximation. In reality, there is much more material 
+  // around the crystal, see [30] or [32].
+  FlangeGen.setThread(beamViewerS1ScreenThick,0.0,"SteelUnknownGrade"); // Dummy length
+  // Angle from [30]
+  // Material is actually given as "CVD polycrystalline N doped diamond" in [32].
+  FlangeGen.setBlade(
+    beamViewerS1ScreenSideLength,beamViewerS1ScreenSideLength,
+    beamViewerS1ScreenThick,45.0,"Diamond",1);
+  FlangeGen.generateMount(Control,name+"Screen",1);
+
   BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
   PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",100.0); // dummy SinCrys pipe
