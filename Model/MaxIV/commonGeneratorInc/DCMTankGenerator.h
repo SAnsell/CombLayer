@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/DCMTankGenerator.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_DCMTankGenerator_h
@@ -39,7 +39,8 @@ class DCMTankGenerator :
     public VacBoxGenerator
 {
  private:
-  
+
+  double roofThick;            ///< Roof thickness
   double baseThick;            ///< thickness of base
   double baseWidth;            ///< width of base
   double baseLength;           ///< length of base [beam]
@@ -47,7 +48,7 @@ class DCMTankGenerator :
   double topRadius;            ///< Radius of top dome
   double topLift;              ///< Lift of top dome
 
-  
+
  public:
 
   DCMTankGenerator();
@@ -64,4 +65,3 @@ class DCMTankGenerator :
 }
 
 #endif
- 

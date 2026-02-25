@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/DCMTank.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_DCMTank_h
@@ -26,13 +26,13 @@ class Simulation;
 
 namespace xraySystem
 {
-  
+
 /*!
   \class DCMTank
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief DCMTank unit  
+  \brief Double crystal monochromator vessel
 */
 
 class DCMTank :
@@ -46,19 +46,20 @@ class DCMTank :
 
   const bool centreOrigin;    ///< Construct on the centre line
   double outerSize;           ///< Distance for outer void
-  
+
   double voidRadius;          ///< void main radius
   double voidDepth;           ///< void depth to dome
   double voidHeight;          ///< void height to smooth lid jo
-  
+
   double wallThick;           ///< Thick of side walls
+  double roofThick;             ///< Roof thickness
 
   double baseThick;            ///< thickness of base
   double baseWidth;            ///< width of base
   double baseLength;           ///< length [beam direct] of base
 
   double topLift;              ///< Lift of top dome
-  
+
   // inlet port
   double portAXStep;          ///< XStep of port
   double portAZStep;          ///< ZStep of port
@@ -86,13 +87,13 @@ class DCMTank :
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
   /// Vector of ports FixedComp
-  std::vector<constructSystem::portItem> Ports;  
+  std::vector<constructSystem::portItem> Ports;
 
   int voidMat;                  ///< void material
   int wallMat;                  ///< Fe material layer
 
   bool delayPortBuild;        ///< Delay port to manual construct
-  
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
@@ -118,4 +119,3 @@ class DCMTank :
 }
 
 #endif
- 

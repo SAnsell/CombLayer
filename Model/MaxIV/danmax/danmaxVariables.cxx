@@ -1139,7 +1139,8 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   // radius, height, depth
   const std::string monoVesselKey = monoKey+"HDCMVessel";
   MBoxGen.generateBox(Control,monoVesselKey,monoVesselRadius,0.0,17.5); // [24]
-  Control.addVariable(monoVesselKey+"WallThick", 0.3); // [24]
+  Control.addVariable(monoVesselKey+"WallThick", 0.5); // [24]
+  Control.addVariable(monoVesselKey+"RoofThick", 0.3); // [24]
   Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::HDCM
     -HDCMPortALength-monoVesselRadius-monoVesselWallThick);
 

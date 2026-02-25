@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   danmax/DCMTankGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -52,6 +52,7 @@ namespace setVariable
 
 DCMTankGenerator::DCMTankGenerator() :
   VacBoxGenerator(),
+  roofThick(0.3),
   baseThick(2.0),baseWidth(65.0),baseLength(65.0),
   topRadius(80.0),topLift(9.0)
   /*!
@@ -62,12 +63,12 @@ DCMTankGenerator::DCMTankGenerator() :
 }
 
 
-DCMTankGenerator::~DCMTankGenerator() 
+DCMTankGenerator::~DCMTankGenerator()
  /*!
    Destructor
  */
 {}
-  
+
 void
 DCMTankGenerator::generateBox(FuncDataBase& Control,
 			      const std::string& keyName,
@@ -77,7 +78,7 @@ DCMTankGenerator::generateBox(FuncDataBase& Control,
   const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param radius :: radius of main cylinder
     \param depth :: depth of main cylinder
@@ -85,12 +86,13 @@ DCMTankGenerator::generateBox(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("DCMTankGenerator","generateBox");
-  
+
 
   VacBoxGenerator::generateBox(Control,keyName,radius*2.0,
 			       height,depth,radius*2.0);
 
   Control.addVariable(keyName+"VoidRadius",radius);
+  Control.addVariable(keyName+"RoofThick",roofThick);
   Control.addVariable(keyName+"BaseThick",baseThick);
   Control.addVariable(keyName+"BaseLength",baseLength);
   Control.addVariable(keyName+"BaseWidth",baseWidth);
@@ -99,9 +101,9 @@ DCMTankGenerator::generateBox(FuncDataBase& Control,
   Control.addVariable(keyName+"TopLift",topLift);
 
   Control.addVariable(keyName+"NPorts",0);
-  
+
   return;
 
 }
-  
+
 }  // NAMESPACE setVariable

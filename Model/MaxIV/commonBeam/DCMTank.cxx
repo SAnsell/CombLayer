@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/DCMTank.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -51,7 +51,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -80,7 +80,7 @@ DCMTank::DCMTank(const std::string& Key) :
   */
 {}
 
-DCMTank::~DCMTank() 
+DCMTank::~DCMTank()
   /*!
     Destructor
   */
@@ -94,7 +94,7 @@ DCMTank::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("DCMTank","populate");
-  
+
   FixedRotate::populate(Control);
 
   // Void + Fe special:
@@ -103,13 +103,14 @@ DCMTank::populate(const FuncDataBase& Control)
   voidDepth=Control.EvalVar<double>(keyName+"VoidDepth");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  roofThick=Control.EvalDefVar<double>(keyName+"RoofThick", wallThick);
 
   baseThick=Control.EvalVar<double>(keyName+"BaseThick");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
   baseLength=Control.EvalVar<double>(keyName+"BaseLength");
 
   topLift=Control.EvalVar<double>(keyName+"TopLift");
-  
+
   portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
   portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
   portAWallThick=Control.EvalPair<double>(keyName+"PortAWallThick",
@@ -129,7 +130,7 @@ DCMTank::populate(const FuncDataBase& Control)
   portBTubeRadius=Control.EvalPair<double>(keyName+"PortBTubeRadius",
 					   keyName+"PortTubeRadius");
 
-  
+
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
   flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
@@ -167,7 +168,7 @@ DCMTank::populate(const FuncDataBase& Control)
       const std::string portName=portBase+std::to_string(i);
       constructSystem::portItem windowPort(portBase,portName);
       windowPort.populate(Control);
-      
+
       const Geometry::Vec3D Centre=
 	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
       const Geometry::Vec3D Axis=
@@ -176,7 +177,7 @@ DCMTank::populate(const FuncDataBase& Control)
       PCentre.push_back(Centre);
       PAxis.push_back(Axis);
       Ports.push_back(windowPort);
-    }					    
+    }
 
   outerSize=Control.EvalDefVar<double>(keyName+"OuterSize",voidRadius+20.0);
 
@@ -217,37 +218,37 @@ DCMTank::createSurfaces()
 	      std::abs(portBZStep)+flangeBRadius)+0.01);
   // mid layer divider
   ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,Y);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*outerSize,X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*outerSize,X);  
+  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*outerSize,X);
   ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*outerSize,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*outerSize,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*outerSize,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+1013,Origin-X*maxPortWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+1014,Origin+X*maxPortWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+1015,Origin+Z*maxPortHeight,Z);
-  
+
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);
 
   makeCylinder("innerCylinder",SMap,buildIndex+7,Origin,Z,voidRadius);
   setCutSurf("innerRadius",-SMap.realSurf(buildIndex+7));
   makeCylinder("outerCylinder",SMap,buildIndex+17,Origin,
 	       Z,voidRadius+wallThick);
-    
+
   // Top plate
   const Geometry::Vec3D topCent=Origin-Z*(topRadius-(voidHeight+topLift));
   ModelSupport::buildSphere(SMap,buildIndex+108,topCent,topRadius);
-  ModelSupport::buildSphere(SMap,buildIndex+118,topCent,topRadius+wallThick);
+  ModelSupport::buildSphere(SMap,buildIndex+118,topCent,topRadius+roofThick);
   // base plate
 
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-X*(baseWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+X*(baseWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-Y*(baseLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+Y*(baseLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(voidDepth+baseThick),Z);  
-  
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(voidDepth+baseThick),Z);
+
   // FRONT PORT
   const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
   const Geometry::Vec3D AFCentre(ACentre+X*flangeAXStep+Z*flangeAZStep);
@@ -285,8 +286,8 @@ DCMTank::createObjects(Simulation& System)
 
   const HeadRule FPortHR(ExternalCut::getRule("front"));
   const HeadRule BPortHR(ExternalCut::getRule("back"));
-  
-  // Main Void 
+
+  // Main Void
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 5 (-6:-108) -7");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
@@ -400,7 +401,7 @@ DCMTank::createPorts(Simulation& System)
 
   MonteCarlo::Object* wallObject=
     CellMap::getCellObject(System,"Wall");
-  
+
   const HeadRule innerWall=SurfMap::getSurfRule("innerCylinder");
   const HeadRule outerWall=SurfMap::getSurfRule("outerCylinder");
 
@@ -430,19 +431,19 @@ DCMTank::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("DCMTank","createAll(FC)");
 
-  
+
   populate(System.getDataBase());
   createCentredUnitVector(FC,FIndex,portATubeLength+wallThick+voidRadius);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
-  insertObjects(System);   
+  insertObjects(System);
 
   if (!delayPortBuild)
     createPorts(System);
 
   return;
 }
-  
+
 }  // NAMESPACE xraySystem
