@@ -131,9 +131,11 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   valveS1(new xraySystem::CylGateValve(newName+"ValveS1")),
   beamViewerS1(new constructSystem::PipeTube(newName+"BeamViewerS1")),
   beamViewerS1Screen(new xraySystem::FlangeMount(newName+"BeamViewerS1Screen")),
-  bellowAA(new constructSystem::Bellows(newName+"BellowAA")),
+  cardanBellowUpstream(new constructSystem::Bellows(newName+"CardanBellowUpstream")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   pipeSinCrys(new constructSystem::VacuumPipe(newName+"PipeSinCrys")),
+  linearlyGuidedBellowUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowUpstream")),
+  cardanBellowDownstream(new constructSystem::Bellows(newName+"CardanBellowDownstream")),
 
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),
@@ -211,9 +213,11 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(valveS1);
   OR.addObject(beamViewerS1);
   OR.addObject(beamViewerS1Screen);
-  OR.addObject(bellowAA);
+  OR.addObject(cardanBellowUpstream);
   OR.addObject(bellowBA);
   OR.addObject(pipeSinCrys);
+  OR.addObject(linearlyGuidedBellowUpstream);
+  OR.addObject(cardanBellowDownstream);
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
   OR.addObject(bellowD);
@@ -835,14 +839,25 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   valveS1->insertInCell(System,outerCell);
   bellowBA->insertAllInCell(System,valveS1->getCell("LowSpace"));
 
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*beamViewerS1,"back",*cardanBellowUpstream
+  );
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*cardanBellowUpstream,"back",*pipeSinCrys
+  );
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*pipeSinCrys,"back",*linearlyGuidedBellowUpstream
+  );
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,
+    *linearlyGuidedBellowUpstream,"back",*cardanBellowDownstream
+  );
+
   outerCell=buildZoneSinCrys.createUnit(System);
   for (int i=0; i<1; ++i) {
     MonteCarlo::Object* OPtr = System.findObject(outerCell-i);
     OPtr->addIntersection(getRule("BackPlateFloorShine"));
   }
-
-  pipeSinCrys->createAll(System,*beamViewerS1,"back");
-  pipeSinCrys->insertAllInCell(System,outerCell);
 
   constructSlitTube(System,*bellowBA,"back");
 

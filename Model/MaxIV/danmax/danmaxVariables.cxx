@@ -1583,9 +1583,20 @@ opticsVariables(FuncDataBase& Control,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
   FlangeGen.generateMount(Control,name+"Screen",1);
 
-  BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
+  BellowGen.generateBellow(Control,opticsName+"CardanBellowUpstream",18.0); // [30]
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
-  PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",100.0); // dummy SinCrys pipe
+  // Length at center angle from [30]
+  PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",180.0);
+  // Actually, the linearly guided bellow consists of 7 single bellows. For simplicity,
+  // it is modeled as a single, long bellow here.
+  // Length at center angle from [30]
+  BellowGen.generateBellow(Control,opticsName+"LinearlyGuidedBellowUpstream",70.0);
+  // Increase NFolds to be able to build long bellows (see above why it is unusually 
+  // long).
+  Control.addVariable(opticsName+"LinearlyGuidedBellowUpstreamNFolds",30);
+  BellowGen.generateBellow(Control,opticsName+"CardanBellowDownstream",18.0); // [30]
+  // Reset NFolds to default.
+  Control.addVariable(opticsName+"CardanBellowDownstreamNFolds",10);
 
   // Laue monochromator
   PipeGen.setNoWindow();

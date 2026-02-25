@@ -123,9 +123,11 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::CylGateValve> valveS1;
   std::shared_ptr<constructSystem::PipeTube> beamViewerS1;
   std::shared_ptr<xraySystem::FlangeMount> beamViewerS1Screen;
-  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  std::shared_ptr<constructSystem::Bellows> cardanBellowUpstream;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeSinCrys;
+  std::shared_ptr<constructSystem::Bellows> linearlyGuidedBellowUpstream;
+  std::shared_ptr<constructSystem::Bellows> cardanBellowDownstream;
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe for laue mono
