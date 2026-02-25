@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGeneratorInc/MonoBlockXstalsGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_MonoBlockXstalsGenerator_h
@@ -43,11 +43,11 @@ class MonoBlockXstalsGenerator
 
   double phiA;              ///< phi angle of first [rot:Y]
   double phiB;              ///< phi angle of second [rot:Y]
-  
+
   double widthA;            ///< Radius of from centre
   double heightA;           ///< Radius of detector
   double lengthA;           ///< Outer wall thickness
-  
+
   double widthB;            ///< Radius of from centre
   double heightB;           ///< Radius of detector
   double lengthB;           ///< Outer wall thickness
@@ -67,7 +67,7 @@ class MonoBlockXstalsGenerator
   double topBLength;        ///< Top length
   double topBHeight;        ///< Top thickness
   double topBWidth;         ///< Edge aligned to crystal
-  
+
   std::string xtalMat;      ///< XStal material
   std::string baseMat;      ///< Base material
 
@@ -80,6 +80,14 @@ class MonoBlockXstalsGenerator
   ~MonoBlockXstalsGenerator();
 
   /// accessor to the gap
+  void setBaseA(const double L,const double W,const double H) {baseALength=L; baseAWidth=W; baseAHeight=H;}
+  void setTopA(const double L,const double W,const double H) {topALength=L; topAWidth=W; topAHeight=H;}
+  void setA(const double L,const double W,const double H) {lengthA=L; widthA=W; heightA=H;}
+
+  void setBaseB(const double L,const double W,const double H) {baseBLength=L; baseBWidth=W; baseBHeight=H;}
+  void setTopB(const double L,const double W,const double H) {topBLength=L; topBWidth=W; topBHeight=H;}
+  void setB(const double L,const double W,const double H) {lengthB=L; widthB=W; heightB=H;}
+
   void setGap(const double G) { gap=G; }
   void generateXstal(FuncDataBase&,const std::string&,
 		     const double,const double) const;
@@ -89,4 +97,3 @@ class MonoBlockXstalsGenerator
 }
 
 #endif
- 

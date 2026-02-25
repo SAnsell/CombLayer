@@ -1153,7 +1153,16 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   			Geometry::Vec3D(1,0,0));
 
   // crystals gap 7mm
-  MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0);
+  MXtalGen.setTopA(9.0, 5.0, 1.5); // [24]
+  MXtalGen.setA(5.0, 5.0, 2.0); // [24]
+  MXtalGen.setBaseA(11.0, 6.0, 1.5); // [24]
+
+  MXtalGen.setTopB(12.5, 3.0, 1.5); // [24]
+  MXtalGen.setB(10.0, 3.0, 2.0); // [24]
+  MXtalGen.setBaseB(14.0, 6.0, 1.5); // [24]
+
+  MXtalGen.setGap(0.7);
+  MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0); // yStep, theta
 }
 
 void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)

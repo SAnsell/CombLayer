@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/MonoBlockXstals.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -60,6 +60,8 @@
 
 #include "MonoBlockXstals.h"
 
+// References
+// [1] DanMAX DDR DDR_DanMAX_v1_1.pdf
 
 namespace xraySystem
 {
@@ -100,7 +102,7 @@ MonoBlockXstals::populate(const FuncDataBase& Control)
   theta=Control.EvalVar<double>(keyName+"Theta");
   phiA=Control.EvalDefVar<double>(keyName+"PhiA",0.0);
   phiB=Control.EvalDefVar<double>(keyName+"PhiB",0.0);
-  
+
   widthA=Control.EvalPair<double>(keyName+"WidthA",keyName+"Width");
   heightA=Control.EvalPair<double>(keyName+"HeightA",keyName+"Height");
   lengthA=Control.EvalPair<double>(keyName+"LengthA",keyName+"Length");
@@ -108,7 +110,7 @@ MonoBlockXstals::populate(const FuncDataBase& Control)
   widthB=Control.EvalPair<double>(keyName+"WidthB",keyName+"Width");
   heightB=Control.EvalPair<double>(keyName+"HeightB",keyName+"Height");
   lengthB=Control.EvalPair<double>(keyName+"LengthB",keyName+"Length");
-  
+
   baseALength=Control.EvalPair<double>(keyName+"BaseALength",keyName+"BaseLength");
   baseAHeight=Control.EvalPair<double>(keyName+"BaseAHeight",keyName+"BaseHeight");
   baseAWidth=Control.EvalPair<double>(keyName+"BaseAWidth",keyName+"BaseWidth");
@@ -139,7 +141,7 @@ MonoBlockXstals::createSurfaces()
 {
   ELog::RegMethod RegA("MonoBlockXstals","createSurfaces");
 
-  // main xstal CENTRE AT ORIGIN 
+  // main xstal CENTRE AT ORIGIN
   const Geometry::Quaternion QXTheta
     (Geometry::Quaternion::calcQRotDeg(theta,Z));
   const Geometry::Quaternion QXA
@@ -161,7 +163,7 @@ MonoBlockXstals::createSurfaces()
   QXA.rotate(AX);
   QXA.rotate(AY);
   QXA.rotate(AZ);
-  
+
   QXB.rotate(BX);
   QXB.rotate(BY);
   QXB.rotate(BZ);
@@ -175,8 +177,9 @@ MonoBlockXstals::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+AZ*(heightA/2.0),AZ);
 
   // crystal 2: (left hand side BX points to centre)
-  const Geometry::Vec3D bOrg=
-    Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))-X*gap;
+  const Geometry::Vec3D bOrg= (std::abs(theta)>Geometry::zeroTol) ?
+    Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))-X*gap :
+    Origin+Y*(lengthB/2.0)-X*gap; // parked position: is y-offset correct ([1] fig B-9) ?
   ModelSupport::buildPlane(SMap,buildIndex+201,bOrg-BY*(lengthB/2.0),BY);
   ModelSupport::buildPlane(SMap,buildIndex+202,bOrg+BY*(lengthB/2.0),BY);
   ModelSupport::buildPlane(SMap,buildIndex+203,bOrg-BX*widthB,BX);
@@ -223,7 +226,7 @@ MonoBlockXstals::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+4003,bOrg-BX*BWMax,BX);
 
 
-  return; 
+  return;
 }
 
 void
@@ -262,15 +265,15 @@ MonoBlockXstals::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"3001 -3002 103 -3004 -1106 1005");
   addOuterUnionSurf(HR);
-  
+
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"201 -202 203 -204 205 -206");
-  makeCell("XtalB",System,cellIndex++,xtalMat,0.0,HR);  
+  makeCell("XtalB",System,cellIndex++,xtalMat,0.0,HR);
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"4001 -4002 -204 4003 205 -206 (-201:202:-203)");
   makeCell("XtalBVoid",System,cellIndex++,0,0.0,HR);
   System.minimizeObject(cellIndex-1);
-  
+
   // base block
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"2001 -2002 -204 2003 2005 -205");
@@ -283,7 +286,7 @@ MonoBlockXstals::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"2101 -2102 -204 2103 -2106 206");
   makeCell("TopB",System,cellIndex++,baseMat,0.0,HR);
-  
+
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"4001 -4002 -204 4003 -2106 206 (-2101:2102:-2103)");
   makeCell("TopBVoid",System,cellIndex++,0,0.0,HR);
@@ -293,7 +296,7 @@ MonoBlockXstals::createObjects(Simulation& System)
     (SMap,buildIndex,"4001 -4002 -204 4003 -2106 2005");
   addOuterUnionSurf(HR);
 
-  return; 
+  return;
 }
 
 void
@@ -336,7 +339,7 @@ MonoBlockXstals::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);       
+  insertObjects(System);
 
   return;
 }
