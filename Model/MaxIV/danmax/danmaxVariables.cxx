@@ -114,6 +114,7 @@
 // [30] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
 // [31] SINCRYS layout CM1, Drawing 256569, 2025-05-06
 // [32] JJ X-RAY, SINCRY beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
+// [33] JJ X-RAY, SINCRYS layout drawing, 23087, 2025-06-27 (Appendix to [32])
 
 namespace setVariable
 {
@@ -156,6 +157,7 @@ namespace danmaxVar
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
+const double SINCRYSBranchShift = -98.0; // [31,33]
 const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // Height of Optics Hutch and Expt. Hutches 1 and 2.
 // The value that is passed as the 'Height' variable of each hutch is the height above
@@ -1507,7 +1509,7 @@ opticsVariables(FuncDataBase& Control,
   // all beamline elements are at a fixed angle of 16.177 deg, which is the center of 
   // motion between the two extreme angles 15.041 deg and 17.313 deg:
   // (17.313 deg - 15.041 deg) / 2 = 16.177 deg
-  // Refs. [31] and [32] only contain evidence that this must be the fixed angle, but 
+  // Refs. [32] and [33] only contain evidence that this must be the fixed angle, but 
   // I have not found a reference that states this explicitly.
   const double sinCrysBranchCenterAngleDeg = 16.177;
   const double sinCrysBranchCenterAngle = sinCrysBranchCenterAngleDeg * M_PI/180.0;
@@ -1524,7 +1526,7 @@ opticsVariables(FuncDataBase& Control,
 
   // Front
   // Port lengths measured in [30], using the information that CM1 is centered on the 
-  // granite block whose length is given in [31].
+  // granite block whose length is given in [33].
   const double CM1FrontPortLength = 10.9;
   const double CM1Port12Length = 26.0;
   PItemGen.setCF<setVariable::CF40>(CM1FrontPortLength);
@@ -1587,16 +1589,45 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
   // Length at center angle from [30]
   PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",180.0);
+  name = opticsName+"LinearlyGuidedBellowUpstream";
   // Actually, the linearly guided bellow consists of 7 single bellows. For simplicity,
   // it is modeled as a single, long bellow here.
   // Length at center angle from [30]
-  BellowGen.generateBellow(Control,opticsName+"LinearlyGuidedBellowUpstream",70.0);
-  // Increase NFolds to be able to build long bellows (see above why it is unusually 
-  // long).
-  Control.addVariable(opticsName+"LinearlyGuidedBellowUpstreamNFolds",30);
-  BellowGen.generateBellow(Control,opticsName+"CardanBellowDownstream",18.0); // [30]
+  BellowGen.generateBellow(Control,name,70.0);
+  // Increase NFolds to be able to build long bellows
+  // (see comment above about the unusual length).
+  Control.addVariable(name+"NFolds",30);
+  name = opticsName + "CardanBellowDownstream";
+  BellowGen.generateBellow(Control,name,18.0); // [30]
   // Reset NFolds to default.
-  Control.addVariable(opticsName+"CardanBellowDownstreamNFolds",10);
+  Control.addVariable(name+"NFolds",10);
+
+  name=opticsName+"CM2";
+  SimpleTubeGen.setCF<CF250>(); // [32]
+  const double CM2MainTubeLength = 26.0; // [30]
+  const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,name,CM2MainTubeLength);
+  Control.addVariable(name+"NPorts",2);
+
+  PItemGen.setCF<setVariable::CF40>(CM2PortLength);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),vSinCrys);
+  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),ZVec);
+
+  Control.addVariable(name+"XStep",SINCRYSBranchShift);
+  Control.addVariable(name+"YStep",
+    danmaxVar::absY::CM1
+    // Refs. [31] and [33] give the distance from CM1 to CM2 along the beam axis as 
+    // 3395.0 mm (explicitly in [33], implicitly in [31]).
+    // However, the center angle of 16.177 deg from Ref. [32], together with the 
+    // offset of 980 mm, results in a value of about 3378 mm that creates a visible 
+    // discrepancy in the geometry. For this reason, the optical-axis distance is 
+    // calculated here instead of taking it from [31] or [33].
+    +fabs(SINCRYSBranchShift)/tan(sinCrysBranchCenterAngle)
+    +CM2PortLength
+  );
+  Control.addVariable(name+"ZAngle",180.0);
 
   // Laue monochromator
   PipeGen.setNoWindow();
@@ -1630,9 +1661,9 @@ opticsVariables(FuncDataBase& Control,
   viewPackage(Control,opticsName);
 
   std::string valve8Name = opticsName+"Valve8";
-  Control.copyVarSet(beamName+"FrontBeamValve3",valve8Name); // [31]
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve8Name); // [33]
   // Neither visible on [26] or [28] as the other valves of this type, but the angle 
-  // can be seen in [31].
+  // can be seen in [33].
   Control.addVariable(valve8Name+"YAngle", 90.0);
 
   // Dummy length

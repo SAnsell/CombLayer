@@ -128,6 +128,8 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> pipeSinCrys;
   std::shared_ptr<constructSystem::Bellows> linearlyGuidedBellowUpstream;
   std::shared_ptr<constructSystem::Bellows> cardanBellowDownstream;
+  std::shared_ptr<constructSystem::PipeTube> cm2;
+
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe for laue mono

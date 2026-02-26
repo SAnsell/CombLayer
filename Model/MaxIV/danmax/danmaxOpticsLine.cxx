@@ -136,6 +136,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   pipeSinCrys(new constructSystem::VacuumPipe(newName+"PipeSinCrys")),
   linearlyGuidedBellowUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowUpstream")),
   cardanBellowDownstream(new constructSystem::Bellows(newName+"CardanBellowDownstream")),
+  cm2(new constructSystem::PipeTube(newName+"CM2")),
 
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),
@@ -218,6 +219,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(pipeSinCrys);
   OR.addObject(linearlyGuidedBellowUpstream);
   OR.addObject(cardanBellowDownstream);
+  OR.addObject(cm2);
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
   OR.addObject(bellowD);
@@ -852,6 +854,11 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
     System,buildZoneSinCrys,
     *linearlyGuidedBellowUpstream,"back",*cardanBellowDownstream
   );
+
+  cm2->setPortRotation(4,Geometry::Vec3D(1,0,0));
+  cm2->createAll(System,*frontEnd,0);
+  cm2->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate"));
 
   outerCell=buildZoneSinCrys.createUnit(System);
   for (int i=0; i<1; ++i) {
