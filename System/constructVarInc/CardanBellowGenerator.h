@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   constructInc/CardanBellows.h
+ * File:   constructVarInc/CardanBellowGenerator.h
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *
@@ -19,29 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef constructSystem_CardanBellows_h
-#define constructSystem_CardanBellows_h
+#ifndef setVariable_CardanBellowGenerator_h
+#define setVariable_CardanBellowGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-namespace constructSystem
+namespace setVariable
 {
 
 /*!
-  \class CardanBellows
+  \class CardanBellowGenerator
   \version 0.1
   \author U. Friman-Gayer
   \date February 2026
-  \brief Bent bellows supported by a universal joint ("Cardan joint")
+  \brief CardanBellowGenerator for variables
 */
 
-class CardanBellows:
-  public attachSystem::FixedRotate,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+class CardanBellowGenerator
 {
+ private:
 
   double angle;
   double bellowStep;
@@ -52,28 +48,21 @@ class CardanBellows:
   double pipeInnerRadius;
   double pipeWallThick;
 
-  int bellowMat;
-  int pipeMat;
-
-  Geometry::Vec3D Yp;
-
-  virtual void populate(const FuncDataBase&);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  std::string bellowMat;
+  std::string pipeMat;
 
  public:
 
-  CardanBellows(const std::string&);
-  CardanBellows(const CardanBellows&);
-  CardanBellows& operator=(const CardanBellows&);
-  ~CardanBellows();
+  CardanBellowGenerator();
+  CardanBellowGenerator(const CardanBellowGenerator&);
+  CardanBellowGenerator& operator=(const CardanBellowGenerator&);
+  ~CardanBellowGenerator() =default;
 
+  void generateBellows(
+    FuncDataBase&,const std::string&) const;
 
-  using FixedComp::createAll;
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int) override;
 };
+
 }
 
 #endif
