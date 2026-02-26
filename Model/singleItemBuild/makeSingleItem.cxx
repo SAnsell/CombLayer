@@ -207,6 +207,7 @@
 #include "TDCBeamDump.h"
 #include "FixedMaskHybrid.h"
 #include "SqrShield.h"
+#include "CardanBellows.h"
 
 #include "makeSingleItem.h"
 
@@ -240,7 +241,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-	"CornerPipe","ChopperPit","CylGateValve","SingleChopper",
+	"CardanBellows","CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder", "GTFGateValve", "CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
 	"DCMTank","MagnetBlock","Sexupole","MagnetM1","MagnetU1",
@@ -282,6 +283,7 @@ makeSingleItem::build(Simulation& System,
       (item,"Item not a single component");
 
   ELog::EM<<"Component == "<<item<<ELog::endDiag;
+
   if (item=="default" || item == "CylGateValve" )
     {
       std::shared_ptr<xraySystem::CylGateValve>
@@ -291,6 +293,23 @@ makeSingleItem::build(Simulation& System,
 
       GV->addInsertCell(voidCell);
       GV->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "CardanBellows" )
+    {
+      std::shared_ptr<constructSystem::CardanBellows> cardanBellows(
+        new constructSystem::CardanBellows("CardanBellows"));
+      std::shared_ptr<constructSystem::CardanBellows> cardanBellows2(
+        new constructSystem::CardanBellows("CardanBellows2"));
+
+      OR.addObject(cardanBellows);
+      OR.addObject(cardanBellows2);
+
+      cardanBellows->addInsertCell(voidCell);
+      cardanBellows->createAll(System,World::masterOrigin(),0);
+      cardanBellows2->addInsertCell(voidCell);
+      cardanBellows2->createAll(System,*cardanBellows,"back");
 
       return;
     }
