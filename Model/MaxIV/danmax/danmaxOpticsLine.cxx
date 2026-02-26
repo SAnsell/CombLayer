@@ -847,13 +847,6 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   constructSystem::constructUnit(
     System,buildZoneSinCrys,*cardanBellowUpstream,"back",*pipeSinCrys
   );
-  // constructSystem::constructUnit(
-  //   System,buildZoneSinCrys,*pipeSinCrys,"back",*linearlyGuidedBellowUpstream
-  // );
-  // constructSystem::constructUnit(
-  //   System,buildZoneSinCrys,
-  //   *linearlyGuidedBellowUpstream,"back",*cardanBellowDownstream
-  // );
 
   cm2->setPortRotation(4,Geometry::Vec3D(1,0,0));
   cm2->createAll(System,*frontEnd,0);
