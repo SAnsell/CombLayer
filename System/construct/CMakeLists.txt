@@ -1,6 +1,6 @@
 set (constructSources
     anglePortItem.cxx Aperture.cxx BasicFlightLine.cxx
-    BeamWindow.cxx Bellows.cxx BlankTube.cxx
+    BeamWindow.cxx Bellows.cxx BlankTube.cxx CardanBellows.cxx
     CentredHoleShape.cxx ChopperPit.cxx ConicInfo.cxx
     CornerPipe.cxx CrossPipe.cxx Cryostat.cxx
     CrystalMount.cxx DomeConnector.cxx doublePortItem.cxx
@@ -44,6 +44,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/BeamWindow.cxx
   ${tarDIR}/Bellows.cxx
   ${tarDIR}/BlankTube.cxx
+  ${tarDIR}/CardanBellows.cxx
   ${tarDIR}/CentredHoleShape.cxx
   ${tarDIR}/ChopperPit.cxx
   ${tarDIR}/ConicInfo.cxx
@@ -105,6 +106,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/BeamWindow.h
   ${tarINC}/Bellows.h
   ${tarINC}/BlankTube.h
+  ${tarINC}/CardanBellows.h
   ${tarINC}/CentredHoleShape.h
   ${tarINC}/ChopperPit.h
   ${tarINC}/ConicInfo.h
