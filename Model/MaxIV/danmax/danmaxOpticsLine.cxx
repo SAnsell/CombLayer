@@ -847,16 +847,28 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   constructSystem::constructUnit(
     System,buildZoneSinCrys,*cardanBellowUpstream,"back",*pipeSinCrys
   );
-  constructSystem::constructUnit(
-    System,buildZoneSinCrys,*pipeSinCrys,"back",*linearlyGuidedBellowUpstream
-  );
-  constructSystem::constructUnit(
-    System,buildZoneSinCrys,
-    *linearlyGuidedBellowUpstream,"back",*cardanBellowDownstream
-  );
+  // constructSystem::constructUnit(
+  //   System,buildZoneSinCrys,*pipeSinCrys,"back",*linearlyGuidedBellowUpstream
+  // );
+  // constructSystem::constructUnit(
+  //   System,buildZoneSinCrys,
+  //   *linearlyGuidedBellowUpstream,"back",*cardanBellowDownstream
+  // );
 
   cm2->setPortRotation(4,Geometry::Vec3D(1,0,0));
   cm2->createAll(System,*frontEnd,0);
+
+  cardanBellowDownstream->createAll(System,cm2->getPort(0),"OuterPlate");
+  linearlyGuidedBellowUpstream->setBack(*pipeSinCrys,"back");
+  linearlyGuidedBellowUpstream->createAll(System,*cardanBellowDownstream,"back");
+
+  linearlyGuidedBellowUpstream->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*linearlyGuidedBellowUpstream,"front")
+  );
+  cardanBellowDownstream->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*cardanBellowDownstream,"front")
+  );
+
   cm2->insertAllInCell(
     System,buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate"));
 
