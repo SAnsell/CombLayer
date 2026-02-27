@@ -50,28 +50,23 @@
 namespace setVariable
 {
 
-template<typename Flange>
-CardanBellowGenerator<Flange>::CardanBellowGenerator() :
+CardanBellowGenerator::CardanBellowGenerator() :
   angle(0.0),bellowStep(0.5),
-  bellowThick(0.8*(Flange::flangeRadius-Flange::innerRadius)),
-  flangeLength(Flange::flangeLength),flangeRadius(Flange::flangeRadius),length(10.0),
-  pipeInnerRadius(Flange::innerRadius),pipeWallThick(Flange::wallThick),
+  bellowThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
+  flangeLength(CF40::flangeLength),flangeRadius(CF40::flangeRadius),length(10.0),
+  pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),
   bellowMat("SteelUnknownGrade%Void%10.0"),pipeMat("SteelUnknownGrade")
 {}
 
-template<>
-template<>
-void
-CardanBellowGenerator<CF40>::setCF<CF40>(){
+template<typename CF> void
+CardanBellowGenerator::setCF(){
   flangeLength=CF40::flangeLength;
   flangeRadius=CF40::flangeRadius;
   pipeInnerRadius=CF40::innerRadius;
   pipeWallThick=CF40::wallThick;
 }
 
-template<typename Flange>
-void
-CardanBellowGenerator<Flange>::generateBellows(
+void CardanBellowGenerator::generateBellows(
   FuncDataBase& Control,const std::string& keyName) const
 {
   ELog::RegMethod RegA("BellowGenerator","generatorBellow");
@@ -90,10 +85,7 @@ CardanBellowGenerator<Flange>::generateBellows(
 
 ///\cond TEMPLATE
 
-  template CardanBellowGenerator<CF40>::CardanBellowGenerator();
-  template void CardanBellowGenerator<CF40>::generateBellows(
-    FuncDataBase& Control,const std::string& keyName) const;
-  template void CardanBellowGenerator<CF40>::setCF<CF40>();
+  template void CardanBellowGenerator::setCF<CF40>();
 
 ///\endcond TEMPLATE
 

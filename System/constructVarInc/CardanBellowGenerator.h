@@ -35,7 +35,6 @@ namespace setVariable
   \brief CardanBellowGenerator for variables
 */
 
-template<typename Flange>
 class CardanBellowGenerator
 {
  private:

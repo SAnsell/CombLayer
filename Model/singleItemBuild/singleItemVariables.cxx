@@ -649,7 +649,7 @@ SingleItemVariables(FuncDataBase& Control)
   BellowGen.generateBellow(Control,"Bellow",7.5);
 
   // CardanBellow
-  setVariable::CardanBellowGenerator<CF40> cardanBellowGenerator;
+  setVariable::CardanBellowGenerator cardanBellowGenerator;
   std::string cardanBellowsName = "CardanBellows1";
   cardanBellowGenerator.setAngle(0.25*M_PI);
   cardanBellowGenerator.generateBellows(Control,cardanBellowsName);
