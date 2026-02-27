@@ -35,6 +35,7 @@ namespace setVariable
   \brief CardanBellowGenerator for variables
 */
 
+template<typename Flange>
 class CardanBellowGenerator
 {
  private:
@@ -57,6 +58,9 @@ class CardanBellowGenerator
   CardanBellowGenerator(const CardanBellowGenerator&);
   CardanBellowGenerator& operator=(const CardanBellowGenerator&);
   ~CardanBellowGenerator() =default;
+
+  void setAngle(const double a){angle = a;}
+  template<typename CF> void setCF();
 
   void generateBellows(
     FuncDataBase&,const std::string&) const;
