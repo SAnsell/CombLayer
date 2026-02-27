@@ -42,22 +42,29 @@ class CardanBellowGenerator
   double angle;
   double bellowStep;
   double bellowThick;
+  double bellowsVolumeFraction;
   double flangeLength;
   double flangeRadius;
   double length;
   double pipeInnerRadius;
   double pipeWallThick;
 
-  std::string bellowMat;
+  std::string bellowBaseMat;
   std::string pipeMat;
+
+  double bellowLength() const;
+  double bellowSheetVolumeOverPi(const int,const double) const;
 
  public:
 
   CardanBellowGenerator();
-  CardanBellowGenerator(const CardanBellowGenerator&);
-  CardanBellowGenerator& operator=(const CardanBellowGenerator&);
-  ~CardanBellowGenerator() =default;
+  ~CardanBellowGenerator()=default;
 
+  void setMat(const std::string mat){
+    bellowBaseMat = mat; bellowsVolumeFraction = 0.0;};
+  void setMat(const std::string mat, const double volumeFraction){
+    bellowBaseMat = mat; bellowsVolumeFraction = volumeFraction;};
+  void setMat(const std::string, const int, const double);
   void setAngle(const double a){angle = a;}
   template<typename CF> void setCF();
 
