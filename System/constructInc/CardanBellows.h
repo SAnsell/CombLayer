@@ -46,13 +46,14 @@ class CardanBellows:
   double angle;
   double bellowStep;
   double bellowThick;
+  double bellowsVolumeFraction;
   double flangeLength;
   double flangeRadius;
   double length;
   double pipeInnerRadius;
   double pipeWallThick;
 
-  int bellowMat;
+  int bellowBaseMat;
   int pipeMat;
 
   Geometry::Vec3D Yp;

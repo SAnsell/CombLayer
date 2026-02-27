@@ -80,13 +80,14 @@ CardanBellows::CardanBellows(const CardanBellows& A) :
   angle(A.angle),
   bellowStep(A.bellowStep),
   bellowThick(A.bellowThick),
+  bellowsVolumeFraction(A.bellowsVolumeFraction),
   flangeLength(A.flangeLength),
   flangeRadius(A.flangeRadius),
   length(A.length),
   pipeInnerRadius(A.pipeInnerRadius),
   pipeWallThick(A.pipeWallThick),
 
-  bellowMat(A.bellowMat),
+  bellowBaseMat(A.bellowBaseMat),
   pipeMat(A.pipeMat)
 {}
 
@@ -103,13 +104,14 @@ CardanBellows::operator=(const CardanBellows& A)
       angle=A.angle;
       bellowStep=A.bellowStep;
       bellowThick=A.bellowThick;
+      bellowsVolumeFraction=A.bellowsVolumeFraction;
       flangeLength=A.flangeLength;
       flangeRadius=A.flangeRadius;
       length=A.length;
       pipeInnerRadius=A.pipeInnerRadius;
       pipeWallThick=A.pipeWallThick;
 
-      bellowMat=A.bellowMat;
+      bellowBaseMat=A.bellowBaseMat;
       pipeMat=A.pipeMat;
     }
   return *this;
@@ -126,13 +128,15 @@ CardanBellows::populate(const FuncDataBase& Control)
   angle=Control.EvalDefVar<double>(keyName+"Angle",0.0);
   bellowStep=Control.EvalVar<double>(keyName+"BellowStep");
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
+  bellowsVolumeFraction=Control.EvalVar<double>(keyName+"BellowsVolumeFraction");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   length=Control.EvalVar<double>(keyName+"Length");
   pipeInnerRadius=Control.EvalVar<double>(keyName+"PipeInnerRadius");
   pipeWallThick=Control.EvalVar<double>(keyName+"PipeWallThick");
 
-  bellowMat=ModelSupport::EvalDefMat(Control,keyName+"BellowMat","SteelUnknownGrade");
+  bellowBaseMat=ModelSupport::EvalDefMat(
+    Control,keyName+"BellowMat","SteelUnknownGrade");
   pipeMat=ModelSupport::EvalDefMat(Control,keyName+"PipeMat","SteelUnknownGrade");
   return;
 }
@@ -204,12 +208,12 @@ CardanBellows::createObjects(Simulation& System)
 
   makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -27 37"));
-  makeCell("FrontBellow",System,cellIndex++,bellowMat,0.0,
+  makeCell("FrontBellow",System,cellIndex++,bellowBaseMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 -17 37"));
 
   makeCell("BackPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -127 137"));
-  makeCell("BackBellow",System,cellIndex++,bellowMat,0.0,
+  makeCell("BackBellow",System,cellIndex++,bellowBaseMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 -117 137"));
 
   makeCell("FrontVoid",System,cellIndex++,0,0.0,
