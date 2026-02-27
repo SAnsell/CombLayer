@@ -56,7 +56,7 @@ CardanBellowGenerator::CardanBellowGenerator() :
   bellowsVolumeFraction(0.0),flangeLength(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),length(10.0),
   pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),
-  bellowBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade")
+  nSectors(2),bellowBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade")
 {}
 
 double CardanBellowGenerator::bellowLength() const {
@@ -109,6 +109,7 @@ void CardanBellowGenerator::generateBellows(
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"PipeInnerRadius",pipeInnerRadius);
   Control.addVariable(keyName+"PipeWallThick",pipeWallThick);
+  Control.addVariable(keyName+"NSectors",nSectors);
   Control.addVariable(keyName+"BellowBaseMat",bellowBaseMat);
   Control.addVariable(keyName+"PipeMat",pipeMat);
 }

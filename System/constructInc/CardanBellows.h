@@ -54,7 +54,10 @@ class CardanBellows:
   double pipeWallThick;
 
   int bellowBaseMat;
+  int nSectors;
   int pipeMat;
+
+  std::vector<int> bellowMat;
 
   Geometry::Vec3D Yp;
 

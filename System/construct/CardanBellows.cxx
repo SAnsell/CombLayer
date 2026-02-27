@@ -20,6 +20,7 @@
  *
  ****************************************************************************/
 
+#include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <vector>
@@ -57,6 +58,7 @@
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
+#include "MaterialSupport.h"
 
 #include "CardanBellows.h"
 
@@ -88,7 +90,9 @@ CardanBellows::CardanBellows(const CardanBellows& A) :
   pipeWallThick(A.pipeWallThick),
 
   bellowBaseMat(A.bellowBaseMat),
-  pipeMat(A.pipeMat)
+  pipeMat(A.pipeMat),
+
+  bellowMat()
 {}
 
 CardanBellows&
@@ -134,10 +138,21 @@ CardanBellows::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   pipeInnerRadius=Control.EvalVar<double>(keyName+"PipeInnerRadius");
   pipeWallThick=Control.EvalVar<double>(keyName+"PipeWallThick");
+  nSectors=Control.EvalVar<int>(keyName+"NSectors");
 
   bellowBaseMat=ModelSupport::EvalDefMat(
     Control,keyName+"BellowMat","SteelUnknownGrade");
   pipeMat=ModelSupport::EvalDefMat(Control,keyName+"PipeMat","SteelUnknownGrade");
+
+  for(int n = 0; n < nSectors; ++n){
+    bellowMat.push_back(
+      ModelSupport::EvalMatName(
+        ModelSupport::EvalMatString(bellowBaseMat)
+        +"%Void%"+std::to_string(bellowsVolumeFraction)
+      )
+    );
+  }
+
   return;
 }
 
@@ -146,6 +161,8 @@ CardanBellows::createSurfaces()
 {
   ELog::RegMethod RegA("CardanBellows","createSurfaces");
 
+  Geometry::Vec3D Xp = X;
+  Xp.rotate(Z,angle);
   Yp = Y;
   Yp.rotate(Z,angle);
   Geometry::Vec3D Yp2 = Y;
@@ -170,6 +187,18 @@ CardanBellows::createSurfaces()
     center+Yp*(length/2.0-flangeLength),Yp);
   ModelSupport::buildPlane(SMap,buildIndex+22,
     center+Yp*(length/2.0-flangeLength-bellowStep),Yp);
+
+  const double dPhi = 2.0*M_PI/nSectors;
+  double phi = -0.5*dPhi;
+  for(int n = 0; n < nSectors; ++n){
+    ModelSupport::buildPlane(
+      SMap,buildIndex+10*n+3,Origin,X*sin(phi)+Z*cos(phi)
+    );
+    ModelSupport::buildPlane(
+      SMap,buildIndex+10*n+4,Origin,Xp*sin(phi)+Z*cos(phi)
+    );
+    phi+=dPhi;
+  }
 
   ModelSupport::buildPlane(SMap,buildIndex+101,center,Yp2);
 
@@ -208,13 +237,32 @@ CardanBellows::createObjects(Simulation& System)
 
   makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -27 37"));
-  makeCell("FrontBellow",System,cellIndex++,bellowBaseMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 -17 37"));
+
+  for(int n = 0; n < nSectors-1; ++n){
+    makeCell("FrontBellow",System,cellIndex++,bellowMat[n],0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 -17 37")
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*n+3)).complement()
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*(n+1)+3))
+    );
+  }
+  makeCell("FrontBellow",System,cellIndex++,bellowMat[nSectors-1],0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 -17 37 3")
+    *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*(nSectors-1)+3)).complement()
+  );
 
   makeCell("BackPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -127 137"));
-  makeCell("BackBellow",System,cellIndex++,bellowBaseMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 -117 137"));
+  for(int n = 0; n < nSectors-1; ++n){
+    makeCell("BackBellow",System,cellIndex++,bellowMat[n],0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 -117 137")
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*n+4)).complement()
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*(n+1)+4))
+    );
+  }
+  makeCell("BackBellow",System,cellIndex++,bellowMat[nSectors-1],0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 -117 137 4")
+    *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*(nSectors-1)+4)).complement()
+  );
 
   makeCell("FrontVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 -37"));

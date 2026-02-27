@@ -49,6 +49,8 @@ class CardanBellowGenerator
   double pipeInnerRadius;
   double pipeWallThick;
 
+  int nSectors;
+
   std::string bellowBaseMat;
   std::string pipeMat;
 
@@ -60,13 +62,14 @@ class CardanBellowGenerator
   CardanBellowGenerator();
   ~CardanBellowGenerator()=default;
 
+  void setAngle(const double a){angle = a;}
+  template<typename CF> void setCF();
+  void setNSectors(const int n){nSectors = n;}
   void setMat(const std::string mat){
     bellowBaseMat = mat; bellowsVolumeFraction = 0.0;};
   void setMat(const std::string mat, const double volumeFraction){
     bellowBaseMat = mat; bellowsVolumeFraction = volumeFraction;};
   void setMat(const std::string, const int, const double);
-  void setAngle(const double a){angle = a;}
-  template<typename CF> void setCF();
 
   void generateBellows(
     FuncDataBase&,const std::string&) const;
