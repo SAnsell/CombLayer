@@ -299,7 +299,7 @@ makeSingleItem::build(Simulation& System,
   if (item == "CardanBellows" )
     {
       std::shared_ptr<constructSystem::CardanBellows> cardanBellows(
-        new constructSystem::CardanBellows("CardanBellows"));
+        new constructSystem::CardanBellows("CardanBellows1"));
       std::shared_ptr<constructSystem::CardanBellows> cardanBellows2(
         new constructSystem::CardanBellows("CardanBellows2"));
 
