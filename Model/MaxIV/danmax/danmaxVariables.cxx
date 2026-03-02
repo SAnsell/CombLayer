@@ -1135,6 +1135,7 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   // Although the HDCM shifts the beam axis, the front and back ports of
   // are collinear [24]. No call to MBoxGen.setBPortOffset() or similar needed.
+  // See rad/Beamlines/DanMAX/Pictures/OH/IMG_0718.JPG
 
   // radius, height, depth
   const std::string monoVesselKey = monoKey+"HDCMVessel";
@@ -1145,12 +1146,16 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
     -HDCMPortALength-monoVesselRadius-monoVesselWallThick);
 
   const std::string portName=monoKey+"HDCMVessel";
-  Control.addVariable(monoKey+"HDCMVesselNPorts",0);
-  PItemGen.setCF<setVariable::CF63>(5.0+31.2);
-  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass");
-  PItemGen.generatePort(Control,portName+"Port0",
-  			Geometry::Vec3D(0,5.0,-10.0),
-  			Geometry::Vec3D(1,0,0));
+  Control.addVariable(monoKey+"HDCMVesselNPorts",2);
+
+  PItemGen.setCF<setVariable::CF35_TDC>(34.1); // [24]
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  PItemGen.generatePort(Control,portName+"Port0",Geometry::Vec3D(0,0.0,-10.4),Geometry::Vec3D(1,0,0)); // [24]
+
+  PItemGen.setCF<setVariable::CF35_TDC>(34.1); // dummy, the port turns upwards, but this is not modelled
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  PItemGen.generatePort(Control,portName+"Port1",Geometry::Vec3D(0,0.0,-10.0),Geometry::Vec3D(-1,0,0));
+
 
   // crystals gap 7mm
   MXtalGen.setTopA(9.0, 5.0, 1.5); // [24]

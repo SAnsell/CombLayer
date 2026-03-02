@@ -410,6 +410,7 @@ DCMTank::createPorts(Simulation& System)
       for(const int CN : portCells)
 	Ports[i].addOuterCell(CN);
       Ports[i].addInsertCell(CellMap::getCell("OuterRightVoid"));
+      Ports[i].addInsertCell(CellMap::getCell("OuterLeftVoid"));
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i].constructTrack(System,wallObject,innerWall,outerWall);
       Ports[i].insertObjects(System);
