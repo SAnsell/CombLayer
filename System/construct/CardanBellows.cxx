@@ -180,8 +180,17 @@ void CardanBellows::createSectors(){
 }
 
 std::pair<int,int> CardanBellows::cylindricOuterSurf() const {
-  if(bellowsThick[0] > flangeRadius){
-    return {sectorPlaneID(0,7,100),sectorPlaneID(0,8,100)};
+  int nSectorWithMaxRadius = 0;
+  for(int n=1; n<nSectors; ++n){
+    if(bellowsThick[n]>bellowsThick[nSectorWithMaxRadius]){
+      nSectorWithMaxRadius = n;
+    }
+  }
+  if(bellowsThick[nSectorWithMaxRadius] > flangeRadius){
+    return {
+      sectorPlaneID(nSectorWithMaxRadius,7,100),
+      sectorPlaneID(nSectorWithMaxRadius,8,100)
+    };
   }
   return {7,8};
 }
