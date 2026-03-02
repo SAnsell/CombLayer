@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   constructInc/CardanBellows.h
+ * File:   constructInc/SmallAngleBellows.h
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef constructSystem_CardanBellows_h
-#define constructSystem_CardanBellows_h
+#ifndef constructSystem_SmallAngleBellows_h
+#define constructSystem_SmallAngleBellows_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace constructSystem
 {
 
 /*!
-  \class CardanBellows
+  \class SmallAngleBellows
   \version 0.1
   \author U. Friman-Gayer
   \date February 2026
-  \brief Bent bellows supported by a universal joint ("Cardan joint")
+  \brief 
 */
 
-class CardanBellows:
+class SmallAngleBellows:
   public attachSystem::FixedRotate,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -82,10 +82,10 @@ class CardanBellows:
 
  public:
 
-  CardanBellows(const std::string&);
-  CardanBellows(const CardanBellows&);
-  CardanBellows& operator=(const CardanBellows&);
-  ~CardanBellows();
+  SmallAngleBellows(const std::string&);
+  SmallAngleBellows(const SmallAngleBellows&);
+  SmallAngleBellows& operator=(const SmallAngleBellows&);
+  ~SmallAngleBellows();
 
 
   using FixedComp::createAll;

@@ -207,7 +207,7 @@
 #include "TDCBeamDump.h"
 #include "FixedMaskHybrid.h"
 #include "SqrShield.h"
-#include "CardanBellows.h"
+#include "SmallAngleBellows.h"
 
 #include "makeSingleItem.h"
 
@@ -241,7 +241,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-	"CardanBellows","CornerPipe","ChopperPit","CylGateValve","SingleChopper",
+	"SmallAngleBellows","CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder", "GTFGateValve", "CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
 	"DCMTank","MagnetBlock","Sexupole","MagnetM1","MagnetU1",
@@ -296,20 +296,20 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  if (item == "CardanBellows" )
+  if (item == "SmallAngleBellows" )
     {
-      std::shared_ptr<constructSystem::CardanBellows> cardanBellows(
-        new constructSystem::CardanBellows("CardanBellows1"));
-      std::shared_ptr<constructSystem::CardanBellows> cardanBellows2(
-        new constructSystem::CardanBellows("CardanBellows2"));
+      std::shared_ptr<constructSystem::SmallAngleBellows> SmallAngleBellows(
+        new constructSystem::SmallAngleBellows("SmallAngleBellows1"));
+      std::shared_ptr<constructSystem::SmallAngleBellows> SmallAngleBellows2(
+        new constructSystem::SmallAngleBellows("SmallAngleBellows2"));
 
-      OR.addObject(cardanBellows);
-      OR.addObject(cardanBellows2);
+      OR.addObject(SmallAngleBellows);
+      OR.addObject(SmallAngleBellows2);
 
-      cardanBellows->addInsertCell(voidCell);
-      cardanBellows->createAll(System,World::masterOrigin(),0);
-      cardanBellows2->addInsertCell(voidCell);
-      cardanBellows2->createAll(System,*cardanBellows,"back");
+      SmallAngleBellows->addInsertCell(voidCell);
+      SmallAngleBellows->createAll(System,World::masterOrigin(),0);
+      SmallAngleBellows2->addInsertCell(voidCell);
+      SmallAngleBellows2->createAll(System,*SmallAngleBellows,"back");
 
       return;
     }

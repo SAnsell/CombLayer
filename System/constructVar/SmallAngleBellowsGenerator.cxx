@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   constructVar/CardanBellowGenerator.cxx
+ * File:   constructVar/SmallAngleBellowsGenerator.cxx
  *
  * Copyright (c) 2026 U. Friman-Gayer
  *
@@ -45,12 +45,12 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 
-#include "CardanBellowGenerator.h"
+#include "SmallAngleBellowsGenerator.h"
 
 namespace setVariable
 {
 
-CardanBellowGenerator::CardanBellowGenerator() :
+SmallAngleBellowsGenerator::SmallAngleBellowsGenerator() :
   angle(0.0),bellowStep(0.5),bellowsMaterialThick(0.05),
   bellowThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
   bellowsVolumeFraction(0.0),flangeLength(CF40::flangeLength),
@@ -60,17 +60,17 @@ CardanBellowGenerator::CardanBellowGenerator() :
 {}
 
 template<typename CF> void
-CardanBellowGenerator::setCF(){
+SmallAngleBellowsGenerator::setCF(){
   flangeLength=CF40::flangeLength;
   flangeRadius=CF40::flangeRadius;
   pipeInnerRadius=CF40::innerRadius;
   pipeWallThick=CF40::wallThick;
 }
 
-void CardanBellowGenerator::generateBellows(
+void SmallAngleBellowsGenerator::generateBellows(
   FuncDataBase& Control,const std::string& keyName) const
 {
-  ELog::RegMethod RegA("BellowGenerator","generatorBellow");
+  ELog::RegMethod RegA("BellowsGenerator","generatorBellow");
 
   Control.addVariable(keyName+"Angle",angle);
   Control.addVariable(keyName+"BellowsMaterialThick",bellowsMaterialThick);
@@ -89,7 +89,7 @@ void CardanBellowGenerator::generateBellows(
 
 ///\cond TEMPLATE
 
-  template void CardanBellowGenerator::setCF<CF40>();
+  template void SmallAngleBellowsGenerator::setCF<CF40>();
 
 ///\endcond TEMPLATE
 

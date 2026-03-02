@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   construct/CardanBellows.cxx
+ * File:   construct/SmallAngleBellows.cxx
  *
  * Copyright (c) 2026 by Udo Friman-Gayer
  *
@@ -60,12 +60,12 @@
 #include "Plane.h"
 #include "MaterialSupport.h"
 
-#include "CardanBellows.h"
+#include "SmallAngleBellows.h"
 
 namespace constructSystem
 {
 
-CardanBellows::CardanBellows(const std::string& Key):
+SmallAngleBellows::SmallAngleBellows(const std::string& Key):
   attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -73,7 +73,7 @@ CardanBellows::CardanBellows(const std::string& Key):
   attachSystem::FrontBackCut()
 {}
 
-CardanBellows::CardanBellows(const CardanBellows& A) :
+SmallAngleBellows::SmallAngleBellows(const SmallAngleBellows& A) :
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
@@ -96,8 +96,8 @@ CardanBellows::CardanBellows(const CardanBellows& A) :
   bellowsThick()
 {}
 
-CardanBellows&
-CardanBellows::operator=(const CardanBellows& A)
+SmallAngleBellows&
+SmallAngleBellows::operator=(const SmallAngleBellows& A)
 {
   if (this!=&A)
     {
@@ -123,14 +123,14 @@ CardanBellows::operator=(const CardanBellows& A)
   return *this;
 }
 
-CardanBellows::~CardanBellows()
+SmallAngleBellows::~SmallAngleBellows()
 {}
 
-double CardanBellows::bellowLength() const {
+double SmallAngleBellows::bellowLength() const {
   return (length-2.0*(flangeLength+bellowStep));
 }
 
-double CardanBellows::bellowsMaterialVolume() const {
+double SmallAngleBellows::bellowsMaterialVolume() const {
   return M_PI*(
     (
       (pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
@@ -144,7 +144,7 @@ double CardanBellows::bellowsMaterialVolume() const {
   );
 }
 
-double CardanBellows::bellowsThickness(
+double SmallAngleBellows::bellowsThickness(
   const double volume, const double sLength) const {
   return sqrt(
     (
@@ -156,7 +156,7 @@ double CardanBellows::bellowsThickness(
   )-pipeInnerRadius;
 }
 
-void CardanBellows::createSectors(){
+void SmallAngleBellows::createSectors(){
   const double totalBellowsMaterialVolume = bellowsMaterialVolume();
   if(nSectors == 1){
     bellowsThick.push_back(bellowThick);
@@ -200,7 +200,7 @@ void CardanBellows::createSectors(){
   }
 }
 
-std::pair<int,int> CardanBellows::cylindricOuterSurf() const {
+std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const {
   if(nSectors == 1){
     if(pipeInnerRadius+bellowsThick[0] > flangeRadius){
       return {
@@ -225,7 +225,7 @@ std::pair<int,int> CardanBellows::cylindricOuterSurf() const {
   return {7,8};
 }
 
-double CardanBellows::sectorAngle(
+double SmallAngleBellows::sectorAngle(
   const int nSector,const bool centerAngle=false) const {
   if(centerAngle){
     return nSector*2.0*M_PI/nSectors;
@@ -233,20 +233,20 @@ double CardanBellows::sectorAngle(
   return (nSector-0.5)*2.0*M_PI/nSectors;
 }
 
-double CardanBellows::sectorLength(const int nSector) const {
+double SmallAngleBellows::sectorLength(const int nSector) const {
   return (bellowLength()+angle*pipeInnerRadius*cos(sectorAngle(nSector,true)));
 }
 
-int CardanBellows::sectorPlaneID(
+int SmallAngleBellows::sectorPlaneID(
   const int nSector, const int base, const int offset = 0
 ) const {
   return offset+10*(nSector%nSectors)+base;
 }
 
 void
-CardanBellows::populate(const FuncDataBase& Control)
+SmallAngleBellows::populate(const FuncDataBase& Control)
 {
-  ELog::RegMethod RegA("CardanBellows","populate");
+  ELog::RegMethod RegA("SmallAngleBellows","populate");
 
   angleDeg=Control.EvalDefVar<double>(keyName+"Angle",0.0);
   angle=M_PI/180.0*angleDeg;
@@ -269,9 +269,9 @@ CardanBellows::populate(const FuncDataBase& Control)
 }
 
 void
-CardanBellows::createSurfaces()
+SmallAngleBellows::createSurfaces()
 {
-  ELog::RegMethod RegA("CardanBellows","createSurfaces");
+  ELog::RegMethod RegA("SmallAngleBellows","createSurfaces");
 
   Geometry::Vec3D Xp = X;
   Xp.rotate(Z,angle);
@@ -335,9 +335,9 @@ CardanBellows::createSurfaces()
 }
 
 void
-CardanBellows::createObjects(Simulation& System)
+SmallAngleBellows::createObjects(Simulation& System)
 {
-  ELog::RegMethod RegA("CardanBellows","createObjects");
+  ELog::RegMethod RegA("SmallAngleBellows","createObjects");
 
   HeadRule HR;
 
@@ -446,7 +446,7 @@ CardanBellows::createObjects(Simulation& System)
 }
 
 void
-CardanBellows::createLinks()
+SmallAngleBellows::createLinks()
 {
   ELog::RegMethod RegA("Bellow","createLinks");
 
@@ -460,11 +460,11 @@ CardanBellows::createLinks()
 }
 
 void
-CardanBellows::createAll(Simulation& System,
+SmallAngleBellows::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
 		   const long int FIndex)
 {
-  ELog::RegMethod RegA("CardanBellows","createAll(FC)");
+  ELog::RegMethod RegA("SmallAngleBellows","createAll(FC)");
 
   populate(System.getDataBase());
   createSectors();

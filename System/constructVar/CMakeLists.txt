@@ -1,5 +1,5 @@
 set (constructVarSources
-    BellowGenerator.cxx CardanBellowGenerator.cxx CornerPipeGenerator.cxx 
+    BellowGenerator.cxx SmallAngleBellowsGenerator.cxx CornerPipeGenerator.cxx 
     CrossGenerator.cxx DomeConnectorGenerator.cxx DoublePortItemGenerator.cxx
     FlangeDomeGenerator.cxx
     FlangePlateGenerator.cxx
@@ -29,7 +29,7 @@ file(RELATIVE_PATH tarINC
 
 set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/BellowGenerator.cxx
-  ${tarDIR}/CardanBellowGenerator.cxx
+  ${tarDIR}/SmallAngleBellowsGenerator.cxx
   ${tarDIR}/CornerPipeGenerator.cxx
   ${tarDIR}/CrossGenerator.cxx
   ${tarDIR}/DomeConnectorGenerator.cxx
@@ -50,7 +50,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/VacBoxGenerator.cxx
   ${tarINC}/BellowGenerator.h
   ${tarINC}/CFFlanges.h
-  ${tarINC}/CardanBellowGenerator.h
+  ${tarINC}/SmallAngleBellowsGenerator.h
   ${tarINC}/CornerPipeGenerator.h
   ${tarINC}/CrossGenerator.h
   ${tarINC}/DomeConnectorGenerator.h

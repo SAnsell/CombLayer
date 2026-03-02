@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   constructVarInc/CardanBellowGenerator.h
+ * File:   constructVarInc/SmallAngleBellowsGenerator.h
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef setVariable_CardanBellowGenerator_h
-#define setVariable_CardanBellowGenerator_h
+#ifndef setVariable_SmallAngleBellowsGenerator_h
+#define setVariable_SmallAngleBellowsGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class CardanBellowGenerator
+  \class SmallAngleBellowsGenerator
   \version 0.1
   \author U. Friman-Gayer
   \date February 2026
-  \brief CardanBellowGenerator for variables
+  \brief SmallAngleBellowsGenerator for variables
 */
 
-class CardanBellowGenerator
+class SmallAngleBellowsGenerator
 {
  private:
 
@@ -58,8 +58,8 @@ class CardanBellowGenerator
 
  public:
 
-  CardanBellowGenerator();
-  ~CardanBellowGenerator()=default;
+  SmallAngleBellowsGenerator();
+  ~SmallAngleBellowsGenerator()=default;
 
   void setAngle(const double a){angle = a;}
   template<typename CF> void setCF();
