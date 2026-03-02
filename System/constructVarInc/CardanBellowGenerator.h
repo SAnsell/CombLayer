@@ -41,6 +41,7 @@ class CardanBellowGenerator
 
   double angle;
   double bellowStep;
+  double bellowsMaterialThick;
   double bellowThick;
   double bellowsVolumeFraction;
   double flangeLength;
@@ -49,13 +50,11 @@ class CardanBellowGenerator
   double pipeInnerRadius;
   double pipeWallThick;
 
+  int nFolds;
   int nSectors;
 
   std::string bellowBaseMat;
   std::string pipeMat;
-
-  double bellowLength() const;
-  double bellowSheetVolumeOverPi(const int,const double) const;
 
  public:
 
@@ -64,12 +63,11 @@ class CardanBellowGenerator
 
   void setAngle(const double a){angle = a;}
   template<typename CF> void setCF();
+  void setNFolds(const int n){nFolds = n;}
   void setNSectors(const int n){nSectors = n;}
-  void setMat(const std::string mat){
-    bellowBaseMat = mat; bellowsVolumeFraction = 0.0;};
-  void setMat(const std::string mat, const double volumeFraction){
-    bellowBaseMat = mat; bellowsVolumeFraction = volumeFraction;};
-  void setMat(const std::string, const int, const double);
+  void setBellowThick(const double t){bellowThick = t;}
+  void setBellowMaterialThick(const double t){bellowsMaterialThick = t;}
+  void setBellowBaseMat(const std::string mat){bellowBaseMat = mat;}
 
   void generateBellows(
     FuncDataBase&,const std::string&) const;

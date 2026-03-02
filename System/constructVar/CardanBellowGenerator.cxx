@@ -51,41 +51,13 @@ namespace setVariable
 {
 
 CardanBellowGenerator::CardanBellowGenerator() :
-  angle(0.0),bellowStep(0.5),
+  angle(0.0),bellowStep(0.5),bellowsMaterialThick(0.05),
   bellowThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
   bellowsVolumeFraction(0.0),flangeLength(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),length(10.0),
-  pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),
+  pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),nFolds(10),
   nSectors(2),bellowBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade")
 {}
-
-double CardanBellowGenerator::bellowLength() const {
-  return (length-2.0*(flangeLength+bellowStep));
-}
-
-double CardanBellowGenerator::bellowSheetVolumeOverPi(
-  const int nFolds,const double bellowSheetThick) const {
-  return (
-    (pipeInnerRadius+bellowSheetThick)*(pipeInnerRadius+bellowSheetThick)
-    *(bellowLength()-2.0*nFolds*bellowSheetThick)
-    +(
-      (pipeInnerRadius+bellowThick)*(pipeInnerRadius+bellowThick)
-      -pipeInnerRadius*pipeInnerRadius
-    )*2.0*nFolds*bellowSheetThick
-  );
-}
-
-void CardanBellowGenerator::setMat(
-  const std::string baseMat, const int nFolds, const double bellowSheetThick){
-    bellowBaseMat = baseMat;
-    const double bellowsAvailableVolumeOverPi = (
-      (pipeInnerRadius+bellowThick)*(pipeInnerRadius+bellowThick)
-      -pipeInnerRadius*pipeInnerRadius
-    );
-    bellowsVolumeFraction = (
-      bellowSheetVolumeOverPi(nFolds,bellowSheetThick)
-      /bellowsAvailableVolumeOverPi);
-}
 
 template<typename CF> void
 CardanBellowGenerator::setCF(){
@@ -101,14 +73,15 @@ void CardanBellowGenerator::generateBellows(
   ELog::RegMethod RegA("BellowGenerator","generatorBellow");
 
   Control.addVariable(keyName+"Angle",angle);
+  Control.addVariable(keyName+"BellowsMaterialThick",bellowsMaterialThick);
   Control.addVariable(keyName+"BellowStep",bellowStep);
   Control.addVariable(keyName+"BellowThick",bellowThick);
-  Control.addVariable(keyName+"BellowsVolumeFraction",bellowsVolumeFraction);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"PipeInnerRadius",pipeInnerRadius);
   Control.addVariable(keyName+"PipeWallThick",pipeWallThick);
+  Control.addVariable(keyName+"NFolds",nFolds);
   Control.addVariable(keyName+"NSectors",nSectors);
   Control.addVariable(keyName+"BellowBaseMat",bellowBaseMat);
   Control.addVariable(keyName+"PipeMat",pipeMat);

@@ -43,7 +43,9 @@ class CardanBellows:
   public attachSystem::FrontBackCut
 {
 
+ private:
   double angle;
+  double bellowsMaterialThick;
   double bellowStep;
   double bellowThick;
   double bellowsVolumeFraction;
@@ -54,10 +56,12 @@ class CardanBellows:
   double pipeWallThick;
 
   int bellowBaseMat;
+  int nFolds;
   int nSectors;
   int pipeMat;
 
   std::vector<int> bellowMat;
+  std::vector<double> bellowsThick;
 
   Geometry::Vec3D Yp;
 
@@ -65,6 +69,13 @@ class CardanBellows:
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+
+  double bellowLength() const;
+  double bellowsMaterialVolume() const;
+  double bellowsThickness(const double volume, const double length) const;
+  void createSectors();
+  double sectorAngle(const int nSector,const bool centerAngle) const;
+  double sectorLength(const int nSector) const;
 
  public:
 

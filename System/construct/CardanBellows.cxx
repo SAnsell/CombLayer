@@ -92,7 +92,8 @@ CardanBellows::CardanBellows(const CardanBellows& A) :
   bellowBaseMat(A.bellowBaseMat),
   pipeMat(A.pipeMat),
 
-  bellowMat()
+  bellowMat(),
+  bellowsThick()
 {}
 
 CardanBellows&
@@ -124,34 +125,90 @@ CardanBellows::operator=(const CardanBellows& A)
 CardanBellows::~CardanBellows()
 {}
 
+double CardanBellows::bellowLength() const {
+  return (length-2.0*(flangeLength+bellowStep));
+}
+
+double CardanBellows::bellowsMaterialVolume() const {
+  return M_PI*(
+    (pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
+    *(bellowLength()-2.0*nFolds*bellowsMaterialThick)
+    +(
+      (pipeInnerRadius+bellowThick)*(pipeInnerRadius+bellowThick)
+      -pipeInnerRadius*pipeInnerRadius
+    )*2.0*nFolds*bellowsMaterialThick
+  );
+}
+
+double CardanBellows::bellowsThickness(
+  const double volume, const double length) const {
+  return sqrt(
+    (
+      volume*M_1_PI
+      +(pipeInnerRadius+bellowThick)*(pipeInnerRadius+bellowThick)
+      *(2.0*nFolds*bellowThick)
+      +pipeInnerRadius*pipeInnerRadius*length
+    )/(2.0*nFolds*bellowThick)
+  )-pipeInnerRadius;
+}
+
+void CardanBellows::createSectors(){
+  const double totalBellowsMaterialVolume = bellowsMaterialVolume();
+  const double sBellowsMaterialVolume = totalBellowsMaterialVolume/nSectors;
+  double sLength;
+  for(int nSector=0;nSector<nSectors;++nSector){
+    sLength = sectorLength(nSector);
+    bellowsThick.push_back(bellowsThickness(totalBellowsMaterialVolume,sLength));
+    bellowMat.push_back(
+      ModelSupport::EvalMatName(
+        ModelSupport::EvalMatString(bellowBaseMat)
+        +"%Void%"
+        +std::to_string(
+          sBellowsMaterialVolume/(
+            M_PI*(
+              (pipeInnerRadius+bellowsThick[nSector])
+              *(pipeInnerRadius+bellowsThick[nSector])
+              -pipeInnerRadius*pipeInnerRadius
+            )*sLength
+          )
+        )
+      )
+    );
+  }
+}
+
+double CardanBellows::sectorAngle(
+  const int nSector,const bool centerAngle=false) const {
+  if(centerAngle){
+    return nSector*2.0*M_PI/nSectors;
+  }
+  return (nSector-0.5)*2.0*M_PI/nSectors;
+}
+
+double CardanBellows::sectorLength(const int nSector) const {
+  return length+angle*pipeInnerRadius*cos(sectorAngle(nSector,true));
+}
+
 void
 CardanBellows::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CardanBellows","populate");
 
   angle=Control.EvalDefVar<double>(keyName+"Angle",0.0);
+  bellowsMaterialThick=Control.EvalVar<double>(keyName+"BellowsMaterialThick");
   bellowStep=Control.EvalVar<double>(keyName+"BellowStep");
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
-  bellowsVolumeFraction=Control.EvalVar<double>(keyName+"BellowsVolumeFraction");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   length=Control.EvalVar<double>(keyName+"Length");
   pipeInnerRadius=Control.EvalVar<double>(keyName+"PipeInnerRadius");
   pipeWallThick=Control.EvalVar<double>(keyName+"PipeWallThick");
+  nFolds=Control.EvalVar<int>(keyName+"NFolds");
   nSectors=Control.EvalVar<int>(keyName+"NSectors");
 
   bellowBaseMat=ModelSupport::EvalDefMat(
     Control,keyName+"BellowMat","SteelUnknownGrade");
   pipeMat=ModelSupport::EvalDefMat(Control,keyName+"PipeMat","SteelUnknownGrade");
-
-  for(int n = 0; n < nSectors; ++n){
-    bellowMat.push_back(
-      ModelSupport::EvalMatName(
-        ModelSupport::EvalMatString(bellowBaseMat)
-        +"%Void%"+std::to_string(bellowsVolumeFraction)
-      )
-    );
-  }
 
   return;
 }
@@ -188,16 +245,15 @@ CardanBellows::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+22,
     center+Yp*(length/2.0-flangeLength-bellowStep),Yp);
 
-  const double dPhi = 2.0*M_PI/nSectors;
-  double phi = -0.5*dPhi;
+  double phi;
   for(int n = 0; n < nSectors; ++n){
+    phi = sectorAngle(n);
     ModelSupport::buildPlane(
       SMap,buildIndex+10*n+3,Origin,X*sin(phi)+Z*cos(phi)
     );
     ModelSupport::buildPlane(
       SMap,buildIndex+10*n+4,Origin,Xp*sin(phi)+Z*cos(phi)
     );
-    phi+=dPhi;
   }
 
   ModelSupport::buildPlane(SMap,buildIndex+101,center,Yp2);
@@ -306,6 +362,7 @@ CardanBellows::createAll(Simulation& System,
   ELog::RegMethod RegA("CardanBellows","createAll(FC)");
 
   populate(System.getDataBase());
+  createSectors();
   createUnitVector(FC,FIndex);
   createSurfaces();
   createObjects(System);
