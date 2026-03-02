@@ -131,7 +131,10 @@ double CardanBellows::bellowLength() const {
 
 double CardanBellows::bellowsMaterialVolume() const {
   return M_PI*(
-    (pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
+    (
+      (pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
+      -pipeInnerRadius*pipeInnerRadius
+    )
     *(bellowLength()-2.0*nFolds*bellowsMaterialThick)
     +(
       (pipeInnerRadius+bellowThick)*(pipeInnerRadius+bellowThick)
@@ -141,37 +144,36 @@ double CardanBellows::bellowsMaterialVolume() const {
 }
 
 double CardanBellows::bellowsThickness(
-  const double volume, const double length) const {
+  const double volume, const double sLength) const {
   return sqrt(
     (
       volume*M_1_PI
-      +(pipeInnerRadius+bellowThick)*(pipeInnerRadius+bellowThick)
-      *(2.0*nFolds*bellowThick)
-      +pipeInnerRadius*pipeInnerRadius*length
-    )/(2.0*nFolds*bellowThick)
+      +(pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
+      *(2.0*nFolds*bellowsMaterialThick-sLength)
+      +pipeInnerRadius*pipeInnerRadius*sLength
+    )/(2.0*nFolds*bellowsMaterialThick)
   )-pipeInnerRadius;
 }
 
 void CardanBellows::createSectors(){
   const double totalBellowsMaterialVolume = bellowsMaterialVolume();
   const double sBellowsMaterialVolume = totalBellowsMaterialVolume/nSectors;
-  double sLength;
+  double sLength, sTotalVolume;
   for(int nSector=0;nSector<nSectors;++nSector){
     sLength = sectorLength(nSector);
     bellowsThick.push_back(bellowsThickness(totalBellowsMaterialVolume,sLength));
+    sTotalVolume = (
+      M_PI*(
+        (pipeInnerRadius+bellowsThick[nSector])
+        *(pipeInnerRadius+bellowsThick[nSector])
+        -pipeInnerRadius*pipeInnerRadius
+      )*sLength
+    );
     bellowMat.push_back(
       ModelSupport::EvalMatName(
         ModelSupport::EvalMatString(bellowBaseMat)
         +"%Void%"
-        +std::to_string(
-          sBellowsMaterialVolume/(
-            M_PI*(
-              (pipeInnerRadius+bellowsThick[nSector])
-              *(pipeInnerRadius+bellowsThick[nSector])
-              -pipeInnerRadius*pipeInnerRadius
-            )*sLength
-          )
-        )
+        +std::to_string(sBellowsMaterialVolume/sTotalVolume)
       )
     );
   }
@@ -186,7 +188,11 @@ double CardanBellows::sectorAngle(
 }
 
 double CardanBellows::sectorLength(const int nSector) const {
-  return length+angle*pipeInnerRadius*cos(sectorAngle(nSector,true));
+  return (length+angle*pipeInnerRadius*cos(sectorAngle(nSector,true)))/nSectors;
+}
+
+int CardanBellows::sectorPlaneID(const int nSector, const bool back=false) const {
+  return back ? 10*(nSector%nSectors)+4 : 10*(nSector%nSectors)+3;
 }
 
 void
@@ -249,10 +255,10 @@ CardanBellows::createSurfaces()
   for(int n = 0; n < nSectors; ++n){
     phi = sectorAngle(n);
     ModelSupport::buildPlane(
-      SMap,buildIndex+10*n+3,Origin,X*sin(phi)+Z*cos(phi)
+      SMap,buildIndex+sectorPlaneID(n),Origin,X*sin(phi)+Z*cos(phi)
     );
     ModelSupport::buildPlane(
-      SMap,buildIndex+10*n+4,Origin,Xp*sin(phi)+Z*cos(phi)
+      SMap,buildIndex+sectorPlaneID(n,true),Origin,Xp*sin(phi)+Z*cos(phi)
     );
   }
 
@@ -294,31 +300,23 @@ CardanBellows::createObjects(Simulation& System)
   makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -27 37"));
 
-  for(int n = 0; n < nSectors-1; ++n){
+  for(int n = 0; n < nSectors; ++n){
     makeCell("FrontBellow",System,cellIndex++,bellowMat[n],0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 -17 37")
-      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*n+3)).complement()
-      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*(n+1)+3))
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n))).complement()
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1)))
     );
   }
-  makeCell("FrontBellow",System,cellIndex++,bellowMat[nSectors-1],0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 -17 37 3")
-    *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*(nSectors-1)+3)).complement()
-  );
 
   makeCell("BackPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -127 137"));
-  for(int n = 0; n < nSectors-1; ++n){
+  for(int n = 0; n < nSectors; ++n){
     makeCell("BackBellow",System,cellIndex++,bellowMat[n],0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 -117 137")
-      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*n+4)).complement()
-      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*(n+1)+4))
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n,true))).complement()
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,true)))
     );
   }
-  makeCell("BackBellow",System,cellIndex++,bellowMat[nSectors-1],0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 -117 137 4")
-    *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(10*(nSectors-1)+4)).complement()
-  );
 
   makeCell("FrontVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 -37"));

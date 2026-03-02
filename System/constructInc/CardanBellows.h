@@ -75,6 +75,7 @@ class CardanBellows:
   double bellowsThickness(const double volume, const double length) const;
   void createSectors();
   double sectorAngle(const int nSector,const bool centerAngle) const;
+  int sectorPlaneID(const int nSector, const bool back) const;
   double sectorLength(const int nSector) const;
 
  public:
