@@ -328,6 +328,16 @@ CardanBellows::createObjects(Simulation& System)
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100))).complement()
     );
+    makeCell("FrontBellowVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100)))
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
+    );
 
     makeCell("BackBellow",System,cellIndex++,bellowMat[n],0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
@@ -336,6 +346,16 @@ CardanBellows::createObjects(Simulation& System)
       *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100))).complement()
+    );
+    makeCell("BackBellowVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
+      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100)))
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(cylOuterSurf.second)).complement()
     );
   }
 
