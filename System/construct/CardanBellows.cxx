@@ -167,7 +167,7 @@ void CardanBellows::createSectors(){
         (pipeInnerRadius+bellowsThick[nSector])
         *(pipeInnerRadius+bellowsThick[nSector])
         -pipeInnerRadius*pipeInnerRadius
-      )*sLength
+      )*sLength/nSectors
     );
     bellowMat.push_back(
       ModelSupport::EvalMatName(
@@ -188,7 +188,7 @@ double CardanBellows::sectorAngle(
 }
 
 double CardanBellows::sectorLength(const int nSector) const {
-  return (length+angle*pipeInnerRadius*cos(sectorAngle(nSector,true)))/nSectors;
+  return (bellowLength()+angle*pipeInnerRadius*cos(sectorAngle(nSector,true)));
 }
 
 int CardanBellows::sectorPlaneID(const int nSector, const bool back=false) const {
