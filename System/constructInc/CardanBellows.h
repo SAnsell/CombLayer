@@ -45,6 +45,7 @@ class CardanBellows:
 
  private:
   double angle;
+  double angleDeg;
   double bellowsMaterialThick;
   double bellowStep;
   double bellowThick;

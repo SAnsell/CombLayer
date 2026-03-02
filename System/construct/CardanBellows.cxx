@@ -79,7 +79,7 @@ CardanBellows::CardanBellows(const CardanBellows& A) :
   attachSystem::CellMap(A),
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  angle(A.angle),
+  angle(A.angle),angleDeg(A.angleDeg),
   bellowStep(A.bellowStep),
   bellowThick(A.bellowThick),
   bellowsVolumeFraction(A.bellowsVolumeFraction),
@@ -107,6 +107,7 @@ CardanBellows::operator=(const CardanBellows& A)
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       angle=A.angle;
+      angleDeg=A.angleDeg;
       bellowStep=A.bellowStep;
       bellowThick=A.bellowThick;
       bellowsVolumeFraction=A.bellowsVolumeFraction;
@@ -218,7 +219,8 @@ CardanBellows::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CardanBellows","populate");
 
-  angle=Control.EvalDefVar<double>(keyName+"Angle",0.0);
+  angleDeg=Control.EvalDefVar<double>(keyName+"Angle",0.0);
+  angle=M_PI/180.0*angleDeg;
   bellowsMaterialThick=Control.EvalVar<double>(keyName+"BellowsMaterialThick");
   bellowStep=Control.EvalVar<double>(keyName+"BellowStep");
   bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
