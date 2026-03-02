@@ -345,9 +345,9 @@ SmallAngleBellows::createObjects(Simulation& System)
   const HeadRule& backHR=getRule("back");
 
   makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"1 -11 -7 27"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 27")*frontHR);
   makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"12 -2 -8 28"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"12 -8 28")*backHR);
 
   makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 27"));
@@ -424,12 +424,12 @@ SmallAngleBellows::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -18 28"));
 
   makeCell("FrontVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"1 -101 -27"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-101 -27")*frontHR);
   makeCell("FrontOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -7 17"));
 
   makeCell("BackVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"101 -2 -28"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"101 -28")*backHR);
   makeCell("BackOuterVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -8 18"));
 
