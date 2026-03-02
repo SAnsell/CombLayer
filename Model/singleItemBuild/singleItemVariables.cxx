@@ -652,7 +652,7 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::SmallAngleBellowsGenerator SmallAngleBellowsGenerator;
   std::string SmallAngleBellowsName = "SmallAngleBellows1";
   SmallAngleBellowsGenerator.setAngle(3.0);
-  SmallAngleBellowsGenerator.setNSectors(1);
+  SmallAngleBellowsGenerator.setNSectors(8);
   SmallAngleBellowsGenerator.generateBellows(Control,SmallAngleBellowsName);
   SmallAngleBellowsName = "SmallAngleBellows2";
   SmallAngleBellowsGenerator.generateBellows(Control,SmallAngleBellowsName);
