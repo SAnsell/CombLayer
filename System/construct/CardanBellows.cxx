@@ -158,36 +158,65 @@ double CardanBellows::bellowsThickness(
 
 void CardanBellows::createSectors(){
   const double totalBellowsMaterialVolume = bellowsMaterialVolume();
-  const double sBellowsMaterialVolume = totalBellowsMaterialVolume/nSectors;
-  double sLength, sTotalVolume;
-  for(int nSector=0;nSector<nSectors;++nSector){
-    sLength = sectorLength(nSector);
-    bellowsThick.push_back(bellowsThickness(totalBellowsMaterialVolume,sLength));
-    sTotalVolume = (
+  if(nSectors == 1){
+    bellowsThick.push_back(bellowThick);
+    double totalVolume = (
       M_PI*(
-        (pipeInnerRadius+bellowsThick[nSector])
-        *(pipeInnerRadius+bellowsThick[nSector])
+        (pipeInnerRadius+bellowThick)
+        *(pipeInnerRadius+bellowThick)
         -pipeInnerRadius*pipeInnerRadius
-      )*sLength/nSectors
+      )*bellowLength()
     );
     bellowMat.push_back(
       ModelSupport::EvalMatName(
         ModelSupport::EvalMatString(bellowBaseMat)
         +"%Void%"
-        +std::to_string(sBellowsMaterialVolume/sTotalVolume)
+        +std::to_string(
+          totalBellowsMaterialVolume/totalVolume
+        )
       )
     );
+  } else {
+    const double sBellowsMaterialVolume = totalBellowsMaterialVolume/nSectors;
+    double sLength, sTotalVolume;
+    for(int nSector=0;nSector<nSectors;++nSector){
+      sLength = sectorLength(nSector);
+      bellowsThick.push_back(bellowsThickness(totalBellowsMaterialVolume,sLength));
+      sTotalVolume = (
+        M_PI*(
+          (pipeInnerRadius+bellowsThick[nSector])
+          *(pipeInnerRadius+bellowsThick[nSector])
+          -pipeInnerRadius*pipeInnerRadius
+        )*sLength/nSectors
+      );
+      bellowMat.push_back(
+        ModelSupport::EvalMatName(
+          ModelSupport::EvalMatString(bellowBaseMat)
+          +"%Void%"
+          +std::to_string(sBellowsMaterialVolume/sTotalVolume)
+        )
+      );
+    }
   }
 }
 
 std::pair<int,int> CardanBellows::cylindricOuterSurf() const {
+  if(nSectors == 1){
+    if(pipeInnerRadius+bellowsThick[0] > flangeRadius){
+      return {
+        sectorPlaneID(0,7,100),
+        sectorPlaneID(0,8,100)
+      };
+    }
+    return {7,8};
+  }
   int nSectorWithMaxRadius = 0;
   for(int n=1; n<nSectors; ++n){
     if(bellowsThick[n]>bellowsThick[nSectorWithMaxRadius]){
       nSectorWithMaxRadius = n;
     }
   }
-  if(bellowsThick[nSectorWithMaxRadius] > flangeRadius){
+  if(pipeInnerRadius+bellowsThick[nSectorWithMaxRadius] > flangeRadius){
     return {
       sectorPlaneID(nSectorWithMaxRadius,7,100),
       sectorPlaneID(nSectorWithMaxRadius,8,100)
@@ -274,17 +303,20 @@ CardanBellows::createSurfaces()
   double phi;
   for(int n = 0; n < nSectors; ++n){
     phi = sectorAngle(n);
-    ModelSupport::buildPlane(
-      SMap,buildIndex+sectorPlaneID(n,3),Origin,X*sin(phi)+Z*cos(phi)
-    );
-    ModelSupport::buildPlane(
-      SMap,buildIndex+sectorPlaneID(n,4),Origin,Xp*sin(phi)+Z*cos(phi)
-    );
+    if(nSectors > 1){
+      ModelSupport::buildPlane(
+        SMap,buildIndex+sectorPlaneID(n,3),Origin,X*sin(phi)+Z*cos(phi)
+      );
+      ModelSupport::buildPlane(
+        SMap,buildIndex+sectorPlaneID(n,4),Origin,Xp*sin(phi)+Z*cos(phi)
+      );
+    }
     ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,7,100),center,
               Y,pipeInnerRadius+bellowsThick[n]);
     ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,8,100),center,
               Yp,pipeInnerRadius+bellowsThick[n]);
   }
+
 
   ModelSupport::buildPlane(SMap,buildIndex+101,center,Yp2);
 
@@ -321,44 +353,71 @@ CardanBellows::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 27"));
 
   std::pair<int,int> cylOuterSurf = cylindricOuterSurf();
-  for(int n = 0; n < nSectors; ++n){
-    makeCell("FrontBellow",System,cellIndex++,bellowMat[n],0.0,
+  if(nSectors == 1){
+    makeCell("FrontBellow",System,cellIndex++,bellowMat[0],0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
       *ModelSupport::getHeadRule(
-        SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
-      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
-      *ModelSupport::getHeadRule(
-        SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100))).complement()
+        SMap,buildIndex,std::to_string(sectorPlaneID(0,7,100))).complement()
     );
     makeCell("FrontBellowVoid",System,cellIndex++,0,0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
       *ModelSupport::getHeadRule(
-        SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
-      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
-      *ModelSupport::getHeadRule(
-        SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100)))
+        SMap,buildIndex,std::to_string(sectorPlaneID(0,7,100)))
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
     );
-
-    makeCell("BackBellow",System,cellIndex++,bellowMat[n],0.0,
+    makeCell("BackBellow",System,cellIndex++,bellowMat[0],0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
       *ModelSupport::getHeadRule(
-        SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
-      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
-      *ModelSupport::getHeadRule(
-        SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100))).complement()
+        SMap,buildIndex,std::to_string(sectorPlaneID(0,8,100))).complement()
     );
     makeCell("BackBellowVoid",System,cellIndex++,0,0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
       *ModelSupport::getHeadRule(
-        SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
-      *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
-      *ModelSupport::getHeadRule(
-        SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100)))
+        SMap,buildIndex,std::to_string(sectorPlaneID(0,8,100)))
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(cylOuterSurf.second)).complement()
     );
+  } else {
+    for(int n = 0; n < nSectors; ++n){
+      makeCell("FrontBellow",System,cellIndex++,bellowMat[n],0.0,
+        ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
+        *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100))).complement()
+      );
+      makeCell("FrontBellowVoid",System,cellIndex++,0,0.0,
+        ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
+        *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
+      );
+
+      makeCell("BackBellow",System,cellIndex++,bellowMat[n],0.0,
+        ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
+        *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100))).complement()
+      );
+      makeCell("BackBellowVoid",System,cellIndex++,0,0.0,
+        ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
+        *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(cylOuterSurf.second)).complement()
+      );
+    }
   }
 
   makeCell("BackPipe",System,cellIndex++,pipeMat,0.0,
