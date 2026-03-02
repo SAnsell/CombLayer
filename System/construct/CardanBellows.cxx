@@ -179,6 +179,13 @@ void CardanBellows::createSectors(){
   }
 }
 
+std::pair<int,int> CardanBellows::cylindricOuterSurf() const {
+  if(bellowsThick[0] > flangeRadius){
+    return {sectorPlaneID(0,7,100),sectorPlaneID(0,8,100)};
+  }
+  return {7,8};
+}
+
 double CardanBellows::sectorAngle(
   const int nSector,const bool centerAngle=false) const {
   if(centerAngle){
@@ -302,6 +309,7 @@ CardanBellows::createObjects(Simulation& System)
   makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 27"));
 
+  std::pair<int,int> cylOuterSurf = cylindricOuterSurf();
   for(int n = 0; n < nSectors; ++n){
     makeCell("FrontBellow",System,cellIndex++,bellowMat[n],0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
@@ -336,7 +344,14 @@ CardanBellows::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -8 18"));
 
   addOuterSurf(
-    ModelSupport::getHeadRule(SMap,buildIndex,"(1 -101 -7) : (101 -2 -8)")
+    ModelSupport::getHeadRule(SMap,buildIndex,"-101")
+    *ModelSupport::getHeadRule(
+      SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
+    *frontHR
+    +ModelSupport::getHeadRule(SMap,buildIndex,"101")
+    *ModelSupport::getHeadRule(
+      SMap,buildIndex,std::to_string(cylOuterSurf.second)).complement()
+    *backHR
   );
 }
 

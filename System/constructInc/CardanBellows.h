@@ -74,9 +74,10 @@ class CardanBellows:
   double bellowsMaterialVolume() const;
   double bellowsThickness(const double volume, const double length) const;
   void createSectors();
+  std::pair<int,int> cylindricOuterSurf() const;
   double sectorAngle(const int nSector,const bool centerAngle) const;
-  int sectorPlaneID(const int nSector, const int base, const int offset) const;
   double sectorLength(const int nSector) const;
+  int sectorPlaneID(const int nSector, const int base, const int offset) const;
 
  public:
 
