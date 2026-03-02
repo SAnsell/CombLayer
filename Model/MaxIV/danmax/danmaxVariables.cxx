@@ -1146,15 +1146,31 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
     -HDCMPortALength-monoVesselRadius-monoVesselWallThick);
 
   const std::string portName=monoKey+"HDCMVessel";
-  Control.addVariable(monoKey+"HDCMVesselNPorts",2);
+  Control.addVariable(monoKey+"HDCMVesselNPorts",5); // the ports below are sorted by their rad. safety importance
+
+  PItemGen.setCF<setVariable::CF100>(19.5); // [24]
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  PItemGen.generatePort(Control,portName+"Port0",Geometry::Vec3D(0,0.0,-0.2-3.5),Geometry::Vec3D(0,0,1));
+
+  PItemGen.setCF<setVariable::CF63>(34.1); // approx
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  const double port2angle = 45 * M_PI/180.0; // approx - not clear from [24]
+  PItemGen.generatePort(Control,portName+"Port1",Geometry::Vec3D(0,0.0,-0.2),Geometry::Vec3D(sin(port2angle),cos(port2angle),0.0)); // [24]
+
+  PItemGen.setCF<setVariable::CF63>(34.1); // approx
+  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  const double port3angle = 30 * M_PI/180.0; // approx - not clear from [24]
+  PItemGen.generatePort(Control,portName+"Port2",Geometry::Vec3D(0,0.0,-0.2),Geometry::Vec3D(-sin(port3angle),-cos(port3angle),0.0)); // [24]
 
   PItemGen.setCF<setVariable::CF35_TDC>(34.1); // [24]
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
-  PItemGen.generatePort(Control,portName+"Port0",Geometry::Vec3D(0,0.0,-10.4),Geometry::Vec3D(1,0,0)); // [24]
+  PItemGen.generatePort(Control,portName+"Port3",Geometry::Vec3D(0,0.0,-10.4),Geometry::Vec3D(1,0,0)); // [24]
 
-  PItemGen.setCF<setVariable::CF35_TDC>(34.1); // dummy, the port turns upwards, but this is not modelled
+  PItemGen.setCF<setVariable::CF35_TDC>(34.1); // dummy, the port turns upwards, but not modelling it to save time
   PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
-  PItemGen.generatePort(Control,portName+"Port1",Geometry::Vec3D(0,0.0,-10.0),Geometry::Vec3D(-1,0,0));
+  PItemGen.generatePort(Control,portName+"Port4",Geometry::Vec3D(0,0.0,-10.0),Geometry::Vec3D(-1,0,0));
+
+
 
 
   // crystals gap 7mm

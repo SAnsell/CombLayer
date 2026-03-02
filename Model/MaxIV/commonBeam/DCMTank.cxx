@@ -241,7 +241,6 @@ DCMTank::createSurfaces()
   const Geometry::Vec3D topCent=Origin-Z*(topRadius-(voidHeight+topLift));
   ModelSupport::buildSphere(SMap,buildIndex+108,topCent,topRadius);
   ModelSupport::buildSphere(SMap,buildIndex+118,topCent,topRadius+roofThick);
-  // base plate
 
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin-X*(baseWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+X*(baseWidth/2.0),X);
@@ -399,11 +398,12 @@ DCMTank::createPorts(Simulation& System)
 {
   ELog::RegMethod RegA("DCMTank","createPorts");
 
-  MonteCarlo::Object* wallObject=
-    CellMap::getCellObject(System,"Wall");
+  MonteCarlo::Object* wallObject=CellMap::getCellObject(System,"Wall");
+  MonteCarlo::Object* roofObject=CellMap::getCellObject(System,"TopPlate");
+  const std::set<MonteCarlo::Object*> wall {wallObject, roofObject};
 
-  const HeadRule innerWall=SurfMap::getSurfRule("innerCylinder");
-  const HeadRule outerWall=SurfMap::getSurfRule("outerCylinder");
+  const HeadRule innerWall=ModelSupport::getHeadRule(SMap,buildIndex," 7 : 108 ");
+  const HeadRule outerWall=ModelSupport::getHeadRule(SMap,buildIndex," 17 : 118  ");
 
   for(size_t i=0;i<Ports.size();i++)
     {
@@ -411,8 +411,9 @@ DCMTank::createPorts(Simulation& System)
 	Ports[i].addOuterCell(CN);
       Ports[i].addInsertCell(CellMap::getCell("OuterRightVoid"));
       Ports[i].addInsertCell(CellMap::getCell("OuterLeftVoid"));
+      Ports[i].addInsertCell(CellMap::getCell("OuterTopVoid"));
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i].constructTrack(System,wallObject,innerWall,outerWall);
+      Ports[i].constructTrack(System,wall,innerWall,outerWall);
       Ports[i].insertObjects(System);
     }
   return;
