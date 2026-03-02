@@ -102,7 +102,7 @@ portItem::portItem(const std::string& Key) :
   */
 {}
 
-portItem::portItem(const portItem& A) : 
+portItem::portItem(const portItem& A) :
   attachSystem::FixedComp(A),
   attachSystem::ContainedComp(A),
   attachSystem::ExternalCut(A),
@@ -160,7 +160,7 @@ portItem::operator=(const portItem& A)
   return *this;
 }
 
-  
+
 portItem::~portItem()
   /*!
     Destructor
@@ -255,7 +255,7 @@ portItem::populate(const FuncDataBase& Control)
   windowThick=Control.EvalDefTail<double>(keyName,portBase,"WindowThick",0.0);
 
   windowRadius=Control.EvalDefTail<double>(keyName,portBase,"WindowRadius",0.0);
-  
+
   voidMat=ModelSupport::EvalDefMat
     (Control,keyName+"VoidMat",portBase+"VoidMat",0);
 
@@ -263,7 +263,7 @@ portItem::populate(const FuncDataBase& Control)
   int oFlag(static_cast<int>(outerFlag));
   oFlag=Control.EvalDefTail<int>(keyName,portBase,"OuterVoid",oFlag);
   outerFlag=static_cast<bool>(oFlag);
-	
+
   outerVoidMat=ModelSupport::EvalDefMat
     (Control,keyName+"OuterVoidMat",portBase+"OuterVoidMat",0);
 
@@ -369,9 +369,9 @@ portItem::createSurfaces()
 			 windowRadius>Geometry::zeroTol &&
 			 windowRadius+Geometry::zeroTol < flangeRadius);
   if (!windowFlag) windowThick=-1.0;
-  // 
+  //
   // This builds a window cap if required:
-  // 
+  //
   if (capFlag)
     {
       Geometry::Vec3D capPt(Origin+Y*(length+capThick));
@@ -411,7 +411,7 @@ portItem::createLinks()
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 
   FixedComp::nameSideIndex(1,"OuterPlate");
-  
+
   if (capThick>Geometry::zeroTol)
     {
       FixedComp::setConnect(1,Origin+Y*(length+capThick),Y);
@@ -444,11 +444,11 @@ portItem::createLinks()
   FixedComp::nameSideIndex(6,"FlangePlate");
   const Geometry::Vec3D flangePoint=
     Origin+Y*(length-flangeLength);
-  
+
   FixedComp::setConnect(6,flangePoint,Y);
   FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+102));
 
-  
+
   FixedComp::nameSideIndex(7,"OuterRadius");
   if (outerFlag)
     {
@@ -472,7 +472,7 @@ portItem::constructObject(Simulation& System,
     Construct a flange from the centre point
     \param System :: Simulation to use
     \param inner Surface of main cell to cut (into the void typically)
-    \param wall Surface of main cell to cut 
+    \param wall Surface of main cell to cut
   */
 {
   ELog::RegMethod RegA("portItem","constructObject");
@@ -481,7 +481,7 @@ portItem::constructObject(Simulation& System,
   const bool windowFlag(windowThick>Geometry::zeroTol);
   const HeadRule portHR=getRule("portEnd");
   const HeadRule portComp=getComplementRule("portEnd");
-  
+
   // construct inner volume:
   HeadRule HR;
 
@@ -635,7 +635,27 @@ portItem::constructTrack(Simulation& System,
     \param outerSurf :: HeadRule to outer surf
   */
 {
-  ELog::RegMethod RegA("portItem","constructTrack(HR,HR)");
+  ELog::RegMethod RegA("portItem","constructTrack(obj,HR,HR)");
+
+  const std::set<MonteCarlo::Object*> insertSet {insertObj};
+
+  return constructTrack(System,insertSet,innerSurf,outerSurf);
+}
+
+void
+portItem::constructTrack(Simulation& System,
+			 const std::set<MonteCarlo::Object*>& insertSet,
+			 const HeadRule& innerSurf,
+			 const HeadRule& outerSurf)
+  /*!
+    Construct a track system
+    \param System :: Simulation of model
+    \param insertSet :: Set of objects to insert port cut into
+    \param innerSurf :: HeadRule to inner surf
+    \param outerSurf :: HeadRule to outer surf
+  */
+{
+  ELog::RegMethod RegA("portItem","constructTrack(set,HR,HR)");
 
   if (!statusFlag)
     {
@@ -645,12 +665,14 @@ portItem::constructTrack(Simulation& System,
   createSurfaces();
 
   constructObject(System,innerSurf,outerSurf);
-  
-  addPortCut(insertObj);
-  
+
+  for (const auto insertObj : insertSet)
+    addPortCut(insertObj);
+
   createLinks();
   return;
 }
+
 
 void
 portItem::constructAxis(Simulation& System,
@@ -664,7 +686,7 @@ portItem::constructAxis(Simulation& System,
    */
 {
   ELog::RegMethod RegA("portItem","constructAxis");
-  
+
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   setCentLine(FC,centreOffset,axisOffset);
@@ -686,7 +708,7 @@ portItem::createAll(Simulation& System,
   ELog::RegMethod RegA("portItem","createAll");
 
   constructAxis(System,FC,sideIndex);
-  
+
   return;
 }
 

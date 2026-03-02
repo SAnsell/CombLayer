@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/portItem.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_portItem_h
@@ -30,7 +30,7 @@ namespace ModelSupport
 
 namespace constructSystem
 {
-  
+
   /*!
     \class portItem
     \brief This is a half pipe added to a component
@@ -57,7 +57,7 @@ class portItem :
 
   Geometry::Vec3D centreOffset;  ///< Centre axis
   Geometry::Vec3D axisOffset;    ///< axis Offset
-  
+
   double length;             ///< Length of port (to flange end)
   double radius;             ///< radius of pipe
   double wall;               ///< wall thick
@@ -70,21 +70,21 @@ class portItem :
   int voidMat;               ///< Void material
   int wallMat;               ///< Wall material
   int capMat;                ///< plate Material
-  int windowMat;             ///< window Material 
+  int windowMat;             ///< window Material
   int outerVoidMat;          ///< outer void Material [window outer/surround]
 
   std::set<int> outerCell;   ///< Extra cell to add outer to
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
- 
+
   virtual void createSurfaces();
   void createLinks();
 
   virtual void constructObject(Simulation&,
 			       const HeadRule&,
 			       const HeadRule&);
-  
-  
+
+
  public:
 
   portItem(const std::string&);
@@ -95,11 +95,11 @@ class portItem :
 
   // make public as accessor function:
   virtual void populate(const FuncDataBase&);
-  
+
   double getLength() const { return length; }
   double getCapLength() const
     { return std::max(capThick,0.0); }
-  
+
   void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void setCentLine(const attachSystem::FixedComp&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
@@ -112,10 +112,12 @@ class portItem :
   void setCoverPlate(const double,const int= -1);
   /// surround the object
   void setWrapVolume() { outerFlag=1; }
-  
+
   void constructTrack(Simulation&,MonteCarlo::Object*,
 		      const HeadRule&,const HeadRule&);
-  
+  void constructTrack(Simulation&,const std::set<MonteCarlo::Object*>&,
+		      const HeadRule&,const HeadRule&);
+
   void intersectPair(Simulation&,portItem&) const;
   void intersectVoidPair(Simulation&,const portItem&) const;
 
@@ -126,16 +128,15 @@ class portItem :
 
   void addPortCut(MonteCarlo::Object*) const;
   void addFlangeCut(MonteCarlo::Object*) const;
-  
+
   using FixedComp::createAll;
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int) override;
-				       
+
 };
-  
+
 
 }
 
 #endif
- 
