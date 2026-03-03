@@ -53,7 +53,6 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
-#include "DoublePortItemGenerator.h"
 #include "VacBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
@@ -71,7 +70,6 @@
 #include "XRayHutchBaseGenerator.h"
 #include "OpticsHutchGenerator.h"
 #include "ExptHutGenerator.h"
-#include "MovableSafetyMaskGenerator.h"
 #include "CrossGenerator.h"
 #include "BeamMountGenerator.h"
 #include "BremBlockGenerator.h"
@@ -1224,11 +1222,11 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
       MLMTotalLength-2.0*MLMWallThick-2.0*MLMPortLength
     );
 
-  Control.addVariable(monoVesselKey+"NPorts",0);
-  PItemGen.setCF<setVariable::CF63>(5.0);
+  Control.addVariable(monoVesselKey+"NPorts",1);
+  PItemGen.setCF<setVariable::CF63>(35.0);
   PItemGen.setPlate(4.0,"LeadGlass");
   PItemGen.generatePort(Control,monoVesselKey+"Port0",
-			Geometry::Vec3D(0,5.0,-10.0),
+			Geometry::Vec3D(0,0.0,0.0),
 			Geometry::Vec3D(1,0,0));
   Control.addVariable(monoVesselKey+"YStep",
     danmaxVar::absY::MLM-MLMFrontToTopViewPort);

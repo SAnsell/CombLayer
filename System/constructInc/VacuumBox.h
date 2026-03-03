@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/VacuumBox.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell & Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_VacuumBox_h
@@ -26,13 +26,14 @@ class Simulation;
 
 namespace constructSystem
 {
-  
+  class portSet;
+
 /*!
   \class VacuumBox
-  \version 1.0
-  \author S. Ansell
-  \date July 2015
-  \brief VacuumBox unit  
+  \version 1.1
+  \author S. Ansell & K. Batkov
+  \date March 2026
+  \brief VacuumBox unit
 */
 
 class VacuumBox :
@@ -43,7 +44,7 @@ class VacuumBox :
 {
  private:
 
-  const bool centreOrigin;      ///< Construct on the first port 
+  const bool centreOrigin;      ///< Construct on the first port
 
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
@@ -53,7 +54,7 @@ class VacuumBox :
   double feHeight;            ///< fe height [top only]
   double feDepth;             ///< fe depth [low only]
   double feWidth;             ///< fe width [total]
-  double feFront;             ///< fe front 
+  double feFront;             ///< fe front
   double feBack;              ///< fe back
 
   double portAXStep;          ///< XStep of port
@@ -74,15 +75,19 @@ class VacuumBox :
   double flangeALength;        ///< Joining Flange length
   double flangeBRadius;        ///< Joining Flange radius
   double flangeBLength;        ///< Joining Flange length
-  
+
+  constructSystem::portSet PSet; ///< Port set
+
   int voidMat;                ///< void material
   int feMat;                  ///< Fe material layer
-  
+
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,const long int) override;
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+
+  void createPorts(Simulation&);
 
  public:
 
@@ -90,6 +95,11 @@ class VacuumBox :
   VacuumBox(const VacuumBox&);
   VacuumBox& operator=(const VacuumBox&);
   ~VacuumBox() override;
+
+  const portItem& getPort(const size_t index) const {return PSet.getPort(index);};
+  void insertInCell(MonteCarlo::Object&) const override;
+  void insertInCell(Simulation&,const int) const override;
+
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,
@@ -100,4 +110,3 @@ class VacuumBox :
 }
 
 #endif
- 

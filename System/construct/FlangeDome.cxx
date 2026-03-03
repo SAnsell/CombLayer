@@ -60,7 +60,6 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
-#include "portItem.h"
 #include "portSet.h"
 
 #include "FlangeDome.h"
@@ -129,14 +128,14 @@ FlangeDome::createSurfaces()
   const double& y=curveStep;
   const double& L=curveRadius;
   const double Radius= (L*L+y*y)/(2.0*y);
-  
-  const Geometry::Vec3D rCentre=Origin-Y*(Radius-y); 
-  
+
+  const Geometry::Vec3D rCentre=Origin-Y*(Radius-y);
+
   ModelSupport::buildSphere(SMap,buildIndex+8,rCentre,Radius);
   ModelSupport::buildSphere(SMap,buildIndex+18,rCentre+Y*plateThick,Radius);
   ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,curveRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeRadius);
-  
+
   return;
 }
 
@@ -152,7 +151,7 @@ FlangeDome::createObjects(Simulation& System)
   HeadRule HR;
 
   const HeadRule frontHR=getRule("plate");
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -8 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*frontHR);
 
@@ -191,8 +190,8 @@ FlangeDome::createPorts(Simulation& System)
   ELog::RegMethod RegA("FlangeDome","createPorts");
 
   const HeadRule frontHR=getRule("plate");
-  
-  MonteCarlo::Object* insertObj= 
+
+  MonteCarlo::Object* insertObj=
     this->getCellObject(System,"Dome");
   const HeadRule innerHR=HeadRule(SMap,buildIndex,8)*frontHR;
   const HeadRule outerHR=HeadRule(SMap,buildIndex,18)*frontHR;
@@ -207,7 +206,7 @@ FlangeDome::createPorts(Simulation& System)
 void
 FlangeDome::insertInCell(MonteCarlo::Object& outerObj) const
   /*!
-    Insert both the flange adn the ports in a cell 
+    Insert both the flange and the ports in a cell
     \param outerObj :: Cell to insert
    */
 {
@@ -215,7 +214,7 @@ FlangeDome::insertInCell(MonteCarlo::Object& outerObj) const
 
   ContainedComp::insertInCell(outerObj);
   PSet.insertAllInCell(outerObj);
-  
+
   return;
 }
 
@@ -223,20 +222,20 @@ void
 FlangeDome::insertInCell(Simulation& System,
 			 const int CN) const
   /*!
-    Insert both the flange adn the ports in a cell 
+    Insert both the flange and the ports in a cell
     \param System :: Simulation
     \param CN :: Cell to insert
    */
 {
   ELog::RegMethod RegA("FlangeDome","insertInCell");
-  
-  
+
+
   MonteCarlo::Object* outerObj=System.findObjectThrow(CN,"CN");
   outerObj->addIntersection(outerSurf.complement());
 
   ContainedComp::insertInCell(*outerObj);
   PSet.insertAllInCell(System,CN);
-  
+
   return;
 }
 
@@ -272,9 +271,9 @@ FlangeDome::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   createPorts(System);
-  insertObjects(System);  
+  insertObjects(System);
 
-  
+
   return;
 }
 

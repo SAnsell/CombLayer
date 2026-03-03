@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   construct/VacuumBox.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell & Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -52,7 +52,7 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "geomSupport.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedRotate.h"
 #include "ContainedComp.h"
@@ -60,6 +60,9 @@
 #include "CellMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
+#include "portSet.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "VacuumBox.h"
 
@@ -67,11 +70,12 @@ namespace constructSystem
 {
 
 VacuumBox::VacuumBox(const std::string& Key,
-		       const bool flag) : 
+		       const bool flag) :
   attachSystem::FixedRotate(Key,10),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
-  centreOrigin(flag)
+  centreOrigin(flag),
+  PSet(*this)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -79,7 +83,7 @@ VacuumBox::VacuumBox(const std::string& Key,
   */
 {}
 
-VacuumBox::VacuumBox(const VacuumBox& A) : 
+VacuumBox::VacuumBox(const VacuumBox& A) :
   attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
   centreOrigin(A.centreOrigin),voidHeight(A.voidHeight),
@@ -94,7 +98,7 @@ VacuumBox::VacuumBox(const VacuumBox& A) :
   portBTubeLength(A.portBTubeLength),portBTubeRadius(A.portBTubeRadius),
   flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
   flangeBRadius(A.flangeBRadius),flangeBLength(A.flangeBLength),
-  voidMat(A.voidMat),feMat(A.feMat)
+  PSet(A.PSet),voidMat(A.voidMat),feMat(A.feMat)
   /*!
     Copy constructor
     \param A :: VacuumBox to copy
@@ -146,8 +150,8 @@ VacuumBox::operator=(const VacuumBox& A)
   return *this;
 }
 
-  
-VacuumBox::~VacuumBox() 
+
+VacuumBox::~VacuumBox()
   /*!
     Destructor
   */
@@ -161,7 +165,7 @@ VacuumBox::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("VacuumBox","populate");
-  
+
   FixedRotate::populate(Control);
 
   // Void + Fe special:
@@ -199,7 +203,7 @@ VacuumBox::populate(const FuncDataBase& Control)
 					   keyName+"PortTubeLength");
   portBTubeRadius=Control.EvalPair<double>(keyName+"PortBTubeRadius",
 					   keyName+"PortTubeRadius");
-  
+
   flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
 					 keyName+"FlangeRadius");
   flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
@@ -243,7 +247,7 @@ VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
     Origin+=Y*(portATubeLength+feFront+voidLength/2.0)-
       X*portAXStep-
       Z*portAZStep;
-  
+
   return;
 }
 
@@ -269,14 +273,14 @@ VacuumBox::createSurfaces()
 	    Origin+Y*(portBTubeLength+feBack+voidLength/2.0),Y);
       setBack(-SMap.realSurf(buildIndex+102));
     }
-  
+
   // Inner void
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);
 
   // Fe system [front face is link surf]
   ModelSupport::buildPlane(SMap,buildIndex+11,
@@ -305,7 +309,7 @@ VacuumBox::createSurfaces()
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
   const Geometry::Vec3D BAxis=
     Geometry::calcRotatedVec(portBXAngle,0.0,portBZAngle,X,Y,Z,Y);
-  
+
   ModelSupport::buildCylinder(SMap,buildIndex+207,BCentre,BAxis,portBTubeRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+217,BCentre,BAxis,
 			      portBTubeRadius+portBWallThick);
@@ -330,8 +334,8 @@ VacuumBox::createObjects(Simulation& System)
   HeadRule HR;
   const HeadRule& FPortHR(getFrontRule());
   const HeadRule& BPortHR(getBackRule());
-  
-  // Main Void 
+
+  // Main Void
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
@@ -367,16 +371,16 @@ VacuumBox::createObjects(Simulation& System)
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -211 217 -227");
   CellMap::makeCell("BFlangeVoid",System,cellIndex++,0,0.0,HR);
-  
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
   addOuterSurf(HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -127");
-  addOuterUnionSurf(HR*FPortHR);      
+  addOuterUnionSurf(HR*FPortHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -227");
-  addOuterUnionSurf(HR*BPortHR);      
+  addOuterUnionSurf(HR*BPortHR);
   return;
 }
 
@@ -396,13 +400,13 @@ VacuumBox::createLinks()
   const Geometry::Vec3D BAxis=
       Geometry::calcRotatedVec(portBXAngle,0.0,portBZAngle,X,Y,Z,Y);
 
-  FrontBackCut::createFrontLinks(*this,ACentre,Y); 
-  FrontBackCut::createBackLinks(*this,BCentre,BAxis);  
+  FrontBackCut::createFrontLinks(*this,ACentre,Y);
+  FrontBackCut::createBackLinks(*this,BCentre,BAxis);
 
   FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
-  FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
+  FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);
 
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
@@ -415,7 +419,7 @@ VacuumBox::createLinks()
 
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+117));
   FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+217));
-  
+
   FixedComp::nameSideIndex(2,"left");
   FixedComp::nameSideIndex(3,"right");
   FixedComp::nameSideIndex(4,"base");
@@ -426,6 +430,66 @@ VacuumBox::createLinks()
 
   return;
 }
+
+
+void
+VacuumBox::createPorts(Simulation& System)
+  /*!
+    Simple function to create ports
+    \param System :: Simulation to use
+   */
+{
+  ELog::RegMethod RegA("VacuumBox","createPorts");
+
+  MonteCarlo::Object* insertObj=
+    this->getCellObject(System,"MainWall");
+  const HeadRule innerHR=HeadRule(SMap,buildIndex,4);
+  const HeadRule outerHR=HeadRule(SMap,buildIndex,14);
+
+  for(const auto CN : insertCells)
+    PSet.addInsertPortCells(CN);
+
+  PSet.createPorts(System,insertObj,innerHR,outerHR);
+
+  return;
+}
+
+void
+VacuumBox::insertInCell(MonteCarlo::Object& outerObj) const
+  /*!
+    Insert both VacuumBox and its ports in a cell
+    \param outerObj :: Cell to insert
+   */
+{
+  ELog::RegMethod RegA("VacuumBox","insertInCell[Object]");
+
+  ContainedComp::insertInCell(outerObj);
+  PSet.insertAllInCell(outerObj);
+
+  return;
+}
+
+void
+VacuumBox::insertInCell(Simulation& System,
+			 const int CN) const
+  /*!
+    Insert both VacuumBox and its ports in a cell
+    \param System :: Simulation
+    \param CN :: Cell to insert
+   */
+{
+  ELog::RegMethod RegA("VacuumBox","insertInCell[System,CN]");
+
+  MonteCarlo::Object* outerObj=System.findObjectThrow(CN,"CN");
+  outerObj->addIntersection(outerSurf.complement());
+
+  ContainedComp::insertInCell(*outerObj);
+  PSet.insertAllInCell(System,CN);
+
+  return;
+}
+
+
 
 void
 VacuumBox::createAll(Simulation& System,
@@ -442,13 +506,14 @@ VacuumBox::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
+  createPorts(System);
   insertObjects(System);
-  
+
   return;
 }
-  
+
 }  // NAMESPACE constructSystem
