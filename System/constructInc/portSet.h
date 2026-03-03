@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructInc/portSet.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef constructSystem_portSet_h
@@ -32,7 +32,7 @@ namespace constructSystem
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief portSet unit  
+  \brief portSet unit
 
   This stores a group of ports that are attached to some FixedComp
   unit (FUnit). The FUnit that it is attached to is set in the constructor
@@ -47,23 +47,23 @@ class portSet
   attachSystem::CellMap* cellPtr;        ///< Pointer if exists
   bool outerVoid;                        ///< Is outer void needed
   std::string outerVoidName;             ///< Is outer void needed
-  
+
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
   std::vector<double> PLen;              ///< Port lengths
   /// Vector of ports FixedComp
-  std::vector<std::shared_ptr<portItem>> Ports;     
+  std::vector<std::shared_ptr<portItem>> Ports;
 
   void populate(const FuncDataBase&);
   template<typename T>
   int procSplit(Simulation&,const std::string&,const int,const int,
 		 const T&,const T&);
-  
+
  public:
 
   portSet(attachSystem::FixedComp&);  // effective this
-  portSet(const portSet&);
+  portSet(const portSet&) = default;
   portSet& operator=(const portSet&);
   virtual ~portSet();
 
@@ -71,7 +71,7 @@ class portSet
   bool empty() { return Ports.empty(); }
   /// Return size
   size_t size() { return Ports.size(); }
-  
+
   int splitVoidPorts(Simulation&,const std::string&,
 		     const int,const int);
   int splitVoidPorts(Simulation&,const std::string&,const int,
@@ -90,7 +90,7 @@ class portSet
 
   void insertAllInCell(MonteCarlo::Object&) const;
   void insertAllInCell(Simulation&,const int) const;
-  void insertAllInCell(Simulation&,const std::vector<int>&) const; 
+  void insertAllInCell(Simulation&,const std::vector<int>&) const;
   void insertPortInCell(Simulation&,
 			const std::vector<std::set<int>>&) const;
 
@@ -100,10 +100,10 @@ class portSet
 
   std::tuple<Geometry::Vec3D,Geometry::Vec3D,double>
   getPortInfo(const size_t) const ;
-  
+
   void constructPortAxis(const FuncDataBase&);
   void copyPortLinks(const size_t,attachSystem::FixedComp&) const;
-  
+
   void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
   void createPorts(Simulation&,const std::string&);
@@ -112,4 +112,3 @@ class portSet
 }
 
 #endif
- 
