@@ -75,8 +75,9 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bellows.h"
-#include "VacuumBox.h"
+#include "portSet.h"
 #include "portItem.h"
+#include "VacuumBox.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
@@ -120,7 +121,7 @@ cosaxsOpticsLine::cosaxsOpticsLine(const std::string& Key) :
   filterStick(new xraySystem::FlangeMount(newName+"FilterStick")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
   screenPipeA(new constructSystem::PipeTube(newName+"ScreenPipeA")),
-  screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")), 
+  screenPipeB(new constructSystem::PipeTube(newName+"ScreenPipeB")),
   adaptorPlateA(new constructSystem::VacuumPipe(newName+"AdaptorPlateA")),
   diffPumpA(new xraySystem::DiffPumpXIADP03(newName+"DiffPumpA")),
   primeJawBox(new constructSystem::VacuumBox(newName+"PrimeJawBox")),
@@ -365,7 +366,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   int outerCell;
 
   buildZone.addInsertCells(this->getInsertCells());
-  
+
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
@@ -398,7 +399,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   cellIndex++;
   bremCollA->createExtension(System,filterBoxA->getCell("FrontPortVoid"));
-  
+
   const constructSystem::portItem& PI=filterBoxA->getPort(3);
   filterStick->addInsertCell("Body",PI.getCell("Void"));
   filterStick->addInsertCell("Blade",PI.getCell("Void"));
@@ -436,7 +437,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
 		       Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0));
   cellIndex++;
 
-  
+
   monoXtal->addInsertCell(monoBox->getCell("Void"));
   monoXtal->createAll(System,*monoBox,0);
 
@@ -448,7 +449,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
 
   outerCell=constructSystem::constructUnit
     (System,buildZone,*bellowD,"back",*diagBoxA);
-  
+
   diagBoxA->splitVoidPorts(System,"SplitOuter",2001,
      			   diagBoxA->getCell("Void"),
    			   {0,1, 1,2});
@@ -459,7 +460,7 @@ cosaxsOpticsLine::buildObjects(Simulation& System)
   diagBoxA->intersectVoidPorts(System,6,3);
   cellIndex+=4;
 
-  
+
   bremMonoCollA->addInsertCell("Flange",diagBoxA->getCell("Void",0));
   bremMonoCollA->addInsertCell("Main",diagBoxA->getCell("Void",0));
   bremMonoCollA->addInsertCell("Main",diagBoxA->getCell("Void",1));

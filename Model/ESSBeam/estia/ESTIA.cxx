@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:  estia/ESTIA.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -71,6 +71,7 @@
 #include "GuideUnit.h"
 #include "PlateUnit.h"
 #include "DiskChopper.h"
+#include "portSet.h"
 #include "VacuumBox.h"
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
@@ -93,13 +94,13 @@ ESTIA::ESTIA(const std::string& keyName) :
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VacBoxA(new constructSystem::VacuumBox(newName+"VBoxA")),
   FocusB(new beamlineSystem::PlateUnit(newName+"FB"))
-  /*! 
+  /*!
     Constructor
     \param keyName :: main beamline name
   */
 {
   ELog::RegMethod RegA("ESTIA","ESTIA");
- 
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -132,14 +133,14 @@ ESTIA::buildChopperBlock(Simulation& System,
 			 constructSystem::VacuumPipe& Pipe)
   /*!
     Build a chopper block [about to move to some higher level]
-    \param System :: Simulation 
+    \param System :: Simulation
     \param bunkerObj :: Object
     \param prevFC :: FixedComponent for like point [uses side 2]
-    \param GL :: Guide Line 
+    \param GL :: Guide Line
   */
 {
   ELog::RegMethod RegA("ESTIA","buildChopperBlock");
-  
+
   // Box for BandA Disk
   VacBox.addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBox.createAll(System,prevFC,2);
@@ -160,17 +161,17 @@ ESTIA::buildChopperBlock(Simulation& System,
   Pipe.setFront(prevVacBox,2);
   Pipe.setBack(VacBox,1);
   Pipe.createAll(System,prevVacBox,2);
-  
+
   GL.addInsertCell(Pipe.getCells("Void"));
   GL.addInsertCell(prevVacBox.getCells("Void"));
   GL.addInsertCell(VacBox.getCells("Void"));
   GL.createAll(System,prevFC,2);
   return;
-} 
+}
 
 
-  
-void 
+
+void
 ESTIA::build(Simulation& System,
 	    const GuideItem& GItem,
 	    const Bunker& bunkerObj,
@@ -178,7 +179,7 @@ ESTIA::build(Simulation& System,
   /*!
     Carry out the full build
     \param System :: Simulation system
-    \param GItem :: Guide Item 
+    \param GItem :: Guide Item
     \param BunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
    */
@@ -187,7 +188,7 @@ ESTIA::build(Simulation& System,
   ELog::RegMethod RegA("ESTIA","build");
 
   const FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(System.getDataBase());  
+  CopiedComp::process(System.getDataBase());
 
   ELog::EM<<"\nBuilding ESTIA on : "<<GItem.getKeyName()<<ELog::endDiag;
 
@@ -202,7 +203,7 @@ ESTIA::build(Simulation& System,
   // Shutter pipe [note gap front/back]
   VPipeA->addAllInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->createAll(System,*FocusMono,2);
-  
+
   FocusA->addInsertCell(VPipeA->getCells("Void"));
   FocusA->createAll(System,*FocusMono,2);
 
@@ -219,4 +220,3 @@ ESTIA::build(Simulation& System,
 
 
 }   // NAMESPACE essSystem
-

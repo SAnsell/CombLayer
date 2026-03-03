@@ -72,8 +72,9 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bellows.h"
-#include "VacuumBox.h"
+#include "portSet.h"
 #include "portItem.h"
+#include "VacuumBox.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
@@ -848,7 +849,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   constructSystem::constructUnit(System,buildZoneDanMAX,*lensBox,"back",*CRLGateOut);
 
   constructRevBeamStopTube(System,*CRLGateOut,"back");
-  
+
   constructMonoShutter(System,revBeamStopTube->getPort(1),"OuterPlate");
 
   outerCell = buildZoneDanMAX.createUnit(System);

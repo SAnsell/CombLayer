@@ -55,7 +55,7 @@
 #include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "BlockZone.h"
-
+#include "portSet.h"
 #include "VacuumBox.h"
 #include "Wiggler.h"
 #include "R3FrontEnd.h"

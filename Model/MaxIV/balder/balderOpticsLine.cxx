@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File: balder/balderOpticsLine.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -73,9 +73,10 @@
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
 #include "Bellows.h"
+#include "portItem.h"
+#include "portSet.h"
 #include "VacuumBox.h"
 #include "CylGateValve.h"
-#include "portItem.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
@@ -97,7 +98,7 @@ namespace xraySystem
 {
 
 // Note currently uncopied:
-  
+
 balderOpticsLine::balderOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
@@ -106,7 +107,7 @@ balderOpticsLine::balderOpticsLine(const std::string& Key) :
   attachSystem::CellMap(),
 
   buildZone(newName+"BuildZone"),
-  
+
   pipeInit(new constructSystem::VacuumPipe(newName+"InitPipe")),
   triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
   gateTubeA(new xraySystem::CylGateValve(newName+"GateTubeA")),
@@ -124,7 +125,7 @@ balderOpticsLine::balderOpticsLine(const std::string& Key) :
   mirror(new xraySystem::Mirror(newName+"Mirror")),
   gateB(new constructSystem::GateValveCube(newName+"GateB")),
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
-  driftA(new constructSystem::VacuumPipe(newName+"DriftA")),  
+  driftA(new constructSystem::VacuumPipe(newName+"DriftA")),
   driftB(new constructSystem::VacuumPipe(newName+"DriftB")),
   monoV(new xraySystem::MonoVessel(newName+"MonoVac")),
   monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
@@ -147,7 +148,7 @@ balderOpticsLine::balderOpticsLine(const std::string& Key) :
 	}),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   monoShutter(new xraySystem::MonoShutter(newName+"MonoShutter")),
-  
+
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   gateE(new constructSystem::GateValveCube(newName+"GateE")),
   neutShield({
@@ -156,7 +157,7 @@ balderOpticsLine::balderOpticsLine(const std::string& Key) :
       std::make_shared<xraySystem::PipeShield>(newName+"NShield2"),
       std::make_shared<xraySystem::PipeShield>(newName+"NShield3")
 	})
-  
+
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -172,7 +173,7 @@ balderOpticsLine::balderOpticsLine(const std::string& Key) :
     OR.addObject(FM);
   for(const auto& FM : neutShield)
     OR.addObject(FM);
-  
+
   OR.addObject(pipeInit);
   OR.addObject(triggerPipe);
   OR.addObject(gateTubeA);
@@ -208,7 +209,7 @@ balderOpticsLine::balderOpticsLine(const std::string& Key) :
   OR.addObject(bellowG);
   OR.addObject(gateE);
 }
-  
+
 balderOpticsLine::~balderOpticsLine()
   /*!
     Destructor
@@ -228,7 +229,7 @@ balderOpticsLine::populate(const FuncDataBase& Control)
   outerLeft=Control.EvalDefVar<double>(keyName+"OuterLeft",0.0);
   outerRight=Control.EvalDefVar<double>(keyName+"OuterRight",outerLeft);
   outerTop=Control.EvalDefVar<double>(keyName+"OuterTop",outerLeft);
-  
+
   return;
 }
 
@@ -272,7 +273,7 @@ balderOpticsLine::buildObjects(Simulation& System)
   int outerCell;
 
   buildZone.addInsertCells(this->getInsertCells());
-  
+
   // dummy space for first item
   // This is a mess but want to preserve insert items already
   // in the hut beam port
@@ -319,7 +320,7 @@ balderOpticsLine::buildObjects(Simulation& System)
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
-  
+
   constructSystem::constructUnit
     (System,buildZone,*filterBox,"back",*bellowB);
 
@@ -329,7 +330,7 @@ balderOpticsLine::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,buildZone,*gateA,"back",*mirrorBox);
   mirrorBox->setCell("OuterVoid",outerCell);
-  
+
   mirrorBox->splitObject(System,-11,outerCell);
   mirrorBox->splitObject(System,12,outerCell);
   cellIndex+=2;
@@ -388,12 +389,12 @@ balderOpticsLine::buildObjects(Simulation& System)
 
   constructSystem::constructUnit
     (System,buildZone,*driftC,"back",*slitsA);
-  
+
   //  shieldPipe->addAllInsertCell(masterCell->getName());
 
   outerCell=constructSystem::constructUnit
     (System,buildZone,*slitsA,"back",*shieldPipe);
-  
+
   shieldPipe->splitObject(System,1001,outerCell,
 			  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
   cellIndex++;
@@ -407,7 +408,7 @@ balderOpticsLine::buildObjects(Simulation& System)
   outerCell=constructSystem::constructUnit
     (System,buildZone,*gateD,"back",*mirrorBoxB);
   mirrorBoxB->setCell("OuterVoid",outerCell);
-  
+
   mirrorB->addInsertCell(mirrorBoxB->getCell("Void"));
   mirrorB->createAll(System,*mirrorBoxB,0);
 
@@ -463,12 +464,12 @@ balderOpticsLine::buildObjects(Simulation& System)
 				   midPoint,midAxis);
   monoShutter->splitObject(System,"PortBCut",
 			   monoShutter->getCell("OuterVoid",1));
-  
+
   constructSystem::constructUnit
     (System,buildZone,*monoShutter,"back",*bellowG);
 
   constructSystem::constructUnit
-    (System,buildZone,*bellowG,"back",*gateE);  
+    (System,buildZone,*bellowG,"back",*gateE);
 
   neutShield[0]->addAllInsertCell(mirrorBox->getCell("FFlangeVoid"));
   neutShield[0]->addAllInsertCell(mirrorBox->getCell("OuterVoid",1));
@@ -478,12 +479,12 @@ balderOpticsLine::buildObjects(Simulation& System)
   neutShield[1]->addAllInsertCell(driftB->getCell("OuterVoid"));
   neutShield[1]->setCutSurf("inner",*driftB,"pipeOuterTop");
   neutShield[1]->createAll(System,*driftB,-1);
-  
+
   neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("BFlangeVoid"));
   neutShield[2]->addAllInsertCell(mirrorBoxB->getCell("OuterVoid",2));
   neutShield[2]->setCutSurf("inner",*mirrorBoxB,"backPortWall");
   neutShield[2]->createAll(System,*mirrorBoxB,"#back");
-  
+
 
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
@@ -505,9 +506,9 @@ balderOpticsLine::createLinks()
   setLinkCopy(1,*lastComp,2);
   return;
 }
-  
-  
-void 
+
+
+void
 balderOpticsLine::createAll(Simulation& System,
 			    const attachSystem::FixedComp& FC,
 			    const long int sideIndex)
@@ -534,4 +535,3 @@ balderOpticsLine::createAll(Simulation& System,
 
 
 }   // NAMESPACE xraySystem
-

@@ -78,6 +78,7 @@
 
 
 #include "VacuumPipe.h"
+#include "portSet.h"
 #include "VacuumBox.h"
 #include "Mirror.h"
 #include "CRLTube.h"

@@ -54,6 +54,7 @@
 #include "FrontBackCut.h"
 #include "ModelSupport.h"
 
+#include "portSet.h"
 #include "VacuumBox.h"
 #include "VirtualTube.h"
 #include "PipeTube.h"

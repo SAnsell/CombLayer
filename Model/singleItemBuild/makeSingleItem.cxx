@@ -82,6 +82,7 @@
 
 #include "GeneralPipe.h"
 #include "VacuumPipe.h"
+#include "portSet.h"
 #include "VacuumBox.h"
 #include "UTubePipe.h"
 #include "RectanglePipe.h"
