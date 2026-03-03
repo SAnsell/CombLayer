@@ -138,6 +138,11 @@
     #declare cameraLookAt   = <0.0, 15, 0>;
     #declare cameraAngle = 40;
   #break
+  #case (strcmp(ITEM,"FlangeDome"))
+    #declare cameraLocation = <200, -20.0, 0.0>;
+    #declare cameraLookAt   = <0.0, 10, 0>;
+    #declare cameraAngle = 40;
+  #break
 #else
     #declare cameraLocation = <100, 100, 100>;
     #declare cameraLookAt   = <0, 0, 0>;

@@ -11,7 +11,10 @@ make -j$(nproc) singleItem
 
 ITEM=${BASH_ARGV} # last argument is the view in povray/singleItem.pov
 
+echo $ITEM
+
 params=" +A +W800 +H600 "
+out=" +O$ITEM.png"
 void=""
 
 echo $ITEM
@@ -21,4 +24,4 @@ trap "rm -f /tmp/povray.txt" EXIT
 
 ./singleItem -povray -singleItem $ITEM a \
     && echo \"$ITEM\" > /tmp/povray.txt \
-    && povray ${params} povray/singleItem.pov && exit 0
+    && povray ${params} ${out} povray/singleItem.pov && exit 0
