@@ -63,11 +63,12 @@ class SmallAngleBellowsGenerator
 
   void setAngle(const double a){angle = a;}
   template<typename CF> void setCF();
-  void setNFolds(const int n){nFolds = n;}
-  void setNSectors(const int n){nSectors = n;}
   void setBellowThick(const double t){bellowThick = t;}
   void setBellowMaterialThick(const double t){bellowsMaterialThick = t;}
   void setBellowBaseMat(const std::string mat){bellowBaseMat = mat;}
+  void setLength(const double l){length = l;}
+  void setNFolds(const int n){nFolds = n;}
+  void setNSectors(const int n){nSectors = n;}
 
   void generateBellows(
     FuncDataBase&,const std::string&) const;
