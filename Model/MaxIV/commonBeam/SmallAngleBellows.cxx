@@ -480,7 +480,7 @@ SmallAngleBellows::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length/2.0+Yp*length/2.0,Yp);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
 
   return;
