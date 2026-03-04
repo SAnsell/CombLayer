@@ -80,6 +80,7 @@
 #include "BladeBPMToyamaGenerator.h"
 #include "FlangePlateGenerator.h"
 #include "TwinPipeGenerator.h"
+#include "SmallAngleBellowsGenerator.h"
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
@@ -1585,7 +1586,10 @@ opticsVariables(FuncDataBase& Control,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
   FlangeGen.generateMount(Control,name+"Screen",1);
 
-  BellowGen.generateBellow(Control,opticsName+"CardanBellowUpstream",18.0); // [30]
+  SmallAngleBellowsGenerator smallAngleBellowsGen;
+  smallAngleBellowsGen.setLength(18.0); // [30]
+  smallAngleBellowsGen.setAngle(0.0);
+  smallAngleBellowsGen.generateBellows(Control,opticsName+"CardanBellowsUpstream");
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
   // Length at center angle from [30]
   PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",180.0);
@@ -1597,8 +1601,8 @@ opticsVariables(FuncDataBase& Control,
   // Increase NFolds to be able to build long bellows
   // (see comment above about the unusual length).
   Control.addVariable(name+"NFolds",30);
-  name = opticsName + "CardanBellowDownstream";
-  BellowGen.generateBellow(Control,name,18.0); // [30]
+  name = opticsName + "CardanBellowsDownstream";
+  smallAngleBellowsGen.generateBellows(Control,name); // [30]
   // Reset NFolds to default.
   Control.addVariable(name+"NFolds",10);
 

@@ -96,6 +96,7 @@
 #include "SquareFMask.h"
 #include "TwinPipe.h"
 #include "FlangePlate.h"
+#include "SmallAngleBellows.h"
 
 #include "danmaxOpticsLine.h"
 
@@ -131,11 +132,11 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   valveS1(new xraySystem::CylGateValve(newName+"ValveS1")),
   beamViewerS1(new constructSystem::PipeTube(newName+"BeamViewerS1")),
   beamViewerS1Screen(new xraySystem::FlangeMount(newName+"BeamViewerS1Screen")),
-  cardanBellowUpstream(new constructSystem::Bellows(newName+"CardanBellowUpstream")),
+  cardanBellowsUpstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsUpstream")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   pipeSinCrys(new constructSystem::VacuumPipe(newName+"PipeSinCrys")),
   linearlyGuidedBellowUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowUpstream")),
-  cardanBellowDownstream(new constructSystem::Bellows(newName+"CardanBellowDownstream")),
+  cardanBellowsDownstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsDownstream")),
   cm2(new constructSystem::PipeTube(newName+"CM2")),
 
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
@@ -214,11 +215,11 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(valveS1);
   OR.addObject(beamViewerS1);
   OR.addObject(beamViewerS1Screen);
-  OR.addObject(cardanBellowUpstream);
+  OR.addObject(cardanBellowsUpstream);
   OR.addObject(bellowBA);
   OR.addObject(pipeSinCrys);
   OR.addObject(linearlyGuidedBellowUpstream);
-  OR.addObject(cardanBellowDownstream);
+  OR.addObject(cardanBellowsDownstream);
   OR.addObject(cm2);
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
@@ -842,24 +843,24 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   bellowBA->insertAllInCell(System,valveS1->getCell("LowSpace"));
 
   constructSystem::constructUnit(
-    System,buildZoneSinCrys,*beamViewerS1,"back",*cardanBellowUpstream
+    System,buildZoneSinCrys,*beamViewerS1,"back",*cardanBellowsUpstream
   );
   constructSystem::constructUnit(
-    System,buildZoneSinCrys,*cardanBellowUpstream,"back",*pipeSinCrys
+    System,buildZoneSinCrys,*cardanBellowsUpstream,"back",*pipeSinCrys
   );
 
   cm2->setPortRotation(4,Geometry::Vec3D(1,0,0));
   cm2->createAll(System,*frontEnd,0);
 
-  cardanBellowDownstream->createAll(System,cm2->getPort(0),"OuterPlate");
+  cardanBellowsDownstream->createAll(System,cm2->getPort(0),"OuterPlate");
   linearlyGuidedBellowUpstream->setBack(*pipeSinCrys,"back");
-  linearlyGuidedBellowUpstream->createAll(System,*cardanBellowDownstream,"back");
+  linearlyGuidedBellowUpstream->createAll(System,*cardanBellowsDownstream,"back");
 
   linearlyGuidedBellowUpstream->insertAllInCell(
     System,buildZoneSinCrys.createUnit(System,*linearlyGuidedBellowUpstream,"front")
   );
-  cardanBellowDownstream->insertAllInCell(
-    System,buildZoneSinCrys.createUnit(System,*cardanBellowDownstream,"front")
+  cardanBellowsDownstream->insertInCell(
+    System,buildZoneSinCrys.createUnit(System,*cardanBellowsDownstream,"front")
   );
 
   cm2->insertAllInCell(
