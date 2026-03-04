@@ -443,8 +443,8 @@ VacuumBox::createPorts(Simulation& System)
 
   MonteCarlo::Object* insertObj=
     this->getCellObject(System,"MainWall");
-  const HeadRule innerHR=HeadRule(SMap,buildIndex,4);
-  const HeadRule outerHR=HeadRule(SMap,buildIndex,14);
+  const HeadRule innerHR=ModelSupport::getHeadRule(SMap,buildIndex,"-1:2:-3:4:-5:6");
+  const HeadRule outerHR=ModelSupport::getHeadRule(SMap,buildIndex,"-11:12:-13:14:-15:16");
 
   for(const auto CN : insertCells)
     PSet.addInsertPortCells(CN);
