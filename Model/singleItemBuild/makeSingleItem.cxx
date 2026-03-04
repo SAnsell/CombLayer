@@ -298,10 +298,10 @@ makeSingleItem::build(Simulation& System,
     }
   if (item == "SmallAngleBellows" )
     {
-      std::shared_ptr<constructSystem::SmallAngleBellows> SmallAngleBellows(
-        new constructSystem::SmallAngleBellows("SmallAngleBellows1"));
-      std::shared_ptr<constructSystem::SmallAngleBellows> SmallAngleBellows2(
-        new constructSystem::SmallAngleBellows("SmallAngleBellows2"));
+      std::shared_ptr<xraySystem::SmallAngleBellows> SmallAngleBellows(
+        new xraySystem::SmallAngleBellows("SmallAngleBellows1"));
+      std::shared_ptr<xraySystem::SmallAngleBellows> SmallAngleBellows2(
+        new xraySystem::SmallAngleBellows("SmallAngleBellows2"));
 
       OR.addObject(SmallAngleBellows);
       OR.addObject(SmallAngleBellows2);

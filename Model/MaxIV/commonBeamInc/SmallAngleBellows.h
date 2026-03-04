@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   constructInc/SmallAngleBellows.h
+ * File:   commonBeamInc/SmallAngleBellows.h
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef constructSystem_SmallAngleBellows_h
-#define constructSystem_SmallAngleBellows_h
+#ifndef xraySystem_SmallAngleBellows_h
+#define xraySystem_SmallAngleBellows_h
 
 class Simulation;
 
-namespace constructSystem
+namespace xraySystem
 {
 
 /*!

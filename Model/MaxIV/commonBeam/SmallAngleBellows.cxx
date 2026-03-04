@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   construct/SmallAngleBellows.cxx
+ * File:   commonBeam/SmallAngleBellows.cxx
  *
  * Copyright (c) 2026 by Udo Friman-Gayer
  *
@@ -64,7 +64,7 @@
 
 #include "SmallAngleBellows.h"
 
-namespace constructSystem
+namespace xraySystem
 {
 
 SmallAngleBellows::SmallAngleBellows(const std::string& Key):
