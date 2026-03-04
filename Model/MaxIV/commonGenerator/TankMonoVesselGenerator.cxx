@@ -44,14 +44,14 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "TankMonoVesselGenerator.h"
 
 namespace setVariable
 {
 
 TankMonoVesselGenerator::TankMonoVesselGenerator() :
-  VacBoxGenerator(),
+  VacuumBoxGenerator(),
   baseGap(4.0),topGap(6.0),
   lidOffset(3.0),lidRadius(3.0),lidDepth(3.0)
   /*!
@@ -87,7 +87,7 @@ TankMonoVesselGenerator::generateBox(FuncDataBase& Control,
   ELog::RegMethod RegA("TankMonoVesselGenerator","generateBox");
   
 
-  VacBoxGenerator::generateBox(Control,keyName,radius*2.0,
+  VacuumBoxGenerator::generateBox(Control,keyName,radius*2.0,
 			       height,depth,radius*2.0);
   const double LR= (radius>lidRadius) ? radius+lidRadius : lidRadius;
 

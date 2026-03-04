@@ -47,7 +47,7 @@
 #include "PipeGenerator.h"
 #include "CornerPipeGenerator.h"
 #include "PipeTubeGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "PortItemGenerator.h"

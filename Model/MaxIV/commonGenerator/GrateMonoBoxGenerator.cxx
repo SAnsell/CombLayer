@@ -44,14 +44,14 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
 
 namespace setVariable
 {
 
 GrateMonoBoxGenerator::GrateMonoBoxGenerator() :
-  VacBoxGenerator(),
+  VacuumBoxGenerator(),
   overHangExtent(3.0),overHangDepth(1.0),
   roofThick(1.0),baseRadius(0.0),baseThick(1.0)
   /*!
@@ -103,7 +103,7 @@ GrateMonoBoxGenerator::generateBox(FuncDataBase& Control,
   ELog::RegMethod RegA("GrateMonoBoxGenerator","generateBox");
   
 
-  VacBoxGenerator::generateBox(Control,keyName,width,
+  VacuumBoxGenerator::generateBox(Control,keyName,width,
 			       height,depth,length);
 
   Control.addVariable(keyName+"VoidRadius",width/2.0);

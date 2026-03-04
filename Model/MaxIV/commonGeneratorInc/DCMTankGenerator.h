@@ -36,7 +36,7 @@ namespace setVariable
 */
 
 class DCMTankGenerator :
-    public VacBoxGenerator
+    public VacuumBoxGenerator
 {
  private:
 

@@ -8,7 +8,7 @@ set (constructVarSources
     JawValveGenerator.cxx LeadPipeGenerator.cxx PipeGenerator.cxx
     PipeTubeGenerator.cxx PortItemGenerator.cxx PortTubeGenerator.cxx
     TorusUnitGenerator.cxx
-    TubeDetBoxGenerator.cxx VacBoxGenerator.cxx
+    TubeDetBoxGenerator.cxx VacuumBoxGenerator.cxx
 )
 
 add_library (constructVar SHARED
@@ -46,7 +46,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/PortTubeGenerator.cxx
   ${tarDIR}/TorusUnitGenerator.cxx
   ${tarDIR}/TubeDetBoxGenerator.cxx
-  ${tarDIR}/VacBoxGenerator.cxx
+  ${tarDIR}/VacuumBoxGenerator.cxx
   ${tarINC}/BellowGenerator.h
   ${tarINC}/CFFlanges.h
   ${tarINC}/CornerPipeGenerator.h
@@ -66,5 +66,5 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/PortTubeGenerator.h
   ${tarINC}/TorusUnitGenerator.h
   ${tarINC}/TubeDetBoxGenerator.h
-  ${tarINC}/VacBoxGenerator.h
+  ${tarINC}/VacuumBoxGenerator.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)

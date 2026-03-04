@@ -47,7 +47,7 @@
 #include "PipeGenerator.h"
 #include "CornerPipeGenerator.h"
 #include "PipeTubeGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "PortItemGenerator.h"
@@ -356,7 +356,7 @@ R3FrontEndFMBBVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::CornerPipeGenerator CPipeGen;
   setVariable::PipeTubeGenerator SimpleTubeGen;
-  setVariable::VacBoxGenerator VBoxGen;
+  setVariable::VacuumBoxGenerator VBoxGen;
 
   setVariable::EPSeparatorGenerator ESGen;
   setVariable::R3ChokeChamberGenerator CCGen;

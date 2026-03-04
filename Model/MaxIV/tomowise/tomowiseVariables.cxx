@@ -52,7 +52,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "RoundShutterGenerator.h"
 #include "BremMonoCollGenerator.h"
@@ -1149,7 +1149,7 @@ mirrorMonoPackage(FuncDataBase& Control,
   ELog::RegMethod RegA("tomowiseVariables[F]","mirrorMonoPackage");
 
   setVariable::PortItemGenerator PItemGen;
-  setVariable::VacBoxGenerator MBoxGen;
+  setVariable::VacuumBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
 
   setVariable::MLMDetailGenerator MLGen;

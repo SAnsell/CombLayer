@@ -65,7 +65,7 @@
 #include "BellowGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "GrateMonoBoxGenerator.h"
 
 namespace setVariable

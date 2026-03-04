@@ -89,7 +89,7 @@
 #include "FlatPipeGenerator.h"
 #include "SixPortGenerator.h"
 #include "CrossWayGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "DCMTankGenerator.h"
 #include "GaugeGenerator.h"
 #include "BremBlockGenerator.h"
@@ -857,7 +857,7 @@ SingleItemVariables(FuncDataBase& Control)
      Geometry::Vec3D(0.0, -3.0, 0.0),
      Geometry::Vec3D(-1.0, 0.0, 0.0));
 
-  setVariable::VacBoxGenerator MBoxGen;
+  setVariable::VacuumBoxGenerator MBoxGen;
   MBoxGen.setCF<CF40>();   // set ports
   MBoxGen.setAllThick(1.5,2.5,1.0,1.0,1.0); // Roof/Base/Width/Front/Back
   MBoxGen.setPortLength(7.5,7.5); // La/Lb

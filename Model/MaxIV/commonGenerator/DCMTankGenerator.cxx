@@ -44,14 +44,14 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "DCMTankGenerator.h"
 
 namespace setVariable
 {
 
 DCMTankGenerator::DCMTankGenerator() :
-  VacBoxGenerator(),
+  VacuumBoxGenerator(),
   roofThick(0.3),
   baseThick(2.0),baseWidth(65.0),baseLength(65.0),
   topRadius(80.0),topLift(9.0)
@@ -88,7 +88,7 @@ DCMTankGenerator::generateBox(FuncDataBase& Control,
   ELog::RegMethod RegA("DCMTankGenerator","generateBox");
 
 
-  VacBoxGenerator::generateBox(Control,keyName,radius*2.0,
+  VacuumBoxGenerator::generateBox(Control,keyName,radius*2.0,
 			       height,depth,radius*2.0);
 
   Control.addVariable(keyName+"VoidRadius",radius);

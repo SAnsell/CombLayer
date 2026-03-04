@@ -35,7 +35,7 @@ namespace setVariable
   \brief TankMonoVesselGenerator for variables
 */
 
-class TankMonoVesselGenerator : public VacBoxGenerator
+class TankMonoVesselGenerator : public VacuumBoxGenerator
 {
  private:
 

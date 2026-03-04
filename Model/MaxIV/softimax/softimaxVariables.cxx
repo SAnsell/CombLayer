@@ -59,7 +59,7 @@
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "PipeShieldGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "GratingMonoGenerator.h"
 #include "GratingUnitGenerator.h"
 #include "TankMonoVesselGenerator.h"

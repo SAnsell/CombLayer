@@ -64,7 +64,7 @@
 #include "TriggerGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "TwinPipeGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "TankMonoVesselGenerator.h"
 #include "GratingUnitGenerator.h"
 #include "WallLeadGenerator.h"

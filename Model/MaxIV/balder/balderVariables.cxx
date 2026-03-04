@@ -50,7 +50,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
 #include "MonoShutterGenerator.h"
@@ -90,7 +90,7 @@ wigglerVariables(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("balderVariables[F]","wigglerVariables");
 
-  setVariable::VacBoxGenerator VBoxGen;
+  setVariable::VacuumBoxGenerator VBoxGen;
 
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
@@ -387,7 +387,7 @@ opticsVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
-  setVariable::VacBoxGenerator VBoxGen;
+  setVariable::VacuumBoxGenerator VBoxGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;

@@ -44,14 +44,14 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 
 namespace setVariable
 {
 
 MonoBoxGenerator::MonoBoxGenerator() :
-  VacBoxGenerator(),
+  VacuumBoxGenerator(),
   overHang(3.0),baseThick(1.0),roofThick(1.0)
   /*!
     Constructor and defaults
@@ -100,7 +100,7 @@ MonoBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 {
   ELog::RegMethod RegA("MonoBoxGenerator","generateBox");
   
-  VacBoxGenerator::generateBox(Control,keyName,width,
+  VacuumBoxGenerator::generateBox(Control,keyName,width,
 			       height,depth,length);
 
   Control.addVariable(keyName+"OverHang",overHang);

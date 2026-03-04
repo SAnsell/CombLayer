@@ -35,7 +35,7 @@ namespace setVariable
   \brief MonoBoxGenerator for variables
 */
 
-class MonoBoxGenerator : public VacBoxGenerator
+class MonoBoxGenerator : public VacuumBoxGenerator
 {
  private:
 

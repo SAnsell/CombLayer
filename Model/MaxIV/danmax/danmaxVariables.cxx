@@ -53,7 +53,7 @@
 #include "PipeTubeGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
-#include "VacBoxGenerator.h"
+#include "VacuumBoxGenerator.h"
 #include "MonoBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
@@ -1194,7 +1194,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   ELog::RegMethod RegA("danmaxVariables[F]","mirrorMonoPackage");
 
   setVariable::PortItemGenerator PItemGen;
-  setVariable::VacBoxGenerator MBoxGen;
+  setVariable::VacuumBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
 
   const double MLMFrontToTopViewPort = 21.95; // [25]
@@ -1225,6 +1225,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   Control.addVariable(monoVesselKey+"NPorts",1);
   PItemGen.setCF<setVariable::CF63>(35.0);
   PItemGen.setPlate(4.0,"LeadGlass");
+
   PItemGen.generatePort(Control,monoVesselKey+"Port0",
 			Geometry::Vec3D(0,0.0,0.0),
 			Geometry::Vec3D(1,0,0));
