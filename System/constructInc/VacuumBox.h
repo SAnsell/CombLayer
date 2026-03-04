@@ -78,8 +78,9 @@ class VacuumBox :
 
   constructSystem::portSet PSet; ///< Port set
 
-  int voidMat;                ///< void material
-  int feMat;                  ///< Fe material layer
+  int voidMat;                ///< Void material
+  int wallMat;                ///< Wall material
+  int pipeMat;                ///< Pipe (port/flangeA/B) material
 
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,const long int) override;

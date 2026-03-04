@@ -98,7 +98,7 @@ VacuumBox::VacuumBox(const VacuumBox& A) :
   portBTubeLength(A.portBTubeLength),portBTubeRadius(A.portBTubeRadius),
   flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
   flangeBRadius(A.flangeBRadius),flangeBLength(A.flangeBLength),
-  PSet(A.PSet),voidMat(A.voidMat),feMat(A.feMat)
+  PSet(A.PSet),voidMat(A.voidMat),wallMat(A.wallMat),pipeMat(A.pipeMat)
   /*!
     Copy constructor
     \param A :: VacuumBox to copy
@@ -145,7 +145,8 @@ VacuumBox::operator=(const VacuumBox& A)
       flangeBRadius=A.flangeBRadius;
       flangeBLength=A.flangeBLength;
       voidMat=A.voidMat;
-      feMat=A.feMat;
+      wallMat=A.wallMat;
+      pipeMat=A.pipeMat;
     }
   return *this;
 }
@@ -224,7 +225,8 @@ VacuumBox::populate(const FuncDataBase& Control)
        "Flange to small for "+keyName+" port B");
 
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  pipeMat=ModelSupport::EvalMat<int>(Control,keyName+"PipeMat");
 
   return;
 }
@@ -349,21 +351,21 @@ VacuumBox::createObjects(Simulation& System)
   // Main metal
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex,"11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) (1:107) (-2:207)");
-  CellMap::makeCell("MainWall",System,cellIndex++,feMat,0.0,HR);
+  CellMap::makeCell("MainWall",System,cellIndex++,wallMat,0.0,HR);
 
   // Port metal
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 107 -117");
-  CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,HR*FPortHR);
+  CellMap::makeCell("PortWall",System,cellIndex++,pipeMat,0.0,HR*FPortHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 207 -217");
-  CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,HR*BPortHR);
+  CellMap::makeCell("PortWall",System,cellIndex++,pipeMat,0.0,HR*BPortHR);
 
   // Flange
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-111 117 -127");
-  CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,HR*FPortHR);
+  CellMap::makeCell("Flange",System,cellIndex++,pipeMat,0.0,HR*FPortHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 217 -227");
-  CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,HR*BPortHR);
+  CellMap::makeCell("Flange",System,cellIndex++,pipeMat,0.0,HR*BPortHR);
 
   // Flange Voids
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"111 -11 117 -127");

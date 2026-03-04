@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   constructVarInc/VacBoxGenerator.h
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_VacBoxGenerator_h
@@ -44,7 +44,7 @@ class VacBoxGenerator
   double feHeight;            ///< fe height [top only]
   double feDepth;             ///< fe depth [low only]
   double feWidth;             ///< fe width [total]
-  double feFront;             ///< fe front 
+  double feFront;             ///< fe front
   double feBack;              ///< fe back
 
   double portAXStep;         ///< X offset
@@ -60,14 +60,15 @@ class VacBoxGenerator
   double portBWallThick;     ///< Flange wall thickness
   double portBTubeLength;    ///< Port tube
   double portBTubeRadius;    ///< Port tube length
-  
-  double flangeALen;          ///< Flange length
+
   double flangeARadius;       ///< Flange Radius
-  double flangeBLen;          ///< Flange length
+  double flangeALength;          ///< Flange length
   double flangeBRadius;       ///< Flange radius
-    
-  std::string voidMat;          ///< Primary default mat
-  std::string wallMat;          ///< Primary default mat
+  double flangeBLength;          ///< Flange length
+
+  std::string voidMat;          ///< Void material
+  std::string wallMat;          ///< Wall material
+  std::string pipeMat;          ///< Pipe (port/flangeA/B) material
 
  public:
 
@@ -95,7 +96,7 @@ class VacBoxGenerator
   void setAPortOffset(const double,const double);
   void setBPortOffset(const double,const double);
   void setBPortAngle(const double,const double);
-  
+
   void setFlange(const double,const double);
   void setAFlange(const double,const double);
   void setBFlange(const double,const double);
@@ -107,10 +108,9 @@ class VacBoxGenerator
   void generateBox(FuncDataBase&,const std::string&,
 		   const double,const double,
 		   const double,const double) const;
-  
+
 };
 
 }
 
 #endif
- 
