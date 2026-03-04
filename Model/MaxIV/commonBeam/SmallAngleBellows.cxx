@@ -197,7 +197,7 @@ void SmallAngleBellows::createSectors(){
         ModelSupport::EvalMatString(bellowBaseMat)
         +"%Void%"
         +std::to_string(
-          totalBellowsMaterialVolume/totalVolume
+          (1.0-totalBellowsMaterialVolume/totalVolume)*100.0
         )
       )
     );
@@ -218,7 +218,7 @@ void SmallAngleBellows::createSectors(){
         ModelSupport::EvalMatName(
           ModelSupport::EvalMatString(bellowBaseMat)
           +"%Void%"
-          +std::to_string(sBellowsMaterialVolume/sTotalVolume)
+          +std::to_string((1.0-sBellowsMaterialVolume/sTotalVolume)*100.0)
         )
       );
     }
