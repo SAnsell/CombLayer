@@ -335,7 +335,7 @@ SmallAngleBellows::createSurfaces()
         SMap,buildIndex+sectorPlaneID(n,3),Origin,X*sin(phi)+Z*cos(phi)
       );
       ModelSupport::buildPlane(
-        SMap,buildIndex+sectorPlaneID(n,4),Origin,Xp*sin(phi)+Z*cos(phi)
+        SMap,buildIndex+sectorPlaneID(n,4),Origin+Y*length/2.0,Xp*sin(phi)+Z*cos(phi)
       );
     }
     ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,7,100),center,
