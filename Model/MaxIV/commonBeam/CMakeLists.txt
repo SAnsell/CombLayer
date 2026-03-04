@@ -17,7 +17,7 @@ set (commonBeamSources
     Octupole.cxx OpticsHutch.cxx PipeShield.cxx
     PortChicane.cxx PowerFilter.cxx ProximityShielding.cxx Quadrupole.cxx RingDoor.cxx
     RoundMonoShutter.cxx Sexupole.cxx ShutterUnit.cxx
-    SideShield.cxx SimpleChicane.cxx SixPortTube.cxx
+    SideShield.cxx SimpleChicane.cxx SixPortTube.cxx SmallAngleBellows.cxx
     SqrCollimator.cxx SquareFMask.cxx Table.cxx
     TankMonoVessel.cxx TriggerTube.cxx TwinPipe.cxx
     Undulator.cxx UTubePipe.cxx ViewScreenTube.cxx
@@ -110,6 +110,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/SideShield.cxx
   ${tarDIR}/SimpleChicane.cxx
   ${tarDIR}/SixPortTube.cxx
+  ${tarDIR}/SmallAngleBellows.cxx
   ${tarDIR}/SqrCollimator.cxx
   ${tarDIR}/SquareFMask.cxx
   ${tarDIR}/Table.cxx
@@ -189,6 +190,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/SideShield.h
   ${tarINC}/SimpleChicane.h
   ${tarINC}/SixPortTube.h
+  ${tarINC}/SmallAngleBellows.h
   ${tarINC}/SqrCollimator.h
   ${tarINC}/SquareFMask.h
   ${tarINC}/Table.h
