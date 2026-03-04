@@ -74,6 +74,7 @@ class SmallAngleBellows:
   double bellowLength() const;
   double bellowsMaterialVolume() const;
   double bellowsThickness(const double volume, const double length) const;
+  void checkInput() const;
   void createSectors();
   std::pair<int,int> cylindricOuterSurf() const;
   double sectorAngle(const int nSector,const bool centerAngle) const;

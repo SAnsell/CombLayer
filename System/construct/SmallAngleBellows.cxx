@@ -32,6 +32,7 @@
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
+#include "OutputLog.h"
 #include "Vec3D.h"
 #include "surfRegister.h"
 #include "varList.h"
@@ -59,6 +60,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "MaterialSupport.h"
+#include "Exception.h"
 
 #include "SmallAngleBellows.h"
 
@@ -154,6 +156,29 @@ double SmallAngleBellows::bellowsThickness(
       +pipeInnerRadius*pipeInnerRadius*sLength
     )/(2.0*nFolds*bellowsMaterialThick)
   )-pipeInnerRadius;
+}
+
+void SmallAngleBellows::checkInput() const {
+  ELog::RegMethod RegA("SmallAngleBellows","checkInput");
+
+  if(bellowLength() - 2.0*nFolds*bellowsMaterialThick < Geometry::zeroTol){
+    throw ColErr::NumericalAbort(
+      "Element: '" + keyName + "'\n"
+      "Condition L >= 2 * N * T not fulfilled for:\n"
+      "\tBellows Length (L)             = "+std::to_string(bellowLength())+" cm\n"
+      "\tNumber of Folds (N)            = "+std::to_string(nFolds)+"\n"
+      "\tBellows Material Thickness (T) = "+std::to_string(bellowsMaterialThick)+" cm\n"
+      "\t2 * N * T                      = "
+      +std::to_string(2.0*nFolds*bellowsMaterialThick)+" cm"
+    );
+  }
+  if(angleDeg > 10.0){
+    ELog::EM << "Element: '" + keyName + "'\nWarning: SmallAngleBellows class "
+    "intended for use with small angles, but the input angle of "
+    + std::to_string(angleDeg) + " deg is larger than 10.0 deg, the arbitrary warning "
+    "threshold of this class."
+    << ELog::endWarn;
+  }
 }
 
 void SmallAngleBellows::createSectors(){
@@ -264,6 +289,8 @@ SmallAngleBellows::populate(const FuncDataBase& Control)
   bellowBaseMat=ModelSupport::EvalDefMat(
     Control,keyName+"BellowMat","SteelUnknownGrade");
   pipeMat=ModelSupport::EvalDefMat(Control,keyName+"PipeMat","SteelUnknownGrade");
+
+  checkInput();
 
   return;
 }
