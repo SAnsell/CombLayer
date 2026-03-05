@@ -1672,6 +1672,39 @@ opticsVariables(FuncDataBase& Control,
   );
   Control.addVariable(name+"ZAngle",180.0);
 
+  // See also comments on LinearlyGuidedBellowsUpstream
+  name = opticsName+"LinearlyGuidedBellowsDownstream";
+  // Length at center angle from [30]
+  BellowGen.generateBellow(Control,name,70.0);
+  Control.addVariable(name+"NFolds",30);
+
+  PipeGen.generatePipe(Control,opticsName+"TransportPipe2",170.0); // [30]
+
+  // Implement as regular bellows, because CardanBellowsUpstream and 
+  // CardanBellowsDownstream perform all the bending.
+  name = opticsName+"CardanBellowsTransfocator";
+  BellowGen.generateBellow(Control,name,18.0); // [30]
+
+  // If not referenced, the following uses dummy dimensions copied from the 
+  // DanMAX-branch transfocator ("lens box").
+  const std::string transfocatorName=opticsName+"Transfocator";
+  setVariable::MonoBoxGenerator MBoxGen;
+  MBoxGen.setCF<CF40>();
+  const double wallThick = 1.0;
+  MBoxGen.setWallThick(wallThick);
+  const double portABLength = 4.5;
+  MBoxGen.setPortLength(portABLength, portABLength);
+  const double bottomThick = 2.0;
+  const double topThick = 2.4;
+  MBoxGen.setLids(3.5,bottomThick, topThick);
+  MBoxGen.generateBox(Control,transfocatorName,
+    21.0,12.0-2.0*topThick,8.2-2.0*bottomThick,
+    2.0*(49.445/2.0-(wallThick+portABLength)));
+
+  Control.addVariable(transfocatorName+"XStep",SINCRYSBranchShift);
+  Control.addVariable(transfocatorName+"YStep",
+    danmaxVar::absY::CM1+639.9); // [33]
+
   // Laue monochromator
   PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",bellowCDLength);

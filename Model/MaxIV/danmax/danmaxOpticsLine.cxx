@@ -138,6 +138,10 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   linearlyGuidedBellowsUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowsUpstream")),
   cardanBellowsDownstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsDownstream")),
   cm2(new constructSystem::PipeTube(newName+"CM2")),
+  linearlyGuidedBellowsDownstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowsDownstream")),
+  transportPipe2(new constructSystem::VacuumPipe(newName+"TransportPipe2")),
+  cardanBellowsTransfocator(new constructSystem::Bellows(newName+"CardanBellowsTransfocator")),
+  transfocator(new xraySystem::MonoBox(newName+"Transfocator")),
 
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),
@@ -865,6 +869,25 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   cm2->insertAllInCell(
     System,buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate"));
+
+  transfocator->createAll(System,*frontEnd,0);
+  cardanBellowsTransfocator->createAll(System,*transfocator,"front");
+  transportPipe2->createAll(System,*cardanBellowsTransfocator,"back");
+  linearlyGuidedBellowsDownstream->setBack(cm2->getPort(1),"OuterPlate");
+  linearlyGuidedBellowsDownstream->createAll(System,*transportPipe2,"back");
+
+  linearlyGuidedBellowsDownstream->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*linearlyGuidedBellowsDownstream,"front")
+  );
+  transportPipe2->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*transportPipe2,"front")
+  );
+  cardanBellowsTransfocator->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*cardanBellowsTransfocator,"front")
+  );
+  transfocator->insertInCell(
+    System,buildZoneSinCrys.createUnit(System,*transfocator,"back")
+  );
 
   outerCell=buildZoneSinCrys.createUnit(System);
   for (int i=0; i<1; ++i) {
