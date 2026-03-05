@@ -273,6 +273,8 @@ SmallAngleBellows::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SmallAngleBellows","populate");
 
+  FixedRotate::populate(Control);
+
   angleDeg=Control.EvalDefVar<double>(keyName+"Angle",0.0);
   angle=M_PI/180.0*angleDeg;
   bellowsMaterialThick=Control.EvalVar<double>(keyName+"BellowsMaterialThick");
