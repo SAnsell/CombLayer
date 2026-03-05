@@ -51,12 +51,12 @@ namespace setVariable
 {
 
 SmallAngleBellowsGenerator::SmallAngleBellowsGenerator() :
-  angle(0.0),bellowStep(0.5),bellowsMaterialThick(0.05),
-  bellowThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
+  angle(0.0),bellowsStep(0.5),bellowsMaterialThick(0.05),
+  bellowsThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
   bellowsVolumeFraction(0.0),flangeLength(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),length(10.0),
   pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),nFolds(10),
-  nSectors(2),bellowBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade")
+  nSectors(2),bellowsBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade")
 {}
 
 template<typename CF> void
@@ -74,8 +74,8 @@ void SmallAngleBellowsGenerator::generateBellows(
 
   Control.addVariable(keyName+"Angle",angle);
   Control.addVariable(keyName+"BellowsMaterialThick",bellowsMaterialThick);
-  Control.addVariable(keyName+"BellowStep",bellowStep);
-  Control.addVariable(keyName+"BellowThick",bellowThick);
+  Control.addVariable(keyName+"BellowsStep",bellowsStep);
+  Control.addVariable(keyName+"BellowsThick",bellowsThick);
   Control.addVariable(keyName+"FlangeLength",flangeLength);
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"Length",length);
@@ -83,7 +83,7 @@ void SmallAngleBellowsGenerator::generateBellows(
   Control.addVariable(keyName+"PipeWallThick",pipeWallThick);
   Control.addVariable(keyName+"NFolds",nFolds);
   Control.addVariable(keyName+"NSectors",nSectors);
-  Control.addVariable(keyName+"BellowBaseMat",bellowBaseMat);
+  Control.addVariable(keyName+"BellowsBaseMat",bellowsBaseMat);
   Control.addVariable(keyName+"PipeMat",pipeMat);
 }
 

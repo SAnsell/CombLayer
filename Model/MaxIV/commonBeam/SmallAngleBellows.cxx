@@ -82,8 +82,8 @@ SmallAngleBellows::SmallAngleBellows(const SmallAngleBellows& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   angle(A.angle),angleDeg(A.angleDeg),
-  bellowStep(A.bellowStep),
-  bellowThick(A.bellowThick),
+  bellowsStep(A.bellowsStep),
+  bellowsThick(A.bellowsThick),
   bellowsVolumeFraction(A.bellowsVolumeFraction),
   flangeLength(A.flangeLength),
   flangeRadius(A.flangeRadius),
@@ -91,11 +91,11 @@ SmallAngleBellows::SmallAngleBellows(const SmallAngleBellows& A) :
   pipeInnerRadius(A.pipeInnerRadius),
   pipeWallThick(A.pipeWallThick),
 
-  bellowBaseMat(A.bellowBaseMat),
+  bellowsBaseMat(A.bellowsBaseMat),
   pipeMat(A.pipeMat),
 
-  bellowMat(),
-  bellowsThick()
+  bellowsMatPerSector(),
+  bellowsThickPerSector()
 {}
 
 SmallAngleBellows&
@@ -110,8 +110,8 @@ SmallAngleBellows::operator=(const SmallAngleBellows& A)
       attachSystem::FrontBackCut::operator=(A);
       angle=A.angle;
       angleDeg=A.angleDeg;
-      bellowStep=A.bellowStep;
-      bellowThick=A.bellowThick;
+      bellowsStep=A.bellowsStep;
+      bellowsThick=A.bellowsThick;
       bellowsVolumeFraction=A.bellowsVolumeFraction;
       flangeLength=A.flangeLength;
       flangeRadius=A.flangeRadius;
@@ -119,7 +119,7 @@ SmallAngleBellows::operator=(const SmallAngleBellows& A)
       pipeInnerRadius=A.pipeInnerRadius;
       pipeWallThick=A.pipeWallThick;
 
-      bellowBaseMat=A.bellowBaseMat;
+      bellowsBaseMat=A.bellowsBaseMat;
       pipeMat=A.pipeMat;
     }
   return *this;
@@ -128,8 +128,8 @@ SmallAngleBellows::operator=(const SmallAngleBellows& A)
 SmallAngleBellows::~SmallAngleBellows()
 {}
 
-double SmallAngleBellows::bellowLength() const {
-  return (length-2.0*(flangeLength+bellowStep));
+double SmallAngleBellows::bellowsLength() const {
+  return (length-2.0*(flangeLength+bellowsStep));
 }
 
 double SmallAngleBellows::bellowsMaterialVolume() const {
@@ -138,22 +138,22 @@ double SmallAngleBellows::bellowsMaterialVolume() const {
       (pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
       -pipeInnerRadius*pipeInnerRadius
     )
-    *(bellowLength()-2.0*nFolds*bellowsMaterialThick)
+    *(bellowsLength()-2.0*nFolds*bellowsMaterialThick)
     +(
-      (pipeInnerRadius+bellowThick)*(pipeInnerRadius+bellowThick)
+      (pipeInnerRadius+bellowsThick)*(pipeInnerRadius+bellowsThick)
       -pipeInnerRadius*pipeInnerRadius
     )*2.0*nFolds*bellowsMaterialThick
   );
 }
 
 double SmallAngleBellows::bellowsThickness(
-  const double volume, const double sLength) const {
+  const double volume, const double sectorLength) const {
   return sqrt(
     (
       volume*M_1_PI
       +(pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
-      *(2.0*nFolds*bellowsMaterialThick-sLength)
-      +pipeInnerRadius*pipeInnerRadius*sLength
+      *(2.0*nFolds*bellowsMaterialThick-sectorLength)
+      +pipeInnerRadius*pipeInnerRadius*sectorLength
     )/(2.0*nFolds*bellowsMaterialThick)
   )-pipeInnerRadius;
 }
@@ -161,11 +161,11 @@ double SmallAngleBellows::bellowsThickness(
 void SmallAngleBellows::checkInput() const {
   ELog::RegMethod RegA("SmallAngleBellows","checkInput");
 
-  if(bellowLength() - 2.0*nFolds*bellowsMaterialThick < Geometry::zeroTol){
+  if(bellowsLength() - 2.0*nFolds*bellowsMaterialThick < Geometry::zeroTol){
     throw ColErr::NumericalAbort(
       "Element: '" + keyName + "'\n"
       "Condition L >= 2 * N * T not fulfilled for:\n"
-      "\tBellows Length (L)             = "+std::to_string(bellowLength())+" cm\n"
+      "\tBellows Length (L)             = "+std::to_string(bellowsLength())+" cm\n"
       "\tNumber of Folds (N)            = "+std::to_string(nFolds)+"\n"
       "\tBellows Material Thickness (T) = "+std::to_string(bellowsMaterialThick)+" cm\n"
       "\t2 * N * T                      = "
@@ -184,17 +184,17 @@ void SmallAngleBellows::checkInput() const {
 void SmallAngleBellows::createSectors(){
   const double totalBellowsMaterialVolume = bellowsMaterialVolume();
   if(nSectors == 1){
-    bellowsThick.push_back(bellowThick);
+    bellowsThickPerSector.push_back(bellowsThick);
     double totalVolume = (
       M_PI*(
-        (pipeInnerRadius+bellowThick)
-        *(pipeInnerRadius+bellowThick)
+        (pipeInnerRadius+bellowsThick)
+        *(pipeInnerRadius+bellowsThick)
         -pipeInnerRadius*pipeInnerRadius
-      )*bellowLength()
+      )*bellowsLength()
     );
-    bellowMat.push_back(
+    bellowsMatPerSector.push_back(
       ModelSupport::EvalMatName(
-        ModelSupport::EvalMatString(bellowBaseMat)
+        ModelSupport::EvalMatString(bellowsBaseMat)
         +"%Void%"
         +std::to_string(
           (1.0-totalBellowsMaterialVolume/totalVolume)*100.0
@@ -206,17 +206,18 @@ void SmallAngleBellows::createSectors(){
     double sLength, sTotalVolume;
     for(int nSector=0;nSector<nSectors;++nSector){
       sLength = sectorLength(nSector);
-      bellowsThick.push_back(bellowsThickness(totalBellowsMaterialVolume,sLength));
+      bellowsThickPerSector.push_back(
+        bellowsThickness(totalBellowsMaterialVolume,sLength));
       sTotalVolume = (
         M_PI*(
-          (pipeInnerRadius+bellowsThick[nSector])
-          *(pipeInnerRadius+bellowsThick[nSector])
+          (pipeInnerRadius+bellowsThickPerSector[nSector])
+          *(pipeInnerRadius+bellowsThickPerSector[nSector])
           -pipeInnerRadius*pipeInnerRadius
         )*sLength/nSectors
       );
-      bellowMat.push_back(
+      bellowsMatPerSector.push_back(
         ModelSupport::EvalMatName(
-          ModelSupport::EvalMatString(bellowBaseMat)
+          ModelSupport::EvalMatString(bellowsBaseMat)
           +"%Void%"
           +std::to_string((1.0-sBellowsMaterialVolume/sTotalVolume)*100.0)
         )
@@ -227,7 +228,7 @@ void SmallAngleBellows::createSectors(){
 
 std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const {
   if(nSectors == 1){
-    if(pipeInnerRadius+bellowsThick[0] > flangeRadius){
+    if(pipeInnerRadius+bellowsThickPerSector[0] > flangeRadius){
       return {
         sectorPlaneID(0,7,100),
         sectorPlaneID(0,8,100)
@@ -237,11 +238,11 @@ std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const {
   }
   int nSectorWithMaxRadius = 0;
   for(int n=1; n<nSectors; ++n){
-    if(bellowsThick[n]>bellowsThick[nSectorWithMaxRadius]){
+    if(bellowsThickPerSector[n]>bellowsThickPerSector[nSectorWithMaxRadius]){
       nSectorWithMaxRadius = n;
     }
   }
-  if(pipeInnerRadius+bellowsThick[nSectorWithMaxRadius] > flangeRadius){
+  if(pipeInnerRadius+bellowsThickPerSector[nSectorWithMaxRadius] > flangeRadius){
     return {
       sectorPlaneID(nSectorWithMaxRadius,7,100),
       sectorPlaneID(nSectorWithMaxRadius,8,100)
@@ -259,7 +260,7 @@ double SmallAngleBellows::sectorAngle(
 }
 
 double SmallAngleBellows::sectorLength(const int nSector) const {
-  return (bellowLength()+angle*pipeInnerRadius*cos(sectorAngle(nSector,true)));
+  return (bellowsLength()+angle*pipeInnerRadius*cos(sectorAngle(nSector,true)));
 }
 
 int SmallAngleBellows::sectorPlaneID(
@@ -278,8 +279,8 @@ SmallAngleBellows::populate(const FuncDataBase& Control)
   angleDeg=Control.EvalDefVar<double>(keyName+"Angle",0.0);
   angle=M_PI/180.0*angleDeg;
   bellowsMaterialThick=Control.EvalVar<double>(keyName+"BellowsMaterialThick");
-  bellowStep=Control.EvalVar<double>(keyName+"BellowStep");
-  bellowThick=Control.EvalVar<double>(keyName+"BellowThick");
+  bellowsStep=Control.EvalVar<double>(keyName+"BellowsStep");
+  bellowsThick=Control.EvalVar<double>(keyName+"BellowsThick");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -288,8 +289,8 @@ SmallAngleBellows::populate(const FuncDataBase& Control)
   nFolds=Control.EvalVar<int>(keyName+"NFolds");
   nSectors=Control.EvalVar<int>(keyName+"NSectors");
 
-  bellowBaseMat=ModelSupport::EvalDefMat(
-    Control,keyName+"BellowMat","SteelUnknownGrade");
+  bellowsBaseMat=ModelSupport::EvalDefMat(
+    Control,keyName+"BellowsMat","SteelUnknownGrade");
   pipeMat=ModelSupport::EvalDefMat(Control,keyName+"PipeMat","SteelUnknownGrade");
 
   checkInput();
@@ -323,11 +324,11 @@ SmallAngleBellows::createSurfaces()
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(flangeLength+bellowStep),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(flangeLength+bellowsStep),Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,
     center+Yp*(length/2.0-flangeLength),Yp);
   ModelSupport::buildPlane(SMap,buildIndex+22,
-    center+Yp*(length/2.0-flangeLength-bellowStep),Yp);
+    center+Yp*(length/2.0-flangeLength-bellowsStep),Yp);
 
   double phi;
   for(int n = 0; n < nSectors; ++n){
@@ -341,9 +342,9 @@ SmallAngleBellows::createSurfaces()
       );
     }
     ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,7,100),center,
-              Y,pipeInnerRadius+bellowsThick[n]);
+              Y,pipeInnerRadius+bellowsThickPerSector[n]);
     ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,8,100),center,
-              Yp,pipeInnerRadius+bellowsThick[n]);
+              Yp,pipeInnerRadius+bellowsThickPerSector[n]);
   }
 
 
@@ -383,24 +384,24 @@ SmallAngleBellows::createObjects(Simulation& System)
 
   std::pair<int,int> cylOuterSurf = cylindricOuterSurf();
   if(nSectors == 1){
-    makeCell("FrontBellow",System,cellIndex++,bellowMat[0],0.0,
+    makeCell("FrontBellows",System,cellIndex++,bellowsMatPerSector[0],0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(0,7,100))).complement()
     );
-    makeCell("FrontBellowVoid",System,cellIndex++,0,0.0,
+    makeCell("FrontBellowsVoid",System,cellIndex++,0,0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(0,7,100)))
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
     );
-    makeCell("BackBellow",System,cellIndex++,bellowMat[0],0.0,
+    makeCell("BackBellows",System,cellIndex++,bellowsMatPerSector[0],0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(0,8,100))).complement()
     );
-    makeCell("BackBellowVoid",System,cellIndex++,0,0.0,
+    makeCell("BackBellowsVoid",System,cellIndex++,0,0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(0,8,100)))
@@ -409,7 +410,7 @@ SmallAngleBellows::createObjects(Simulation& System)
     );
   } else {
     for(int n = 0; n < nSectors; ++n){
-      makeCell("FrontBellow",System,cellIndex++,bellowMat[n],0.0,
+      makeCell("FrontBellows",System,cellIndex++,bellowsMatPerSector[n],0.0,
         ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
@@ -417,7 +418,7 @@ SmallAngleBellows::createObjects(Simulation& System)
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100))).complement()
       );
-      makeCell("FrontBellowVoid",System,cellIndex++,0,0.0,
+      makeCell("FrontBellowsVoid",System,cellIndex++,0,0.0,
         ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
@@ -428,7 +429,7 @@ SmallAngleBellows::createObjects(Simulation& System)
           SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
       );
 
-      makeCell("BackBellow",System,cellIndex++,bellowMat[n],0.0,
+      makeCell("BackBellows",System,cellIndex++,bellowsMatPerSector[n],0.0,
         ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
@@ -436,7 +437,7 @@ SmallAngleBellows::createObjects(Simulation& System)
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100))).complement()
       );
-      makeCell("BackBellowVoid",System,cellIndex++,0,0.0,
+      makeCell("BackBellowsVoid",System,cellIndex++,0,0.0,
         ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
@@ -477,7 +478,7 @@ SmallAngleBellows::createObjects(Simulation& System)
 void
 SmallAngleBellows::createLinks()
 {
-  ELog::RegMethod RegA("Bellow","createLinks");
+  ELog::RegMethod RegA("SmallAngleBellows","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length/2.0+Yp*length/2.0,Yp);
@@ -493,7 +494,7 @@ SmallAngleBellows::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
 		   const long int FIndex)
 {
-  ELog::RegMethod RegA("SmallAngleBellows","createAll(FC)");
+  ELog::RegMethod RegA("SmallAngleBellows","createAll");
 
   populate(System.getDataBase());
   createSectors();

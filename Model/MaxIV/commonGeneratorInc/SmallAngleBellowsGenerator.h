@@ -40,9 +40,9 @@ class SmallAngleBellowsGenerator
  private:
 
   double angle;
-  double bellowStep;
+  double bellowsStep;
   double bellowsMaterialThick;
-  double bellowThick;
+  double bellowsThick;
   double bellowsVolumeFraction;
   double flangeLength;
   double flangeRadius;
@@ -53,7 +53,7 @@ class SmallAngleBellowsGenerator
   int nFolds;
   int nSectors;
 
-  std::string bellowBaseMat;
+  std::string bellowsBaseMat;
   std::string pipeMat;
 
  public:
@@ -63,9 +63,9 @@ class SmallAngleBellowsGenerator
 
   void setAngle(const double a){angle = a;}
   template<typename CF> void setCF();
-  void setBellowThick(const double t){bellowThick = t;}
-  void setBellowMaterialThick(const double t){bellowsMaterialThick = t;}
-  void setBellowBaseMat(const std::string mat){bellowBaseMat = mat;}
+  void setBellowsThick(const double t){bellowsThick = t;}
+  void setBellowsMaterialThick(const double t){bellowsMaterialThick = t;}
+  void setBellowsBaseMat(const std::string mat){bellowsBaseMat = mat;}
   void setLength(const double l){length = l;}
   void setNFolds(const int n){nFolds = n;}
   void setNSectors(const int n){nSectors = n;}

@@ -47,8 +47,8 @@ class SmallAngleBellows:
   double angle;
   double angleDeg;
   double bellowsMaterialThick;
-  double bellowStep;
-  double bellowThick;
+  double bellowsStep;
+  double bellowsThick;
   double bellowsVolumeFraction;
   double flangeLength;
   double flangeRadius;
@@ -56,13 +56,13 @@ class SmallAngleBellows:
   double pipeInnerRadius;
   double pipeWallThick;
 
-  int bellowBaseMat;
+  int bellowsBaseMat;
   int nFolds;
   int nSectors;
   int pipeMat;
 
-  std::vector<int> bellowMat;
-  std::vector<double> bellowsThick;
+  std::vector<int> bellowsMatPerSector;
+  std::vector<double> bellowsThickPerSector;
 
   Geometry::Vec3D Yp;
 
@@ -71,7 +71,7 @@ class SmallAngleBellows:
   void createObjects(Simulation&);
   void createLinks();
 
-  double bellowLength() const;
+  double bellowsLength() const;
   double bellowsMaterialVolume() const;
   double bellowsThickness(const double volume, const double length) const;
   void checkInput() const;
