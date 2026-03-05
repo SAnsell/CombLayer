@@ -154,6 +154,7 @@
 #include "PowerFilterGenerator.h"
 #include "TDCBeamDumpGenerator.h"
 #include "FixedMaskHybridGenerator.h"
+#include "SmallAngleBellowsGenerator.h"
 
 namespace setVariable
 {
@@ -646,6 +647,15 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::BellowGenerator BellowGen;
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,"Bellow",7.5);
+
+  // SmallAngleBellow
+  setVariable::SmallAngleBellowsGenerator SmallAngleBellowsGenerator;
+  std::string SmallAngleBellowsName = "SmallAngleBellows1";
+  SmallAngleBellowsGenerator.setAngle(3.0);
+  SmallAngleBellowsGenerator.setNSectors(8);
+  SmallAngleBellowsGenerator.generateBellows(Control,SmallAngleBellowsName);
+  SmallAngleBellowsName = "SmallAngleBellows2";
+  SmallAngleBellowsGenerator.generateBellows(Control,SmallAngleBellowsName);
 
   // Lead Clad Pipe
   setVariable::LeadPipeGenerator LeadGen;

@@ -67,6 +67,7 @@ namespace xraySystem
   class MLMono;
   class MLMVessel;
   class MonoBox;
+  class SmallAngleBellows;
   class TriggerTube;
   class TwinPipe;
 
@@ -106,7 +107,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> pipeInit;
   /// vacuum trigger system
   std::shared_ptr<xraySystem::TriggerTube> triggerPipe;
-  /// first ion pump
+  /// First gate valve in Optics Hutch (common branch)
   std::shared_ptr<xraySystem::CylGateValve> valve4;
   /// bellows from trigger outward
   std::shared_ptr<constructSystem::Bellows> bellowA;
@@ -115,14 +116,25 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::BremBlock> bremColl1;
   /// High Pass Filter
   std::shared_ptr<constructSystem::VacuumPipe> highPassFilter;
-  /// First gate valve
+  /// Second gate valve in Optics Hutch (common branch)
   std::shared_ptr<xraySystem::CylGateValve> valve5;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  std::shared_ptr<constructSystem::PipeTube> cm1; // CM1
-  std::shared_ptr<xraySystem::TwinPipe> splitter;
-  std::shared_ptr<constructSystem::Bellows> bellowAA;
+  std::shared_ptr<constructSystem::PipeTube> cm1;
+  // First gate valve in SINCRYS (S) branch
+  std::shared_ptr<xraySystem::CylGateValve> valveS1;
+  std::shared_ptr<constructSystem::PipeTube> beamViewerS1;
+  std::shared_ptr<xraySystem::FlangeMount> beamViewerS1Screen;
+  std::shared_ptr<xraySystem::SmallAngleBellows> cardanBellowsUpstream;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeSinCrys;
+  std::shared_ptr<constructSystem::Bellows> linearlyGuidedBellowsUpstream;
+  std::shared_ptr<xraySystem::SmallAngleBellows> cardanBellowsDownstream;
+  std::shared_ptr<constructSystem::PipeTube> cm2;
+  std::shared_ptr<constructSystem::Bellows> linearlyGuidedBellowsDownstream;
+  std::shared_ptr<constructSystem::VacuumPipe> transportPipe2;
+  std::shared_ptr<constructSystem::Bellows> cardanBellowsTransfocator;
+  std::shared_ptr<xraySystem::MonoBox> transfocator;
+
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowC;
   /// Pipe for laue mono

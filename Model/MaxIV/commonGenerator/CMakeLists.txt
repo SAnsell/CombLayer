@@ -35,7 +35,7 @@ set (commonGeneratorSources
     QuadUnitGenerator.cxx R3ChokeChamberGenerator.cxx RFGunGenerator.cxx
     RingDoorGenerator.cxx RoundShutterGenerator.cxx ScrapperGenerator.cxx
     ScreenGenerator.cxx SexupoleGenerator.cxx ShutterUnitGenerator.cxx
-    SimpleChicaneGenerator.cxx SixPortGenerator.cxx SolenoidGenerator.cxx
+    SimpleChicaneGenerator.cxx SixPortGenerator.cxx SmallAngleBellowsGenerator.cxx SolenoidGenerator.cxx
     SPFCameraShieldGenerator.cxx SqrFMaskGenerator.cxx StriplineBPMGenerator.cxx BladeBPMToyamaGenerator.cxx
     TableGenerator.cxx TankMonoVesselGenerator.cxx TDCBeamDumpGenerator.cxx
     TriggerGenerator.cxx TriGroupGenerator.cxx TriPipeGenerator.cxx
@@ -161,6 +161,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/ShutterUnitGenerator.cxx
   ${tarDIR}/SimpleChicaneGenerator.cxx
   ${tarDIR}/SixPortGenerator.cxx
+  ${tarDIR}/SmallAngleBellowsGenerator.cxx
   ${tarDIR}/SolenoidGenerator.cxx
   ${tarDIR}/SPFCameraShieldGenerator.cxx
   ${tarDIR}/SqrFMaskGenerator.cxx
@@ -280,6 +281,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/ShutterUnitGenerator.h
   ${tarINC}/SimpleChicaneGenerator.h
   ${tarINC}/SixPortGenerator.h
+  ${tarINC}/SmallAngleBellowsGenerator.h
   ${tarINC}/SolenoidGenerator.h
   ${tarINC}/SPFCameraShieldGenerator.h
   ${tarINC}/SqrFMaskGenerator.h
