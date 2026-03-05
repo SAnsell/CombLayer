@@ -53,7 +53,7 @@ namespace setVariable
 SmallAngleBellowsGenerator::SmallAngleBellowsGenerator() :
   angle(0.0),bellowsStep(0.5),bellowsMaterialThick(0.05),
   bellowsThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
-  bellowsVolumeFraction(0.0),flangeLength(CF40::flangeLength),
+  flangeLength(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),length(10.0),
   pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),nFolds(10),
   nSectors(2),bellowsBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade")

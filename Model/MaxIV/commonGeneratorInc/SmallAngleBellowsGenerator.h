@@ -43,7 +43,6 @@ class SmallAngleBellowsGenerator
   double bellowsStep;
   double bellowsMaterialThick;
   double bellowsThick;
-  double bellowsVolumeFraction;
   double flangeLength;
   double flangeRadius;
   double length;
