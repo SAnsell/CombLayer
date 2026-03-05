@@ -127,7 +127,7 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::SmallAngleBellows> cardanBellowsUpstream;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeSinCrys;
-  std::shared_ptr<constructSystem::Bellows> linearlyGuidedBellowUpstream;
+  std::shared_ptr<constructSystem::Bellows> linearlyGuidedBellowsUpstream;
   std::shared_ptr<xraySystem::SmallAngleBellows> cardanBellowsDownstream;
   std::shared_ptr<constructSystem::PipeTube> cm2;
 

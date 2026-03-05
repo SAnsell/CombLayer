@@ -1634,7 +1634,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
   // Length at center angle from [30]
   PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",180.0);
-  name = opticsName+"LinearlyGuidedBellowUpstream";
+  name = opticsName+"LinearlyGuidedBellowsUpstream";
   // Actually, the linearly guided bellow consists of 7 single bellows. For simplicity,
   // it is modeled as a single, long bellow here.
   // Length at center angle from [30]

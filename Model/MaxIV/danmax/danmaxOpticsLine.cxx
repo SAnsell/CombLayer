@@ -135,7 +135,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   cardanBellowsUpstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsUpstream")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   pipeSinCrys(new constructSystem::VacuumPipe(newName+"PipeSinCrys")),
-  linearlyGuidedBellowUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowUpstream")),
+  linearlyGuidedBellowsUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowsUpstream")),
   cardanBellowsDownstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsDownstream")),
   cm2(new constructSystem::PipeTube(newName+"CM2")),
 
@@ -218,7 +218,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(cardanBellowsUpstream);
   OR.addObject(bellowBA);
   OR.addObject(pipeSinCrys);
-  OR.addObject(linearlyGuidedBellowUpstream);
+  OR.addObject(linearlyGuidedBellowsUpstream);
   OR.addObject(cardanBellowsDownstream);
   OR.addObject(cm2);
   OR.addObject(bellowC);
@@ -853,11 +853,11 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   cm2->createAll(System,*frontEnd,0);
 
   cardanBellowsDownstream->createAll(System,cm2->getPort(0),"OuterPlate");
-  linearlyGuidedBellowUpstream->setBack(*pipeSinCrys,"back");
-  linearlyGuidedBellowUpstream->createAll(System,*cardanBellowsDownstream,"back");
+  linearlyGuidedBellowsUpstream->setBack(*pipeSinCrys,"back");
+  linearlyGuidedBellowsUpstream->createAll(System,*cardanBellowsDownstream,"back");
 
-  linearlyGuidedBellowUpstream->insertAllInCell(
-    System,buildZoneSinCrys.createUnit(System,*linearlyGuidedBellowUpstream,"front")
+  linearlyGuidedBellowsUpstream->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*linearlyGuidedBellowsUpstream,"front")
   );
   cardanBellowsDownstream->insertInCell(
     System,buildZoneSinCrys.createUnit(System,*cardanBellowsDownstream,"front")
