@@ -29,7 +29,7 @@ namespace xraySystem
 
 /*!
   \class SmallAngleBellows
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
   \date March 2026
   \brief Fixed-length cylindric bellows that bend at a small angle
@@ -83,6 +83,9 @@ namespace xraySystem
   line of sight between the front and the back.
   However, bellows that bend at large angles could be approximated by a combination 
   of small-angle bellows.
+
+  Version history:
+  1.0 - 2026-03-05
 */
 
 class SmallAngleBellows:

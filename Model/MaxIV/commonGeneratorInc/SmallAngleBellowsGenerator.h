@@ -29,10 +29,13 @@ namespace setVariable
 
 /*!
   \class SmallAngleBellowsGenerator
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
-  \date February 2026
+  \date March 2026
   \brief SmallAngleBellowsGenerator for variables
+
+  Version history:
+  1.0 - 2026-03-05
 */
 
 class SmallAngleBellowsGenerator
