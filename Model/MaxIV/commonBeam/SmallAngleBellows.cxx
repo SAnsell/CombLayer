@@ -68,6 +68,10 @@ namespace xraySystem
 {
 
 SmallAngleBellows::SmallAngleBellows(const std::string& Key):
+  /*!
+    Constructor
+    \param Key :: Key name
+  */
   attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
@@ -76,6 +80,10 @@ SmallAngleBellows::SmallAngleBellows(const std::string& Key):
 {}
 
 SmallAngleBellows::SmallAngleBellows(const SmallAngleBellows& A) :
+  /*!
+    Copy constructor
+    \param A :: Bellows to copy
+  */
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
@@ -84,7 +92,6 @@ SmallAngleBellows::SmallAngleBellows(const SmallAngleBellows& A) :
   angle(A.angle),angleDeg(A.angleDeg),
   bellowsStep(A.bellowsStep),
   bellowsThick(A.bellowsThick),
-  bellowsVolumeFraction(A.bellowsVolumeFraction),
   flangeLength(A.flangeLength),
   flangeRadius(A.flangeRadius),
   length(A.length),
@@ -100,6 +107,11 @@ SmallAngleBellows::SmallAngleBellows(const SmallAngleBellows& A) :
 
 SmallAngleBellows&
 SmallAngleBellows::operator=(const SmallAngleBellows& A)
+  /*!
+    Assignment operator
+    \param A :: Bellows to copy
+    \return *this
+  */
 {
   if (this!=&A)
     {
@@ -112,7 +124,6 @@ SmallAngleBellows::operator=(const SmallAngleBellows& A)
       angleDeg=A.angleDeg;
       bellowsStep=A.bellowsStep;
       bellowsThick=A.bellowsThick;
-      bellowsVolumeFraction=A.bellowsVolumeFraction;
       flangeLength=A.flangeLength;
       flangeRadius=A.flangeRadius;
       length=A.length;
@@ -126,13 +137,38 @@ SmallAngleBellows::operator=(const SmallAngleBellows& A)
 }
 
 SmallAngleBellows::~SmallAngleBellows()
+  /*!
+    Destructor
+  */
 {}
 
-double SmallAngleBellows::bellowsLength() const {
+double SmallAngleBellows::bellowsLength() const 
+  /*!
+    Length of the bellows parts, i.e. total length without flanges and pipes.
+  */
+{
   return (length-2.0*(flangeLength+bellowsStep));
 }
 
-double SmallAngleBellows::bellowsMaterialVolume() const {
+double SmallAngleBellows::bellowsMaterialVolume() const 
+/*!
+  Volume occupied by the bellows' material. For the assumed bellows shape, this is:
+
+  V = 
+      pi*((r+t)^2-r^2)*(L-2*N*t)       horizontal parts
+      pi*((r+b)^2-r^2)*2*N*t           vertical  parts
+
+  where
+
+  L = length
+  N = nFolds
+  r = pipeInnerRadius
+  t = bellowsMaterialThick
+  b = bellowsThick
+
+  b and the bellows' material vary with the bending angle to conserve V.
+ */
+{
   return M_PI*(
     (
       (pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
@@ -147,7 +183,14 @@ double SmallAngleBellows::bellowsMaterialVolume() const {
 }
 
 double SmallAngleBellows::bellowsThickness(
-  const double volume, const double sectorLength) const {
+  const double volume, const double sectorLength) const
+/*!
+  Given the effective length of a sector and the volume of the bellows' material,
+  calculate the bellows' thickness.
+
+  The expression below is obtained by solving the expression for the volume for b.
+ */
+{
   return sqrt(
     (
       volume*M_1_PI
@@ -158,7 +201,12 @@ double SmallAngleBellows::bellowsThickness(
   )-pipeInnerRadius;
 }
 
-void SmallAngleBellows::checkInput() const {
+void SmallAngleBellows::checkInput() const 
+/*!
+  Print warning messages or throw errors if input parameters challenge/violate the
+  assumptions of this model.
+ */
+{
   ELog::RegMethod RegA("SmallAngleBellows","checkInput");
 
   if(bellowsLength() - 2.0*nFolds*bellowsMaterialThick < Geometry::zeroTol){
@@ -181,8 +229,15 @@ void SmallAngleBellows::checkInput() const {
   }
 }
 
-void SmallAngleBellows::createSectors(){
+void SmallAngleBellows::createSectors()
+/*!
+  Based on the given nominal values bellowsBaseMaterial and bellowsThick, determine 
+  effective densities and bellows thicknesses for each sector.
+ */
+{
+  // 1) Determine the volume of the bellows' material that is conserved.
   const double totalBellowsMaterialVolume = bellowsMaterialVolume();
+  // Edge case nSectors = 1
   if(nSectors == 1){
     bellowsThickPerSector.push_back(bellowsThick);
     double totalVolume = (
@@ -205,9 +260,13 @@ void SmallAngleBellows::createSectors(){
     const double sBellowsMaterialVolume = totalBellowsMaterialVolume/nSectors;
     double sLength, sTotalVolume;
     for(int nSector=0;nSector<nSectors;++nSector){
+      // 2) Determine the length of a sector.
       sLength = sectorLength(nSector);
+      // 3) For a given length, adjust the radius to conserve the volume.
       bellowsThickPerSector.push_back(
         bellowsThickness(totalBellowsMaterialVolume,sLength));
+      // 4) For the adjusted radius, calculate the volume fraction taken up by the
+      // bellows.
       sTotalVolume = (
         M_PI*(
           (pipeInnerRadius+bellowsThickPerSector[nSector])
@@ -226,7 +285,13 @@ void SmallAngleBellows::createSectors(){
   }
 }
 
-std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const {
+std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const
+/*!
+  Find the cylindric surface with the largest radius (either the flange radius or the 
+  largest bellows-sector radius) and return its relative index for the front and back 
+  part.
+ */
+{
   if(nSectors == 1){
     if(pipeInnerRadius+bellowsThickPerSector[0] > flangeRadius){
       return {
@@ -252,25 +317,58 @@ std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const {
 }
 
 double SmallAngleBellows::sectorAngle(
-  const int nSector,const bool centerAngle=false) const {
+  const int nSector,const bool centerAngle=false) const
+/*!
+  Starting or center angle of a given sector.
+ */
+{
   if(centerAngle){
     return nSector*2.0*M_PI/nSectors;
   }
   return (nSector-0.5)*2.0*M_PI/nSectors;
 }
 
-double SmallAngleBellows::sectorLength(const int nSector) const {
+double SmallAngleBellows::sectorLength(const int nSector) const
+/*!
+  When modeling the variation of the bellows' thickness with the angle (sector), it is 
+  assumed that the bent bellow has the shape of a circle's line segment (in contrast to
+  what the geometry actually looks like, but for small angle, the difference is 
+  negligible). In this case, the sectors with the maximum and minimum bend have 
+  lengths of
+
+  L_max = L - alpha*r,
+  and
+  L_min = L + alpha*r,
+
+  respectively, where
+  
+  L = length
+  alpha = angle
+  r = pipeInnerRadius
+
+  This function returns the 'effective length' for any sector angle.
+
+ */
+{
   return (bellowsLength()+angle*pipeInnerRadius*cos(sectorAngle(nSector,true)));
 }
 
 int SmallAngleBellows::sectorPlaneID(
   const int nSector, const int base, const int offset = 0
-) const {
+) const
+/*!
+  Create relative IDs for the sector-separating planes.
+ */
+{
   return offset+10*(nSector%nSectors)+base;
 }
 
 void
 SmallAngleBellows::populate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables and check input
+    \param Control :: DataBase of variables
+  */
 {
   ELog::RegMethod RegA("SmallAngleBellows","populate");
 
@@ -300,6 +398,14 @@ SmallAngleBellows::populate(const FuncDataBase& Control)
 
 void
 SmallAngleBellows::createSurfaces()
+  /*!
+    Create the surfaces
+
+    This function uses the following rules on top of the usual conventions:
+    - Cylindric-surface IDs end with 7 (8) ...
+    - Sector-separating-plane IDs end with 3 (4) ...
+    in the front (back) part.
+  */
 {
   ELog::RegMethod RegA("SmallAngleBellows","createSurfaces");
 
@@ -367,9 +473,10 @@ SmallAngleBellows::createSurfaces()
 void
 SmallAngleBellows::createObjects(Simulation& System)
 {
+  /*!
+    Create cells
+  */
   ELog::RegMethod RegA("SmallAngleBellows","createObjects");
-
-  HeadRule HR;
 
   const HeadRule& frontHR=getRule("front");
   const HeadRule& backHR=getRule("back");
@@ -477,6 +584,9 @@ SmallAngleBellows::createObjects(Simulation& System)
 
 void
 SmallAngleBellows::createLinks()
+/*!
+  Create links
+ */
 {
   ELog::RegMethod RegA("SmallAngleBellows","createLinks");
 
@@ -493,6 +603,9 @@ void
 SmallAngleBellows::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
 		   const long int FIndex)
+/*!
+  Create bellows
+ */
 {
   ELog::RegMethod RegA("SmallAngleBellows","createAll");
 
