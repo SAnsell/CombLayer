@@ -1513,6 +1513,8 @@ opticsVariables(FuncDataBase& Control,
   // Refs. [32] and [33] only contain evidence that this must be the fixed angle, but 
   // I have not found a reference that states this explicitly.
   const double sinCrysBranchCenterAngleDeg = 16.177;
+  const double sinCrysBranchMinAngleDeg = 15.041;
+  const double sinCrysBranchMaxAngleDeg = 17.313;
   const double sinCrysBranchCenterAngle = sinCrysBranchCenterAngleDeg * M_PI/180.0;
   const Geometry::Vec3D vSinCrys(
     -sin(sinCrysBranchCenterAngle),0.0,-cos(sinCrysBranchCenterAngle));
@@ -1586,11 +1588,47 @@ opticsVariables(FuncDataBase& Control,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
   FlangeGen.generateMount(Control,name+"Screen",1);
 
-  double SINCRYSAngleDeg = Control.EvalDefVar<double>(
+  const double SINCRYSAngleDeg = Control.EvalDefVar<double>(
     beamName+"SINCRYSAngle",sinCrysBranchCenterAngleDeg);
+  if(
+    SINCRYSAngleDeg < sinCrysBranchMinAngleDeg - Geometry::zeroTol ||
+    SINCRYSAngleDeg < sinCrysBranchMaxAngleDeg + Geometry::zeroTol
+  ){
+    ELog::EM << "SINCRYS branch angle of " + std::to_string(SINCRYSAngleDeg)
+    + " deg is outside the nominal range [ " + std::to_string(sinCrysBranchMinAngleDeg)
+    + " deg, " + std::to_string(sinCrysBranchMaxAngleDeg) + " deg ]" << ELog::endWarn;
+  }
+  const double SINCRYSAngle = SINCRYSAngleDeg*M_PI/180.0;
   SmallAngleBellowsGenerator smallAngleBellowsGen;
-  smallAngleBellowsGen.setLength(18.0); // [30]
-  smallAngleBellowsGen.setAngle(0.0);
+  const double cardanBellowsLength = 18.0; // [30]
+  const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
+
+  const Geometry::Vec3D SINCRYSBranchCenterVector(
+    cos(sinCrysBranchCenterAngle),-sin(sinCrysBranchCenterAngle),0.0);
+  const Geometry::Vec3D SINCRYSTransportPipeUpstreamJoint = (
+    SINCRYSBranchCenterVector*(
+      CM1Port12Length+valve3Length+2.0*beamViewerS1PortLength+0.5*cardanBellowsLength
+    )
+  );
+  const Geometry::Vec3D SINCRYSTransportPipeDownstreamJoint = (
+    Geometry::Vec3D(
+      -SINCRYSBranchShift/tan(SINCRYSAngle),SINCRYSBranchShift,0.0
+    )
+    -SINCRYSBranchCenterVector*(CM2PortLength+0.5*cardanBellowsLength)
+  );
+  Geometry::Vec3D SINCRYSTransportPipeDirection = (
+    SINCRYSTransportPipeDownstreamJoint-SINCRYSTransportPipeUpstreamJoint
+  );
+  SINCRYSTransportPipeDirection.makeUnit();
+  const double cardanBellowsAngleSign = (
+      SINCRYSTransportPipeDirection*SINCRYSBranchCenterVector).Z()
+      /fabs((SINCRYSTransportPipeDirection*SINCRYSBranchCenterVector).Z()
+    );
+  const double cardanBellowsAngle = cardanBellowsAngleSign*acos(
+    SINCRYSTransportPipeDirection.dotProd(SINCRYSBranchCenterVector));
+
+  smallAngleBellowsGen.setLength(cardanBellowsLength);
+  smallAngleBellowsGen.setAngle(cardanBellowsAngle*180.0/M_PI);
   name = opticsName+"CardanBellowsUpstream";
   smallAngleBellowsGen.generateBellows(Control,name);
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
@@ -1611,7 +1649,6 @@ opticsVariables(FuncDataBase& Control,
   name=opticsName+"CM2";
   SimpleTubeGen.setCF<CF250>(); // [32]
   const double CM2MainTubeLength = 26.0; // [30]
-  const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,name,CM2MainTubeLength);
   Control.addVariable(name+"NPorts",2);
