@@ -1586,10 +1586,13 @@ opticsVariables(FuncDataBase& Control,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
   FlangeGen.generateMount(Control,name+"Screen",1);
 
+  double SINCRYSAngleDeg = Control.EvalDefVar<double>(
+    beamName+"SINCRYSAngle",sinCrysBranchCenterAngleDeg);
   SmallAngleBellowsGenerator smallAngleBellowsGen;
   smallAngleBellowsGen.setLength(18.0); // [30]
   smallAngleBellowsGen.setAngle(0.0);
-  smallAngleBellowsGen.generateBellows(Control,opticsName+"CardanBellowsUpstream");
+  name = opticsName+"CardanBellowsUpstream";
+  smallAngleBellowsGen.generateBellows(Control,name);
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
   // Length at center angle from [30]
   PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",180.0);
@@ -1603,8 +1606,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(name+"NFolds",30);
   name = opticsName + "CardanBellowsDownstream";
   smallAngleBellowsGen.generateBellows(Control,name); // [30]
-  // Reset NFolds to default.
-  Control.addVariable(name+"NFolds",10);
+  Control.addVariable(name+"YAngle",sinCrysBranchCenterAngleDeg);
 
   name=opticsName+"CM2";
   SimpleTubeGen.setCF<CF250>(); // [32]
@@ -1628,7 +1630,7 @@ opticsVariables(FuncDataBase& Control,
     // offset of 980 mm, results in a value of about 3378 mm that creates a visible 
     // discrepancy in the geometry. For this reason, the optical-axis distance is 
     // calculated here instead of taking it from [31] or [33].
-    +fabs(SINCRYSBranchShift)/tan(sinCrysBranchCenterAngle)
+    +fabs(SINCRYSBranchShift)/tan(SINCRYSAngleDeg*M_PI/180.0)
     +CM2PortLength
   );
   Control.addVariable(name+"ZAngle",180.0);
