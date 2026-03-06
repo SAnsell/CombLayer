@@ -803,14 +803,15 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   cm1->calcLinkAxis(2,crossX,crossY,crossZ);
   const double midDividerAngle = 10.0;
   ModelSupport::buildPlaneRotAxis(SMap,buildIndex+5003,DPoint,crossX,-Z,-midDividerAngle);
+  ModelSupport::buildPlane(SMap,buildIndex+5004,DPoint-X*60.0,-X);
 
   HeadRule HSurroundA=buildZone.getSurround();
   HeadRule HSurroundB=buildZone.getSurround();
   HSurroundA.removeMatchedPlanes(-X,0.9);   // remove left/right
   HSurroundB.removeMatchedPlanes(X,0.9);
 
-  HSurroundA.addIntersection(-SMap.realSurf(buildIndex+5003));
-  HSurroundB.addIntersection(SMap.realSurf(buildIndex+5003));
+  HSurroundA.addIntersection(ModelSupport::getHeadRule(buildIndex,"-5003 : 5004"));
+  HSurroundB.addIntersection(ModelSupport::getHeadRule(buildIndex,"5003 -5004"));
 
   buildZoneSinCrys.setSurround(HSurroundA);
   buildZoneDanMAX.setSurround(HSurroundB);
