@@ -114,6 +114,7 @@
 // [31] SINCRYS layout CM1, Drawing 256569, 2025-05-06
 // [32] JJ X-RAY, SINCRY beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
 // [33] JJ X-RAY, SINCRYS layout drawing, 23087, 2025-06-27 (Appendix to [32])
+// [34] /mxn/groups/rad/Beamlines/DanMAX/Simulations/03_OH.STEP, see also [10]
 
 namespace setVariable
 {
@@ -1681,12 +1682,13 @@ opticsVariables(FuncDataBase& Control,
   // (see comment above about the unusual length).
   Control.addVariable(name+"NFolds",30);
   name = opticsName + "CardanBellowsDownstream";
-  smallAngleBellowsGen.generateBellows(Control,name); // [30]
+  smallAngleBellowsGen.generateBellows(Control,name);
+  // Compensate the rotation introduced by attaching the bellows to CM2.
   Control.addVariable(name+"YAngle",sinCrysBranchCenterAngleDeg);
 
   name=opticsName+"CM2";
   SimpleTubeGen.setCF<CF250>(); // [32]
-  const double CM2MainTubeLength = 26.0; // [30]
+  const double CM2MainTubeLength = 26.0; // [34]
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,name,CM2MainTubeLength);
   Control.addVariable(name+"NPorts",2);
@@ -1712,16 +1714,16 @@ opticsVariables(FuncDataBase& Control,
 
   // See also comments on LinearlyGuidedBellowsUpstream
   name = opticsName+"LinearlyGuidedBellowsDownstream";
-  // Length at center angle from [30]
+  // Length at center angle from [34]
   BellowGen.generateBellow(Control,name,70.0);
   Control.addVariable(name+"NFolds",30);
 
-  PipeGen.generatePipe(Control,opticsName+"TransportPipe2",170.0); // [30]
+  PipeGen.generatePipe(Control,opticsName+"TransportPipe2",170.0); // [34]
 
   // Implement as regular bellows, because CardanBellowsUpstream and 
   // CardanBellowsDownstream perform all the bending.
   name = opticsName+"CardanBellowsTransfocator";
-  BellowGen.generateBellow(Control,name,18.0); // [30]
+  BellowGen.generateBellow(Control,name,18.0); // [34]
 
   // If not referenced, the following uses dummy dimensions copied from the 
   // DanMAX-branch transfocator ("lens box").
@@ -1741,7 +1743,7 @@ opticsVariables(FuncDataBase& Control,
 
   Control.addVariable(transfocatorName+"XStep",SINCRYSBranchShift);
   Control.addVariable(transfocatorName+"YStep",
-    danmaxVar::absY::CM1+639.9); // [33]
+    danmaxVar::absY::CM1+639.9); // [34]
 
   // Laue monochromator
   PipeGen.setNoWindow();
