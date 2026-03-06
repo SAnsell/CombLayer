@@ -155,6 +155,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   slitTubeSBackAdapter(new constructSystem::FlangePlate(newName+"SlitTubeSBackAdapter")),
   beamViewerS3(new constructSystem::PipeTube(newName+"BeamViewerS3")),
   beamViewerS3Screen(new xraySystem::FlangeMount(newName+"BeamViewerS3Screen")),
+  valveS3(new constructSystem::GateValveCube(newName+"ValveS3")),
+  slitsToShutterBellows(new constructSystem::Bellows(newName+"SlitsToShutterBellows")),
+  monoShutterS(new xraySystem::MonoShutterR3(newName+"MonoShutterS")),
 
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),
@@ -253,6 +256,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(slitTubeSBackAdapter);
   OR.addObject(beamViewerS3);
   OR.addObject(beamViewerS3Screen);
+  OR.addObject(valveS3);
+  OR.addObject(slitsToShutterBellows);
+  OR.addObject(monoShutterS);
 
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
@@ -966,6 +972,19 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   beamViewerS3Screen->addInsertCell("Body",beamViewerS3->getPort(2).getCell("Void"));
   beamViewerS3Screen->setBladeCentre(beamViewerS3->getLinkPt(0));
   beamViewerS3Screen->createAll(System,beamViewerS3->getPort(2),"#InnerPlate");
+
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*beamViewerS3,"back",*valveS3
+  );
+  monoShutterS->createAll(System,*frontEnd,0);
+  slitsToShutterBellows->setBack(*valveS3,"back");
+  slitsToShutterBellows->createAll(System,*monoShutterS,"front");
+  slitsToShutterBellows->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*slitsToShutterBellows,"front")
+  );
+  monoShutterS->insertInCell(
+    System,buildZoneSinCrys.createUnit(System,*monoShutterS,"back")
+  );
 
   outerCell=buildZoneSinCrys.createUnit(System);
   for (int i=0; i<1; ++i) {

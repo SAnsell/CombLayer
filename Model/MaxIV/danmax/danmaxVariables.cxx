@@ -1847,6 +1847,23 @@ opticsVariables(FuncDataBase& Control,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
   FlangeGen.generateMount(Control,name+"Screen",1);
 
+  // See also comments on ValveS2.
+  name = opticsName+"ValveS3";
+  Control.copyVarSet(beamName+"FrontBeamValve1",name); // [34]
+  Control.addVariable(name+"YAngle",90.0);
+
+  BellowGen.generateBellow(
+    Control,opticsName+"SlitsToShutterBellows",10.0); // Dummy length
+
+  // Mono shutter is identical to the one on the DanMAX branch [32].
+  // See there for more information.
+  setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MShutterGen;
+  name = opticsName+"MonoShutterS";
+  MShutterGen.generate(Control,name);
+  Control.addVariable(name+"XStep",SINCRYSBranchShift);
+  Control.addVariable(name+"YStep",
+    danmaxVar::absY::CM1+819.0-MShutterGen.getLength()/2.0);
+
   // Laue monochromator
   PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",bellowCDLength);
