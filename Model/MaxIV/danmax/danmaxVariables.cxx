@@ -1237,7 +1237,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   Control.addVariable(monoVesselKey+"PipeMat", "Stainless316L"); // only front/back ports
 
  // MLM Ports:
-  Control.addVariable(monoVesselKey+"NPorts",2);
+  Control.addVariable(monoVesselKey+"NPorts",3);
 
   // Ion pump port (top)
   PItemGen.setCF<setVariable::DN160CF>(17.69); // [25]
@@ -1246,6 +1246,16 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			Geometry::Vec3D(0.0, -1.53, 0.0),
 			Geometry::Vec3D(0,0,1));
 
+  // View port (top of vessel, along Bragg axis)
+  PItemGen.setCF<setVariable::DN100CF>(19.43); // [25]
+  PItemGen.setWindowPlate(setVariable::DN100CF::flangeLength, // [25]
+			  1.5, // TODO: window thick is dummy
+			  5.0, // [25]
+			  "SteelUnknownGrade", // TODO: dummy
+			  "QuartzGlass");  // [35, section 4.1]
+  PItemGen.generatePort(Control,monoVesselKey+"Port1",
+			Geometry::Vec3D(0.0, -35.9, 0.0),
+			Geometry::Vec3D(0,0,1));
 
   PItemGen.setCF<setVariable::CF63>(34.2);
   PItemGen.setWindowPlate(setVariable::CF63::flangeLength, // [25]
@@ -1253,7 +1263,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			  3.2, // [25]
 			  "SteelUnknownGrade", // TODO: dummy
 			  "QuartzGlass");  // [35, section 4.1]
-  PItemGen.generatePort(Control,monoVesselKey+"Port1",
+  PItemGen.generatePort(Control,monoVesselKey+"Port2",
 			Geometry::Vec3D(0.0, -35.9, 0.0),
 			Geometry::Vec3D(-1,0,0));
 
