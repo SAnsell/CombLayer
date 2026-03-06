@@ -42,12 +42,19 @@ namespace setVariable
     static constexpr double innerRadius=outerRadius-wallThick;
     static constexpr double flangeRadius=11.35/2;
     static constexpr double flangeLength=1.7;
-    /* static constexpr double bellowStep=0.5; */
-    /* static constexpr double bellowThick=0.5; */
-    /* static constexpr double gasketRadius=0.5; */
-    /* static constexpr double gasketThick=0.7; */
-    /* static constexpr double boltRadius=0.4; */
     static constexpr size_t nBolts=8;
+  };
+
+  // DN160CF 203mm (8″) OD Flanges
+  // https://www.lewvac.co.uk/product/dn160cf-flanges-203mm-8-od-flanges/
+  struct DN160CF
+  {
+    static constexpr double outerRadius=15.24/2.0;
+    static constexpr double wallThick=0.135;
+    static constexpr double innerRadius=outerRadius-wallThick;
+    static constexpr double flangeRadius=20.24/2.0;
+    static constexpr double flangeLength=2.24;
+    static constexpr size_t nBolts=20;
   };
 
 }  // NAMESPACE setVariables
