@@ -111,7 +111,7 @@
 // [29] /mxn/groups/rad/Beamlines/DanMAX/Drawings/DanMAX/Optics/FDR_Diagnostics/Stp Files/DM1/AQM0214.stp
 // [30] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
 // [31] SINCRYS layout CM1, Drawing 256569, 2025-05-06
-
+// [32] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
 namespace setVariable
 {
 
@@ -1222,22 +1222,23 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
       MLMTotalLength-2.0*MLMWallThick-2.0*MLMPortLength
     );
 
-  Control.addVariable(monoVesselKey+"NPorts",1);
-  Control.addVariable(monoVesselKey+"YStep",
-    danmaxVar::absY::MLM-MLMFrontToTopViewPort);
+  Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::MLM-MLMFrontToTopViewPort);
+  Control.addVariable(monoVesselKey+"WallMat", "Stainless316L");
+  Control.addVariable(monoVesselKey+"PipeMat", "Stainless316L"); // only front/back ports
 
-  PItemGen.setCF<setVariable::CF63>(35.0-.8);
+ // MLM Ports:
+  Control.addVariable(monoVesselKey+"NPorts",1);
+
+  PItemGen.setCF<setVariable::CF63>(34.2);
   PItemGen.setWindowPlate(setVariable::CF63::flangeLength, // [25]
 			  1.5, // TODO: window thick is dummy
 			  3.2, // [25]
 			  "SteelUnknownGrade", // TODO: dummy
-			  "LeadGlass");  // TODO: dummy
+			  "QuartzGlass");  // [32, section 4.1]
   PItemGen.generatePort(Control,monoVesselKey+"Port0",
 			Geometry::Vec3D(0.0, -35.9, 0.0),
 			Geometry::Vec3D(-1,0,0));
 
-  Control.addVariable(monoVesselKey+"WallMat", "Stainless316L");
-  Control.addVariable(monoVesselKey+"PipeMat", "Stainless316L");
 
 
   // crystals gap 4mm
