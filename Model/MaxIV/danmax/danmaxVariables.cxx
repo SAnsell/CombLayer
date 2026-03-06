@@ -1773,21 +1773,22 @@ opticsVariables(FuncDataBase& Control,
   // See also comment on CardanBellowsCM2.
   BellowGen.generateBellow(Control,opticsName+"CardanBellowsTransfocator",18.0); // [34]
 
-  // If not referenced, the following uses dummy dimensions copied from the 
-  // DanMAX-branch transfocator ("lens box").
   const std::string transfocatorName=opticsName+"Transfocator";
   setVariable::MonoBoxGenerator MBoxGen;
-  MBoxGen.setCF<CF40>();
-  const double wallThick = 1.0;
+  MBoxGen.setCF<CF40>(); // [32,34]
+  const double wallThick = 0.5;
   MBoxGen.setWallThick(wallThick);
-  const double portABLength = 4.5;
-  MBoxGen.setPortLength(portABLength, portABLength);
-  const double bottomThick = 2.0;
-  const double topThick = 2.4;
-  MBoxGen.setLids(3.5,bottomThick, topThick);
+  const double transfocatorLength = 74.0; // [34]
+  const double transfocatorBoxLength = 62.6; // [34]
+  const double transfocatorPortLength = (transfocatorLength-transfocatorBoxLength)/2.0;
+  MBoxGen.setPortLength(transfocatorPortLength,transfocatorPortLength);
+  const double bottomThick = 0.5; // [34]
+  const double topThick = 2.0;
+  // Actually, the transfocator vessel has no overhang at the bottom, see [34].
+  MBoxGen.setLids(5.5,bottomThick,topThick); // [34]
   MBoxGen.generateBox(Control,transfocatorName,
-    21.0,12.0-2.0*topThick,8.2-2.0*bottomThick,
-    2.0*(49.445/2.0-(wallThick+portABLength)));
+    16.4-2.0*wallThick,8.3,9.8,
+    transfocatorBoxLength-2.0*wallThick); // [34]
 
   Control.addVariable(transfocatorName+"XStep",SINCRYSBranchShift);
   Control.addVariable(transfocatorName+"YStep",
