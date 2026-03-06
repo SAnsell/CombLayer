@@ -1691,12 +1691,32 @@ opticsVariables(FuncDataBase& Control,
   const double CM2MainTubeLength = 26.0; // [34]
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,name,CM2MainTubeLength);
-  Control.addVariable(name+"NPorts",2);
+  Control.addVariable(name+"NPorts",4);
 
   PItemGen.setCF<setVariable::CF40>(CM2PortLength);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),vSinCrys);
   PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),ZVec);
+  
+  Geometry::Vec3D YVec(0.0,1.0,0.0);
+  Geometry::Vec3D beamViewer2Dir = vSinCrys;
+  // [32] gives the angle between the crystal and the incoming beam in CM2
+  // as 45 degrees. From the way the crystal is mounted in the port (see [34]),
+  // it is clear that the port's angle w.r.t. the beam port must also be 45 degrees.
+  beamViewer2Dir.rotate(YVec,-M_PI_4);
+  const Geometry::Vec3D beamViewer2CM2CenterOffset = vSinCrys*6.0;
+
+   // Length of beam-viewer and camera ports [34]
+  PItemGen.setLength(CF250::outerRadius+2.5);
+  // Upstream distance of the beam-viewer screen from the center of CM2 roughly
+  // read off as 6(1) cm from [34].
+  PItemGen.generatePort(Control,name+"Port2",beamViewer2CM2CenterOffset,
+    beamViewer2Dir);
+  Geometry::Vec3D beamViewer2CameraDir = vSinCrys;
+  // Angle of camera port roughly read off as 90(5) deg from [34].
+  beamViewer2CameraDir.rotate(YVec,-M_PI_2);
+  PItemGen.generatePort(Control,name+"Port3",beamViewer2CM2CenterOffset,
+    beamViewer2CameraDir);
 
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",

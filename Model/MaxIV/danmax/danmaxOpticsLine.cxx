@@ -866,6 +866,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   cm2->setPortRotation(4,Geometry::Vec3D(1,0,0));
   cm2->createAll(System,*frontEnd,0);
+  cm2->intersectPorts(System,0,2);
 
   cardanBellowsDownstream->createAll(System,cm2->getPort(0),"OuterPlate");
   linearlyGuidedBellowsUpstream->setBack(*pipeSinCrys,"back");
@@ -874,10 +875,10 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   linearlyGuidedBellowsUpstream->insertAllInCell(
     System,buildZoneSinCrys.createUnit(System,*linearlyGuidedBellowsUpstream,"front")
   );
-  cardanBellowsDownstream->insertInCell(
-    System,buildZoneSinCrys.createUnit(System,*cardanBellowsDownstream,"front")
-  );
+  outerCell = buildZoneSinCrys.createUnit(System,*cardanBellowsDownstream,"front");
+  cardanBellowsDownstream->insertInCell(System,outerCell);
 
+  cm2->getPort(2).insertInCell(System,outerCell);
   cm2->insertAllInCell(
     System,buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate"));
 
