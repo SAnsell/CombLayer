@@ -78,6 +78,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
+#include "GateValveCube.h"
 
 #include "BremBlock.h"
 #include "GateValveCylinder.h"
@@ -139,6 +140,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   linearlyGuidedBellowsUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowsUpstream")),
   cardanBellowsDownstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsDownstream")),
   cm2(new constructSystem::PipeTube(newName+"CM2")),
+  valveS2(new constructSystem::GateValveCube(newName+"ValveS2")),
+  cardanBellowsCM2(new constructSystem::Bellows(newName+"CardanBellowsCM2")),
   linearlyGuidedBellowsDownstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowsDownstream")),
   transportPipe2(new constructSystem::VacuumPipe(newName+"TransportPipe2")),
   cardanBellowsTransfocator(new constructSystem::Bellows(newName+"CardanBellowsTransfocator")),
@@ -226,6 +229,12 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(linearlyGuidedBellowsUpstream);
   OR.addObject(cardanBellowsDownstream);
   OR.addObject(cm2);
+  OR.addObject(valveS2);
+  OR.addObject(cardanBellowsCM2);
+  OR.addObject(linearlyGuidedBellowsDownstream);
+  OR.addObject(transportPipe2);
+  OR.addObject(cardanBellowsTransfocator);
+  OR.addObject(transfocator);
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
   OR.addObject(bellowD);
@@ -872,10 +881,17 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   cm2->insertAllInCell(
     System,buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate"));
 
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,cm2->getPort(1),"OuterPlate",*valveS2
+  );
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*valveS2,"back",*cardanBellowsCM2
+  );
+
   transfocator->createAll(System,*frontEnd,0);
   cardanBellowsTransfocator->createAll(System,*transfocator,"front");
   transportPipe2->createAll(System,*cardanBellowsTransfocator,"back");
-  linearlyGuidedBellowsDownstream->setBack(cm2->getPort(1),"OuterPlate");
+  linearlyGuidedBellowsDownstream->setBack(*cardanBellowsCM2,"back");
   linearlyGuidedBellowsDownstream->createAll(System,*transportPipe2,"back");
 
   linearlyGuidedBellowsDownstream->insertAllInCell(

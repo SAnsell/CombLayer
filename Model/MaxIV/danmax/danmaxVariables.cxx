@@ -1712,6 +1712,15 @@ opticsVariables(FuncDataBase& Control,
   );
   Control.addVariable(name+"ZAngle",180.0);
 
+  // Gate valve 2 is a different type than valve 1, which can be seen by comparing 
+  // [30] and [34]. Due to its outer shape, assumed that it is similar to 
+  // FrontBeamValve1.
+  Control.copyVarSet(beamName+"FrontBeamValve1",opticsName+"ValveS2"); // [34]
+
+  // Implement as stiff -in particular, non-bending- bellows, because transversal
+  // stress is neglected in this part of the beamline.
+  BellowGen.generateBellow(Control,opticsName+"CardanBellowsCM2",18.0); // [34]
+
   // See also comments on LinearlyGuidedBellowsUpstream
   name = opticsName+"LinearlyGuidedBellowsDownstream";
   // Length at center angle from [34]
@@ -1720,10 +1729,8 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.generatePipe(Control,opticsName+"TransportPipe2",170.0); // [34]
 
-  // Implement as regular bellows, because CardanBellowsUpstream and 
-  // CardanBellowsDownstream perform all the bending.
-  name = opticsName+"CardanBellowsTransfocator";
-  BellowGen.generateBellow(Control,name,18.0); // [34]
+  // See also comment on CardanBellowsCM2.
+  BellowGen.generateBellow(Control,opticsName+"CardanBellowsTransfocator",18.0); // [34]
 
   // If not referenced, the following uses dummy dimensions copied from the 
   // DanMAX-branch transfocator ("lens box").
