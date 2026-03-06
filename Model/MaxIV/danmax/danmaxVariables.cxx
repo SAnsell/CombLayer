@@ -1706,8 +1706,9 @@ opticsVariables(FuncDataBase& Control,
   beamViewer2Dir.rotate(YVec,-M_PI_4);
   const Geometry::Vec3D beamViewer2CM2CenterOffset = vSinCrys*6.0;
 
-   // Length of beam-viewer and camera ports [34]
-  PItemGen.setLength(CF250::outerRadius+2.5);
+  // Length of beam-viewer and camera ports [34]
+  const double beamViewerS2PortLength = CF250::outerRadius+2.5;
+  PItemGen.setLength(beamViewerS2PortLength);
   // Upstream distance of the beam-viewer screen from the center of CM2 roughly
   // read off as 6(1) cm from [34].
   PItemGen.generatePort(Control,name+"Port2",beamViewer2CM2CenterOffset,
@@ -1717,6 +1718,26 @@ opticsVariables(FuncDataBase& Control,
   beamViewer2CameraDir.rotate(YVec,-M_PI_2);
   PItemGen.generatePort(Control,name+"Port3",beamViewer2CM2CenterOffset,
     beamViewer2CameraDir);
+
+  const double beamViewerS2ScreenThick = 0.005; // [34]
+  const double beamViewerS2ScreenSideLength = 1.0; // [34]
+  FlangeGen.setNoPlate();
+  // Thread is a conservative approximation. In reality, there is much more material 
+  // around the crystal, see [32] or [34].
+  FlangeGen.setThread(beamViewerS2ScreenThick,
+    beamViewerS2PortLength-beamViewerS2ScreenSideLength/2.0,
+    "SteelUnknownGrade"
+  );
+  // Angle w.r.t. the beam is 45 degrees according to [32], but this angle is already
+  // fixed by the beam-port angle. In reality, the angle is actually -45 degrees w.r.t.
+  // the beam, because the screen is mounted in a way that is not possible with the 
+  // FlangeMount class (I believe).
+  // Material is actually given as "YAG" in [32].
+  FlangeGen.setBlade(
+    beamViewerS2ScreenSideLength,beamViewerS2ScreenSideLength,
+    beamViewerS2ScreenThick,0.0,"Diamond",1);
+  FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",1);
+  Control.addVariable(opticsName+"BeamViewerS2ScreenBladeCentreActive",1);
 
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",

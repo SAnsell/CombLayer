@@ -140,6 +140,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   linearlyGuidedBellowsUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowsUpstream")),
   cardanBellowsDownstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsDownstream")),
   cm2(new constructSystem::PipeTube(newName+"CM2")),
+  beamViewerS2Screen(new xraySystem::FlangeMount(newName+"BeamViewerS2Screen")),
   valveS2(new constructSystem::GateValveCube(newName+"ValveS2")),
   cardanBellowsCM2(new constructSystem::Bellows(newName+"CardanBellowsCM2")),
   linearlyGuidedBellowsDownstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowsDownstream")),
@@ -229,6 +230,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(linearlyGuidedBellowsUpstream);
   OR.addObject(cardanBellowsDownstream);
   OR.addObject(cm2);
+  OR.addObject(beamViewerS2Screen);
   OR.addObject(valveS2);
   OR.addObject(cardanBellowsCM2);
   OR.addObject(linearlyGuidedBellowsDownstream);
@@ -867,6 +869,11 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   cm2->setPortRotation(4,Geometry::Vec3D(1,0,0));
   cm2->createAll(System,*frontEnd,0);
   cm2->intersectPorts(System,0,2);
+  beamViewerS2Screen->addInsertCell("Body",cm2->getCell("Void"));
+  beamViewerS2Screen->addInsertCell("Blade",cm2->getCell("Void"));
+  beamViewerS2Screen->addInsertCell("Body",cm2->getPort(2).getCell("Void"));
+  // beamViewerS2Screen->setBladeCentre(cm2->getLinkPt(0));
+  beamViewerS2Screen->createAll(System,cm2->getPort(2),"#InnerPlate");
 
   cardanBellowsDownstream->createAll(System,cm2->getPort(0),"OuterPlate");
   linearlyGuidedBellowsUpstream->setBack(*pipeSinCrys,"back");
