@@ -169,6 +169,7 @@ FlangePlateGenerator::generateFlangePlate
   template void FlangePlateGenerator::setCF<CF100>(const double);
   template void FlangePlateGenerator::setCF<CF120>(const double);
   template void FlangePlateGenerator::setCF<CF150>(const double);
+  template void FlangePlateGenerator::setCF<CF160>(const double);
   template void FlangePlateGenerator::setFlangeCF<CF25>();
   template void FlangePlateGenerator::setFlangeCF<CF40_22>();
   template void FlangePlateGenerator::setFlangeCF<CF63>();

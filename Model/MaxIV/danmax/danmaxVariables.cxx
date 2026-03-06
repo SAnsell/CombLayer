@@ -1773,7 +1773,7 @@ opticsVariables(FuncDataBase& Control,
   // See also comment on CardanBellowsCM2.
   BellowGen.generateBellow(Control,opticsName+"CardanBellowsTransfocator",18.0); // [34]
 
-  const std::string transfocatorName=opticsName+"Transfocator";
+  name=opticsName+"Transfocator";
   setVariable::MonoBoxGenerator MBoxGen;
   MBoxGen.setCF<CF40>(); // [32,34]
   const double wallThick = 0.5;
@@ -1786,13 +1786,30 @@ opticsVariables(FuncDataBase& Control,
   const double topThick = 2.0;
   // Actually, the transfocator vessel has no overhang at the bottom, see [34].
   MBoxGen.setLids(5.5,bottomThick,topThick); // [34]
-  MBoxGen.generateBox(Control,transfocatorName,
+  MBoxGen.generateBox(Control,name,
     16.4-2.0*wallThick,8.3,9.8,
     transfocatorBoxLength-2.0*wallThick); // [34]
 
-  Control.addVariable(transfocatorName+"XStep",SINCRYSBranchShift);
-  Control.addVariable(transfocatorName+"YStep",
-    danmaxVar::absY::CM1+639.9); // [34]
+  Control.addVariable(name+"XStep",SINCRYSBranchShift);
+  Control.addVariable(name+"YStep",
+    danmaxVar::absY::CM1+639.9); // [33]
+
+  name=opticsName+"SlitTubeS";
+  SimpleTubeGen.setCF<CF160>(); // [32]
+  SimpleTubeGen.setFlangeLength(0.5*CF160::flangeLength,0.5*CF160::flangeLength);
+  SimpleTubeGen.setCap(false, false);
+  const double slitTubeSLength = 12.3; // [34]
+  SimpleTubeGen.generateTube(Control,name,slitTubeSLength);
+  Control.addVariable(name+"NPorts",0);
+  Control.addVariable(name+"XStep",SINCRYSBranchShift);
+  Control.addVariable(name+"YStep",
+    danmaxVar::absY::CM1+769.0-slitTubeSLength/2.0); // [33]
+
+  FlangePlateGenerator flangePlateGen;
+  flangePlateGen.setCF<CF160>(CF40::innerRadius); // [32]
+  flangePlateGen.setFlangeLen(CF160::flangeLength/2.0); // [34]
+  flangePlateGen.generateFlangePlate(Control,name+"FrontAdapter");
+  flangePlateGen.generateFlangePlate(Control,name+"BackAdapter");
 
   // Laue monochromator
   PipeGen.setNoWindow();

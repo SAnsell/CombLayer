@@ -147,6 +147,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   transportPipe2(new constructSystem::VacuumPipe(newName+"TransportPipe2")),
   cardanBellowsTransfocator(new constructSystem::Bellows(newName+"CardanBellowsTransfocator")),
   transfocator(new xraySystem::MonoBox(newName+"Transfocator")),
+  slitTubeSFrontAdapter(new constructSystem::FlangePlate(newName+"SlitTubeSFrontAdapter")),
+  slitTubeS(new constructSystem::PipeTube(newName+"SlitTubeS")),
+  slitTubeSBackAdapter(new constructSystem::FlangePlate(newName+"SlitTubeSBackAdapter")),
 
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),
@@ -237,6 +240,10 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(transportPipe2);
   OR.addObject(cardanBellowsTransfocator);
   OR.addObject(transfocator);
+  OR.addObject(slitTubeSFrontAdapter);
+  OR.addObject(slitTubeS);
+  OR.addObject(slitTubeSBackAdapter);
+
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
   OR.addObject(bellowD);
@@ -914,6 +921,11 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   transfocator->insertInCell(
     System,buildZoneSinCrys.createUnit(System,*transfocator,"back")
   );
+
+
+  slitTubeS->createAll(System,*frontEnd,0);
+  slitTubeSFrontAdapter->createAll(System,*slitTubeS,"front");
+
 
   outerCell=buildZoneSinCrys.createUnit(System);
   for (int i=0; i<1; ++i) {
