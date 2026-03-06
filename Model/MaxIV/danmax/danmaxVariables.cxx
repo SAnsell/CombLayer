@@ -78,6 +78,7 @@
 #include "BladeBPMToyamaGenerator.h"
 #include "FlangePlateGenerator.h"
 #include "TwinPipeGenerator.h"
+#include "SmallAngleBellowsGenerator.h"
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
@@ -111,7 +112,11 @@
 // [29] /mxn/groups/rad/Beamlines/DanMAX/Drawings/DanMAX/Optics/FDR_Diagnostics/Stp Files/DM1/AQM0214.stp
 // [30] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
 // [31] SINCRYS layout CM1, Drawing 256569, 2025-05-06
-// [32] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
+// [32] JJ X-RAY, SINCRY beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
+// [33] JJ X-RAY, SINCRYS layout drawing, 23087, 2025-06-27 (Appendix to [32])
+// [34] /mxn/groups/rad/Beamlines/DanMAX/Simulations/03_OH.STEP, see also [10]
+// [35] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
+
 namespace setVariable
 {
 
@@ -129,9 +134,12 @@ namespace danmaxVar
     // This value is used to determine the lengths of elements in the optics hutch that
     // are not shown in [12].
     double valve4Back = 2290.23; // [4]
-    // All following absolute coordinates taken from [12]
+    // All following absolute coordinates taken from [12] if not indicated otherwise.
     const double bremColl1 = 2330.0;
     const double highPassFilter = 2347.48;
+    // Using information from [12] and [31]. In the latter, the distance of CM1 from
+    // the bremsstrahlung collimator is shown.
+    const double CM1 = bremColl1 + 62.26;
     // Assume that the Y coordinate given there is the central axis of the top-jaw
     // port.
     const double whiteBeamSlitsTopJaw = 2622.75;
@@ -150,6 +158,7 @@ namespace danmaxVar
   }
 // "V3 Valve" [4] Determines the length of several valves of the same type.
 constexpr double valve3Length = 7.2;
+const double SINCRYSBranchShift = -98.0; // [31,33]
 const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // Height of Optics Hutch and Expt. Hutches 1 and 2.
 // The value that is passed as the 'Height' variable of each hutch is the height above
@@ -1234,7 +1243,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			  1.5, // TODO: window thick is dummy
 			  3.2, // [25]
 			  "SteelUnknownGrade", // TODO: dummy
-			  "QuartzGlass");  // [32, section 4.1]
+			  "QuartzGlass");  // [35, section 4.1]
   PItemGen.generatePort(Control,monoVesselKey+"Port0",
 			Geometry::Vec3D(0.0, -35.9, 0.0),
 			Geometry::Vec3D(-1,0,0));
@@ -1533,45 +1542,210 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setNoWindow();
   PipeGen.generatePipe(Control,opticsName+"PipeA",12.5); // [16]
-  BellowGen.generateBellow(Control,opticsName+"BellowC",11.8); // [16]
+  BellowGen.generateBellow(Control,opticsName+"BellowC",10.0); // Dummy length
 
   //////// CM1
   const Geometry::Vec3D ZVec(0,0,1);
   const Geometry::Vec3D vDanMAX = -ZVec;
-  const double sinCrysBranchAngle = 17.0 * M_PI/180.0;
-  const Geometry::Vec3D vSinCrys(-sin(sinCrysBranchAngle),0.0,-cos(sinCrysBranchAngle));
+  // Starting with the SINCRYS-side port of CM1 and ending with SINCRYS beam viewer 1,
+  // all beamline elements are at a fixed angle of 16.177 deg, which is the center of
+  // motion between the two extreme angles 15.041 deg and 17.313 deg:
+  // (17.313 deg - 15.041 deg) / 2 = 16.177 deg
+  // Refs. [32] and [33] only contain evidence that this must be the fixed angle, but
+  // I have not found a reference that states this explicitly.
+  const double sinCrysBranchCenterAngleDeg = 16.177;
+  const double sinCrysBranchMinAngleDeg = 15.041;
+  const double sinCrysBranchMaxAngleDeg = 17.313;
+  const double sinCrysBranchCenterAngle = sinCrysBranchCenterAngleDeg * M_PI/180.0;
+  const Geometry::Vec3D vSinCrys(
+    -sin(sinCrysBranchCenterAngle),0.0,-cos(sinCrysBranchCenterAngle));
 
   // will be rotated vertical
   std::string name=opticsName+"CM1";
-  SimpleTubeGen.setCF<CF100>();
+  SimpleTubeGen.setCF<CF100>(); // [32]
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,name,30.8);
-  Control.addVariable(name+"NPorts",3);   // beam ports
+  const double CM1MainTubeLength = 36.0; // [30]
+  SimpleTubeGen.generateTube(Control,name,CM1MainTubeLength);
+  Control.addVariable(name+"NPorts",3);
 
   // Front
-  // add outerRadius to count port length from the outer surface
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+4.0);
+  // Port lengths measured in [30], using the information that CM1 is centered on the
+  // granite block whose length is given in [33].
+  const double CM1FrontPortLength = 10.9;
+  const double CM1Port12Length = 26.0;
+  PItemGen.setCF<setVariable::CF40>(CM1FrontPortLength);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),ZVec);
+  const double CM1PortY = CM1MainTubeLength/2.0-12.0; // [32]
+  PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,CM1PortY,0),ZVec);
 
   // Back: DanMAX branch
-  // add outerRadius to count port length from the outer surface
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
+  PItemGen.setCF<setVariable::CF40>(CM1Port12Length);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),vDanMAX);
+  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,CM1PortY,0),vDanMAX);
 
   // Back: SinCrys branch
-  // add outerRadius to count port length from the outer surface
-  PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+20.0);
+  PItemGen.setCF<setVariable::CF40>(CM1Port12Length);
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,0,0),vSinCrys);
+  PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,CM1PortY,0),vSinCrys);
+  Control.addVariable(name+"YStep",danmaxVar::absY::CM1-CM1FrontPortLength);
 
   ///////////
 
+  Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"ValveS1"); // [30]
+  Control.addVariable(opticsName+"ValveS1YAngle",sinCrysBranchCenterAngleDeg);
 
-  BellowGen.generateBellow(Control,opticsName+"BellowAA",10.0); // dummy TODO: fix length
+  name=opticsName+"BeamViewerS1";
+  // [30] In a good approximation (+- 1 mm), all ports have the same length,
+  // no matter what one considers a port or a part of the main tube.
+  const double beamViewerS1PortLength = 6.25;
+  SimpleTubeGen.setCF<CF40>(); // [32]
+  SimpleTubeGen.setCap(false, false);
+  SimpleTubeGen.generateTube(Control,name,2.0*beamViewerS1PortLength);
+  Control.addVariable(name+"NPorts",3);
+
+  PItemGen.setCF<setVariable::CF40>(beamViewerS1PortLength);
+  // Build ports with slightly smaller outer radius than the main pipe to avoid
+  // geometry errors.
+  PItemGen.setPort(beamViewerS1PortLength,CF40::innerRadius-1e-3,CF40::wallThick);
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
+  PItemGen.generatePort(
+    Control,name+"Port0",Geometry::Vec3D(),Geometry::Vec3D(0,0,1));
+  PItemGen.generatePort(
+    Control,name+"Port1",Geometry::Vec3D(),Geometry::Vec3D(0,0,-1));
+  PItemGen.generatePort(
+    Control,name+"Port2",Geometry::Vec3D(),Geometry::Vec3D(-1,0,0));
+
+  // Screen dimensions from [30].
+  const double beamViewerS1ScreenThick = 0.015; // [30]
+  const double beamViewerS1ScreenSideLength = 1.0; // [30]
+  FlangeGen.setNoPlate();
+  // Thread is a conservative approximation. In reality, there is much more material
+  // around the crystal, see [30] or [32].
+  FlangeGen.setThread(beamViewerS1ScreenThick,0.0,"SteelUnknownGrade"); // Dummy length
+  // Angle from [30]
+  // Material is actually given as "CVD polycrystalline N doped diamond" in [32].
+  FlangeGen.setBlade(
+    beamViewerS1ScreenSideLength,beamViewerS1ScreenSideLength,
+    beamViewerS1ScreenThick,45.0,"Diamond",1);
+  FlangeGen.generateMount(Control,name+"Screen",1);
+
+  const double SINCRYSAngleDeg = Control.EvalDefVar<double>(
+    beamName+"SINCRYSAngle",sinCrysBranchCenterAngleDeg);
+  if(
+    SINCRYSAngleDeg < sinCrysBranchMinAngleDeg - Geometry::zeroTol ||
+    SINCRYSAngleDeg > sinCrysBranchMaxAngleDeg + Geometry::zeroTol
+  ){
+    ELog::EM << "SINCRYS branch angle of " + std::to_string(SINCRYSAngleDeg)
+    + " deg is outside the nominal range [ " + std::to_string(sinCrysBranchMinAngleDeg)
+    + " deg, " + std::to_string(sinCrysBranchMaxAngleDeg) + " deg ]" << ELog::endWarn;
+  }
+  const double SINCRYSAngle = SINCRYSAngleDeg*M_PI/180.0;
+  SmallAngleBellowsGenerator smallAngleBellowsGen;
+  const double cardanBellowsLength = 18.0; // [30]
+  const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
+
+  const Geometry::Vec3D SINCRYSBranchCenterVector(
+    cos(sinCrysBranchCenterAngle),-sin(sinCrysBranchCenterAngle),0.0);
+  const Geometry::Vec3D SINCRYSTransportPipeUpstreamJoint = (
+    SINCRYSBranchCenterVector*(
+      CM1Port12Length+valve3Length+2.0*beamViewerS1PortLength+0.5*cardanBellowsLength
+    )
+  );
+  const Geometry::Vec3D SINCRYSTransportPipeDownstreamJoint = (
+    Geometry::Vec3D(
+      -SINCRYSBranchShift/tan(SINCRYSAngle),SINCRYSBranchShift,0.0
+    )
+    -SINCRYSBranchCenterVector*(CM2PortLength+0.5*cardanBellowsLength)
+  );
+  Geometry::Vec3D SINCRYSTransportPipeDirection = (
+    SINCRYSTransportPipeDownstreamJoint-SINCRYSTransportPipeUpstreamJoint
+  );
+  SINCRYSTransportPipeDirection.makeUnit();
+  const double cardanBellowsAngleSign = (
+      SINCRYSTransportPipeDirection*SINCRYSBranchCenterVector).Z()
+      /fabs((SINCRYSTransportPipeDirection*SINCRYSBranchCenterVector).Z()
+    );
+  const double cardanBellowsAngle = cardanBellowsAngleSign*acos(
+    SINCRYSTransportPipeDirection.dotProd(SINCRYSBranchCenterVector));
+
+  smallAngleBellowsGen.setLength(cardanBellowsLength);
+  smallAngleBellowsGen.setAngle(cardanBellowsAngle*180.0/M_PI);
+  name = opticsName+"CardanBellowsUpstream";
+  smallAngleBellowsGen.generateBellows(Control,name);
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
-  PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",100.0); // dummy SinCrys pipe
+  // Length at center angle from [30]
+  PipeGen.generatePipe(Control,opticsName+"PipeSinCrys",180.0);
+  name = opticsName+"LinearlyGuidedBellowsUpstream";
+  // Actually, the linearly guided bellow consists of 7 single bellows. For simplicity,
+  // it is modeled as a single, long bellow here.
+  // Length at center angle from [30]
+  BellowGen.generateBellow(Control,name,70.0);
+  // Increase NFolds to be able to build long bellows
+  // (see comment above about the unusual length).
+  Control.addVariable(name+"NFolds",30);
+  name = opticsName + "CardanBellowsDownstream";
+  smallAngleBellowsGen.generateBellows(Control,name);
+  // Compensate the rotation introduced by attaching the bellows to CM2.
+  Control.addVariable(name+"YAngle",sinCrysBranchCenterAngleDeg);
+
+  name=opticsName+"CM2";
+  SimpleTubeGen.setCF<CF250>(); // [32]
+  const double CM2MainTubeLength = 26.0; // [34]
+  SimpleTubeGen.setCap();
+  SimpleTubeGen.generateTube(Control,name,CM2MainTubeLength);
+  Control.addVariable(name+"NPorts",2);
+
+  PItemGen.setCF<setVariable::CF40>(CM2PortLength);
+  PItemGen.setPlate(0.0,"Void");
+  PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),vSinCrys);
+  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),ZVec);
+
+  Control.addVariable(name+"XStep",SINCRYSBranchShift);
+  Control.addVariable(name+"YStep",
+    danmaxVar::absY::CM1
+    // Refs. [31] and [33] give the distance from CM1 to CM2 along the beam axis as
+    // 3395.0 mm (explicitly in [33], implicitly in [31]).
+    // However, the center angle of 16.177 deg from Ref. [32], together with the
+    // offset of 980 mm, results in a value of about 3378 mm that creates a visible
+    // discrepancy in the geometry. For this reason, the optical-axis distance is
+    // calculated here instead of taking it from [31] or [33].
+    +fabs(SINCRYSBranchShift)/tan(SINCRYSAngleDeg*M_PI/180.0)
+    +CM2PortLength
+  );
+  Control.addVariable(name+"ZAngle",180.0);
+
+  // See also comments on LinearlyGuidedBellowsUpstream
+  name = opticsName+"LinearlyGuidedBellowsDownstream";
+  // Length at center angle from [34]
+  BellowGen.generateBellow(Control,name,70.0);
+  Control.addVariable(name+"NFolds",30);
+
+  PipeGen.generatePipe(Control,opticsName+"TransportPipe2",170.0); // [34]
+
+  // Implement as regular bellows, because CardanBellowsUpstream and
+  // CardanBellowsDownstream perform all the bending.
+  name = opticsName+"CardanBellowsTransfocator";
+  BellowGen.generateBellow(Control,name,18.0); // [34]
+
+  // If not referenced, the following uses dummy dimensions copied from the
+  // DanMAX-branch transfocator ("lens box").
+  const std::string transfocatorName=opticsName+"Transfocator";
+  setVariable::MonoBoxGenerator MBoxGen;
+  MBoxGen.setCF<CF40>();
+  const double wallThick = 1.0;
+  MBoxGen.setWallThick(wallThick);
+  const double portABLength = 4.5;
+  MBoxGen.setPortLength(portABLength, portABLength);
+  const double bottomThick = 2.0;
+  const double topThick = 2.4;
+  MBoxGen.setLids(3.5,bottomThick, topThick);
+  MBoxGen.generateBox(Control,transfocatorName,
+    21.0,12.0-2.0*topThick,8.2-2.0*bottomThick,
+    2.0*(49.445/2.0-(wallThick+portABLength)));
+
+  Control.addVariable(transfocatorName+"XStep",SINCRYSBranchShift);
+  Control.addVariable(transfocatorName+"YStep",
+    danmaxVar::absY::CM1+639.9); // [34]
 
   // Laue monochromator
   PipeGen.setNoWindow();
@@ -1605,9 +1779,9 @@ opticsVariables(FuncDataBase& Control,
   viewPackage(Control,opticsName);
 
   std::string valve8Name = opticsName+"Valve8";
-  Control.copyVarSet(beamName+"FrontBeamValve3",valve8Name); // [31]
+  Control.copyVarSet(beamName+"FrontBeamValve3",valve8Name); // [33]
   // Neither visible on [26] or [28] as the other valves of this type, but the angle
-  // can be seen in [31].
+  // can be seen in [33].
   Control.addVariable(valve8Name+"YAngle", 90.0);
 
   // Dummy length
@@ -1648,14 +1822,6 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,opticsName+"BellowK",10.0); // Dummy length
 
   monoShutterVariables(Control,opticsName);
-
-  // GateGen.setBladeThick(0.3);
-  // GateGen.generateValve(Control,opticsName+"GateG",0.0,0);
-
-  // splitterVariables(Control,opticsName);
-
-  // return;
-
 }
 
 }  // NAMESPACE danmaxVar

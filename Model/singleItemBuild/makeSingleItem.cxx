@@ -208,6 +208,7 @@
 #include "TDCBeamDump.h"
 #include "FixedMaskHybrid.h"
 #include "SqrShield.h"
+#include "SmallAngleBellows.h"
 
 #include "makeSingleItem.h"
 
@@ -241,7 +242,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-	"CornerPipe","ChopperPit","CylGateValve","SingleChopper",
+	"SmallAngleBellows","CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder", "GTFGateValve", "CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
 	"DCMTank","MagnetBlock","Sexupole","MagnetM1","MagnetU1",
@@ -283,6 +284,7 @@ makeSingleItem::build(Simulation& System,
       (item,"Item not a single component");
 
   ELog::EM<<"Component == "<<item<<ELog::endDiag;
+
   if (item=="default" || item == "CylGateValve" )
     {
       std::shared_ptr<xraySystem::CylGateValve>
@@ -292,6 +294,23 @@ makeSingleItem::build(Simulation& System,
 
       GV->addInsertCell(voidCell);
       GV->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  if (item == "SmallAngleBellows" )
+    {
+      std::shared_ptr<xraySystem::SmallAngleBellows> SmallAngleBellows(
+        new xraySystem::SmallAngleBellows("SmallAngleBellows1"));
+      std::shared_ptr<xraySystem::SmallAngleBellows> SmallAngleBellows2(
+        new xraySystem::SmallAngleBellows("SmallAngleBellows2"));
+
+      OR.addObject(SmallAngleBellows);
+      OR.addObject(SmallAngleBellows2);
+
+      SmallAngleBellows->addInsertCell(voidCell);
+      SmallAngleBellows->createAll(System,World::masterOrigin(),0);
+      SmallAngleBellows2->addInsertCell(voidCell);
+      SmallAngleBellows2->createAll(System,*SmallAngleBellows,"back");
 
       return;
     }

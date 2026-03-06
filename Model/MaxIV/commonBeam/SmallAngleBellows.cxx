@@ -1,0 +1,623 @@
+/*********************************************************************
+  CombLayer : MCNP(X) Input builder
+
+ * File:   commonBeam/SmallAngleBellows.cxx
+ *
+ * Copyright (c) 2026 by U. Friman-Gayer
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ****************************************************************************/
+
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <vector>
+#include <set>
+#include <map>
+#include <string>
+#include <memory>
+
+#include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "Vec3D.h"
+#include "surfRegister.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "groupRange.h"
+#include "objectGroups.h"
+#include "Simulation.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
+#include "generateSurf.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedRotate.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
+#include "SurfMap.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "MaterialSupport.h"
+#include "Exception.h"
+
+#include "SmallAngleBellows.h"
+
+namespace xraySystem
+{
+
+SmallAngleBellows::SmallAngleBellows(const std::string& Key):
+  /*!
+    Constructor
+    \param Key :: Key name
+  */
+  attachSystem::FixedRotate(Key,2),
+  attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
+  attachSystem::SurfMap(),
+  attachSystem::FrontBackCut()
+{}
+
+SmallAngleBellows::SmallAngleBellows(const SmallAngleBellows& A) :
+  /*!
+    Copy constructor
+    \param A :: Bellows to copy
+  */
+  attachSystem::FixedRotate(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
+  attachSystem::FrontBackCut(A),
+  angle(A.angle),angleDeg(A.angleDeg),
+  bellowsStep(A.bellowsStep),
+  bellowsThick(A.bellowsThick),
+  flangeLength(A.flangeLength),
+  flangeRadius(A.flangeRadius),
+  length(A.length),
+  pipeInnerRadius(A.pipeInnerRadius),
+  pipeWallThick(A.pipeWallThick),
+
+  bellowsBaseMat(A.bellowsBaseMat),
+  pipeMat(A.pipeMat),
+
+  bellowsMatPerSector(),
+  bellowsThickPerSector()
+{}
+
+SmallAngleBellows&
+SmallAngleBellows::operator=(const SmallAngleBellows& A)
+  /*!
+    Assignment operator
+    \param A :: Bellows to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedRotate::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      angle=A.angle;
+      angleDeg=A.angleDeg;
+      bellowsStep=A.bellowsStep;
+      bellowsThick=A.bellowsThick;
+      flangeLength=A.flangeLength;
+      flangeRadius=A.flangeRadius;
+      length=A.length;
+      pipeInnerRadius=A.pipeInnerRadius;
+      pipeWallThick=A.pipeWallThick;
+
+      bellowsBaseMat=A.bellowsBaseMat;
+      pipeMat=A.pipeMat;
+    }
+  return *this;
+}
+
+SmallAngleBellows::~SmallAngleBellows()
+  /*!
+    Destructor
+  */
+{}
+
+double SmallAngleBellows::bellowsLength() const 
+  /*!
+    Length of the bellows parts, i.e. total length without flanges and pipes.
+  */
+{
+  return (length-2.0*(flangeLength+bellowsStep));
+}
+
+double SmallAngleBellows::bellowsMaterialVolume() const 
+/*!
+  Volume occupied by the bellows' material. For the assumed bellows shape, this is:
+
+  V = 
+      pi*((r+t)^2-r^2)*(L-2*N*t)       horizontal parts
+      pi*((r+b)^2-r^2)*2*N*t           vertical  parts
+
+  where
+
+  L = length
+  N = nFolds
+  r = pipeInnerRadius
+  t = bellowsMaterialThick
+  b = bellowsThick
+
+  b and the bellows' material vary with the bending angle to conserve V.
+ */
+{
+  return M_PI*(
+    (
+      (pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
+      -pipeInnerRadius*pipeInnerRadius
+    )
+    *(bellowsLength()-2.0*nFolds*bellowsMaterialThick)
+    +(
+      (pipeInnerRadius+bellowsThick)*(pipeInnerRadius+bellowsThick)
+      -pipeInnerRadius*pipeInnerRadius
+    )*2.0*nFolds*bellowsMaterialThick
+  );
+}
+
+double SmallAngleBellows::bellowsThickness(
+  const double volume, const double sectorLength) const
+/*!
+  Given the effective length of a sector and the volume of the bellows' material,
+  calculate the bellows' thickness.
+
+  The expression below is obtained by solving the expression for the volume for b.
+ */
+{
+  return sqrt(
+    (
+      volume*M_1_PI
+      +(pipeInnerRadius+bellowsMaterialThick)*(pipeInnerRadius+bellowsMaterialThick)
+      *(2.0*nFolds*bellowsMaterialThick-sectorLength)
+      +pipeInnerRadius*pipeInnerRadius*sectorLength
+    )/(2.0*nFolds*bellowsMaterialThick)
+  )-pipeInnerRadius;
+}
+
+void SmallAngleBellows::checkInput() const 
+/*!
+  Print warning messages or throw errors if input parameters challenge/violate the
+  assumptions of this model.
+ */
+{
+  ELog::RegMethod RegA("SmallAngleBellows","checkInput");
+
+  if(bellowsLength() - 2.0*nFolds*bellowsMaterialThick < Geometry::zeroTol){
+    throw ColErr::NumericalAbort(
+      "Element: '" + keyName + "'\n"
+      "Condition L >= 2 * N * T not fulfilled for:\n"
+      "\tBellows Length (L)             = "+std::to_string(bellowsLength())+" cm\n"
+      "\tNumber of Folds (N)            = "+std::to_string(nFolds)+"\n"
+      "\tBellows Material Thickness (T) = "+std::to_string(bellowsMaterialThick)+" cm\n"
+      "\t2 * N * T                      = "
+      +std::to_string(2.0*nFolds*bellowsMaterialThick)+" cm"
+    );
+  }
+  if(angleDeg > 10.0){
+    ELog::EM << "Element: '" + keyName + "'\nWarning: SmallAngleBellows class "
+    "intended for use with small angles, but the input angle of "
+    + std::to_string(angleDeg) + " deg is larger than 10.0 deg, the arbitrary warning "
+    "threshold of this class."
+    << ELog::endWarn;
+  }
+}
+
+void SmallAngleBellows::createSectors()
+/*!
+  Based on the given nominal values bellowsBaseMaterial and bellowsThick, determine 
+  effective densities and bellows thicknesses for each sector.
+ */
+{
+  // 1) Determine the volume of the bellows' material that is conserved.
+  const double totalBellowsMaterialVolume = bellowsMaterialVolume();
+  // Edge case nSectors = 1
+  if(nSectors == 1){
+    bellowsThickPerSector.push_back(bellowsThick);
+    double totalVolume = (
+      M_PI*(
+        (pipeInnerRadius+bellowsThick)
+        *(pipeInnerRadius+bellowsThick)
+        -pipeInnerRadius*pipeInnerRadius
+      )*bellowsLength()
+    );
+    bellowsMatPerSector.push_back(
+      ModelSupport::EvalMatName(
+        ModelSupport::EvalMatString(bellowsBaseMat)
+        +"%Void%"
+        +std::to_string(
+          (1.0-totalBellowsMaterialVolume/totalVolume)*100.0
+        )
+      )
+    );
+  } else {
+    const double sBellowsMaterialVolume = totalBellowsMaterialVolume/nSectors;
+    double sLength, sTotalVolume;
+    for(int nSector=0;nSector<nSectors;++nSector){
+      // 2) Determine the length of a sector.
+      sLength = sectorLength(nSector);
+      // 3) For a given length, adjust the radius to conserve the volume.
+      bellowsThickPerSector.push_back(
+        bellowsThickness(totalBellowsMaterialVolume,sLength));
+      // 4) For the adjusted radius, calculate the volume fraction taken up by the
+      // bellows.
+      sTotalVolume = (
+        M_PI*(
+          (pipeInnerRadius+bellowsThickPerSector[nSector])
+          *(pipeInnerRadius+bellowsThickPerSector[nSector])
+          -pipeInnerRadius*pipeInnerRadius
+        )*sLength/nSectors
+      );
+      bellowsMatPerSector.push_back(
+        ModelSupport::EvalMatName(
+          ModelSupport::EvalMatString(bellowsBaseMat)
+          +"%Void%"
+          +std::to_string((1.0-sBellowsMaterialVolume/sTotalVolume)*100.0)
+        )
+      );
+    }
+  }
+}
+
+std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const
+/*!
+  Find the cylindric surface with the largest radius (either the flange radius or the 
+  largest bellows-sector radius) and return its relative index for the front and back 
+  part.
+ */
+{
+  if(nSectors == 1){
+    if(pipeInnerRadius+bellowsThickPerSector[0] > flangeRadius){
+      return {
+        sectorPlaneID(0,7,100),
+        sectorPlaneID(0,8,100)
+      };
+    }
+    return {7,8};
+  }
+  int nSectorWithMaxRadius = 0;
+  for(int n=1; n<nSectors; ++n){
+    if(bellowsThickPerSector[n]>bellowsThickPerSector[nSectorWithMaxRadius]){
+      nSectorWithMaxRadius = n;
+    }
+  }
+  if(pipeInnerRadius+bellowsThickPerSector[nSectorWithMaxRadius] > flangeRadius){
+    return {
+      sectorPlaneID(nSectorWithMaxRadius,7,100),
+      sectorPlaneID(nSectorWithMaxRadius,8,100)
+    };
+  }
+  return {7,8};
+}
+
+double SmallAngleBellows::sectorAngle(
+  const int nSector,const bool centerAngle=false) const
+/*!
+  Starting or center angle of a given sector.
+ */
+{
+  if(centerAngle){
+    return nSector*2.0*M_PI/nSectors;
+  }
+  return (nSector-0.5)*2.0*M_PI/nSectors;
+}
+
+double SmallAngleBellows::sectorLength(const int nSector) const
+/*!
+  When modeling the variation of the bellows' thickness with the angle (sector), it is 
+  assumed that the bent bellow has the shape of a circle's line segment (in contrast to
+  what the geometry actually looks like, but for small angle, the difference is 
+  negligible). In this case, the sectors with the maximum and minimum bend have 
+  lengths of
+
+  L_max = L - alpha*r,
+  and
+  L_min = L + alpha*r,
+
+  respectively, where
+  
+  L = length
+  alpha = angle
+  r = pipeInnerRadius
+
+  This function returns the 'effective length' for any sector angle.
+
+ */
+{
+  return (bellowsLength()+angle*pipeInnerRadius*cos(sectorAngle(nSector,true)));
+}
+
+int SmallAngleBellows::sectorPlaneID(
+  const int nSector, const int base, const int offset = 0
+) const
+/*!
+  Create relative IDs for the sector-separating planes.
+ */
+{
+  return offset+10*(nSector%nSectors)+base;
+}
+
+void
+SmallAngleBellows::populate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables and check input
+    \param Control :: DataBase of variables
+  */
+{
+  ELog::RegMethod RegA("SmallAngleBellows","populate");
+
+  FixedRotate::populate(Control);
+
+  angleDeg=Control.EvalDefVar<double>(keyName+"Angle",0.0);
+  angle=M_PI/180.0*angleDeg;
+  bellowsMaterialThick=Control.EvalVar<double>(keyName+"BellowsMaterialThick");
+  bellowsStep=Control.EvalVar<double>(keyName+"BellowsStep");
+  bellowsThick=Control.EvalVar<double>(keyName+"BellowsThick");
+  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  length=Control.EvalVar<double>(keyName+"Length");
+  pipeInnerRadius=Control.EvalVar<double>(keyName+"PipeInnerRadius");
+  pipeWallThick=Control.EvalVar<double>(keyName+"PipeWallThick");
+  nFolds=Control.EvalVar<int>(keyName+"NFolds");
+  nSectors=Control.EvalVar<int>(keyName+"NSectors");
+
+  bellowsBaseMat=ModelSupport::EvalDefMat(
+    Control,keyName+"BellowsMat","SteelUnknownGrade");
+  pipeMat=ModelSupport::EvalDefMat(Control,keyName+"PipeMat","SteelUnknownGrade");
+
+  checkInput();
+
+  return;
+}
+
+void
+SmallAngleBellows::createSurfaces()
+  /*!
+    Create the surfaces
+
+    This function uses the following rules on top of the usual conventions:
+    - Cylindric-surface IDs end with 7 (8) ...
+    - Sector-separating-plane IDs end with 3 (4) ...
+    in the front (back) part.
+  */
+{
+  ELog::RegMethod RegA("SmallAngleBellows","createSurfaces");
+
+  Geometry::Vec3D Xp = X;
+  Xp.rotate(Z,angle);
+  Yp = Y;
+  Yp.rotate(Z,angle);
+  Geometry::Vec3D Yp2 = Y;
+  Yp2.rotate(Z,angle/2.0);
+
+  const Geometry::Vec3D center = Origin+Y*length/2.0;
+
+  if (!isActive("front"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
+    }
+  if (!isActive("back"))
+    {
+      ModelSupport::buildPlane(SMap,buildIndex+2,center+Yp*(length/2.0),Yp);
+      ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
+    }
+
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
+  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(flangeLength+bellowsStep),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,
+    center+Yp*(length/2.0-flangeLength),Yp);
+  ModelSupport::buildPlane(SMap,buildIndex+22,
+    center+Yp*(length/2.0-flangeLength-bellowsStep),Yp);
+
+  double phi;
+  for(int n = 0; n < nSectors; ++n){
+    phi = sectorAngle(n);
+    if(nSectors > 1){
+      ModelSupport::buildPlane(
+        SMap,buildIndex+sectorPlaneID(n,3),Origin,X*sin(phi)+Z*cos(phi)
+      );
+      ModelSupport::buildPlane(
+        SMap,buildIndex+sectorPlaneID(n,4),Origin+Y*length/2.0,Xp*sin(phi)+Z*cos(phi)
+      );
+    }
+    ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,7,100),center,
+              Y,pipeInnerRadius+bellowsThickPerSector[n]);
+    ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,8,100),center,
+              Yp,pipeInnerRadius+bellowsThickPerSector[n]);
+  }
+
+
+  ModelSupport::buildPlane(SMap,buildIndex+101,center,Yp2);
+
+  ModelSupport::buildCylinder(SMap,buildIndex+7,center,
+			      Y,flangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,center,
+			      Y,pipeInnerRadius+pipeWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,center,
+			      Y,pipeInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+8,center,
+			      Yp,flangeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+18,center,
+			      Yp,pipeInnerRadius+pipeWallThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+28,center,
+			      Yp,pipeInnerRadius);
+}
+
+void
+SmallAngleBellows::createObjects(Simulation& System)
+{
+  /*!
+    Create cells
+  */
+  ELog::RegMethod RegA("SmallAngleBellows","createObjects");
+
+  const HeadRule& frontHR=getRule("front");
+  const HeadRule& backHR=getRule("back");
+
+  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 27")*frontHR);
+  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"12 -8 28")*backHR);
+
+  makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 27"));
+
+  std::pair<int,int> cylOuterSurf = cylindricOuterSurf();
+  if(nSectors == 1){
+    makeCell("FrontBellows",System,cellIndex++,bellowsMatPerSector[0],0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(sectorPlaneID(0,7,100))).complement()
+    );
+    makeCell("FrontBellowsVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(sectorPlaneID(0,7,100)))
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
+    );
+    makeCell("BackBellows",System,cellIndex++,bellowsMatPerSector[0],0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(sectorPlaneID(0,8,100))).complement()
+    );
+    makeCell("BackBellowsVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(sectorPlaneID(0,8,100)))
+      *ModelSupport::getHeadRule(
+        SMap,buildIndex,std::to_string(cylOuterSurf.second)).complement()
+    );
+  } else {
+    for(int n = 0; n < nSectors; ++n){
+      makeCell("FrontBellows",System,cellIndex++,bellowsMatPerSector[n],0.0,
+        ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
+        *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100))).complement()
+      );
+      makeCell("FrontBellowsVoid",System,cellIndex++,0,0.0,
+        ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
+        *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
+      );
+
+      makeCell("BackBellows",System,cellIndex++,bellowsMatPerSector[n],0.0,
+        ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
+        *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100))).complement()
+      );
+      makeCell("BackBellowsVoid",System,cellIndex++,0,0.0,
+        ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
+        *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100)))
+        *ModelSupport::getHeadRule(
+          SMap,buildIndex,std::to_string(cylOuterSurf.second)).complement()
+      );
+    }
+  }
+
+  makeCell("BackPipe",System,cellIndex++,pipeMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -18 28"));
+
+  makeCell("FrontVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-101 -27")*frontHR);
+  makeCell("FrontOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -7 17"));
+
+  makeCell("BackVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"101 -28")*backHR);
+  makeCell("BackOuterVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -8 18"));
+
+  addOuterSurf(
+    ModelSupport::getHeadRule(SMap,buildIndex,"-101")
+    *ModelSupport::getHeadRule(
+      SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
+    *frontHR
+    +ModelSupport::getHeadRule(SMap,buildIndex,"101")
+    *ModelSupport::getHeadRule(
+      SMap,buildIndex,std::to_string(cylOuterSurf.second)).complement()
+    *backHR
+  );
+}
+
+void
+SmallAngleBellows::createLinks()
+/*!
+  Create links
+ */
+{
+  ELog::RegMethod RegA("SmallAngleBellows","createLinks");
+
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect(1,Origin+Y*length/2.0+Yp*length/2.0,Yp);
+
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+
+  return;
+}
+
+void
+SmallAngleBellows::createAll(Simulation& System,
+		   const attachSystem::FixedComp& FC,
+		   const long int FIndex)
+/*!
+  Create bellows
+ */
+{
+  ELog::RegMethod RegA("SmallAngleBellows","createAll");
+
+  populate(System.getDataBase());
+  createSectors();
+  createUnitVector(FC,FIndex);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
+
+  return;
+}
+
+}  // NAMESPACE constructSystem
