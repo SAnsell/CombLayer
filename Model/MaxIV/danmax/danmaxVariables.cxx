@@ -1108,14 +1108,14 @@ void revBeamStopPackage(FuncDataBase& Control,
 }
 
 void
-monoPackage(FuncDataBase& Control,const std::string& monoKey)
+hdcmPackage(FuncDataBase& Control,const std::string& monoKey)
   /*!
     Builds the variables for the mono packge
     \param Control :: Database
     \param slitKey :: prename
   */
 {
-  ELog::RegMethod RegA("danmaxVariables[F]","monoPackage");
+  ELog::RegMethod RegA("danmaxVariables[F]","hdcmPackage");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::DCMTankGenerator MBoxGen;
@@ -1123,12 +1123,12 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   const double HDCMTotalLength = 75.0; // [14]
   const double HDCMPortALength = 4.5; // [24]
-  const double monoVesselWallThick = 0.5; // [24]
-  const double monoVesselRadius = 30.0; // [24]
+  const double hdcmVesselWallThick = 0.5; // [24]
+  const double hdcmVesselRadius = 30.0; // [24]
   MBoxGen.setCF<CF40>(); // [24]
   MBoxGen.setPortLength(
     HDCMPortALength,HDCMTotalLength-HDCMPortALength
-    -2.0*monoVesselWallThick-2.0*monoVesselRadius
+    -2.0*hdcmVesselWallThick-2.0*hdcmVesselRadius
   );
 
   // Although the HDCM shifts the beam axis, the front and back ports of
@@ -1136,12 +1136,12 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   // See rad/Beamlines/DanMAX/Pictures/OH/IMG_0718.JPG
 
   // radius, height, depth
-  const std::string monoVesselKey = monoKey+"HDCMVessel";
-  MBoxGen.generateBox(Control,monoVesselKey,monoVesselRadius,0.0,17.5); // [24]
-  Control.addVariable(monoVesselKey+"WallThick", 0.5); // [24]
-  Control.addVariable(monoVesselKey+"RoofThick", 0.3); // [24]
-  Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::HDCM
-    -HDCMPortALength-monoVesselRadius-monoVesselWallThick);
+  const std::string hdcmVesselKey = monoKey+"HDCMVessel";
+  MBoxGen.generateBox(Control,hdcmVesselKey,hdcmVesselRadius,0.0,17.5); // [24]
+  Control.addVariable(hdcmVesselKey+"WallThick", 0.5); // [24]
+  Control.addVariable(hdcmVesselKey+"RoofThick", 0.3); // [24]
+  Control.addVariable(hdcmVesselKey+"YStep",danmaxVar::absY::HDCM
+    -HDCMPortALength-hdcmVesselRadius-hdcmVesselWallThick);
 
   const std::string portName=monoKey+"HDCMVessel";
   Control.addVariable(monoKey+"HDCMVesselNPorts",5); // the ports below are sorted by their rad. safety importance
@@ -1591,7 +1591,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,bellowEName,10.0);  // Dummy length
   Control.addVariable(bellowEName+"YAngle", -valve6Angle);
 
-  monoPackage(Control,opticsName);
+  hdcmPackage(Control,opticsName);
 
   // Dummy length
   BellowGen.generateBellow(Control,opticsName+"BellowAfterHDCM",10.0);
