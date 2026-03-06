@@ -1223,6 +1223,8 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
     );
 
   Control.addVariable(monoVesselKey+"NPorts",1);
+  Control.addVariable(monoVesselKey+"YStep",
+    danmaxVar::absY::MLM-MLMFrontToTopViewPort);
 
   PItemGen.setCF<setVariable::CF63>(35.0-.8);
   PItemGen.setWindowPlate(setVariable::CF63::flangeLength, // [25]
@@ -1231,10 +1233,8 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			  "SteelUnknownGrade", // TODO: dummy
 			  "LeadGlass");  // TODO: dummy
   PItemGen.generatePort(Control,monoVesselKey+"Port0",
-			Geometry::Vec3D(0,0.0,0.0),
+			Geometry::Vec3D(0.0, -35.9, 0.0),
 			Geometry::Vec3D(-1,0,0));
-  Control.addVariable(monoVesselKey+"YStep",
-    danmaxVar::absY::MLM-MLMFrontToTopViewPort);
 
   Control.addVariable(monoVesselKey+"WallMat", "Stainless316L");
   Control.addVariable(monoVesselKey+"PipeMat", "Stainless316L");
