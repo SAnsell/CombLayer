@@ -147,6 +147,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   transportPipe2(new constructSystem::VacuumPipe(newName+"TransportPipe2")),
   cardanBellowsTransfocator(new constructSystem::Bellows(newName+"CardanBellowsTransfocator")),
   transfocator(new xraySystem::MonoBox(newName+"Transfocator")),
+  transfocatorToSlitsPipe1(new constructSystem::VacuumPipe(newName+"TransfocatorToSlitsPipe1")),
+  transfocatorToSlitsBellows(new constructSystem::Bellows(newName+"TransfocatorToSlitsBellows")),
+  transfocatorToSlitsPipe2(new constructSystem::VacuumPipe(newName+"TransfocatorToSlitsPipe2")),
   slitTubeSFrontAdapter(new constructSystem::FlangePlate(newName+"SlitTubeSFrontAdapter")),
   slitTubeS(new constructSystem::PipeTube(newName+"SlitTubeS")),
   slitTubeSBackAdapter(new constructSystem::FlangePlate(newName+"SlitTubeSBackAdapter")),
@@ -240,6 +243,9 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(transportPipe2);
   OR.addObject(cardanBellowsTransfocator);
   OR.addObject(transfocator);
+  OR.addObject(transfocatorToSlitsPipe1);
+  OR.addObject(transfocatorToSlitsBellows);
+  OR.addObject(transfocatorToSlitsPipe2);
   OR.addObject(slitTubeSFrontAdapter);
   OR.addObject(slitTubeS);
   OR.addObject(slitTubeSBackAdapter);
@@ -921,11 +927,31 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   transfocator->insertInCell(
     System,buildZoneSinCrys.createUnit(System,*transfocator,"back")
   );
-
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*transfocator,"back",*transfocatorToSlitsPipe1
+  );
 
   slitTubeS->createAll(System,*frontEnd,0);
   slitTubeSFrontAdapter->createAll(System,*slitTubeS,"front");
+  transfocatorToSlitsPipe2->createAll(System,*slitTubeSFrontAdapter,"back");
+  transfocatorToSlitsBellows->setBack(*transfocatorToSlitsPipe1,"back");
+  transfocatorToSlitsBellows->createAll(System,*transfocatorToSlitsPipe2,"back");
 
+  transfocatorToSlitsBellows->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*transfocatorToSlitsBellows,"front")
+  );
+  transfocatorToSlitsPipe2->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*transfocatorToSlitsPipe2,"front")
+  );
+  slitTubeSFrontAdapter->insertInCell(
+    System,buildZoneSinCrys.createUnit(System,*slitTubeSFrontAdapter,"front")
+  );
+  slitTubeS->insertAllInCell(
+    System,buildZoneSinCrys.createUnit(System,*slitTubeS,"back")
+  );
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*slitTubeS,"back",*slitTubeSBackAdapter
+  );
 
   outerCell=buildZoneSinCrys.createUnit(System);
   for (int i=0; i<1; ++i) {

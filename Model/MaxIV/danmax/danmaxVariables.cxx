@@ -1794,6 +1794,17 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+639.9); // [33]
 
+  PipeGen.generatePipe(
+    Control,opticsName+"TransfocatorToSlitsPipe1",12.5); // [34]
+  BellowGen.generateBellow(
+    Control,opticsName+"TransfocatorToSlitsBellows",10.0); // Dummy length
+  // Between the bellows and the slits, there are actually two CF40 pipes.
+  // The one upstream contains a port for a vacuum pump (see, for example, [34]).
+  // Here, everything is implemented as a single pipe, and the pump and its 
+  // port are not modeled.
+  PipeGen.generatePipe(
+    Control,opticsName+"TransfocatorToSlitsPipe2",25.0);
+
   name=opticsName+"SlitTubeS";
   SimpleTubeGen.setCF<CF160>(); // [32]
   SimpleTubeGen.setFlangeLength(0.5*CF160::flangeLength,0.5*CF160::flangeLength);

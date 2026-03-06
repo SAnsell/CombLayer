@@ -137,6 +137,9 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> transportPipe2;
   std::shared_ptr<constructSystem::Bellows> cardanBellowsTransfocator;
   std::shared_ptr<xraySystem::MonoBox> transfocator;
+  std::shared_ptr<constructSystem::VacuumPipe> transfocatorToSlitsPipe1;
+  std::shared_ptr<constructSystem::Bellows> transfocatorToSlitsBellows;
+  std::shared_ptr<constructSystem::VacuumPipe> transfocatorToSlitsPipe2;
   std::shared_ptr<constructSystem::FlangePlate> slitTubeSFrontAdapter;
   std::shared_ptr<constructSystem::PipeTube> slitTubeS;
   std::shared_ptr<constructSystem::FlangePlate> slitTubeSBackAdapter;
