@@ -1630,7 +1630,7 @@ opticsVariables(FuncDataBase& Control,
     beamName+"SINCRYSAngle",sinCrysBranchCenterAngleDeg);
   if(
     SINCRYSAngleDeg < sinCrysBranchMinAngleDeg - Geometry::zeroTol ||
-    SINCRYSAngleDeg < sinCrysBranchMaxAngleDeg + Geometry::zeroTol
+    SINCRYSAngleDeg > sinCrysBranchMaxAngleDeg + Geometry::zeroTol
   ){
     ELog::EM << "SINCRYS branch angle of " + std::to_string(SINCRYSAngleDeg)
     + " deg is outside the nominal range [ " + std::to_string(sinCrysBranchMinAngleDeg)
