@@ -1237,7 +1237,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   Control.addVariable(monoVesselKey+"PipeMat", "Stainless316L"); // only front/back ports
 
  // MLM Ports:
-  Control.addVariable(monoVesselKey+"NPorts",4);
+  Control.addVariable(monoVesselKey+"NPorts",5);
 
   // Ion pump port (top)
   PItemGen.setCF<setVariable::DN160CF>(17.69); // [25]
@@ -1269,12 +1269,16 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			Geometry::Vec3D(-1,0,0));
 
   // View port (vessel side, viewing at 2nd crystal surface)
-  PItemGen.setCF<setVariable::CF63>(33.4); // [25]
+  PItemGen.setLength(33.4); // [25]
   PItemGen.generatePort(Control,monoVesselKey+"Port3",
 			Geometry::Vec3D(0.0, 34.95, -0.15), // [25]
 			Geometry::Vec3D(1,0,0));
 
-
+  // Spare port (blind), IMG_0719.JPG
+  PItemGen.setNoWindow();
+  PItemGen.generatePort(Control,monoVesselKey+"Port4",
+			Geometry::Vec3D(0.0, 0.0, -0.15), // [25]
+			Geometry::Vec3D(-1,0,0));
 
   // crystals gap 4mm
   MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
