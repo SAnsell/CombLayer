@@ -1757,6 +1757,7 @@ opticsVariables(FuncDataBase& Control,
   // [30] and [34]. Due to its outer shape, assumed that it is similar to 
   // FrontBeamValve1.
   Control.copyVarSet(beamName+"FrontBeamValve1",opticsName+"ValveS2"); // [34]
+  Control.addVariable(name+"YAngle",180.0);
 
   // Implement as stiff -in particular, non-bending- bellows, because transversal
   // stress is neglected in this part of the beamline.
