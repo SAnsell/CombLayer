@@ -21,6 +21,8 @@
 // another possibility to affect speed is command argument -q0 ... -q11
 // so one can set quick=0 and play with -q0
 
+#declare ownLightSource=0; // true if view defines own light source
+
 #declare C_Sun= rgb <1,0.98,0.96>;
 
 #if (quick=1)
@@ -79,6 +81,19 @@ global_settings {
     #declare cameraAngle = 120;
     #declare projection = 0;
   #break
+  #case(strcmp(ITEM,"MLM"))
+    #declare cameraLocation = <-232, 2293, 60>;
+    #declare cameraLookAt   = <0, 2870, 0>;
+    #declare cameraAngle = 30;
+    #declare projection = 0;
+    // #declare ownLightSource=0;
+    // light_source { // Port2
+    //   <-31, 2834, 0> C_Sun
+    // }
+    // light_source { // below MLM
+    //   <0, 2870, -122> C_Sun
+    // }
+  #break
   #else // default view
     #declare cameraLocation = <175, -275, 0>;
     #declare cameraLookAt   = <0, 245, 0>;
@@ -87,6 +102,7 @@ global_settings {
 #end
 
 
+#if (ownLightSource=0)
 #if (quick=1)
   light_source { // front
     cameraLocation + <-100,0,50> C_Sun
@@ -119,6 +135,7 @@ global_settings {
   //   #end
   // }
 
+#end
 #end
 
 camera {
