@@ -147,7 +147,7 @@ namespace danmaxVar
     const double beamViewer1 = 2647.72;
     const double HDCM = 2715.50;
     const double beamViewer2 = 2784.0;
-    const double MLM = 2834.8; // Position of the view port on the top
+    const double MLM = 2834.8; // [12] Position of the view port viewing at the 1st crystal
     const double whiteBeamStop = 2954.83;
     const double bremColl2 = 2965.03;
     const double monoSlits = 2987.56;
@@ -1207,7 +1207,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   setVariable::VacuumBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
 
-  const double MLMFrontToTopViewPort = 21.95; // [25]
+  const double mlmFrontToPort2 = 21.95; // [25] distance b/w flange A front and  port 2 centre
   MBoxGen.setCF<CF40>();   // set ports
   const double MLMWallThick = 1.2; // Walls: front, side, back [25]
   // Roof/Base/Width/Front/Back
@@ -1232,7 +1232,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
       MLMTotalLength-2.0*MLMWallThick-2.0*MLMPortLength
     );
 
-  Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::MLM-MLMFrontToTopViewPort);
+  Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::MLM-mlmFrontToPort2); // [12]
   Control.addVariable(monoVesselKey+"WallMat", "Stainless316L");
   Control.addVariable(monoVesselKey+"PipeMat", "Stainless316L"); // only front/back ports
 
@@ -1254,7 +1254,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			  "SteelUnknownGrade", // TODO: dummy
 			  "QuartzGlass");  // [35, section 4.1]
   PItemGen.generatePort(Control,monoVesselKey+"Port1",
-			Geometry::Vec3D(0.0, -35.9, 0.0),
+			Geometry::Vec3D(0.0, -36.0, 0.0), // [25]
 			Geometry::Vec3D(0,0,1));
 
   // View port (vessel side, viewing at 1st crystal surface)
@@ -1265,7 +1265,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			  "SteelUnknownGrade", // TODO: dummy
 			  "QuartzGlass");  // [35, section 4.1]
   PItemGen.generatePort(Control,monoVesselKey+"Port2",
-			Geometry::Vec3D(0.0, -35.9, 0.0), // [25]
+			Geometry::Vec3D(0.0, -36.0, 0.0), // [25]
 			Geometry::Vec3D(-1,0,0));
 
   // View port (vessel side, viewing at 2nd crystal surface)
