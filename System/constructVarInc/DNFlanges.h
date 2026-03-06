@@ -45,7 +45,19 @@ namespace setVariable
     static constexpr size_t nBolts=8;
   };
 
-  // DN160CF 203mm (8″) OD Flanges
+  // DN100CF 152mm (6″) OD Flange
+  // https://www.lewvac.co.uk/product/dn100cf-flanges-152mm-6-od-flanges/
+  struct DN100CF
+  {
+    static constexpr double outerRadius=10.45/2.0;
+    static constexpr double wallThick=0.2;
+    static constexpr double innerRadius=outerRadius-wallThick;
+    static constexpr double flangeRadius=15.16/2.0;
+    static constexpr double flangeLength=1.98;
+    static constexpr size_t nBolts=16;
+  };
+
+  // DN160CF 203mm (8″) OD Flange
   // https://www.lewvac.co.uk/product/dn160cf-flanges-203mm-8-od-flanges/
   struct DN160CF
   {
