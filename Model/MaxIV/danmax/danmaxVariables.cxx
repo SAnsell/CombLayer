@@ -1822,6 +1822,31 @@ opticsVariables(FuncDataBase& Control,
   flangePlateGen.generateFlangePlate(Control,name+"FrontAdapter");
   flangePlateGen.generateFlangePlate(Control,name+"BackAdapter");
 
+  // According to [32], it is identical to beam viewer 1 except for the orientation.
+  // See beam viewer 1 for more information.
+  name=opticsName+"BeamViewerS3";
+  SimpleTubeGen.setCF<CF40>();
+  SimpleTubeGen.setCap(false, false);
+  SimpleTubeGen.generateTube(Control,name,2.0*beamViewerS1PortLength);
+  Control.addVariable(name+"NPorts",3);
+
+  PItemGen.setCF<setVariable::CF40>(beamViewerS1PortLength);
+  PItemGen.setPort(beamViewerS1PortLength,CF40::innerRadius-1e-3,CF40::wallThick);
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
+  PItemGen.generatePort(
+    Control,name+"Port0",Geometry::Vec3D(),Geometry::Vec3D(1,0,0));
+  PItemGen.generatePort(
+    Control,name+"Port1",Geometry::Vec3D(),Geometry::Vec3D(-1,0,0));
+  PItemGen.generatePort(
+    Control,name+"Port2",Geometry::Vec3D(),Geometry::Vec3D(0,0,1));
+
+  FlangeGen.setNoPlate();
+  FlangeGen.setThread(beamViewerS1ScreenThick,0.0,"SteelUnknownGrade"); // Dummy length
+  FlangeGen.setBlade(
+    beamViewerS1ScreenSideLength,beamViewerS1ScreenSideLength,
+    beamViewerS1ScreenThick,45.0,"Diamond",1);
+  FlangeGen.generateMount(Control,name+"Screen",1);
+
   // Laue monochromator
   PipeGen.setNoWindow();
   BellowGen.generateBellow(Control,opticsName+"BellowC",bellowCDLength);

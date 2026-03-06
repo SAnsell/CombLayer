@@ -143,6 +143,8 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::FlangePlate> slitTubeSFrontAdapter;
   std::shared_ptr<constructSystem::PipeTube> slitTubeS;
   std::shared_ptr<constructSystem::FlangePlate> slitTubeSBackAdapter;
+  std::shared_ptr<constructSystem::PipeTube> beamViewerS3;
+  std::shared_ptr<xraySystem::FlangeMount> beamViewerS3Screen;
 
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowC;
