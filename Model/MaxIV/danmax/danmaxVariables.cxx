@@ -1856,7 +1856,7 @@ opticsVariables(FuncDataBase& Control,
   SimpleTubeGen.setCap(false, false);
   const double slitTubeSLength = 9.2; // [36]
   SimpleTubeGen.generateTube(Control,name,slitTubeSLength);
-  Control.addVariable(0);
+  Control.addVariable(name+"NPorts",0);
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+769.0-slitTubeSLength/2.0); // [33]
