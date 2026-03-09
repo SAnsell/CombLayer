@@ -1767,10 +1767,9 @@ opticsVariables(FuncDataBase& Control,
   // fixed by the beam-port angle. In reality, the angle is actually -45 degrees w.r.t.
   // the beam, because the screen is mounted in a way that is not possible with the 
   // FlangeMount class (I believe).
-  // Material is actually given as "YAG" in [32].
   FlangeGen.setBlade(
     beamViewerS2ScreenSideLength,beamViewerS2ScreenSideLength,
-    beamViewerS2ScreenThick,0.0,"Diamond",1);
+    beamViewerS2ScreenThick,0.0,"YAG",1); // [32]
   FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",1);
   Control.addVariable(opticsName+"BeamViewerS2ScreenBladeCentreActive",1);
 
