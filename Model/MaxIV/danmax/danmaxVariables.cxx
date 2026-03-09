@@ -1790,7 +1790,8 @@ opticsVariables(FuncDataBase& Control,
   // Gate valve 2 is a different type than valve 1, which can be seen by comparing 
   // [30] and [34]. Due to its outer shape, assumed that it is similar to 
   // FrontBeamValve1.
-  Control.copyVarSet(beamName+"FrontBeamValve1",opticsName+"ValveS2"); // [34]
+  name = opticsName+"ValveS2";
+  Control.copyVarSet(beamName+"FrontBeamValve1",name); // [34]
   Control.addVariable(name+"YAngle",180.0);
 
   // Implement as stiff -in particular, non-bending- bellows, because transversal
