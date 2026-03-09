@@ -115,6 +115,7 @@
 // [32] JJ X-RAY, SINCRY beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
 // [33] JJ X-RAY, SINCRYS layout drawing, 23087, 2025-06-27 (Appendix to [32])
 // [34] /mxn/groups/rad/Beamlines/DanMAX/Simulations/03_OH.STEP, see also [10]
+// [35] JJ X-RAY, IB-C30-UHV CAD Model and Technical Drawing, https://www.jjxray.dk/product/ib-c30-uhv/ (accessed on 2026-03-09)
 
 namespace setVariable
 {
@@ -1806,25 +1807,34 @@ opticsVariables(FuncDataBase& Control,
   PipeGen.generatePipe(
     Control,opticsName+"TransfocatorToSlitsPipe2",25.0);
 
+  // IB-C30-UHV slits
   name=opticsName+"SlitTubeS";
-  const double slitTubeSWallThick = 1.8; // [34]
+  const double slitTubeSOuterRadius = CF160::flangeRadius; // [35]
+  const double slitTubeSInnerRadius = 8.56; // [35]
+  const double slitTubeSWallThick = slitTubeSOuterRadius-slitTubeSInnerRadius;
   SimpleTubeGen.setPipe(
-    CF160::flangeRadius-slitTubeSWallThick, // [32]
+    slitTubeSInnerRadius, // [32]
     slitTubeSWallThick,
     1.0, // dummy
     0.0 // dummy
   );
   SimpleTubeGen.setCap(false, false);
-  const double slitTubeSLength = 10.0; // [34]
+  const double slitTubeSLength = 9.2; // [35]
   SimpleTubeGen.generateTube(Control,name,slitTubeSLength);
-  Control.addVariable(name+"NPorts",0);
+  Control.addVariable(0);
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+769.0-slitTubeSLength/2.0); // [33]
 
+  const double slitTubeSPortToPortDist = 6.0; // [35]
+  const double slitTubeSPortToFrontBackDist = 2.1; // [35]
+  PItemGen.setCF<CF25>(11.0+CF25::flangeLength); // [35]
+  PItemGen.setFlange(CF40::flangeRadius,CF40::flangeLength); // [35]
+  PItemGen.setPlate(CF25::flangeLength,"SteelUnknownGrade");
+
   FlangePlateGenerator flangePlateGen;
   flangePlateGen.setCF<CF160>(CF40::innerRadius); // [32]
-  flangePlateGen.setFlangeLen(2.2); // [34]
+  flangePlateGen.setFlangeLen(2.2); // [35]
   flangePlateGen.generateFlangePlate(Control,name+"FrontAdapter");
   flangePlateGen.generateFlangePlate(Control,name+"BackAdapter");
 
