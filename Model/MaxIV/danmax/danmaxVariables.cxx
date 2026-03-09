@@ -1807,10 +1807,15 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName+"TransfocatorToSlitsPipe2",25.0);
 
   name=opticsName+"SlitTubeS";
-  SimpleTubeGen.setCF<CF160>(); // [32]
-  SimpleTubeGen.setFlangeLength(0.5*CF160::flangeLength,0.5*CF160::flangeLength);
+  const double slitTubeSWallThick = 1.8; // [34]
+  SimpleTubeGen.setPipe(
+    CF160::flangeRadius-slitTubeSWallThick, // [32]
+    slitTubeSWallThick,
+    1.0, // dummy
+    0.0 // dummy
+  );
   SimpleTubeGen.setCap(false, false);
-  const double slitTubeSLength = 12.3; // [34]
+  const double slitTubeSLength = 10.0; // [34]
   SimpleTubeGen.generateTube(Control,name,slitTubeSLength);
   Control.addVariable(name+"NPorts",0);
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
@@ -1819,7 +1824,7 @@ opticsVariables(FuncDataBase& Control,
 
   FlangePlateGenerator flangePlateGen;
   flangePlateGen.setCF<CF160>(CF40::innerRadius); // [32]
-  flangePlateGen.setFlangeLen(CF160::flangeLength/2.0); // [34]
+  flangePlateGen.setFlangeLen(2.2); // [34]
   flangePlateGen.generateFlangePlate(Control,name+"FrontAdapter");
   flangePlateGen.generateFlangePlate(Control,name+"BackAdapter");
 
