@@ -181,6 +181,8 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
+  std::string name;
+
   targetShieldVariables(Control);
   // photon test
   Control.addVariable("TargetZStep",0.0);
@@ -981,7 +983,7 @@ SingleItemVariables(FuncDataBase& Control)
   PFGen.generate(Control,"PowerFilter");
 
   // SqrShield
-  const std::string name = "SqrShield";
+  name = "SqrShield";
   Control.addVariable(name+"SmallWidth", 22.0);
   Control.addVariable(name+"LargeWidth", 40.0);
   Control.addVariable(name+"SmallHeight", 23.5);
@@ -998,6 +1000,12 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable(name+"Mat", "Lead");
   Control.addVariable(name+"SkinMat", "SteelUnknownGrade");
   Control.addVariable(name+"VoidMat", "Void");
+
+  // Cylinder
+  name = "Cylinder";
+  Control.addVariable(name+"Length", 10.6);
+  Control.addVariable(name+"Radius", 10.15);
+  Control.addVariable(name+"Mat", "Tantalum");
 
   return;
 }
