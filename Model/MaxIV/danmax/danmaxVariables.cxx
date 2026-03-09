@@ -80,6 +80,7 @@
 #include "FlangePlateGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "SmallAngleBellowsGenerator.h"
+#include "WhiteBeamStopGenerator.h"
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
@@ -901,6 +902,9 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.generatePort(Control,pipeName+"Port1",Geometry::Vec3D(0,port1y,0),
 			Geometry::Vec3D(sin(port1angle),cos(port1angle),0));
   PItemGen.setNoWindow();
+
+  WhiteBeamStopGenerator WBSGen;
+  WBSGen.generate(Control,viewKey+"WhiteBeamStop");
 
   // will be rotated vertical
   pipeName=viewKey+"BeamStopTube";

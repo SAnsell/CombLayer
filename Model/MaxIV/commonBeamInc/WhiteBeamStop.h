@@ -32,20 +32,22 @@ namespace xraySystem
   \version 1.0
   \author Konstantin Batkov
   \date March 2026
-  \brief White Beam Stop
+  \brief White Beam Stop (without support and cooling pipes)
 */
 
 class WhiteBeamStop : public attachSystem::ContainedComp,
-                    public attachSystem::FixedRotate,
-                    public attachSystem::CellMap,
-                    public attachSystem::SurfMap
+		      public attachSystem::FixedRotate,
+		      public attachSystem::CellMap,
+		      public attachSystem::SurfMap
 {
  private:
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
+  double length;                ///< Angle-invariant length
+  double width;                 ///< Angle-invariant width
   double height;                ///< Height
-  double angle;                 ///< Angle between the incident beam and the beam target surface
+  double angle;                 ///< Angle between the incident beam and the beam target surface (#3)
+  bool inBeam;                  ///< Object in beam
+  double offBeamOffset;         ///< Offset when not in beam
 
   int mat;                      ///< Beam stop material
 
@@ -61,6 +63,8 @@ class WhiteBeamStop : public attachSystem::ContainedComp,
   WhiteBeamStop& operator=(const WhiteBeamStop&);
   virtual WhiteBeamStop* clone() const;
   virtual ~WhiteBeamStop();
+
+  bool isInBeam() const {return inBeam;}
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);

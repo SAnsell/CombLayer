@@ -3,7 +3,7 @@
 
  * File:   danmaxInc/danmaxOpticsLine.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell, Konstantin Batkov and Udo Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,14 +45,6 @@ namespace constructSystem
   class FlangePlate;
 }
 
-/*!
-  \namespace xraySystem
-  \brief General xray optics system
-  \version 1.0
-  \date January 2018
-  \author S. Ansell
-*/
-
 namespace xraySystem
 {
   class OpticsHutch;
@@ -70,14 +62,15 @@ namespace xraySystem
   class SmallAngleBellows;
   class TriggerTube;
   class TwinPipe;
+  class WhiteBeamStop;
 
-  /*!
-    \class danmaxOpticsLine
-    \version 1.0
-    \author S. Ansell
-    \date January 2018
-    \brief General constructor for the xray system
-  */
+/*!
+  \class danmaxOpticsLine
+  \brief DanMAX optics line
+  \version 2.0
+  \date February 2026
+  \author S. Ansell, K. Batkov, U. Friman-Gayer
+*/
 
 class danmaxOpticsLine :
   public attachSystem::CopiedComp,
@@ -177,6 +170,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> beamStopInPipe;
   // Short section that contains a port for the WB stop
   std::shared_ptr<constructSystem::PipeTube> beamStopSection;
+  std::shared_ptr<xraySystem::WhiteBeamStop> wbs;
   /// BeamStopTube
   std::shared_ptr<constructSystem::PipeTube> beamStopTube;
   /// BeamStopBlock

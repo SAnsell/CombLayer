@@ -82,6 +82,8 @@ WhiteBeamStop::WhiteBeamStop(const WhiteBeamStop& A) :
   attachSystem::SurfMap(A),
   length(A.length),width(A.width),height(A.height),
   angle(A.angle),
+  inBeam(A.inBeam),
+  offBeamOffset(A.offBeamOffset),
   mat(A.mat)
   /*!
     Copy constructor
@@ -106,6 +108,8 @@ WhiteBeamStop::operator=(const WhiteBeamStop& A)
       width=A.width;
       height=A.height;
       angle=A.angle;
+      inBeam=A.inBeam;
+      offBeamOffset=A.offBeamOffset;
       mat=A.mat;
     }
   return *this;
@@ -142,6 +146,8 @@ WhiteBeamStop::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   angle=Control.EvalVar<double>(keyName+"Angle");
+  inBeam=Control.EvalVar<int>(keyName+"InBeam");
+  offBeamOffset=Control.EvalVar<double>(keyName+"OffBeamOffset");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -160,14 +166,14 @@ WhiteBeamStop::createSurfaces()
   const Geometry::Vec3D PX=Qxy.rotate(X);
 
   const double cosa = cos(angle*M_PI/180.0);
+  const double offset = inBeam ? 0.0 : offBeamOffset;
 
   const double dl = cosa * length/2.0;
   SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(dl),Y);
   SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(dl),Y);
 
-  const double dw = cosa * width/2.0;
-  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-X*(dw),PX);
-  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(dw),PX);
+  SurfMap::makePlane("left",SMap,buildIndex+3,Origin+X*(offset),PX);
+  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width*cosa+offset),PX);
 
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
