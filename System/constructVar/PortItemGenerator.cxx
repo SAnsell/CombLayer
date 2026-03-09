@@ -44,6 +44,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
+#include "DNFlanges.h"
 #include "CFFlanges.h"
 #include "PortItemGenerator.h"
 
@@ -341,6 +342,8 @@ template void PortItemGenerator::setCF<CF100>(const double);
 template void PortItemGenerator::setCF<CF120>(const double);
 template void PortItemGenerator::setCF<CF150>(const double);
 template void PortItemGenerator::setCF<CF350>(const double);
+template void PortItemGenerator::setCF<DN100CF>(const double);
+template void PortItemGenerator::setCF<DN160CF>(const double);
 
 template void PortItemGenerator::setFlangeCF<CF16>();
 template void PortItemGenerator::setFlangeCF<CF18_TDC>();
@@ -357,6 +360,8 @@ template void PortItemGenerator::setFlangeCF<CF100>();
 template void PortItemGenerator::setFlangeCF<CF120>();
 template void PortItemGenerator::setFlangeCF<CF150>();
 template void PortItemGenerator::setFlangeCF<CF350>();
+template void PortItemGenerator::setFlangeCF<DN100CF>();
+template void PortItemGenerator::setFlangeCF<DN160CF>();
 
 ///\endcond  TEMPLATE
 
