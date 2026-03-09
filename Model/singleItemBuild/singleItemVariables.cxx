@@ -155,6 +155,7 @@
 #include "TDCBeamDumpGenerator.h"
 #include "FixedMaskHybridGenerator.h"
 #include "SmallAngleBellowsGenerator.h"
+#include "WhiteBeamStopGenerator.h"
 
 namespace setVariable
 {
@@ -1006,6 +1007,9 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable(name+"Length", 10.6);
   Control.addVariable(name+"Radius", 10.15);
   Control.addVariable(name+"Mat", "Tantalum");
+
+  WhiteBeamStopGenerator WBSGen;
+  WBSGen.generate(Control,"WhiteBeamStop");
 
   return;
 }

@@ -22,6 +22,7 @@ set (commonBeamSources
     TankMonoVessel.cxx TriggerTube.cxx TwinPipe.cxx
     Undulator.cxx UTubePipe.cxx ViewScreenTube.cxx
     WallLead.cxx XrayInputs.cxx XRayHutchBase.cxx FixedMaskHybrid.cxx BladeBPMToyama.cxx
+    WhiteBeamStop.cxx
 )
 
 add_library (commonBeam SHARED
@@ -97,6 +98,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/XRayHutchBase.cxx
   ${tarDIR}/FixedMaskHybrid.cxx
   ${tarDIR}/BladeBPMToyama.cxx
+  ${tarDIR}/WhiteBeamStop.cxx
   ${tarDIR}/PipeShield.cxx
   ${tarDIR}/PortChicane.cxx
   ${tarDIR}/PowerFilter.cxx
@@ -176,6 +178,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/XRayHutchBase.h
   ${tarINC}/FixedMaskHybrid.h
   ${tarINC}/BladeBPMToyama.h
+  ${tarINC}/WhiteBeamStop.h
   ${tarINC}/PipeShield.h
   ${tarINC}/PortChicane.h
   ${tarINC}/PowerFilter.h

@@ -210,6 +210,7 @@
 #include "SqrShield.h"
 #include "SmallAngleBellows.h"
 #include "cylinderUnit.h"
+#include "WhiteBeamStop.h"
 
 #include "makeSingleItem.h"
 
@@ -243,7 +244,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-	"Cylinder",
+	"Cylinder","WhiteBeamStop",
 	"SmallAngleBellows","CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder", "GTFGateValve", "CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
@@ -2004,7 +2005,16 @@ makeSingleItem::build(Simulation& System,
       mbs->createAll(System,World::masterOrigin(),0);
 
       return;
+    }
 
+    if (item == "WhiteBeamStop") {
+      const auto wbs = std::make_shared<xraySystem::WhiteBeamStop>(item);
+      OR.addObject(wbs);
+
+      wbs->addInsertCell(voidCell);
+      wbs->createAll(System,World::masterOrigin(),0);
+
+      return;
     }
 
 
