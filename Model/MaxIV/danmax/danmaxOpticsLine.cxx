@@ -690,6 +690,12 @@ danmaxOpticsLine::constructBeamStopTube
   constructSystem::constructUnit
     (System,buildZoneDanMAX,*beamStopInPipe,"back",*beamStopSection);
 
+  const constructSystem::portItem& port0 = beamStopSection->getPort(0);
+  port0.insertInCell(System,outerCell);
+
+  const constructSystem::portItem& port1 = beamStopSection->getPort(1);
+  port1.insertInCell(System,outerCell);
+
   beamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   beamStopTube->createAll(System,*beamStopSection,sideName);
   beamStopTube->insertAllInCell(System,buildZoneDanMAX.getLastCell("Unit"));
@@ -938,7 +944,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
   lastComp=bellowL;
 
-  // Intersect the 2nd buildZoneSinCrys cell (tilted plane, contains CM1) with cells 
+  // Intersect the 2nd buildZoneSinCrys cell (tilted plane, contains CM1) with cells
   // from the SINCRYS and common build zone.
   for(int n = 0; n < 3; ++n){
     MonteCarlo::Object* SUnit=System.findObject(buildZoneSinCrys.getCell("Unit",10-n));
