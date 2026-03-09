@@ -79,6 +79,7 @@ class PortItemGenerator
   void setWindowPlate(const double,const double,const double,
 		      const std::string&,const std::string&);
   void setNoPlate();
+  void setNoWindow() {windowRadius = windowThick = 0.0;}
 
   /// accessor to outerVoid
   void setOuterVoid(const bool F) { outerVoid=F; }

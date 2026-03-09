@@ -45,6 +45,7 @@
 #include "FuncDataBase.h"
 #include "maxivVariables.h"
 
+#include "DNFlanges.h"
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
 #include "BellowGenerator.h"
@@ -115,7 +116,8 @@
 // [32] JJ X-RAY, SINCRY beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
 // [33] JJ X-RAY, SINCRYS layout drawing, 23087, 2025-06-27 (Appendix to [32])
 // [34] /mxn/groups/rad/Beamlines/DanMAX/Simulations/03_OH.STEP, see also [10]
-// [35] JJ X-RAY, IB-C30-UHV CAD Model and Technical Drawing, https://www.jjxray.dk/product/ib-c30-uhv/ (accessed on 2026-03-09)
+// [35] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
+// [36] JJ X-RAY, IB-C30-UHV CAD Model and Technical Drawing, https://www.jjxray.dk/product/ib-c30-uhv/ (accessed on 2026-03-09)
 
 namespace setVariable
 {
@@ -137,7 +139,7 @@ namespace danmaxVar
     // All following absolute coordinates taken from [12] if not indicated otherwise.
     const double bremColl1 = 2330.0;
     const double highPassFilter = 2347.48;
-    // Using information from [12] and [31]. In the latter, the distance of CM1 from 
+    // Using information from [12] and [31]. In the latter, the distance of CM1 from
     // the bremsstrahlung collimator is shown.
     const double CM1 = bremColl1 + 62.26;
     // Assume that the Y coordinate given there is the central axis of the top-jaw
@@ -146,7 +148,7 @@ namespace danmaxVar
     const double beamViewer1 = 2647.72;
     const double HDCM = 2715.50;
     const double beamViewer2 = 2784.0;
-    const double MLM = 2834.8; // Position of the view port on the top
+    const double MLM = 2834.8; // [12] Position of the view port viewing at the 1st crystal
     const double whiteBeamStop = 2954.83;
     const double bremColl2 = 2965.03;
     const double monoSlits = 2987.56;
@@ -472,6 +474,7 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"VoidMat", "Void");
   Control.addVariable(connectName+"XStep",danmaxVar::beamMirrorShift);
 
+  BellowGen.setMat("SteelUnknownGrade","SteelUnknownGrade%Void%10.0");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,beamName+"BellowA",16.0);
 
@@ -1117,14 +1120,14 @@ void revBeamStopPackage(FuncDataBase& Control,
 }
 
 void
-monoPackage(FuncDataBase& Control,const std::string& monoKey)
+hdcmPackage(FuncDataBase& Control,const std::string& monoKey)
   /*!
     Builds the variables for the mono packge
     \param Control :: Database
     \param slitKey :: prename
   */
 {
-  ELog::RegMethod RegA("danmaxVariables[F]","monoPackage");
+  ELog::RegMethod RegA("danmaxVariables[F]","hdcmPackage");
 
   setVariable::PortItemGenerator PItemGen;
   setVariable::DCMTankGenerator MBoxGen;
@@ -1132,12 +1135,12 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
 
   const double HDCMTotalLength = 75.0; // [14]
   const double HDCMPortALength = 4.5; // [24]
-  const double monoVesselWallThick = 0.5; // [24]
-  const double monoVesselRadius = 30.0; // [24]
+  const double hdcmVesselWallThick = 0.5; // [24]
+  const double hdcmVesselRadius = 30.0; // [24]
   MBoxGen.setCF<CF40>(); // [24]
   MBoxGen.setPortLength(
     HDCMPortALength,HDCMTotalLength-HDCMPortALength
-    -2.0*monoVesselWallThick-2.0*monoVesselRadius
+    -2.0*hdcmVesselWallThick-2.0*hdcmVesselRadius
   );
 
   // Although the HDCM shifts the beam axis, the front and back ports of
@@ -1145,12 +1148,12 @@ monoPackage(FuncDataBase& Control,const std::string& monoKey)
   // See rad/Beamlines/DanMAX/Pictures/OH/IMG_0718.JPG
 
   // radius, height, depth
-  const std::string monoVesselKey = monoKey+"HDCMVessel";
-  MBoxGen.generateBox(Control,monoVesselKey,monoVesselRadius,0.0,17.5); // [24]
-  Control.addVariable(monoVesselKey+"WallThick", 0.5); // [24]
-  Control.addVariable(monoVesselKey+"RoofThick", 0.3); // [24]
-  Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::HDCM
-    -HDCMPortALength-monoVesselRadius-monoVesselWallThick);
+  const std::string hdcmVesselKey = monoKey+"HDCMVessel";
+  MBoxGen.generateBox(Control,hdcmVesselKey,hdcmVesselRadius,0.0,17.5); // [24]
+  Control.addVariable(hdcmVesselKey+"WallThick", 0.5); // [24]
+  Control.addVariable(hdcmVesselKey+"RoofThick", 0.3); // [24]
+  Control.addVariable(hdcmVesselKey+"YStep",danmaxVar::absY::HDCM
+    -HDCMPortALength-hdcmVesselRadius-hdcmVesselWallThick);
 
   const std::string portName=monoKey+"HDCMVessel";
   Control.addVariable(monoKey+"HDCMVesselNPorts",5); // the ports below are sorted by their rad. safety importance
@@ -1206,7 +1209,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   setVariable::VacuumBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
 
-  const double MLMFrontToTopViewPort = 21.95; // [25]
+  const double mlmFrontToPort2 = 21.95; // [25] distance b/w flange A front and  port 2 centre
   MBoxGen.setCF<CF40>();   // set ports
   const double MLMWallThick = 1.2; // Walls: front, side, back [25]
   // Roof/Base/Width/Front/Back
@@ -1231,23 +1234,53 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
       MLMTotalLength-2.0*MLMWallThick-2.0*MLMPortLength
     );
 
-  Control.addVariable(monoVesselKey+"NPorts",1);
+  Control.addVariable(monoVesselKey+"YStep",danmaxVar::absY::MLM-mlmFrontToPort2); // [12]
+  Control.addVariable(monoVesselKey+"WallMat", "Stainless316L");
+  Control.addVariable(monoVesselKey+"PipeMat", "Stainless316L"); // only front/back ports
 
-  PItemGen.setCF<setVariable::CF63>(35.0-.8);
+ // MLM Ports:
+  Control.addVariable(monoVesselKey+"NPorts",5);
+
+  // Ion pump port (top)
+  PItemGen.setCF<setVariable::DN160CF>(17.69); // [25]
+  PItemGen.setPlate(setVariable::DN160CF::flangeLength, "SteelUnknownGrade"); // [25] + not modelling vacuum pump (close the cap instead)
+  PItemGen.generatePort(Control,monoVesselKey+"Port0",
+			Geometry::Vec3D(0.0, -1.53, 0.0),
+			Geometry::Vec3D(0,0,1));
+
+  // View port (top of vessel, along Bragg axis)
+  PItemGen.setCF<setVariable::DN100CF>(19.43); // [25]
+  PItemGen.setWindowPlate(setVariable::DN100CF::flangeLength, // [25]
+			  1.5, // TODO: window thick is dummy
+			  5.0, // window radius [25]
+			  "SteelUnknownGrade", // TODO: dummy
+			  "QuartzGlass");  // [35, section 4.1]
+  PItemGen.generatePort(Control,monoVesselKey+"Port1",
+			Geometry::Vec3D(0.0, -36.0, 0.0), // [25]
+			Geometry::Vec3D(0,0,1));
+
+  // View port (vessel side, viewing at 1st crystal surface)
+  PItemGen.setCF<setVariable::CF63>(34.2);
   PItemGen.setWindowPlate(setVariable::CF63::flangeLength, // [25]
 			  1.5, // TODO: window thick is dummy
 			  3.2, // [25]
 			  "SteelUnknownGrade", // TODO: dummy
-			  "LeadGlass");  // TODO: dummy
-  PItemGen.generatePort(Control,monoVesselKey+"Port0",
-			Geometry::Vec3D(0,0.0,0.0),
+			  "QuartzGlass");  // [35, section 4.1]
+  PItemGen.generatePort(Control,monoVesselKey+"Port2",
+			Geometry::Vec3D(0.0, -36.0, 0.0), // [25]
 			Geometry::Vec3D(-1,0,0));
-  Control.addVariable(monoVesselKey+"YStep",
-    danmaxVar::absY::MLM-MLMFrontToTopViewPort);
 
-  Control.addVariable(monoVesselKey+"WallMat", "Stainless316L");
-  Control.addVariable(monoVesselKey+"PipeMat", "Stainless316L");
+  // View port (vessel side, viewing at 2nd crystal surface)
+  PItemGen.setLength(33.4); // [25]
+  PItemGen.generatePort(Control,monoVesselKey+"Port3",
+			Geometry::Vec3D(0.0, 34.95, -0.15), // [25]
+			Geometry::Vec3D(1,0,0));
 
+  // Spare port (blind), IMG_0719.JPG
+  PItemGen.setNoWindow();
+  PItemGen.generatePort(Control,monoVesselKey+"Port4",
+			Geometry::Vec3D(0.0, 0.0, -0.15), // [25]
+			Geometry::Vec3D(-1,0,0));
 
   // crystals gap 4mm
   MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
@@ -1275,6 +1308,7 @@ monoShutterVariables(FuncDataBase& Control,
     danmaxVar::absY::monoShutter-MShutterGen.getLength()/2.0);
 
   const double bellowLength = 12.0; // [26]
+  BellowGen.setMat("SteelUnknownGrade","SteelUnknownGrade%Void%10.0");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowL",bellowLength);
 }
@@ -1451,6 +1485,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setNoWindow();
   PipeGen.setMat("SteelUnknownGrade");
+  BellowGen.setMat("SteelUnknownGrade","SteelUnknownGrade%Void%10.0");
   BellowGen.setCF<setVariable::CF40>(); // [28]
   BellowGen.setBellowStep(2.5); // [28]
   // dummy length, but length is also given in [4]
@@ -1547,10 +1582,10 @@ opticsVariables(FuncDataBase& Control,
   const Geometry::Vec3D ZVec(0,0,1);
   const Geometry::Vec3D vDanMAX = -ZVec;
   // Starting with the SINCRYS-side port of CM1 and ending with SINCRYS beam viewer 1,
-  // all beamline elements are at a fixed angle of 16.177 deg, which is the center of 
+  // all beamline elements are at a fixed angle of 16.177 deg, which is the center of
   // motion between the two extreme angles 15.041 deg and 17.313 deg:
   // (17.313 deg - 15.041 deg) / 2 = 16.177 deg
-  // Refs. [32] and [33] only contain evidence that this must be the fixed angle, but 
+  // Refs. [32] and [33] only contain evidence that this must be the fixed angle, but
   // I have not found a reference that states this explicitly.
   const double sinCrysBranchCenterAngleDeg = 16.177;
   const double sinCrysBranchMinAngleDeg = 15.041;
@@ -1568,7 +1603,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(name+"NPorts",3);
 
   // Front
-  // Port lengths measured in [30], using the information that CM1 is centered on the 
+  // Port lengths measured in [30], using the information that CM1 is centered on the
   // granite block whose length is given in [33].
   const double CM1FrontPortLength = 10.9;
   const double CM1Port12Length = 26.0;
@@ -1603,7 +1638,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(name+"NPorts",3);
 
   PItemGen.setCF<setVariable::CF40>(beamViewerS1PortLength);
-  // Build ports with slightly smaller outer radius than the main pipe to avoid 
+  // Build ports with slightly smaller outer radius than the main pipe to avoid
   // geometry errors.
   PItemGen.setPort(beamViewerS1PortLength,CF40::innerRadius-1e-3,CF40::wallThick);
   PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
@@ -1618,7 +1653,7 @@ opticsVariables(FuncDataBase& Control,
   const double beamViewerS1ScreenThick = 0.015; // [30]
   const double beamViewerS1ScreenSideLength = 1.0; // [30]
   FlangeGen.setNoPlate();
-  // Thread is a conservative approximation. In reality, there is much more material 
+  // Thread is a conservative approximation. In reality, there is much more material
   // around the crystal, see [30] or [32].
   FlangeGen.setThread(beamViewerS1ScreenThick,0.0,"SteelUnknownGrade"); // Dummy length
   // Angle from [30]
@@ -1733,21 +1768,20 @@ opticsVariables(FuncDataBase& Control,
   // fixed by the beam-port angle. In reality, the angle is actually -45 degrees w.r.t.
   // the beam, because the screen is mounted in a way that is not possible with the 
   // FlangeMount class (I believe).
-  // Material is actually given as "YAG" in [32].
   FlangeGen.setBlade(
     beamViewerS2ScreenSideLength,beamViewerS2ScreenSideLength,
-    beamViewerS2ScreenThick,0.0,"Diamond",1);
+    beamViewerS2ScreenThick,0.0,"YAG",1); // [32]
   FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",1);
   Control.addVariable(opticsName+"BeamViewerS2ScreenBladeCentreActive",1);
 
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1
-    // Refs. [31] and [33] give the distance from CM1 to CM2 along the beam axis as 
+    // Refs. [31] and [33] give the distance from CM1 to CM2 along the beam axis as
     // 3395.0 mm (explicitly in [33], implicitly in [31]).
-    // However, the center angle of 16.177 deg from Ref. [32], together with the 
-    // offset of 980 mm, results in a value of about 3378 mm that creates a visible 
-    // discrepancy in the geometry. For this reason, the optical-axis distance is 
+    // However, the center angle of 16.177 deg from Ref. [32], together with the
+    // offset of 980 mm, results in a value of about 3378 mm that creates a visible
+    // discrepancy in the geometry. For this reason, the optical-axis distance is
     // calculated here instead of taking it from [31] or [33].
     +fabs(SINCRYSBranchShift)/tan(SINCRYSAngleDeg*M_PI/180.0)
     +CM2PortLength
@@ -1757,7 +1791,8 @@ opticsVariables(FuncDataBase& Control,
   // Gate valve 2 is a different type than valve 1, which can be seen by comparing 
   // [30] and [34]. Due to its outer shape, assumed that it is similar to 
   // FrontBeamValve1.
-  Control.copyVarSet(beamName+"FrontBeamValve1",opticsName+"ValveS2"); // [34]
+  name = opticsName+"ValveS2";
+  Control.copyVarSet(beamName+"FrontBeamValve1",name); // [34]
   Control.addVariable(name+"YAngle",180.0);
 
   // Implement as stiff -in particular, non-bending- bellows, because transversal
@@ -1809,8 +1844,8 @@ opticsVariables(FuncDataBase& Control,
 
   // IB-C30-UHV slits
   name=opticsName+"SlitTubeS";
-  const double slitTubeSOuterRadius = CF160::flangeRadius; // [35]
-  const double slitTubeSInnerRadius = 8.56; // [35]
+  const double slitTubeSOuterRadius = CF160::flangeRadius; // [36]
+  const double slitTubeSInnerRadius = 8.56; // [36]
   const double slitTubeSWallThick = slitTubeSOuterRadius-slitTubeSInnerRadius;
   SimpleTubeGen.setPipe(
     slitTubeSInnerRadius, // [32]
@@ -1819,22 +1854,22 @@ opticsVariables(FuncDataBase& Control,
     0.0 // dummy
   );
   SimpleTubeGen.setCap(false, false);
-  const double slitTubeSLength = 9.2; // [35]
+  const double slitTubeSLength = 9.2; // [36]
   SimpleTubeGen.generateTube(Control,name,slitTubeSLength);
   Control.addVariable(0);
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+769.0-slitTubeSLength/2.0); // [33]
 
-  const double slitTubeSPortToPortDist = 6.0; // [35]
-  const double slitTubeSPortToFrontBackDist = 2.1; // [35]
-  PItemGen.setCF<CF25>(11.0+CF25::flangeLength); // [35]
-  PItemGen.setFlange(CF40::flangeRadius,CF40::flangeLength); // [35]
+  const double slitTubeSPortToPortDist = 6.0; // [36]
+  const double slitTubeSPortToFrontBackDist = 2.1; // [36]
+  PItemGen.setCF<CF25>(11.0+CF25::flangeLength); // [36]
+  PItemGen.setFlange(CF40::flangeRadius,CF40::flangeLength); // [36]
   PItemGen.setPlate(CF25::flangeLength,"SteelUnknownGrade");
 
   FlangePlateGenerator flangePlateGen;
   flangePlateGen.setCF<CF160>(CF40::innerRadius); // [32]
-  flangePlateGen.setFlangeLen(2.2); // [35]
+  flangePlateGen.setFlangeLen(2.2); // [36]
   flangePlateGen.generateFlangePlate(Control,name+"FrontAdapter");
   flangePlateGen.generateFlangePlate(Control,name+"BackAdapter");
 
@@ -1899,7 +1934,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.generateBellow(Control,bellowEName,10.0);  // Dummy length
   Control.addVariable(bellowEName+"YAngle", -valve6Angle);
 
-  monoPackage(Control,opticsName);
+  hdcmPackage(Control,opticsName);
 
   // Dummy length
   BellowGen.generateBellow(Control,opticsName+"BellowAfterHDCM",10.0);
@@ -1913,7 +1948,7 @@ opticsVariables(FuncDataBase& Control,
 
   std::string valve8Name = opticsName+"Valve8";
   Control.copyVarSet(beamName+"FrontBeamValve3",valve8Name); // [33]
-  // Neither visible on [26] or [28] as the other valves of this type, but the angle 
+  // Neither visible on [26] or [28] as the other valves of this type, but the angle
   // can be seen in [33].
   Control.addVariable(valve8Name+"YAngle", 90.0);
 
@@ -1936,6 +1971,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,opticsName+"BellowI",10.0); // Dummy length
 
+  GateGen.setBladeMat("SteelUnknownGrade");
   GateGen.setCylCF<setVariable::CF40>(); // [26]
   const double CRLGateTotalLength = 3.5+2.0*CF40::flangeLength; // [26]
   GateGen.setLength(CRLGateTotalLength-2.0*CF40::flangeLength);
