@@ -1274,6 +1274,7 @@ monoShutterVariables(FuncDataBase& Control,
     danmaxVar::absY::monoShutter-MShutterGen.getLength()/2.0);
 
   const double bellowLength = 12.0; // [26]
+  BellowGen.setMat("SteelUnknownGrade","SteelUnknownGrade%Void%10.0");
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,preName+"BellowL",bellowLength);
 }
@@ -1450,6 +1451,7 @@ opticsVariables(FuncDataBase& Control,
 
   PipeGen.setNoWindow();
   PipeGen.setMat("SteelUnknownGrade");
+  BellowGen.setMat("SteelUnknownGrade","SteelUnknownGrade%Void%10.0");
   BellowGen.setCF<setVariable::CF40>(); // [28]
   BellowGen.setBellowStep(2.5); // [28]
   // dummy length, but length is also given in [4]
@@ -1921,6 +1923,7 @@ opticsVariables(FuncDataBase& Control,
 
   BellowGen.generateBellow(Control,opticsName+"BellowI",10.0); // Dummy length
 
+  GateGen.setBladeMat("SteelUnknownGrade");
   GateGen.setCylCF<setVariable::CF40>(); // [26]
   const double CRLGateTotalLength = 3.5+2.0*CF40::flangeLength; // [26]
   GateGen.setLength(CRLGateTotalLength-2.0*CF40::flangeLength);
