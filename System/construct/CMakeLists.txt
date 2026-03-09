@@ -3,7 +3,7 @@ set (constructSources
     BeamWindow.cxx Bellows.cxx BlankTube.cxx
     CentredHoleShape.cxx ChopperPit.cxx ConicInfo.cxx
     CornerPipe.cxx CrossPipe.cxx Cryostat.cxx
-    CrystalMount.cxx DomeConnector.cxx doublePortItem.cxx
+    CrystalMount.cxx cylinderUnit.cxx DomeConnector.cxx doublePortItem.cxx
     FlangeDome.cxx FlangePlate.cxx FlightLine.cxx
     GateValveCube.cxx GateValveCylinder.cxx generalConstruct.cxx
     GeneralPipe.cxx gridUnit.cxx GroupOrigin.cxx
@@ -51,6 +51,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/CrossPipe.cxx
   ${tarDIR}/Cryostat.cxx
   ${tarDIR}/CrystalMount.cxx
+  ${tarDIR}/cylinderUnit.cxx
   ${tarDIR}/DomeConnector.cxx
   ${tarDIR}/doublePortItem.cxx
   ${tarDIR}/FlangeDome.cxx
@@ -112,6 +113,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/CrossPipe.h
   ${tarINC}/Cryostat.h
   ${tarINC}/CrystalMount.h
+  ${tarINC}/cylinderUnit.h
   ${tarINC}/DomeConnector.h
   ${tarINC}/doublePortItem.h
   ${tarINC}/FlangeDome.h

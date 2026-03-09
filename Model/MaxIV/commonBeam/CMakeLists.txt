@@ -12,7 +12,7 @@ set (commonBeamSources
     GratingMono.cxx GratingUnit.cxx HeatAbsorberR3Toyama.cxx HeatAbsorberToyama.cxx HeatDump.cxx
     HPJaws.cxx IonGauge.cxx IonPumpTube.cxx LObjectSupport.cxx
     LCollimator.cxx Maze.cxx Mirror.cxx
-    MLMono.cxx MonoBeamStop.cxx MonoBlockXstals.cxx
+    MLMono.cxx MonoBlockXstals.cxx
     MonoBox.cxx MonoCrystals.cxx MonoShutter.cxx MonoShutterR3.cxx MovableSafetyMask.cxx
     Octupole.cxx OpticsHutch.cxx PipeShield.cxx
     PortChicane.cxx PowerFilter.cxx ProximityShielding.cxx Quadrupole.cxx RingDoor.cxx
@@ -86,7 +86,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/Maze.cxx
   ${tarDIR}/Mirror.cxx
   ${tarDIR}/MLMono.cxx
-  ${tarDIR}/MonoBeamStop.cxx
   ${tarDIR}/MonoBlockXstals.cxx
   ${tarDIR}/MonoBox.cxx
   ${tarDIR}/MonoCrystals.cxx
@@ -166,7 +165,6 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/Maze.h
   ${tarINC}/Mirror.h
   ${tarINC}/MLMono.h
-  ${tarINC}/MonoBeamStop.h
   ${tarINC}/MonoBlockXstals.h
   ${tarINC}/MonoBox.h
   ${tarINC}/MonoCrystals.h

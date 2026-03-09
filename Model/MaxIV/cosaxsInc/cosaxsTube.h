@@ -28,6 +28,7 @@ namespace constructSystem
 {
   class FlangeDome;
   class PipeTube;
+  class cylinderUnit;
 }
 
 namespace xraySystem
@@ -46,7 +47,6 @@ namespace xraySystem
   class cosaxsTubeWAXSDetector;
   class cosaxsTubeAirBox;
   class cosaxsTubeCable;
-  class MonoBeamStop;
 
 class cosaxsTube :
     public attachSystem::ContainedComp,
@@ -60,9 +60,9 @@ class cosaxsTube :
   bool delayPortFlag;           ///< Delay building port
   double outerRadius;           ///< Radius of bounding volume
   double outerLength;           ///< Length of bounding volume
- 
+
   int outerMat;                 ///< Outer material
-  
+
   attachSystem::BlockZone buildZone;      ///< Outer BlockZone
   attachSystem::BlockZone tubeZone;       ///< Inner void BlockZone
 
@@ -73,14 +73,14 @@ class cosaxsTube :
   std::shared_ptr<constructSystem::FlangeDome> backPlate;
 
   // inner components:
-  std::shared_ptr<xraySystem::MonoBeamStop> beamDump;
+  std::shared_ptr<constructSystem::cylinderUnit> beamDump;
   std::shared_ptr<xraySystem::cosaxsTubeWAXSDetector> waxs;
   std::shared_ptr<xraySystem::cosaxsTubeAirBox> airBox;
   std::shared_ptr<xraySystem::cosaxsTubeCable>  cable;
-  
+
 
   void createInnerObjects(Simulation&);
-  
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
@@ -108,5 +108,3 @@ class cosaxsTube :
 }
 
 #endif
-
-

@@ -71,7 +71,7 @@
 #include "portSet.h"
 #include "FlangeDome.h"
 #include "GateValveCylinder.h"
-#include "MonoBeamStop.h"
+#include "cylinderUnit.h"
 #include "AreaDetector.h"
 
 #include "formaxDetectorTube.h"
@@ -87,7 +87,7 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
   attachSystem::ExternalCut(),
 
   buildZone(Key+"BuildZone"),
-  
+
   mainTube
   ({
     std::make_shared<constructSystem::PipeTube>(keyName+"Segment0"),
@@ -101,7 +101,7 @@ formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
   }),
   frontDome(new constructSystem::FlangeDome(keyName+"FrontDome")),
   backDome(new constructSystem::FlangeDome(keyName+"BackDome")),
-  monoBeamStop(new xraySystem::MonoBeamStop(keyName+"BeamStop")),
+  monoBeamStop(new constructSystem::cylinderUnit(keyName+"BeamStop")),
   waxs(new xraySystem::AreaDetector(keyName+"WAXS"))
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -139,7 +139,7 @@ formaxDetectorTube::populate(const FuncDataBase& Control)
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerMat=ModelSupport::EvalDefMat(Control,keyName+"OuterMat",0);
-  
+
   return;
 }
 
@@ -184,16 +184,16 @@ formaxDetectorTube::createObjects(Simulation& System)
   ELog::RegMethod RegA("formaxDetectorTube","createObjects");
 
   int outerCell;
-  
+
   buildZone.addInsertCells(this->getInsertCells());
 
   mainTube[0]->createAll(System,*this,0);
   outerCell=buildZone.createUnit(System,*mainTube[0],-1);
-  
+
   frontDome->setCutSurf("plate",*mainTube[0],"front");
   frontDome->createAll(System,*mainTube[0],1);
   frontDome->insertInCell(System,outerCell);
-  
+
   outerCell=buildZone.createUnit(System,*mainTube[0],2);
   mainTube[0]->insertAllInCell(System,outerCell);
 
@@ -201,12 +201,12 @@ formaxDetectorTube::createObjects(Simulation& System)
     {
       constructSystem::constructUnit
 	(System,buildZone,*mainTube[i-1],"back",*mainTube[i]);
-    }  
+    }
 
   backDome->setCutSurf("plate",*mainTube[7],"back");
   backDome->createAll(System,*mainTube[7],2);
   const constructSystem::portItem& BPI=backDome->getPort(1);
-  outerCell=buildZone.createUnit(System,BPI,"OuterPlate");  
+  outerCell=buildZone.createUnit(System,BPI,"OuterPlate");
   backDome->insertInCell(System,outerCell);
 
   // Construct inner stuff
@@ -225,7 +225,7 @@ formaxDetectorTube::createObjects(Simulation& System)
 	  waxs->insertInCell(*mainTube[i]->getCellObject(System,"Void"));
 	}
     }
-  
+
   buildZone.createUnit(System);
   buildZone.rebuildInsertCells(System);
   setCell("FirstVoid",buildZone.getCell("Unit"));
@@ -244,8 +244,8 @@ formaxDetectorTube::createLinks()
 
   const constructSystem::portItem& API=frontDome->getPort(0);
   setLinkCopy(0,API,"OuterPlate");
-  setLinkCopy(1,*backDome,2);  
- 
+  setLinkCopy(1,*backDome,2);
+
   return;
 }
 
@@ -273,5 +273,3 @@ formaxDetectorTube::createAll(Simulation& System,
 }
 
 }  // xraySystem
-
-

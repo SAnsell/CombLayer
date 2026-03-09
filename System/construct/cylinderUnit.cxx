@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/commonBeam/MonoBeamStop.cxx
+ * File:   Model/MaxIV/commonBeam/cylinderUnit.cxx
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,12 +58,12 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 
-#include "MonoBeamStop.h"
+#include "cylinderUnit.h"
 
-namespace xraySystem
+namespace constructSystem
 {
 
-MonoBeamStop::MonoBeamStop(const std::string& Key)  :
+cylinderUnit::cylinderUnit(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedRotate(Key,3),
   attachSystem::CellMap(),
@@ -74,20 +74,20 @@ MonoBeamStop::MonoBeamStop(const std::string& Key)  :
   */
 {}
 
-MonoBeamStop::~MonoBeamStop()
+cylinderUnit::~cylinderUnit()
   /*!
     Destructor
   */
 {}
 
 void
-MonoBeamStop::populate(const FuncDataBase& Control)
+cylinderUnit::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("MonoBeamStop","populate");
+  ELog::RegMethod RegA("cylinderUnit","populate");
 
   FixedRotate::populate(Control);
 
@@ -99,12 +99,12 @@ MonoBeamStop::populate(const FuncDataBase& Control)
 }
 
 void
-MonoBeamStop::createSurfaces()
+cylinderUnit::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("MonoBeamStop","createSurfaces");
+  ELog::RegMethod RegA("cylinderUnit","createSurfaces");
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
@@ -114,13 +114,13 @@ MonoBeamStop::createSurfaces()
 }
 
 void
-MonoBeamStop::createObjects(Simulation& System)
+cylinderUnit::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("MonoBeamStop","createObjects");
+  ELog::RegMethod RegA("cylinderUnit","createObjects");
 
   HeadRule HR;
 
@@ -133,24 +133,24 @@ MonoBeamStop::createObjects(Simulation& System)
 
 
 void
-MonoBeamStop::createLinks()
+cylinderUnit::createLinks()
   /*!
     Create all the links
   */
 {
-  ELog::RegMethod RegA("MonoBeamStop","createLinks");
+  ELog::RegMethod RegA("cylinderUnit","createLinks");
 
   setConnect(0,Origin-Y*(length/2.0),-Y);
   setConnect(1,Origin+Y*(length/2.0),Y);
-  
+
   setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  
+
   return;
 }
 
 void
-MonoBeamStop::createAll(Simulation& System,
+cylinderUnit::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
@@ -160,7 +160,7 @@ MonoBeamStop::createAll(Simulation& System,
     \param sideIndex :: link point for origin
   */
 {
-  ELog::RegMethod RegA("MonoBeamStop","createAll");
+  ELog::RegMethod RegA("cylinderUnit","createAll");
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,sideIndex,length/2.0);
@@ -172,4 +172,4 @@ MonoBeamStop::createAll(Simulation& System,
   return;
 }
 
-}  // xraySystem
+}  // constructSystem
