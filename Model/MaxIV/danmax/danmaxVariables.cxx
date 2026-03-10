@@ -59,6 +59,7 @@
 #include "FlangeMountGenerator.h"
 #include "BeamPairGenerator.h"
 #include "MonoShutterR3Generator.h"
+#include "MonoSlitsJJGenerator.h"
 #include "CollGenerator.h"
 #include "SqrFMaskGenerator.h"
 #include "FixedMaskHybridGenerator.h"
@@ -1844,35 +1845,11 @@ opticsVariables(FuncDataBase& Control,
 
   // IB-C30-UHV slits
   name=opticsName+"SlitTubeS";
-  const double slitTubeSOuterRadius = CF160::flangeRadius; // [36]
-  const double slitTubeSInnerRadius = 8.56; // [36]
-  const double slitTubeSWallThick = slitTubeSOuterRadius-slitTubeSInnerRadius;
-  SimpleTubeGen.setPipe(
-    slitTubeSInnerRadius, // [32]
-    slitTubeSWallThick,
-    1.0, // dummy
-    0.0 // dummy
-  );
-  SimpleTubeGen.setCap(false, false);
-  const double slitTubeSLength = 9.2; // [36]
-  SimpleTubeGen.generateTube(Control,name,slitTubeSLength);
-  Control.addVariable(name+"NPorts",0);
+  MonoSlitsJJGenerator monoSlitsJJGenerator;
+  monoSlitsJJGenerator.generate(Control,name);
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
-    danmaxVar::absY::CM1+769.0-slitTubeSLength/2.0); // [33]
-
-  const double slitTubeSPortToPortDist = 6.0; // [36]
-  const double slitTubeSPortToFrontBackDist = 2.1; // [36]
-  PItemGen.setCF<CF25>(11.0+CF25::flangeLength); // [36]
-  PItemGen.setFlange(CF40::flangeRadius,CF40::flangeLength); // [36]
-  PItemGen.setPlate(CF25::flangeLength,"SteelUnknownGrade");
-
-  FlangePlateGenerator flangePlateGen;
-  flangePlateGen.setCF<CF160>(CF40::innerRadius); // [32]
-  flangePlateGen.setFlangeLen(2.2); // [36]
-  flangePlateGen.generateFlangePlate(Control,name+"FrontAdapter");
-  flangePlateGen.generateFlangePlate(Control,name+"BackAdapter");
-
+    danmaxVar::absY::CM1+769.0-monoSlitsJJGenerator.getLength()/2.0); // [33]
   // According to [32], it is identical to beam viewer 1 except for the orientation.
   // See beam viewer 1 for more information.
   name=opticsName+"BeamViewerS3";

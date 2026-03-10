@@ -63,6 +63,7 @@ namespace xraySystem
   class Mirror;
   class MonoBlockXstals;
   class MonoShutterR3;
+  class MonoSlitsJJ;
   class DCMTank;
   class MLMono;
   class MLMVessel;
@@ -140,9 +141,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::VacuumPipe> transfocatorToSlitsPipe1;
   std::shared_ptr<constructSystem::Bellows> transfocatorToSlitsBellows;
   std::shared_ptr<constructSystem::VacuumPipe> transfocatorToSlitsPipe2;
-  std::shared_ptr<constructSystem::FlangePlate> slitTubeSFrontAdapter;
-  std::shared_ptr<constructSystem::PipeTube> slitTubeS;
-  std::shared_ptr<constructSystem::FlangePlate> slitTubeSBackAdapter;
+  std::shared_ptr<xraySystem::MonoSlitsJJ> slitTubeS;
   std::shared_ptr<constructSystem::PipeTube> beamViewerS3;
   std::shared_ptr<xraySystem::FlangeMount> beamViewerS3Screen;
   std::shared_ptr<constructSystem::GateValveCube> valveS3;

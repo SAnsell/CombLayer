@@ -90,6 +90,7 @@
 #include "FlangeMount.h"
 #include "MonoBox.h"
 #include "MonoShutterR3.h"
+#include "MonoSlitsJJ.h"
 #include "BeamPair.h"
 #include "DCMTank.h"
 #include "MonoBlockXstals.h"
@@ -150,9 +151,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   transfocatorToSlitsPipe1(new constructSystem::VacuumPipe(newName+"TransfocatorToSlitsPipe1")),
   transfocatorToSlitsBellows(new constructSystem::Bellows(newName+"TransfocatorToSlitsBellows")),
   transfocatorToSlitsPipe2(new constructSystem::VacuumPipe(newName+"TransfocatorToSlitsPipe2")),
-  slitTubeSFrontAdapter(new constructSystem::FlangePlate(newName+"SlitTubeSFrontAdapter")),
-  slitTubeS(new constructSystem::PipeTube(newName+"SlitTubeS")),
-  slitTubeSBackAdapter(new constructSystem::FlangePlate(newName+"SlitTubeSBackAdapter")),
+  slitTubeS(new xraySystem::MonoSlitsJJ(newName+"SlitTubeS")),
   beamViewerS3(new constructSystem::PipeTube(newName+"BeamViewerS3")),
   beamViewerS3Screen(new xraySystem::FlangeMount(newName+"BeamViewerS3Screen")),
   valveS3(new constructSystem::GateValveCube(newName+"ValveS3")),
@@ -251,9 +250,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(transfocatorToSlitsPipe1);
   OR.addObject(transfocatorToSlitsBellows);
   OR.addObject(transfocatorToSlitsPipe2);
-  OR.addObject(slitTubeSFrontAdapter);
   OR.addObject(slitTubeS);
-  OR.addObject(slitTubeSBackAdapter);
   OR.addObject(beamViewerS3);
   OR.addObject(beamViewerS3Screen);
   OR.addObject(valveS3);
@@ -942,8 +939,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   );
 
   slitTubeS->createAll(System,*frontEnd,0);
-  slitTubeSFrontAdapter->createAll(System,*slitTubeS,"front");
-  transfocatorToSlitsPipe2->createAll(System,*slitTubeSFrontAdapter,"back");
+  transfocatorToSlitsPipe2->createAll(System,*slitTubeS,"front");
   transfocatorToSlitsBellows->setBack(*transfocatorToSlitsPipe1,"back");
   transfocatorToSlitsBellows->createAll(System,*transfocatorToSlitsPipe2,"back");
 
@@ -953,17 +949,11 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   transfocatorToSlitsPipe2->insertAllInCell(
     System,buildZoneSinCrys.createUnit(System,*transfocatorToSlitsPipe2,"front")
   );
-  slitTubeSFrontAdapter->insertInCell(
-    System,buildZoneSinCrys.createUnit(System,*slitTubeSFrontAdapter,"front")
-  );
-  slitTubeS->insertAllInCell(
+  slitTubeS->insertInCell(
     System,buildZoneSinCrys.createUnit(System,*slitTubeS,"back")
   );
   constructSystem::constructUnit(
-    System,buildZoneSinCrys,*slitTubeS,"back",*slitTubeSBackAdapter
-  );
-  constructSystem::constructUnit(
-    System,buildZoneSinCrys,*slitTubeSBackAdapter,"back",*beamViewerS3
+    System,buildZoneSinCrys,*slitTubeS,"back",*beamViewerS3
   );
   beamViewerS3->intersectPorts(System,0,2);
   beamViewerS3->intersectPorts(System,1,2);
