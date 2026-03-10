@@ -73,7 +73,7 @@
 #include "GateValveCylinder.h"
 #include "cosaxsTubeNoseCone.h"
 #include "cosaxsTubeStartPlate.h"
-#include "MonoBeamStop.h"
+#include "cylinderUnit.h"
 #include "cosaxsTubeWAXSDetector.h"
 #include "cosaxsTubeAirBox.h"
 #include "cosaxsTubeCable.h"
@@ -101,8 +101,8 @@ cosaxsTube::cosaxsTube(const std::string& Key)  :
   gateA(new constructSystem::GateValveCylinder(keyName+"GateA")),
   startPlate(new xraySystem::cosaxsTubeStartPlate(keyName+"StartPlate")),
   backPlate(new constructSystem::FlangeDome(keyName+"BackDome")),
-  
-  beamDump(new xraySystem::MonoBeamStop(keyName+"BeamDump")),
+
+  beamDump(new constructSystem::cylinderUnit(keyName+"BeamDump")),
   waxs(new xraySystem::cosaxsTubeWAXSDetector(keyName+"WAXS")),
   airBox(new xraySystem::cosaxsTubeAirBox(keyName+"AirBox")),
   cable(new xraySystem::cosaxsTubeCable(keyName+"Cable"))
@@ -200,14 +200,14 @@ cosaxsTube::createObjects(Simulation& System)
   int outerCell;
 
   buildZone.addInsertCells(this->getInsertCells());
-  
+
   noseCone->createAll(System, *this, 0);
   outerCell=buildZone.createUnit(System,*noseCone,2);
   noseCone->insertInCell(System,outerCell);
 
   constructSystem::constructUnit
     (System,buildZone,*noseCone,"back",*gateA);
-    
+
   constructSystem::constructUnit
     (System,buildZone,*gateA,"back",*startPlate);
 
@@ -227,7 +227,7 @@ cosaxsTube::createObjects(Simulation& System)
   const constructSystem::portItem& BPI=backPlate->getPort(1);
   outerCell=buildZone.createUnit(System,BPI,"OuterPlate");
   backPlate->insertInCell(System,outerCell);
-  
+
 
   std::vector<int> cellVec;
   cellVec=seg[5]->splitObject
@@ -238,14 +238,14 @@ cosaxsTube::createObjects(Simulation& System)
     (System,3002,buildZone.getCell("Unit",7),
      Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
 
-  
+
   // cellVec=seg[5]->splitObject
   //   (System,3003,buildZone.getCell("Unit",7),
   //    Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0.5));
   // //  this->addCell("OuterVoid",CellVec.back());
-  
+
   cellIndex+=2;
-  
+
 
   return;
 }
@@ -279,7 +279,7 @@ cosaxsTube::createInnerObjects(Simulation& System)
   tubeZone.createUnit(System);
   return;
 }
-  
+
 void
 cosaxsTube::createLinks()
   /*!

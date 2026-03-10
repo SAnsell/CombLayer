@@ -81,6 +81,7 @@
 #include "FlangePlateGenerator.h"
 #include "TwinPipeGenerator.h"
 #include "SmallAngleBellowsGenerator.h"
+#include "WhiteBeamStopGenerator.h"
 
 // References
 // [1] CARATELLI Drawing 06769-01-000
@@ -884,13 +885,29 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   std::string pipeName = viewKey+"BeamStopSection";
   SimpleTubeGen.setPipe(port0Radius, port0WallThick, 1.0, 0.0);
   SimpleTubeGen.generateTube(Control,pipeName,port0Length-port0SplitLength);
-  Control.addVariable(pipeName+"NPorts",1);
-  PItemGen.setCF<CF40>(14.0); // [22]
-  PItemGen.setPlate(CF40::flangeLength, "SteelUnknownGrade");
+  Control.addVariable(pipeName+"NPorts",2);
+  PItemGen.setCF<CF63>(14.0); // [22]
+  PItemGen.setPlate(CF63::flangeLength, "SteelUnknownGrade");
+  const double port0y = -(port0Length-port0SplitLength)/2.0+
+    beamStopFrontToWBPort-beamStopInPipeLength-CF63::flangeLength-port0WallThick-0.8; // approx
   PItemGen.generatePort(Control,pipeName+"Port0",
-			Geometry::Vec3D(0,-(port0Length-port0SplitLength)/2.0
-      +beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength-port0WallThick,0),
+			Geometry::Vec3D(0,port0y,0),
 			Geometry::Vec3D(1,0,0));
+
+  PItemGen.setWindowPlate(2.5,1.1,1.8,"SteelUnknownGrade","QuartzGlass"); // TODO dummy
+
+  //  const double port1angle = -116 * M_PI/180.0; // [22]
+  const double port1angle = -115 * M_PI/180.0; // [22]
+  PItemGen.setCF<CF40>(14.0-4.1);
+  PItemGen.setPlate(CF40::flangeLength, "SteelUnknownGrade");
+  const double port1y = -(port0Length-port0SplitLength)/2.0+
+    beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength-port0WallThick; // approx
+  PItemGen.generatePort(Control,pipeName+"Port1",Geometry::Vec3D(0,port1y,0),
+			Geometry::Vec3D(sin(port1angle),cos(port1angle),0));
+  PItemGen.setNoWindow();
+
+  WhiteBeamStopGenerator WBSGen;
+  WBSGen.generate(Control,viewKey+"WhiteBeamStop");
 
   // will be rotated vertical
   pipeName=viewKey+"BeamStopTube";

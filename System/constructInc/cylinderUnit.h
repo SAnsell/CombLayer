@@ -1,9 +1,9 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   Model/MaxIV/commonBeam/MonoBeamStop.h
+ * File:   Model/MaxIV/commonBeam/cylinderUnit.h
  *
- * Copyright (c) 2004-2021 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#ifndef xraySystem_MonoBeamStop_h
-#define xraySystem_MonoBeamStop_h
+#ifndef constructSystem_cylinderUnit_h
+#define constructSystem_cylinderUnit_h
 
 class Simulation;
 
-namespace xraySystem
+namespace constructSystem
 {
 
 /*!
-  \class MonoBeamStop
+  \class cylinderUnit
   \version 1.0
   \author Konstantin Batkov
   \date 25 Jun 2019
-  \brief Beam dump
+  \brief Simple Cylinder shape
 */
 
-class MonoBeamStop :
+class cylinderUnit :
     public attachSystem::ContainedComp,
     public attachSystem::FixedRotate,
     public attachSystem::CellMap,
@@ -43,7 +43,7 @@ class MonoBeamStop :
 {
  private:
 
-  double length;  ///< Total length
+  double length;  ///< Length
   double radius;  ///< Radius
   int    mat;     ///< Material
 
@@ -54,10 +54,10 @@ class MonoBeamStop :
 
  public:
 
-  MonoBeamStop(const std::string&);
-  MonoBeamStop(const MonoBeamStop&);
-  MonoBeamStop& operator=(const MonoBeamStop&);
-  ~MonoBeamStop() override;
+  cylinderUnit(const std::string&);
+  cylinderUnit(const cylinderUnit&);
+  cylinderUnit& operator=(const cylinderUnit&);
+  ~cylinderUnit() override;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int) override;
@@ -67,5 +67,3 @@ class MonoBeamStop :
 }
 
 #endif
-
-

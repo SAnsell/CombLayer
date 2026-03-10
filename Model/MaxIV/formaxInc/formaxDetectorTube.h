@@ -29,12 +29,12 @@ namespace constructSystem
   class PipeTube;
   class portItem;
   class FlangeDome;
+  class cylinderUnit;
 }
 
 namespace xraySystem
 {
   class AreaDetector;
-  class MonoBeamStop;
 
 /*!
   \class formaxDetectorTube
@@ -59,19 +59,19 @@ class formaxDetectorTube :
   /// Shared point to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
 
-  
+
   double outerRadius; ///< Radius of bounding volume
   double outerLength; ///< Length of bounding volume
   int outerMat;       ///< Surround matieral
-  
-  /// main tube vacuum segments 
+
+  /// main tube vacuum segments
   std::array<std::shared_ptr<constructSystem::PipeTube>,8> mainTube;
   std::shared_ptr<constructSystem::FlangeDome> frontDome;
   std::shared_ptr<constructSystem::FlangeDome> backDome;
 
-  std::shared_ptr<xraySystem::MonoBeamStop> monoBeamStop;
+  std::shared_ptr<constructSystem::cylinderUnit> monoBeamStop;
   std::shared_ptr<xraySystem::AreaDetector> waxs;
-  
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);
@@ -96,5 +96,3 @@ class formaxDetectorTube :
 }
 
 #endif
-
-

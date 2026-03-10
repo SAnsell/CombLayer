@@ -210,6 +210,8 @@
 #include "FixedMaskHybrid.h"
 #include "SqrShield.h"
 #include "SmallAngleBellows.h"
+#include "cylinderUnit.h"
+#include "WhiteBeamStop.h"
 
 #include "makeSingleItem.h"
 
@@ -243,6 +245,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
+	"Cylinder","WhiteBeamStop",
 	"SmallAngleBellows","CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder", "GTFGateValve", "CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
@@ -1995,16 +1998,37 @@ makeSingleItem::build(Simulation& System,
 	sqrShield->addInsertCell(voidCell);
 	sqrShield->createAll(System,World::masterOrigin(),0);
 
-  attachSystem::BlockZone blockZone("BlockZone");
-  blockZone.setFront(sqrShield->getFrontRule());
-  blockZone.setMaxExtent(sqrShield->getBackRule());
-  blockZone.setSurround(sqrShield->getSurround());
-  blockZone.setInnerMat(sqrShield->getInnerMat());
-  blockZone.createUnit(System);
-  blockZone.createAll(System,World::masterOrigin(),0);
+	attachSystem::BlockZone blockZone("BlockZone");
+	blockZone.setFront(sqrShield->getFrontRule());
+	blockZone.setMaxExtent(sqrShield->getBackRule());
+	blockZone.setSurround(sqrShield->getSurround());
+	blockZone.setInnerMat(sqrShield->getInnerMat());
+	blockZone.createUnit(System);
+	blockZone.createAll(System,World::masterOrigin(),0);
 
 	return;
       }
+
+    if (item == "Cylinder") {
+      const auto mbs = std::make_shared<constructSystem::cylinderUnit>(item);
+      OR.addObject(mbs);
+
+      mbs->addInsertCell(voidCell);
+      mbs->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
+    if (item == "WhiteBeamStop") {
+      const auto wbs = std::make_shared<xraySystem::WhiteBeamStop>(item);
+      OR.addObject(wbs);
+
+      wbs->addInsertCell(voidCell);
+      wbs->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+
 
     if (item=="Help" || item=="help")
       {
