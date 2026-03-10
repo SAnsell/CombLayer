@@ -136,6 +136,7 @@
 #include "BeamBoxGenerator.h"
 #include "MonoShutterGenerator.h"
 #include "MonoShutterR3Generator.h"
+#include "MonoSlitsJJGenerator.h"
 #include "FocusGenerator.h"
 #include "MLMDetailGenerator.h"
 #include "M1DetailGenerator.h"
@@ -413,6 +414,9 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("MonoShutterR3FrontOpenEntryShutterUpFlag",1);
   MSR3Gen.generate(Control,"MonoShutterR3BackOpen");
   Control.addVariable("MonoShutterR3BackOpenExitShutterUpFlag",1);
+
+  setVariable::MonoSlitsJJGenerator MSJJGen;
+  MSJJGen.generate(Control,"MonoSlitsJJ");
 
   setVariable::RoundShutterGenerator RMSGen;
   RMSGen.generateShutter(Control,"RMS",1,1);

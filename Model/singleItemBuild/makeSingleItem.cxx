@@ -180,6 +180,7 @@
 #include "DomeConnector.h"
 #include "MonoShutter.h"
 #include "MonoShutterR3.h"
+#include "MonoSlitsJJ.h"
 #include "RoundMonoShutter.h"
 #include "GuideUnit.h"
 #include "PlateUnit.h"
@@ -265,8 +266,8 @@ makeSingleItem::build(Simulation& System,
 	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
 	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
-	"MonoShutter","MonoShutterR3","RoundMonoShutter","TubeDetBox", "TDCBeamDump",
-	"GuideUnit","PlateUnit","BenderUnit","MLMdetail",
+	"MonoShutter","MonoShutterR3","MonoSlitsJJ","RoundMonoShutter","TubeDetBox",
+  "TDCBeamDump","GuideUnit","PlateUnit","BenderUnit","MLMdetail",
         "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama",
 	"HeatAbsorberR3Toyama", "FixedMaskHybrid", "SqrShield", "Help","help"
@@ -1816,6 +1817,17 @@ makeSingleItem::build(Simulation& System,
 	msr3FrontOpen->insertInCell(System,voidCell);
 	msr3BackOpen->createAll(System,*msr3FrontOpen,"back");
 	msr3BackOpen->insertInCell(System,voidCell);
+	return;
+      }
+    if (item == "MonoSlitsJJ" )
+      {
+	std::shared_ptr<xraySystem::MonoSlitsJJ>
+	  msjj(new xraySystem::MonoSlitsJJ("MonoSlitsJJ"));
+
+	OR.addObject(msjj);
+
+	msjj->createAll(System,World::masterOrigin(),0);
+  msjj->insertInCell(System,voidCell);
 	return;
       }
     if (item == "RoundMonoShutter" )
