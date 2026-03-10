@@ -113,7 +113,7 @@
 // [29] /mxn/groups/rad/Beamlines/DanMAX/Drawings/DanMAX/Optics/FDR_Diagnostics/Stp Files/DM1/AQM0214.stp
 // [30] CAD model 01_OH.x_t /mxn/groups/rad/Beamlines/DanMAX/Simulations/01_OH.x_t
 // [31] SINCRYS layout CM1, Drawing 256569, 2025-05-06
-// [32] JJ X-RAY, SINCRY beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
+// [32] JJ X-RAY, SINCRYS beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
 // [33] JJ X-RAY, SINCRYS layout drawing, 23087, 2025-06-27 (Appendix to [32])
 // [34] /mxn/groups/rad/Beamlines/DanMAX/Simulations/03_OH.STEP, see also [10]
 // [35] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
