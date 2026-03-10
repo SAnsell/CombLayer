@@ -13,8 +13,8 @@ set (commonBeamSources
     HPJaws.cxx IonGauge.cxx IonPumpTube.cxx LObjectSupport.cxx
     LCollimator.cxx Maze.cxx Mirror.cxx
     MLMono.cxx MonoBeamStop.cxx MonoBlockXstals.cxx
-    MonoBox.cxx MonoCrystals.cxx MonoShutter.cxx MonoShutterR3.cxx MovableSafetyMask.cxx
-    Octupole.cxx OpticsHutch.cxx PipeShield.cxx
+    MonoBox.cxx MonoCrystals.cxx MonoShutter.cxx MonoShutterR3.cxx MonoSlitsJJ.cxx 
+    MovableSafetyMask.cxx Octupole.cxx OpticsHutch.cxx PipeShield.cxx
     PortChicane.cxx PowerFilter.cxx ProximityShielding.cxx Quadrupole.cxx RingDoor.cxx
     RoundMonoShutter.cxx Sexupole.cxx ShutterUnit.cxx
     SideShield.cxx SimpleChicane.cxx SixPortTube.cxx SmallAngleBellows.cxx
@@ -92,6 +92,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MonoCrystals.cxx
   ${tarDIR}/MonoShutter.cxx
   ${tarDIR}/MonoShutterR3.cxx
+  ${tarDIR}/MonoSlitsJJ.cxx
   ${tarDIR}/MovableSafetyMask.cxx
   ${tarDIR}/Octupole.cxx
   ${tarDIR}/OpticsHutch.cxx
@@ -172,6 +173,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/MonoCrystals.h
   ${tarINC}/MonoShutter.h
   ${tarINC}/MonoShutterR3.h
+  ${tarINC}/MonoSlitsJJ.h
   ${tarINC}/MovableSafetyMask.h
   ${tarINC}/Octupole.h
   ${tarINC}/OpticsHutch.h
