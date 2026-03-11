@@ -118,6 +118,7 @@
 // [33] JJ X-RAY, SINCRYS layout drawing, 23087, 2025-06-27 (Appendix to [32])
 // [34] /mxn/groups/rad/Beamlines/DanMAX/Simulations/03_OH.STEP, see also [10]
 // [35] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
+// [36] Verbal communication with Mads and Sergio 260311 (viewing window parameters: thickness 3 mm, standard Glass, radius: same as the pipe inner radius) + see email from KB 260311
 
 namespace setVariable
 {
@@ -891,7 +892,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
 			Geometry::Vec3D(0,port0y,0),
 			Geometry::Vec3D(1,0,0));
 
-  PItemGen.setWindowPlate(2.5,1.1,1.8,"SteelUnknownGrade","QuartzGlass"); // TODO dummy
+  PItemGen.setWindowPlate(CF40::flangeLength,0.3,CF40::innerRadius,"SteelUnknownGrade","Glass"); // Window parameters: [36]
 
   //  const double port1angle = -116 * M_PI/180.0; // [22]
   const double port1angle = -115 * M_PI/180.0; // [22]
@@ -1174,29 +1175,24 @@ hdcmPackage(FuncDataBase& Control,const std::string& monoKey)
   Control.addVariable(monoKey+"HDCMVesselNPorts",5); // the ports below are sorted by their rad. safety importance
 
   PItemGen.setCF<setVariable::CF100>(19.5); // [24]
-  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  PItemGen.setWindowPlate(CF100::flangeLength,0.3,CF100::innerRadius,"SteelUnknownGrade","Glass"); // Window parameters: 36  - Mads: it's getting dark under irradiation -> normal (not Lead) glass
   PItemGen.generatePort(Control,portName+"Port0",Geometry::Vec3D(0,0.0,-0.2-3.5),Geometry::Vec3D(0,0,1));
 
-  PItemGen.setCF<setVariable::CF63>(34.1); // approx
-  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  PItemGen.setCF<setVariable::CF63>(34.1); // [24] approx
+  PItemGen.setWindowPlate(CF63::flangeLength,0.3,CF63::innerRadius,"SteelUnknownGrade","Glass"); // Window parameters: 36
   const double port2angle = 45 * M_PI/180.0; // approx - not clear from [24]
   PItemGen.generatePort(Control,portName+"Port1",Geometry::Vec3D(0,0.0,-0.2),Geometry::Vec3D(sin(port2angle),cos(port2angle),0.0)); // [24]
 
-  PItemGen.setCF<setVariable::CF63>(34.1); // approx
-  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
   const double port3angle = 30 * M_PI/180.0; // approx - not clear from [24]
   PItemGen.generatePort(Control,portName+"Port2",Geometry::Vec3D(0,0.0,-0.2),Geometry::Vec3D(-sin(port3angle),-cos(port3angle),0.0)); // [24]
 
   PItemGen.setCF<setVariable::CF35_TDC>(34.1); // [24]
-  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  PItemGen.setWindowPlate(CF35_TDC::flangeLength,0.3,CF35_TDC::innerRadius,"SteelUnknownGrade","Glass"); // Window parameters: 36
   PItemGen.generatePort(Control,portName+"Port3",Geometry::Vec3D(0,0.0,-10.4),Geometry::Vec3D(1,0,0)); // [24]
 
   PItemGen.setCF<setVariable::CF35_TDC>(34.1); // dummy, the port turns upwards, but not modelling it to save time
-  PItemGen.setWindowPlate(2.5,2.0,-0.8,"SteelUnknownGrade","LeadGlass"); // TODO dummy
+  PItemGen.setNoWindow();
   PItemGen.generatePort(Control,portName+"Port4",Geometry::Vec3D(0,0.0,-10.0),Geometry::Vec3D(-1,0,0));
-
-
-
 
   // crystals gap 7mm
   MXtalGen.setTopA(9.0, 5.0, 1.5); // [24]
@@ -1266,10 +1262,10 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   // View port (top of vessel, along Bragg axis)
   PItemGen.setCF<setVariable::DN100CF>(19.43); // [25]
   PItemGen.setWindowPlate(setVariable::DN100CF::flangeLength, // [25]
-			  1.5, // TODO: window thick is dummy
-			  5.0, // window radius [25]
+			  0.3, // [36]
+			  DN100CF::innerRadius, // window radius [25, 36]
 			  "SteelUnknownGrade", // TODO: dummy
-			  "QuartzGlass");  // [35, section 4.1]
+			  "Glass");  // [36]
   PItemGen.generatePort(Control,monoVesselKey+"Port1",
 			Geometry::Vec3D(0.0, -36.0, 0.0), // [25]
 			Geometry::Vec3D(0,0,1));
@@ -1277,10 +1273,10 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   // View port (vessel side, viewing at 1st crystal surface)
   PItemGen.setCF<setVariable::CF63>(34.2);
   PItemGen.setWindowPlate(setVariable::CF63::flangeLength, // [25]
-			  1.5, // TODO: window thick is dummy
-			  3.2, // [25]
+			  0.3, // [36]
+			  CF63::innerRadius, // [25, 36]
 			  "SteelUnknownGrade", // TODO: dummy
-			  "QuartzGlass");  // [35, section 4.1]
+			  "Glass");  // [36]
   PItemGen.generatePort(Control,monoVesselKey+"Port2",
 			Geometry::Vec3D(0.0, -36.0, 0.0), // [25]
 			Geometry::Vec3D(-1,0,0));
