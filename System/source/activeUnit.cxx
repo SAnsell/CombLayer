@@ -3,7 +3,7 @@
  
  * File:   source/activeUnit.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "Random.h"
@@ -215,12 +215,12 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
   if (E>1e-3)  // above threshold
     {
       
-      OX<<"2 "<<fmt::format(" {:<12.6e}  {:<12.6e}  {:<12.6e}",
+      OX<<"2 "<<std::format(" {:<12.6e}  {:<12.6e}  {:<12.6e}",
 			    Pt.X(),Pt.Y(),Pt.Z());
-      OX<<" "<<fmt::format(" {:<12.6e}  {:<12.6e}  {:<12.6e}",
+      OX<<" "<<std::format(" {:<12.6e}  {:<12.6e}  {:<12.6e}",
 			   uvw.X(),uvw.Y(),uvw.Z());
       
-      OX<<" "<<fmt::format(" {:<12.6e}  {:<12.6e}",
+      OX<<" "<<std::format(" {:<12.6e}  {:<12.6e}",
 			   E,(weight*getScaleFlux()*integralFlux))
 	<<std::endl;
     }

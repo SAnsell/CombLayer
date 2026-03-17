@@ -3,7 +3,7 @@
  
  * File:   monte/Zaid.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <set>
 #include <map>
 #include <algorithm>
-#include <fmt/core.h>
+#include <format>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -201,7 +201,7 @@ Zaid::getZaid() const
   std::ostringstream OX;
 
   if (index)  // avoid writing 00000 zaid
-    OX << fmt::format("{:d}.{:02d}{:c}",index,tag,type);
+    OX << std::format("{:d}.{:02d}{:c}",index,tag,type);
 
   return OX.str();
 
@@ -250,7 +250,7 @@ Zaid::write(std::ostream& OX) const
     {
       OX<<getZaid();
       if (type=='c')
-        OX<<" "<<fmt::format("{:.6g}",density);
+        OX<<" "<<std::format("{:.6g}",density);
     }
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   weights/WItem.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -260,7 +260,7 @@ WItem::write(std::ostream& OX) const
   cx<<cellN<<"   ";
  
   for(const double V : Val)
-    cx<<fmt::format("{:5.2e} ",V);
+    cx<<std::format("{:5.2e} ",V);
 
   StrFunc::writeMCNPX(cx.str(),OX);
   return;

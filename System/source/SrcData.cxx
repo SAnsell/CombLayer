@@ -3,7 +3,7 @@
  
  * File:   src/SrcData.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <map>
 #include <iterator>
 #include <numeric>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -421,7 +421,7 @@ SrcInfo::write(const size_t Index,std::ostream& OX) const
   if (!Values.empty())
     {
       for(const double& V : Values)
-	cx<<fmt::format("{:.5g} ",V);
+	cx<<std::format("{:.5g} ",V);
     }
   else
     {
@@ -591,7 +591,7 @@ SrcProb::write(const size_t Index,std::ostream& OX) const
     cx<<option<<" ";
 
   for(const double& V: Values)
-    cx<<fmt::format("{:.5g} ",V);
+    cx<<std::format("{:.5g} ",V);
 
 
   StrFunc::writeMCNPX(cx.str(),OX);
@@ -702,7 +702,7 @@ SrcBias::write(const size_t Index,std::ostream& OX) const
     {
       cx<<"sb"<<Index<<" "<<option<<" ";
       for(const double& V : Values)
-	cx<<fmt::format("{:11.5g} ",V); 
+	cx<<std::format("{:11.5g} ",V); 
     }
   else
     {

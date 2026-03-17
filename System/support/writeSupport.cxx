@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  C++Azint : 2D-Detector to Q-Data processor
  
  * File:   support/writeSupport.cxx
  *
@@ -31,7 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "Vec3D.h"
@@ -54,9 +54,9 @@ flukaNum(const long int I)
 {
   const double D=static_cast<double>(I);
   if (D > 1e8 || D < -1e7)
-    return fmt::format("{:10.5g}",D);
+    return std::format("{:10.5g}",D);
 
-  return fmt::format("{:10.1f}",D);
+  return std::format("{:10.1f}",D);
 }
 
 std::string
@@ -67,48 +67,41 @@ flukaNum(const double D,const double zeroTol,
     \param D :: Number to use
   */
 {
-
-  const static std::vector<std::string> FNum
-    ({
-      "{:10.8f}",
-      "{:10.7f}",
-      "{:10.6f}",
-      "{:10.5f}",
-      "{:10.4f}",
-      "{:10.3f}"
-      });
-
-  const static std::vector<std::string> FG
-    ({
-      "{:10.8g}",
-      "{:10.7g}",
-      "{:10.6g}",
-      "{:10.5g}",
-      "{:10.4g}",
-      "{:10.3g}"
-    });
-
   const double lowExpTol(1.0/exponentTol);
 
   if (D>-zeroTol && D<zeroTol)  // float point limits
-    return fmt::format("{:10.6f}",0.0);
+    return std::format("{:10.6f}",0.0);
 
   std::string out;  
   if (std::abs(D)<exponentTol && std::abs(D) >lowExpTol)      // +ve low range
     {
-      for(const std::string& FMTStr : FNum)
-	{
-	  out=fmt::format(fmt::runtime(FMTStr),D);
-	  if (out.size()<=10) return out;
-	}
+      // avoid runtime issue not being in std::format
+      out=std::format("{:10.8f}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.7f}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.6f}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.5f}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.4f}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.3f}",D);
     }
   else
     {
-      for(const std::string& FMTStr : FG)
-	{
-	  out=fmt::format(fmt::runtime(FMTStr),D);
-	  if (out.size()<=10) return out;
-	}
+      // avoid runtime issue not being in std::format
+      out=std::format("{:10.8g}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.7g}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.6g}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.5g}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.4g}",D);
+      if (out.size()<=10) return out;
+      out=std::format("{:10.3g}",D);
     }
   return out;
 }

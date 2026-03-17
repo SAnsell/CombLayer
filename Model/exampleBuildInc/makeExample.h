@@ -47,7 +47,7 @@ namespace exampleSystem
 class makeExample
 {
  private:
-  
+
  public:
   
   makeExample();

@@ -34,6 +34,7 @@
 namespace pipeSystem
 {
   class pipeTube;
+  class CylTarget;
   /*!
     \class makePipe
     \version 1.0
@@ -47,6 +48,7 @@ class makePipe
  private:
 
 
+  std::shared_ptr<CylTarget> Target;   ///< pre-tube
   std::shared_ptr<pipeSystem::pipeTube> ATube;   ///< pre-tube
   std::shared_ptr<pipeSystem::pipeTube> BTube;   ///< Main tube
   std::shared_ptr<pipeSystem::pipeTube> CTube;   ///< collector tube

@@ -3,7 +3,7 @@
  
  * File:   support/support.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,10 +33,11 @@
 #include <string>
 #include <algorithm>
 #include <functional>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "Vec3D.h"
+#include "Vec2D.h"
 #include "Quaternion.h"
 #include "doubleErr.h"
 #include "mathSupport.h"
@@ -217,6 +218,31 @@ getPartLine(std::istream& IX,std::string& Out,
     }
   // Fail
   return -1; 
+}
+  
+void
+replaceStrings(std::string& CLine,
+	       const std::string& searchItem,
+	       const std::string& replaceItem)
+  /*!
+    Given a string replace all places with the string
+    \param CLine :: String to replace
+    \param searchItem :: String to search within the main string
+    \param replaceItem :: string to substitue.
+  */
+{
+  if (CLine.empty() || searchItem.empty())
+    return;
+
+  const size_t replaceLen=replaceItem.size();
+  std::string::size_type pos=
+    CLine.find(searchItem);
+  while(pos!=std::string::npos)
+    {
+      CLine.replace(pos,replaceLen,replaceItem);
+      pos+=replaceLen;   // avoid inset search
+      pos=CLine.find(searchItem,pos);
+    }
 }
 
 std::string
@@ -485,15 +511,37 @@ getDelimUnit(const std::string& A,
 
 bool
 hasStringEnd(const std::string& mainStr,
-	       const std::string& endStr)
+	     const std::string& endStr)
   /*!
     Check if a string ends the string
+    \param mainStr :: full string to check
+    \param endStr :: component to check if at the end
+    \return true if match
    */
 {
   if (endStr.size() > mainStr.size()) return false;
   return std::equal(endStr.rbegin(),endStr.rend(),mainStr.rbegin());
 }
 
+std::string
+stripEndString(const std::string& mainStr,
+	 const std::string& endStr)
+  /*!
+    Finds the last point in the main string
+    with component endStr. Then freturn the main strin gwithout
+    it.
+    \param mainStr
+   */
+{
+  if (!mainStr.empty() && !endStr.empty())
+    {
+      const std::string::size_type pos=mainStr.rfind(endStr);
+      if (pos!=std::string::npos)
+	return mainStr.substr(0,pos);
+    }
+  return mainStr;
+}
+  
 bool
 splitUnit(const std::string& Item,
 	  std::string& A,
@@ -680,7 +728,99 @@ sectionBracket(std::string& A,std::string& out)
     }
   return 0;
 }
-  
+
+int
+sectionQuote(std::string& A,std::string& out)
+  /*!
+    Given a string of type [xxx[] ] 
+    extract the full bracket section and remove from the string
+    \param A :: string to input
+    \param out :: string for output
+    \return 1 if bracket closes correctly
+   */
+{
+  size_t aPos(0);
+  for(;aPos<A.size() && isspace(A[aPos]);aPos++) ;
+  if (A[aPos]=='\'' || A[aPos]=='"')
+    {
+      const bool qType(A[aPos]=='\'');
+      size_t bPos(aPos+1);
+      int flag(1);
+      for(;bPos<A.size() && flag>0;bPos++)
+	if ((qType && A[bPos]=='\'') ||
+	    (!qType && A[bPos]=='"'))
+	  flag--;
+      
+      if (!flag)
+	{
+	  bPos--;
+	  out=A.substr(aPos+1,bPos-aPos-1);
+	  const std::string tmp=A.substr(bPos+1);
+	  A=A.substr(0,aPos)+tmp;
+	  return 1;
+	}
+    }
+  return 0;
+}
+
+std::string
+getBracketPart(std::string& main)
+  /*!
+    If the main string is of the form keyword[xxxx]
+    separates keyword : xxxx (xxxx -- returned)
+    \param main :: full string returned as [ ] removed
+    \return  [xxx component]
+  */
+{
+  const std::string::size_type posA=main.find('[');
+  const std::string::size_type posB=main.find(']');
+  if (posA==std::string::npos ||
+      posB==std::string::npos ||
+      posA>posB ||
+      posB-posA<2)
+    {
+      // this will be default
+      return std::string("");
+    }
+  const std::string typeItem=
+    main.substr(posA+1,posB-posA-1);
+  main.erase(posA);
+
+  return typeItem;
+}
+
+int
+sectionSqrBracket(std::string& A,std::string& out)
+  /*!
+    Given a string of type [.[.].]
+    extract the full bracket section and remove from the string
+    \param A :: string to input
+    \param out :: string for output
+    \return 1 if bracket closes correctly
+   */
+{
+  std::string NStr(A);
+  std::string::size_type pos(0);
+  pos=NStr.find_first_of("[",pos);
+  if(pos!=std::string::npos)
+    {
+      int bCnt(1);
+      std::string::size_type posIndex(pos+1);
+      for(;bCnt && posIndex<NStr.size();posIndex++)
+        {
+          if (NStr[posIndex]=='[') bCnt++;
+          if (NStr[posIndex]==']') bCnt--;
+        }
+      if (!bCnt)
+        {
+          out=NStr.substr(pos+1,posIndex-(pos+2));
+          A.erase(pos,posIndex-pos);
+        }
+      return 1;
+    }
+  return 0;
+}
+
 template<typename T>
 int
 sectPartNum(std::string& A,T& out)
@@ -779,6 +919,7 @@ sectionRange(std::string& A,std::vector<T>& out)
     }
   return 1;
 }
+
 template<typename T>
 std::set<T>
 getRangedSet(std::string& line)
@@ -789,29 +930,41 @@ getRangedSet(std::string& line)
   */
 {
   std::set<T> out;
-  T a,b;
-  // has to start with a number 
-  while(sectPartNum(line,a))
-    {
-      size_t pos=0;
-      if (line[pos]=='-')   // 
-	{
-	  line[pos]=' ';
-	  if (!section(line,b) || (b-a)>1000 || b<a)
-	    {
-	      line[pos]='-';
-	      return std::set<T>();
-	    }
 
-	  for(T item(a);item<=b;item++)
-	    out.emplace(item);
+  int preNumber(0);
+  int number(0);
+  bool preFlag(0);
+  while(!StrFunc::isEmpty(line))
+    {
+      if (StrFunc::section(line,number) ||
+	  (StrFunc::sectPartNum(line,number) && 
+	   !line.empty() && line[0]=='-'))
+	{
+	  if (number<0 && number<preNumber)
+	    {
+	      number*=-1;
+	      preFlag=1;
+	    }
+	  out.emplace(static_cast<T>(number));
+	  if (preFlag && number-preNumber<1000)
+	    {
+	      for(int i=preNumber+1;i<number;i++)
+		out.emplace(i);
+	    }
+	  preFlag=0;\
+	}
+      else if (!preFlag && line[0]=='-')
+	{
+	  preFlag=1;
+	  line[0]=' ';
 	}
       else
-	out.emplace(a);
+	{
+	  throw ColErr::InvalidLine("Line invalid",line,out.size());
+	}
     }
-  return (isEmpty(line)) ? out : std::set<T>();
+  return out;
 }
-
 
 template<typename T>
 int 
@@ -1456,7 +1609,27 @@ cutFront(std::string& Line,const char delim)
     }
   return out;
 }
-      
+
+std::string
+cutBack(std::string& Line,const char delim)
+  /*!
+    Split out the back of the object (if it exists before)
+    the deliminator
+    \param Line :: string to cut
+    \param delim :: deliminter character
+    \return Part at back (if delim found)
+  */
+{
+  std::string out;
+  std::string::size_type pos=Line.find_last_of(delim);
+  if (pos!=std::string::npos)
+    {
+      out=Line.substr(pos+1);
+      Line.erase(pos);
+    }
+  return out;
+}
+
   
 std::vector<std::string>
 splitParts(const std::string& Line,const char delim)
@@ -1578,9 +1751,9 @@ writeLine(std::ostream& OX,const T& V,
 
 
   if (AVal>9.9e4 || (AVal<1e-2 && AVal>1e-38))
-    OX<<fmt::format("{:13.4e}",VUnit);
+    OX<<std::format("{:13.4e}",VUnit);
   else
-    OX<<fmt::format("{:13.4f}",VUnit);
+    OX<<std::format("{:13.4f}",VUnit);
   
   itemCnt++;
   if (itemCnt==lineCut)
@@ -1671,6 +1844,8 @@ template bool convertNameWithIndex(std::string&,long int&);
 
 template int setValues(const std::string&,const std::vector<int>&,
 		      std::vector<double>&);
+
+template std::set<size_t> getRangedSet(std::string&);
 
 template int sliceVector(std::vector<int>&,const int&,const int&);
 template bool removeItem(std::vector<int>&,const int&);

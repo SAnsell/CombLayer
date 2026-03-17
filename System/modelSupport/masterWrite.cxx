@@ -3,7 +3,7 @@
 
  * File:   modelSupport/masterWrite.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "Vec3D.h"
@@ -102,7 +102,8 @@ masterWrite::Num(const double& D)
   if (std::abs(D)<zeroTol)
     return "0.0";
 
-  return fmt::format(fmt::runtime(FMTdouble),D);
+  return std::vformat(FMTdouble,std::make_format_args(D));
+  //    fmt::format(fmt::runtime(FMTdouble),D);
 }
 
 std::string
@@ -113,7 +114,8 @@ masterWrite::Num(const int& I)
     \return formated number
   */
 {
-  return fmt::format(fmt::runtime(FMTinteger),I);
+  return std::vformat(FMTinteger,std::make_format_args(I));
+  //  return fmt::format(fmt::runtime(FMTinteger),I);
 }
 
 std::string
@@ -127,8 +129,9 @@ masterWrite::Num(const Geometry::Vec3D& V)
   std::string Out;
   for(int i=0;i<3;i++)
     {
-      Out +=(std::abs(V[i])<zeroTol) ? "0.0" :
-	fmt::format(fmt::runtime(FMTdouble),V[i]);
+      const double D=V[i];
+      Out +=(std::abs(D)<zeroTol) ? "0.0" :
+	std::vformat(FMTdouble,std::make_format_args(D));
       if (i!=2) Out+=" ";
     }
   return Out;
@@ -145,8 +148,9 @@ masterWrite::NumComma(const Geometry::Vec3D& V)
   std::string Out;
   for(int i=0;i<3;i++)
     {
-      Out +=(std::abs(V[i])<zeroTol) ? "0.0" :
-	fmt::format(fmt::runtime(FMTdouble),V[i]);
+      const double D=V[i];
+      Out +=(std::abs(D)<zeroTol) ? "0.0" :
+	std::vformat(FMTdouble,std::make_format_args(D));
       if (i!=2) Out+=",";
     }
   return Out;

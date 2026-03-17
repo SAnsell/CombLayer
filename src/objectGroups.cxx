@@ -3,7 +3,7 @@
  
  * File:   src/objectGroups.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <fmt/core.h>
-#include <fmt/format.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -63,8 +62,8 @@
 std::string
 fmtBlock(const Geometry::Vec3D& A)
 {
-  std::string out= fmt::format("{} {} {}",A.X(),A.Y(),A.Z());
-  return fmt::format("{:<40}",out);
+  std::string out= std::format("{} {} {}",A.X(),A.Y(),A.Z());
+  return std::format("{:<40}",out);
 } 
 
 objectGroups::objectGroups() :
@@ -1103,7 +1102,7 @@ objectGroups::write(const std::string& OFile,
 	    getObject<CTYPE::element_type>(mc->first);
 
 	  const int flag=(FPTR) ? 1 : 0;
-	  OX<<fmt::format("{:<40}{}",mc->first,FStatus[flag]);
+	  OX<<std::format("{:<40}{}",mc->first,FStatus[flag]);
 			  
 	  if (flag)
 	    OX<<"C: "<<fmtBlock(FPTR->getCentre());	      

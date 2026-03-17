@@ -3,7 +3,7 @@
 
  * File: Linac/TDCsegment.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <fmt/core.h>
+#include <format>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -408,10 +408,10 @@ TDCsegment::writeBasicItems
 	  const Geometry::Vec3D endPt(FCptr->getLinkPt(2)*10.0);
 	  const Geometry::Vec3D DV=endPt-Org;
 	  ELog::EM<<
-	    fmt::format("{:<20s}          == {:<12.6g} {:<12.6g} {:<12.6g}",
+	    std::format("{:<20s}          == {:<12.6g} {:<12.6g} {:<12.6g}",
 			FCptr->getKeyName(),DV.X(),DV.Y(),DV.Z())
 		  <<std::string(21,' ')
-		  <<fmt::format("Len == {:12.6g}\n",DV.abs());
+		  <<std::format("Len == {:12.6g}\n",DV.abs());
 	}
       ELog::EM<<ELog::endDiag;
     }	  

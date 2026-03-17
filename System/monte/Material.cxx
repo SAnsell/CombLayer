@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #include <iterator>
 #include <numeric>
 #include <memory>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -812,7 +812,7 @@ Material::writeZaid(std::ostream& OX,const double F,const size_t ZD)
   const size_t Z=ZD/1000;
   const size_t A=ZD % 1000;
   if (A)
-    OX<<fmt::format("{:3d}{:03d}0  {:10.7e}",A,Z,F)
+    OX<<std::format("{:3d}{:03d}0  {:10.7e}",A,Z,F)
       <<std::endl;
   return;
 }
@@ -894,7 +894,7 @@ Material::writeFLUKA(std::ostream& OX) const
   for(const Zaid& ZItem: zaidVec)
     {
       if (ZItem.getZ())
-	cx<<fmt::format("{:.4g}",ZItem.getDensity())
+	cx<<std::format("{:.4g}",ZItem.getDensity())
 	  <<" "<<ZItem.getFlukaName()<<" ";
     }
   StrFunc::writeFLUKAhead("COMPOUND",matName,cx.str(),OX);

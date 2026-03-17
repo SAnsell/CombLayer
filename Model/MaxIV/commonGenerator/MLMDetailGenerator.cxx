@@ -327,12 +327,11 @@ MLMDetailGenerator::generateMono(FuncDataBase& Control,
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param thetaA ::  angle
-    
+    \param thetaA ::  angle of first crystal
+    \param thetaB ::  angle of second crystal
   */
 {
   ELog::RegMethod RegA("MLMDetailGenerator","generateMono");
-
   
   // guess of separation
   const double xstalYStep(gap/tan(2.0*M_PI*thetaA/180.0));
