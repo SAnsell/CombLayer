@@ -93,6 +93,14 @@ MonoSlitsJJ::populate(const FuncDataBase& Control)
   adapterInnerRadius=Control.EvalVar<double>(keyName+"AdapterInnerRadius");
   adapterThick=Control.EvalVar<double>(keyName+"AdapterThick");
 
+  auxPortAngleStep=Control.EvalVar<double>(keyName+"AuxPortAngleStep");
+  auxPortCenterAngle=Control.EvalVar<double>(keyName+"AuxPortCenterAngle");
+  auxPortFlangeLength=Control.EvalVar<double>(keyName+"AuxPortFlangeLength");
+  auxPortFlangeRadius=Control.EvalVar<double>(keyName+"AuxPortFlangeRadius");
+  auxPortInnerRadius=Control.EvalVar<double>(keyName+"AuxPortInnerRadius");
+  auxPortOpticalAxisOffset=Control.EvalVar<double>(keyName+"AuxPortOpticalAxisOffset");
+  auxPortWallThick=Control.EvalVar<double>(keyName+"AuxPortWallThick");
+
   mainInnerRadius=Control.EvalVar<double>(keyName+"MainInnerRadius");
   mainWallThick=Control.EvalVar<double>(keyName+"MainWallThick");
 
@@ -141,7 +149,6 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin-X*16.999,X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin-Z*10.925,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*adapterThick,Y);
@@ -152,7 +159,6 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,mainInnerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,adapterInnerRadius);
 
-  Geometry::Vec3D portOrigin;
   ModelSupport::buildPlane(
     SMap,buildIndex+101,Origin+Z*(bladePortLength+bladePortFlangeLength),Z);
   ModelSupport::buildPlane(
@@ -183,7 +189,7 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(
     SMap,buildIndex+154,Origin+X*(bladeLongEdge/2.0),X);
 
-  portOrigin = (
+  Geometry::Vec3D portOrigin = (
     Origin+Y*(length/2.0+bladePortCenterDist)+X*(bladePortDist/2.0)
   );
   ModelSupport::buildCylinder(
@@ -272,7 +278,9 @@ MonoSlitsJJ::createSurfaces()
 
   ModelSupport::buildPlane(
     SMap,buildIndex+451,
-    Origin+Y*(length/2.0-bladePortCenterDist-bladeThreadRadius-bladeToThreadDist-bladeThick),Y);
+    Origin
+    +Y*(length/2.0-bladePortCenterDist-bladeThreadRadius-bladeToThreadDist-bladeThick),
+    Y);
   ModelSupport::buildPlane(
     SMap,buildIndex+452,
     Origin+Y*(length/2.0-bladePortCenterDist-bladeThreadRadius-bladeToThreadDist),Y);
@@ -296,6 +304,111 @@ MonoSlitsJJ::createSurfaces()
     SMap,buildIndex+427,portOrigin,X,bladePortInnerRadius);
   ModelSupport::buildCylinder(
     SMap,buildIndex+437,portOrigin,X,bladeThreadRadius);
+
+  const double auxPortCenterAngleRad = auxPortCenterAngle * M_PI / 180.0;
+  const double auxPortAngleStepRad = auxPortAngleStep * M_PI / 180.0;
+  // In [1] or [2], it can be seen that the flanges of the auxiliary ports touch each 
+  // other when projected on a 2D plane (in reality, they do not touch because they 
+  // are offset along the beam axis).
+  // From this information, the port length can be calculated.
+  const double auxPortLength = (
+    auxPortFlangeRadius / tan(auxPortAngleStepRad/2.0)+auxPortFlangeLength);
+  Geometry::Vec3D auxPortCenterOrigin = Origin+Y*(length/2.0+auxPortOpticalAxisOffset);
+  Geometry::Vec3D auxPortCenterDir(
+    -cos(auxPortCenterAngleRad),0.0,sin(auxPortCenterAngleRad));
+  ModelSupport::buildPlane(
+    SMap,buildIndex+501,
+    auxPortCenterOrigin+auxPortCenterDir*(auxPortLength+auxPortFlangeLength),
+    auxPortCenterDir
+  );
+  ModelSupport::buildPlane(
+    SMap,buildIndex+511,
+    auxPortCenterOrigin+auxPortCenterDir*auxPortLength,auxPortCenterDir
+  );
+  ModelSupport::buildPlane(
+    SMap,buildIndex+521,
+    auxPortCenterOrigin+auxPortCenterDir*(auxPortLength-auxPortFlangeLength),
+    auxPortCenterDir
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+507,auxPortCenterOrigin,auxPortCenterDir,auxPortFlangeRadius
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+517,
+    auxPortCenterOrigin,auxPortCenterDir,auxPortInnerRadius+auxPortWallThick
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+527,auxPortCenterOrigin,auxPortCenterDir,auxPortInnerRadius
+  );
+
+  Geometry::Vec3D auxPortTopBottomOrigin = (
+    Origin+Y*(length/2.0-auxPortOpticalAxisOffset));
+
+  Geometry::Vec3D auxPortTopDir(
+    -cos(auxPortCenterAngleRad+auxPortAngleStepRad),
+    0.0,
+    sin(auxPortCenterAngleRad+auxPortAngleStepRad));
+  ModelSupport::buildPlane(
+    SMap,buildIndex+601,
+    auxPortTopBottomOrigin+auxPortTopDir*(auxPortLength+auxPortFlangeLength),
+    auxPortTopDir
+  );
+  ModelSupport::buildPlane(
+    SMap,buildIndex+611,auxPortTopBottomOrigin+auxPortTopDir*auxPortLength,
+    auxPortTopDir
+  );
+  ModelSupport::buildPlane(
+    SMap,buildIndex+621,
+    auxPortTopBottomOrigin+auxPortTopDir*(auxPortLength-auxPortFlangeLength),
+    auxPortTopDir
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+607,auxPortTopBottomOrigin,auxPortTopDir,auxPortFlangeRadius
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+617,auxPortTopBottomOrigin,auxPortTopDir,
+    auxPortInnerRadius+auxPortWallThick
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+627,auxPortTopBottomOrigin,auxPortTopDir,auxPortInnerRadius
+  );
+
+  Geometry::Vec3D auxPortBottomDir(
+    -cos(auxPortCenterAngleRad-auxPortAngleStepRad),
+    0.0,
+    sin(auxPortCenterAngleRad-auxPortAngleStepRad));
+  ModelSupport::buildPlane(
+    SMap,buildIndex+701,
+    auxPortTopBottomOrigin+auxPortBottomDir*(auxPortLength+auxPortFlangeLength),
+    auxPortBottomDir
+  );
+  ModelSupport::buildPlane(
+    SMap,buildIndex+711,auxPortTopBottomOrigin+auxPortBottomDir*auxPortLength,
+    auxPortBottomDir
+  );
+  ModelSupport::buildPlane(
+    SMap,buildIndex+721,
+    auxPortTopBottomOrigin+auxPortBottomDir*(auxPortLength-auxPortFlangeLength),
+    auxPortBottomDir
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+707,auxPortTopBottomOrigin,auxPortBottomDir,auxPortFlangeRadius
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+717,auxPortTopBottomOrigin,auxPortBottomDir,
+    auxPortInnerRadius+auxPortWallThick
+  );
+  ModelSupport::buildCylinder(
+    SMap,buildIndex+727,auxPortTopBottomOrigin,auxPortBottomDir,auxPortInnerRadius
+  );
+
+  ModelSupport::buildPlane(
+    SMap,buildIndex+505,Origin,Geometry::Vec3D(cos(0.2*M_PI),0.0,sin(0.2*M_PI))
+  );
+  ModelSupport::buildPlane(
+    SMap,buildIndex+515,Origin,auxPortTopDir-auxPortCenterDir);
+  ModelSupport::buildPlane(
+    SMap,buildIndex+525,Origin,auxPortCenterDir-auxPortBottomDir);
 }
 
 void
@@ -311,17 +424,21 @@ MonoSlitsJJ::createObjects(Simulation& System)
 
   addOuterSurf(
     front*back
-    *ModelSupport::getHeadRule(SMap,buildIndex,"4 6 -101 -301")
+    *ModelSupport::getHeadRule(SMap,buildIndex,"6 -101 -301 -501 -601 -701")
   );
 
   makeCell("MainFrontRight",System,cellIndex++,mainMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-11 21 -7 17 3 327 427"));
   makeCell("MainFrontLeft",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-11 21 -7 17 -3"));
-  makeCell("MainBackTop",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"11 -22 -7 17 5 127 227"));
-  makeCell("MainBackBottom",System,cellIndex++,mainMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"11 -22 -7 17 -5"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 21 -7 17 -3 527 627 727"));
+  makeCell("MainBackTopLeft",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 11 -22 -7 17 5 227 527 627"));
+  makeCell("MainBackTopRight",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"3 11 -22 -7 17 5 127"));
+  makeCell("MainBackBottomLeft",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 11 -22 -7 17 -5 527 727"));
+  makeCell("MainBackBottomRight",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"3 11 -22 -7 17 -5"));
 
   makeCell("MainVoidFront",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -451 -17"));
@@ -344,12 +461,24 @@ MonoSlitsJJ::createObjects(Simulation& System)
 
   makeCell("TopRightVoid",System,cellIndex++,0,0.0,
     front*back*ModelSupport::getHeadRule(SMap,buildIndex,"3 5 7 -101 107 -301 307"));
-  makeCell("TopLeftVoid",System,cellIndex++,0,0.0,
-    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 5 7 -101 207"));
+  makeCell("M2PortVoid",System,cellIndex++,0,0.0,
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -101 207 505 -601"));
+  makeCell("AuxPortTopVoid",System,cellIndex++,0,0.0,
+    front*back
+    *ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 207 -505 515 -601 607"));
+  makeCell("AuxPortTopVoid",System,cellIndex++,0,0.0,
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 515 -621 -607 617"));
+  makeCell("AuxPortCenterVoid",System,cellIndex++,0,0.0,
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -515 525 -501 507"));
+  makeCell("AuxPortCenterVoid",System,cellIndex++,0,0.0,
+    front*back
+    *ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -515 525 -521 -507 517"));
+  makeCell("AuxPortBottomVoid",System,cellIndex++,0,0.0,
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 6 7 -525 -701 707"));
+  makeCell("AuxPortBottomVoid",System,cellIndex++,0,0.0,
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 6 7 -525 -721 -707 717"));
   makeCell("BottomRightVoid",System,cellIndex++,0,0.0,
-    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"3 4 -5 6 7 -301 407"));
-  makeCell("BottomLeftVoid",System,cellIndex++,0,0.0,
-    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 4 -5 6 7"));
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"3 -5 6 7 -301 407"));
 
   makeCell("AdapterFront",System,cellIndex++,mainMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-7 27 -21")*front);
@@ -423,6 +552,45 @@ MonoSlitsJJ::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"-311 312 -437"));
   makeCell(portName+"InnerVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"3 17 -311 -427 437"));
+
+  makeCell("AuxPortCenterCap",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -501 511 -507")
+  );
+  makeCell("AuxPortCenterFlange",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -511 521 -507 527")
+  );
+  makeCell("AuxPortCenterPipe",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -521 -517 527")
+  );
+  makeCell("AuxPortCenterInnerVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 17 -511 -527")
+  );
+
+  makeCell("AuxPortTopCap",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -601 611 -607")
+  );
+  makeCell("AuxPortTopFlange",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -611 621 -607 627")
+  );
+  makeCell("AuxPortTopPipe",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -621 -617 627")
+  );
+  makeCell("AuxPortTopInnerVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 17 -611 -627")
+  );
+
+  makeCell("AuxPortBottomCap",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -701 711 -707")
+  );
+  makeCell("AuxPortBottomFlange",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -711 721 -707 727")
+  );
+  makeCell("AuxPortBottomPipe",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -721 -717 727")
+  );
+  makeCell("AuxPortBottomInnerVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-3 17 -711 -727")
+  );
 }
 
 void

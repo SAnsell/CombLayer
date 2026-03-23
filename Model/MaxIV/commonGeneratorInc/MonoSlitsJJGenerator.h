@@ -42,6 +42,14 @@ class MonoSlitsJJGenerator
   double adapterThick;
   double adapterInnerRadius;
 
+  double auxPortAngleStep;
+  double auxPortCenterAngle;
+  double auxPortFlangeLength;
+  double auxPortFlangeRadius;
+  double auxPortInnerRadius;
+  double auxPortOpticalAxisOffset;
+  double auxPortWallThick;
+
   double mainInnerRadius;
   double mainWallThick;
 

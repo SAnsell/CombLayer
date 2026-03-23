@@ -54,6 +54,13 @@ MonoSlitsJJGenerator
   length(14.0),
   adapterThick(2.4),
   adapterInnerRadius(CF40::innerRadius),
+  auxPortAngleStep(28.0), // [1]
+  auxPortCenterAngle(3.0), // [1]
+  auxPortFlangeLength(CF40::flangeLength), // [4]
+  auxPortFlangeRadius(CF40::flangeRadius), // [4]
+  auxPortInnerRadius(CF40::innerRadius), // [4]
+  auxPortOpticalAxisOffset(0.9), // [1]
+  auxPortWallThick(CF40::wallThick), // [4]
   mainInnerRadius(8.0),
   mainWallThick(2.125),
   bladeAngle(0.5),
@@ -96,6 +103,14 @@ void MonoSlitsJJGenerator
 
   Control.addVariable(keyName+"AdapterThick",adapterThick);
   Control.addVariable(keyName+"AdapterInnerRadius",adapterInnerRadius);
+
+  Control.addVariable(keyName+"AuxPortAngleStep",auxPortAngleStep);
+  Control.addVariable(keyName+"AuxPortCenterAngle",auxPortCenterAngle);
+  Control.addVariable(keyName+"AuxPortFlangeLength",auxPortFlangeLength);
+  Control.addVariable(keyName+"AuxPortFlangeRadius",auxPortFlangeRadius);
+  Control.addVariable(keyName+"AuxPortInnerRadius",auxPortInnerRadius);
+  Control.addVariable(keyName+"AuxPortOpticalAxisOffset",auxPortOpticalAxisOffset);
+  Control.addVariable(keyName+"AuxPortWallThick",auxPortWallThick);
 
   Control.addVariable(keyName+"MainInnerRadius",mainInnerRadius);
   Control.addVariable(keyName+"MainWallThick",mainWallThick);
