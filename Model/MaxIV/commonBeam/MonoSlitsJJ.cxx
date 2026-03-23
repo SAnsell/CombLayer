@@ -402,9 +402,24 @@ MonoSlitsJJ::createSurfaces()
     SMap,buildIndex+727,auxPortTopBottomOrigin,auxPortBottomDir,auxPortInnerRadius
   );
 
+
+  // Separating plane between the M2 port and the top auxiliary port.
+  const double m2TopPortSeparatorAngle = (
+    (auxPortCenterAngleRad+auxPortAngleStepRad)/2.0 + M_PI_4);
   ModelSupport::buildPlane(
-    SMap,buildIndex+505,Origin,Geometry::Vec3D(cos(0.2*M_PI),0.0,sin(0.2*M_PI))
+    SMap,buildIndex+505,
+    Origin+Geometry::Vec3D(
+      -cos(m2TopPortSeparatorAngle),
+      0.0,
+      sin(m2TopPortSeparatorAngle)
+    )*(mainInnerRadius+mainWallThick),
+    Geometry::Vec3D(
+      cos(M_PI_2-m2TopPortSeparatorAngle),
+      0.0,
+      sin(M_PI_2-m2TopPortSeparatorAngle)
+    )
   );
+  // Separating planes between the auxiliary ports.
   ModelSupport::buildPlane(
     SMap,buildIndex+515,Origin,auxPortTopDir-auxPortCenterDir);
   ModelSupport::buildPlane(
@@ -462,10 +477,10 @@ MonoSlitsJJ::createObjects(Simulation& System)
   makeCell("TopRightVoid",System,cellIndex++,0,0.0,
     front*back*ModelSupport::getHeadRule(SMap,buildIndex,"3 5 7 -101 107 -301 307"));
   makeCell("M2PortVoid",System,cellIndex++,0,0.0,
-    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -101 207 505 -601"));
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -101 207 505"));
   makeCell("AuxPortTopVoid",System,cellIndex++,0,0.0,
     front*back
-    *ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 207 -505 515 -601 607"));
+    *ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -101 207 -505 515 -601 607"));
   makeCell("AuxPortTopVoid",System,cellIndex++,0,0.0,
     front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 515 -621 -607 617"));
   makeCell("AuxPortCenterVoid",System,cellIndex++,0,0.0,
