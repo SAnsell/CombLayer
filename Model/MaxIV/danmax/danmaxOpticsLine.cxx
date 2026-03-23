@@ -78,6 +78,7 @@
 #include "VirtualTube.h"
 #include "PipeTube.h"
 #include "PortTube.h"
+#include "AttachSupport.h"
 #include "GateValveCube.h"
 
 #include "BremBlock.h"
@@ -732,11 +733,9 @@ danmaxOpticsLine::constructBeamStopTube
 
   // White Beam Stop
   wbs->createAll(System,*beamStopSection,0);
-  if (wbs->isInBeam())
-    wbs->insertInCell(System,beamStopSection->getCell("Void"));
-  else
-    wbs->insertInCell(System,port0.getCell("Void"));
-
+  attachSystem::addToInsertSurfCtrl(System,*beamStopSection,"Void", *wbs);
+  if (!wbs->isInBeam())
+    attachSystem::addToInsertSurfCtrl(System,port0,"Void", *wbs);
 
   beamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   beamStopTube->createAll(System,*beamStopSection,sideName);

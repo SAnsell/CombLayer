@@ -167,13 +167,13 @@ WhiteBeamStop::createSurfaces()
 
   const double cosa = cos(angle*M_PI/180.0);
   const double offset = inBeam ? 0.0 : offBeamOffset;
-
   const double dl = cosa * length/2.0;
+
   SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(dl),Y);
   SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(dl),Y);
 
   SurfMap::makePlane("left",SMap,buildIndex+3,Origin+X*(offset),PX);
-  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+X*(width*cosa+offset),PX);
+  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+PX*(width)+X*(offset),PX);
 
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
@@ -208,25 +208,37 @@ WhiteBeamStop::createLinks()
 {
   ELog::RegMethod RegA("WhiteBeamStop","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
+  // const Geometry::Quaternion Qxy=Geometry::Quaternion::calcQRotDeg(angle,Z);
+  // const Geometry::Vec3D PX=Qxy.rotate(X);
 
-  // TODO: Check and use names for the links below:
+  // const double cosa = cos(angle*M_PI/180.0);
+  // const double offset = inBeam ? 0.0 : offBeamOffset;
+  // const double dl = cosa * length/2.0;
+  // const double dw = cosa * width/2.0;
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
+  // ELog::EM << "Origin: " << Origin << ELog::endDiag;
+  // ELog::EM << "PX: " << PX << ELog::endDiag;
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
+  // FixedComp::setConnect(0,Origin+X*(offset),-PX);
+  // FixedComp::setNamedLinkSurf(0,"Left",SurfMap::getSignedSurf("#left"));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
+  // FixedComp::setConnect(1,Origin+PX*(width)+X*(offset),PX);
+  // FixedComp::setNamedLinkSurf(1,"Right",SurfMap::getSignedSurf("right"));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
+  // ELog::EM<<"*** "<<keyName<<": "<<getLinkPt("Right")<<" "<<getLinkSurf("Right")<<ELog::endDiag;
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
+  // FixedComp::setConnect(2,Origin-Y*(dl)+X*(dw),-Y);
+  // FixedComp::setNamedLinkSurf(2,"Back",SurfMap::getSignedSurf("#back"));
+
+  // FixedComp::setConnect(3,Origin+Y*(dl)+X*(dw),X);
+  // FixedComp::setNamedLinkSurf(3,"Front",SurfMap::getSignedSurf("front"));
+
+  // FixedComp::setConnect(4,Origin-Z*(height/2.0)+X*(dw),-Z);
+  // FixedComp::setNamedLinkSurf(4,"Bottom",SurfMap::getSignedSurf("#bottom"));
+
+  // FixedComp::setConnect(5,Origin+Z*(height/2.0)+X*(dw),Z);
+  // FixedComp::setNamedLinkSurf(5,"Top",SurfMap::getSignedSurf("#bottom"));
+
 
   return;
 }
