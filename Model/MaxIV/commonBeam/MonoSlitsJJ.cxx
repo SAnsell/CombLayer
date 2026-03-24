@@ -314,8 +314,8 @@ MonoSlitsJJ::createSurfaces()
   const double auxPortLength = (
     auxPortFlangeRadius / tan(auxPortAngleStepRad/2.0)+auxPortFlangeLength);
   Geometry::Vec3D auxPortCenterOrigin = Origin+Y*(length/2.0+auxPortOpticalAxisOffset);
-  Geometry::Vec3D auxPortCenterDir(
-    -cos(auxPortCenterAngleRad),0.0,sin(auxPortCenterAngleRad));
+  Geometry::Vec3D auxPortCenterDir = (
+    X*(-cos(auxPortCenterAngleRad))+Z*sin(auxPortCenterAngleRad));
   ModelSupport::buildPlane(
     SMap,buildIndex+501,
     auxPortCenterOrigin+auxPortCenterDir*(auxPortLength+auxPortFlangeLength),
@@ -344,10 +344,10 @@ MonoSlitsJJ::createSurfaces()
   Geometry::Vec3D auxPortTopBottomOrigin = (
     Origin+Y*(length/2.0-auxPortOpticalAxisOffset));
 
-  Geometry::Vec3D auxPortTopDir(
-    -cos(auxPortCenterAngleRad+auxPortAngleStepRad),
-    0.0,
-    sin(auxPortCenterAngleRad+auxPortAngleStepRad));
+  Geometry::Vec3D auxPortTopDir = (
+    X*(-cos(auxPortCenterAngleRad+auxPortAngleStepRad))
+    +Z*sin(auxPortCenterAngleRad+auxPortAngleStepRad)
+  );
   ModelSupport::buildPlane(
     SMap,buildIndex+601,
     auxPortTopBottomOrigin+auxPortTopDir*(auxPortLength+auxPortFlangeLength),
@@ -373,10 +373,10 @@ MonoSlitsJJ::createSurfaces()
     SMap,buildIndex+627,auxPortTopBottomOrigin,auxPortTopDir,auxPortInnerRadius
   );
 
-  Geometry::Vec3D auxPortBottomDir(
-    -cos(auxPortCenterAngleRad-auxPortAngleStepRad),
-    0.0,
-    sin(auxPortCenterAngleRad-auxPortAngleStepRad));
+  Geometry::Vec3D auxPortBottomDir = (
+    X*(-cos(auxPortCenterAngleRad-auxPortAngleStepRad))+
+    Z*sin(auxPortCenterAngleRad-auxPortAngleStepRad)
+  );
   ModelSupport::buildPlane(
     SMap,buildIndex+701,
     auxPortTopBottomOrigin+auxPortBottomDir*(auxPortLength+auxPortFlangeLength),
@@ -408,16 +408,12 @@ MonoSlitsJJ::createSurfaces()
     (auxPortCenterAngleRad+auxPortAngleStepRad)/2.0 + M_PI_4);
   ModelSupport::buildPlane(
     SMap,buildIndex+505,
-    Origin+Geometry::Vec3D(
-      -cos(m2TopPortSeparatorAngle),
-      0.0,
-      sin(m2TopPortSeparatorAngle)
+    Origin+(
+      X*(-cos(m2TopPortSeparatorAngle))
+      +Z*sin(m2TopPortSeparatorAngle)
     )*(mainInnerRadius+mainWallThick),
-    Geometry::Vec3D(
-      cos(M_PI_2-m2TopPortSeparatorAngle),
-      0.0,
-      sin(M_PI_2-m2TopPortSeparatorAngle)
-    )
+    X*cos(M_PI_2-m2TopPortSeparatorAngle)
+    +Z*sin(M_PI_2-m2TopPortSeparatorAngle)
   );
   // Separating planes between the auxiliary ports.
   ModelSupport::buildPlane(
