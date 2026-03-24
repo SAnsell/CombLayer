@@ -63,6 +63,9 @@ MonoSlitsJJGenerator
   auxPortWallThick(CF40::wallThick), // [4]
   mainInnerRadius(8.0),
   mainWallThick(2.125),
+  baseDepth(10.925), // [2]
+  baseThick(1.2), // [1]
+  baseWidth(22.0), // [1]
   bladeAngle(0.5),
   bladeLongEdge(4.0),
   bladeM1Pos(-1.5),
@@ -114,6 +117,10 @@ void MonoSlitsJJGenerator
 
   Control.addVariable(keyName+"MainInnerRadius",mainInnerRadius);
   Control.addVariable(keyName+"MainWallThick",mainWallThick);
+
+  Control.addVariable(keyName+"BaseDepth",baseDepth);
+  Control.addVariable(keyName+"BaseThick",baseThick);
+  Control.addVariable(keyName+"BaseWidth",baseWidth);
 
   Control.addVariable(keyName+"BladeAngle",bladeAngle);
   Control.addVariable(keyName+"BladeLongEdge",bladeLongEdge);

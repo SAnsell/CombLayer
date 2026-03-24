@@ -85,6 +85,10 @@ class MonoSlitsJJ :
   double mainInnerRadius;
   double mainWallThick;
 
+  double baseDepth;
+  double baseThick;
+  double baseWidth;
+
   double bladeAngle;
   double bladeLongEdge;
   double bladeM1Pos;

@@ -104,6 +104,10 @@ MonoSlitsJJ::populate(const FuncDataBase& Control)
   mainInnerRadius=Control.EvalVar<double>(keyName+"MainInnerRadius");
   mainWallThick=Control.EvalVar<double>(keyName+"MainWallThick");
 
+  baseDepth=Control.EvalVar<double>(keyName+"BaseDepth");
+  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+  baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
+
   bladeAngle=Control.EvalVar<double>(keyName+"BladeAngle");
   bladeM1Pos=Control.EvalVar<double>(keyName+"BladeM1Pos");
   bladeM2Pos=Control.EvalVar<double>(keyName+"BladeM2Pos");
@@ -150,8 +154,6 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
-  // Bottom plane, defined by the base plate (not modeled) in [2].
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin-Z*10.925,Z);
 
   // Adapter (main vessel to in/out pipe)
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*adapterThick,Y);
@@ -162,6 +164,12 @@ MonoSlitsJJ::createSurfaces()
     SMap,buildIndex+7,Origin,Y,mainInnerRadius+mainWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,mainInnerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,adapterInnerRadius);
+
+  // Base plate
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin+X*(baseWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin-X*(baseWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin-Z*baseDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin-Z*(baseDepth-baseThick),Z);
 
   // Blades and their respective ports/threads.
   // Surfaces of M1, ... M4 have index offsets of +100, ...,  +400, respectively.
@@ -483,6 +491,12 @@ MonoSlitsJJ::createObjects(Simulation& System)
   makeCell("MainBackBottomRight",System,cellIndex++,mainMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"3 11 -22 -7 17 -5"));
 
+  makeCell("BasePlate",System,cellIndex++,mainMat,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -13 14 6 -16 7"));
+  makeCell("BaseVoid",System,cellIndex++,0,0.0,
+    front*back*
+    ModelSupport::getHeadRule(SMap,buildIndex,"(-21:22:13:-14) -301 -701 6 -16 707"));
+
   makeCell("MainVoidFront",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -451 -17"));
   makeCell("MainVoidM4",System,cellIndex++,0,0.0,
@@ -517,11 +531,11 @@ MonoSlitsJJ::createObjects(Simulation& System)
     front*back
     *ModelSupport::getHeadRule(SMap,buildIndex,"-3 7 -515 525 -521 -507 517"));
   makeCell("AuxPortBottomVoid",System,cellIndex++,0,0.0,
-    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 6 7 -525 -701 707"));
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 16 7 -525 -701 707"));
   makeCell("AuxPortBottomVoid",System,cellIndex++,0,0.0,
-    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 6 7 -525 -721 -707 717"));
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"-3 16 7 -525 -721 -707 717"));
   makeCell("BottomRightVoid",System,cellIndex++,0,0.0,
-    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"3 -5 6 7 -301 407"));
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"3 -5 16 7 -301 407"));
 
   makeCell("AdapterFront",System,cellIndex++,mainMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-7 27 -21")*front);
