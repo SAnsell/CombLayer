@@ -33,6 +33,26 @@ namespace xraySystem
   \date March 2026
   \brief JJ X-Ray Individual Blade (IB)-C30-UHV Slit System
 
+  The IB-C30-UHV slit system [1-3] consists of four blades that move along 
+  "rails"/threads inside a cylindric main vessel. This model includes the main vessel,
+  the blades and rails with their individual ports, and three auxiliary ports.
+  The stepper motors on the blade ports and the two forked, electrical feedthrough 
+  ports are not modeled. Furthermore, many structural components inside the main vessel
+  that are not hit directly by the beam are not modeled. In particular, the copper 
+  mounts of the blades are missing.
+
+  At the SINCRYS beamline, the blades with names "M1"-"M4" are hit by the incoming 
+  beam in the following order [4]:
+  - M4 (x > 0, near motor, "right")
+  - M3 (x < 0, far from motor, "left")
+  - M1 (z < 0, far from motor, "bottom")
+  - M2 (z > 0, near motor, "top")
+  This is the order in which the blades are implemented here. Note that the IB-C30-UHV
+  manual [3] shows the reverse order, where M1/M2 are hit first, and then M3/M4.
+
+  The ports for M3 and M4 are on the right-hand side as seen from upstream.
+  The ports for M1 and M2 are on the top. The auxiliary ports are on the left.
+
   References:
   [1] JJ X-RAY, IB-C30-UHV CAD Model,
       https://www.jjxray.dk/product/ib-c30-uhv/ (accessed on 2026-03-09)

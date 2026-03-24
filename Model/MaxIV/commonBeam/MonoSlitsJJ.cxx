@@ -146,19 +146,32 @@ MonoSlitsJJ::createSurfaces()
       setBack(-SMap.realSurf(buildIndex+2));
     }
 
+  // Auxiliary planes
   ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin,X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin,Z);
+  // Bottom plane, defined by the base plate (not modeled) in [2].
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin-Z*10.925,Z);
 
+  // Adapter (main vessel to in/out pipe)
   ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*adapterThick,Y);
   ModelSupport::buildPlane(SMap,buildIndex+22,Origin+Y*(length-adapterThick),Y);
 
+  // Main vessel
   ModelSupport::buildCylinder(
     SMap,buildIndex+7,Origin,Y,mainInnerRadius+mainWallThick);
   ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,mainInnerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,adapterInnerRadius);
 
+  // Blades and their respective ports/threads.
+  // Surfaces of M1, ... M4 have index offsets of +100, ...,  +400, respectively.
+  // Surfaces related to the blades have index offsets of +150, ..., +450, 
+  // respectively.
+  // Whenever there are shared surfaces between M1/M2 and M3/M4, the lower offset is
+  // used, i.e. there is no surface with the index 201 because the M2 port uses 101 
+  // from the M1 port.
+
+  // M1 and M2 - common surfaces for ports
   ModelSupport::buildPlane(
     SMap,buildIndex+101,Origin+Z*(bladePortLength+bladePortFlangeLength),Z);
   ModelSupport::buildPlane(
@@ -167,7 +180,8 @@ MonoSlitsJJ::createSurfaces()
     SMap,buildIndex+121,Origin+Z*(bladePortLength-bladePortFlangeLength),Z);
   ModelSupport::buildPlane(
     SMap,buildIndex+112,Origin+Z*(bladePortLength-bladeThreadLength),Z);
-
+  
+  // M1 - blade
   ModelSupport::buildPlane(
     SMap,buildIndex+151,
     Origin+Y*(
@@ -189,6 +203,7 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(
     SMap,buildIndex+154,Origin+X*(bladeLongEdge/2.0),X);
 
+  // M1 - port and thread
   Geometry::Vec3D portOrigin = (
     Origin+Y*(length/2.0+bladePortCenterDist)+X*(bladePortDist/2.0)
   );
@@ -201,16 +216,17 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildCylinder(
     SMap,buildIndex+137,portOrigin,Z,bladeThreadRadius);
 
- ModelSupport::buildPlane(
-    SMap,buildIndex+251,
-    Origin+Y*(
-      length/2.0+bladePortCenterDist+bladeThreadRadius+bladeToThreadDist
-    ),Y);
- ModelSupport::buildPlane(
-    SMap,buildIndex+252,
-    Origin+Y*(
-      length/2.0+bladePortCenterDist+bladeThreadRadius+bladeToThreadDist+bladeThick
-    ),Y);
+  // M2 - blade
+  ModelSupport::buildPlane(
+      SMap,buildIndex+251,
+      Origin+Y*(
+        length/2.0+bladePortCenterDist+bladeThreadRadius+bladeToThreadDist
+      ),Y);
+  ModelSupport::buildPlane(
+      SMap,buildIndex+252,
+      Origin+Y*(
+        length/2.0+bladePortCenterDist+bladeThreadRadius+bladeToThreadDist+bladeThick
+      ),Y);
   Zp = Z;
   Zp.rotate(X,bladeAngle*M_PI/180.0);
   ModelSupport::buildPlane(
@@ -220,7 +236,7 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(
     SMap,buildIndex+256,Origin+Z*(bladeM1Pos+bladeShortEdge),Z);
 
-
+  // M2 = port and thread
   portOrigin = (
     Origin+Y*(length/2.0+bladePortCenterDist)-X*(bladePortDist/2.0)
   );
@@ -233,6 +249,7 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildCylinder(
     SMap,buildIndex+237,portOrigin,Z,bladeThreadRadius);
 
+  // M3 and M4 - common surfaces for ports
   ModelSupport::buildPlane(
     SMap,buildIndex+301,Origin+X*(bladePortLength+bladePortFlangeLength),X);
   ModelSupport::buildPlane(
@@ -242,6 +259,7 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(
     SMap,buildIndex+312,Origin+X*(bladePortLength-bladeThreadLength),X);
 
+  // M3 - blade
   ModelSupport::buildPlane(
     SMap,buildIndex+351,
     Origin+Y*(length/2.0-bladePortCenterDist+bladeThreadRadius+bladeToThreadDist),Y);
@@ -264,6 +282,7 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(
     SMap,buildIndex+356,Origin+Z*(bladeLongEdge/2.0),Z);
 
+  // M3 - port and thread
   portOrigin = (
     Origin+Y*(length/2.0-bladePortCenterDist)+Z*(bladePortDist/2.0)
   );
@@ -276,6 +295,7 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildCylinder(
     SMap,buildIndex+337,portOrigin,X,bladeThreadRadius);
 
+  // M4 - blade
   ModelSupport::buildPlane(
     SMap,buildIndex+451,
     Origin
@@ -293,6 +313,7 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(
     SMap,buildIndex+454,Origin+X*(bladeM4Pos+bladeShortEdge),X);
 
+  // M4 - port and thread
   portOrigin = (
     Origin+Y*(length/2.0-bladePortCenterDist)-Z*(bladePortDist/2.0)
   );
@@ -305,6 +326,11 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildCylinder(
     SMap,buildIndex+437,portOrigin,X,bladeThreadRadius);
 
+  // Surfaces for auxiliary ports, using the following index offsets:
+  // Center : +500
+  // Top    : +600
+  // Bottom : +700
+
   const double auxPortCenterAngleRad = auxPortCenterAngle * M_PI / 180.0;
   const double auxPortAngleStepRad = auxPortAngleStep * M_PI / 180.0;
   // In [1] or [2], it can be seen that the flanges of the auxiliary ports touch each 
@@ -313,6 +339,8 @@ MonoSlitsJJ::createSurfaces()
   // From this information, the port length can be calculated.
   const double auxPortLength = (
     auxPortFlangeRadius / tan(auxPortAngleStepRad/2.0)+auxPortFlangeLength);
+
+  // Auxiliary: Center port
   Geometry::Vec3D auxPortCenterOrigin = Origin+Y*(length/2.0+auxPortOpticalAxisOffset);
   Geometry::Vec3D auxPortCenterDir = (
     X*(-cos(auxPortCenterAngleRad))+Z*sin(auxPortCenterAngleRad));
@@ -341,6 +369,7 @@ MonoSlitsJJ::createSurfaces()
     SMap,buildIndex+527,auxPortCenterOrigin,auxPortCenterDir,auxPortInnerRadius
   );
 
+  // Auxiliary: Top port (using the same origin as the bottom port)
   Geometry::Vec3D auxPortTopBottomOrigin = (
     Origin+Y*(length/2.0-auxPortOpticalAxisOffset));
 
@@ -373,6 +402,7 @@ MonoSlitsJJ::createSurfaces()
     SMap,buildIndex+627,auxPortTopBottomOrigin,auxPortTopDir,auxPortInnerRadius
   );
 
+  // Auxiliary: Bottom port
   Geometry::Vec3D auxPortBottomDir = (
     X*(-cos(auxPortCenterAngleRad-auxPortAngleStepRad))+
     Z*sin(auxPortCenterAngleRad-auxPortAngleStepRad)
@@ -404,6 +434,8 @@ MonoSlitsJJ::createSurfaces()
 
 
   // Separating plane between the M2 port and the top auxiliary port.
+  // Angle adjusted such that port dimensions/position can be adjusted slightly without
+  // breaking the geometry.
   const double m2TopPortSeparatorAngle = (
     (auxPortCenterAngleRad+auxPortAngleStepRad)/2.0 + M_PI_4);
   ModelSupport::buildPlane(
