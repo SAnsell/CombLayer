@@ -1825,12 +1825,23 @@ makeSingleItem::build(Simulation& System,
     if (item == "MonoSlitsJJ" )
       {
 	std::shared_ptr<xraySystem::MonoSlitsJJ>
-	  msjj(new xraySystem::MonoSlitsJJ("MonoSlitsJJ"));
+	  msjjAllIn(new xraySystem::MonoSlitsJJ("MonoSlitsJJAllIn"));
+	std::shared_ptr<xraySystem::MonoSlitsJJ>
+	  msjjAllOut(new xraySystem::MonoSlitsJJ("MonoSlitsJJAllOut"));
+	std::shared_ptr<xraySystem::MonoSlitsJJ>
+	  msjjIndividual(new xraySystem::MonoSlitsJJ("MonoSlitsJJIndividual"));
 
-	OR.addObject(msjj);
+	OR.addObject(msjjAllIn);
+	OR.addObject(msjjAllOut);
+	OR.addObject(msjjIndividual);
 
-	msjj->createAll(System,World::masterOrigin(),0);
-  msjj->insertInCell(System,voidCell);
+	msjjAllIn->createAll(System,World::masterOrigin(),0);
+  msjjAllIn->insertInCell(System,voidCell);
+	msjjAllOut->createAll(System,*msjjAllIn,"back");
+  msjjAllOut->insertInCell(System,voidCell);
+	msjjIndividual->createAll(System,*msjjAllOut,"back");
+  msjjIndividual->insertInCell(System,voidCell);
+
 	return;
       }
     if (item == "RoundMonoShutter" )

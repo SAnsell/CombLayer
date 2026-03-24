@@ -419,7 +419,13 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("MonoShutterR3BackOpenExitShutterUpFlag",1);
 
   setVariable::MonoSlitsJJGenerator MSJJGen;
-  MSJJGen.generate(Control,"MonoSlitsJJ");
+  MSJJGen.generate(Control,"MonoSlitsJJAllIn");
+  MSJJGen.generate(Control,"MonoSlitsJJAllOut",1,1,1,1);
+  MSJJGen.generate(Control,"MonoSlitsJJIndividual",2,2,2,2);
+  Control.addVariable("MonoSlitsJJIndividualBladeM1Pos",0.1);
+  Control.addVariable("MonoSlitsJJIndividualBladeM2Pos",0.2);
+  Control.addVariable("MonoSlitsJJIndividualBladeM3Pos",0.3);
+  Control.addVariable("MonoSlitsJJIndividualBladeM4Pos",0.4);
 
   setVariable::RoundShutterGenerator RMSGen;
   RMSGen.generateShutter(Control,"RMS",1,1);
