@@ -59,6 +59,9 @@ namespace xraySystem
   [2] JJ X-RAY, IB-C30-UHV Technical Drawing, for URL see [1]
   [3] JJ X-RAY, IB-C30-UHV Manual, for URL see [1]
   [4] JJ X-RAY, SINCRYS beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
+  [5] PK245m-01b Stepper Motor
+      https://www.orientalmotor.com.sg/sg/products/detail?hinmei=PK245M-01B
+      (accessed on 2026-03-24)
 */
 class MonoSlitsJJ :
   public attachSystem::FixedRotate,

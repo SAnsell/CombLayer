@@ -51,9 +51,9 @@ namespace setVariable
 {
 MonoSlitsJJGenerator
 ::MonoSlitsJJGenerator() :
-  length(14.0),
-  adapterThick(2.4),
-  adapterInnerRadius(CF40::innerRadius),
+  length(14.0), // [2]
+  adapterThick(2.4), // [2]
+  adapterInnerRadius(CF40::innerRadius), // [4]
   auxPortAngleStep(28.0), // [1]
   auxPortCenterAngle(3.0), // [1]
   auxPortFlangeLength(CF40::flangeLength), // [4]
@@ -61,30 +61,34 @@ MonoSlitsJJGenerator
   auxPortInnerRadius(CF40::innerRadius), // [4]
   auxPortOpticalAxisOffset(0.9), // [1]
   auxPortWallThick(CF40::wallThick), // [4]
-  mainInnerRadius(8.0),
-  mainWallThick(2.125),
+  mainInnerRadius(8.0), // [1]
+  mainWallThick(2.125), // [1]
   baseDepth(10.925), // [2]
   baseThick(1.2), // [1]
   baseWidth(22.0), // [1]
-  bladeAngle(0.5),
-  bladeLongEdge(4.0),
-  bladeM1Pos(-1.5),
-  bladeM2Pos(-1.5),
-  bladeM3Pos(-1.5),
-  bladeM4Pos(-1.5),
-  bladePortCenterDist(2.5),
-  bladePortDist(6.0),
-  bladePortFlangeLength(CF40::flangeLength),
-  bladePortFlangeRadius(CF40::flangeRadius),
-  bladePortInnerRadius(CF25::innerRadius),
+  bladeAngle(0.5), // [4]
+  bladeLongEdge(4.0), // [1]
+  bladeM1Pos(-1.5), // [4] "in" position
+  bladeM2Pos(-1.5), // [4] "in" position
+  bladeM3Pos(-1.5), // [4] "in" position
+  bladeM4Pos(-1.5), // [4] "in" position
+  bladePortCenterDist(2.5), // [2]
+  bladePortDist(6.0), // [1]
+  bladePortFlangeLength(CF40::flangeLength), // [1]
+  bladePortFlangeRadius(CF40::flangeRadius), // [1]
+  bladePortInnerRadius(CF25::innerRadius), // [1]
+  // Total length of port including motor: 201.05 mm [2]
+  // Type of motor                       : PK245m-01b [3]
+  // Length of motor                     : 67 mm [5]
+  // -> Port length (including cap)      : 201.05 mm - 67 mm = 154.05 mm
   bladePortLength(15.405-CF40::flangeLength),
-  bladePortWallThick(CF25::wallThick),
-  bladeShortEdge(3.0),
-  bladeThick(0.2),
-  bladeThreadLength(19.0),
-  bladeThreadRadius(0.5),
-  bladeToThreadDist(0.1),
-  bladeMat("TungstenCarbide"),
+  bladePortWallThick(CF25::wallThick), // [1]
+  bladeShortEdge(3.0), // [1]
+  bladeThick(0.2), // [4]
+  bladeThreadLength(19.0), // Estimated from [1]
+  bladeThreadRadius(0.5), // Estimated from [1]
+  bladeToThreadDist(0.1), // Estimated from [1]
+  bladeMat("TungstenCarbide"), // [4]
   mainMat("SteelUnknownGrade")
 
   /*!
