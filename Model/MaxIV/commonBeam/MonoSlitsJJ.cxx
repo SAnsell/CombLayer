@@ -135,9 +135,17 @@ MonoSlitsJJ::populate(const FuncDataBase& Control)
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
 
   bladeAngle=Control.EvalVar<double>(keyName+"BladeAngle");
+  bladeM1InPos=Control.EvalVar<double>(keyName+"BladeM1InPos");
+  bladeM1OutPos=Control.EvalVar<double>(keyName+"BladeM1OutPos");
   bladeM1Pos=Control.EvalVar<double>(keyName+"BladeM1Pos");
+  bladeM2InPos=Control.EvalVar<double>(keyName+"BladeM2InPos");
+  bladeM2OutPos=Control.EvalVar<double>(keyName+"BladeM2OutPos");
   bladeM2Pos=Control.EvalVar<double>(keyName+"BladeM2Pos");
+  bladeM3InPos=Control.EvalVar<double>(keyName+"BladeM3InPos");
+  bladeM3OutPos=Control.EvalVar<double>(keyName+"BladeM3OutPos");
   bladeM3Pos=Control.EvalVar<double>(keyName+"BladeM3Pos");
+  bladeM4InPos=Control.EvalVar<double>(keyName+"BladeM4InPos");
+  bladeM4OutPos=Control.EvalVar<double>(keyName+"BladeM4OutPos");
   bladeM4Pos=Control.EvalVar<double>(keyName+"BladeM4Pos");
   bladeLongEdge=Control.EvalVar<double>(keyName+"BladeLongEdge");
   bladePortCenterDist=Control.EvalVar<double>(keyName+"BladePortCenterDist");
@@ -272,9 +280,9 @@ MonoSlitsJJ::createSurfaces()
   ModelSupport::buildPlane(
     SMap,buildIndex+255,Origin
     +Y*(length/2.0+bladePortCenterDist+bladeThreadRadius+bladeToThreadDist)
-    +Z*bladeM1Pos,Zp);
+    +Z*bladeM2Pos,Zp);
   ModelSupport::buildPlane(
-    SMap,buildIndex+256,Origin+Z*(bladeM1Pos+bladeShortEdge),Z);
+    SMap,buildIndex+256,Origin+Z*(bladeM2Pos+bladeShortEdge),Z);
 
   // M2 = port and thread
   portOrigin = (
