@@ -120,6 +120,7 @@
 // [34] /mxn/groups/rad/Beamlines/DanMAX/Simulations/03_OH.STEP, see also [10]
 // [35] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
 // [36] Verbal communication with Mads and Sergio 260311 (viewing window parameters: thickness 3 mm, standard Glass, radius: same as the pipe inner radius) + see email from KB 260311
+// [37] CAD model CM2_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM2_chamber_2026-03-04.STEP
 
 namespace setVariable
 {
@@ -1740,7 +1741,7 @@ opticsVariables(FuncDataBase& Control,
   const double CM2MainTubeLength = 26.0; // [34]
   SimpleTubeGen.setCap();
   SimpleTubeGen.generateTube(Control,name,CM2MainTubeLength);
-  Control.addVariable(name+"NPorts",4);
+  Control.addVariable(name+"NPorts",5);
 
   PItemGen.setCF<setVariable::CF40>(CM2PortLength);
   PItemGen.setPlate(0.0,"Void");
@@ -1755,6 +1756,7 @@ opticsVariables(FuncDataBase& Control,
   beamViewer2Dir.rotate(YVec,-M_PI_4);
   const Geometry::Vec3D beamViewer2CM2CenterOffset = vSinCrys*6.0;
 
+  PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade"); // [37]
   // Length of beam-viewer and camera ports [34]
   const double beamViewerS2PortLength = CF250::outerRadius+2.5;
   PItemGen.setLength(beamViewerS2PortLength);
@@ -1767,6 +1769,11 @@ opticsVariables(FuncDataBase& Control,
   beamViewer2CameraDir.rotate(YVec,-M_PI_2);
   PItemGen.generatePort(Control,name+"Port3",beamViewer2CM2CenterOffset,
     beamViewer2CameraDir);
+
+  PItemGen.setLength(17.0); // Read off as 170(5) from [37]
+  Geometry::Vec3D viewPortDir = vSinCrys;
+  viewPortDir.rotate(YVec,M_PI_2); // [37]
+  PItemGen.generatePort(Control,name+"Port4",Geometry::Vec3D(0,0,0),viewPortDir);
 
   const double beamViewerS2ScreenThick = 0.005; // [34]
   const double beamViewerS2ScreenSideLength = 1.0; // [34]
