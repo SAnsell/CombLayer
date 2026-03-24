@@ -527,7 +527,7 @@ MonoSlitsJJ::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -22 -13 14 6 -16 7"));
   makeCell("BaseVoid",System,cellIndex++,0,0.0,
     front*back*
-    ModelSupport::getHeadRule(SMap,buildIndex,"(-21:22:13:-14) -301 -701 6 -16 707"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"(-21:22:13:-14) -301 -701 6 -16 707 7"));
 
   makeCell("MainVoidFront",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -451 -17"));
