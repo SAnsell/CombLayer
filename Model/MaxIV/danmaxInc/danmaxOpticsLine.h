@@ -116,6 +116,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PipeTube> cm1;
   // First gate valve in SINCRYS (S) branch
   std::shared_ptr<xraySystem::CylGateValve> valveS1;
+  std::shared_ptr<constructSystem::FlangePlate> diamondWindow;
   std::shared_ptr<constructSystem::PipeTube> beamViewerS1;
   std::shared_ptr<xraySystem::FlangeMount> beamViewerS1Screen;
   std::shared_ptr<xraySystem::SmallAngleBellows> cardanBellowsUpstream;

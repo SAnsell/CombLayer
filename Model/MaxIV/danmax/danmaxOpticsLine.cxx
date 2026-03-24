@@ -135,6 +135,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   cm1(new constructSystem::PipeTube(newName+"CM1")),
   valveS1(new xraySystem::CylGateValve(newName+"ValveS1")),
+  diamondWindow(new constructSystem::FlangePlate(newName+"DiamondWindow")),
   beamViewerS1(new constructSystem::PipeTube(newName+"BeamViewerS1")),
   beamViewerS1Screen(new xraySystem::FlangeMount(newName+"BeamViewerS1Screen")),
   cardanBellowsUpstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsUpstream")),
@@ -235,6 +236,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(pipeA);
   OR.addObject(cm1);
   OR.addObject(valveS1);
+  OR.addObject(diamondWindow);
   OR.addObject(beamViewerS1);
   OR.addObject(beamViewerS1Screen);
   OR.addObject(cardanBellowsUpstream);
@@ -877,9 +879,12 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   constructSystem::constructUnit(
     System,buildZoneSinCrys,cm1PortSinCrys,"OuterPlate",*valveS1
   );
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*valveS1,"back",*diamondWindow
+  );
 
   constructSystem::constructUnit(
-    System,buildZoneSinCrys,*valveS1,"back",*beamViewerS1
+    System,buildZoneSinCrys,*diamondWindow,"back",*beamViewerS1
   );
   beamViewerS1->intersectPorts(System,0,2);
   beamViewerS1->intersectPorts(System,1,2);

@@ -1642,6 +1642,13 @@ opticsVariables(FuncDataBase& Control,
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"ValveS1"); // [30]
   Control.addVariable(opticsName+"ValveS1YAngle",sinCrysBranchCenterAngleDeg);
 
+  FlangePlateGenerator flangePlateGen;
+  flangePlateGen.setFlangeCF<CF40>(); // [30]
+  // Dimensions from [30]
+  // Material from [32]
+  flangePlateGen.setWindow(0.35,0.05,"Diamond");
+  flangePlateGen.generateFlangePlate(Control,opticsName+"DiamondWindow");
+
   name=opticsName+"BeamViewerS1";
   // [30] In a good approximation (+- 1 mm), all ports have the same length,
   // no matter what one considers a port or a part of the main tube.
