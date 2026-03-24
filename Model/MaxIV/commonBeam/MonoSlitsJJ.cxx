@@ -77,6 +77,32 @@ MonoSlitsJJ::MonoSlitsJJ(const std::string& Key) :
   */
 {}
 
+void MonoSlitsJJ::setBladePositions(){
+  if(bladeM1PosFlag == 0){
+    bladeM1Pos = bladeM1InPos;
+  } else if(bladeM1PosFlag == 1){
+    bladeM1Pos = bladeM1OutPos;
+  }
+
+  if(bladeM2PosFlag == 0){
+    bladeM2Pos = bladeM2InPos;
+  } else if(bladeM2PosFlag == 1){
+    bladeM2Pos = bladeM2OutPos;
+  }
+
+  if(bladeM3PosFlag == 0){
+    bladeM3Pos = bladeM3InPos;
+  } else if(bladeM3PosFlag == 1){
+    bladeM3Pos = bladeM3OutPos;
+  }
+
+  if(bladeM4PosFlag == 0){
+    bladeM4Pos = bladeM4InPos;
+  } else if(bladeM4PosFlag == 1){
+    bladeM4Pos = bladeM4OutPos;
+  }
+}
+
 void
 MonoSlitsJJ::populate(const FuncDataBase& Control)
   /*!
@@ -129,6 +155,12 @@ MonoSlitsJJ::populate(const FuncDataBase& Control)
 
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+
+  bladeM1PosFlag=Control.EvalVar<int>(keyName+"BladeM1PosFlag");
+  bladeM2PosFlag=Control.EvalVar<int>(keyName+"BladeM2PosFlag");
+  bladeM3PosFlag=Control.EvalVar<int>(keyName+"BladeM3PosFlag");
+  bladeM4PosFlag=Control.EvalVar<int>(keyName+"BladeM4PosFlag");
+  setBladePositions();
 
   return;
 }

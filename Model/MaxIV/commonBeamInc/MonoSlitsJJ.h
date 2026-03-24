@@ -94,9 +94,17 @@ class MonoSlitsJJ :
 
   double bladeAngle;
   double bladeLongEdge;
+  double bladeM1InPos;
+  double bladeM1OutPos;
   double bladeM1Pos;
+  double bladeM2InPos;
+  double bladeM2OutPos;
   double bladeM2Pos;
+  double bladeM3InPos;
+  double bladeM3OutPos;
   double bladeM3Pos;
+  double bladeM4InPos;
+  double bladeM4OutPos;
   double bladeM4Pos;
   double bladePortCenterDist;
   double bladePortDist;
@@ -114,9 +122,14 @@ class MonoSlitsJJ :
   int bladeMat;
   int mainMat;
 
+  int bladeM1PosFlag;
+  int bladeM2PosFlag;
+  int bladeM3PosFlag;
+  int bladeM4PosFlag;
+
  protected:
   void populate(const FuncDataBase&) override;
-
+  void setBladePositions();
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();

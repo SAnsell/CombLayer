@@ -68,10 +68,18 @@ MonoSlitsJJGenerator
   baseWidth(22.0), // [1]
   bladeAngle(0.5), // [4]
   bladeLongEdge(4.0), // [1]
-  bladeM1Pos(-1.5), // [4] "in" position
-  bladeM2Pos(-1.5), // [4] "in" position
-  bladeM3Pos(-1.5), // [4] "in" position
-  bladeM4Pos(-1.5), // [4] "in" position
+  bladeM1InPos(-1.5), // [4]
+  bladeM1OutPos(1.5), // [4]
+  bladeM1Pos(-1.5), // [4]
+  bladeM2InPos(-1.5), // [4]
+  bladeM2OutPos(1.5), // [4]
+  bladeM2Pos(-1.5), // [4]
+  bladeM3InPos(-1.5), // [4]
+  bladeM3OutPos(1.5), // [4]
+  bladeM3Pos(-1.5), // [4]
+  bladeM4InPos(-1.5), // [4]
+  bladeM4OutPos(1.5), // [4]
+  bladeM4Pos(-1.5), // [4]
   bladePortCenterDist(2.5), // [2]
   bladePortDist(6.0), // [1]
   bladePortFlangeLength(CF40::flangeLength), // [1]
@@ -97,11 +105,19 @@ MonoSlitsJJGenerator
 {}
 
 void MonoSlitsJJGenerator
-::generate(FuncDataBase& Control,const std::string& keyName) const
+::generate(FuncDataBase& Control,const std::string& keyName,
+  const int m1PosFlag,const int m2PosFlag,const int m3PosFlag,const int m4PosFlag)
+  const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
+    \param m1PosFlag :: 0     : blade at BladeM1InPos
+                        1     : blade at BladeM1OutPos
+                        other : blade at BladeM1Pos
+    \param m2PosFlag :: see m1PosFlag
+    \param m3PosFlag :: see m1PosFlag
+    \param m4PosFlag :: see m1PosFlag
   */
 {
   ELog::RegMethod RegA("MonoSlitsJJGenerator","generate");
@@ -128,9 +144,21 @@ void MonoSlitsJJGenerator
 
   Control.addVariable(keyName+"BladeAngle",bladeAngle);
   Control.addVariable(keyName+"BladeLongEdge",bladeLongEdge);
+  Control.addVariable(keyName+"BladeM1InPos",bladeM1Pos);
+  Control.addVariable(keyName+"BladeM1PosFlag",m1PosFlag);
+  Control.addVariable(keyName+"BladeM1OutPos",bladeM1Pos);
   Control.addVariable(keyName+"BladeM1Pos",bladeM1Pos);
+  Control.addVariable(keyName+"BladeM2InPos",bladeM2Pos);
+  Control.addVariable(keyName+"BladeM2PosFlag",m2PosFlag);
+  Control.addVariable(keyName+"BladeM2OutPos",bladeM2Pos);
   Control.addVariable(keyName+"BladeM2Pos",bladeM2Pos);
+  Control.addVariable(keyName+"BladeM3InPos",bladeM3Pos);
+  Control.addVariable(keyName+"BladeM3PosFlag",m3PosFlag);
+  Control.addVariable(keyName+"BladeM3OutPos",bladeM3Pos);
   Control.addVariable(keyName+"BladeM3Pos",bladeM3Pos);
+  Control.addVariable(keyName+"BladeM4InPos",bladeM4Pos);
+  Control.addVariable(keyName+"BladeM4PosFlag",m4PosFlag);
+  Control.addVariable(keyName+"BladeM4OutPos",bladeM4Pos);
   Control.addVariable(keyName+"BladeM4Pos",bladeM4Pos);
   Control.addVariable(keyName+"BladePortCenterDist",bladePortCenterDist);
   Control.addVariable(keyName+"BladePortDist",bladePortDist);

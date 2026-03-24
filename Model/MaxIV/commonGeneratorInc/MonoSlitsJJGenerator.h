@@ -59,9 +59,17 @@ class MonoSlitsJJGenerator
 
   double bladeAngle;
   double bladeLongEdge;
+  double bladeM1InPos;
+  double bladeM1OutPos;
   double bladeM1Pos;
+  double bladeM2InPos;
+  double bladeM2OutPos;
   double bladeM2Pos;
+  double bladeM3InPos;
+  double bladeM3OutPos;
   double bladeM3Pos;
+  double bladeM4InPos;
+  double bladeM4OutPos;
   double bladeM4Pos;
   double bladePortCenterDist;
   double bladePortDist;
@@ -85,8 +93,11 @@ class MonoSlitsJJGenerator
   ~MonoSlitsJJGenerator() = default;
 
   double getLength() const {return length;};
-    
-  void generate(FuncDataBase&,const std::string&) const;
+
+  void generate(
+    FuncDataBase&,const std::string&,
+    const int m1PosFlag=0,const int m2PosFlag=0,
+    const int m3PosFlag=0,const int m4PosFlag=0) const;
   
 };
 
