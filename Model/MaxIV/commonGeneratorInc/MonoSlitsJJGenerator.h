@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/MonoSlitsJJGenerator.h
  *
- * Copyright (c) 2026 by Udo Friman-Gayer
+ * Copyright (c) 2026 by U. Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,13 @@ namespace setVariable
 {
 /*!
   \class MonoSlitsJJGenerator
-  \version 0.1
-  \author Udo Friman-Gayer
+  \version 1.0
+  \author U. Friman-Gayer
   \date March 2026
   \brief MonoSlitsJJGenerator for variables
+
+  Version history:
+  1.0 - 2026-03-24
 */
 class MonoSlitsJJGenerator
 {

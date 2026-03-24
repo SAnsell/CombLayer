@@ -3,7 +3,7 @@
  
  * File:   commonBeamInc/MonoSlitsJJ.h
  *
- * Copyright (c) 2026 by Udo Friman-Gayer
+ * Copyright (c) 2026 by U. Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ namespace xraySystem
 /*!
   \class MonoSlitsJJ
   \author U. Friman-Gayer
-  \version 0.1
+  \version 1.0
   \date March 2026
   \brief JJ X-Ray Individual Blade (IB)-C30-UHV Slit System
 
@@ -62,6 +62,9 @@ namespace xraySystem
   [5] PK245m-01b Stepper Motor
       https://www.orientalmotor.com.sg/sg/products/detail?hinmei=PK245M-01B
       (accessed on 2026-03-24)
+
+  Version history:
+  1.0 - 2026-03-24
 */
 class MonoSlitsJJ :
   public attachSystem::FixedRotate,
