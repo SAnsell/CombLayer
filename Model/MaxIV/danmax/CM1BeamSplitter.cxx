@@ -234,9 +234,11 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+72,
     Origin+Y*(length-splitterCrystalPitToBack),Y);
   ModelSupport::buildPlane(SMap,buildIndex+81,
-    Origin+Y*(length-splitterCrystalPitToBack-splitterCrystalPitWidth),Y);
+    Origin+Y*(length-splitterCrystalPitToBack
+      -(splitterCrystalPitWidth+splitterCrystalWidth)/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+82,
-    Origin+Y*(length-splitterCrystalPitToBack),Y);
+    Origin+Y*(length-splitterCrystalPitToBack
+      -(splitterCrystalPitWidth-splitterCrystalWidth)/2.0),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
@@ -343,13 +345,15 @@ CM1BeamSplitter::createObjects(Simulation& System)
   makeCell("FilterCrystalHoleUpstream",System,cellIndex++,0,0.0,
     back*ModelSupport::getHeadRule(SMap,buildIndex,"41 -14 -7"));
   makeCell("HolderSplitterCrystalHoleUpstream",System,cellIndex++,holderMaterial,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"41 -51 13 -23 5 -26 7 47 (72:54:-55:56)"));
+    ModelSupport::getHeadRule(SMap,buildIndex,
+      "41 -51 13 -23 5 -26 7 47 (72:54:-55:56)"));
   makeCell("HolderSplitterCrystalHoleCenter",System,cellIndex++,holderMaterial,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"51 -61 13 -23 5 -26 7 37"));
   makeCell("HolderSplitterCrystalHoleDownstream",System,cellIndex++,holderMaterial,0.0,
     back*ModelSupport::getHeadRule(SMap,buildIndex,"61 13 -23 5 -26 7 27"));
   makeCell("SplitterCrystalPit",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"71 -72 13 -54 55 -56")
+    ModelSupport::getHeadRule(SMap,buildIndex,
+      "71 -72 13 -54 55 -56 (-81:82:-53:-65:66)")
   );
   makeCell("SplitterCrystalHoleUpstream",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-71 13 -47"));
@@ -359,6 +363,8 @@ CM1BeamSplitter::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"51 -61 -37"));
   makeCell("SplitterCrystalHoleDownstream",System,cellIndex++,0,0.0,
     back*ModelSupport::getHeadRule(SMap,buildIndex,"61 -27"));
+  makeCell("SplitterCrystal",System,cellIndex++,splitterCrystalMaterial,0.0,
+    back*ModelSupport::getHeadRule(SMap,buildIndex,"81 -82 53 -54 65 -66"));
 
   makeCell("FrontVoid",System,cellIndex++,0,0.0,
     front*ModelSupport::getHeadRule(SMap,buildIndex,"-11 13 5 -26"));
