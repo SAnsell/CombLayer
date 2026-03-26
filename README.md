@@ -1,46 +1,85 @@
-CombLayer
-=========
+# CombLayer
 
-MCNP(X) project builder using C++ 
+**CombLayer** is a high-performance C++ framework for building and exporting parametric [CSG](https://en.wikipedia.org/wiki/Constructive_solid_geometry) geometry to Monte Carlo codes.  
+Designed for flexibility, reuse, and speed—ideal for complex scientific facilities and simulations.
 
-The object of this program is to produce highly parametric space-filling geometry models described by quadratic surfaces. 
-The models are primarily for used to build MCNPX models for nuclear simulation but it can be quickly addapted for any 
-other such geometry-type problem.  
+Designed for speed, flexibility, and scalability, CombLayer enables users to rapidly generate sophisticated geometric models optimized for leading Monte Carlo codes such as [MCNP](https://mcnp.lanl.gov), [FLUKA](https://fluka.eu), and [PHITS](https://phits.jaea.go.jp).
 
-The program has its own internal tracking system, which allows simple validation, variance reduction to be done, and 
-property checking. 
+At its core, CombLayer uses modular, plug-and-play components that can be combined, reused, and reoriented with ease. Each component is defined in its own local coordinate system, allowing you to assemble large, intricate models with minimal effort while maintaining full parametric control.
 
-The current build has models that cover the ISIS neutron facility, the ESS, and others. 
+CombLayer goes beyond geometry construction. It provides integrated support for **materials, tallies (estimators), and source definitions**, helping streamline the entire simulation setup process. Built-in validation and variance reduction tools ensure both accuracy and performance.
 
-Contributions, comments and bug issues welcome. Please see the documents section for an introduction to the program philosophy and useage.
+The framework has been successfully used to model real-world, large-scale facilities, including:
 
-Some basic tutorials and a bit of a gettting started guide is available at http://plone.esss.lu.se/
+- [ISIS](https://www.isis.stfc.ac.uk) and [ESS](https://ess.eu) neutron sources  
+- [MAX IV](https://maxiv.lu.se) synchrotron light source  
+- [Delft](https://www.tudelft.nl/en/faculty-of-applied-sciences/business/facilities/tu-delft-reactor-institute) nuclear reactor  
 
-Requirements
-------------
+While the workflow is conceptually similar to [GEANT4](https://cern.ch/geant4) — where reusable component classes define geometry — CombLayer is specifically optimized for **CSG-based simulation engines**, delivering efficient and production-ready output.
 
-To compile, you will need CMake, a C++ compiler (clang/gcc for example), boost, and GSL (Gnu Scientific Library).
+👉 See [the documentation](https://github.com/SAnsell/CombLayer/blob/master/Documents/Guide) for a deeper introduction to the design philosophy and usage.
 
-It can be built either in the top directory or in a separate build directory.
-If built in the source directory, the command is
+---
 
-```
+## 🚀 Features
+
+**CombLayer helps you go from idea to simulation faster:**
+
+- **Multi-code export**  
+  Seamlessly generate geometry for:
+  - MCNP  
+  - FLUKA  
+  - PHITS  
+  - POV-Ray (visualization)  
+  - VTK (analysis & visualization)
+
+- **Full simulation support**  
+  - Automatic export of materials and tallies  
+  - Source term generation (when applicable)
+
+- **High-performance geometry handling**  
+  - Efficient object–object intersections  
+  - Optimized for fast Monte Carlo execution  
+
+- **Advanced variance reduction tools**  
+  Compatible with MCNP, FLUKA, and PHITS:
+  - Cell-based methods  
+  - Mesh-based methods  
+  - Angular biasing (MCNP & PHITS)
+
+- **Fully parametric design system**  
+  Build flexible, reusable, and configurable geometries with ease.
+
+---
+
+## 📦 Source Code
+
+https://github.com/SAnsell/CombLayer
+
+---
+
+## ⚙️ Installation
+
+### Requirements
+
+- CMake  
+- C++ compiler (e.g., Clang or GCC)  
+- Boost  
+- GSL (GNU Scientific Library)
+
+### Build Instructions
+
+Build directly in the source directory:
+
+```bash
 cmake ./
 make
 ```
 
-or for a separate build directory
-
+Or use a separate build directory:
 ```
-cmake -B/path/to/buildDirectory -S/path/to/srcDirectory
+cmake -B /path/to/buildDirectory -S /path/to/srcDirectory
 make
 ```
+You can speed up compilation with options like ```-j8```, or enable verbose output with ```VERBOSE=1```.
 
-obviously make can be decorated with normal stuff, like -j8 to speed things up, or VERBOSE=1 to see what is going on.
-
-
-After than build a model e.g.
-```
-./maxiv --defaultConfig Single COSAXS AA
-```
-will build the CoSAXS beamline model for Max IV.
