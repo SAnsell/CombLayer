@@ -102,11 +102,11 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   bottomWidth=Control.EvalDefVar<double>(keyName+"BottomWidth", 1.0);
 
   filterCrystalPitDepth=Control.EvalDefVar<double>(
-    keyName+"FilterCrytalPitDepth", 0.075);
+    keyName+"FilterCrystalPitDepth", 0.075);
   filterCrystalPitSideLength=Control.EvalDefVar<double>(
-    keyName+"FilterCrytalPitSideLength", 0.64);
+    keyName+"FilterCrystalPitSideLength", 0.64);
   filterCrystalSideLength=Control.EvalDefVar<double>(
-    keyName+"FilterCrytalSideLength", 0.6); // [1]
+    keyName+"FilterCrystalSideLength", 0.6); // [1]
   filterCrystalThick=Control.EvalDefVar<double>(
     keyName+"FilterCrystalThick", 0.06); // [1]
 
@@ -117,6 +117,54 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
     keyName+"FilterHoleUpstreamLength", 0.65);
   filterHoleUpstreamRadius=Control.EvalDefVar<double>(
     keyName+"FilterHoleUpstreamRadius", 0.15);
+
+  // In the CAD model [2], the splitter crystal has an orientation that results from
+  // a rotation about a nontrivial axis (i.e. neither base axes nor any of the 
+  // body axes of the holder). Furthermore, the crystal has an irregular polygonal 
+  // shape.
+  //
+  // The orientation was determined from three points on the inside wall of the 
+  // crystal pit in [2] (arbitrary offset, base coordinate system, values in mm):
+  //
+  // v0 = (0.96,  0.00,  7.56)
+  // v1 = (0.41,  0.00,  0.00)
+  // v2 = (0.79, 12.09,  7.56)
+  //
+  // From these points, the normal vector on the plane was constructed, and the
+  // yaw (rotation around Y axis in [1], here: Z axis),
+  // pitch (rotation around X axis in [1], here: Y axis),
+  // and roll (rotation around Z axis in [1], here: X axis)
+  // angles were determined to be 0.80559476 deg, 4.16060316 deg, and -0.02926297 deg,
+  // respectively.
+  // The pivot point for the 3D rotations of the crystal has been determined by trial 
+  // and error to reproduce the sample points with +- 0.1 mm precision.
+  //
+  // The polygonal shape of the crystal is approximated as a rectangle here, assuming 
+  // that the beam hits the center of the crystal. The gap between the pit walls and
+  // the crystal is assumed to be of the same size as for the filter crystal, and the
+  // same on all sides.
+  splitterCrystalHeight=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalHeight", 0.72);
+  splitterCrystalPitch=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalPitch", 4.16060316)*M_PI/180.0;
+  // Nominal depth if the crystal was parallel to the holder's surface.
+  splitterCrystalPitDepth=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalPitDepth", 0.075);
+  splitterCrystalPitHeight=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalPitHeight", 0.76);
+  splitterCrystalPitToBack=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalPitToBack", 2.69);
+  splitterCrystalPitWidth=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalPitWidth", 1.4);
+  splitterCrystalRoll=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalRoll", -0.02926297)*M_PI/180.0;
+  // See comment on crystal width.
+  splitterCrystalWidth=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalWidth", 1.36);
+  splitterCrystalThick=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalThick", 0.01);
+  splitterCrystalYaw=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalYaw", 0.80559476)*M_PI/180.0;
 
   splitterHoleCenterLength=Control.EvalDefVar<double>(
     keyName+"SplitterHoleCenterLength", 1.0);
@@ -181,10 +229,17 @@ CM1BeamSplitter::createSurfaces()
     splitterHoleUpstreamLength);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+61,buildIndex+51,holeDir,
     splitterHoleCenterLength);
+  ModelSupport::buildPlane(SMap,buildIndex+71,
+    Origin+Y*(length-splitterCrystalPitToBack-splitterCrystalPitWidth),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+72,
+    Origin+Y*(length-splitterCrystalPitToBack),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+81,
+    Origin+Y*(length-splitterCrystalPitToBack-splitterCrystalPitWidth),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+82,
+    Origin+Y*(length-splitterCrystalPitToBack),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*width/2.0,X);
-//   ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*filterHoleOffset,holeX);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+13,buildIndex+4,X,
     topOverhangWidth-width);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+23,buildIndex+4,X,
@@ -201,6 +256,17 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+44,
     filterHoleOrigin+holeX*filterCrystalSideLength/2.0,holeX);
 
+  Geometry::Vec3D splitterCrystalNormalVector = X;
+  splitterCrystalNormalVector.rotate(X,splitterCrystalRoll);
+  splitterCrystalNormalVector.rotate(Y,splitterCrystalPitch);
+  splitterCrystalNormalVector.rotate(Z,splitterCrystalYaw);
+  ModelSupport::buildPlane(SMap,buildIndex+53,
+    Origin+X*(topOverhangWidth-width/2.0+splitterCrystalPitDepth-splitterCrystalThick),
+    splitterCrystalNormalVector);
+  ModelSupport::buildPlane(SMap,buildIndex+54,
+    Origin+X*(topOverhangWidth-width/2.0+splitterCrystalPitDepth),
+    splitterCrystalNormalVector);
+
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*bottomDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-bottomDepth),Z);
   ModelSupport::buildPlane(SMap,buildIndex+16,
@@ -212,6 +278,10 @@ CM1BeamSplitter::createSurfaces()
     Origin+Z*filterCrystalPitSideLength/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+45,Origin-Z*filterCrystalSideLength/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+46,Origin+Z*filterCrystalSideLength/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+55,Origin-Z*splitterCrystalPitHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+56,Origin+Z*splitterCrystalPitHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+65,Origin-Z*splitterCrystalHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+66,Origin+Z*splitterCrystalHeight/2.0,Z);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,filterHoleOrigin,holeDir,
     filterHoleDownstreamRadius);
@@ -262,21 +332,33 @@ CM1BeamSplitter::createObjects(Simulation& System)
         "11 -21 33 -34 35 -36 (-31:-43:44:-45:46)"));
   makeCell("FilterCrystal",System,cellIndex++,filterCrystalMaterial,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"31 -21 43 -44 45 -46"));
-  makeCell("Bottom",System,cellIndex++,holderMaterial,0.0,
+  makeCell("HolderFilterCrystalPit",System,cellIndex++,holderMaterial,0.0,
     front*ModelSupport::getHeadRule(SMap,buildIndex,
         "11 -21 13 -34 5 -26 47 (-33:34:-35:36)"));
-  makeCell("Bottom",System,cellIndex++,holderMaterial,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"21 -41 13 -23 5 -26 17 47"));
+  makeCell("HolderFilterCrystalHoleUpstream",System,cellIndex++,holderMaterial,0.0,
+    ModelSupport::getHeadRule(
+      SMap,buildIndex,"21 -41 13 -23 5 -26 17 47 (-71:54:-55:56)"));
   makeCell("FilterCrystalHoleUpstream",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -41 -17"));
   makeCell("FilterCrystalHoleUpstream",System,cellIndex++,0,0.0,
     back*ModelSupport::getHeadRule(SMap,buildIndex,"41 -14 -7"));
-  makeCell("Bottom",System,cellIndex++,holderMaterial,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"41 -51 13 -23 5 -26 7 47"));
-  makeCell("Bottom",System,cellIndex++,holderMaterial,0.0,
+  makeCell("HolderSplitterCrystalHoleUpstream",System,cellIndex++,holderMaterial,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"41 -51 13 -23 5 -26 7 47 (72:54:-55:56)"));
+  makeCell("HolderSplitterCrystalHoleCenter",System,cellIndex++,holderMaterial,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"51 -61 13 -23 5 -26 7 37"));
-  makeCell("Bottom",System,cellIndex++,holderMaterial,0.0,
+  makeCell("HolderSplitterCrystalHoleDownstream",System,cellIndex++,holderMaterial,0.0,
     back*ModelSupport::getHeadRule(SMap,buildIndex,"61 13 -23 5 -26 7 27"));
+  makeCell("SplitterCrystalPit",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"71 -72 13 -54 55 -56")
+  );
+  makeCell("SplitterCrystalHoleUpstream",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-71 13 -47"));
+  makeCell("SplitterCrystalHoleUpstream",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"71 -51 -47 (54:72)"));
+  makeCell("SplitterCrystalHoleCenter",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"51 -61 -37"));
+  makeCell("SplitterCrystalHoleDownstream",System,cellIndex++,0,0.0,
+    back*ModelSupport::getHeadRule(SMap,buildIndex,"61 -27"));
 
   makeCell("FrontVoid",System,cellIndex++,0,0.0,
     front*ModelSupport::getHeadRule(SMap,buildIndex,"-11 13 5 -26"));

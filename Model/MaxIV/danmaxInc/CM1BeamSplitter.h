@@ -67,6 +67,17 @@ class CM1BeamSplitter :
   double filterHoleUpstreamLength;
   double filterHoleUpstreamRadius;
 
+  double splitterCrystalHeight;
+  double splitterCrystalPitch;
+  double splitterCrystalPitDepth;
+  double splitterCrystalPitHeight;
+  double splitterCrystalPitToBack;
+  double splitterCrystalPitWidth;
+  double splitterCrystalRoll;
+  double splitterCrystalThick;
+  double splitterCrystalWidth;
+  double splitterCrystalYaw;
+
   double splitterHoleCenterLength;
   double splitterHoleCenterRadius;
   double splitterHoleDownstreamRadius;
