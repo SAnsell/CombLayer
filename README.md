@@ -1,83 +1,85 @@
-CombLayer
-------------
+# CombLayer
 
-CombLayer - A Constructive Solid Geometry project builder using C++
+**CombLayer** is a high-performance C++ framework for building and exporting parametric [CSG](https://en.wikipedia.org/wiki/Constructive_solid_geometry) geometry to Monte Carlo codes.  
+Designed for flexibility, reuse, and speed—ideal for complex scientific facilities and simulations.
 
-The purpose of CombLayer is to easily and rapidly build highly parametric complex
-geometric models which are fast to run in Monte Carlo codes utilising
-CGS-based geometry description used in e.g. FLUKA, MCNP and PHITS.
+Designed for speed, flexibility, and scalability, CombLayer enables users to rapidly generate sophisticated geometric models optimized for leading Monte Carlo codes such as [MCNP](https://mcnp.lanl.gov), [FLUKA](https://fluka.eu), and [PHITS](https://phits.jaea.go.jp).
 
-The program uses modifiable plug-and-play component modules to produce
-a highly parametric space-filling geometry models described by
-quadratic surfaces. The modules are described in a local coordinate
-system and then can be inserted anywhere, and with any orientation.
+At its core, CombLayer uses modular, plug-and-play components that can be combined, reused, and reoriented with ease. Each component is defined in its own local coordinate system, allowing you to assemble large, intricate models with minimal effort while maintaining full parametric control.
 
-The code exports models for the MCNP, FLUKA, PHITS nuclear simulation
-programs, as well as for the POV-Ray raytracer and VTK file
-format. The internal tracking system allows geometry validation and
-variance reduction. Full featured examples cover the ISIS and ESS
-neutron facilities, MAX IV synchrotron light source, Delft nuclear
-reactor and others.
+CombLayer goes beyond geometry construction. It provides integrated support for **materials, tallies (estimators), and source definitions**, helping streamline the entire simulation setup process. Built-in validation and variance reduction tools ensure both accuracy and performance.
 
-Geometry simulation methodology is similar to GEANT4 in that component
-types are defined in a class and used in multiple locations but the
-output is optimised for a CSG system.
+The framework has been successfully used to model real-world, large-scale facilities, including:
 
-Please see the documents section for an introduction to the program philosophy and usage.
+- [ISIS](https://www.isis.stfc.ac.uk) and [ESS](https://ess.eu) neutron sources  
+- [MAX IV](https://maxiv.lu.se) synchrotron light source  
+- [Delft](https://www.tudelft.nl/en/faculty-of-applied-sciences/business/facilities/tu-delft-reactor-institute) nuclear reactor  
 
-## Features
-List of features advertises the code to the unfamiliar users. This list is very incomplete:
+While the workflow is conceptually similar to [GEANT4](https://cern.ch/geant4) — where reusable component classes define geometry — CombLayer is specifically optimized for **CSG-based simulation engines**, delivering efficient and production-ready output.
 
-* Export geometry to
-  - MCNP
-  - FLUKA
-  - PHITS
-  - POV-Ray
-  - VTK
+👉 See [the documentation](https://github.com/SAnsell/CombLayer/blob/master/Documents/Guide) for a deeper introduction to the design philosophy and usage.
 
-* In addition, for the Monte Carlo codes, both materials and tallies (estimators) are exported.
-* When possible, the source terms are also exported.
-* Complex object-object intersection which maintains simulation speed
-* Variance reduction system, which can be used with MCNP, FLUKA and PHITS
- - Cell based
- - Mesh based
- - ext (angular bias on a cell/cell level, MCNP and PHITS only)
-* Variable system to build fully parameterised geometries
+---
 
-## Source code
+## 🚀 Features
+
+**CombLayer helps you go from idea to simulation faster:**
+
+- **Multi-code export**  
+  Seamlessly generate geometry for:
+  - MCNP  
+  - FLUKA  
+  - PHITS  
+  - POV-Ray (visualization)  
+  - VTK (analysis & visualization)
+
+- **Full simulation support**  
+  - Automatic export of materials and tallies  
+  - Source term generation (when applicable)
+
+- **High-performance geometry handling**  
+  - Efficient object–object intersections  
+  - Optimized for fast Monte Carlo execution  
+
+- **Advanced variance reduction tools**  
+  Compatible with MCNP, FLUKA, and PHITS:
+  - Cell-based methods  
+  - Mesh-based methods  
+  - Angular biasing (MCNP & PHITS)
+
+- **Fully parametric design system**  
+  Build flexible, reusable, and configurable geometries with ease.
+
+---
+
+## 📦 Source Code
+
 https://github.com/SAnsell/CombLayer
 
-## Documentation
+---
 
-Selected features are documented in this guide:
+## ⚙️ Installation
 
-https://github.com/SAnsell/CombLayer/blob/master/Documents/Guide
+### Requirements
 
+- CMake  
+- C++ compiler (e.g., Clang or GCC)  
+- Boost  
+- GSL (GNU Scientific Library)
 
-## Installation Requirements
+### Build Instructions
 
-To compile, you will need CMake, a C++ compiler (clang/gcc for example), boost, and GSL (Gnu Scientific Library).
+Build directly in the source directory:
 
-It can be built either in the top directory or in a separate build directory.
-If built in the source directory, the command is
-
-```
+```bash
 cmake ./
 make
 ```
 
-or for a separate build directory
-
+Or use a separate build directory:
 ```
-cmake -B/path/to/buildDirectory -S/path/to/srcDirectory
+cmake -B /path/to/buildDirectory -S /path/to/srcDirectory
 make
 ```
+You can speed up compilation with options like ```-j8```, or enable verbose output with ```VERBOSE=1```.
 
-obviously make can be decorated with normal stuff, like -j8 to speed things up, or VERBOSE=1 to see what is going on.
-
-
-After than build a model e.g.
-```
-./maxiv --defaultConfig Single COSAXS AA
-```
-will build the CoSAXS beamline model for MAX IV.
