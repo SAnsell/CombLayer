@@ -157,6 +157,7 @@
 #include "FixedMaskHybridGenerator.h"
 #include "SmallAngleBellowsGenerator.h"
 #include "WhiteBeamStopGenerator.h"
+#include "CM1BeamSplitterGenerator.h"
 
 namespace setVariable
 {
@@ -1020,6 +1021,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   WhiteBeamStopGenerator WBSGen;
   WBSGen.generate(Control,"WhiteBeamStop");
+
+  // CM1BeamSplitter
+  CM1BeamSplitterGenerator cm1BeamSplitterGenerator;
+  cm1BeamSplitterGenerator.setMode(0);
+  cm1BeamSplitterGenerator.generate(Control,"CM1BeamSplitter");
 
   return;
 }

@@ -90,16 +90,16 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
 
   // Dimensions
   // Measured in the CAD model [2] if not indicated otherwise.
-  bodyAngle=Control.EvalDefVar<double>(keyName+"BodyAngle", 8.04)*M_PI/180.0;
+  bodyAngle=Control.EvalVar<double>(keyName+"BodyAngle")*M_PI/180.0;
   height=Control.EvalDefVar<double>(keyName+"Height", 2.55);
   length=Control.EvalDefVar<double>(keyName+"Length", 4.38);
-  width=Control.EvalDefVar<double>(keyName+"Width", 2.75);
+  width=Control.EvalVar<double>(keyName+"Width");
 
-  bottomChamferWidth=Control.EvalDefVar<double>(keyName+"BottomChamferWidth", 0.15);
+  bottomChamferWidth=Control.EvalVar<double>(keyName+"BottomChamferWidth");
   bottomDepth=Control.EvalDefVar<double>(keyName+"BottomDepth", 0.9);
   bottomHeight=Control.EvalDefVar<double>(keyName+"BottomHeight", 1.6);
   bottomRoundingRadius=Control.EvalDefVar<double>(keyName+"BottomRoundingRadius", 0.5);
-  bottomWidth=Control.EvalDefVar<double>(keyName+"BottomWidth", 1.0);
+  bottomWidth=Control.EvalVar<double>(keyName+"BottomWidth");
 
   filterCrystalPitDepth=Control.EvalDefVar<double>(
     keyName+"FilterCrystalPitDepth", 0.075);
@@ -112,7 +112,7 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
 
   filterHoleDownstreamRadius=Control.EvalDefVar<double>(
     keyName+"FilterHoleDownstreamRadius", 0.2);
-  filterHoleOffset=Control.EvalDefVar<double>(keyName+"FilterHoleOffset", 0.293);
+  filterHoleOffset=Control.EvalVar<double>(keyName+"FilterHoleOffset");
   filterHoleUpstreamLength=Control.EvalDefVar<double>(
     keyName+"FilterHoleUpstreamLength", 0.65);
   filterHoleUpstreamRadius=Control.EvalDefVar<double>(
@@ -172,15 +172,15 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
     keyName+"SplitterHoleCenterRadius", 0.15);
   splitterHoleDownstreamRadius=Control.EvalDefVar<double>(
     keyName+"SplitterHoleDownstreamRadius", 0.2);
-  splitterHoleToFilterHole=Control.EvalDefVar<double>(
-    keyName+"SplitterHoleToFilterHole", 0.656);
+  splitterHoleToFilterHole=Control.EvalVar<double>(
+    keyName+"SplitterHoleToFilterHole");
   splitterHoleUpstreamLength=Control.EvalDefVar<double>(
     keyName+"SplitterHoleUpstreamLength", 2.0);
   splitterHoleUpstreamRadius=Control.EvalDefVar<double>(
     keyName+"SplitterHoleUpstreamRadius", 0.09);
 
   topOverhangThick=Control.EvalDefVar<double>(keyName+"TopOverhangThick", 0.5);
-  topOverhangWidth=Control.EvalDefVar<double>(keyName+"TopOverhangWidth", 0.6);
+  topOverhangWidth=Control.EvalVar<double>(keyName+"TopOverhangWidth");
 
   // Materials
   filterCrystalMaterial=ModelSupport::EvalDefMat(
@@ -216,7 +216,7 @@ CM1BeamSplitter::createSurfaces()
   holeDir.rotate(Z,-bodyAngle);
 
   const Geometry::Vec3D frontCorner = (
-    Origin+X*(topOverhangWidth+bottomWidth-width/2.0-bottomChamferWidth));
+    Origin+X*(-width/2.0+topOverhangWidth+bottomWidth-bottomChamferWidth));
   ModelSupport::buildPlane(SMap,buildIndex+11,
     frontCorner,holeDir);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+11,holeDir,
@@ -304,7 +304,6 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+57,
     X*(-width/2.0+topOverhangWidth+bottomWidth-bottomRoundingRadius)
     +Z*(bottomRoundingRadius-bottomDepth),Y,bottomRoundingRadius);
-
 }
 
 void
