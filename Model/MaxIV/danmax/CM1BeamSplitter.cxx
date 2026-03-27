@@ -268,6 +268,8 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+54,
     Origin+X*(topOverhangWidth-width/2.0+splitterCrystalPitDepth),
     splitterCrystalNormalVector);
+  ModelSupport::buildPlane(SMap,buildIndex+63,
+    Origin+X*(-width/2.0+topOverhangWidth+bottomWidth-bottomRoundingRadius),X);
 
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*bottomDepth,Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-bottomDepth),Z);
@@ -284,6 +286,7 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+56,Origin+Z*splitterCrystalPitHeight/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+65,Origin-Z*splitterCrystalHeight/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+66,Origin+Z*splitterCrystalHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+76,Origin+Z*(-bottomDepth+bottomRoundingRadius),Z);
 
   ModelSupport::buildCylinder(SMap,buildIndex+7,filterHoleOrigin,holeDir,
     filterHoleDownstreamRadius);
@@ -325,10 +328,10 @@ CM1BeamSplitter::createObjects(Simulation& System)
   makeCell("TopOverhang",System,cellIndex++,holderMaterial,0.0,
     front*back*ModelSupport::getHeadRule(SMap,buildIndex,"3 -13 -6 16"));
 
-  makeCell("Bottom",System,cellIndex++,holderMaterial,0.0,
-    front*ModelSupport::getHeadRule(SMap,buildIndex,"-21 34 -14 5 -26"));
-  makeCell("Bottom",System,cellIndex++,holderMaterial,0.0,
-    back*ModelSupport::getHeadRule(SMap,buildIndex,"21 23 -14 5 -26 7"));
+  makeCell("HolderFlatFrontUpstream",System,cellIndex++,holderMaterial,0.0,
+    front*ModelSupport::getHeadRule(SMap,buildIndex,"-21 34 -14 76 -26"));
+  makeCell("HolderFlatFrontDownstream",System,cellIndex++,holderMaterial,0.0,
+    back*ModelSupport::getHeadRule(SMap,buildIndex,"21 23 -14 76 -26 7"));
   makeCell("FilterCrystalPit",System,cellIndex++,0,0.0,
     front*ModelSupport::getHeadRule(SMap,buildIndex,
         "11 -21 33 -34 35 -36 (-31:-43:44:-45:46)"));
@@ -336,21 +339,21 @@ CM1BeamSplitter::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"31 -21 43 -44 45 -46"));
   makeCell("HolderFilterCrystalPit",System,cellIndex++,holderMaterial,0.0,
     front*ModelSupport::getHeadRule(SMap,buildIndex,
-        "11 -21 13 -34 5 -26 47 (-33:34:-35:36)"));
+        "11 -21 13 -34 76 -26 47 (-33:34:-35:36)"));
   makeCell("HolderFilterCrystalHoleUpstream",System,cellIndex++,holderMaterial,0.0,
     ModelSupport::getHeadRule(
-      SMap,buildIndex,"21 -41 13 -23 5 -26 17 47 (-71:54:-55:56)"));
+      SMap,buildIndex,"21 -41 13 -23 76 -26 17 47 (-71:54:-55:56)"));
   makeCell("FilterCrystalHoleUpstream",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -41 -17"));
   makeCell("FilterCrystalHoleUpstream",System,cellIndex++,0,0.0,
     back*ModelSupport::getHeadRule(SMap,buildIndex,"41 -14 -7"));
   makeCell("HolderSplitterCrystalHoleUpstream",System,cellIndex++,holderMaterial,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,
-      "41 -51 13 -23 5 -26 7 47 (72:54:-55:56)"));
+      "41 -51 13 -23 76 -26 7 47 (72:54:-55:56)"));
   makeCell("HolderSplitterCrystalHoleCenter",System,cellIndex++,holderMaterial,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"51 -61 13 -23 5 -26 7 37"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"51 -61 13 -23 76 -26 7 37"));
   makeCell("HolderSplitterCrystalHoleDownstream",System,cellIndex++,holderMaterial,0.0,
-    back*ModelSupport::getHeadRule(SMap,buildIndex,"61 13 -23 5 -26 7 27"));
+    back*ModelSupport::getHeadRule(SMap,buildIndex,"61 13 -23 76 -26 7 27"));
   makeCell("SplitterCrystalPit",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,
       "71 -72 13 -54 55 -56 (-81:82:-53:-65:66)")
@@ -364,7 +367,16 @@ CM1BeamSplitter::createObjects(Simulation& System)
   makeCell("SplitterCrystalHoleDownstream",System,cellIndex++,0,0.0,
     back*ModelSupport::getHeadRule(SMap,buildIndex,"61 -27"));
   makeCell("SplitterCrystal",System,cellIndex++,splitterCrystalMaterial,0.0,
-    back*ModelSupport::getHeadRule(SMap,buildIndex,"81 -82 53 -54 65 -66"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"81 -82 53 -54 65 -66"));
+  makeCell("HolderBottomBlock",System,cellIndex++,holderMaterial,0.0,
+    back*ModelSupport::getHeadRule(SMap,buildIndex,"11 13 -63 5 -76")
+  );
+  makeCell("HolderBottomRoundedBlock",System,cellIndex++,holderMaterial,0.0,
+    back*ModelSupport::getHeadRule(SMap,buildIndex,"11 63 -14 5 -76 -57")
+  );
+  makeCell("HolderBottomRoundedBlockVoid",System,cellIndex++,0,0.0,
+    back*ModelSupport::getHeadRule(SMap,buildIndex,"11 63 -14 5 -76 57")
+  );
 
   makeCell("FrontVoid",System,cellIndex++,0,0.0,
     front*ModelSupport::getHeadRule(SMap,buildIndex,"-11 13 5 -26"));
