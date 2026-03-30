@@ -45,6 +45,10 @@ class CM1BeamSplitterGenerator
 
   double filterHoleOffset;
 
+  double splitterCrystalPitch;
+  double splitterCrystalRoll;
+  double splitterCrystalYaw;
+
   double splitterHoleToFilterHole;
 
   double topOverhangWidth;

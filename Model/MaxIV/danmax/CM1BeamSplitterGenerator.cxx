@@ -3,7 +3,7 @@
 
  * File:   commonGenerator/CM1BeamSplitterGenerator.cxx
  *
- * Copyright (c) 2026 by Udo Friman-Gayer
+ * Copyright (c) 2026 by U. Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,9 @@ CM1BeamSplitterGenerator
   bottomChamferWidth(0.15),
   bottomWidth(1.0),
   filterHoleOffset(0.293),
+  splitterCrystalPitch(4.16060316),
+  splitterCrystalRoll(-0.02926297),
+  splitterCrystalYaw(0.80559476),
   splitterHoleToFilterHole(0.656),
   topOverhangWidth(0.6),
   mode(0)
@@ -85,6 +88,10 @@ void CM1BeamSplitterGenerator
 
   Control.addVariable(keyName+"FilterHoleOffset",filterHoleOffset);
 
+  Control.addVariable(keyName+"SplitterCrystalPitch",splitterCrystalPitch);
+  Control.addVariable(keyName+"SplitterCrystalRoll",splitterCrystalRoll);
+  Control.addVariable(keyName+"SplitterCrystalYaw",splitterCrystalYaw);
+
   Control.addVariable(keyName+"SplitterHoleToFilterHole",splitterHoleToFilterHole);
 
   Control.addVariable(keyName+"TopOverhangWidth",topOverhangWidth);
@@ -101,7 +108,7 @@ void CM1BeamSplitterGenerator
         Control.addVariable(keyName+"XStep",
           filterHoleOffset-0.5*cos(bodyAngleRad)*(bottomChamferWidth)+splitterHoleToFilterHole);
         Control.addVariable(keyName+"YStep",-sin(bodyAngleRad)*frontCornerX);
-        // Control.addVariable(keyName+"ZAngle",bodyAngle);
+        Control.addVariable(keyName+"ZAngle",bodyAngle);
     }
   }
 }

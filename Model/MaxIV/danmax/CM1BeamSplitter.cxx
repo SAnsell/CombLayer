@@ -145,8 +145,8 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   // same on all sides.
   splitterCrystalHeight=Control.EvalDefVar<double>(
     keyName+"SplitterCrystalHeight", 0.72);
-  splitterCrystalPitch=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalPitch", 4.16060316)*M_PI/180.0;
+  splitterCrystalPitch=Control.EvalVar<double>(
+    keyName+"SplitterCrystalPitch")*M_PI/180.0;
   // Nominal depth if the crystal was parallel to the holder's surface.
   splitterCrystalPitDepth=Control.EvalDefVar<double>(
     keyName+"SplitterCrystalPitDepth", 0.075);
@@ -156,15 +156,15 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
     keyName+"SplitterCrystalPitToBack", 2.69);
   splitterCrystalPitWidth=Control.EvalDefVar<double>(
     keyName+"SplitterCrystalPitWidth", 1.4);
-  splitterCrystalRoll=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalRoll", -0.02926297)*M_PI/180.0;
+  splitterCrystalRoll=Control.EvalVar<double>(
+    keyName+"SplitterCrystalRoll")*M_PI/180.0;
   // See comment on crystal width.
   splitterCrystalWidth=Control.EvalDefVar<double>(
     keyName+"SplitterCrystalWidth", 1.36);
   splitterCrystalThick=Control.EvalDefVar<double>(
     keyName+"SplitterCrystalThick", 0.01);
-  splitterCrystalYaw=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalYaw", 0.80559476)*M_PI/180.0;
+  splitterCrystalYaw=Control.EvalVar<double>(
+    keyName+"SplitterCrystalYaw")*M_PI/180.0;
 
   splitterHoleCenterLength=Control.EvalDefVar<double>(
     keyName+"SplitterHoleCenterLength", 1.0);
