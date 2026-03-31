@@ -1024,7 +1024,6 @@ SingleItemVariables(FuncDataBase& Control)
 
   // CM1BeamSplitter
   CM1BeamSplitterGenerator cm1BeamSplitterGenerator;
-  cm1BeamSplitterGenerator.setMode(0);
   cm1BeamSplitterGenerator.generate(Control,"CM1BeamSplitter");
 
   return;
