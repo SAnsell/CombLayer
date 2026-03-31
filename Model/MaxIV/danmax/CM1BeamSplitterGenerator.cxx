@@ -80,7 +80,6 @@ void CM1BeamSplitterGenerator
   ELog::RegMethod RegA("CM1BeamSplitterGenerator","generate");
 
   Control.addVariable(keyName+"BodyAngle",bodyAngle);
-  const double bodyAngleRad = bodyAngle*M_PI/180.0;
   Control.addVariable(keyName+"Width",width);
 
   Control.addVariable(keyName+"BottomChamferWidth",bottomChamferWidth);
@@ -96,21 +95,6 @@ void CM1BeamSplitterGenerator
 
   Control.addVariable(keyName+"TopOverhangWidth",topOverhangWidth);
   Control.addVariable(keyName+"Mode",mode);
-
-  if(mode != 0){
-    const double frontCornerX = -width/2.0+topOverhangWidth+bottomWidth-bottomChamferWidth;
-    if(mode == 1){
-        Control.addVariable(keyName+"XStep",filterHoleOffset-0.5*cos(bodyAngleRad)*bottomChamferWidth);
-        Control.addVariable(keyName+"YStep",-sin(bodyAngleRad)*frontCornerX);
-        Control.addVariable(keyName+"ZAngle",bodyAngle);
-    }
-    else if(mode == 2){
-        Control.addVariable(keyName+"XStep",
-          filterHoleOffset-0.5*cos(bodyAngleRad)*(bottomChamferWidth)+splitterHoleToFilterHole);
-        Control.addVariable(keyName+"YStep",-sin(bodyAngleRad)*frontCornerX);
-        Control.addVariable(keyName+"ZAngle",bodyAngle);
-    }
-  }
 }
 
 }  // NAMESPACE setVariable

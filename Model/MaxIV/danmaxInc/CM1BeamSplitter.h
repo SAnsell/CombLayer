@@ -95,7 +95,7 @@ class CM1BeamSplitter :
   int mode;
 
  protected:
-  void calculateInternalAxes(
+  void updateInternalReferenceVectors(
     Geometry::Vec3D&,Geometry::Vec3D&,Geometry::Vec3D&,Geometry::Vec3D&,
     Geometry::Vec3D&);
   void calculateSplitterCrystalNormalVector(Geometry::Vec3D&);
