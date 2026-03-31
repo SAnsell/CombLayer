@@ -92,6 +92,8 @@ class CM1BeamSplitter :
   int filterCrystalMaterial;
   int splitterCrystalMaterial;
 
+  int mode;
+
  protected:
   void calculateInternalAxes(
     Geometry::Vec3D&,Geometry::Vec3D&,Geometry::Vec3D&,Geometry::Vec3D&,
