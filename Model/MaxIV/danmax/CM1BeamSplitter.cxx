@@ -40,6 +40,13 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Vec3D.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Line.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Quaternion.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -193,11 +200,69 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   return;
 }
 
+void CM1BeamSplitter::calculateSplitterCrystalNormalVector(Geometry::Vec3D &splitterCrystalNormalVector){
+  splitterCrystalNormalVector = X;
+  splitterCrystalNormalVector.rotate(X,splitterCrystalRoll);
+  splitterCrystalNormalVector.rotate(Y,splitterCrystalPitch);
+  splitterCrystalNormalVector.rotate(Z,splitterCrystalYaw);
+}
+
+void CM1BeamSplitter::calculateInternalAxes(
+  Geometry::Vec3D &filterHoleOrigin,Geometry::Vec3D &frontCorner,
+  Geometry::Vec3D &holeDir,Geometry::Vec3D &holeX,Geometry::Vec3D &splitterHoleOrigin){
+  holeX = X;
+  holeX.rotate(Z,-bodyAngle);
+  holeDir = Y;
+  holeDir.rotate(Z,-bodyAngle);
+
+  frontCorner = (
+    Origin+X*(-width/2.0+topOverhangWidth+bottomWidth-bottomChamferWidth));
+
+  filterHoleOrigin = frontCorner-holeX*filterHoleOffset;
+
+  splitterHoleOrigin = filterHoleOrigin-holeX*splitterHoleToFilterHole;
+}
+
+void CM1BeamSplitter::calculateSplitterCrystalOrigin(const Geometry::Vec3D &holeDir,
+  const Geometry::Vec3D &splitterCrystalNormalVector,
+  const Geometry::Vec3D &splitterHoleOrigin,Geometry::Vec3D &splitterCrystalOrigin){
+  const Geometry::Line splitterHoleAxis(splitterHoleOrigin,holeDir);
+  const Geometry::Plane splitterCrystalNominalPlane(
+    0,
+    Origin+X*(topOverhangWidth-width/2.0+splitterCrystalPitDepth-splitterCrystalThick),
+    splitterCrystalNormalVector
+  );
+  splitterCrystalOrigin = (
+    splitterHoleAxis.planeIntersect(splitterCrystalNominalPlane));
+}
 
 void
 CM1BeamSplitter::createSurfaces()
 {
   ELog::RegMethod RegA("CM1BeamSplitter","createSurfaces");
+
+  Geometry::Vec3D filterHoleOrigin,frontCorner,holeDir,holeX,
+  splitterCrystalNormalVector,splitterCrystalOrigin,splitterHoleOrigin;
+
+  const Geometry::Vec3D X0 = X;
+  calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
+  calculateInternalAxes(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
+
+  Geometry::Quaternion q = Geometry::Quaternion::calcQVRot(X,splitterCrystalNormalVector,X);
+  X = q.rotate(X);
+  Y = q.rotate(Y);
+  Z = q.rotate(Z);
+
+  splitterCrystalNormalVector = X0;
+
+  calculateSplitterCrystalOrigin(
+    holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+
+  Origin = Origin - splitterCrystalOrigin;
+
+  calculateInternalAxes(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
+  calculateSplitterCrystalOrigin(
+    holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
 
   if (!isActive("front"))
     {
@@ -210,13 +275,6 @@ CM1BeamSplitter::createSurfaces()
       setBack(SMap.realSurf(buildIndex+2));
     }
 
-  Geometry::Vec3D holeX = X;
-  holeX.rotate(Z,-bodyAngle);
-  Geometry::Vec3D holeDir = Y;
-  holeDir.rotate(Z,-bodyAngle);
-
-  const Geometry::Vec3D frontCorner = (
-    Origin+X*(-width/2.0+topOverhangWidth+bottomWidth-bottomChamferWidth));
   ModelSupport::buildPlane(SMap,buildIndex+11,
     frontCorner,holeDir);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+11,holeDir,
@@ -248,7 +306,6 @@ CM1BeamSplitter::createSurfaces()
     topOverhangWidth+bottomWidth-width-bottomChamferWidth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,
     topOverhangWidth+bottomWidth-width);
-  const Geometry::Vec3D filterHoleOrigin = frontCorner-holeX*filterHoleOffset;
   ModelSupport::buildPlane(SMap,buildIndex+33,
     filterHoleOrigin-holeX*filterCrystalPitSideLength/2.0,holeX);
   ModelSupport::buildPlane(SMap,buildIndex+34,
@@ -258,16 +315,10 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+44,
     filterHoleOrigin+holeX*filterCrystalSideLength/2.0,holeX);
 
-  Geometry::Vec3D splitterCrystalNormalVector = X;
-  splitterCrystalNormalVector.rotate(X,splitterCrystalRoll);
-  splitterCrystalNormalVector.rotate(Y,splitterCrystalPitch);
-  splitterCrystalNormalVector.rotate(Z,splitterCrystalYaw);
-  ModelSupport::buildPlane(SMap,buildIndex+53,
-    Origin+X*(topOverhangWidth-width/2.0+splitterCrystalPitDepth-splitterCrystalThick),
+  ModelSupport::buildPlane(SMap,buildIndex+53,splitterCrystalOrigin,
     splitterCrystalNormalVector);
-  ModelSupport::buildPlane(SMap,buildIndex+54,
-    Origin+X*(topOverhangWidth-width/2.0+splitterCrystalPitDepth),
-    splitterCrystalNormalVector);
+  ModelSupport::buildShiftedPlane(SMap,buildIndex+54,buildIndex+53,
+    splitterCrystalNormalVector,splitterCrystalThick);
   ModelSupport::buildPlane(SMap,buildIndex+63,
     Origin+X*(-width/2.0+topOverhangWidth+bottomWidth-bottomRoundingRadius),X);
 
@@ -293,8 +344,6 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+17,filterHoleOrigin,holeDir,
     filterHoleUpstreamRadius);
 
-  const Geometry::Vec3D splitterHoleOrigin = (
-    filterHoleOrigin-holeX*splitterHoleToFilterHole);
   ModelSupport::buildCylinder(SMap,buildIndex+27,splitterHoleOrigin,holeDir,
     splitterHoleDownstreamRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+37,splitterHoleOrigin,holeDir,
@@ -344,7 +393,7 @@ CM1BeamSplitter::createObjects(Simulation& System)
       SMap,buildIndex,"21 -41 13 -23 76 -26 17 47 (-71:54:-55:56)"));
   makeCell("FilterCrystalHoleUpstream",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"21 -41 -17"));
-  makeCell("FilterCrystalHoleUpstream",System,cellIndex++,0,0.0,
+  makeCell("FilterCrystalHoleDownstream",System,cellIndex++,0,0.0,
     back*ModelSupport::getHeadRule(SMap,buildIndex,"41 -14 -7"));
   makeCell("HolderSplitterCrystalHoleUpstream",System,cellIndex++,holderMaterial,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,
