@@ -254,30 +254,27 @@ CM1BeamSplitter::createSurfaces()
       holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
   }
 
-  if(mode == 1){
+  if(mode == 1 || mode == 2){
     X.rotate(Z,bodyAngle);
     Y.rotate(Z,bodyAngle);
     updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
-    Origin = Origin - filterHoleOrigin;
-    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
-    calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
-    calculateSplitterCrystalOrigin(
-      holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
-
-  }
-
-  if(mode == 2){
-    X.rotate(Z,bodyAngle);
-    Y.rotate(Z,bodyAngle);
-    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
-    calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
-    calculateSplitterCrystalOrigin(
-      holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
-    Origin = Origin - splitterCrystalOrigin;
-    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
-    calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
-    calculateSplitterCrystalOrigin(
-      holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+    if(mode == 1){
+      Origin = Origin - filterHoleOrigin;
+      updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
+      calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
+      calculateSplitterCrystalOrigin(
+        holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+    }
+    if(mode == 2){
+      calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
+      calculateSplitterCrystalOrigin(
+        holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+      Origin = Origin - splitterCrystalOrigin;
+      updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
+      calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
+      calculateSplitterCrystalOrigin(
+        holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+    }
   }
 
   if(mode == 3){
