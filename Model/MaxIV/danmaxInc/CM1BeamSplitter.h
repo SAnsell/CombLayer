@@ -33,6 +33,58 @@ namespace xraySystem
   \date March 2026
   \brief Beam Splitter and High-Pass Filter in CM1
 
+  The CM1 beam splitter allows to switch between two operation modes in the 
+  DanMAX/SINCRYS beamline. 
+  In the first mode ("DanMAX mode"), the beam passes straight through a 
+  high-pass-filter crystal into the DanMAX branch.
+  In the second mode ("DanMAX/SINCRYS mode"), the high-pass filter is replaced by a 
+  beam-splitter crystal that allows part of the beam to pass straight through into the 
+  DanMAX branch. Another part is monochromatized and diverted into the SINCRYS branch 
+  via Bragg scattering. The angle of the beam-splitter crystal can be varied to select 
+  different energies.
+
+  This class constructs the central piece inside the CM1 chamber: a copper holder on 
+  which the high-pass- and beam-splitter crystals are mounted. By varying the position 
+  and orientation of this holder, the different operation modes of DanMAX/SINCRYS can 
+  be chosen.
+  It should be noted that the two holes in the holder that guide the transmitted beam 
+  in both modes straight into the DanMAX branch are at a small angle with respect to 
+  the holder.
+  Furthermore, the splitter crystal has a nontrivial 3D rotation with respect to the 
+  holder and its transmission hole. A possible reason for this could be that the 
+  crystal lattice is not parallel to the surface plane to avoid specular reflection.
+  CM1BeamSplitter provides a special mode to facilitate specular reflection if desired.
+
+  CM1BeamSplitter actually provides 4 default positions/orientations for different use
+  cases. In all of them, it is assumed that the beam travels in the positive Y
+  direction. The SINCRYS branch is on the negative X side of the incoming beam.
+  This class uses the same convention for the pitch, roll, and yaw angles as [1], but 
+  with the axes adapted to the CombLayer convention. An overview of the modes is given 
+  below.
+
+  Mode 0: Positions the holder such that its axes are aligned with the coordinate axes.
+  The origin is at the center of the front surface, which corresponds neither to the 
+  DanMAX, nor the DanMAX/SINCRYS mode.
+
+  Mode 1: DanMAX mode. The beam passes centrally through the high-pass-filter crystal 
+  and the corresponding hole in the holder. The origin is at the center of the 
+  high-pass-filter crystal on its upstream side, i.e. where the beam hits the crystal.
+
+  Mode 2: DanMAX/SINCRYS mode I. The beam passes centrally through the corresponding hole
+  in the holder. The origin is on the upstream side of the beam-splitter crystal where 
+  the beam hits the crystal. In order to achieve the desired orientation of the hole, 
+  only the yaw angle is modified, and the entire holder is translated. Since the 
+  beam-splitter crystal is mounted with a nonzero pitch, roll, and yaw w.r.t. the 
+  holder, this means that specular (angle of incidence = reflected angle) reflection 
+  will result in the beam being reflected in an arbitrary direction.
+
+  Mode 3: DanMAX/SINCRYS mode II. The origin is at the same point as in Mode 2, but the
+  holder is oriented such that the beam axis is in the splitter-crystal plane and the 
+  -X axis is the normal axis of the splitter-crystal plane. This means that the pitch,
+  roll, and yaw rotation of the splitter crystal have been compensated. By changing the
+  yaw (ZAngle) of the holder, the specular-reflection angle in the X-Y plane can be set
+  in a straighforward way.
+
   References:
   [1] JJ X-RAY, SINCRYS beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
   [2] CAD model CM1_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM1_chamber_2026-03-04.STEP
