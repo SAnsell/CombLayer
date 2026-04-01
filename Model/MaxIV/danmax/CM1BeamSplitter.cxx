@@ -97,33 +97,33 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
 
   // Dimensions
   // Measured in the CAD model [2] if not indicated otherwise.
-  bodyAngle=Control.EvalVar<double>(keyName+"BodyAngle")*M_PI/180.0;
-  height=Control.EvalDefVar<double>(keyName+"Height", 2.55);
-  length=Control.EvalDefVar<double>(keyName+"Length", 4.38);
-  width=Control.EvalVar<double>(keyName+"Width");
+  bodyAngle=Control.EvalDefVar<double>(keyName+"BodyAngle",8.04)*M_PI/180.0;
+  height=Control.EvalDefVar<double>(keyName+"Height",2.55);
+  length=Control.EvalDefVar<double>(keyName+"Length",4.38);
+  width=Control.EvalDefVar<double>(keyName+"Width",2.75);
 
-  bottomChamferWidth=Control.EvalVar<double>(keyName+"BottomChamferWidth");
-  bottomDepth=Control.EvalDefVar<double>(keyName+"BottomDepth", 0.9);
-  bottomHeight=Control.EvalDefVar<double>(keyName+"BottomHeight", 1.6);
-  bottomRoundingRadius=Control.EvalDefVar<double>(keyName+"BottomRoundingRadius", 0.5);
-  bottomWidth=Control.EvalVar<double>(keyName+"BottomWidth");
+  bottomChamferWidth=Control.EvalDefVar<double>(keyName+"BottomChamferWidth",0.15);
+  bottomDepth=Control.EvalDefVar<double>(keyName+"BottomDepth",0.9);
+  bottomHeight=Control.EvalDefVar<double>(keyName+"BottomHeight",1.6);
+  bottomRoundingRadius=Control.EvalDefVar<double>(keyName+"BottomRoundingRadius",0.5);
+  bottomWidth=Control.EvalDefVar<double>(keyName+"BottomWidth",1.0);
 
   filterCrystalPitDepth=Control.EvalDefVar<double>(
-    keyName+"FilterCrystalPitDepth", 0.075);
+    keyName+"FilterCrystalPitDepth",0.075);
   filterCrystalPitSideLength=Control.EvalDefVar<double>(
-    keyName+"FilterCrystalPitSideLength", 0.64);
+    keyName+"FilterCrystalPitSideLength",0.64);
   filterCrystalSideLength=Control.EvalDefVar<double>(
-    keyName+"FilterCrystalSideLength", 0.6); // [1]
+    keyName+"FilterCrystalSideLength",0.6); // [1]
   filterCrystalThick=Control.EvalDefVar<double>(
-    keyName+"FilterCrystalThick", 0.06); // [1]
+    keyName+"FilterCrystalThick",0.06); // [1]
 
   filterHoleDownstreamRadius=Control.EvalDefVar<double>(
-    keyName+"FilterHoleDownstreamRadius", 0.2);
-  filterHoleOffset=Control.EvalVar<double>(keyName+"FilterHoleOffset");
+    keyName+"FilterHoleDownstreamRadius",0.2);
+  filterHoleOffset=Control.EvalDefVar<double>(keyName+"FilterHoleOffset",0.293);
   filterHoleUpstreamLength=Control.EvalDefVar<double>(
-    keyName+"FilterHoleUpstreamLength", 0.65);
+    keyName+"FilterHoleUpstreamLength",0.65);
   filterHoleUpstreamRadius=Control.EvalDefVar<double>(
-    keyName+"FilterHoleUpstreamRadius", 0.15);
+    keyName+"FilterHoleUpstreamRadius",0.15);
 
   // In the CAD model [2], the splitter crystal has an orientation that results from
   // a rotation about a nontrivial axis (i.e. neither base axes nor any of the 
@@ -148,43 +148,43 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   // pit walls and the crystal is assumed to be of the same size as for the filter
   // crystal, and the same on all sides.
   splitterCrystalHeight=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalHeight", 0.72);
-  splitterCrystalPitch=Control.EvalVar<double>(
-    keyName+"SplitterCrystalPitch")*M_PI/180.0;
+    keyName+"SplitterCrystalHeight",0.72);
+  splitterCrystalPitch=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalPitch",4.16060316)*M_PI/180.0;
   // Nominal depth if the crystal was parallel to the holder's surface.
   splitterCrystalPitDepth=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalPitDepth", 0.075);
+    keyName+"SplitterCrystalPitDepth",0.075);
   splitterCrystalPitHeight=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalPitHeight", 0.76);
+    keyName+"SplitterCrystalPitHeight",0.76);
   splitterCrystalPitToBack=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalPitToBack", 2.69);
+    keyName+"SplitterCrystalPitToBack",2.69);
   splitterCrystalPitWidth=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalPitWidth", 1.4);
-  splitterCrystalRoll=Control.EvalVar<double>(
-    keyName+"SplitterCrystalRoll")*M_PI/180.0;
+    keyName+"SplitterCrystalPitWidth",1.4);
+  splitterCrystalRoll=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalRoll",-0.02926297)*M_PI/180.0;
   // See comment on crystal width.
   splitterCrystalWidth=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalWidth", 1.36);
+    keyName+"SplitterCrystalWidth",1.36);
   splitterCrystalThick=Control.EvalDefVar<double>(
-    keyName+"SplitterCrystalThick", 0.01);
-  splitterCrystalYaw=Control.EvalVar<double>(
-    keyName+"SplitterCrystalYaw")*M_PI/180.0;
+    keyName+"SplitterCrystalThick",0.01);
+  splitterCrystalYaw=Control.EvalDefVar<double>(
+    keyName+"SplitterCrystalYaw",0.80559476)*M_PI/180.0;
 
   splitterHoleCenterLength=Control.EvalDefVar<double>(
-    keyName+"SplitterHoleCenterLength", 1.0);
+    keyName+"SplitterHoleCenterLength",1.0);
   splitterHoleCenterRadius=Control.EvalDefVar<double>(
-    keyName+"SplitterHoleCenterRadius", 0.15);
+    keyName+"SplitterHoleCenterRadius",0.15);
   splitterHoleDownstreamRadius=Control.EvalDefVar<double>(
-    keyName+"SplitterHoleDownstreamRadius", 0.2);
-  splitterHoleToFilterHole=Control.EvalVar<double>(
-    keyName+"SplitterHoleToFilterHole");
+    keyName+"SplitterHoleDownstreamRadius",0.2);
+  splitterHoleToFilterHole=Control.EvalDefVar<double>(
+    keyName+"SplitterHoleToFilterHole",0.656);
   splitterHoleUpstreamLength=Control.EvalDefVar<double>(
-    keyName+"SplitterHoleUpstreamLength", 2.0);
+    keyName+"SplitterHoleUpstreamLength",2.0);
   splitterHoleUpstreamRadius=Control.EvalDefVar<double>(
-    keyName+"SplitterHoleUpstreamRadius", 0.09);
+    keyName+"SplitterHoleUpstreamRadius",0.09);
 
-  topOverhangThick=Control.EvalDefVar<double>(keyName+"TopOverhangThick", 0.5);
-  topOverhangWidth=Control.EvalVar<double>(keyName+"TopOverhangWidth");
+  topOverhangThick=Control.EvalDefVar<double>(keyName+"TopOverhangThick",0.5);
+  topOverhangWidth=Control.EvalDefVar<double>(keyName+"TopOverhangWidth",0.6);
 
   // Materials
   filterCrystalMaterial=ModelSupport::EvalDefMat(
@@ -194,7 +194,7 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   splitterCrystalMaterial=ModelSupport::EvalDefMat(
     Control,keyName+"SplitterCrystalMaterial","Diamond");
 
-  mode=Control.EvalVar<int>(keyName+"Mode");
+  mode=Control.EvalDefVar<int>(keyName+"Mode",0);
 
   return;
 }
