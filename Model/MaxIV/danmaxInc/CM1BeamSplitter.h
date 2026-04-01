@@ -104,26 +104,38 @@ class CM1BeamSplitter :
 {
  private:
 
+  // Holder and outer-surface dimensions
+
+  /// Angle between the sides of the holder and the transmission holes.
   double bodyAngle;
   double length;
   double height;
   double width;
 
+  // Lower part of the holder
+
+  /// Width of the small flat part on the front surface of the holder.
   double bottomChamferWidth;
-  double bottomDepth;
+  double bottomDepth; ///< Distance from the bottom to the transmission hole centers.
   double bottomHeight;
   double bottomRoundingRadius;
   double bottomWidth;
+
+  // Filter crystal
 
   double filterCrystalPitDepth;
   double filterCrystalPitSideLength;
   double filterCrystalSideLength;
   double filterCrystalThick;
 
+  // Filter hole (i.e. beam path in DanMAX mode)
+
   double filterHoleDownstreamRadius;
   double filterHoleOffset;
   double filterHoleUpstreamLength;
   double filterHoleUpstreamRadius;
+
+  // Splitter crystal
 
   double splitterCrystalHeight;
   double splitterCrystalPitch;
@@ -136,6 +148,8 @@ class CM1BeamSplitter :
   double splitterCrystalWidth;
   double splitterCrystalYaw;
 
+  // Splitter crystal hole (i.e. beam path in DanMAX/SINCRYS mode)
+
   double splitterHoleCenterLength;
   double splitterHoleCenterRadius;
   double splitterHoleDownstreamRadius;
@@ -143,13 +157,20 @@ class CM1BeamSplitter :
   double splitterHoleUpstreamLength;
   double splitterHoleUpstreamRadius;
 
+  // Overhang on the -X side of the upper part of the holder.
+
   double topOverhangThick;
   double topOverhangWidth;
+
+  // Materials
 
   int holderMaterial;
   int filterCrystalMaterial;
   int splitterCrystalMaterial;
 
+  /// Beam-splitter mode.
+  /// Possible values are 0,1,2, or 3.
+  /// If mode is set to any other integer value, mode 3 will be used.
   int mode;
 
  protected:
