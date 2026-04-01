@@ -138,18 +138,15 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   // v2 = (0.79, 12.09,  7.56)
   //
   // From these points, the normal vector on the plane was constructed, and the
-  // yaw (rotation around Y axis in [1], here: Z axis),
-  // pitch (rotation around X axis in [1], here: Y axis),
-  // and roll (rotation around Z axis in [1], here: X axis)
-  // angles were determined to be 0.80559476 deg, 4.16060316 deg, and -0.02926297 deg,
-  // respectively.
-  // The pivot point for the 3D rotations of the crystal has been determined by trial 
+  // yaw, pitch, and roll angles were determined to be
+  // 0.80559476 deg, 4.16060316 deg, and -0.02926297 deg, respectively.
+  // The pivot point for the 3D rotations of the crystal has been determined by trial
   // and error to reproduce the sample points with +- 0.1 mm precision.
   //
   // The polygonal shape of the crystal is approximated as a rectangle here, assuming 
-  // that the beam hits the center of the crystal. The gap between the pit walls and
-  // the crystal is assumed to be of the same size as for the filter crystal, and the
-  // same on all sides.
+  // that the beam never hits the bare copper areas of the pit. The gap between the
+  // pit walls and the crystal is assumed to be of the same size as for the filter
+  // crystal, and the same on all sides.
   splitterCrystalHeight=Control.EvalDefVar<double>(
     keyName+"SplitterCrystalHeight", 0.72);
   splitterCrystalPitch=Control.EvalVar<double>(
