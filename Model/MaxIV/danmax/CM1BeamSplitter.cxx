@@ -199,7 +199,15 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   return;
 }
 
-void CM1BeamSplitter::calculateSplitterCrystalNormalVector(Geometry::Vec3D &splitterCrystalNormalVector){
+void CM1BeamSplitter::calculateSplitterCrystalNormalVector(
+  Geometry::Vec3D &splitterCrystalNormalVector){
+    /*!
+    Apply the pitch, roll, and yaw rotations to the X axis to obtain the normal vector
+    of the splitter crystal.
+
+    \param splitterCrystalNormalVector :: Vector that determines the orientation of
+    the splitter crystal.
+  */
   splitterCrystalNormalVector = X;
   splitterCrystalNormalVector.rotate(X,splitterCrystalRoll);
   splitterCrystalNormalVector.rotate(Y,splitterCrystalPitch);
@@ -209,6 +217,26 @@ void CM1BeamSplitter::calculateSplitterCrystalNormalVector(Geometry::Vec3D &spli
 void CM1BeamSplitter::updateInternalReferenceVectors(
   Geometry::Vec3D &filterHoleOrigin,Geometry::Vec3D &frontCorner,
   Geometry::Vec3D &holeDir,Geometry::Vec3D &holeX,Geometry::Vec3D &splitterHoleOrigin){
+    /*!
+    Based on the current Origin and coordinate vectors, calculate some reference 
+    vectors (positions and axes).
+    - filterHoleOrigin,splitterHoleOrigin: Origins of the holes.
+      Do not correspond to the crystal positions.
+    - frontCorner: Position at the front of the holder where the flat and tilted 
+      surfaces meet.
+    - holeDir: Main axis of the transmission holes in the holder.
+    - holeX: Symmetry plane of the transmission holes that contains the Z axis.
+
+    \param filterHoleOrigin :: Origin of the filter hole on the front surface of the 
+    holder.
+    \param frontCorner :: Position at the front of the holder where the flat and tilted 
+      surfaces meet.
+    \param holeDir :: Main axis of the transmission holes in the holder.
+    \param holeX :: Symmetry plane of the transmission holes that contains the Z axis.
+      Obtained from X via the same transformation that rotates Y into holeDir.
+    \param splitterHoleOrigin :: Origin of the splitter hole on the imaginary 
+      extension of the front surface of the holder.
+  */
   holeX = X;
   holeX.rotate(Z,-bodyAngle);
   holeDir = Y;
@@ -225,6 +253,17 @@ void CM1BeamSplitter::updateInternalReferenceVectors(
 void CM1BeamSplitter::calculateSplitterCrystalOrigin(const Geometry::Vec3D &holeDir,
   const Geometry::Vec3D &splitterCrystalNormalVector,
   const Geometry::Vec3D &splitterHoleOrigin,Geometry::Vec3D &splitterCrystalOrigin){
+    /*!
+    Based on the current Origin and coordinate vectors and the auxiliary reference 
+    vectors calculated elsewhere, calculate the origin of the splitter crystal that 
+    is needed for positioning the element in modes 2 and 3.
+
+    \param holeDir :: Main axis of the transmission holes in the holder.
+    \param splitterCrystalNormalVector :: Vector that determines the orientation of
+    the splitter crystal.
+    \param splitterHoleOrigin :: Origin of the splitter hole on the imaginary 
+      extension of the front surface of the holder.
+  */
   const Geometry::Line splitterHoleAxis(splitterHoleOrigin,holeDir);
   const Geometry::Plane splitterCrystalNominalPlane(
     0,
@@ -240,18 +279,24 @@ CM1BeamSplitter::createSurfaces()
 {
   ELog::RegMethod RegA("CM1BeamSplitter","createSurfaces");
 
+  // Set up Origin, X, Y, Z, and auxiliary reference vectors for the different modes
+  // of CM1BeamSplitter. This is a multi-step process in which some auxiliary 
+  // functions may be called multiple times. For example, in mode 1:
+  // 
+  //  Calculate reference points
+  //  -> Calculate new origin
+  //  -> Shift origin to new position
+  //  -> Recalculate reference points
+  //  -> ...
   Geometry::Vec3D filterHoleOrigin,frontCorner,holeDir,holeX,
   splitterCrystalNormalVector,splitterCrystalOrigin,splitterHoleOrigin;
 
-  calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
-
   if(mode == 0){
+    calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
     updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
     calculateSplitterCrystalOrigin(
       holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
-  }
-
-  if(mode == 1 || mode == 2){
+  } else if(mode == 1 || mode == 2){
     X.rotate(Z,bodyAngle);
     Y.rotate(Z,bodyAngle);
     updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
@@ -272,9 +317,8 @@ CM1BeamSplitter::createSurfaces()
       calculateSplitterCrystalOrigin(
         holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
     }
-  }
-
-  if(mode == 3){
+  } else {
+    calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
     const Geometry::Vec3D X0 = X;
 
     updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
