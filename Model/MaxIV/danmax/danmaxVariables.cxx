@@ -1640,6 +1640,7 @@ opticsVariables(FuncDataBase& Control,
   name = opticsName+"CM1BeamSplitter";
   Control.addVariable(name+"Mode",1);
   Control.addVariable(name+"YStep",danmaxVar::absY::CM1);
+  Control.addVariable(name+"ZAngle",0.0);
 
   ///////////
 
