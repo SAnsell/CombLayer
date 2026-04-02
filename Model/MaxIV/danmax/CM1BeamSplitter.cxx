@@ -72,7 +72,7 @@ namespace xraySystem
 {
 
 CM1BeamSplitter::CM1BeamSplitter(const std::string& Key) :
-  attachSystem::FixedRotate(Key,3),
+  attachSystem::FixedRotate(Key,2),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::SurfMap(),

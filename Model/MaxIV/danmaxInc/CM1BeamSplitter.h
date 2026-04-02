@@ -96,7 +96,9 @@ namespace xraySystem
   [2] CAD model CM1_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM1_chamber_2026-03-04.STEP
 
   Version history:
-  1.0 - 2026-04-02
+  1.0.1 - 2026-04-02
+    - Set correct number of link points.
+  1.0   - 2026-04-02
 */
 class CM1BeamSplitter :
   public attachSystem::FixedRotate,
