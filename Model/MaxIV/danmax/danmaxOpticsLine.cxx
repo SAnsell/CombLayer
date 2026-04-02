@@ -841,9 +841,6 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   cm1->intersectPorts(System,1,2);
 
-  cm1BeamSplitter->addInsertCell(cm1->getCell("Void"));
-  cm1BeamSplitter->createAll(System,*frontEnd,0);
-
   const constructSystem::portItem& cm1PortDanMAX=cm1->getPort(1);
   const constructSystem::portItem& cm1PortSinCrys=cm1->getPort(2);
 
@@ -882,6 +879,10 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   outerCell=buildZoneSinCrys.createUnit(System,cm1PortSinCrys,"OuterPlate");
   cm1->insertAllInCell(System,outerCell);
+
+  cm1BeamSplitter->addInsertCell(cm1->getCell("Void"));
+  cm1BeamSplitter->createAll(System,*frontEnd,0);
+
   constructSystem::constructUnit(
     System,buildZoneSinCrys,cm1PortSinCrys,"OuterPlate",*valveS1
   );
