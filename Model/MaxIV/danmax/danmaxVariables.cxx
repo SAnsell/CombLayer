@@ -1637,11 +1637,6 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,CM1PortY,0),vSinCrys);
   Control.addVariable(name+"YStep",danmaxVar::absY::CM1-CM1FrontPortLength);
 
-  name = opticsName+"CM1BeamSplitter";
-  Control.addVariable(name+"Mode",1);
-  Control.addVariable(name+"YStep",danmaxVar::absY::CM1);
-  Control.addVariable(name+"ZAngle",0.0);
-
   ///////////
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"ValveS1"); // [30]
@@ -1689,6 +1684,8 @@ opticsVariables(FuncDataBase& Control,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
   FlangeGen.generateMount(Control,name+"Screen",1);
 
+  // TODO: Add a corresponding Control.addVariable("...SINCRYSAngle",) command in a 
+  // top-level class to make the variable available at runtime.
   const double SINCRYSAngleDeg = Control.EvalDefVar<double>(
     beamName+"SINCRYSAngle",sinCrysBranchCenterAngleDeg);
   if(
@@ -1703,6 +1700,24 @@ opticsVariables(FuncDataBase& Control,
   SmallAngleBellowsGenerator smallAngleBellowsGen;
   const double cardanBellowsLength = 18.0; // [30]
   const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
+
+  name = opticsName+"CM1BeamSplitter";
+  int mode = 2;
+  // TODO: Add a corresponding Control.addVariable("...Mode",) command in a 
+  // top-level class to make the variable available at runtime.
+  Control.EvalDefVar<int>(beamName+"Mode",mode); 
+  Control.addVariable(name+"Mode",mode);
+  Control.addVariable(name+"YStep",danmaxVar::absY::CM1);
+  double cm1BeamSplitterZAngle = 0.0;
+  if(mode == 2){
+    // In mode 2, assume that the orientation of the CM1 splitter crystal corresponds
+    // to Bragg scattering at the SINCRYS center angle. The actual relation between 
+    // the crystal-surface angle and the crystal-lattice orientation is neither given 
+    // in the main reference [32], nor is FLUKA capable of simulating Bragg scattering.
+    // Therefore, this is more a cosmetic issue.
+    cm1BeamSplitterZAngle = (SINCRYSAngleDeg-sinCrysBranchCenterAngleDeg)/2.0;
+  }
+  Control.addVariable(name+"ZAngle",cm1BeamSplitterZAngle);
 
   const Geometry::Vec3D SINCRYSBranchCenterVector(
     cos(sinCrysBranchCenterAngle),-sin(sinCrysBranchCenterAngle),0.0);
