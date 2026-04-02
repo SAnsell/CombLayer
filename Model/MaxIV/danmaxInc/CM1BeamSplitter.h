@@ -179,7 +179,7 @@ class CM1BeamSplitter :
     Geometry::Vec3D&);
   void calculateSplitterCrystalNormalVector(Geometry::Vec3D&);
   void calculateSplitterCrystalOrigin(const Geometry::Vec3D&,const Geometry::Vec3D&,
-    const Geometry::Vec3D&,Geometry::Vec3D&);
+    const Geometry::Vec3D&,Geometry::Vec3D&,const Geometry::Vec3D&);
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);

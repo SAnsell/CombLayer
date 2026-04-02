@@ -241,8 +241,7 @@ void CM1BeamSplitter::updateInternalReferenceVectors(
   holeDir = Y;
   holeDir.rotate(Z,-bodyAngle);
 
-  frontCorner = (
-    Origin+X*(-width/2.0+topOverhangWidth+bottomWidth-bottomChamferWidth));
+  frontCorner = X*(-width/2.0+topOverhangWidth+bottomWidth-bottomChamferWidth);
 
   filterHoleOrigin = frontCorner-holeX*filterHoleOffset;
 
@@ -251,7 +250,8 @@ void CM1BeamSplitter::updateInternalReferenceVectors(
 
 void CM1BeamSplitter::calculateSplitterCrystalOrigin(const Geometry::Vec3D &holeDir,
   const Geometry::Vec3D &splitterCrystalNormalVector,
-  const Geometry::Vec3D &splitterHoleOrigin,Geometry::Vec3D &splitterCrystalOrigin){
+  const Geometry::Vec3D &splitterHoleOrigin,Geometry::Vec3D &splitterCrystalOrigin,
+  const Geometry::Vec3D &offset = Geometry::Vec3D(0.0,0.0,0.0)){
     /*!
     Based on the current Origin and coordinate vectors and the auxiliary reference 
     vectors calculated elsewhere, calculate the origin of the splitter crystal that 
@@ -263,10 +263,10 @@ void CM1BeamSplitter::calculateSplitterCrystalOrigin(const Geometry::Vec3D &hole
     \param splitterHoleOrigin :: Origin of the splitter hole on the imaginary 
       extension of the front surface of the holder.
   */
-  const Geometry::Line splitterHoleAxis(splitterHoleOrigin,holeDir);
+  const Geometry::Line splitterHoleAxis(offset+splitterHoleOrigin,holeDir);
   const Geometry::Plane splitterCrystalNominalPlane(
     0,
-    Origin+X*(topOverhangWidth-width/2.0+splitterCrystalPitDepth-splitterCrystalThick),
+    offset+X*(topOverhangWidth-width/2.0+splitterCrystalPitDepth-splitterCrystalThick),
     splitterCrystalNormalVector
   );
   splitterCrystalOrigin = (
@@ -289,39 +289,40 @@ CM1BeamSplitter::createSurfaces()
   //  -> ...
   Geometry::Vec3D filterHoleOrigin,frontCorner,holeDir,holeX,
   splitterCrystalNormalVector,splitterCrystalOrigin,splitterHoleOrigin;
+  Geometry::Vec3D offset(0.0,0.0,0.0);
 
   if(mode == 0){
+    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,
+      splitterHoleOrigin);
     calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
-    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
     calculateSplitterCrystalOrigin(
-      holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+      holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin,
+      Origin);
   } else if(mode == 1 || mode == 2){
     X.rotate(Z,bodyAngle);
     Y.rotate(Z,bodyAngle);
-    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
+    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,
+      splitterHoleOrigin);
     if(mode == 1){
-      Origin = Origin - filterHoleOrigin;
-      updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
+      offset = -filterHoleOrigin;
       calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
       calculateSplitterCrystalOrigin(
-        holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+        holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin,
+        Origin+offset);
     }
     if(mode == 2){
       calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
       calculateSplitterCrystalOrigin(
         holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
-      Origin = Origin - splitterCrystalOrigin;
-      updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
-      calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
-      calculateSplitterCrystalOrigin(
-        holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+      offset = -splitterCrystalOrigin;
+      splitterCrystalOrigin = Origin;
     }
   } else {
+    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,
+      splitterHoleOrigin);
     calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
+
     const Geometry::Vec3D X0 = X;
-
-    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
-
     Geometry::Quaternion q = Geometry::Quaternion::calcQVRot(
       X,splitterCrystalNormalVector,X);
     X = q.rotate(X);
@@ -333,12 +334,16 @@ CM1BeamSplitter::createSurfaces()
     calculateSplitterCrystalOrigin(
       holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
 
-    Origin = Origin - splitterCrystalOrigin;
+    offset = -splitterCrystalOrigin;
 
-    updateInternalReferenceVectors(filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
+    updateInternalReferenceVectors(
+      filterHoleOrigin,frontCorner,holeDir,holeX,splitterHoleOrigin);
     calculateSplitterCrystalOrigin(
-      holeDir,splitterCrystalNormalVector,splitterHoleOrigin,splitterCrystalOrigin);
+      holeDir,splitterCrystalNormalVector,splitterHoleOrigin,
+      splitterCrystalOrigin,Origin+offset);
   }
+
+  Origin = Origin + offset;
 
   if (!isActive("front"))
     {
@@ -352,7 +357,7 @@ CM1BeamSplitter::createSurfaces()
     }
 
   ModelSupport::buildPlane(SMap,buildIndex+11,
-    frontCorner,holeDir);
+    Origin+frontCorner,holeDir);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+21,buildIndex+11,holeDir,
     filterCrystalPitDepth);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+11,holeDir,
@@ -383,13 +388,13 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+14,buildIndex+4,X,
     topOverhangWidth+bottomWidth-width);
   ModelSupport::buildPlane(SMap,buildIndex+33,
-    filterHoleOrigin-holeX*filterCrystalPitSideLength/2.0,holeX);
+    Origin+filterHoleOrigin-holeX*filterCrystalPitSideLength/2.0,holeX);
   ModelSupport::buildPlane(SMap,buildIndex+34,
-    filterHoleOrigin+holeX*filterCrystalPitSideLength/2.0,holeX);
+    Origin+filterHoleOrigin+holeX*filterCrystalPitSideLength/2.0,holeX);
   ModelSupport::buildPlane(SMap,buildIndex+43,
-    filterHoleOrigin-holeX*filterCrystalSideLength/2.0,holeX);
+    Origin+filterHoleOrigin-holeX*filterCrystalSideLength/2.0,holeX);
   ModelSupport::buildPlane(SMap,buildIndex+44,
-    filterHoleOrigin+holeX*filterCrystalSideLength/2.0,holeX);
+    Origin+filterHoleOrigin+holeX*filterCrystalSideLength/2.0,holeX);
 
   ModelSupport::buildPlane(SMap,buildIndex+53,splitterCrystalOrigin,
     splitterCrystalNormalVector);
@@ -415,16 +420,16 @@ CM1BeamSplitter::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+66,Origin+Z*splitterCrystalHeight/2.0,Z);
   ModelSupport::buildPlane(SMap,buildIndex+76,Origin+Z*(-bottomDepth+bottomRoundingRadius),Z);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,filterHoleOrigin,holeDir,
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin+filterHoleOrigin,holeDir,
     filterHoleDownstreamRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,filterHoleOrigin,holeDir,
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin+filterHoleOrigin,holeDir,
     filterHoleUpstreamRadius);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+27,splitterHoleOrigin,holeDir,
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin+splitterHoleOrigin,holeDir,
     splitterHoleDownstreamRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+37,splitterHoleOrigin,holeDir,
+  ModelSupport::buildCylinder(SMap,buildIndex+37,Origin+splitterHoleOrigin,holeDir,
     splitterHoleCenterRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+47,splitterHoleOrigin,holeDir,
+  ModelSupport::buildCylinder(SMap,buildIndex+47,Origin+splitterHoleOrigin,holeDir,
     splitterHoleUpstreamRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+57,
     Origin+X*(-width/2.0+topOverhangWidth+bottomWidth-bottomRoundingRadius)
