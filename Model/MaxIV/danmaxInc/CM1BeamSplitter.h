@@ -29,8 +29,8 @@ namespace xraySystem
 /*!
   \class CM1BeamSplitter
   \author U. Friman-Gayer
-  \version 0.1
-  \date March 2026
+  \version 1.0
+  \date April 2026
   \brief Beam Splitter and High-Pass Filter in CM1
 
   The CM1 beam splitter allows to switch between two operation modes in the
@@ -94,6 +94,9 @@ namespace xraySystem
   References:
   [1] JJ X-RAY, SINCRYS beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
   [2] CAD model CM1_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM1_chamber_2026-03-04.STEP
+
+  Version history:
+  1.0 - 2026-04-02
 */
 class CM1BeamSplitter :
   public attachSystem::FixedRotate,
