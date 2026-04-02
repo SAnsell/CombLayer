@@ -102,6 +102,7 @@
 #include "FlangePlate.h"
 #include "SmallAngleBellows.h"
 #include "WhiteBeamStop.h"
+#include "CM1BeamSplitter.h"
 
 #include "danmaxOpticsLine.h"
 
@@ -134,6 +135,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   valve5(new xraySystem::CylGateValve(newName+"Valve5")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   cm1(new constructSystem::PipeTube(newName+"CM1")),
+  cm1BeamSplitter(new xraySystem::CM1BeamSplitter(newName+"CM1BeamSplitter")),
   valveS1(new xraySystem::CylGateValve(newName+"ValveS1")),
   diamondWindow(new constructSystem::FlangePlate(newName+"DiamondWindow")),
   beamViewerS1(new constructSystem::PipeTube(newName+"BeamViewerS1")),
@@ -235,6 +237,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(valve5);
   OR.addObject(pipeA);
   OR.addObject(cm1);
+  OR.addObject(cm1BeamSplitter);
   OR.addObject(valveS1);
   OR.addObject(diamondWindow);
   OR.addObject(beamViewerS1);
@@ -837,6 +840,9 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   bellowC->createAll(System,cm1->getPort(0),"OuterPlate");
 
   cm1->intersectPorts(System,1,2);
+
+  cm1BeamSplitter->addInsertCell(cm1->getCell("Void"));
+  cm1BeamSplitter->createAll(System,*frontEnd,0);
 
   const constructSystem::portItem& cm1PortDanMAX=cm1->getPort(1);
   const constructSystem::portItem& cm1PortSinCrys=cm1->getPort(2);

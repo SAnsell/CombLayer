@@ -64,6 +64,7 @@ namespace xraySystem
   class TriggerTube;
   class TwinPipe;
   class WhiteBeamStop;
+  class CM1BeamSplitter;
 
 /*!
   \class danmaxOpticsLine
@@ -114,6 +115,7 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::CylGateValve> valve5;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<constructSystem::PipeTube> cm1;
+  std::shared_ptr<xraySystem::CM1BeamSplitter> cm1BeamSplitter;
   // First gate valve in SINCRYS (S) branch
   std::shared_ptr<xraySystem::CylGateValve> valveS1;
   std::shared_ptr<constructSystem::FlangePlate> diamondWindow;

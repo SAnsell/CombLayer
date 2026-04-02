@@ -1637,6 +1637,10 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.generatePort(Control,name+"Port2",Geometry::Vec3D(0,CM1PortY,0),vSinCrys);
   Control.addVariable(name+"YStep",danmaxVar::absY::CM1-CM1FrontPortLength);
 
+  name = opticsName+"CM1BeamSplitter";
+  Control.addVariable(name+"Mode",1);
+  Control.addVariable(name+"YStep",danmaxVar::absY::CM1);
+
   ///////////
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"ValveS1"); // [30]
