@@ -29,7 +29,7 @@ namespace xraySystem
 /*!
   \class CM2Crystal
   \author U. Friman-Gayer
-  \version 0.1
+  \version 1.0
   \date April 2026
   \brief Crystal in CM2 for catching and realigning the beam from CM1.
 
@@ -71,6 +71,10 @@ namespace xraySystem
   References:
   [1] JJ X-RAY, SINCRYS beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
   [2] CAD model CM2_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM2_chamber_2026-03-04.STEP
+
+  Version history:
+  1.0   - 2026-04-07
+    - Compatible with CM1BeamSplitter v1.
 */
 class CM2Crystal :
   public attachSystem::FixedRotate,
