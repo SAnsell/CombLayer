@@ -998,7 +998,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   );
 
   outerCell=buildZoneSinCrys.createUnit(System);
-  for (int i=0; i<1; ++i) {
+  for (int i=0; i<2; ++i) {
     MonteCarlo::Object* OPtr = System.findObject(outerCell-i);
     OPtr->addIntersection(getRule("BackPlateFloorShine"));
   }
