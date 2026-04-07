@@ -76,20 +76,20 @@ namespace xraySystem
   and the corresponding hole in the holder. The origin is at the center of the
   high-pass-filter crystal on its upstream side, i.e. where the beam hits the crystal.
 
-  Mode 2: DanMAX/SINCRYS mode I. The beam passes centrally through the corresponding hole
-  in the holder. The origin is on the upstream side of the beam-splitter crystal where
-  the beam hits the crystal. In order to achieve the desired orientation of the hole,
-  only the yaw angle is modified, and the entire holder is translated. Since the
-  beam-splitter crystal is mounted with a nonzero pitch, roll, and yaw w.r.t. the
-  holder, this means that specularly reflected particles will not travel
-  along the beamline by design.
+  Mode 2: DanMAX/SINCRYS Bragg-reflection mode. The beam passes centrally through the
+  corresponding hole in the holder. The origin is on the upstream side of the
+  beam-splitter crystal where the beam hits the crystal. In order to achieve the
+  desired orientation of the hole, only the yaw angle is modified, and the entire
+  holder is translated. Since the beam-splitter crystal is mounted with a nonzero
+  pitch, roll, and yaw w.r.t. the holder, this means that specularly reflected
+  particles will not travel along the beamline by design.
 
-  Mode 3: DanMAX/SINCRYS mode II. The origin is at the same point as in Mode 2, but the
-  holder is oriented such that the beam axis is in the splitter-crystal plane and the
-  -X axis is the normal axis of the splitter-crystal plane. This means that the pitch,
-  roll, and yaw rotation of the splitter crystal have been compensated. By changing the
-  yaw (ZAngle) of the holder, the specular-reflection angle in the X-Y plane can be set
-  in a straighforward way.
+  Mode 3: DanMAX/SINCRYS specular-reflection mode. The origin is at the same point as
+  in Mode 2, but the holder is oriented such that the beam axis is in the
+  splitter-crystal plane and the -X axis is the normal axis of the splitter-crystal
+  plane. This means that the pitch, roll, and yaw rotation of the splitter crystal have
+  been compensated. By changing the yaw (ZAngle) of the holder, the specular-reflection
+  angle in the X-Y plane can be set in a straighforward way.
 
   References:
   [1] JJ X-RAY, SINCRYS beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
