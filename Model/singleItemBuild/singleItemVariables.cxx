@@ -1025,6 +1025,7 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("CM1BeamSplitterMode", 0);
 
   // CM2Crystal
+  Control.addVariable("CM2CrystalMode", 2);
 
   return;
 }
