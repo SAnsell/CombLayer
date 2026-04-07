@@ -38,6 +38,7 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -127,6 +128,19 @@ CM2Crystal::createSurfaces()
 {
   ELog::RegMethod RegA("CM2Crystal","createSurfaces");
 
+  Geometry::Vec3D crystalNormalVector = Y;
+  crystalNormalVector.rotate(X,crystalRoll);
+  crystalNormalVector.rotate(Y,crystalPitch);
+  crystalNormalVector.rotate(Z,crystalYaw);
+  const Geometry::Vec3D Y0 = Y;
+  Geometry::Quaternion q = Geometry::Quaternion::calcQVRot(
+      Y,crystalNormalVector,Y);
+    X = q.rotate(X);
+    Y = q.rotate(Y);
+    Z = q.rotate(Z);
+
+  crystalNormalVector = Y0;
+
   if (!isActive("front"))
     {
       ModelSupport::buildPlane(SMap,buildIndex+1,
@@ -143,10 +157,6 @@ CM2Crystal::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,buildIndex+11,buildIndex+1,Y,
     crystalPitChannelDepth);
 
-  Geometry::Vec3D crystalNormalVector = Y;
-  crystalNormalVector.rotate(X,crystalRoll);
-  crystalNormalVector.rotate(Y,crystalPitch);
-  crystalNormalVector.rotate(Z,crystalYaw);
   ModelSupport::buildPlane(SMap,buildIndex+21,
     Origin,crystalNormalVector);
   ModelSupport::buildShiftedPlane(SMap,buildIndex+31,buildIndex+21,crystalNormalVector,
