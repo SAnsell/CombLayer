@@ -99,6 +99,15 @@ CM2Crystal::populate(const FuncDataBase& Control)
   topWidth=Control.EvalDefVar<double>(keyName+"Width",2.2);
 
   crystalHeight=Control.EvalDefVar<double>(keyName+"CrystalHeight",0.77);
+  // The pitch, roll, and yaw angle and the pivot point have been determined in the
+  // same way as described in CM1BeamSplitter. Here, the three points sampled 
+  // from the corresponding CAD model [2] were:
+  //
+  // v0 = ( 0.0,   0.110,  0.00)
+  // v1 = ( 0.0,   0.059, -0.81)
+  // v2 = (-1.254, 0.090, -0.81)
+  //
+  // As in CM1BeamSplitter, the crystal shape is approximated as a rectangle.
   crystalPitch=
     Control.EvalDefVar<double>(keyName+"CrystalPitch",-0.04443803)*M_PI/180.0;
   crystalPitChannelDepth=Control.EvalDefVar<double>(
