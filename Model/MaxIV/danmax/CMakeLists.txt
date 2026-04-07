@@ -1,7 +1,7 @@
 set (danmaxSources
-    CM1BeamSplitter.cxx danmaxConnectLine.cxx DANMAX.cxx danmaxFrontEnd.cxx 
-    danmaxOpticsLine.cxx danmaxVariables.cxx MirrorMono.cxx 
-    SqrShield.cxx 
+    CM1BeamSplitter.cxx CM2Crystal.cxx danmaxConnectLine.cxx DANMAX.cxx
+    danmaxFrontEnd.cxx danmaxOpticsLine.cxx danmaxVariables.cxx MirrorMono.cxx
+    SqrShield.cxx
 )
 
 add_library (danmax SHARED
@@ -23,6 +23,7 @@ file(RELATIVE_PATH tarINC
 
 set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/CM1BeamSplitter.cxx
+  ${tarDIR}/CM2Crystal.cxx
   ${tarDIR}/danmaxConnectLine.cxx
   ${tarDIR}/DANMAX.cxx
   ${tarDIR}/danmaxFrontEnd.cxx
@@ -31,6 +32,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MirrorMono.cxx
   ${tarDIR}/SqrShield.cxx
   ${tarINC}/CM1BeamSplitter.h
+  ${tarINC}/CM2Crystal.h
   ${tarINC}/danmaxConnectLine.h
   ${tarINC}/danmaxFrontEnd.h
   ${tarINC}/DANMAX.h
