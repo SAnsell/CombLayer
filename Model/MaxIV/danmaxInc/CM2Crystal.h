@@ -79,6 +79,11 @@ class CM2Crystal :
   int holderMaterial;
   int crystalMaterial;
 
+  /// Crystal mode.
+  /// Possible values are 2 or 3 for compatibility with CM1BeamSplitter.
+  /// If mode is set to any other integer value, mode 2 will be used.
+  int mode;
+
  protected:
   void populate(const FuncDataBase&) override;
   void createSurfaces();

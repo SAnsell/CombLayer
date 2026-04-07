@@ -120,6 +120,8 @@ CM2Crystal::populate(const FuncDataBase& Control)
   holderMaterial=ModelSupport::EvalDefMat(
     Control,keyName+"HolderMaterial","Copper"); // [1]
 
+  mode=Control.EvalDefVar<int>(keyName+"Mode",2);
+
   return;
 }
 
@@ -132,14 +134,17 @@ CM2Crystal::createSurfaces()
   crystalNormalVector.rotate(X,crystalRoll);
   crystalNormalVector.rotate(Y,crystalPitch);
   crystalNormalVector.rotate(Z,crystalYaw);
-  const Geometry::Vec3D Y0 = Y;
-  Geometry::Quaternion q = Geometry::Quaternion::calcQVRot(
-      Y,crystalNormalVector,Y);
-    X = q.rotate(X);
-    Y = q.rotate(Y);
-    Z = q.rotate(Z);
 
-  crystalNormalVector = Y0;
+  if(mode == 3){
+    const Geometry::Vec3D Y0 = Y;
+    Geometry::Quaternion q = Geometry::Quaternion::calcQVRot(
+        Y,crystalNormalVector,Y);
+      X = q.rotate(X);
+      Y = q.rotate(Y);
+      Z = q.rotate(Z);
+
+    crystalNormalVector = Y0;
+  }
 
   if (!isActive("front"))
     {
