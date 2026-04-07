@@ -213,6 +213,7 @@
 #include "cylinderUnit.h"
 #include "WhiteBeamStop.h"
 #include "CM1BeamSplitter.h"
+#include "CM2Crystal.h"
 
 #include "makeSingleItem.h"
 
@@ -246,7 +247,7 @@ makeSingleItem::build(Simulation& System,
   std::set<std::string> validItems
     ({
       "default",
-	"CM1BeamSplitter","Cylinder","WhiteBeamStop",
+	"CM1BeamSplitter","CM2Crystal","Cylinder","WhiteBeamStop",
 	"SmallAngleBellows","CornerPipe","ChopperPit","CylGateValve","SingleChopper",
 	"GateValveCube","GateValveCylinder", "GTFGateValve", "CleaningMagnet",
 	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
@@ -2038,6 +2039,17 @@ makeSingleItem::build(Simulation& System,
 
       beamSplitter->addInsertCell(voidCell);
       beamSplitter->createAll(System,World::masterOrigin(),0);
+
+      return;
+    }
+  
+    if (item == "CM2Crystal") {
+      std::shared_ptr<xraySystem::CM2Crystal> cm2Crystal = 
+        std::make_shared<xraySystem::CM2Crystal>("CM2Crystal");
+      OR.addObject(cm2Crystal);
+
+      cm2Crystal->addInsertCell(voidCell);
+      cm2Crystal->createAll(System,World::masterOrigin(),0);
 
       return;
     }
