@@ -65,6 +65,7 @@ namespace xraySystem
   class TwinPipe;
   class WhiteBeamStop;
   class CM1BeamSplitter;
+  class CM2Crystal;
 
 /*!
   \class danmaxOpticsLine
@@ -127,6 +128,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::Bellows> linearlyGuidedBellowsUpstream;
   std::shared_ptr<xraySystem::SmallAngleBellows> cardanBellowsDownstream;
   std::shared_ptr<constructSystem::PipeTube> cm2;
+  std::shared_ptr<xraySystem::CM2Crystal> cm2Crystal;
   std::shared_ptr<xraySystem::FlangeMount> beamViewerS2Screen;
   std::shared_ptr<constructSystem::GateValveCube> valveS2;
   std::shared_ptr<constructSystem::Bellows> cardanBellowsCM2;

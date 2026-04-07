@@ -1821,19 +1821,31 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",1);
   Control.addVariable(opticsName+"BeamViewerS2ScreenBladeCentreActive",1);
 
+  // Refs. [31] and [33] give the distance from CM1 to CM2 along the beam axis as
+  // 3395.0 mm (explicitly in [33], implicitly in [31]).
+  // However, the center angle of 16.177 deg from Ref. [32], together with the
+  // offset of 980 mm, results in a value of about 3378 mm that creates a visible
+  // discrepancy in the geometry. For this reason, the optical-axis distance is
+  // calculated here instead of taking it from [31] or [33].
+  const double CM2YStep = danmaxVar::absY::CM1
+    +fabs(SINCRYSBranchShift)/tan(SINCRYSAngleDeg*M_PI/180.0)+CM2PortLength;
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
-  Control.addVariable(name+"YStep",
-    danmaxVar::absY::CM1
-    // Refs. [31] and [33] give the distance from CM1 to CM2 along the beam axis as
-    // 3395.0 mm (explicitly in [33], implicitly in [31]).
-    // However, the center angle of 16.177 deg from Ref. [32], together with the
-    // offset of 980 mm, results in a value of about 3378 mm that creates a visible
-    // discrepancy in the geometry. For this reason, the optical-axis distance is
-    // calculated here instead of taking it from [31] or [33].
-    +fabs(SINCRYSBranchShift)/tan(SINCRYSAngleDeg*M_PI/180.0)
-    +CM2PortLength
-  );
+  Control.addVariable(name+"YStep",CM2YStep);
   Control.addVariable(name+"ZAngle",180.0);
+
+  name = opticsName+"CM2Crystal";
+  Control.addVariable(name+"Mode",mode);
+  Control.addVariable(name+"XStep",SINCRYSBranchShift);
+  Control.addVariable(name+"YStep",CM2YStep-CM2PortLength);
+  // By default, CM2Crystal is (in mode 2: almost) in X-Z plane, i.e. it would block
+  // the SINCRYS branch. The yaw rotation by 90 degrees places it (almost) parallel
+  // to the Y-Z plane.
+  double CM2CrystalZAngle = 90.0;
+  if(mode == 2){
+    // See comment on the equivalent variable of CM1BeamSplitter.
+    CM2CrystalZAngle -= (SINCRYSAngleDeg-sinCrysBranchCenterAngleDeg)/2.0;
+  }
+  Control.addVariable(name+"ZAngle",CM2CrystalZAngle);
 
   // Gate valve 2 is a different type than valve 1, which can be seen by comparing 
   // [30] and [34]. Due to its outer shape, assumed that it is similar to 
