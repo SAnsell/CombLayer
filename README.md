@@ -17,7 +17,9 @@ The framework has been successfully used to model real-world, large-scale facili
 
 While the workflow is conceptually similar to [GEANT4](https://cern.ch/geant4) — where reusable component classes define geometry — CombLayer is specifically optimized for **CSG-based simulation engines**, delivering efficient and production-ready output.
 
-👉 See [the documentation](https://github.com/SAnsell/CombLayer/blob/master/Documents/Guide) for a deeper introduction to the design philosophy and usage.
+👉 See [the documentation](https://github.com/SAnsell/CombLayer/blob/master/Documents/Guide) for a deeper introduction to the design philosophy and usage 
+
+and check out our DeepWiki section: [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/SAnsell/CombLayer)
 
 ---
 
