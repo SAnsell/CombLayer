@@ -1,5 +1,5 @@
 set (danmaxSources
-    CM1BeamSplitter.cxx CM2Crystal.cxx danmaxConnectLine.cxx DANMAX.cxx
+    CardanBellowsSINCRYS.cxx CM1BeamSplitter.cxx CM2Crystal.cxx CM2Vessel.cxx danmaxConnectLine.cxx DANMAX.cxx
     danmaxFrontEnd.cxx danmaxOpticsLine.cxx danmaxVariables.cxx MirrorMono.cxx
     SqrShield.cxx
 )
@@ -22,8 +22,10 @@ file(RELATIVE_PATH tarINC
     "${CMAKE_CURRENT_SOURCE_DIR}/../danmaxInc")
 
 set (SRC_LIST ${SRC_LIST}
+  ${tarDIR}/CardanBellowsSINCRYS.cxx
   ${tarDIR}/CM1BeamSplitter.cxx
   ${tarDIR}/CM2Crystal.cxx
+  ${tarDIR}/CM2Vessel.cxx
   ${tarDIR}/danmaxConnectLine.cxx
   ${tarDIR}/DANMAX.cxx
   ${tarDIR}/danmaxFrontEnd.cxx
@@ -31,8 +33,10 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/danmaxVariables.cxx
   ${tarDIR}/MirrorMono.cxx
   ${tarDIR}/SqrShield.cxx
+  ${tarINC}/CardanBellowsSINCRYS.h
   ${tarINC}/CM1BeamSplitter.h
   ${tarINC}/CM2Crystal.h
+  ${tarINC}/CM2Vessel.h
   ${tarINC}/danmaxConnectLine.h
   ${tarINC}/danmaxFrontEnd.h
   ${tarINC}/DANMAX.h

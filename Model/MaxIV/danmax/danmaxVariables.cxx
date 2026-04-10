@@ -1602,8 +1602,6 @@ opticsVariables(FuncDataBase& Control,
   // Refs. [32] and [33] only contain evidence that this must be the fixed angle, but
   // I have not found a reference that states this explicitly.
   const double sinCrysBranchCenterAngleDeg = 16.177;
-  const double sinCrysBranchMinAngleDeg = 15.041;
-  const double sinCrysBranchMaxAngleDeg = 17.313;
   const double sinCrysBranchCenterAngle = sinCrysBranchCenterAngleDeg * M_PI/180.0;
   const Geometry::Vec3D vSinCrys(
     -sin(sinCrysBranchCenterAngle),0.0,-cos(sinCrysBranchCenterAngle));
@@ -1684,67 +1682,29 @@ opticsVariables(FuncDataBase& Control,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
   FlangeGen.generateMount(Control,name+"Screen",1);
 
-  // TODO: Add a corresponding Control.addVariable("...SINCRYSAngle",) command in a 
-  // top-level class to make the variable available at runtime.
-  const double SINCRYSAngleDeg = Control.EvalDefVar<double>(
-    beamName+"SINCRYSAngle",sinCrysBranchCenterAngleDeg);
-  if(
-    SINCRYSAngleDeg < sinCrysBranchMinAngleDeg - Geometry::zeroTol ||
-    SINCRYSAngleDeg > sinCrysBranchMaxAngleDeg + Geometry::zeroTol
-  ){
-    ELog::EM << "SINCRYS branch angle of " + std::to_string(SINCRYSAngleDeg)
-    + " deg is outside the nominal range [ " + std::to_string(sinCrysBranchMinAngleDeg)
-    + " deg, " + std::to_string(sinCrysBranchMaxAngleDeg) + " deg ]" << ELog::endWarn;
-  }
-  const double SINCRYSAngle = SINCRYSAngleDeg*M_PI/180.0;
+  // Create variables for run-time control of
+  // - CM1BeamSplitter
+  // - CardanBellowsUpstream
+  // - CardanBellowsDownstream
+  // - CM2Vessel/CM2
+  // - CM2Crystal
+  Control.addVariable(beamName+"CM1Y", danmaxVar::absY::CM1);
+  const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
+  Control.addVariable(beamName+"CM2PortLength", CM2PortLength);
+  Control.addVariable(beamName+"SINCRYSAngle", sinCrysBranchCenterAngleDeg);
+  Control.addVariable(beamName+"SINCRYSBranchShift", SINCRYSBranchShift); 
+  Control.addVariable(beamName+"SINCRYSCenterAngle", sinCrysBranchCenterAngleDeg); 
+  Control.addVariable(beamName+"SINCRYSCM1ToCardanBellowsUpstream",
+    CM1Port12Length+valve3Length+2.0*beamViewerS1PortLength); 
+
   SmallAngleBellowsGenerator smallAngleBellowsGen;
   const double cardanBellowsLength = 18.0; // [30]
-  const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
 
   name = opticsName+"CM1BeamSplitter";
-  int mode = 2;
-  // TODO: Add a corresponding Control.addVariable("...Mode",) command in a 
-  // top-level class to make the variable available at runtime.
-  Control.EvalDefVar<int>(beamName+"Mode",mode); 
-  Control.addVariable(name+"Mode",mode);
+  Control.addVariable(name+"Mode",2);
   Control.addVariable(name+"YStep",danmaxVar::absY::CM1);
-  double cm1BeamSplitterZAngle = 0.0;
-  if(mode == 2){
-    // In mode 2, assume that the orientation of the CM1 splitter crystal corresponds
-    // to Bragg scattering at the SINCRYS center angle. The actual relation between 
-    // the crystal-surface angle and the crystal-lattice orientation is neither given 
-    // in the main reference [32], nor is FLUKA capable of simulating Bragg scattering.
-    // Therefore, this is more a cosmetic issue.
-    cm1BeamSplitterZAngle = (SINCRYSAngleDeg-sinCrysBranchCenterAngleDeg)/2.0;
-  }
-  Control.addVariable(name+"ZAngle",cm1BeamSplitterZAngle);
-
-  const Geometry::Vec3D SINCRYSBranchCenterVector(
-    cos(sinCrysBranchCenterAngle),-sin(sinCrysBranchCenterAngle),0.0);
-  const Geometry::Vec3D SINCRYSTransportPipeUpstreamJoint = (
-    SINCRYSBranchCenterVector*(
-      CM1Port12Length+valve3Length+2.0*beamViewerS1PortLength+0.5*cardanBellowsLength
-    )
-  );
-  const Geometry::Vec3D SINCRYSTransportPipeDownstreamJoint = (
-    Geometry::Vec3D(
-      -SINCRYSBranchShift/tan(SINCRYSAngle),SINCRYSBranchShift,0.0
-    )
-    -SINCRYSBranchCenterVector*(CM2PortLength+0.5*cardanBellowsLength)
-  );
-  Geometry::Vec3D SINCRYSTransportPipeDirection = (
-    SINCRYSTransportPipeDownstreamJoint-SINCRYSTransportPipeUpstreamJoint
-  );
-  SINCRYSTransportPipeDirection.makeUnit();
-  const double cardanBellowsAngleSign = (
-      SINCRYSTransportPipeDirection*SINCRYSBranchCenterVector).Z()
-      /fabs((SINCRYSTransportPipeDirection*SINCRYSBranchCenterVector).Z()
-    );
-  const double cardanBellowsAngle = cardanBellowsAngleSign*acos(
-    SINCRYSTransportPipeDirection.dotProd(SINCRYSBranchCenterVector));
 
   smallAngleBellowsGen.setLength(cardanBellowsLength);
-  smallAngleBellowsGen.setAngle(cardanBellowsAngle*180.0/M_PI);
   name = opticsName+"CardanBellowsUpstream";
   smallAngleBellowsGen.generateBellows(Control,name);
   BellowGen.generateBellow(Control,opticsName+"BellowBA",10.0); // dummy TODO: fix length
@@ -1821,31 +1781,8 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",1);
   Control.addVariable(opticsName+"BeamViewerS2ScreenBladeCentreActive",1);
 
-  // Refs. [31] and [33] give the distance from CM1 to CM2 along the beam axis as
-  // 3395.0 mm (explicitly in [33], implicitly in [31]).
-  // However, the center angle of 16.177 deg from Ref. [32], together with the
-  // offset of 980 mm, results in a value of about 3378 mm that creates a visible
-  // discrepancy in the geometry. For this reason, the optical-axis distance is
-  // calculated here instead of taking it from [31] or [33].
-  const double CM2YStep = danmaxVar::absY::CM1
-    +fabs(SINCRYSBranchShift)/tan(SINCRYSAngleDeg*M_PI/180.0)+CM2PortLength;
-  Control.addVariable(name+"XStep",SINCRYSBranchShift);
-  Control.addVariable(name+"YStep",CM2YStep);
-  Control.addVariable(name+"ZAngle",180.0);
-
   name = opticsName+"CM2Crystal";
-  Control.addVariable(name+"Mode",mode);
-  Control.addVariable(name+"XStep",SINCRYSBranchShift);
-  Control.addVariable(name+"YStep",CM2YStep-CM2PortLength);
-  // By default, CM2Crystal is (in mode 2: almost) in X-Z plane, i.e. it would block
-  // the SINCRYS branch. The yaw rotation by 90 degrees places it (almost) parallel
-  // to the Y-Z plane.
-  double CM2CrystalZAngle = 90.0;
-  if(mode == 2){
-    // See comment on the equivalent variable of CM1BeamSplitter.
-    CM2CrystalZAngle -= (SINCRYSAngleDeg-sinCrysBranchCenterAngleDeg)/2.0;
-  }
-  Control.addVariable(name+"ZAngle",CM2CrystalZAngle);
+  Control.addVariable(name+"Mode",2);
 
   // Gate valve 2 is a different type than valve 1, which can be seen by comparing 
   // [30] and [34]. Due to its outer shape, assumed that it is similar to 

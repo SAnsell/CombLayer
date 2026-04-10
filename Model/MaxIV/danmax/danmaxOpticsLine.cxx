@@ -102,8 +102,10 @@
 #include "FlangePlate.h"
 #include "SmallAngleBellows.h"
 #include "WhiteBeamStop.h"
+#include "CardanBellowsSINCRYS.h"
 #include "CM1BeamSplitter.h"
 #include "CM2Crystal.h"
+#include "CM2Vessel.h"
 
 #include "danmaxOpticsLine.h"
 
@@ -141,12 +143,12 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   diamondWindow(new constructSystem::FlangePlate(newName+"DiamondWindow")),
   beamViewerS1(new constructSystem::PipeTube(newName+"BeamViewerS1")),
   beamViewerS1Screen(new xraySystem::FlangeMount(newName+"BeamViewerS1Screen")),
-  cardanBellowsUpstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsUpstream")),
+  cardanBellowsUpstream(new xraySystem::CardanBellowsSINCRYS(newName+"CardanBellowsUpstream")),
   bellowBA(new constructSystem::Bellows(newName+"BellowBA")),
   pipeSinCrys(new constructSystem::VacuumPipe(newName+"PipeSinCrys")),
   linearlyGuidedBellowsUpstream(new constructSystem::Bellows(newName+"LinearlyGuidedBellowsUpstream")),
-  cardanBellowsDownstream(new xraySystem::SmallAngleBellows(newName+"CardanBellowsDownstream")),
-  cm2(new constructSystem::PipeTube(newName+"CM2")),
+  cardanBellowsDownstream(new xraySystem::CardanBellowsSINCRYS(newName+"CardanBellowsDownstream")),
+  cm2(new xraySystem::CM2Vessel(newName+"CM2")),
   cm2Crystal(new xraySystem::CM2Crystal(newName+"CM2Crystal")),
   beamViewerS2Screen(new xraySystem::FlangeMount(newName+"BeamViewerS2Screen")),
   valveS2(new constructSystem::GateValveCube(newName+"ValveS2")),
