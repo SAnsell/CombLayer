@@ -73,6 +73,9 @@ namespace xraySystem
   [2] CAD model CM2_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM2_chamber_2026-03-04.STEP
 
   Version history:
+  2.0   - 2026-04-10
+    - Orientation determined by CombLayer variables.
+    - Compatible with CM1BeamSplitter v2.
   1.0   - 2026-04-07
     - Compatible with CM1BeamSplitter v1.
 */
@@ -110,6 +113,11 @@ class CM2Crystal :
   double crystalThick;
   double crystalWidth;
   double crystalYaw;
+
+  double CM1Y;
+  double SINCRYSAngle;
+  double SINCRYSBranchShift;
+  double SINCRYSCenterAngle;
 
   // Materials
 

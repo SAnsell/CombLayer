@@ -129,7 +129,17 @@ CM2Crystal::populate(const FuncDataBase& Control)
   holderMaterial=ModelSupport::EvalDefMat(
     Control,keyName+"HolderMaterial","Copper"); // [1]
 
+  const std::string beamName = "DanMAX";
+  CM1Y = Control.EvalVar<double>(beamName+"CM1Y");
+  SINCRYSAngle = Control.EvalVar<double>(beamName+"SINCRYSAngle")*M_PI/180.0;
+  SINCRYSBranchShift = Control.EvalVar<double>(beamName+"SINCRYSBranchShift");
+  SINCRYSCenterAngle = Control.EvalVar<double>(beamName+"SINCRYSCenterAngle")
+    *M_PI/180.0;
+
   mode=Control.EvalDefVar<int>(keyName+"Mode",2);
+
+  xStep = SINCRYSBranchShift;
+  yStep = (CM1Y+fabs(SINCRYSBranchShift)/tan(SINCRYSAngle));
 
   return;
 }
@@ -138,6 +148,23 @@ void
 CM2Crystal::createSurfaces()
 {
   ELog::RegMethod RegA("CM2Crystal","createSurfaces");
+
+  // By default, CM2Crystal is (in mode 2: almost) in X-Z plane, i.e. it would block
+  // the SINCRYS branch. The yaw rotation by 90 degrees places it (almost) parallel
+  // to the Y-Z plane.
+  double zAngle = M_PI_2;
+  if(mode == 2){
+    // In mode 2, assume that the orientation of the CM1 splitter crystal corresponds
+    // to Bragg scattering at the SINCRYS center angle. The actual relation between 
+    // the crystal-surface angle and the crystal-lattice orientation is neither given 
+    // in the main reference [32], nor is FLUKA capable of simulating Bragg scattering.
+    // Therefore, this is more a cosmetic issue.
+    zAngle -= (SINCRYSAngle-SINCRYSCenterAngle)/2.0;
+  } else if (mode == 3){
+    zAngle += SINCRYSAngle/2.0;
+  }
+  X.rotate(Z,zAngle);
+  Y.rotate(Z,zAngle);
 
   Geometry::Vec3D crystalNormalVector = Y;
   crystalNormalVector.rotate(X,crystalRoll);
