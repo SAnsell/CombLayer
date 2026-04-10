@@ -96,6 +96,8 @@ namespace xraySystem
   [2] CAD model CM1_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM1_chamber_2026-03-04.STEP
 
   Version history:
+  2.0   - 2026-04-10
+    - Orientation determined by CombLayer variables.
   1.0.1 - 2026-04-02
     - Set correct number of link points.
   1.0   - 2026-04-02
@@ -172,6 +174,9 @@ class CM1BeamSplitter :
   int holderMaterial;
   int filterCrystalMaterial;
   int splitterCrystalMaterial;
+
+  double SINCRYSAngle;
+  double SINCRYSCenterAngle;
 
   /// Beam-splitter mode.
   /// Possible values are 0,1,2, or 3.

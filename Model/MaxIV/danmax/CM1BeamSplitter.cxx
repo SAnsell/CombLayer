@@ -193,6 +193,11 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   splitterCrystalMaterial=ModelSupport::EvalDefMat(
     Control,keyName+"SplitterCrystalMaterial","Diamond");
 
+  const std::string beamName = "DanMAX";
+  SINCRYSAngle = Control.EvalVar<double>(beamName+"SINCRYSAngle")*M_PI/180.0;
+  SINCRYSCenterAngle = Control.EvalVar<double>(beamName+"SINCRYSCenterAngle")
+    *M_PI/180.0;
+
   mode=Control.EvalDefVar<int>(keyName+"Mode",0);
 
   return;
@@ -277,6 +282,20 @@ void
 CM1BeamSplitter::createSurfaces()
 {
   ELog::RegMethod RegA("CM1BeamSplitter","createSurfaces");
+
+  double zAngle = 0.0;
+  if(mode == 2){
+    // In mode 2, assume that the orientation of the CM1 splitter crystal corresponds
+    // to Bragg scattering at the SINCRYS center angle. The actual relation between 
+    // the crystal-surface angle and the crystal-lattice orientation is neither given 
+    // in the main reference [32], nor is FLUKA capable of simulating Bragg scattering.
+    // Therefore, this is more a cosmetic issue.
+    zAngle = (SINCRYSAngle-SINCRYSCenterAngle)/2.0;
+  } else if(mode == 3){
+    zAngle = SINCRYSAngle/2.0;
+  }
+  X.rotate(Z,zAngle);
+  Y.rotate(Z,zAngle);
 
   // Set up Origin, X, Y, Z, and auxiliary reference vectors for the different modes
   // of CM1BeamSplitter. This is a multi-step process in which some auxiliary
