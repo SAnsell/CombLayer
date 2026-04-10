@@ -35,6 +35,9 @@ namespace xraySystem
 
   This class has been derived from PipeTube to be able to support some CombLayer 
   variables that are specific to the DanMAX/SINCRYS model.
+
+  Version history:
+  1.0   - 2026-04-10
 */
 class CM2Vessel final:
   public constructSystem::PipeTube
