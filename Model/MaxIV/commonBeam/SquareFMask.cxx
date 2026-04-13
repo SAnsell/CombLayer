@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/SquareFMask.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -69,13 +69,13 @@ SquareFMask::SquareFMask(const std::string& Key) :
   attachSystem::FixedRotate(Key,6),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
-  attachSystem::FrontBackCut()  
+  attachSystem::FrontBackCut()
   /*!
     Default constructor
     \param Key :: Key name for variables
   */
 {}
-  
+
 
 void
 SquareFMask::populate(const FuncDataBase& Control)
@@ -87,7 +87,7 @@ SquareFMask::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("SquareFMask","populate");
 
   FixedRotate::populate(Control);
-  
+
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -119,12 +119,12 @@ SquareFMask::populate(const FuncDataBase& Control)
 
       waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
     }
-  
+
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 
-  
+
   return;
 }
 
@@ -139,7 +139,7 @@ SquareFMask::createSurfaces()
   Geometry::Vec3D APt;  // front
   Geometry::Vec3D MPt;  // mid
   Geometry::Vec3D BPt;  // back
-  
+
 
   // four possibilites : front/ back/ both/ none:
   if (ExternalCut::isActive("front") &&
@@ -148,7 +148,7 @@ SquareFMask::createSurfaces()
       APt=ExternalCut::interPoint("front",Origin,Y);
       BPt=ExternalCut::interPoint("back",Origin,Y);
       length=BPt.Distance(APt);
-    } 
+    }
   else if (ExternalCut::isActive("back"))  // front not active
     {
       BPt=ExternalCut::interPoint("back",Origin,Y);
@@ -173,7 +173,7 @@ SquareFMask::createSurfaces()
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
   MPt=APt+Y*minLength;
-      
+
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
@@ -189,7 +189,7 @@ SquareFMask::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+8,Origin,Y,flangeBInRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+18,Origin,Y,flangeBOutRadius);
 
-  
+
   const double AH2(innerAHeight/2.0);
   const double MH2(innerMinHeight/2.0);
   const double BH2(innerBHeight/2.0);
@@ -198,7 +198,7 @@ SquareFMask::createSurfaces()
   const double BW2(innerBWidth/2.0);
   // Inner Structure (no pipe)
   ModelSupport::buildPlane(SMap,buildIndex+101,MPt,Y);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+103,
 			   APt-X*AW2-Z*AH2,
 			   APt-X*AW2+Z*AH2,
@@ -266,12 +266,12 @@ SquareFMask::createSurfaces()
 			       pipeOrgZ+X*(pipeXWidth/2.0),
 			       X+Z);
     }
-      
+
   return;
 }
 
 void
-SquareFMask::createObjects(Simulation& System) 
+SquareFMask::createObjects(Simulation& System)
   /*!
     Creates the colllimator block
     \param System :: Simuation for object
@@ -310,12 +310,12 @@ SquareFMask::createObjects(Simulation& System)
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-7M -1003 -1004");
 	  CellMap::makeCell("PipeA",System,cellIndex++,waterMat,0.0,HR);
 	  pipeHR[i].addUnion(HR);
-	  
+
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-8M 1003");
 	  CellMap::makeCell("PipeLeft",System,cellIndex++,
 			    waterMat,0.0,HR*topSurfHR);
 	  pipeHR[i].addUnion(HR);
-	  
+
 	  HR=ModelSupport::getHeadRule(SMap,buildIndex,BI,"-9M 1004");
 	  CellMap::makeCell("PipeRight",System,cellIndex++,
 			    waterMat,0.0,HR*topSurfHR);
@@ -362,7 +362,7 @@ SquareFMask::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"11 -101 3 -4 5 -6 (-103:104:-105:106)");
       CellMap::makeCell("FrontColl",System,cellIndex++,mat,0.0,HR);
-      
+
       HR=ModelSupport::getHeadRule
 	(SMap,buildIndex,"101 -12 3 -4 5 -6 (-203:204:-205:206)");
       CellMap::makeCell("BackColl",System,cellIndex++,mat,0.0,HR);
@@ -374,20 +374,23 @@ SquareFMask::createObjects(Simulation& System)
 		    HR*frontSurfHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -8 (-203:204:-205:206)");
+  if (minLength>length-flangeBLength-Geometry::zeroTol)
+    HR*=ModelSupport::getHeadRule(SMap,buildIndex,"(-103:104:-105:106)");
+
   CellMap::makeCell("BackMat",System,cellIndex++,mat,0.0,
 		    HR*backSurfHR);
 
 
-  
+
   // Front flange:
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 7 -17");
   CellMap::makeCell("FrontFlange",System,cellIndex++,
 		    flangeMat,0.0,HR*frontSurfHR);
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 8 -18");
   CellMap::makeCell("BackFlange",System,cellIndex++,
 		    flangeMat,0.0,HR*backSurfHR);
-  
+
   if (flangeAOutRadius>=flangeBOutRadius)
     {
       HR=ModelSupport::getHeadRule
@@ -424,10 +427,10 @@ SquareFMask::createLinks()
 {
   ELog::RegMethod RegA("SquareFMask","createLinks");
 
-  
+
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-  
-  const Geometry::Vec3D Axis[]={-X,X,-Z,Z};  
+
+  const Geometry::Vec3D Axis[]={-X,X,-Z,Z};
   const int surfN((flangeAOutRadius>flangeBOutRadius) ? 17 : 18);
   const double R(std::max(flangeAOutRadius,flangeBOutRadius));
   for(size_t i=0;i<4;i++)
@@ -437,14 +440,14 @@ SquareFMask::createLinks()
     }
   return;
 }
-   
+
 void
 SquareFMask::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
     Generic function to create everything
-    \param System :: Simulation 
+    \param System :: Simulation
     \param FC :: Fixed component to set axis etc
     \param sideIndex :: position of linkpoint
   */
@@ -455,10 +458,10 @@ SquareFMask::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  createLinks(); 
+  createLinks();
   insertObjects(System);
   return;
 }
 
-  
+
 }  // NAMESPACE constructSystem
