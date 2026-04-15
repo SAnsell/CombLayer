@@ -72,7 +72,7 @@ namespace xraySystem
 
 OpticsHutch::OpticsHutch(const std::string& Key) :
   xraySystem::XRayHutchBase(Key),
-  attachSystem::ContainedGroup("Hutch", "WallShineREW", "BackPlateOuter"),
+  attachSystem::ContainedGroup("Hutch", "BackPlateOuter"),
   pSideWall(nullptr)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -228,10 +228,6 @@ OpticsHutch::createSurfaces()
   const Geometry::Plane *pFrontWall = SMap.realPtr<Geometry::Plane>(frontWall.getPrimarySurface());
   ModelSupport::buildShiftedPlane(SMap, buildIndex+501, pFrontWall, wallShineThick);
   ModelSupport::buildShiftedPlane(SMap, buildIndex+503, buildIndex+33, X, wallShineLength);
-
-  // Wall shine along the ratchet-end wall outside OH
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+502, pFrontWall, -wallShineOutLength);
-  ModelSupport::buildShiftedPlane(SMap, buildIndex+504, buildIndex+33, X, -wallShineOutThick);
 
   // Roof shine along the ring side wall
   ModelSupport::buildShiftedPlane(SMap, buildIndex+603, pSideWall, roofShineThick);
