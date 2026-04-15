@@ -63,6 +63,7 @@
 #include "portSet.h"
 #include "Importance.h"
 #include "Object.h"
+#include "portItem.h"
 
 #include "VacuumBox.h"
 
@@ -457,6 +458,53 @@ VacuumBox::createPorts(Simulation& System)
 }
 
 void
+VacuumBox::insertMainInCell(Simulation& System, const int CN) const
+  /*!
+    Insert VacuumBox (but not its ports) into a cell
+    \param outerObj :: Cell to insert
+   */
+{
+  ELog::RegMethod RegA("VacuumBox","insertMainCell[Object]");
+
+  MonteCarlo::Object* outerObj=System.findObjectThrow(CN,"CN");
+  outerObj->addIntersection(outerSurf.complement());
+
+  ContainedComp::insertInCell(*outerObj);
+
+  return;
+}
+
+void
+VacuumBox::insertMainInCell(Simulation& System,
+			   const std::vector<int>& cellVec) const
+  /*!
+    Insert VacuumBox (but not its ports) into the list of cells
+    \param outerObj :: Cell to insert
+   */
+{
+  for (const auto cell : cellVec)
+    insertMainInCell(System,cell);
+
+  return;
+}
+
+void
+VacuumBox::insertPortInCell(Simulation& System,
+			    const size_t index,
+			    const int cellN) const
+  /*!
+    Insert ports (but not the main box part) into the cell
+    \param outerObj :: Cell to insert
+   */
+{
+
+  PSet.getPort(index).insertInCell(System,cellN);
+
+  return;
+}
+
+
+void
 VacuumBox::insertInCell(MonteCarlo::Object& outerObj) const
   /*!
     Insert both VacuumBox and its ports in a cell
@@ -482,10 +530,7 @@ VacuumBox::insertInCell(Simulation& System,
 {
   ELog::RegMethod RegA("VacuumBox","insertInCell[System,CN]");
 
-  MonteCarlo::Object* outerObj=System.findObjectThrow(CN,"CN");
-  outerObj->addIntersection(outerSurf.complement());
-
-  ContainedComp::insertInCell(*outerObj);
+  insertMainInCell(System,CN);
   PSet.insertAllInCell(System,CN);
 
   return;
