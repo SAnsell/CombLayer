@@ -927,12 +927,31 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   cardanBellowsDownstream->insertInCell(System,outerCell);
 
   cm2->getPort(2).insertInCell(System,outerCell);
-  cm2->insertAllInCell(
-    System,buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate"));
+  outerCell=buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate");
+  this->setCell("OuterVoid", outerCell);
+
+  /// split for FLUKA
+  const constructSystem::portItem& VP2=cm2->getPort(2);
+  const constructSystem::portItem& VP3=cm2->getPort(3);
+  const constructSystem::portItem& VP4=cm2->getPort(4);
+
+  const Geometry::Vec3D  Axis23=cm2->getY()*(VP2.getY()+VP3.getY());
+  const Geometry::Vec3D  Axis24=cm2->getY()*(VP2.getY()+VP4.getY());
+  this->splitObjectAbsolute(System,1501,outerCell,VP4.getCentre(),Axis24);
+  this->splitObjectAbsolute(System,1502,outerCell,VP3.getCentre(),Axis23);
+
+  cm2->insertMainInCell(System,getCells("OuterVoid"));
+  cm2->insertPortInCell(System,3,getCell("OuterVoid",0));
+  cm2->insertPortInCell(System,1,getCell("OuterVoid",1));
+  cm2->insertPortInCell(System,4,getCell("OuterVoid",1));
+  cm2->insertPortInCell(System,0,getCell("OuterVoid",2));
+  cm2->insertPortInCell(System,2,getCell("OuterVoid",2));
+  ////////////////////
 
   constructSystem::constructUnit(
     System,buildZoneSinCrys,cm2->getPort(1),"OuterPlate",*valveS2
   );
+
   constructSystem::constructUnit(
     System,buildZoneSinCrys,*valveS2,"back",*cardanBellowsCM2
   );
