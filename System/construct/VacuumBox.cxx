@@ -375,15 +375,15 @@ VacuumBox::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -211 217 -227");
   CellMap::makeCell("BFlangeVoid",System,cellIndex++,0,0.0,HR);
 
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 13 -14 15 -16 127");
+  CellMap::makeCell("AFlangeOuterVoid",System,cellIndex++,0,0.0,HR*FPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16");
-  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 13 -14 15 -16 227");
+  CellMap::makeCell("BFlangeOuterVoid",System,cellIndex++,0,0.0,HR*BPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 -127");
-  addOuterUnionSurf(HR*FPortHR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"13 -14 15 -16");
+  addOuterSurf(HR*FPortHR*BPortHR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"12 -227");
-  addOuterUnionSurf(HR*BPortHR);
   return;
 }
 
