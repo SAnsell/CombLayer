@@ -917,8 +917,21 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   beamViewerS1Screen->createAll(System,beamViewerS1->getPort(2),"#InnerPlate");
 
   outerCell=buildZoneDanMAX.createUnit(System,*bellowBA,"back");
-  cm1->insertAllInCell(System,outerCell);
-  bellowBA->insertAllInCell(System,outerCell);
+  this->setCell("OuterVoid", outerCell);
+
+  this->splitObjectAbsolute(System,1701,outerCell,cm1->getCentre(),X);
+
+  attachSystem::addToInsertSurfCtrl(System,getCells("OuterVoid"),cm1->getCC("Main"));
+  attachSystem::addToInsertSurfCtrl(System,getCells("OuterVoid"),cm1->getCC("FlangeA"));
+  attachSystem::addToInsertSurfCtrl(System,getCells("OuterVoid"),cm1->getCC("FlangeB"));
+
+  attachSystem::addToInsertSurfCtrl(System,getCell("OuterVoid",1),cm1->getPort(0));
+  attachSystem::addToInsertSurfCtrl(System,getCells("OuterVoid"), cm1->getPort(1));
+  attachSystem::addToInsertSurfCtrl(System,getCell("OuterVoid",0),cm1->getPort(2));
+
+  bellowBA->insertAllInCell(System,getCell("OuterVoid",0));
+  bellowBA->insertAllInCell(System,getCell("OuterVoid",1));
+
   valveS1->insertInCell(System,outerCell);
   bellowBA->insertAllInCell(System,valveS1->getCell("LowSpace"));
 
