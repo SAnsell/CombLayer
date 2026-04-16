@@ -626,19 +626,26 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
   int outerCell=buildZoneDanMAX.createUnit(System,*mlmVessel,"back");
   this->setCell("OuterVoid", outerCell);
 
+  const constructSystem::portItem& VP0=mlmVessel->getPort(0);
   const constructSystem::portItem& VP2=mlmVessel->getPort(2);
   const constructSystem::portItem& VP3=mlmVessel->getPort(3);
   const constructSystem::portItem& VP4=mlmVessel->getPort(4);
 
-  this->splitObjectAbsolute(System,1602,outerCell,(VP3.getCentre()+VP4.getCentre())/2.0,Y);
-  this->splitObjectAbsolute(System,1601,outerCell,(VP2.getCentre()+VP4.getCentre())/2.0,Y);
+  const std::vector<int>& v1601 =
+    this->splitObjectAbsolute(System,1601,outerCell,(VP3.getCentre()+VP4.getCentre())/2.0,Y);
+  const std::vector<int>& v1602 =
+    this->splitObjectAbsolute(System,1602,outerCell,VP0.getCentre()-X*(20),X);
+  const std::vector<int>& v1603 =
+    this->splitObjectAbsolute(System,1603,outerCell,(VP2.getCentre()+VP4.getCentre())/2.0,Y);
+  const std::vector<int>& v1604 =
+    this->splitObjectAbsolute(System,1604,v1602[1],(VP2.getCentre()+VP4.getCentre())/2.0,Y);
 
   mlmVessel->insertMainInCell(System,getCells("OuterVoid"));
-  mlmVessel->insertPortInCell(System,0,getCell("OuterVoid",5));
-  mlmVessel->insertPortInCell(System,1,getCell("OuterVoid",0));
+  mlmVessel->insertPortInCell(System,0,v1604[1]);
+  mlmVessel->insertPortInCell(System,1,v1602[1]);
   mlmVessel->insertPortInCell(System,2,getCell("OuterVoid",0));
-  mlmVessel->insertPortInCell(System,3,getCell("OuterVoid",4));
-  mlmVessel->insertPortInCell(System,4,getCell("OuterVoid",5));
+  mlmVessel->insertPortInCell(System,3,v1601[1]);
+  mlmVessel->insertPortInCell(System,4,v1603[1]);
 
   MLM->addInsertCell(mlmVessel->getCell("Void"));
   MLM->createAll(System,*mlmVessel,0);
