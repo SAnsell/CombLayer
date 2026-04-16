@@ -977,10 +977,10 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   cm2->insertMainInCell(System,getCells("OuterVoid"));
   cm2->insertPortInCell(System,3,getCell("OuterVoid",0));
-  cm2->insertPortInCell(System,1,getCell("OuterVoid",1));
-  cm2->insertPortInCell(System,4,getCell("OuterVoid",1));
-  cm2->insertPortInCell(System,0,getCell("OuterVoid",2));
-  cm2->insertPortInCell(System,2,getCell("OuterVoid",2));
+  cm2->insertPortInCell(System,1,getCell("OuterVoid",2));
+  cm2->insertPortInCell(System,4,getCell("OuterVoid",2));
+  cm2->insertPortInCell(System,0,getCell("OuterVoid",3));
+  cm2->insertPortInCell(System,2,getCell("OuterVoid",3));
   ////////////////////
 
   constructSystem::constructUnit(
