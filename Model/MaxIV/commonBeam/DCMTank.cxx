@@ -59,7 +59,10 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "ExternalCut.h"
+#include "portSet.h"
 #include "portItem.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "DCMTank.h"
 
@@ -72,7 +75,8 @@ DCMTank::DCMTank(const std::string& Key) :
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),
-  centreOrigin(0),delayPortBuild(0)
+  centreOrigin(0),
+  PSet(*this),delayPortBuild(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -161,26 +165,6 @@ DCMTank::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
-  const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
-  const std::string portBase=keyName+"Port";
-  for(size_t i=0;i<NPorts;i++)
-    {
-      const std::string portName=portBase+std::to_string(i);
-      constructSystem::portItem windowPort(portBase,portName);
-      windowPort.populate(Control);
-
-      const Geometry::Vec3D Centre=
-	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
-      const Geometry::Vec3D Axis=
-	Control.EvalTail<Geometry::Vec3D>(portName,portBase,"Axis");
-
-      PCentre.push_back(Centre);
-      PAxis.push_back(Axis);
-      Ports.push_back(windowPort);
-    }
-
-  outerSize=Control.EvalDefVar<double>(keyName+"OuterSize",voidRadius+20.0);
-
   return;
 }
 
@@ -218,11 +202,6 @@ DCMTank::createSurfaces()
 	      std::abs(portBZStep)+flangeBRadius)+0.01);
   // mid layer divider
   ModelSupport::buildPlane(SMap,buildIndex+1000,Origin,Y);
-
-  ModelSupport::buildPlane(SMap,buildIndex+1003,Origin-X*outerSize,X);
-  ModelSupport::buildPlane(SMap,buildIndex+1004,Origin+X*outerSize,X);
-  ModelSupport::buildPlane(SMap,buildIndex+1005,Origin-Z*outerSize,Z);
-  ModelSupport::buildPlane(SMap,buildIndex+1006,Origin+Z*outerSize,Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+1013,Origin-X*maxPortWidth,X);
   ModelSupport::buildPlane(SMap,buildIndex+1014,Origin+X*maxPortWidth,X);
@@ -290,20 +269,13 @@ DCMTank::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 5 (-6:-108) -7");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-17 6 -118 108 (507:1000) (607:-1000)");
-  CellMap::makeCell("TopPlate",System,cellIndex++,wallMat,0.0,HR);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				" 5 (-6:-108) 7 -17 (507:1000) (607:-1000)");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex," (5 -6 7 -17 : -17 6 -118 108) (507:1000) (607:-1000)");
   CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14  -5 15");
   CellMap::makeCell("BasePlate",System,cellIndex++,wallMat,0.0,HR);
 
   // Front/Back port
-
-  // PORTS:
   // front port
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1000 (7:108) -507");
   CellMap::makeCell("PortAVoid",System,cellIndex++,voidMat,0.0,HR*FPortHR);
@@ -334,37 +306,15 @@ DCMTank::createObjects(Simulation& System)
 
   // OUTER VOID SPACE
   const HeadRule fbCut=FPortHR*BPortHR;
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"527 1013 -1014 5 -1015 (17:118) -1000");
-  CellMap::makeCell("OuterFrontVoid",System,cellIndex++,0,0.0,HR*FPortHR);
 
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"627 1013 -1014 5 -1015 (17:118) 1000");
-  CellMap::makeCell("OuterBackVoid",System,cellIndex++,0,0.0,HR*BPortHR);
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1003 -1013 5 -1015 (17:118)");
-  CellMap::makeCell("OuterLeftVoid",System,cellIndex++,0,0.0,HR*fbCut);
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"-1004 1014 5 -1015 (17:118)");
-  CellMap::makeCell("OuterRightVoid",System,cellIndex++,0,0.0,HR*fbCut);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-				"1003 -1004 118 1015 -1006");
-  CellMap::makeCell("OuterTopVoid",System,cellIndex++,0,0.0,HR*fbCut);
-
-  HR=ModelSupport::getHeadRule
-    (SMap,buildIndex,"1003 -1004 -5 15 (-11:12:-13:14)");
-  CellMap::makeCell("OuterBasePlateVoid",System,cellIndex++,0,0.0,HR*fbCut);
-
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -15  1005");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-118 15 -5 (-11:12:-13:14)");
   CellMap::makeCell("OuterBaseVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
   // Main exclusion box
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 1005 -1006");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,
+			       "15 -118 (-5:-17) : (-527 (7:108) -1000) : (-627 (7:108) 1000)");
 
-  addOuterSurf(HR*fbCut);
+  addOuterSurf(HR);//*fbCut);
 
   return;
 }
@@ -398,24 +348,63 @@ DCMTank::createPorts(Simulation& System)
 {
   ELog::RegMethod RegA("DCMTank","createPorts");
 
-  MonteCarlo::Object* wallObject=CellMap::getCellObject(System,"Wall");
-  MonteCarlo::Object* roofObject=CellMap::getCellObject(System,"TopPlate");
-  const std::set<MonteCarlo::Object*> wall {wallObject, roofObject};
+  MonteCarlo::Object* insertObj=
+    this->getCellObject(System,"Wall");
 
-  const HeadRule innerWall=ModelSupport::getHeadRule(SMap,buildIndex," 7 : 108 ");
-  const HeadRule outerWall=ModelSupport::getHeadRule(SMap,buildIndex," 17 : 118  ");
+  const HeadRule innerHR=ModelSupport::getHeadRule(SMap,buildIndex," 7 : 108 ");
+  const HeadRule outerHR=ModelSupport::getHeadRule(SMap,buildIndex," 17 : 118 ");
 
-  for(size_t i=0;i<Ports.size();i++)
-    {
-      for(const int CN : portCells)
-	Ports[i].addOuterCell(CN);
-      Ports[i].addInsertCell(CellMap::getCell("OuterRightVoid"));
-      Ports[i].addInsertCell(CellMap::getCell("OuterLeftVoid"));
-      Ports[i].addInsertCell(CellMap::getCell("OuterTopVoid"));
-      Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
-      Ports[i].constructTrack(System,wall,innerWall,outerWall);
-      Ports[i].insertObjects(System);
-    }
+  for(const auto CN : insertCells)
+    PSet.addInsertPortCells(CN);
+
+  PSet.createPorts(System,insertObj,innerHR,outerHR);
+
+  return;
+}
+
+void
+DCMTank::insertMainInCell(Simulation& System, const int CN) const
+  /*!
+    Insert DCMTank (but not its ports) into a cell
+    \param outerObj :: Cell to insert
+   */
+{
+  ELog::RegMethod RegA("DCMTank","insertMainCell[Object]");
+
+  MonteCarlo::Object* outerObj=System.findObjectThrow(CN,"CN");
+  outerObj->addIntersection(outerSurf.complement());
+
+  ContainedComp::insertInCell(*outerObj);
+
+  return;
+}
+
+void
+DCMTank::insertMainInCell(Simulation& System,
+			  const std::vector<int>& cellVec) const
+  /*!
+    Insert DCMTank (but not its ports) into the list of cells
+    \param outerObj :: Cell to insert
+   */
+{
+  for (const auto cell : cellVec)
+    insertMainInCell(System,cell);
+
+  return;
+}
+
+void
+DCMTank::insertPortInCell(Simulation& System,
+			    const size_t index,
+			    const int cellN) const
+  /*!
+    Insert ports (but not the main box part) into the cell
+    \param outerObj :: Cell to insert
+   */
+{
+
+  PSet.getPort(index).insertInCell(System,cellN);
+
   return;
 }
 

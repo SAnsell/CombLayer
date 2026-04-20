@@ -595,7 +595,14 @@ danmaxOpticsLine::constructHDCM(Simulation& System,
   bellowE->createAll(System,*hdcmVessel,"front");
   bellowE->insertAllInCell(System,buildZoneDanMAX.createUnit(System,*bellowE,"front"));
 
-  hdcmVessel->insertInCell(System,buildZoneDanMAX.createUnit(System,*hdcmVessel,"back"));
+  int outerCell=buildZoneDanMAX.createUnit(System,*hdcmVessel,"back");
+  hdcmVessel->insertMainInCell(System,outerCell);
+
+  hdcmVessel->insertPortInCell(System,0,outerCell);
+  hdcmVessel->insertPortInCell(System,1,outerCell);
+  hdcmVessel->insertPortInCell(System,2,outerCell);
+  hdcmVessel->insertPortInCell(System,3,outerCell);
+  hdcmVessel->insertPortInCell(System,4,outerCell);
 
   mbXstals->addInsertCell(hdcmVessel->getCell("Void"));
   mbXstals->createAll(System,*hdcmVessel,0);
