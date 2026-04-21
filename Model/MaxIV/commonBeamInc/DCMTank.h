@@ -26,6 +26,7 @@ class Simulation;
 
 namespace constructSystem
 {
+  class portItem;
   class portSet;
 }
 
@@ -110,6 +111,8 @@ class DCMTank :
 
   /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
+
+  const portItem& getPort(const size_t index) const {return PSet.getPort(index);};
 
   virtual void insertMainInCell(Simulation&,const int) const;
   virtual void insertMainInCell(Simulation&,const std::vector<int>&) const;

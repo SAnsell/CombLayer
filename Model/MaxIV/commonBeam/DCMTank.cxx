@@ -63,6 +63,12 @@
 #include "portItem.h"
 #include "Importance.h"
 #include "Object.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "surfEqual.h"
+
 
 #include "DCMTank.h"
 
@@ -269,7 +275,13 @@ DCMTank::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex," 5 (-6:-108) -7");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," (5 -6 7 -17 : -17 6 -118 108) (507:1000) (607:-1000)");
+  const Geometry::Surface* cyl507 = SMap.realPtr<Geometry::Surface>(buildIndex+507);
+  const Geometry::Surface* cyl607 = SMap.realPtr<Geometry::Surface>(buildIndex+607);
+
+  HR=ModelSupport::cmpSurfaces(cyl507, cyl607) ?
+    ModelSupport::getHeadRule(SMap,buildIndex," (5 -6 7 -17 : -17 6 -118 108) 507") :
+    ModelSupport::getHeadRule(SMap,buildIndex," (5 -6 7 -17 : -17 6 -118 108) (507:1000) (607:-1000)");
+
   CellMap::makeCell("Wall",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14  -5 15");
@@ -311,8 +323,13 @@ DCMTank::createObjects(Simulation& System)
   CellMap::makeCell("OuterBaseVoid",System,cellIndex++,0,0.0,HR*fbCut);
 
   // Main exclusion box
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,
-			       "15 -118 (-5:-17) : (-527 (7:108) -1000) : (-627 (7:108) 1000)");
+  const Geometry::Surface* cyl527 = SMap.realPtr<Geometry::Surface>(buildIndex+527);
+  const Geometry::Surface* cyl627 = SMap.realPtr<Geometry::Surface>(buildIndex+627);
+
+  HR=ModelSupport::cmpSurfaces(cyl527, cyl627) ?
+    ModelSupport::getHeadRule(SMap,buildIndex,"15 -118 (-5:-17) : -527 (7:108) ") :
+    ModelSupport::getHeadRule(SMap,buildIndex,
+	         "15 -118 (-5:-17) : (-527 (7:108) -1000) : (-627 (7:108) 1000)");
 
   addOuterSurf(HR);//*fbCut);
 
