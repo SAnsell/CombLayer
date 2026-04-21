@@ -615,11 +615,11 @@ danmaxOpticsLine::constructHDCM(Simulation& System,
 
   hdcmVessel->insertMainInCell(System,getCells("OuterVoid"));
 
-  hdcmVessel->insertPortInCell(System,0,getCell("OuterVoid",4));
-  hdcmVessel->insertPortInCell(System,1,getCell("OuterVoid",6));
-  hdcmVessel->insertPortInCell(System,2,getCell("OuterVoid",5));
+  hdcmVessel->insertPortInCell(System,0,getCell("OuterVoid",5));
+  hdcmVessel->insertPortInCell(System,1,getCell("OuterVoid",7));
+  hdcmVessel->insertPortInCell(System,2,getCell("OuterVoid",6));
   hdcmVessel->insertPortInCell(System,3,outerCell);
-  hdcmVessel->insertPortInCell(System,4,getCell("OuterVoid",7));
+  hdcmVessel->insertPortInCell(System,4,getCell("OuterVoid",8));
 
   mbXstals->addInsertCell(hdcmVessel->getCell("Void"));
   mbXstals->createAll(System,*hdcmVessel,0);
@@ -967,13 +967,20 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   );
 
   cm2->setPortRotation(4,Geometry::Vec3D(1,0,0));
+  cm2->setOuterVoid();
   cm2->createAll(System,*frontEnd,0);
   cm2->intersectPorts(System,0,2);
+
+  const constructSystem::portItem& VP1=cm2->getPort(1);
+  const constructSystem::portItem& VP2=cm2->getPort(2);
+  const constructSystem::portItem& VP3=cm2->getPort(3);
+  const constructSystem::portItem& VP4=cm2->getPort(4);
+
   beamViewerS2Screen->addInsertCell("Body",cm2->getCell("Void"));
   beamViewerS2Screen->addInsertCell("Blade",cm2->getCell("Void"));
-  beamViewerS2Screen->addInsertCell("Body",cm2->getPort(2).getCell("Void"));
+  beamViewerS2Screen->addInsertCell("Body",VP2.getCell("Void"));
   // beamViewerS2Screen->setBladeCentre(cm2->getLinkPt(0));
-  beamViewerS2Screen->createAll(System,cm2->getPort(2),"#InnerPlate");
+  beamViewerS2Screen->createAll(System,VP2,"#InnerPlate");
 
   cardanBellowsDownstream->createAll(System,cm2->getPort(0),"OuterPlate");
   linearlyGuidedBellowsUpstream->setBack(*pipeSinCrys,"back");
@@ -985,30 +992,38 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   outerCell = buildZoneSinCrys.createUnit(System,*cardanBellowsDownstream,"front");
   cardanBellowsDownstream->insertInCell(System,outerCell);
 
-  cm2->getPort(2).insertInCell(System,outerCell);
-  outerCell=buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate");
+  VP2.insertInCell(System,outerCell);
+  outerCell=buildZoneSinCrys.createUnit(System,VP1,"OuterPlate");
   this->setCell("OuterVoid", outerCell);
 
   /// split for FLUKA
-  const constructSystem::portItem& VP2=cm2->getPort(2);
-  const constructSystem::portItem& VP3=cm2->getPort(3);
-  const constructSystem::portItem& VP4=cm2->getPort(4);
 
   const Geometry::Vec3D  Axis23=cm2->getY()*(VP2.getY()+VP3.getY());
+  const Geometry::Vec3D  Axis14=cm2->getY()*(VP1.getY()+VP4.getY());
   const Geometry::Vec3D  Axis24=cm2->getY()*(VP2.getY()+VP4.getY());
-  this->splitObjectAbsolute(System,1501,outerCell,VP4.getCentre(),Axis24);
+  const std::vector<int>& v1501 =
+    this->splitObjectAbsolute(System,1501,outerCell,VP4.getCentre(),Axis24);
   this->splitObjectAbsolute(System,1502,outerCell,VP3.getCentre(),Axis23);
+  this->splitObjectAbsolute(System,1503,v1501[1],VP4.getCentre(),Axis14);
 
   cm2->insertMainInCell(System,getCells("OuterVoid"));
   cm2->insertPortInCell(System,3,getCell("OuterVoid",0));
-  cm2->insertPortInCell(System,1,getCell("OuterVoid",2));
+  cm2->insertPortInCell(System,1,getCell("OuterVoid",4));
   cm2->insertPortInCell(System,4,getCell("OuterVoid",2));
   cm2->insertPortInCell(System,0,getCell("OuterVoid",3));
   cm2->insertPortInCell(System,2,getCell("OuterVoid",3));
+
+  const MonteCarlo::Object* VP3flange = VP3.getCellObject(System, "Flange");
+  MonteCarlo::Object* cm2OuterVoid = cm2->getCellObject(System,"OuterVoid");
+
+  if (VP3flange && cm2OuterVoid) {
+    HeadRule complement = VP3flange->getHeadRule().complement();
+    cm2OuterVoid->addIntersection(complement);
+  }
   ////////////////////
 
   constructSystem::constructUnit(
-    System,buildZoneSinCrys,cm2->getPort(1),"OuterPlate",*valveS2
+    System,buildZoneSinCrys,VP1,"OuterPlate",*valveS2
   );
 
   constructSystem::constructUnit(
