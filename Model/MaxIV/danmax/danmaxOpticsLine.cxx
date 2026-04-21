@@ -93,7 +93,6 @@
 #include "MonoShutterR3.h"
 #include "MonoSlitsJJ.h"
 #include "BeamPair.h"
-#include "DCMTank.h"
 #include "MonoBlockXstals.h"
 #include "MLMono.h"
 #include "generalConstruct.h"
@@ -102,6 +101,7 @@
 #include "FlangePlate.h"
 #include "SmallAngleBellows.h"
 #include "WhiteBeamStop.h"
+#include "DCMTank.h"
 
 #include "danmaxOpticsLine.h"
 
@@ -596,13 +596,30 @@ danmaxOpticsLine::constructHDCM(Simulation& System,
   bellowE->insertAllInCell(System,buildZoneDanMAX.createUnit(System,*bellowE,"front"));
 
   int outerCell=buildZoneDanMAX.createUnit(System,*hdcmVessel,"back");
-  hdcmVessel->insertMainInCell(System,outerCell);
+  this->setCell("OuterVoid", outerCell);
 
-  hdcmVessel->insertPortInCell(System,0,outerCell);
-  hdcmVessel->insertPortInCell(System,1,outerCell);
-  hdcmVessel->insertPortInCell(System,2,outerCell);
+  const constructSystem::portItem& VP0=hdcmVessel->getPort(0);
+  const constructSystem::portItem& VP1=hdcmVessel->getPort(1);
+  const constructSystem::portItem& VP3=hdcmVessel->getPort(3);
+  const constructSystem::portItem& VP4=hdcmVessel->getPort(4);
+
+  this->splitObjectAbsolute(System,1801,outerCell,VP0.getCentre()+Z*12,Z);
+
+  const Geometry::Vec3D  Axis14=hdcmVessel->getZ()*(VP1.getY()+VP4.getY());
+  const std::vector<int>& v14 =
+    this->splitObjectAbsolute(System,1802,outerCell,(VP1.getCentre()+VP4.getCentre())/2,Axis14);
+
+  const Geometry::Vec3D  Axis13=hdcmVessel->getZ()*(VP1.getY()+VP3.getY());
+  this->splitObjectAbsolute(System,1803,outerCell,(VP1.getCentre()+VP3.getCentre())/2,Axis13);
+  this->splitObjectAbsolute(System,1804,v14[1],(VP1.getCentre()+VP3.getCentre())/2,Axis13);
+
+  hdcmVessel->insertMainInCell(System,getCells("OuterVoid"));
+
+  hdcmVessel->insertPortInCell(System,0,getCell("OuterVoid",4));
+  hdcmVessel->insertPortInCell(System,1,getCell("OuterVoid",6));
+  hdcmVessel->insertPortInCell(System,2,getCell("OuterVoid",5));
   hdcmVessel->insertPortInCell(System,3,outerCell);
-  hdcmVessel->insertPortInCell(System,4,outerCell);
+  hdcmVessel->insertPortInCell(System,4,getCell("OuterVoid",7));
 
   mbXstals->addInsertCell(hdcmVessel->getCell("Void"));
   mbXstals->createAll(System,*hdcmVessel,0);
