@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   danmax/CM2Vessel.h
+ * File:   danmaxInc/CM2Vessel.h
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *

@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   danmax/CardanBellowsSINCRYS.h
+ * File:   danmaxInc/CardanBellowsSINCRYS.h
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *
@@ -27,7 +27,7 @@ class Simulation;
 namespace xraySystem
 {
 /*!
-  \class CM1BeamSplitter
+  \class CardanBellowsSINCRYS
   \author U. Friman-Gayer
   \version 1.0
   \date April 2026

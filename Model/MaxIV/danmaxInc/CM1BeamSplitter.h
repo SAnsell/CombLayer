@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/CM1BeamSplitter.h
+ * File:   danmaxInc/CM1BeamSplitter.h
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *

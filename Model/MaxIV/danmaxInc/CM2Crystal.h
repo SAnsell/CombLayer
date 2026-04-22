@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeamInc/CM2Crystal.h
+ * File:   danmaxInc/CM2Crystal.h
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *

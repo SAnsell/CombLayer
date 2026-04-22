@@ -99,7 +99,8 @@ CM2Vessel::populate(const FuncDataBase& Control)
   // However, the center angle of 16.177 deg from Ref. [2], together with the
   // offset of 980 mm, results in a value of about 3378 mm that creates a visible
   // discrepancy in the geometry. For this reason, the optical-axis distance is
-  // calculated here instead of taking it from [1] or [3].
+  // calculated here instead of taking it from [1] or [3]. Possibly, those two 
+  // references show the beamline at a different angle.
   //
   // [1] SINCRYS layout CM1, Drawing 256569, 2025-05-06
   // [2] JJ X-RAY, SINCRYS beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11

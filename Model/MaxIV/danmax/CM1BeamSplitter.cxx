@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonBeam/CM1BeamSplitter.cxx
+ * File:   danmax/CM1BeamSplitter.cxx
  *
  * Copyright (c) 2026 by U. Friman-Gayer
  *
