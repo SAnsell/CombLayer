@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   attachComp/AttachSupport.cxx
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -76,42 +76,42 @@ namespace attachSystem
 long int
 getLinkNumber(const std::string& Name)
   /*!
-    Get a link number. Input is either a name 
+    Get a link number. Input is either a name
     - Origin : Origin [0]
     - front : link point 1
-    - back : link point 2 
-    \param Name :: Link name / number 
+    - back : link point 2
+    \param Name :: Link name / number
     \return signed link number
   */
 {
   const ELog::RegMethod RegA("AttachSupport[F]","getLinkNumber");
-  
+
   long int linkPt(0);
-  
+
   if (!Name.empty() && !StrFunc::convert(Name,linkPt))
     {
-      if (Name=="origin") 
+      if (Name=="origin")
 	linkPt=0;
-      else if (Name=="front") 
+      else if (Name=="front")
 	linkPt=1;
       else if (Name=="back")
 	linkPt=2;
-      else if (Name=="front-") 
+      else if (Name=="front-")
 	linkPt=-1;
       else if (Name=="back-")
 	linkPt=-2;
-      else 
+      else
 	throw ColErr::InContainerError<std::string>(Name,"Name");
     }
   return linkPt;
 }
-  
-  
+
+
 void
 addUnion(const MonteCarlo::Object& Obj,Rule*& outRule)
   /*!
     Given an Rule: intersect into it another object
-    \param Obj :: Object add 
+    \param Obj :: Object add
     \param outRule :: Rule to modify
   */
 {
@@ -132,7 +132,7 @@ addUnion(const int SN,const Geometry::Surface* SPtr,
   */
 {
   const ELog::RegMethod RegA("AttachSupport[F]","addUnion<int,Rule>");
-  createAddition(-1,new SurfPoint(SPtr,SN),outRule);  
+  createAddition(-1,new SurfPoint(SPtr,SN),outRule);
   return;
 }
 
@@ -140,7 +140,7 @@ void
 addIntersection(const MonteCarlo::Object& Obj,Rule*& outRule)
   /*!
     Given an Rule: intersect into it another object
-    \param Obj :: Object add 
+    \param Obj :: Object add
     \param outRule :: Rule to modify
   */
 {
@@ -162,7 +162,7 @@ addIntersection(const int SN,const Geometry::Surface* SPtr,
 {
   const ELog::RegMethod RegA("AttachSupport[F]","addIntersection<int,Rule>");
 
-  createAddition(1,new SurfPoint(SPtr,SN),outRule);  
+  createAddition(1,new SurfPoint(SPtr,SN),outRule);
   return;
 }
 
@@ -170,9 +170,9 @@ void
 createAddition(const int InterFlag,Rule* NRptr,
 	       Rule*& outRule)
   /*!
-    Function to actually do the addition of a rule to 
+    Function to actually do the addition of a rule to
     avoid code repeat.
-    \param InterFlag :: Intersection / Union [ 1 : -1 ] : 0 for new 
+    \param InterFlag :: Intersection / Union [ 1 : -1 ] : 0 for new
     \param NRptr :: New Rule pointer to add
     \param outRule :: Rule system to modify
    */
@@ -189,7 +189,7 @@ createAddition(const int InterFlag,Rule* NRptr,
   // This is an intersection and we want to add our rule at the base
   // Find first item that is not an intersection
   Rule* RPtr;
-  
+
   std::deque<Rule*> curLevel;
   curLevel.push_back(outRule);
   while(!curLevel.empty())
@@ -223,7 +223,7 @@ createAddition(const int InterFlag,Rule* NRptr,
   throw ColErr::EmptyContainer
     ("Failed on rule structure :"+outRule->display());
 
-  return;  
+  return;
 }
 
 void
@@ -243,7 +243,7 @@ addToInsertControl(Simulation& System,
   */
 {
   const ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC,string)");
-  
+
 
   const std::string outerName=OuterFC.getKeyName();
   const std::set<int> cellVec=System.getObjectRange(outerName);
@@ -322,7 +322,7 @@ addToInsertControl(Simulation& System,
     \param BaseObj :: CellMap key name
     \param cellName :: subname of cell from CellMap
     \param FC :: FixedComp with the points
-    \param CC :: ContainedComp 
+    \param CC :: ContainedComp
   */
 {
   const ELog::RegMethod RegA("attachSuport[F]",
@@ -338,7 +338,7 @@ addToInsertControl(Simulation& System,
       if (CRPtr)
 	{
 	  CRPtr->populate();
-	  for(const Geometry::Vec3D& IP : linkPts)	  
+	  for(const Geometry::Vec3D& IP : linkPts)
 	    {
 	      if (CRPtr->isValid(IP))
 		{
@@ -350,8 +350,8 @@ addToInsertControl(Simulation& System,
     }
   return;
 }
-                   
-  
+
+
 void
 addToInsertControl(Simulation& System,
 		   const std::set<int>& cellVec,
@@ -379,7 +379,7 @@ addToInsertControl(Simulation& System,
       if (CRPtr)
 	{
 	  CRPtr->populate();
-	  for(const Geometry::Vec3D& IP : linkPts)	  
+	  for(const Geometry::Vec3D& IP : linkPts)
 	    {
 	      if (CRPtr->isValid(IP))
 		{
@@ -398,17 +398,14 @@ addToInsertSurfCtrl(Simulation& System,
 		    const attachSystem::FixedComp& BaseFC,
 		    attachSystem::ContainedComp& CC)
   /*!
-    Adds this object to the containedComp to be inserted.
-    FC is the fixed object that is to be inserted -- linkpoints
-    must be set. It is tested against all the ojbect with
-    this object .
+    Inserts CC to BaseFC
     \param System :: Simulation to use
-    \param BaseFC :: FixedComp for name
-    \param CC :: ContainedComp object to add to this
+    \param BaseFC :: FixedComp where CC is inserted
+    \param CC :: ContainedComp object to be inserted in BaseFC
   */
 {
   const ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(FC,CC)");
-  
+
   const std::set<int> cellVec=
     System.getObjectRange(BaseFC.getKeyName());
   addToInsertSurfCtrl(System,cellVec,CC);
@@ -420,20 +417,17 @@ void
 addToInsertSurfCtrl(Simulation& System,
 		    const attachSystem::CellMap& BaseCell,
 		    const std::string& cellName,
-		    attachSystem::ContainedComp& CC)
+		    const attachSystem::ContainedComp& CC)
   /*!
-    Adds this object to the containedComp to be inserted.
-    FC is the fixed object that is to be inserted -- linkpoints
-    must be set. It is tested against all the ojbect with
-    this object .
+    Inserts CC into the cell 'cellName' of the given CellMap object
     \param System :: Simulation to use
     \param BaseCell :: CellMap for cell numbers
     \param cellName :: cell item from CellMap
-    \param CC :: ContainedComp object to add to this
+    \param CC :: ContainedComp object to be inserted
   */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(cellmap,CC)");
-  
+
   const std::vector<int> cellVec=
     BaseCell.getCells(cellName);
 
@@ -445,25 +439,22 @@ addToInsertSurfCtrl(Simulation& System,
 void
 addToInsertSurfCtrl(Simulation& System,
 		    const int cellA,
-		    attachSystem::ContainedComp& CC)
+		    const attachSystem::ContainedComp& CC)
  /*!
-   Adds this object to the containedComp to be inserted.
-   FC is the fixed object that is to be inserted -- linkpoints
-   must be set. It is tested against all the ojbect with
-   this object .
+   Adds CC into cell number 'cellA'
    \param System :: Simulation to use
-   \param cellA :: cell number [to test]
-   \param CC :: ContainedComp object to add to this
+   \param cellA :: cell number where CC is inserted
+   \param CC :: ContainedComp object to be inserted
   */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,int,CC)");
 
   MonteCarlo::Object* CRPtr=System.findObject(cellA);
   if (!CRPtr) return;
-  
+
   CRPtr->populate();
   CRPtr->createSurfaceList();
-  
+
   if (checkIntersect(CC,*CRPtr))
     CC.insertInCell(System,cellA);
 
@@ -473,15 +464,12 @@ addToInsertSurfCtrl(Simulation& System,
 void
 addToInsertSurfCtrl(Simulation& System,
 		    const std::vector<int>& cellVec,
-		    attachSystem::ContainedComp& CC)
+		    const attachSystem::ContainedComp& CC)
  /*!
-   Adds this object to the containedComp to be inserted.
-   FC is the fixed object that is to be inserted -- linkpoints
-   must be set. It is tested against all the ojbect with
-   this object .
+   Adds CC into the vector of cells (referenced by their number)
    \param System :: Simulation to use
-   \param cellVec :: CellVector / CellSet
-   \param CC :: ContainedComp object to add to this
+   \param cellVec :: vector of cells where CC is inserted
+   \param CC :: ContainedComp object to be inserted
   */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,vector,CC)");
@@ -508,16 +496,13 @@ addToInsertSurfCtrl(Simulation& System,
 		    const std::set<int>& cellVec,
 		    attachSystem::ContainedComp& CC)
  /*!
-   Adds this object to the containedComp to be inserted.
-   FC is the fixed object that is to be inserted -- linkpoints
-   must be set. It is tested against all the ojbect with
-   this object .
+   Adds CC into the set of cells (referenced by their number)
    \param System :: Simulation to use
-   \param cellVec :: CellVector / CellSet
-   \param CC :: ContainedComp object to add to this
+   \param cellVec :: vector of cells where CC is inserted
+   \param CC :: ContainedComp object to be inserted
   */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,vector,CC)");
+  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,set,CC)");
 
   for(const int CN : cellVec)
     {
@@ -525,7 +510,7 @@ addToInsertSurfCtrl(Simulation& System,
       if (CRPtr)
 	{
 	  CRPtr->populate();
-	  CRPtr->createSurfaceList();	  
+	  CRPtr->createSurfaceList();
 	  if (checkIntersect(CC,*CRPtr))
 	    CC.insertInCell(System,CN);
 	}
@@ -554,7 +539,7 @@ checkIntersect(const ContainedComp& CC,
   const HeadRule& CellHR=CellObj.getHeadRule();
   const std::set<const Geometry::Surface*>& CellsurfSet=
     CellHR.getSurfaces();
-    
+
   std::vector<Geometry::Vec3D> intersectPoints;
 
   std::set<const Geometry::Surface*>::const_iterator ac,bc,cc;
@@ -563,7 +548,7 @@ checkIntersect(const ContainedComp& CC,
     {
       for(ac=CellsurfSet.begin();ac!=CellsurfSet.end();ac++)
 	for(bc=CellsurfSet.begin();bc!=ac;bc++)
-	  {	      
+	  {
 	    intersectPoints=
 	      SurInter::processPoint(SPtr,*ac,*bc);
 	    for(const Geometry::Vec3D& testPoint : intersectPoints)
@@ -587,7 +572,7 @@ checkIntersect(const ContainedComp& CC,
 		  return 1;
 	      }
 	  }
-    
+
     for(ac=CCsurfSet.begin();ac!=CCsurfSet.end();ac++)
       for(bc=CCsurfSet.begin();bc!=ac;bc++)
 	for(const Geometry::Surface* SPtr : CellsurfSet)
@@ -613,7 +598,7 @@ checkPlaneIntersect(const Geometry::Plane& BPlane,
 		    const MonteCarlo::Object& BObj)
 /*!
   Determine if the surface group intersects the CellObj based
-  on the base. 
+  on the base.
   The test is (a) interesection point valid in both object
   (b) the intersection point is on the surface of both object.
   \param BPlane :: Base plane
@@ -627,20 +612,20 @@ checkPlaneIntersect(const Geometry::Plane& BPlane,
   const HeadRule& AObjHR=AObj.getHeadRule();
   const HeadRule& BObjHR=BObj.getHeadRule();
   const std::set<const Geometry::Surface*>& ASSet=
-    AObjHR.getSurfaces(); 
+    AObjHR.getSurfaces();
   const std::set<const Geometry::Surface*>& BSSet=
-    BObjHR.getSurfaces(); 
-  
+    BObjHR.getSurfaces();
+
   std::vector<Geometry::Vec3D> intersectPoints;
 
   for(const Geometry::Surface* ASPtr : ASSet)
     for(const Geometry::Surface* BSPtr : BSSet)
-      {	      
+      {
 	intersectPoints=
 	  SurInter::processPoint(&BPlane,ASPtr,BSPtr);
 	const int aSN(ASPtr->getName());
 	const int bSN(BSPtr->getName());
-	
+
 	for(const Geometry::Vec3D& testPoint : intersectPoints)
 	  {
 	    const bool aMinus=AObjHR.isValid(testPoint,-aSN);
@@ -683,7 +668,7 @@ addToInsertForced(Simulation& System,
   CC.insertObjects(System);
 
   return;
-}  
+}
 
 void
 addToInsertForced(Simulation& System,
@@ -711,7 +696,7 @@ addToInsertForced(Simulation& System,
 	}
     }
   return;
-}  
+}
 
 
 void
@@ -731,7 +716,7 @@ addToInsertForced(Simulation& System,
     System.getObjectRange(BaseFC.getKeyName());
   addToInsertForced(System,cellVec,CC);
   return;
-}  
+}
 
 void
 addToInsertForced(Simulation& System,
@@ -750,7 +735,7 @@ addToInsertForced(Simulation& System,
     System.getObjectRange(BaseFC.getKeyName());
   addToInsertForced(System,cellVec,CG);
   return;
-}  
+}
 
 
 HeadRule

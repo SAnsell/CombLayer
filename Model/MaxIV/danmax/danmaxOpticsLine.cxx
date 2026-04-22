@@ -93,7 +93,6 @@
 #include "MonoShutterR3.h"
 #include "MonoSlitsJJ.h"
 #include "BeamPair.h"
-#include "DCMTank.h"
 #include "MonoBlockXstals.h"
 #include "MLMono.h"
 #include "generalConstruct.h"
@@ -102,6 +101,7 @@
 #include "FlangePlate.h"
 #include "SmallAngleBellows.h"
 #include "WhiteBeamStop.h"
+#include "DCMTank.h"
 #include "CardanBellowsSINCRYS.h"
 #include "CM1BeamSplitter.h"
 #include "CM2Crystal.h"
@@ -603,7 +603,31 @@ danmaxOpticsLine::constructHDCM(Simulation& System,
   bellowE->createAll(System,*hdcmVessel,"front");
   bellowE->insertAllInCell(System,buildZoneDanMAX.createUnit(System,*bellowE,"front"));
 
-  hdcmVessel->insertInCell(System,buildZoneDanMAX.createUnit(System,*hdcmVessel,"back"));
+  int outerCell=buildZoneDanMAX.createUnit(System,*hdcmVessel,"back");
+  this->setCell("OuterVoid", outerCell);
+
+  const constructSystem::portItem& VP0=hdcmVessel->getPort(0);
+  const constructSystem::portItem& VP1=hdcmVessel->getPort(1);
+  const constructSystem::portItem& VP3=hdcmVessel->getPort(3);
+  const constructSystem::portItem& VP4=hdcmVessel->getPort(4);
+
+  this->splitObjectAbsolute(System,1801,outerCell,VP0.getCentre()+Z*12,Z);
+
+  const Geometry::Vec3D  Axis14=hdcmVessel->getZ()*(VP1.getY()+VP4.getY());
+  const std::vector<int>& v14 =
+    this->splitObjectAbsolute(System,1802,outerCell,(VP1.getCentre()+VP4.getCentre())/2,Axis14);
+
+  const Geometry::Vec3D  Axis13=hdcmVessel->getZ()*(VP1.getY()+VP3.getY());
+  this->splitObjectAbsolute(System,1803,outerCell,(VP1.getCentre()+VP3.getCentre())/2,Axis13);
+  this->splitObjectAbsolute(System,1804,v14[1],(VP1.getCentre()+VP3.getCentre())/2,Axis13);
+
+  hdcmVessel->insertMainInCell(System,getCells("OuterVoid"));
+
+  hdcmVessel->insertPortInCell(System,0,getCell("OuterVoid",5));
+  hdcmVessel->insertPortInCell(System,1,getCell("OuterVoid",7));
+  hdcmVessel->insertPortInCell(System,2,getCell("OuterVoid",6));
+  hdcmVessel->insertPortInCell(System,3,outerCell);
+  hdcmVessel->insertPortInCell(System,4,getCell("OuterVoid",8));
 
   mbXstals->addInsertCell(hdcmVessel->getCell("Void"));
   mbXstals->createAll(System,*hdcmVessel,0);
@@ -631,7 +655,29 @@ danmaxOpticsLine::constructMirrorMono(Simulation& System,
   bellowF->createAll(System,*mlmVessel,"front");
   bellowF->insertAllInCell(System,buildZoneDanMAX.createUnit(System,*bellowF,"front"));
 
-  mlmVessel->insertInCell(System,buildZoneDanMAX.createUnit(System,*mlmVessel,"back"));
+  int outerCell=buildZoneDanMAX.createUnit(System,*mlmVessel,"back");
+  this->setCell("OuterVoid", outerCell);
+
+  const constructSystem::portItem& VP0=mlmVessel->getPort(0);
+  const constructSystem::portItem& VP2=mlmVessel->getPort(2);
+  const constructSystem::portItem& VP3=mlmVessel->getPort(3);
+  const constructSystem::portItem& VP4=mlmVessel->getPort(4);
+
+  const std::vector<int>& v1601 =
+    this->splitObjectAbsolute(System,1601,outerCell,(VP3.getCentre()+VP4.getCentre())/2.0,Y);
+  const std::vector<int>& v1602 =
+    this->splitObjectAbsolute(System,1602,outerCell,VP0.getCentre()-X*(20),X);
+  const std::vector<int>& v1603 =
+    this->splitObjectAbsolute(System,1603,outerCell,(VP2.getCentre()+VP4.getCentre())/2.0,Y);
+  const std::vector<int>& v1604 =
+    this->splitObjectAbsolute(System,1604,v1602[1],(VP2.getCentre()+VP4.getCentre())/2.0,Y);
+
+  mlmVessel->insertMainInCell(System,getCells("OuterVoid"));
+  mlmVessel->insertPortInCell(System,0,v1604[1]);
+  mlmVessel->insertPortInCell(System,1,v1602[1]);
+  mlmVessel->insertPortInCell(System,2,getCell("OuterVoid",0));
+  mlmVessel->insertPortInCell(System,3,v1601[1]);
+  mlmVessel->insertPortInCell(System,4,v1603[1]);
 
   MLM->addInsertCell(mlmVessel->getCell("Void"));
   MLM->createAll(System,*mlmVessel,0);
@@ -907,8 +953,21 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   beamViewerS1Screen->createAll(System,beamViewerS1->getPort(2),"#InnerPlate");
 
   outerCell=buildZoneDanMAX.createUnit(System,*bellowBA,"back");
-  cm1->insertAllInCell(System,outerCell);
-  bellowBA->insertAllInCell(System,outerCell);
+  this->setCell("OuterVoid", outerCell);
+
+  this->splitObjectAbsolute(System,1701,outerCell,cm1->getCentre(),X);
+
+  attachSystem::addToInsertSurfCtrl(System,getCells("OuterVoid"),cm1->getCC("Main"));
+  attachSystem::addToInsertSurfCtrl(System,getCells("OuterVoid"),cm1->getCC("FlangeA"));
+  attachSystem::addToInsertSurfCtrl(System,getCells("OuterVoid"),cm1->getCC("FlangeB"));
+
+  attachSystem::addToInsertSurfCtrl(System,getCell("OuterVoid",1),cm1->getPort(0));
+  attachSystem::addToInsertSurfCtrl(System,getCells("OuterVoid"), cm1->getPort(1));
+  attachSystem::addToInsertSurfCtrl(System,getCell("OuterVoid",0),cm1->getPort(2));
+
+  bellowBA->insertAllInCell(System,getCell("OuterVoid",0));
+  bellowBA->insertAllInCell(System,getCell("OuterVoid",1));
+
   valveS1->insertInCell(System,outerCell);
   bellowBA->insertAllInCell(System,valveS1->getCell("LowSpace"));
 
@@ -920,13 +979,20 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   );
 
   cm2->setPortRotation(4,Geometry::Vec3D(1,0,0));
+  cm2->setOuterVoid();
   cm2->createAll(System,*frontEnd,0);
   cm2->intersectPorts(System,0,2);
+
+  const constructSystem::portItem& VP1=cm2->getPort(1);
+  const constructSystem::portItem& VP2=cm2->getPort(2);
+  const constructSystem::portItem& VP3=cm2->getPort(3);
+  const constructSystem::portItem& VP4=cm2->getPort(4);
+
   beamViewerS2Screen->addInsertCell("Body",cm2->getCell("Void"));
   beamViewerS2Screen->addInsertCell("Blade",cm2->getCell("Void"));
-  beamViewerS2Screen->addInsertCell("Body",cm2->getPort(2).getCell("Void"));
+  beamViewerS2Screen->addInsertCell("Body",VP2.getCell("Void"));
   // beamViewerS2Screen->setBladeCentre(cm2->getLinkPt(0));
-  beamViewerS2Screen->createAll(System,cm2->getPort(2),"#InnerPlate");
+  beamViewerS2Screen->createAll(System,VP2,"#InnerPlate");
 
   cm2Crystal->addInsertCell(cm2->getCell("Void"));
   cm2Crystal->createAll(System,*frontEnd,0);
@@ -941,13 +1007,40 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   outerCell = buildZoneSinCrys.createUnit(System,*cardanBellowsDownstream,"front");
   cardanBellowsDownstream->insertInCell(System,outerCell);
 
-  cm2->getPort(2).insertInCell(System,outerCell);
-  cm2->insertAllInCell(
-    System,buildZoneSinCrys.createUnit(System,cm2->getPort(1),"OuterPlate"));
+  VP2.insertInCell(System,outerCell);
+  outerCell=buildZoneSinCrys.createUnit(System,VP1,"OuterPlate");
+  this->setCell("OuterVoid", outerCell);
+
+  /// split for FLUKA
+
+  const Geometry::Vec3D  Axis23=cm2->getY()*(VP2.getY()+VP3.getY());
+  const Geometry::Vec3D  Axis14=cm2->getY()*(VP1.getY()+VP4.getY());
+  const Geometry::Vec3D  Axis24=cm2->getY()*(VP2.getY()+VP4.getY());
+  const std::vector<int>& v1501 =
+    this->splitObjectAbsolute(System,1501,outerCell,VP4.getCentre(),Axis24);
+  this->splitObjectAbsolute(System,1502,outerCell,VP3.getCentre(),Axis23);
+  this->splitObjectAbsolute(System,1503,v1501[1],VP4.getCentre(),Axis14);
+
+  cm2->insertMainInCell(System,getCells("OuterVoid"));
+  cm2->insertPortInCell(System,3,getCell("OuterVoid",0));
+  cm2->insertPortInCell(System,1,getCell("OuterVoid",4));
+  cm2->insertPortInCell(System,4,getCell("OuterVoid",2));
+  cm2->insertPortInCell(System,0,getCell("OuterVoid",3));
+  cm2->insertPortInCell(System,2,getCell("OuterVoid",3));
+
+  const MonteCarlo::Object* VP3flange = VP3.getCellObject(System, "Flange");
+  MonteCarlo::Object* cm2OuterVoid = cm2->getCellObject(System,"OuterVoid");
+
+  if (VP3flange && cm2OuterVoid) {
+    HeadRule complement = VP3flange->getHeadRule().complement();
+    cm2OuterVoid->addIntersection(complement);
+  }
+  ////////////////////
 
   constructSystem::constructUnit(
-    System,buildZoneSinCrys,cm2->getPort(1),"OuterPlate",*valveS2
+    System,buildZoneSinCrys,VP1,"OuterPlate",*valveS2
   );
+
   constructSystem::constructUnit(
     System,buildZoneSinCrys,*valveS2,"back",*cardanBellowsCM2
   );

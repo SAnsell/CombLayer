@@ -101,6 +101,9 @@ class VacuumBox :
   void insertInCell(MonteCarlo::Object&) const override;
   void insertInCell(Simulation&,const int) const override;
 
+  virtual void insertMainInCell(Simulation&,const int) const;
+  virtual void insertMainInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertPortInCell(Simulation&,const size_t,const int) const;
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

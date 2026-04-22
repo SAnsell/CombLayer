@@ -3,7 +3,7 @@
 
  * File:   commonBeamInc/DCMTank.h
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,12 @@
 #define xraySystem_DCMTank_h
 
 class Simulation;
+
+namespace constructSystem
+{
+  class portItem;
+  class portSet;
+}
 
 namespace xraySystem
 {
@@ -83,11 +89,7 @@ class DCMTank :
   double flangeBRadius;        ///< Joining Flange radius
   double flangeBLength;        ///< Joining Flange length
 
-  std::set<int> portCells;               ///< Extra cells for the port
-  std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
-  std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
-  /// Vector of ports FixedComp
-  std::vector<constructSystem::portItem> Ports;
+  constructSystem::portSet PSet; ///< Port set
 
   int voidMat;                  ///< void material
   int wallMat;                  ///< Fe material layer
@@ -98,6 +100,7 @@ class DCMTank :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+  void createPorts(Simulation&);
 
  public:
 
@@ -108,7 +111,13 @@ class DCMTank :
 
   /// Set a port delay
   void delayPorts() { delayPortBuild=1; }
-  void createPorts(Simulation&);
+
+  const constructSystem::portItem& getPort(const size_t index) const {return PSet.getPort(index);};
+
+  virtual void insertMainInCell(Simulation&,const int) const;
+  virtual void insertMainInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertPortInCell(Simulation&,const size_t,const int) const;
+
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

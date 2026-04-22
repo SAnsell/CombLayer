@@ -347,15 +347,6 @@ OpticsStepHutch::createObjects(Simulation& System)
 
       const HeadRule notFrontWall = frontWall.complement();
 
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"502 504 -33 -36");
-      makeCell("WallShineREW",System,cellIndex++,wallShineMat,0.0,HR*floor*notFrontWall);
-
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"502 1033 -504 -36");
-      makeCell("WallShineREWVoid",System,cellIndex++,voidMat,0.0,HR*floor*notFrontWall);
-
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"502 -32 1033 -33 -36");
-      addOuterSurf("WallShineREW", HR*floor);
-
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-32 1033 -36");
     }
   else

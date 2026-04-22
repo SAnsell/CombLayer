@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   attachCompInc/AttachSupport.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef attachSystem_AttachSupport_h
@@ -35,7 +35,7 @@ class ContainedComp;
  class ContainedGroup;
 
 long int getLinkNumber(const std::string&);
- 
+
 void addUnion(const MonteCarlo::Object&,Rule*&);
 void addUnion(const int,const Geometry::Surface*,Rule*&);
 
@@ -69,18 +69,16 @@ void addToInsertControl(Simulation&,const std::set<int>&,
 
 // On surface intersects
 void addToInsertSurfCtrl(Simulation&,const FixedComp&,
-			ContainedComp&);
+			 ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const CellMap&,const std::string&,
-			 ContainedComp&);
-
+			 const ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const std::set<int>&,
-			 ContainedComp&);
-
+			ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const std::vector<int>&,
-			 ContainedComp&);
+			 const ContainedComp&);
 
-void addToInsertSurfCtrl(Simulation&,const int,ContainedComp&);
- 
+void addToInsertSurfCtrl(Simulation&,const int,const ContainedComp&);
+
 
 // Brutal forced option!!
 void addToInsertForced(Simulation&,const FixedComp&,
@@ -106,7 +104,7 @@ HeadRule unionLink(const attachSystem::FixedComp&,
 		   const std::vector<long int>&);
 HeadRule intersectionLink(const attachSystem::FixedComp&,
 			  const std::vector<long int>&);
- 
+
 
 void
 lineIntersect(Simulation&,const attachSystem::FixedComp&,
@@ -114,8 +112,7 @@ lineIntersect(Simulation&,const attachSystem::FixedComp&,
 void
 lineIntersect(Simulation&,const Geometry::Vec3D&,const Geometry::Vec3D&,
 	      std::map<int,MonteCarlo::Object*>&);
- 
+
 }
 
 #endif
- 
