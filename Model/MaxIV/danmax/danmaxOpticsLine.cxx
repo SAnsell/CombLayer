@@ -562,6 +562,11 @@ danmaxOpticsLine::constructRevBeamStopTube
       port0.getSideIndex("InnerPlate"));
   }
 
+ /// split for FLUKA
+ this->splitObjectAbsolute(System,2001,revMonoSlitsTube->getCell("Void"),
+			   (revMonoSlits[0]->getCentre() + revMonoSlits[1]->getCentre())/2,Y);
+  /// end: split for FLUKA
+
   revBeamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   revBeamStopTube->createAll(System,*revMonoSlitsTube,"back");
 
@@ -818,6 +823,11 @@ danmaxOpticsLine::constructBeamStopTube
     monoSlits[i]->createAll(System,*monoSlitsTube,0,port0,
       port0.getSideIndex("InnerPlate"));
   }
+
+  /// split for FLUKA
+  this->splitObjectAbsolute(System,1901,monoSlitsTube->getCell("Void"),
+			    (monoSlits[0]->getCentre() + monoSlits[1]->getCentre())/2,Y);
+  /// end: split for FLUKA
 
   monoSlitsTube->insertAllInCell(System,buildZoneDanMAX.getLastCell("Unit")-1);
 
