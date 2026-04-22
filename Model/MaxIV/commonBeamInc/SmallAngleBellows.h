@@ -96,7 +96,7 @@ class SmallAngleBellows:
   public attachSystem::FrontBackCut
 {
 
- private:
+ protected:
   // Angle between the front- and back-surface normals in radians.
   double angle;
   // Angle between the front- and back-surface normals in degrees.

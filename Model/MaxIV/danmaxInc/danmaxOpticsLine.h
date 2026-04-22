@@ -64,6 +64,10 @@ namespace xraySystem
   class TriggerTube;
   class TwinPipe;
   class WhiteBeamStop;
+  class CardanBellowsSINCRYS;
+  class CM1BeamSplitter;
+  class CM2Crystal;
+  class CM2Vessel;
 
 /*!
   \class danmaxOpticsLine
@@ -114,17 +118,19 @@ class danmaxOpticsLine :
   std::shared_ptr<xraySystem::CylGateValve> valve5;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
   std::shared_ptr<constructSystem::PipeTube> cm1;
+  std::shared_ptr<xraySystem::CM1BeamSplitter> cm1BeamSplitter;
   // First gate valve in SINCRYS (S) branch
   std::shared_ptr<xraySystem::CylGateValve> valveS1;
   std::shared_ptr<constructSystem::FlangePlate> diamondWindow;
   std::shared_ptr<constructSystem::PipeTube> beamViewerS1;
   std::shared_ptr<xraySystem::FlangeMount> beamViewerS1Screen;
-  std::shared_ptr<xraySystem::SmallAngleBellows> cardanBellowsUpstream;
+  std::shared_ptr<xraySystem::CardanBellowsSINCRYS> cardanBellowsUpstream;
   std::shared_ptr<constructSystem::Bellows> bellowBA;
   std::shared_ptr<constructSystem::VacuumPipe> pipeSinCrys;
   std::shared_ptr<constructSystem::Bellows> linearlyGuidedBellowsUpstream;
-  std::shared_ptr<xraySystem::SmallAngleBellows> cardanBellowsDownstream;
-  std::shared_ptr<constructSystem::PipeTube> cm2;
+  std::shared_ptr<xraySystem::CardanBellowsSINCRYS> cardanBellowsDownstream;
+  std::shared_ptr<xraySystem::CM2Vessel> cm2;
+  std::shared_ptr<xraySystem::CM2Crystal> cm2Crystal;
   std::shared_ptr<xraySystem::FlangeMount> beamViewerS2Screen;
   std::shared_ptr<constructSystem::GateValveCube> valveS2;
   std::shared_ptr<constructSystem::Bellows> cardanBellowsCM2;
