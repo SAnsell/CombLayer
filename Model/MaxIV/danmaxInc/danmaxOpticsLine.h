@@ -98,8 +98,9 @@ class danmaxOpticsLine :
 
   int innerMat;                         ///< inner material if used
 
-  /// Shared point to use for last component:
+  /// Shared points to use for last component:
   std::shared_ptr<attachSystem::FixedComp> lastComp;
+  std::shared_ptr<attachSystem::FixedComp> lastCompSINCRYS;
 
   /// Inital bellow
   std::shared_ptr<constructSystem::Bellows> pipeInit;
@@ -298,6 +299,10 @@ class danmaxOpticsLine :
   /// Assignment to extra for first volume
   void setPreInsert
     (const std::shared_ptr<attachSystem::ContainedGroup>& A) { preInsert=A; }
+
+  std::shared_ptr<attachSystem::FixedComp> getLastCompSINCRYS(){
+    return lastCompSINCRYS;
+  }
 
   using FixedComp::createAll;
   void createAll(Simulation&,const attachSystem::FixedComp&,

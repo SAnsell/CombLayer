@@ -1157,6 +1157,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
   setCell("LastVoidSINCRYS",buildZoneSinCrys.getCells("Unit").back());
   lastComp=bellowL;
+  lastCompSINCRYS=monoShutterSExitBellows;
 
   // Intersect the 2nd buildZoneSinCrys cell (tilted plane, contains CM1) with cells
   // from the SINCRYS and common build zone.

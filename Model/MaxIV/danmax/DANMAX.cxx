@@ -93,12 +93,13 @@ DANMAX::DANMAX(const std::string& KN) :
   opticsHut(new OpticsStepHutch(newName+"OpticsHut")),
   opticsBeam(new danmaxOpticsLine(newName+"OpticsLine")),
   joinPipeB(new constructSystem::VacuumPipe(newName+"JoinPipeB")),
+  joinPipeSINCRYS(new constructSystem::VacuumPipe(newName+"JoinPipeSINCRYS")),
   guillotineOHToEH2(new xraySystem::PipeShield(newName+"GuillotineOHToEH2")),
+  guillotineOHToEH2SINCRYS(new xraySystem::PipeShield(newName+"GuillotineOHToEH2SINCRYS")),
   connectUnit(new danmaxConnectLine(newName+"ConnectUnit")),
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut1(new xraySystem::ExperimentalHutch(newName+"ExptHut1")),
   exptHut2(new xraySystem::ExperimentalHutch(newName+"ExptHut2")),
-  guillotineOHToEH2SINCRYS(new xraySystem::PipeShield(newName+"GuillotineOHToEH2SINCRYS")),
   exptBeam(new balderExptLine(newName+"ExptLine"))
   /*!
     Constructor
@@ -115,6 +116,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(opticsHut);
   OR.addObject(opticsBeam);
   OR.addObject(joinPipeB);
+  OR.addObject(joinPipeSINCRYS);
   OR.addObject(guillotineOHToEH2);
   OR.addObject(connectUnit);
   OR.addObject(joinPipeC);
@@ -201,6 +203,11 @@ DANMAX::build(Simulation& System,
   joinPipeB->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   joinPipeB->addInsertCell("Main",opticsHut->getCell("ExitHole"));
 
+  joinPipeSINCRYS->addAllInsertCell(opticsBeam->getCell("LastVoidSINCRYS"));
+  // Optics hut has two exit holes with indices n and n+1, where n is the result of
+  // opticsHut->getCell("ExitHole").
+  joinPipeSINCRYS->addInsertCell("Main",opticsHut->getCell("ExitHole")+1);
+
   exptHut2->setCutSurf("floor",r3Ring->getSurf("Floor"));
   exptHut2->setCutSurf("frontWall",*opticsHut,"back");
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
@@ -244,6 +251,9 @@ DANMAX::build(Simulation& System,
   guillotineOHToEH2->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   guillotineOHToEH2->setCutSurf("inner",*joinPipeB,"outerPipe");
   guillotineOHToEH2->createAll(System,*opticsHut,"innerBack");
+
+  joinPipeSINCRYS->createAll(System,*opticsBeam->getLastCompSINCRYS(),2);
+  joinPipeSINCRYS->insertAllInCell(System,exptHut2->getCell("Void"));
 
   if (stopPoint=="exptHut2") return;
 

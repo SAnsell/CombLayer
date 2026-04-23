@@ -81,24 +81,25 @@ class DANMAX : public R3Beamline
   /// Beamline
   std::shared_ptr<danmaxOpticsLine> opticsBeam;
 
-  /// Pipe joining optics hut to outer
+  /// Pipe joining optics hut to expt. hut 2
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeB;
+  /// Pipe joining optics hut to expt. hut 2 on the SINCRYS branch.
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipeSINCRYS;
 
   /// Guillotine at the downstream wall of the Optics Hutch around joinPipeB
   std::shared_ptr<xraySystem::PipeShield> guillotineOHToEH2;
+  /// Guillotine at the downstream wall of the Optics Hutch on the SINCRYS branch
+  /// around joinPipeSINCRYS.
+  std::shared_ptr<xraySystem::PipeShield> guillotineOHToEH2SINCRYS;
 
-  /// Pipe joining optics hut to outer
+  /// Connecting unit inside expt. hut 2
   std::shared_ptr<xraySystem::danmaxConnectLine> connectUnit;
 
-  /// Pipe joining connecting unit to expt.
+  /// Pipe joining expt. hut 2 to expt. hut 1
   std::shared_ptr<constructSystem::VacuumPipe> joinPipeC;
 
-  /// Pipe joining optics hut to outer
   std::shared_ptr<xraySystem::ExperimentalHutch> exptHut1;
   std::shared_ptr<xraySystem::ExperimentalHutch> exptHut2;
-
-  /// Guillotine at the downstream wall of the Optics Hutch on the SINCRYS branch.
-  std::shared_ptr<xraySystem::PipeShield> guillotineOHToEH2SINCRYS;
 
   /// Beamline for experimental hutch
   std::shared_ptr<balderExptLine> exptBeam;

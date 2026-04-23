@@ -2221,6 +2221,7 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::opticsVariables(Control,beamLineName);
 
   PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",10.0); // Dummy length
+  PipeGen.generatePipe(Control,beamLineName+"JoinPipeSINCRYS",100.0); // Dummy length
 
   const std::string guillotineName = beamLineName + "GuillotineOHToEH2";
   // All dimensions from Section D-D in [1] if not indicated otherwise.
