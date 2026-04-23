@@ -147,6 +147,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::GateValveCube> valveS3;
   std::shared_ptr<constructSystem::Bellows> slitsToShutterBellows;
   std::shared_ptr<xraySystem::MonoShutterR3> monoShutterS;
+  std::shared_ptr<constructSystem::Bellows> monoShutterSExitBellows;
 
   /// bellows to laue mono:
   std::shared_ptr<constructSystem::Bellows> bellowC;

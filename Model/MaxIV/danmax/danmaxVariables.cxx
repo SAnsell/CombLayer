@@ -121,6 +121,8 @@
 // [35] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
 // [36] Verbal communication with Mads and Sergio 260311 (viewing window parameters: thickness 3 mm, standard Glass, radius: same as the pipe inner radius) + see email from KB 260311
 // [37] CAD model CM2_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM2_chamber_2026-03-04.STEP
+// [38] Drawing of SINCRYS Guillotine, 257500_B.pdf, 2025-10-06
+// [39] Drawing of SINCRYS Guillotine, 257605_A.pdf, 2025-10-08
 
 namespace setVariable
 {
@@ -1889,6 +1891,11 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+819.0-MShutterGen.getLength()/2.0);
+
+  // Assume that the mono shutters are followed by bellows with the same length as in
+  // the DanMAX branch [26].
+  BellowGen.generateBellow(
+    Control,opticsName+"MonoShutterSExitBellows",12.0);
 
   // Laue monochromator
   PipeGen.setNoWindow();

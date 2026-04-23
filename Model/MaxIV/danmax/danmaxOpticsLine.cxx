@@ -166,6 +166,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   valveS3(new constructSystem::GateValveCube(newName+"ValveS3")),
   slitsToShutterBellows(new constructSystem::Bellows(newName+"SlitsToShutterBellows")),
   monoShutterS(new xraySystem::MonoShutterR3(newName+"MonoShutterS")),
+  monoShutterSExitBellows(new constructSystem::Bellows(newName+"MonoShutterSExitBellows")),
 
   bellowC(new constructSystem::Bellows(newName+"BellowC")),
   lauePipe(new constructSystem::VacuumPipe(newName+"LauePipe")),
@@ -269,6 +270,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(valveS3);
   OR.addObject(slitsToShutterBellows);
   OR.addObject(monoShutterS);
+  OR.addObject(monoShutterSExitBellows);
 
   OR.addObject(bellowC);
   OR.addObject(lauePipe);
@@ -1104,9 +1106,12 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   monoShutterS->insertInCell(
     System,buildZoneSinCrys.createUnit(System,*monoShutterS,"back")
   );
+  constructSystem::constructUnit(
+    System,buildZoneSinCrys,*monoShutterS,"back",*monoShutterSExitBellows
+  );
 
   outerCell=buildZoneSinCrys.createUnit(System);
-  for (int i=0; i<2; ++i) {
+  for (int i=0; i<3; ++i) {
     MonteCarlo::Object* OPtr = System.findObject(outerCell-i);
     OPtr->addIntersection(getRule("BackPlateFloorShine"));
   }
