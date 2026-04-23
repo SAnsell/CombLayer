@@ -756,7 +756,9 @@ ExperimentalHutch::splitChicane(Simulation& System,
 				const size_t indexA,
 				const size_t indexB)
   /*!
-    Split chicane
+    Chicanes make the cells they are inserted to more complex.
+    This method allows to split those cells between chicanes of the given indices.
+
     \param System :: simulation
     \param indexA of chicane
     \param indexB of chicane
@@ -810,7 +812,10 @@ ExperimentalHutch::splitChicane(Simulation& System,
 	      this->splitObject(System,buildIndex+5001,getCell(cellName));
 	    }
 	}
-    }
+    } else
+    throw ColErr::ExitAbort("Wrong chicane indices: "+
+			    std::to_string(indexA)+" and "+std::to_string(indexB));
+
   return;
 }
 
