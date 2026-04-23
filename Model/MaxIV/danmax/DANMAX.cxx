@@ -265,6 +265,7 @@ DANMAX::build(Simulation& System,
   exptHut1->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut1->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut1->createAll(System,*exptHut2,"back");
+  exptHut1->splitChicane(System,1,3);
 
   joinPipeC->insertAllInCell(System,exptHut1->getCell("Void"));
   joinPipeC->insertInCell("Main",System,exptHut1->getCell("EntranceHole"));
