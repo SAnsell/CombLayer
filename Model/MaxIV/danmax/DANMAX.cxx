@@ -75,6 +75,8 @@
 #include "danmaxConnectLine.h"
 #include "PipeShield.h"
 #include "balderExptLine.h"
+#include "Importance.h"
+#include "Object.h"
 
 #include "R3Ring.h"
 #include "R3Beamline.h"
@@ -204,6 +206,14 @@ DANMAX::build(Simulation& System,
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",PIndex));
   exptHut2->addInsertCell(r3Ring->getCell("OuterSegment",prevIndex));
   exptHut2->createAll(System,*opticsHut,"back");
+
+  /// insert the SinCrys exit hole into the exptHut2 void
+  MonteCarlo::Object *ohExitHole1 = opticsHut->getCellObject(System, "ExitHole",1);
+  MonteCarlo::Object *eh2Void = exptHut2->getCellObject(System, "Void");
+  if (ohExitHole1 && eh2Void) {
+    HeadRule complement = ohExitHole1->getHeadRule().complement();
+    eh2Void->addIntersection(complement);
+  }
 
   // two ways to insert BackPlateOuter into expt. hutch2:
   const std::set<std::string> cells = {
