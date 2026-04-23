@@ -255,6 +255,10 @@ DANMAX::build(Simulation& System,
   joinPipeSINCRYS->createAll(System,*opticsBeam->getLastCompSINCRYS(),2);
   joinPipeSINCRYS->insertAllInCell(System,exptHut2->getCell("Void"));
 
+  guillotineOHToEH2SINCRYS->addAllInsertCell(opticsBeam->getCell("LastVoidSINCRYS"));
+  guillotineOHToEH2SINCRYS->setCutSurf("inner",*joinPipeSINCRYS,"outerPipe");
+  guillotineOHToEH2SINCRYS->createAll(System,*opticsHut,"innerBack");
+
   if (stopPoint=="exptHut2") return;
 
   exptHut1->setCutSurf("floor",r3Ring->getSurf("Floor"));

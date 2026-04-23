@@ -2223,7 +2223,7 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,beamLineName+"JoinPipeB",10.0); // Dummy length
   PipeGen.generatePipe(Control,beamLineName+"JoinPipeSINCRYS",100.0); // Dummy length
 
-  const std::string guillotineName = beamLineName + "GuillotineOHToEH2";
+  std::string guillotineName = beamLineName + "GuillotineOHToEH2";
   // All dimensions from Section D-D in [1] if not indicated otherwise.
   Control.addVariable(guillotineName+"Length",12.0);
   Control.addVariable(guillotineName+"Width",40.0);
@@ -2234,6 +2234,21 @@ DANMAXvariables(FuncDataBase& Control)
   Control.addVariable(guillotineName+"ClearGap",0.0);
   Control.addVariable(guillotineName+"WallMat","SteelUnknownGrade");
   Control.addVariable(guillotineName+"Mat","Lead");
+
+  guillotineName = beamLineName + "GuillotineOHToEH2SINCRYS";
+  // Guillotine consists of 7 plates [38] whose thickness is given in [39].
+  Control.addVariable(guillotineName+"Length",10.5);
+  Control.addVariable(guillotineName+"Width",31.0); // [38]
+  Control.addVariable(guillotineName+"Height",34.0); // [38]
+  Control.addVariable(guillotineName+"WallThick",0.0);
+  // Guillotine hole radius from [39] is slightly larger than the CF40 pipe radius.
+  Control.addVariable(guillotineName+"ClearGap",
+    2.1-(CF40::innerRadius+CF40::wallThick));
+  // TODO: Should be S235JR [39]
+  Control.addVariable(guillotineName+"WallMat","SteelUnknownGrade");
+  Control.addVariable(guillotineName+"Mat","SteelUnknownGrade");
+  // Guillotine hole is off center by 45 mm.
+  Control.addVariable(guillotineName+"XStep",-danmaxVar::SINCRYSBranchShift+4.5);
 
   danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
