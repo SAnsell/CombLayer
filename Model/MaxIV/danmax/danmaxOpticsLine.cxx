@@ -1150,6 +1150,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   buildZoneDanMAX.rebuildInsertCells(System);
   setCell("LastVoid",buildZoneDanMAX.getCells("Unit").back());
+  setCell("LastVoidSINCRYS",buildZoneSinCrys.getCells("Unit").back());
   lastComp=bellowL;
 
   // Intersect the 2nd buildZoneSinCrys cell (tilted plane, contains CM1) with cells
