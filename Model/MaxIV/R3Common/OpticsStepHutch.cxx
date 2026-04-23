@@ -332,7 +332,7 @@ OpticsStepHutch::createObjects(Simulation& System)
   BI=buildIndex;
   for(size_t i=0;i<holeRadius.size();i++)
     {
-      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI,"112 -2002 -107");
+      HR=ModelSupport::getSetHeadRule(SMap,buildIndex,BI,"112 -2002 -107M");
       makeCell("ExitHole",System,cellIndex++,voidMat,0.0,HR);
       BI+=100;
     }
