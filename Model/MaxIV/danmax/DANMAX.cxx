@@ -98,7 +98,7 @@ DANMAX::DANMAX(const std::string& KN) :
   joinPipeC(new constructSystem::VacuumPipe(newName+"JoinPipeC")),
   exptHut1(new xraySystem::ExperimentalHutch(newName+"ExptHut1")),
   exptHut2(new xraySystem::ExperimentalHutch(newName+"ExptHut2")),
-  guillotine(new xraySystem::PipeShield(newName+"Guillotine")),
+  guillotineOHToEH2SINCRYS(new xraySystem::PipeShield(newName+"GuillotineOHToEH2SINCRYS")),
   exptBeam(new balderExptLine(newName+"ExptLine"))
   /*!
     Constructor
@@ -120,7 +120,7 @@ DANMAX::DANMAX(const std::string& KN) :
   OR.addObject(joinPipeC);
   OR.addObject(exptHut1);
   OR.addObject(exptHut2);
-  OR.addObject(guillotine);
+  OR.addObject(guillotineOHToEH2SINCRYS);
 
 }
 
