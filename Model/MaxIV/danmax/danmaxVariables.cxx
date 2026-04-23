@@ -380,7 +380,10 @@ opticsHutVariables(FuncDataBase& Control,
   const double opticsHutchWallThick = 1.2;
   OGen.setWallLead(opticsHutchWallThick);
   OGen.setRoofLead(1.2); // "Roof Lead Thickness", top view [1]
-  OGen.addHole(Geometry::Vec3D(danmaxVar::beamMirrorShift,0,0),3.6); // Section D-D [1]
+  // Section D-D [1] for DanMAX branch. Assume radius is the same for SINCRYS branch.
+  const double holeRadius = 3.6;
+  OGen.addHole(Geometry::Vec3D(danmaxVar::beamMirrorShift,0,0),holeRadius);
+  OGen.addHole(Geometry::Vec3D(danmaxVar::SINCRYSBranchShift,0,0),holeRadius);
   const double opticsHutLength = 1010.0; // Section A-A in [1]
 
   // Section D-D or back view in [1] show all dimensions
