@@ -1022,10 +1022,14 @@ SingleItemVariables(FuncDataBase& Control)
   WBSGen.generate(Control,"WhiteBeamStop");
 
   // CM1BeamSplitter
-  Control.addVariable("CM1BeamSplitterMode", 0);
+  Control.addVariable("DanMAXSINCRYSAngle",16.177);
+  Control.addVariable("DanMAXSINCRYSCenterAngle",16.177);
+  Control.addVariable("CM1BeamSplitterMode",0);
 
   // CM2Crystal
-  Control.addVariable("CM2CrystalMode", 2);
+  Control.addVariable("DanMAXCM1Y",0.0);
+  Control.addVariable("DanMAXSINCRYSBranchShift",0.0);
+  Control.addVariable("CM2CrystalMode",2);
 
   return;
 }
