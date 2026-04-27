@@ -521,10 +521,10 @@ CM1BeamSplitter::createObjects(Simulation& System)
     back*ModelSupport::getHeadRule(SMap,buildIndex,"11 13 -63 5 -76")
   );
   makeCell("HolderBottomRoundedBlock",System,cellIndex++,holderMaterial,0.0,
-    back*ModelSupport::getHeadRule(SMap,buildIndex,"11 63 -14 5 -76 -57")
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"11 63 -14 5 -76 -57")
   );
   makeCell("HolderBottomRoundedBlockVoid",System,cellIndex++,0,0.0,
-    back*ModelSupport::getHeadRule(SMap,buildIndex,"11 63 -14 5 -76 57")
+    front*back*ModelSupport::getHeadRule(SMap,buildIndex,"11 63 -14 5 -76 57")
   );
 
   makeCell("FrontVoid",System,cellIndex++,0,0.0,
