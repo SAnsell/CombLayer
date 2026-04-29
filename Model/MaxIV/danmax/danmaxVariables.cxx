@@ -2247,8 +2247,9 @@ DANMAXvariables(FuncDataBase& Control)
   // TODO: Should be S235JR [39]
   Control.addVariable(guillotineName+"WallMat","SteelUnknownGrade");
   Control.addVariable(guillotineName+"Mat","SteelUnknownGrade");
-  // Guillotine hole is off center by 45 mm.
-  Control.addVariable(guillotineName+"XStep",-danmaxVar::SINCRYSBranchShift+4.5);
+  // Guillotine hole is off center by 45 mm such that the larger part points towards
+  // the DanMAX beamline [39].
+  Control.addVariable(guillotineName+"XStep",-danmaxVar::SINCRYSBranchShift-4.5);
 
   danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");
