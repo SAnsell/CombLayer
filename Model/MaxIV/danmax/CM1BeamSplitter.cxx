@@ -317,17 +317,22 @@ CM1BeamSplitter::createSurfaces()
     calculateSplitterCrystalOrigin(
       holeDir,splitterCrystalNormalVector,splitterHoleOffset,splitterCrystalOrigin,
       Origin);
-  } else if(mode == 1 || mode == 2){
+  } else if(mode == 1 || mode == 2 || mode == 4){
     X.rotate(Z,bodyAngle);
     Y.rotate(Z,bodyAngle);
     updateInternalReferenceVectors(filterHoleOffsetVector,frontCornerOffset,holeDir,
       holeX,splitterHoleOffset);
-    if(mode == 1){
+    if(mode == 1 || mode == 4){
       offset = -filterHoleOffsetVector;
       calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
       calculateSplitterCrystalOrigin(
         holeDir,splitterCrystalNormalVector,splitterHoleOffset,splitterCrystalOrigin,
         Origin+offset);
+      if(mode == 4){
+        const Geometry::Vec3D mode4Offset = X*splitterHoleToFilterHole/2.0;
+        offset += mode4Offset;
+        splitterCrystalOrigin += mode4Offset;
+      }
     }
     if(mode == 2){
       calculateSplitterCrystalNormalVector(splitterCrystalNormalVector);
