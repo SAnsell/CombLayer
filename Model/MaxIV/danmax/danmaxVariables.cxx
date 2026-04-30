@@ -858,7 +858,8 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
 
   FlangeGen.setNoPlate();
   FlangeGen.setBlade(0.7,0.7,0.02,-45.0,"Diamond",1); // [13]
-  FlangeGen.generateMount(Control,pipeName+"Screen",1);
+  FlangeGen.setLift(3.0); // [13]
+  FlangeGen.generateMount(Control,pipeName+"Screen",0);
 }
 
 void
