@@ -476,7 +476,14 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"LeftThick", 0.7); // Detail D and Detail K [9]
   Control.addVariable(connectName+"RightThick", 0.7); // Detail D and Detail K [9]
   Control.addVariable(connectName+"FrontBackThick", 0.7); // Detail D and Detail K [9]
-  Control.addVariable(connectName+"SkinThick", 0.1); // Estimated, not shown in [9]
+  Control.addVariable(connectName+"SkinThickInside", 0.0); // No skin shown in [9]
+  // Roughly read off from Detail D and Detail K in [9].
+  // Detail K indicates a 1-mm thickness for the large region, while Detail D
+  // -which is a little harder to read off- indicates a larger thickness,
+  // possibly 2 mm. Here, use 1 mm everywhere. It seems reasonable that the 
+  // manufacturer did not vary the skin thickness if they did not vary the lead
+  // thickness, and the choice is conservative.
+  Control.addVariable(connectName+"SkinThickOutside", 0.1);
   Control.addVariable(connectName+"Mat", "Lead"); // [9]
   Control.addVariable(connectName+"SkinMat", "SteelUnknownGrade");
   Control.addVariable(connectName+"VoidMat", "Void");
