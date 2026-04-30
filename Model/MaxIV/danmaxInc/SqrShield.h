@@ -42,6 +42,14 @@ namespace xraySystem
   The SqrShield is used in the DanMAX beamline to shield the transfer line from the
   Optics Hutch to the Experimental Hutch 1. In DanMAX, the enlarged region contains
   a pump.
+
+  Version History:
+  2.0 - 2026-01-14
+    - More customization:
+      - Individual wall-thickness setting for each side.
+      - Region with extended cross section 
+        (but build zone determined by region with small cross section).
+  1.0 - 2019  
 */
 
 class SqrShield :
