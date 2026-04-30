@@ -123,6 +123,7 @@
 // [37] CAD model CM2_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM2_chamber_2026-03-04.STEP
 // [38] Drawing of SINCRYS Guillotine, 257500_B.pdf, 2025-10-06
 // [39] Drawing of SINCRYS Guillotine, 257605_A.pdf, 2025-10-08
+// [40] DanMax Optical Hutch, Calculation note, Technical Note 3541.012-NTE, Caratelli (2017)
 
 namespace setVariable
 {
@@ -372,9 +373,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   OpticsHutchGenerator OGen;
 
-  // Not given in [1]. Use same value as in other beamlines (where this value is also
-  // used without reference).
-  const double skinThick = 0.2;
+  const double skinThick = 0.1; // [40]
   OGen.setSkin(skinThick);
   const double backLead = 5.0; // "Lead Thickness Back Wall" Section A-A [1]
   OGen.setBackLead(backLead);
