@@ -764,7 +764,7 @@ void viewPackage(FuncDataBase& Control,const std::string& viewKey)
   //
   // Material is actually given as "pCVD Diamond" in [13].
   FlangeGen.setBlade(3.3,1.3,0.2,-45.0,"Diamond",1);
-  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",1);
+  FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",0);
 }
 
 void
