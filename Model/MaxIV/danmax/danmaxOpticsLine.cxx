@@ -961,6 +961,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   beamViewerS1Screen->addInsertCell("Body",beamViewerS1->getCell("Void"));
   beamViewerS1Screen->addInsertCell("Blade",beamViewerS1->getCell("Void"));
   beamViewerS1Screen->addInsertCell("Body",beamViewerS1->getPort(2).getCell("Void"));
+  beamViewerS1Screen->addInsertCell("Blade",beamViewerS1->getPort(2).getCell("Void"));
   beamViewerS1Screen->setBladeCentre(beamViewerS1->getLinkPt(0));
   beamViewerS1Screen->createAll(System,beamViewerS1->getPort(2),"#InnerPlate");
 
@@ -1003,7 +1004,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   beamViewerS2Screen->addInsertCell("Body",cm2->getCell("Void"));
   beamViewerS2Screen->addInsertCell("Blade",cm2->getCell("Void"));
   beamViewerS2Screen->addInsertCell("Body",VP2.getCell("Void"));
-  // beamViewerS2Screen->setBladeCentre(cm2->getLinkPt(0));
+  beamViewerS2Screen->addInsertCell("Blade",VP2.getCell("Void"));
   beamViewerS2Screen->createAll(System,VP2,"#InnerPlate");
 
   cm2Crystal->addInsertCell(cm2->getCell("Void"));
@@ -1101,6 +1102,7 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
   beamViewerS3Screen->addInsertCell("Body",beamViewerS3->getCell("Void"));
   beamViewerS3Screen->addInsertCell("Blade",beamViewerS3->getCell("Void"));
   beamViewerS3Screen->addInsertCell("Body",beamViewerS3->getPort(2).getCell("Void"));
+  beamViewerS3Screen->addInsertCell("Blade",beamViewerS3->getPort(2).getCell("Void"));
   beamViewerS3Screen->setBladeCentre(beamViewerS3->getLinkPt(0));
   beamViewerS3Screen->createAll(System,beamViewerS3->getPort(2),"#InnerPlate");
 

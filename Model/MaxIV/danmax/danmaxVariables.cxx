@@ -1682,6 +1682,7 @@ opticsVariables(FuncDataBase& Control,
   // Screen dimensions from [30].
   const double beamViewerS1ScreenThick = 0.015; // [30]
   const double beamViewerS1ScreenSideLength = 1.0; // [30]
+  const double beamViewerS1ScreenLift = 3.0; // [32]
   FlangeGen.setNoPlate();
   // Thread is a conservative approximation. In reality, there is much more material
   // around the crystal, see [30] or [32].
@@ -1691,7 +1692,8 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.setBlade(
     beamViewerS1ScreenSideLength,beamViewerS1ScreenSideLength,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
-  FlangeGen.generateMount(Control,name+"Screen",1);
+  FlangeGen.setLift(beamViewerS1ScreenLift);
+  FlangeGen.generateMount(Control,name+"Screen",0);
 
   // Create variables for run-time control of
   // - CM1BeamSplitter
@@ -1789,7 +1791,7 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.setBlade(
     beamViewerS2ScreenSideLength,beamViewerS2ScreenSideLength,
     beamViewerS2ScreenThick,0.0,"YAG",1); // [32]
-  FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",1);
+  FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",0);
   Control.addVariable(opticsName+"BeamViewerS2ScreenBladeCentreActive",1);
 
   name = opticsName+"CM2Crystal";
@@ -1879,7 +1881,8 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.setBlade(
     beamViewerS1ScreenSideLength,beamViewerS1ScreenSideLength,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
-  FlangeGen.generateMount(Control,name+"Screen",1);
+  FlangeGen.setLift(beamViewerS1ScreenLift);
+  FlangeGen.generateMount(Control,name+"Screen",0);
 
   // See also comments on ValveS2.
   name = opticsName+"ValveS3";
