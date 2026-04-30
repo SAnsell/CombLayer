@@ -1454,9 +1454,9 @@ opticsSlitPackage(FuncDataBase& Control,
   // Top (JawX B) -> Right (JawZ A) -> Bottom (JawX A) -> Left (JawZ B)
   const double bladeOffset = 3.6; // [27]
   BeamMGen.setXYStep(0.0,bladeOffset,0.0,-bladeOffset);
-  BeamMGen.generateMount(Control,opticsName+"JawX",0);
+  BeamMGen.generateMount(Control,opticsName+"JawX",1);
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
-  BeamMGen.generateMount(Control,opticsName+"JawZ",0);
+  BeamMGen.generateMount(Control,opticsName+"JawZ",1);
 }
 
 void
