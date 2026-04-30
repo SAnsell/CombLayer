@@ -1581,9 +1581,13 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(bremColl1Name+"XAngle",90);
 
   // High Pass Filter
-  // Simplified to a pipe with two 'windows' corresponding to the two diamond filters.
+  // Simplified to a pipe with a single 'window' corresponding to the diamond filter.
   PipeGen.setOuterVoid(true);
-  PipeGen.setRectWindow(0.6,0.6,0.06,0.6,0.6,0.04); // [13]
+  // [13] gives the dimensions for two windows, a 600 um upstream window, and a 
+  // 400 um downstream window. During a site visit with DanMAX staff in December 2025,
+  // we learned that the thicker upstream window will be removed for the SINCRYS 
+  // upgrade.
+  PipeGen.setRectWindow(0.6,0.6,0.0,0.6,0.6,0.04);
   PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
   // Length adjusted to fit the position given in [12]
   const double highPassFilterLength =
@@ -1594,6 +1598,10 @@ opticsVariables(FuncDataBase& Control,
     highPassFilterLength);
   // When using absolute positioning, YStep variables needs to be adjusted.
   Control.addVariable(opticsName+"HighPassFilterYStep",0.0);
+  // Setting the thickness to zero above is already enough to remove the upstream
+  // window. The following line is a more efficient way of excluding it because no
+  // planes will be created and then removed.
+  Control.addVariable(opticsName+"HighPassFilterWindowAType",0);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5"); // [28]
 
