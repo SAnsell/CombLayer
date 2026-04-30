@@ -675,7 +675,7 @@ exptHut2Variables(FuncDataBase& Control,
   PGen.setSkin(skinThick); // Measured on site.
 
   // Reference x value for all chicanes
-  const double x0 = (danmaxVar::exptHut2Length*skinThick-backLead)/2.0;
+  const double x0 = (danmaxVar::exptHut2Length-skinThick-backLead)/2.0;
   // Chicane0 and Chicane1 are within 1828 mm from the back wall of Expt. Hutch 2
   // (Section A-A [3]). Assume that their centers are located at 1/4*1828 and 3/4*1828.
   // Positioning uncertainty estimate from the drawing: += 50 mm.
