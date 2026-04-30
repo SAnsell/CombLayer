@@ -1852,7 +1852,7 @@ opticsVariables(FuncDataBase& Control,
   // IB-C30-UHV slits
   name=opticsName+"SlitTubeS";
   MonoSlitsJJGenerator monoSlitsJJGenerator;
-  monoSlitsJJGenerator.generate(Control,name);
+  monoSlitsJJGenerator.generate(Control,name,1,1,1,1);
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+769.0-monoSlitsJJGenerator.getLength()/2.0); // [33]
