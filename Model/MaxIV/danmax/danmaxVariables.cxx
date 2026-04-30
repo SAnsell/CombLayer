@@ -438,7 +438,7 @@ opticsHutVariables(FuncDataBase& Control,
   // It is not clear from [2] what the 650 mm correspond to. Here, it is assumed that
   // this value is measured from the outside wall like all other shielding of this
   // type.
-  Control.addVariable(hutName+"WallShineLength", 65.0);
+  Control.addVariable(hutName+"WallShineLength", 65.0); // TODO: measure - unclear from drawings
   Control.addVariable(hutName+"WallShineOutThick", 1.2); // measured by UFG 251201
   Control.addVariable(hutName+"WallShineOutLength", 20.0); // measured by UFG 251201
 }
@@ -1448,9 +1448,9 @@ opticsSlitPackage(FuncDataBase& Control,
   // Top (JawX B) -> Right (JawZ A) -> Bottom (JawX A) -> Left (JawZ B)
   const double bladeOffset = 3.6; // [27]
   BeamMGen.setXYStep(0.0,bladeOffset,0.0,-bladeOffset);
-  BeamMGen.generateMount(Control,opticsName+"JawX",0);
+  BeamMGen.generateMount(Control,opticsName+"JawX",1);
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
-  BeamMGen.generateMount(Control,opticsName+"JawZ",0);
+  BeamMGen.generateMount(Control,opticsName+"JawZ",1);
 }
 
 void
@@ -1697,10 +1697,10 @@ opticsVariables(FuncDataBase& Control,
   const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
   Control.addVariable(beamName+"CM2PortLength", CM2PortLength);
   Control.addVariable(beamName+"SINCRYSAngle", sinCrysBranchCenterAngleDeg);
-  Control.addVariable(beamName+"SINCRYSBranchShift", SINCRYSBranchShift); 
-  Control.addVariable(beamName+"SINCRYSCenterAngle", sinCrysBranchCenterAngleDeg); 
+  Control.addVariable(beamName+"SINCRYSBranchShift", SINCRYSBranchShift);
+  Control.addVariable(beamName+"SINCRYSCenterAngle", sinCrysBranchCenterAngleDeg);
   Control.addVariable(beamName+"SINCRYSCM1ToCardanBellowsUpstream",
-    CM1Port12Length+valve3Length+2.0*beamViewerS1PortLength); 
+    CM1Port12Length+valve3Length+2.0*beamViewerS1PortLength);
 
   SmallAngleBellowsGenerator smallAngleBellowsGen;
   const double cardanBellowsLength = 18.0; // [30]
@@ -1739,7 +1739,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),vSinCrys);
   PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),ZVec);
-  
+
   Geometry::Vec3D YVec(0.0,1.0,0.0);
   Geometry::Vec3D beamViewer2Dir = vSinCrys;
   // [32] gives the angle between the crystal and the incoming beam in CM2
@@ -1770,7 +1770,7 @@ opticsVariables(FuncDataBase& Control,
   const double beamViewerS2ScreenThick = 0.005; // [34]
   const double beamViewerS2ScreenSideLength = 1.0; // [34]
   FlangeGen.setNoPlate();
-  // Thread is a conservative approximation. In reality, there is much more material 
+  // Thread is a conservative approximation. In reality, there is much more material
   // around the crystal, see [32] or [34].
   FlangeGen.setThread(beamViewerS2ScreenThick,
     beamViewerS2PortLength-beamViewerS2ScreenSideLength/2.0,
@@ -1778,7 +1778,7 @@ opticsVariables(FuncDataBase& Control,
   );
   // Angle w.r.t. the beam is 45 degrees according to [32], but this angle is already
   // fixed by the beam-port angle. In reality, the angle is actually -45 degrees w.r.t.
-  // the beam, because the screen is mounted in a way that is not possible with the 
+  // the beam, because the screen is mounted in a way that is not possible with the
   // FlangeMount class (I believe).
   FlangeGen.setBlade(
     beamViewerS2ScreenSideLength,beamViewerS2ScreenSideLength,
@@ -1789,8 +1789,8 @@ opticsVariables(FuncDataBase& Control,
   name = opticsName+"CM2Crystal";
   Control.addVariable(name+"Mode",2);
 
-  // Gate valve 2 is a different type than valve 1, which can be seen by comparing 
-  // [30] and [34]. Due to its outer shape, assumed that it is similar to 
+  // Gate valve 2 is a different type than valve 1, which can be seen by comparing
+  // [30] and [34]. Due to its outer shape, assumed that it is similar to
   // FrontBeamValve1.
   name = opticsName+"ValveS2";
   Control.copyVarSet(beamName+"FrontBeamValve1",name); // [34]
@@ -1838,7 +1838,7 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName+"TransfocatorToSlitsBellows",10.0); // Dummy length
   // Between the bellows and the slits, there are actually two CF40 pipes.
   // The one upstream contains a port for a vacuum pump (see, for example, [34]).
-  // Here, everything is implemented as a single pipe, and the pump and its 
+  // Here, everything is implemented as a single pipe, and the pump and its
   // port are not modeled.
   PipeGen.generatePipe(
     Control,opticsName+"TransfocatorToSlitsPipe2",25.0);

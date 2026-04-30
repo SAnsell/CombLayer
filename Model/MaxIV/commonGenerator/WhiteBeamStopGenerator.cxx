@@ -53,10 +53,10 @@ namespace setVariable
 {
 
 WhiteBeamStopGenerator::WhiteBeamStopGenerator() :
-  length(4.6),  // [1]
-  width(1.7),   // [1]
-  height(1.2),  // [1]
-  angle(30.0),  // [1]
+  length(4.6),  //
+  width(1.7),   //
+  height(1.2),  //
+  angle(30.0),  //
   inBeam(false),
   offBeamOffset(6.0), // adjust to fully contain WBS in the port when off beam to simplify intersections
   mat("Copper") // [1]
