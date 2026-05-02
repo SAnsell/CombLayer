@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 BremBlock::BremBlock(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key,3),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::FrontBackCut()
@@ -289,6 +289,9 @@ BremBlock::createLinks()
 
   FrontBackCut::createFrontLinks(*this,Origin,Y);
   FrontBackCut::createBackLinks(*this,Origin,Y);
+
+  FixedComp::setConnect(2,Origin+X*(holeBWidth/2.0)+Y*length,X);
+  FixedComp::setNamedLinkSurf(2,"HoleBxmax",SMap.realSurf(buildIndex+1003));
 
   return;
 }

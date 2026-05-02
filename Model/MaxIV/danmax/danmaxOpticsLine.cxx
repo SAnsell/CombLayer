@@ -794,12 +794,6 @@ danmaxOpticsLine::constructBeamStopTube
   const constructSystem::portItem& port1 = beamStopSection->getPort(1);
   port1.insertInCell(System,outerCell);
 
-  // White Beam Stop
-  wbs->createAll(System,*beamStopSection,0);
-  attachSystem::addToInsertSurfCtrl(System,*beamStopSection,"Void", *wbs);
-  if (!wbs->isInBeam())
-    attachSystem::addToInsertSurfCtrl(System,port0,"Void", *wbs);
-
   beamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
   beamStopTube->createAll(System,*beamStopSection,sideName);
   beamStopTube->insertAllInCell(System,buildZoneDanMAX.getLastCell("Unit"));
@@ -811,6 +805,11 @@ danmaxOpticsLine::constructBeamStopTube
 
   beamStop->addInsertCell(beamStopTube->getCell("Void"));
   beamStop->createAll(System,*beamStopTube,"Origin");
+
+  // White Beam Stop
+  wbs->setCollimator(System,*beamStop, "HoleBxmax");
+  wbs->createAll(System,*beamStopSection,"Origin");
+  attachSystem::addToInsertSurfCtrl(System,*beamStopSection,"Void", *wbs);
 
   constructSystem::constructUnit
     (System,buildZoneDanMAX,VPB,"OuterPlate",*beamStopOutPipe);

@@ -82,9 +82,9 @@ WhiteBeamStop::WhiteBeamStop(const WhiteBeamStop& A) :
   attachSystem::SurfMap(A),
   length(A.length),width(A.width),height(A.height),
   angle(A.angle),
-  inBeam(A.inBeam),
-  offBeamOffset(A.offBeamOffset),
-  mat(A.mat)
+  mat(A.mat),
+  bsCol(A.bsCol),
+  bsSide(A.bsSide)
   /*!
     Copy constructor
     \param A :: WhiteBeamStop to copy
@@ -108,9 +108,9 @@ WhiteBeamStop::operator=(const WhiteBeamStop& A)
       width=A.width;
       height=A.height;
       angle=A.angle;
-      inBeam=A.inBeam;
-      offBeamOffset=A.offBeamOffset;
       mat=A.mat;
+      bsCol=A.bsCol;
+      bsSide=A.bsSide;
     }
   return *this;
 }
@@ -146,8 +146,6 @@ WhiteBeamStop::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   angle=Control.EvalVar<double>(keyName+"Angle");
-  inBeam=Control.EvalVar<int>(keyName+"InBeam");
-  offBeamOffset=Control.EvalVar<double>(keyName+"OffBeamOffset");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -162,18 +160,19 @@ WhiteBeamStop::createSurfaces()
 {
   ELog::RegMethod RegA("WhiteBeamStop","createSurfaces");
 
+  const double cosa = cos(angle*M_PI/180.0);
+  const double sina = sin(angle*M_PI/180.0);
+  const double dl = cosa * length/2.0;
+  const double dx = (length*sina + width)/2.0 + (bsCol->getLinkPt(bsSide)-(Origin)).dotProd(X);
+
   const Geometry::Quaternion Qxy=Geometry::Quaternion::calcQRotDeg(angle,Z);
   const Geometry::Vec3D PX=Qxy.rotate(X);
-
-  const double cosa = cos(angle*M_PI/180.0);
-  const double offset = inBeam ? 0.0 : offBeamOffset;
-  const double dl = cosa * length/2.0;
 
   SurfMap::makePlane("back",SMap,buildIndex+1,Origin-Y*(dl),Y);
   SurfMap::makePlane("front",SMap,buildIndex+2,Origin+Y*(dl),Y);
 
-  SurfMap::makePlane("left",SMap,buildIndex+3,Origin+X*(offset),PX);
-  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+PX*(width)+X*(offset),PX);
+  SurfMap::makePlane("left",SMap,buildIndex+3,Origin-PX*(width/2.0-dx)*cosa,PX);
+  SurfMap::makePlane("right",SMap,buildIndex+4,Origin+PX*(width/2.0+dx)*cosa,PX);
 
   SurfMap::makePlane("bottom",SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   SurfMap::makePlane("top",SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
@@ -242,6 +241,25 @@ WhiteBeamStop::createLinks()
 
   return;
 }
+
+void
+WhiteBeamStop::setCollimator(Simulation& System,
+			   attachSystem::FixedComp& FC,
+			   const std::string& sideName)
+/*!  White beam stop is located in front of Bremsstrahlung collimator
+  and it is shifted horizontally to align with the BS collimator
+  aperture plane to avoid intersecting the monochromatic beam.  This
+  method sets the collimator and the corresponding aperture link point
+  in order to calculate the required shift.
+  \param System :: Simulation item
+  \param FC :: BS collimator component
+  \param sideIndex :: link point for the aperture plane
+ */
+{
+  bsCol = &FC;
+  bsSide=sideName;
+}
+
 
 void
 WhiteBeamStop::createAll(Simulation& System,
