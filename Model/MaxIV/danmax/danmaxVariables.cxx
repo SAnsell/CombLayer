@@ -851,7 +851,7 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
 
   FlangeGen.setNoPlate();
   FlangeGen.setBlade(0.7,0.7,0.02,-45.0,"Diamond",1); // [13]
-  FlangeGen.generateMount(Control,pipeName+"Screen",1);
+  FlangeGen.generateMount(Control,pipeName+"Screen",0);
 }
 
 void
@@ -1011,11 +1011,11 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BeamPairGen.setXYStep(
     -0.5*bladeThick-2.0*bladeOffset,-0.5*bladeWidth,
     0.0,-0.5*bladeWidth);
-  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsX",0);
+  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsX",1);
   BeamPairGen.setXYStep(
     0.5*bladeWidth,-0.5*bladeThick-2.0*bladeOffset,
     0.5*bladeWidth,0.0);
-  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsZ",0);
+  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsZ",1);
 
   FlangePlateGenerator flangePlateGen;
   flangePlateGen.setCF<CF150>(CF40::innerRadius); // [22]
@@ -1097,11 +1097,11 @@ void revBeamStopPackage(FuncDataBase& Control,
   BeamPairGen.setXYStep(
     -0.5*bladeThick-2.0*bladeOffset,-0.5*bladeWidth,
     0.0,-0.5*bladeWidth);
-  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsX",0);
+  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsX",1);
   BeamPairGen.setXYStep(
     0.5*bladeWidth,-0.5*bladeThick-2.0*bladeOffset,
     0.5*bladeWidth,0.0);
-  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsZ",0);
+  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsZ",1);
 
   // will be rotated vertical
   pipeName=viewKey+"RevBeamStopTube";
