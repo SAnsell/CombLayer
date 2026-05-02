@@ -871,32 +871,33 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::BremBlockGenerator BremGen;
   setVariable::BeamPairGenerator BeamPairGen;
 
+  std::string name=viewKey+"BSCollInPipe";
   const double port0Radius = 5.08; // [22]
   const double port0WallThick = 0.2; // [22]
   const double beamStopInPipeLength = 2.5; // [22]
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<CF40>(); // [22]
   PipeGen.setBFlange(port0Radius+port0WallThick, port0WallThick);
-  PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",
+  PipeGen.generatePipe(Control,name,
     beamStopInPipeLength+CF40::flangeLength+port0WallThick); // [22]
-  Control.addVariable(viewKey+"BeamStopInPipeXStep",danmaxVar::beamMirrorShift);
+  Control.addVariable(name+"XStep",danmaxVar::beamMirrorShift);
   const double beamStopFrontToWBPort =
     beamStopInPipeLength+CF40::flangeLength+5.2; // [22]
-  Control.addVariable(viewKey+"BeamStopInPipeYStep",
+  Control.addVariable(name+"YStep",
     danmaxVar::absY::whiteBeamStop-beamStopFrontToWBPort);
 
   const double port0Length=15.4; // [22]
   const double port0SplitLength=8.0;
 
-  std::string pipeName = viewKey+"BeamStopSection";
+  name = viewKey+"WBSSection";
   SimpleTubeGen.setPipe(port0Radius, port0WallThick, 1.0, 0.0);
-  SimpleTubeGen.generateTube(Control,pipeName,port0Length-port0SplitLength);
-  Control.addVariable(pipeName+"NPorts",2);
+  SimpleTubeGen.generateTube(Control,name,port0Length-port0SplitLength);
+  Control.addVariable(name+"NPorts",2);
   PItemGen.setCF<CF63>(14.0); // [22]
   PItemGen.setPlate(CF63::flangeLength, "SteelUnknownGrade");
   const double port0y = -(port0Length-port0SplitLength)/2.0+
     beamStopFrontToWBPort-beamStopInPipeLength-CF63::flangeLength-port0WallThick-0.8; // approx
-  PItemGen.generatePort(Control,pipeName+"Port0",
+  PItemGen.generatePort(Control,name+"Port0",
 			Geometry::Vec3D(0,port0y,0),
 			Geometry::Vec3D(1,0,0));
 
@@ -908,7 +909,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.setPlate(CF40::flangeLength, "SteelUnknownGrade");
   const double port1y = -(port0Length-port0SplitLength)/2.0+
     beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength-port0WallThick; // approx
-  PItemGen.generatePort(Control,pipeName+"Port1",Geometry::Vec3D(0,port1y,0),
+  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,port1y,0),
 			Geometry::Vec3D(sin(port1angle),cos(port1angle),0));
   PItemGen.setNoWindow();
 
@@ -916,23 +917,23 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   WBSGen.generate(Control,viewKey+"WhiteBeamStop");
 
   // will be rotated vertical
-  pipeName=viewKey+"BeamStopTube";
+  name=viewKey+"BSCollTube";
   SimpleTubeGen.setCF<CF160>(); // [22]
   SimpleTubeGen.setWallThick(0.2); // [22]
   SimpleTubeGen.setCap(1,1);
   const double tubeLengthAboveOpticalAxis = 11.2; // [22]
   const double tubeLengthBelowOpticalAxis = 32.8; // [22]
   const double tubeLength = tubeLengthAboveOpticalAxis+tubeLengthBelowOpticalAxis;
-  SimpleTubeGen.generateTube(Control,pipeName,
+  SimpleTubeGen.generateTube(Control,name,
     tubeLengthAboveOpticalAxis+tubeLengthBelowOpticalAxis);
 
-  Control.addVariable(pipeName+"NPorts",2);
+  Control.addVariable(name+"NPorts",2);
 
   PItemGen.setPort(port0SplitLength-port0WallThick, port0Radius, port0WallThick); // [22]
   PItemGen.setFlange(1.0, 0.0);
   PItemGen.setNoPlate();
   PItemGen.setOuterVoid(0);
-  PItemGen.generatePort(Control,pipeName+"Port0",
+  PItemGen.generatePort(Control,name+"Port0",
 			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),
 			Geometry::Vec3D(0,0,1));
 
@@ -942,7 +943,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   const double port1WallThick = 0.2; // [22]
   PItemGen.setPort(port1ArtificialSplitLength, port1Radius, port1WallThick); // [22]
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,pipeName+"Port1",
+  PItemGen.generatePort(Control,name+"Port1",
 			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),
 			Geometry::Vec3D(0,0,-1));
 
@@ -950,28 +951,28 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.setPipe(port1Radius, port1WallThick);
   PipeGen.setAFlange(1.0, 0.0);
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,viewKey+"BeamStopOutPipe",
+  PipeGen.generatePipe(Control,viewKey+"BSCollOutPipe",
     port1Length-port1ArtificialSplitLength);
 
   // TODO: Material currently set to pure tungsten (default), but should be DENSIMET [13].
   BremGen.centre();
   BremGen.setCube(10.0,10.0); // [13]
   BremGen.setAperature(0.4); // [13]
-  BremGen.generateBlock(Control,viewKey+"BeamStop",
+  BremGen.generateBlock(Control,viewKey+"BSColl",
     tubeLength/2.0-tubeLengthAboveOpticalAxis);
-  Control.addVariable(viewKey+"BeamStopXAngle",90);
+  Control.addVariable(viewKey+"BSCollXAngle",90);
 
   // Tube for Monochromatic Slits
   const double monoSlitsTubeWallThick = 2.0; // [22]
   // CF150 to fit flange B of port 1 [22]
   SimpleTubeGen.setPipe(
     CF150::flangeRadius-monoSlitsTubeWallThick,monoSlitsTubeWallThick,1.0,0.0); // [22]
-  pipeName = viewKey+"MonoSlitsTube";
+  name = viewKey+"MonoSlitsTube";
   const double monoSlitsTubeLength = 2.0*(
     danmaxVar::absY::monoSlits-danmaxVar::absY::bremColl2-port1Length);
   SimpleTubeGen.generateTube(
-    Control,pipeName,monoSlitsTubeLength);
-  Control.addVariable(pipeName+"NPorts",4);
+    Control,name,monoSlitsTubeLength);
+  Control.addVariable(name+"NPorts",4);
   PItemGen.setCF<CF16>(12.0); // Estimated
   PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
   const double bladeThick = 0.2; // [22]
@@ -980,16 +981,16 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   const double bladeWidth = 5.0; // [13]
   const double innerBladePos = 0.5*(bladeXZDist-bladeOffset-bladeThick);
   const double outerBladePos = 0.5*(bladeXZDist+bladeOffset+bladeThick);
-  PItemGen.generatePort(Control,pipeName+"Port0",
+  PItemGen.generatePort(Control,name+"Port0",
 			Geometry::Vec3D(0,-outerBladePos,0.5*bladeWidth),
 			Geometry::Vec3D(-1,0,0));
-  PItemGen.generatePort(Control,pipeName+"Port1",
+  PItemGen.generatePort(Control,name+"Port1",
 			Geometry::Vec3D(0,-innerBladePos,-0.5*bladeWidth),
 			Geometry::Vec3D(-1,0,0));
-  PItemGen.generatePort(Control,pipeName+"Port2",
+  PItemGen.generatePort(Control,name+"Port2",
 			Geometry::Vec3D(0.5*bladeWidth,innerBladePos,0),
 			Geometry::Vec3D(0,0,1));
-  PItemGen.generatePort(Control,pipeName+"Port3",
+  PItemGen.generatePort(Control,name+"Port3",
 			Geometry::Vec3D(-0.5*bladeWidth,outerBladePos,0),
 			Geometry::Vec3D(0,0,1));
 
