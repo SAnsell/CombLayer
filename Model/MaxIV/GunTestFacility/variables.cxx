@@ -72,54 +72,58 @@ constexpr double ystep = 24.1+86.5;
 
 namespace setVariable
 {
-  double getBellowLength(const double lTot,
+
+double
+getBellowLength(const double lTot,
+		const double flangeALength, const double flangeBLength,
+		const double step)
+{
+  return lTot - flangeALength - flangeBLength - step*2.0;
+}
+
+double
+getBellowThick(const unsigned int N,
+	       const double r, const double R, const double pipeThick,
+	       const double lTot,
+	       const double flangeALength, const double flangeBLength,
+	       const double step)
+{
+  const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
+  const double stepLength = l/N;
+  const double halfStep = stepLength/2.0;
+  const double maxThick = R-r-pipeThick; // thickness at max compression
+  return sqrt(maxThick*maxThick - halfStep*halfStep); // actual thickness
+}
+  
+double
+getBellowDensityFraction(const std::string& name, const unsigned int N, const double t,
+			 const double r, const double R, const double lTot,
 			 const double flangeALength, const double flangeBLength,
 			 const double step)
-  {
-    return lTot - flangeALength - flangeBLength - step*2.0;
-  }
-
-  double getBellowThick(const unsigned int N,
-			const double r, const double R, const double pipeThick,
-			const double lTot,
-			const double flangeALength, const double flangeBLength,
-			const double step)
-  {
-    const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
-    const double stepLength = l/N;
-    const double halfStep = stepLength/2.0;
-    const double maxThick = R-r-pipeThick; // thickness at max compression
-    return sqrt(maxThick*maxThick - halfStep*halfStep); // actual thickness
-  }
-
-  double getBellowDensityFraction(const std::string& name, const unsigned int N, const double t,
-				  const double r, const double R, const double lTot,
-				  const double flangeALength, const double flangeBLength,
-				  const double step)
-  /*!
-    Return bellow density fraction
-    \param N :: number of the folding structure maxima
-    \param t :: thickness of the folding structure material (bellow wall thickness)
-    \param r :: inner radius
-    \param R :: outer radius
-    \param lTot :: total bellow length (with flanges and steps)
-    \param flangeALength :: flange A length
-    \param flangeBLength :: flange B length
-    \param step :: bellow step
-
-   */
-  {
-    const double L = N*2*t; // max compressed length
-    // const double V = M_PI*(R*R-r*r)*L; // volume at max compression
-    const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
-    const double val = L/l;
-    if (val>1.0)
-      throw ColErr::RangeError<double>(val,0.0,1,"Bellow "+name+" density fraction is above 1.");
-
-    ELog::EM << "Density fraction: " << name << " " << val*100.0 << ELog::endDiag;
-
-    return val;
-  }
+/*!
+  Return bellow density fraction
+  \param N :: number of the folding structure maxima
+  \param t :: thickness of the folding structure material (bellow wall thickness)
+  \param r :: inner radius
+  \param R :: outer radius
+  \param lTot :: total bellow length (with flanges and steps)
+  \param flangeALength :: flange A length
+  \param flangeBLength :: flange B length
+  \param step :: bellow step
+  
+*/
+{
+  const double L = N*2*t; // max compressed length
+  // const double V = M_PI*(R*R-r*r)*L; // volume at max compression
+  const double l = getBellowLength(lTot, flangeALength, flangeBLength, step);
+  const double val = L/l;
+  if (val>1.0)
+    throw ColErr::RangeError<double>(val,0.0,1,"Bellow "+name+" density fraction is above 1.");
+  
+  ELog::EM << "Density fraction: " << name << " " << val*100.0 << ELog::endDiag;
+  
+  return val;
+}
 
   void BuildingBVariables(FuncDataBase& Control, const std::string& name)
     /*!
@@ -324,371 +328,374 @@ namespace setVariable
     Control.addVariable(name+"ConcreteDoorXStep",138.072); // to set the door-wall distance to 12 cm as measured by AR 241021
   }
 
-  void BeamLineVariables(FuncDataBase& Control)
+void
+BeamLineVariables(FuncDataBase& Control)
   /*!
     Set Gun Test Facility Building variables
     \param Control :: Database to use
     \param name :: name prefix
   */
-  {
-    Control.addVariable("GTFLineOuterLeft", 100.0);
+{
+  Control.addVariable("GTFLineOuterLeft", 100.0);
+  
+  std::string name = "IonPumpA";
 
-    std::string name = "IonPumpA";
-
-    // Ion Pump produced by Gamma Vacuum
-    Control.addVariable(name+"XStep",xstep - (length2)*sin(xyangle*M_PI/180.0));
-    Control.addVariable(name+"YStep",ystep);
-    Control.addVariable(name+"XYAngle",-xyangle);
-    Control.addVariable(name+"Length",17.2);
-    Control.addVariable(name+"Height",13.0);
-    Control.addVariable(name+"WallThick",1.3);
-    Control.addVariable(name+"MainMat","Void");
-    Control.addVariable(name+"WallMat","Stainless304L"); // dummy TODO
-    Control.addVariable(name+"PistonMat","Stainless304"); // dummy TODO
-
-    Control.addVariable(name+"PistonWidth",26.3);
-    Control.addVariable(name+"PistonHeight",5.0);
-    Control.addVariable(name+"PistonBaseHeight",12.0);
-    Control.addVariable(name+"PistonBaseThick",4.5);
-    Control.addVariable(name+"PistonLength",15.0);
-    Control.addVariable(name+"FlangeRadius", 7.5);
-    Control.addVariable(name+"FlangeThick", 2.1);
-    Control.addVariable(name+"FlangeTubeRadius", 5.1); // CF100? TODO: check radius
-    Control.addVariable(name+"FlangeTubeThick", 0.2);
-    Control.addVariable(name+"FlangeTubeLength", 6.9);
-
-    Control.copyVarSet("IonPumpA", "IonPumpB");
-    Control.addVariable("IonPumpBYStep",0.0);
-    Control.addVariable("IonPumpBXStep",0.0);
-
-    Control.copyVarSet("IonPumpA", "PumpBelowGun");
-    Control.addVariable("PumpBelowGunYStep",0.0);
-    Control.addVariable("PumpBelowGunXStep",0.0);
-    Control.addVariable("PumpBelowGunFlangeTubeRadius", setVariable::CF35_TDC::innerRadius);
-    Control.addVariable("PumpBelowGunFlangeRadius", setVariable::CF35_TDC::flangeRadius);
-    Control.addVariable("PumpBelowGunZClearance", 3.0);
-    Control.addVariable("PumpBelowGunFlangeThick", setVariable::CF35_TDC::flangeLength);
-    Control.addVariable("PumpBelowGunPistonWidth",9.7); // approx
-
-    name = "ExtensionA";
-    setVariable::PipeGenerator PipeGen;
-    PipeGen.setMat("Stainless316L", "Stainless304L");
-
-    PipeGen.setNoWindow();   // no window
-    PipeGen.setCF<setVariable::CF100>();
-    PipeGen.setOuterVoid(1);
-    PipeGen.generatePipe(Control,name,11.0);
-    Control.addVariable(name+"PipeThick", 0.2);
-
-    name = "ExtensionB";
-    PipeGen.setNoWindow();   // no window
-    PipeGen.setCF<setVariable::CF100>();
-    PipeGen.generatePipe(Control,name,14.3);
-    Control.addVariable(name+"Radius", 5.0);
-    Control.addVariable(name+"PipeThick", 0.2);
-    Control.addVariable(name+"FlangeAType", 1);
-    Control.addVariable(name+"FlangeBType", 1);
-    Control.addVariable(name+"OuterVoid", 1);
-    Control.addParse<double>(name+"FlangeARadius", name+"Radius"+"+"+name+"PipeThick");
-    Control.addVariable(name+"FlangeBRadius", 7.5);
-
-
-    setVariable::RFGunGenerator RFGen;
-    RFGen.generate(Control, "Gun");
-
-    name = "PipeBelowGun";
-    PipeGen.setCF<setVariable::CF25>(); // CF25 - inner radius is OK
-    PipeGen.generatePipe(Control,name,6.3); // measured approx (difficult to measure)
-    Control.addVariable(name+"PipeThick", 0.4); // measured
-    // These are correct radius and lengh, but then the pipe cuts two more cells,
-    // so that we leave it to CF25 defaults in order to simplify geometry:
-    //    Control.addVariable(name+"FlangeBRadius", 3.45);
-    Control.addVariable(name+"FlangeBLength", 1.2); // measured
-    Control.addParse<double>(name+"FlangeARadius", name+"Radius"+"+"+name+"PipeThick");
-
-
-    name = "PipeA";
-    PipeGen.setCF<setVariable::CF63>(); // dummy TODO - is it a conic pipe?
-    PipeGen.generatePipe(Control,name,27.0); // CAD
-    Control.addVariable(name+"PipeThick", 0.2);
-    Control.addVariable(name+"FlangeALength", 0.0);
-    Control.addVariable(name+"OuterVoid", 0);
-
-    name = "Solenoid";
-    setVariable::SolenoidGenerator SolGen;
-    SolGen.generate(Control,name);
-    Control.addVariable(name+"YStep", 0.0);
-
-    // 48.2 XHV All-Metal Gate Valve
-    // https://www.vatvalve.com/series/extreme-high-vacuum-all-metal-gate-valve-DN-63-100-160?_locale=en&region=SE
-    name = "Gate";
-    GTFGateValveGenerator GateGen;
-
-    // Gate blade: http://localhost:8080/maxiv/work-log/100hz/gtf/2d-drawings/vat-xhv-gate-valve-48_2-dn63.png/view
-    GateGen.setOuter(4.5-0.5, 15.5-1.0, 18.0-0.5+1, 8.2-0.5); // measured (-0.5 to account for wall thick, +1 for the square hutch)
-    GateGen.setBladeMat("EN14435"); // email from AMG 240702
-    GateGen.setBladeThick(1.09); // email from AMG 240702
-    GateGen.setAPortCF<CF63>(); // TODO
-    GateGen.setBPortCF<CF63>(); // TODO
-    //    GateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO
-    GateGen.generateValve(Control,name,0.0,0);
-    Control.addVariable(name+"PortARadius", 3.15); // measured
-    Control.addVariable(name+"PortBRadius", 3.15); // measured
-    Control.addVariable(name+"PortAThick", 5.8); // measured
-    Control.addVariable(name+"PortBThick", 5.8); // measured
-    Control.addVariable(name+"ClampMat", "Iron");  // guess TODO
-    Control.addVariable(name+"BladeRadius", 3.5); // email from AMG 240702 (calculated based on other measurements)
-
-    name = "PipeB";
-    PipeGen.setCF<setVariable::CF63>();
-    PipeGen.generatePipe(Control,name,7.9+CF63::flangeLength); // measured
-    Control.addVariable(name+"PipeThick", 0.2);
-    Control.addVariable(name+"FlangeBLength", 0.0);
-
-    setVariable::BellowGenerator BellowGen;
-    BellowGen.setMat("Stainless316L", 8.0);
-
-    name = "BellowBelowGun";
-    BellowGen.setCF<setVariable::CF35_TDC>(); // CF35 - measured
-    BellowGen.generateBellow(Control,name,15.0); // measured CAD
-    Control.addVariable(name+"BellowStep", 3.0); // guess
-
-    name = "BellowA";
-    BellowGen.setCF<setVariable::CF63>();
-    BellowGen.generateBellow(Control,name,2.2); // approx to have correct y-offset of current transormer
-    Control.addVariable(name+"PipeThick", 0.2);
-    Control.addVariable(name+"FlangeALength", 0.0);
-    Control.addVariable(name+"FlangeBLength", 0.0);
-    Control.addVariable(name+"BellowStep", 0.1); // approx
-
-    name = "CurrentTransformer";
-    setVariable::CurrentTransformerGenerator CMGen;
-    CMGen.generate(Control,name);
-
-    name = "LaserChamber";
-    constexpr double lcRadius = 5.0; // measured
-    constexpr double lcWall = 0.2; // measured
-    setVariable::PipeTubeGenerator PipeTubeGen;
-    PipeTubeGen.setMat("Stainless304L"); // discussion 2409: low carbon stainless steel
-    PipeTubeGen.setCapMat("Stainless304L"); // discussion 2409: "low carbon stainless steel"
-    PipeTubeGen.setCF<CF63>();
-    PipeTubeGen.setCap();
-    PipeTubeGen.generateTube(Control,name,12.0);
-    Control.addVariable(name+"Radius",lcRadius);
-    Control.addVariable(name+"WallThick",lcWall);
-    Control.addVariable(name+"FlangeACapThick",0.0);
-    Control.addVariable(name+"FlangeBCapThick",0.0);
-    Control.addVariable(name+"FlangeALength",1.3); // measured
-    Control.addVariable(name+"FlangeARadius",6.0); // measured
-    Control.addVariable(name+"FlangeBLength",0.0);
-    Control.addVariable(name+"NPorts",4);
-
-    setVariable::PortItemGenerator PItemGen;
-    PItemGen.setWallMat("Stainless304L"); // discussion 2409: "low carbon stainless steel"
-    constexpr double dr = lcRadius-lcWall;
-    PItemGen.setCF<setVariable::CF35_TDC>(dr);
-    PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"Stainless304L");
-    PItemGen.generatePort(Control,name+"Port0",
+  // Ion Pump produced by Gamma Vacuum
+  Control.addVariable(name+"XStep",xstep - (length2)*sin(xyangle*M_PI/180.0));
+  Control.addVariable(name+"YStep",ystep);
+  Control.addVariable(name+"XYAngle",-xyangle);
+  Control.addVariable(name+"Length",17.2);
+  Control.addVariable(name+"Height",13.0);
+  Control.addVariable(name+"WallThick",1.3);
+  Control.addVariable(name+"MainMat","Void");
+  Control.addVariable(name+"WallMat","Stainless304L"); // dummy TODO
+  Control.addVariable(name+"PistonMat","Stainless304"); // dummy TODO
+  
+  Control.addVariable(name+"PistonWidth",26.3);
+  Control.addVariable(name+"PistonHeight",5.0);
+  Control.addVariable(name+"PistonBaseHeight",12.0);
+  Control.addVariable(name+"PistonBaseThick",4.5);
+  Control.addVariable(name+"PistonLength",15.0);
+  Control.addVariable(name+"FlangeRadius", 7.5);
+  Control.addVariable(name+"FlangeThick", 2.1);
+  Control.addVariable(name+"FlangeTubeRadius", 5.1); // CF100? TODO: check radius
+  Control.addVariable(name+"FlangeTubeThick", 0.2);
+  Control.addVariable(name+"FlangeTubeLength", 6.9);
+  
+  Control.copyVarSet("IonPumpA", "IonPumpB");
+  Control.addVariable("IonPumpBYStep",0.0);
+  Control.addVariable("IonPumpBXStep",0.0);
+  
+  Control.copyVarSet("IonPumpA", "PumpBelowGun");
+  Control.addVariable("PumpBelowGunYStep",0.0);
+  Control.addVariable("PumpBelowGunXStep",0.0);
+  Control.addVariable("PumpBelowGunFlangeTubeRadius", setVariable::CF35_TDC::innerRadius);
+  Control.addVariable("PumpBelowGunFlangeRadius", setVariable::CF35_TDC::flangeRadius);
+  Control.addVariable("PumpBelowGunZClearance", 3.0);
+  Control.addVariable("PumpBelowGunFlangeThick", setVariable::CF35_TDC::flangeLength);
+  Control.addVariable("PumpBelowGunPistonWidth",9.7); // approx
+  
+  name = "ExtensionA";
+  setVariable::PipeGenerator PipeGen;
+  PipeGen.setMat("Stainless316L", "Stainless304L");
+  
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.setOuterVoid(1);
+  PipeGen.generatePipe(Control,name,11.0);
+  Control.addVariable(name+"PipeThick", 0.2);
+  
+  name = "ExtensionB";
+  PipeGen.setNoWindow();   // no window
+  PipeGen.setCF<setVariable::CF100>();
+  PipeGen.generatePipe(Control,name,14.3);
+  Control.addVariable(name+"Radius", 5.0);
+  Control.addVariable(name+"PipeThick", 0.2);
+  Control.addVariable(name+"FlangeAType", 1);
+  Control.addVariable(name+"FlangeBType", 1);
+  Control.addVariable(name+"OuterVoid", 1);
+  Control.addParse<double>(name+"FlangeARadius", name+"Radius"+"+"+name+"PipeThick");
+  Control.addVariable(name+"FlangeBRadius", 7.5);
+  
+  
+  setVariable::RFGunGenerator RFGen;
+  RFGen.generate(Control, "Gun");
+  
+  name = "PipeBelowGun";
+  PipeGen.setCF<setVariable::CF25>(); // CF25 - inner radius is OK
+  PipeGen.generatePipe(Control,name,6.3); // measured approx (difficult to measure)
+  Control.addVariable(name+"PipeThick", 0.4); // measured
+  // These are correct radius and lengh, but then the pipe cuts two more cells,
+  // so that we leave it to CF25 defaults in order to simplify geometry:
+  //    Control.addVariable(name+"FlangeBRadius", 3.45);
+  Control.addVariable(name+"FlangeBLength", 1.2); // measured
+  Control.addParse<double>(name+"FlangeARadius", name+"Radius"+"+"+name+"PipeThick");
+  
+  
+  name = "PipeA";
+  PipeGen.setCF<setVariable::CF63>(); // dummy TODO - is it a conic pipe?
+  PipeGen.generatePipe(Control,name,27.0); // CAD
+  Control.addVariable(name+"PipeThick", 0.2);
+  Control.addVariable(name+"FlangeALength", 0.0);
+  Control.addVariable(name+"OuterVoid", 0);
+  
+  name = "Solenoid";
+  setVariable::SolenoidGenerator SolGen;
+  SolGen.generate(Control,name);
+  Control.addVariable(name+"YStep", 0.0);
+  
+  // 48.2 XHV All-Metal Gate Valve
+  // https://www.vatvalve.com/series/extreme-high-vacuum-all-metal-gate-valve-DN-63-100-160?_locale=en&region=SE
+  name = "Gate";
+  GTFGateValveGenerator GateGen;
+  
+  // Gate blade: http://localhost:8080/maxiv/work-log/100hz/gtf/2d-drawings/vat-xhv-gate-valve-48_2-dn63.png/view
+  GateGen.setOuter(4.5-0.5, 15.5-1.0, 18.0-0.5+1, 8.2-0.5); // measured (-0.5 to account for wall thick, +1 for the square hutch)
+  GateGen.setBladeMat("EN14435"); // email from AMG 240702
+  GateGen.setBladeThick(1.09); // email from AMG 240702
+  GateGen.setAPortCF<CF63>(); // TODO
+  GateGen.setBPortCF<CF63>(); // TODO
+  //    GateGen.setPortPairCF<CF40,CF63>(); // inner-outer TODO
+  GateGen.generateValve(Control,name,0.0,0);
+  Control.addVariable(name+"PortARadius", 3.15); // measured
+  Control.addVariable(name+"PortBRadius", 3.15); // measured
+  Control.addVariable(name+"PortAThick", 5.8); // measured
+  Control.addVariable(name+"PortBThick", 5.8); // measured
+  Control.addVariable(name+"ClampMat", "Iron");  // guess TODO
+  Control.addVariable(name+"BladeRadius", 3.5); // email from AMG 240702 (calculated based on other measurements)
+  
+  name = "PipeB";
+  PipeGen.setCF<setVariable::CF63>();
+  PipeGen.generatePipe(Control,name,7.9+CF63::flangeLength); // measured
+  Control.addVariable(name+"PipeThick", 0.2);
+  Control.addVariable(name+"FlangeBLength", 0.0);
+  
+  setVariable::BellowGenerator BellowGen;
+  BellowGen.setMat("Stainless316L", 8.0);
+  
+  name = "BellowBelowGun";
+  BellowGen.setCF<setVariable::CF35_TDC>(); // CF35 - measured
+  BellowGen.generateBellow(Control,name,15.0); // measured CAD
+  Control.addVariable(name+"BellowStep", 3.0); // guess
+  
+  name = "BellowA";
+  BellowGen.setCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,name,2.2); // approx to have correct y-offset of current transormer
+  Control.addVariable(name+"PipeThick", 0.2);
+  Control.addVariable(name+"FlangeALength", 0.0);
+  Control.addVariable(name+"FlangeBLength", 0.0);
+  Control.addVariable(name+"BellowStep", 0.1); // approx
+  
+  name = "CurrentTransformer";
+  setVariable::CurrentTransformerGenerator CMGen;
+  CMGen.generate(Control,name);
+  
+  name = "LaserChamber";
+  constexpr double lcRadius = 5.0; // measured
+  constexpr double lcWall = 0.2; // measured
+  setVariable::PipeTubeGenerator PipeTubeGen;
+  PipeTubeGen.setMat("Stainless304L"); // discussion 2409: low carbon stainless steel
+  PipeTubeGen.setCapMat("Stainless304L"); // discussion 2409: "low carbon stainless steel"
+  PipeTubeGen.setCF<CF63>();
+  PipeTubeGen.setCap();
+  PipeTubeGen.generateTube(Control,name,12.0);
+  Control.addVariable(name+"Radius",lcRadius);
+  Control.addVariable(name+"WallThick",lcWall);
+  Control.addVariable(name+"FlangeACapThick",0.0);
+  Control.addVariable(name+"FlangeBCapThick",0.0);
+  Control.addVariable(name+"FlangeALength",1.3); // measured
+  Control.addVariable(name+"FlangeARadius",6.0); // measured
+  Control.addVariable(name+"FlangeBLength",0.0);
+  Control.addVariable(name+"NPorts",4);
+  
+  setVariable::PortItemGenerator PItemGen;
+  PItemGen.setWallMat("Stainless304L"); // discussion 2409: "low carbon stainless steel"
+  constexpr double dr = lcRadius-lcWall;
+  PItemGen.setCF<setVariable::CF35_TDC>(dr);
+  PItemGen.setPlate(setVariable::CF35_TDC::flangeLength,"Stainless304L");
+  PItemGen.generatePort(Control,name+"Port0",
 			  Geometry::Vec3D(-dr,0,0),
-			  Geometry::Vec3D(-1,0,0));
-    //    Control.addVariable(name+"Port0CapThick",0.0);
-    Control.addVariable(name+"Port0FlangeLength",0); // guess TODO
-    Control.addVariable(name+"Port0WindowThick",1.0); // guess TODO
-    Control.addVariable(name+"Port0WindowRadius",setVariable::CF35_TDC::innerRadius); // guess TODO
+			Geometry::Vec3D(-1,0,0));
+  //    Control.addVariable(name+"Port0CapThick",0.0);
+  Control.addVariable(name+"Port0FlangeLength",0); // guess TODO
+  Control.addVariable(name+"Port0WindowThick",1.0); // guess TODO
+  Control.addVariable(name+"Port0WindowRadius",setVariable::CF35_TDC::innerRadius); // guess TODO
+  
+  PItemGen.generatePort(Control,name+"Port1",
+			Geometry::Vec3D(dr,0,0),
+			Geometry::Vec3D(1,0,0));
+  const std::set<std::string> p1vars = {"FlangeLength", "WindowThick", "WindowRadius"};
+  std::for_each(p1vars.begin(), p1vars.end(),
+		[&](const auto &m) {
+		  Control.copyVar(name+"Port1"+m,name+"Port0"+m);
+		});
+  
+  PItemGen.generatePort(Control,name+"Port2",
+			Geometry::Vec3D(0,0,dr),
+			Geometry::Vec3D(0,0,1));
+  
+  PItemGen.setCF<setVariable::CF66_TDC>(dr);
+  PItemGen.generatePort(Control,name+"Port3",
+			Geometry::Vec3D(0,0.7,-dr),
+			Geometry::Vec3D(0,0,-1));
+  Control.addVariable(name+"Port3Radius",3.3);
+  Control.addVariable(name+"Port3OuterVoid",0);
+  Control.addVariable(name+"Port3Length",9.5); // measured approx
+  Control.addVariable(name+"Port3CapThick",0.0);
+  Control.addVariable(name+"Port3FlangeRadius",5.2);
+  
+  
+  name += "BackPlate";
+  setVariable::FlangePlateGenerator FPGen;
+  
+  FPGen.setCF<setVariable::CF63>(1.5); // measured
+  FPGen.setFlange(lcRadius+lcWall, 1.8);  // drawing 005967-2
+  FPGen.generateFlangePlate(Control,name);
+  Control.addVariable(name+"InnerRadius",0.9); // drawing 005967-2
+  
+  PipeGen.setCF<setVariable::CF40_22>();
+  PipeGen.setAFlange(lcRadius+lcWall, 1.3); // dummy
+  PipeGen.setBFlange(setVariable::CF40::flangeRadius, setVariable::CF40::flangeLength); // dummy
+  PipeGen.generatePipe(Control,"PipeC",7.6+CF63::flangeLength); // TODO: dummy
+  Control.addVariable("PipeCRadius",0.9); // same as BackPlateInnerRadius
+  Control.addVariable("PipeCPipeThick",0.2);
+  Control.addVariable("PipeCFlangeALength", 0.0);
+  
+  
+  setVariable::YagUnitGenerator YagUnitGen;
+  setVariable::YagScreenGenerator YagScreenGen;
+  
+  constexpr double yagPortRadius = 1.965; // email from EM 240930: 39.3mm/2 = 1.965 cm
+  constexpr double yagPortThick = 0.15; // email from EM 240930: (42.3-39.3)mm/2 = 0.15 cm
+  YagUnitGen.setPort(yagPortRadius, yagPortThick, 3.5, 1.3);
+  
+  YagUnitGen.generateYagUnit(Control,"YagUnitA");
+  Control.addVariable("YagUnitAYAngle",180.0);
+  Control.addVariable("YagUnitABackLength",7.9);
+  Control.addVariable("YagUnitAFrontLength",12.1);
+  YagScreenGen.generateScreen(Control,"YagScreenA",0);
+  Control.addVariable("YagScreenAYAngle",-90.0);
+  
+  // Bellows in the emittance meter:
+  // email from EM 240930:
+  constexpr double bellowWallThick = 0.03;
+  constexpr double bellowInnerR = 5.3; // D=106 mm => R=5.3 cm
+  constexpr double bellowOuterR = 7.5; // D=150 mm => R=7.5 cm
+  
+  constexpr double bellowPipeThick = 0.15; // dummy
+  constexpr double bellowStep = 0.1; // approx (TODO)
+  constexpr double bellowFlangeLength = 0.5; // measured
 
-    PItemGen.generatePort(Control,name+"Port1",
-			  Geometry::Vec3D(dr,0,0),
-			  Geometry::Vec3D(1,0,0));
-    const std::set<std::string> p1vars = {"FlangeLength", "WindowThick", "WindowRadius"};
-    std::for_each(p1vars.begin(), p1vars.end(),
-		  [&](const auto &m) {
-		    Control.copyVar(name+"Port1"+m,name+"Port0"+m);
-		  });
+  //    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
 
-    PItemGen.generatePort(Control,name+"Port2",
-			  Geometry::Vec3D(0,0,dr),
-			  Geometry::Vec3D(0,0,1));
+  const char slitLocation='E'; // A: most upstream, E: most downstream
 
-    PItemGen.setCF<setVariable::CF66_TDC>(dr);
-    PItemGen.generatePort(Control,name+"Port3",
-			  Geometry::Vec3D(0,0.7,-dr),
-			  Geometry::Vec3D(0,0,-1));
-    Control.addVariable(name+"Port3Radius",3.3);
-    Control.addVariable(name+"Port3OuterVoid",0);
-    Control.addVariable(name+"Port3Length",9.5); // measured approx
-    Control.addVariable(name+"Port3CapThick",0.0);
-    Control.addVariable(name+"Port3FlangeRadius",5.2);
+  double bellowBLength, bellowDLength;
+  switch (slitLocation) {
+  case 'A':
+    bellowBLength = 20.0;
+    bellowDLength = 164.1; // AR 241212
+    break;
+  case 'B':
+    bellowBLength = 50.1;
+    bellowDLength = 134.0;
+    break;
+  case 'C':
+    bellowBLength = 80.2;
+    bellowDLength = 103.9;
+    break;
+  case 'D':
+    bellowBLength = 110.3;
+    bellowDLength = 73.8;
+    break;
+  case 'E':
+    bellowBLength = 140.4;
+    bellowDLength = 43.7;
+    break;
+  }
 
+  name = "BellowB";
+  //constexpr double bellowBLength = 20.0; // most upstream location of the slits (see also bellowDLength)
+  BellowGen.setFlange(bellowOuterR, bellowFlangeLength, yagPortRadius);
 
-    name += "BackPlate";
-    setVariable::FlangePlateGenerator FPGen;
+  constexpr unsigned int bellowBN = 202; // AR 241212
+  const double bellowBThick =
+    getBellowThick(bellowBN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowBLength,
+		   bellowFlangeLength, bellowFlangeLength, bellowStep);
+  BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowBThick,bellowBN);
 
-    FPGen.setCF<setVariable::CF63>(1.5); // measured
-    FPGen.setFlange(lcRadius+lcWall, 1.8);  // drawing 005967-2
-    FPGen.generateFlangePlate(Control,name);
-    Control.addVariable(name+"InnerRadius",0.9); // drawing 005967-2
+  const double bellowBFrac = getBellowDensityFraction(name, bellowBN, bellowWallThick,
+						      bellowInnerR, bellowOuterR,
+						      bellowBLength, bellowFlangeLength, bellowFlangeLength,
+						      bellowStep);
+  BellowGen.setMat("Stainless316L", bellowBFrac*100.0);
+  BellowGen.generateBellow(Control,name,bellowBLength);
+  Control.addVariable(name+"YAngle",180.0);
 
-    PipeGen.setCF<setVariable::CF40_22>();
-    PipeGen.setAFlange(lcRadius+lcWall, 1.3); // dummy
-    PipeGen.setBFlange(setVariable::CF40::flangeRadius, setVariable::CF40::flangeLength); // dummy
-    PipeGen.generatePipe(Control,"PipeC",7.6+CF63::flangeLength); // TODO: dummy
-    Control.addVariable("PipeCRadius",0.9); // same as BackPlateInnerRadius
-    Control.addVariable("PipeCPipeThick",0.2);
-    Control.addVariable("PipeCFlangeALength", 0.0);
+  YagUnitGen.generateYagUnit(Control,"YagUnitB");
+  // Control.addVariable("YagUnitBYAngle",180.0);
+  YagScreenGen.generateScreen(Control,"YagScreenB",0);
+  Control.addVariable("YagScreenBYAngle",-90.0);
 
+  setVariable::SlitsMaskGenerator slitsGen;
+  slitsGen.generate(Control, "Slits");
 
-    setVariable::YagUnitGenerator YagUnitGen;
-    setVariable::YagScreenGenerator YagScreenGen;
+  name="BellowC";
+  constexpr double bellowCLength = 26.0;
+  // Bellow C folding structure has 52 folds
+  constexpr unsigned int bellowCN = 52;
+  const double bellowCThick =
+    getBellowThick(bellowCN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowCLength,
+		   bellowFlangeLength, bellowFlangeLength, bellowStep);
+  BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowCThick);
+  const double bellowCFrac = getBellowDensityFraction(name,bellowCN, bellowWallThick,
+						      bellowInnerR, bellowOuterR,
+						      bellowCLength, bellowFlangeLength, bellowFlangeLength,
+						      bellowStep);
+  BellowGen.setMat("Stainless316L", bellowCFrac*100.0);
+  BellowGen.generateBellow(Control,name,bellowCLength);
+  Control.addVariable("BellowCNFolds",static_cast<int>(bellowCN));
+  Control.addVariable(name+"YAngle",-180.0);
 
-    constexpr double yagPortRadius = 1.965; // email from EM 240930: 39.3mm/2 = 1.965 cm
-    constexpr double yagPortThick = 0.15; // email from EM 240930: (42.3-39.3)mm/2 = 0.15 cm
-    YagUnitGen.setPort(yagPortRadius, yagPortThick, 3.5, 1.3);
+  name="YagUnitC";
+  YagUnitGen.generateYagUnit(Control,name);
+  Control.addVariable(name+"FrontLength",7.2);
+  Control.addVariable(name+"BackLength",10.4);
+  YagScreenGen.generateScreen(Control,"YagScreenC",0);
+  Control.addVariable("YagScreenCYAngle",-90.0);
 
-    YagUnitGen.generateYagUnit(Control,"YagUnitA");
-    Control.addVariable("YagUnitAYAngle",180.0);
-    Control.addVariable("YagUnitABackLength",7.9);
-    Control.addVariable("YagUnitAFrontLength",12.1);
-    YagScreenGen.generateScreen(Control,"YagScreenA",0);
-    Control.addVariable("YagScreenAYAngle",-90.0);
+  // Bellow D
+  name="BellowD";
+  constexpr unsigned int bellowDN = 328; // 328 is counted by KB
+  const double bellowDThick =
+    getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
+		   bellowFlangeLength, bellowFlangeLength, bellowStep);
+  BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowDThick);
+  const double bellowDFrac = getBellowDensityFraction(name,bellowDN, bellowWallThick,
+						      bellowInnerR, bellowOuterR,
+						      bellowDLength, bellowFlangeLength, bellowFlangeLength,
+						      bellowStep);
+  BellowGen.setMat("Stainless316L", bellowDFrac*100.0);
+  BellowGen.generateBellow(Control,name,bellowDLength); // approx
+  Control.addVariable("BellowDNFolds",383.0); // KB: 328
 
-    // Bellows in the emittance meter:
-    // email from EM 240930:
-    constexpr double bellowWallThick = 0.03;
-    constexpr double bellowInnerR = 5.3; // D=106 mm => R=5.3 cm
-    constexpr double bellowOuterR = 7.5; // D=150 mm => R=7.5 cm
+  YagUnitGen.generateYagUnit(Control,"YagUnitD");
+  Control.addVariable("YagUnitDFrontLength",8.1);
+  Control.addVariable("YagUnitDBackLength",9.5);
+  // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
+  // 1.2 cm: current installed thickness
+  Control.addVariable("YagUnitDBackCapThick", 1.2);
+  YagScreenGen.generateScreen(Control,"YagScreenD",0);
+  Control.addVariable("YagScreenDYAngle",-90.0);
 
-    constexpr double bellowPipeThick = 0.15; // dummy
-    constexpr double bellowStep = 0.1; // approx (TODO)
-    constexpr double bellowFlangeLength = 0.5; // measured
+  setVariable::GTFBeamDumpGenerator DumpGen;
+  DumpGen.generate(Control,"Dump");
+  Control.addVariable("DumpYAngle",180.0);
+  Control.addVariable("DumpYStep",-3.7);
 
-    //    constexpr double bellowThick = bellowOuterR-bellowInnerR-bellowPipeThick;
-
-    const char slitLocation='E'; // A: most upstream, E: most downstream
-
-    double bellowBLength, bellowDLength;
-    switch (slitLocation) {
-    case 'A':
-      bellowBLength = 20.0;
-      bellowDLength = 164.1; // AR 241212
-      break;
-    case 'B':
-      bellowBLength = 50.1;
-      bellowDLength = 134.0;
-      break;
-    case 'C':
-      bellowBLength = 80.2;
-      bellowDLength = 103.9;
-      break;
-    case 'D':
-      bellowBLength = 110.3;
-      bellowDLength = 73.8;
-      break;
-    case 'E':
-      bellowBLength = 140.4;
-      bellowDLength = 43.7;
-      break;
-    }
-
-    name = "BellowB";
-    //constexpr double bellowBLength = 20.0; // most upstream location of the slits (see also bellowDLength)
-    BellowGen.setFlange(bellowOuterR, bellowFlangeLength, yagPortRadius);
-
-    constexpr unsigned int bellowBN = 202; // AR 241212
-    const double bellowBThick =
-      getBellowThick(bellowBN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowBLength,
-		     bellowFlangeLength, bellowFlangeLength, bellowStep);
-    BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowBThick,bellowBN);
-
-    const double bellowBFrac = getBellowDensityFraction(name, bellowBN, bellowWallThick,
-						 bellowInnerR, bellowOuterR,
-						 bellowBLength, bellowFlangeLength, bellowFlangeLength,
-						 bellowStep);
-    BellowGen.setMat("Stainless316L", bellowBFrac*100.0);
-    BellowGen.generateBellow(Control,name,bellowBLength);
-    Control.addVariable(name+"YAngle",180.0);
-
-    YagUnitGen.generateYagUnit(Control,"YagUnitB");
-    // Control.addVariable("YagUnitBYAngle",180.0);
-    YagScreenGen.generateScreen(Control,"YagScreenB",0);
-    Control.addVariable("YagScreenBYAngle",-90.0);
-
-    setVariable::SlitsMaskGenerator slitsGen;
-    slitsGen.generate(Control, "Slits");
-
-    name="BellowC";
-    constexpr double bellowCLength = 26.0;
-    // Bellow C folding structure has 52 folds
-    constexpr unsigned int bellowCN = 52;
-    const double bellowCThick =
-      getBellowThick(bellowCN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowCLength,
-		     bellowFlangeLength, bellowFlangeLength, bellowStep);
-    BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowCThick);
-    const double bellowCFrac = getBellowDensityFraction(name,bellowCN, bellowWallThick,
-						 bellowInnerR, bellowOuterR,
-						 bellowCLength, bellowFlangeLength, bellowFlangeLength,
-						 bellowStep);
-    BellowGen.setMat("Stainless316L", bellowCFrac*100.0);
-    BellowGen.generateBellow(Control,name,bellowCLength);
-    Control.addVariable("BellowCNFolds",static_cast<int>(bellowCN));
-    Control.addVariable(name+"YAngle",-180.0);
-
-    name="YagUnitC";
-    YagUnitGen.generateYagUnit(Control,name);
-    Control.addVariable(name+"FrontLength",7.2);
-    Control.addVariable(name+"BackLength",10.4);
-    YagScreenGen.generateScreen(Control,"YagScreenC",0);
-    Control.addVariable("YagScreenCYAngle",-90.0);
-
-    // Bellow D
-    name="BellowD";
-    constexpr unsigned int bellowDN = 328; // 328 is counted by KB
-    const double bellowDThick =
-      getBellowThick(bellowDN, bellowInnerR, bellowOuterR, bellowPipeThick, bellowDLength,
-		     bellowFlangeLength, bellowFlangeLength, bellowStep);
-    BellowGen.setPipe(bellowInnerR, bellowPipeThick, bellowStep, bellowDThick);
-    const double bellowDFrac = getBellowDensityFraction(name,bellowDN, bellowWallThick,
-						 bellowInnerR, bellowOuterR,
-						 bellowDLength, bellowFlangeLength, bellowFlangeLength,
-						 bellowStep);
-    BellowGen.setMat("Stainless316L", bellowDFrac*100.0);
-    BellowGen.generateBellow(Control,name,bellowDLength); // approx
-    Control.addVariable("BellowDNFolds",383.0); // KB: 328
-
-    YagUnitGen.generateYagUnit(Control,"YagUnitD");
-    Control.addVariable("YagUnitDFrontLength",8.1);
-    Control.addVariable("YagUnitDBackLength",9.5);
-    // 0.5 mm:  email AR 2024-02-13. Might be thicker (or dipole), but set to a very thin number to be conservative
-    // 1.2 cm: current installed thickness
-    Control.addVariable("YagUnitDBackCapThick", 1.2);
-    YagScreenGen.generateScreen(Control,"YagScreenD",0);
-    Control.addVariable("YagScreenDYAngle",-90.0);
-
-    setVariable::GTFBeamDumpGenerator DumpGen;
-    DumpGen.generate(Control,"Dump");
-    Control.addVariable("DumpYAngle",180.0);
-    Control.addVariable("DumpYStep",-3.7);
-
-    name="LocalShieldingWall";
-    Control.addVariable(name+"XStep",  -30.0);
-    Control.addVariable(name+"Width",  6.0);
-    Control.addVariable(name+"Length", 350.0); // 350: guess since not enough with the most downstream slit position at 6 cm wall width
-    Control.addVariable(name+"Height", 45.0);
-    Control.addVariable(name+"Depth",  35.0);
-    Control.addVariable(name+"Mat", "Stainless304L");
-    Control.addVariable(name+"CornerLength",  20.0);
-    Control.addVariable(name+"CornerHeight", 25.0);
+  name="LocalShieldingWall";
+  Control.addVariable(name+"XStep",  -30.0);
+  Control.addVariable(name+"Width",  6.0);
+  Control.addVariable(name+"Length", 350.0); // 350: guess since not enough with the most downstream slit position at 6 cm wall width
+  Control.addVariable(name+"Height", 45.0);
+  Control.addVariable(name+"Depth",  35.0);
+  Control.addVariable(name+"Mat", "Stainless304L");
+  Control.addVariable(name+"CornerLength",  20.0);
+  Control.addVariable(name+"CornerHeight", 25.0);
  }
 
-  void GunTestFacilityVariables(FuncDataBase& Control)
+void
+GunTestFacilityVariables(FuncDataBase& Control)
   /*!
     Set Gun Test Facility Building
     \param Control :: Database to use
   */
-  {
-    ELog::RegMethod RegA("", "GunTestFacilityVariables");
-
-    BuildingBVariables(Control, "BldB");
-    BeamLineVariables(Control);
-
-  }
+{
+  ELog::RegMethod RegA("variables[F]","GunTestFacilityVariables");
+  
+  BuildingBVariables(Control, "BldB");
+  BeamLineVariables(Control);
+  
 }
+  
+} // NAMESPACE setVariable

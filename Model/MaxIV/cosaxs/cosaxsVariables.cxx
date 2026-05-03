@@ -176,10 +176,10 @@ frontMaskVariables(FuncDataBase& Control,
   FMaskGen.setBackAngleSize(FM2dist, 150.0,150.0 );
   FMaskGen.generateColl(Control,preName+"CollB",FM2dist,34.2);
 
-  // approx for 40uRad x 40uRad
-  FMaskGen.setFrontAngleSize(FM2dist,80.0,80.0);
-  FMaskGen.setMinAngleSize(12.0,FM2dist, 40.0, 40.0 );
-  FMaskGen.setBackAngleSize(FM2dist, 60.0,60.0 );
+  // approx for 100uRad x 100uRad  // drawing [corrected 2026]
+  FMaskGen.setFrontAngleSize(FM2dist,180.0,180.0);
+  FMaskGen.setMinAngleSize(12.0,FM2dist, 100.0, 100.0 );
+  FMaskGen.setBackAngleSize(FM2dist, 160.0,160.0 );
   FMaskGen.generateColl(Control,preName+"CollC",17.0/2.0,17.0);
 
   return;
