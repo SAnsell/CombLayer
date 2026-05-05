@@ -769,7 +769,7 @@ void viewPackage(FuncDataBase& Control,const std::string& viewKey)
   // Angle from [19].
   //
   // Material is actually given as "pCVD Diamond" in [13].
-  FlangeGen.setBlade(3.3,1.3,0.2,-45.0,"Diamond",1);
+  FlangeGen.setBlade(3.3,1.3,0.02,-45.0,"Diamond",1);
   FlangeGen.setLift(3.0);
   FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",0);
 }
