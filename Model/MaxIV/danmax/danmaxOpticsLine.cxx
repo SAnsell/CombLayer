@@ -173,8 +173,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   slitTube(new constructSystem::PortTube(newName+"SlitTube")),
   jaws({
-      std::make_shared<xraySystem::BeamPair>(newName+"JawX"),
-      std::make_shared<xraySystem::BeamPair>(newName+"JawZ")
+      std::make_shared<xraySystem::BeamPair>(newName+"Jaw","X"),
+      std::make_shared<xraySystem::BeamPair>(newName+"Jaw","Z")
 	}),
   valve6(new xraySystem::CylGateValve(newName+"Valve6")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
@@ -198,8 +198,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   bsCollOutPipe(new constructSystem::VacuumPipe(newName+"BSCollOutPipe")),
   monoSlitsTube(new constructSystem::PipeTube(newName+"MonoSlitsTube")),
   monoSlits({
-      std::make_shared<xraySystem::BeamPair>(newName+"MonoSlitsX"),
-      std::make_shared<xraySystem::BeamPair>(newName+"MonoSlitsZ")
+      std::make_shared<xraySystem::BeamPair>(newName+"MonoSlits","X"),
+      std::make_shared<xraySystem::BeamPair>(newName+"MonoSlits","Z")
 	}),
   slitsAOut(new constructSystem::FlangePlate(newName+"SlitsAOut")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
@@ -213,8 +213,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   revMonoSlitsIn(new constructSystem::FlangePlate(newName+"RevMonoSlitsIn")),
   revMonoSlitsTube(new constructSystem::PipeTube(newName+"RevMonoSlitsTube")),
   revMonoSlits({
-      std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlitsX"),
-      std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlitsZ")
+      std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlits","X"),
+      std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlits","Z")
 	}),
   revBeamStopTube(new constructSystem::PipeTube(newName+"RevBeamStopTube")),
   revBeamStop(new xraySystem::BremBlock(newName+"RevBeamStop")),

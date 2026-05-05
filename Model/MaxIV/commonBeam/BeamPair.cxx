@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/BeamPair.cxx
  *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -64,11 +64,12 @@
 namespace xraySystem
 {
 
-BeamPair::BeamPair(const std::string& Key) :
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
+  BeamPair::BeamPair(const std::string& Key, const std::string& Orientation) :
+  attachSystem::FixedRotateGroup(Key+Orientation,"Main",6,"Beam",2),
   attachSystem::ContainedGroup("BlockA","BlockB","SupportA","SupportB"),
   attachSystem::ExternalCut(),
-  attachSystem::CellMap()
+  attachSystem::CellMap(),
+  baseName(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -92,9 +93,9 @@ BeamPair::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BeamPair","populate");
 
   FixedRotateGroup::populate(Control);
-  
-  upFlag=Control.EvalDefVar<int>(keyName+"UpFlag",1);
-  
+
+  upFlag=Control.EvalDefTail<int>(keyName,baseName,"UpFlag",1);
+
   outLiftA=Control.EvalVar<double>(keyName+"OutLiftA");
   outLiftB=Control.EvalVar<double>(keyName+"OutLiftB");
 
@@ -105,7 +106,7 @@ BeamPair::populate(const FuncDataBase& Control)
   yStepA=Control.EvalVar<double>(keyName+"YStepA");
   xStepB=Control.EvalVar<double>(keyName+"XStepB");
   yStepB=Control.EvalVar<double>(keyName+"YStepB");
-  
+
   blockXYAngle=Control.EvalDefVar<double>(keyName+"BlockXYAngle",0.0);
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -120,7 +121,6 @@ BeamPair::populate(const FuncDataBase& Control)
   waterRadius=Control.EvalVar<double>(keyName+"WaterRadius");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
-  
   return;
 }
 
@@ -133,7 +133,7 @@ BeamPair::createUnitVector(const attachSystem::FixedComp& centreFC,
     Create the unit vectors.
     The first flangeFC is to set the X,Y,Z relative to the axis
     and the origin at the beam centre position.
-    
+
     The beamFC axis are set so (a) Y ==> cIndex axis
                                (b) Z ==> mount axis
                                (c) X ==> correct other
@@ -150,14 +150,14 @@ BeamPair::createUnitVector(const attachSystem::FixedComp& centreFC,
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
   mainFC.createUnitVector(flangeFC,fIndex);
-  
+
   const Geometry::Vec3D& ZBeam=mainFC.getY();
   const Geometry::Vec3D YBeam=centreFC.getLinkAxis(cIndex);
   const Geometry::Vec3D XBeam=ZBeam*YBeam;
   Geometry::Vec3D BC(mainFC.getCentre());
 
   // need to remove directoin in Y of flange
-  
+
   const double BY=BC.dotProd(ZBeam);
   const double MY=centreFC.getLinkPt(cIndex).dotProd(ZBeam);
   BC += ZBeam * (MY-BY);
@@ -194,7 +194,7 @@ BeamPair::createSurfaces()
   const Geometry::Vec3D bA(bOrigin+X*xStepA+Z*yStepA-Y*blockAY);
   const Geometry::Vec3D wAxis=(bY*Y).unit();
 
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1,bA-bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+2,bA+bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+3,bA-wAxis*(width/2.0),wAxis);
@@ -206,7 +206,7 @@ BeamPair::createSurfaces()
   // action in Y direction:
   const double blockBY = upFlag ? gapB + outLiftB : gapB;
   const Geometry::Vec3D bB(bOrigin+X*xStepB+Z*yStepB+Y*blockBY);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+11,bB-bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+12,bB+bY*(length/2.0),bY);
   ModelSupport::buildPlane(SMap,buildIndex+13,bB-wAxis*(width/2.0),wAxis);
@@ -238,15 +238,15 @@ BeamPair::createSurfaces()
       (SMap,buildIndex+207+i*10,
         b0B-axis*(-dim/2.0 + dim/(nWaterPipes+1)*(i+1)),flowDir,waterRadius);
   }
-  
-  
+
+
   // Support tube
-  
+
   const Geometry::Vec3D cylA(bA+wAxis*(width/2.0-supportRadius));
   const Geometry::Vec3D cylB(bB-wAxis*(width/2.0-supportRadius));
   ModelSupport::buildCylinder(SMap,buildIndex+7,cylA,Y,supportRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+17,cylB,Y,supportRadius);
-  return; 
+  return;
 }
 
 void
@@ -288,20 +288,20 @@ BeamPair::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 15 -16" );
   addOuterSurf("BlockB",HR);
 
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-7 -5" );
   makeCell("SupportA",System,cellIndex++,supportMat,0.0,HR*mountSurfHR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 -15 " );
   makeCell("SupportB",System,cellIndex++,supportMat,0.0,HR*mountSurfHR);
-   
+
   // final exclude:
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -7 -5 " );
   addOuterSurf("SupportA",HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex," -17 -15" );
   addOuterSurf("SupportB",HR);
-  
-  return; 
+
+  return;
 }
 
 void
@@ -311,7 +311,7 @@ BeamPair::createLinks()
   */
 {
   ELog::RegMethod RegA("BeamPair","createLinks");
-  
+
   return;
 }
 
@@ -337,7 +337,7 @@ BeamPair::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);       
+  insertObjects(System);
 
   return;
 }

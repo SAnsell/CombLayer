@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/BeamPairGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -64,7 +64,7 @@ BeamPairGenerator::BeamPairGenerator() :
   */
 {}
 
-BeamPairGenerator::~BeamPairGenerator() 
+BeamPairGenerator::~BeamPairGenerator()
  /*!
    Destructor
  */
@@ -75,7 +75,7 @@ BeamPairGenerator::~BeamPairGenerator()
 void
 BeamPairGenerator::setLift(const double A,const double B)
   /*!
-    Set the thread 
+    Set the thread
     \param A :: beam/out lift
     \param B :: beam/out lift
    */
@@ -88,8 +88,8 @@ BeamPairGenerator::setLift(const double A,const double B)
 void
 BeamPairGenerator::setGap(const double A,const double B)
   /*!
-    Set the thread 
-    \param A :: gap upward 
+    Set the thread
+    \param A :: gap upward
     \param B :: gap downwar
    */
 {
@@ -102,7 +102,7 @@ void
 BeamPairGenerator::setThread(const double R,
 			     const std::string& Mat)
   /*!
-    Set the thread 
+    Set the thread
     \param R :: Thread radius
     \param Mat :: Material of support
    */
@@ -148,10 +148,10 @@ BeamPairGenerator::setXYStep(const double xA,const double yA,
 			     const double xB,const double yB)
   /*!
     Simple setter for xy-step
-    \param xA :: Offset step 
-    \param yA :: Offset step 
+    \param xA :: Offset step
+    \param yA :: Offset step
     \param xB :: Offset step for B
-    \param yb :: Inital step 
+    \param yb :: Inital step
    */
 {
   xStepA=xA;
@@ -160,21 +160,19 @@ BeamPairGenerator::setXYStep(const double xA,const double yA,
   yStepB=yB;
   return;
 }
-  
+
 void
 BeamPairGenerator::generateMount(FuncDataBase& Control,
 				  const std::string& keyName,
 				  const int upFlag) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param upFlag :: true if item open/withdrawn
   */
 {
   ELog::RegMethod RegA("BeamPairGenerator","generatorMount");
-
-  Control.addVariable(keyName+"UpFlag",upFlag);
 
   Control.addVariable(keyName+"BeamZStep",0.0);
 
@@ -195,17 +193,17 @@ BeamPairGenerator::generateMount(FuncDataBase& Control,
   Control.addVariable(keyName+"YStepA",yStepA);
   Control.addVariable(keyName+"XStepB",xStepB);
   Control.addVariable(keyName+"YStepB",yStepB);
-  
+
   // always add even if not needed
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"Length",length);	
+  Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"BlockMat",blockMat);
 
-       
+
   return;
 
 }
 
-  
+
 }  // NAMESPACE setVariable
