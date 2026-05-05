@@ -57,7 +57,6 @@ WhiteBeamStopGenerator::WhiteBeamStopGenerator() :
   width(1.7),   //
   height(1.2),  //
   angle(30.0),  //
-  offBeamOffset(6.0), // adjust to fully contain WBS in the port when off beam to simplify intersections
   mat("Copper") // [1]
   /*!
     Constructor and defaults
@@ -85,7 +84,6 @@ WhiteBeamStopGenerator::generate(FuncDataBase& Control,
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Angle",angle);
-  Control.addVariable(keyName+"OffBeamOffset",offBeamOffset);
   Control.addVariable(keyName+"Mat",mat);
 
   return;
