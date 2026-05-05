@@ -305,18 +305,20 @@ makeSingleItem::build(Simulation& System,
     }
   if (item == "SmallAngleBellows" )
     {
-      std::shared_ptr<xraySystem::SmallAngleBellows> SmallAngleBellows(
-        new xraySystem::SmallAngleBellows("SmallAngleBellows1"));
-      std::shared_ptr<xraySystem::SmallAngleBellows> SmallAngleBellows2(
-        new xraySystem::SmallAngleBellows("SmallAngleBellows2"));
+      std::vector<std::shared_ptr<xraySystem::SmallAngleBellows>> smallAngleBellows(8);
+      for(size_t i = 0; i < smallAngleBellows.size(); ++i){
+        smallAngleBellows[i] = std::make_shared<xraySystem::SmallAngleBellows>(
+          "SmallAngleBellows"+std::to_string(i)
+        );
+        OR.addObject(smallAngleBellows[i]);
+      }
 
-      OR.addObject(SmallAngleBellows);
-      OR.addObject(SmallAngleBellows2);
-
-      SmallAngleBellows->addInsertCell(voidCell);
-      SmallAngleBellows->createAll(System,World::masterOrigin(),0);
-      SmallAngleBellows2->addInsertCell(voidCell);
-      SmallAngleBellows2->createAll(System,*SmallAngleBellows,"back");
+      smallAngleBellows[0]->addInsertCell(voidCell);
+      smallAngleBellows[0]->createAll(System,World::masterOrigin(),0);
+      for(size_t i = 1; i < smallAngleBellows.size(); ++i){
+        smallAngleBellows[i]->addInsertCell(voidCell);
+        smallAngleBellows[i]->createAll(System,*smallAngleBellows[i-1],"back");
+      }
 
       return;
     }

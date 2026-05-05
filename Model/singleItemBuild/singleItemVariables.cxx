@@ -661,14 +661,29 @@ SingleItemVariables(FuncDataBase& Control)
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,"Bellow",7.5);
 
-  // SmallAngleBellow
+  // SmallAngleBellows
+  // Generates several connected bellows to test different options.
+
+  // Parameters for the bellows
+  std::vector<double> smallAngleBellowsAngle{2.0,-2.0,2.0,-2.0,2.0,-2.0,0.0,0.0};
+  std::vector<std::pair<bool,bool>> smallAngleBellowsUseFrontBackPipe{
+    {true,false},{false,false},{false,true},{true,false},
+    {false,false},{false,true},{true,true},{true,true}};
+  std::vector<int> smallAngleBellowsNSectors{1,1,1,8,8,8,1,8};
+
+  // Generate
   setVariable::SmallAngleBellowsGenerator SmallAngleBellowsGenerator;
-  std::string SmallAngleBellowsName = "SmallAngleBellows1";
-  SmallAngleBellowsGenerator.setAngle(3.0);
-  SmallAngleBellowsGenerator.setNSectors(8);
-  SmallAngleBellowsGenerator.generateBellows(Control,SmallAngleBellowsName);
-  SmallAngleBellowsName = "SmallAngleBellows2";
-  SmallAngleBellowsGenerator.generateBellows(Control,SmallAngleBellowsName);
+  std::string SmallAngleBellowsName;
+  for(size_t i = 0; i < smallAngleBellowsAngle.size(); ++i){
+    SmallAngleBellowsGenerator.setAngle(smallAngleBellowsAngle[i]);
+    SmallAngleBellowsGenerator.setNSectors(smallAngleBellowsNSectors[i]);
+    SmallAngleBellowsGenerator.setPipes(
+      smallAngleBellowsUseFrontBackPipe[i].first,
+      smallAngleBellowsUseFrontBackPipe[i].second
+    );
+    SmallAngleBellowsGenerator.generateBellows(
+      Control,"SmallAngleBellows"+std::to_string(i));
+  }
 
   // Lead Clad Pipe
   setVariable::LeadPipeGenerator LeadGen;
