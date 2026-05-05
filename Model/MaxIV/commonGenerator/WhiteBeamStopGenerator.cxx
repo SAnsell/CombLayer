@@ -48,15 +48,16 @@
 
 // References
 // [1] S3716 DanMAX Diagnostics Functional Specification Rev05_NEW.pdf
+// [2] DM4/AQM0218.stp
 
 namespace setVariable
 {
 
 WhiteBeamStopGenerator::WhiteBeamStopGenerator() :
-  length(4.6),  //
-  width(1.7),   //
-  height(1.2),  //
-  angle(30.0),  //
+  length(4.6),  // [2]
+  width(1.7),   // [2]
+  height(1.2),  // [2]
+  angle(30.0),  // [2]
   mat("Copper") // [1]
   /*!
     Constructor and defaults
