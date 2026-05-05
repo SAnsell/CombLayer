@@ -517,6 +517,7 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
   const constructSystem::portItem& VPI=viewTubeB->getPort(1);
   viewTubeBScreen->addInsertCell("Body",VPI.getCell("Void"));
   viewTubeBScreen->addInsertCell("Body",viewTubeB->getCell("Void"));
+  viewTubeBScreen->addInsertCell("Blade",VPI.getCell("Void"));
   viewTubeBScreen->addInsertCell("Blade",viewTubeB->getCell("Void"));
   viewTubeBScreen->createAll(System,VPI,"-InnerPlate");
 
