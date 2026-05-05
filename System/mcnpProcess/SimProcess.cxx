@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   mcnpProcess/SimProcess.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <cmath>
-#include <complex> 
+#include <complex>
 #include <vector>
-#include <map> 
-#include <list> 
+#include <map>
+#include <list>
 #include <set>
 #include <string>
 #include <algorithm>
@@ -59,13 +59,31 @@
 
 namespace SimProcess
 {
-  
+
+std::string
+getInputFileName(const std::string OName,
+		   const int Number,
+		   const int Ninp)
+   /*!
+     Return input file name without extension
+     \param OName :: basic filename
+     \param Number :: input file number
+     \param Ninp :: number of input files that will be generated
+   */
+{
+  std::string name(OName);
+  if (Ninp>1)
+    name += std::to_string(Number+1);
+
+  return name;
+}
+
 void
 writeMany(SimMCNP& System,const std::string& OName,const int Number)
    /*!
      Writes out many different files, each with a new random
      number
-     \param System :: Simuation object 
+     \param System :: Simuation object
      \param OName :: basic filename
      \param Number :: number to write
    */
@@ -84,17 +102,19 @@ writeMany(SimMCNP& System,const std::string& OName,const int Number)
 void
 writeIndexSim(SimMCNP& System,
 	      const std::string& OName,
-	      const int Number)
+	      const int Number,
+	      const int Ninp)
   /*!
     Writes out many different files, each with a new random
     number
-    \param System :: Simuation object 
+    \param System :: Simuation object
     \param FName :: basic filename
     \param Number :: number to write
+    \param Ninp :: number of input files that will be generated
   */
 {
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSim");
-  
+
   physicsSystem::PhysicsCards& PC=System.getPC();
   // increase the RND seed by N*10 [10,20,40,etc]
   PC.setRND(PC.getRNDseed()+Number*10);
@@ -102,50 +122,57 @@ writeIndexSim(SimMCNP& System,
 
   System.makeObjectsDNForCNF();
 
-  System.write(OName+std::to_string(Number+1)+".x");
-  
+  System.write(getInputFileName(OName,Number,Ninp)+".x");
+
   return;
 }
 
 void
 writeIndexSimFLUKA(SimFLUKA& System,
 		   const std::string& OName,
-		   const int Number)
+		   const int Number,
+		   const int Ninp)
    /*!
      Writes out many different files, each with a new random
      number
-     \param System :: Simuation object 
+     \param System :: Simuation object
      \param OName :: basic filename
-     \param Number :: number to write
+     \param Number :: input file number
+     \param Ninp :: number of input files that will be generated
    */
 {
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSimFLUKA");
 
   System.prepareWrite();
   System.setRND(System.getRNDseed()+Number*11);
-  System.write(OName+std::to_string(Number+1)+".inp");
-  
+
+  std::string inpName = getInputFileName(OName,Number,Ninp) + ".inp";
+
+  System.write(inpName);
+
   return;
 }
-  
+
 void
-writeIndexSimPHITS(SimPHITS& System,const std::string& FName,
-		   const int Number)
+writeIndexSimPHITS(SimPHITS& System,const std::string& OName,
+		   const int Number,
+		   const int Ninp)
   /*!
     Writes out many different files, each with a new random
     number
-    \param System :: Simuation object 
-    \param FName :: basic filename
+    \param System :: Simuation object
+    \param OName :: basic filename
     \param Number :: number to write
+    \param Ninp :: number of input files that will be generated
   */
 {
   //  physicsSystem::PhysicsCards& PC=System.getPC();
   //  PC.setRND(PC.getRNDseed()+Number*10);
-  std::string fileName=FName+std::to_string(Number+1);
-  System.setFileName(fileName);
-  System.write(fileName+".phs");
-  // increase the RND seed by 10
-  
+  std::string inpName = getInputFileName(OName,Number,Ninp);
+  System.setFileName(inpName);
+
+  System.write(inpName+".inp");
+
   return;
 }
 
@@ -158,7 +185,7 @@ registerOuter(Simulation& System,const int cellNum,const int vNum)
     \param cellNum :: cell number
     \param vNum :: virtual number
   */
-{  
+{
   ELog::RegMethod RegA("SimProcess","registerOuter");
 
   MonteCarlo::Object* Cptr=System.findObjectThrow(cellNum,"cellNum");
