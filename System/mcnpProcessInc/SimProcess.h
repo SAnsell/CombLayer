@@ -40,7 +40,6 @@ namespace SimProcess
 {
 
   std::string getInputFileName(const std::string&,const int, const int);
-  void writeMany(SimMCNP&,const std::string&,const int);
   void writeIndexSim(SimMCNP&,const std::string&,const int,const int);
   void writeIndexSimPHITS(SimPHITS&,const std::string&,const int,const int);
   void writeIndexSimFLUKA(SimFLUKA&,const std::string&,const int,const int);

@@ -79,27 +79,6 @@ getInputFileName(const std::string OName,
 }
 
 void
-writeMany(SimMCNP& System,const std::string& OName,const int Number)
-   /*!
-     Writes out many different files, each with a new random
-     number
-     \param System :: Simuation object
-     \param OName :: basic filename
-     \param Number :: number to write
-   */
-{
-  physicsSystem::PhysicsCards& PC=System.getPC();
-  for(int i=0;i<Number;i++)
-    {
-      System.write(OName+std::to_string(i+1)+".x");
-      // increase the RND seed by 10
-      PC.setRND(PC.getRNDseed()+10);
-    }
-  return;
-}
-
-
-void
 writeIndexSim(SimMCNP& System,
 	      const std::string& OName,
 	      const int Number,
