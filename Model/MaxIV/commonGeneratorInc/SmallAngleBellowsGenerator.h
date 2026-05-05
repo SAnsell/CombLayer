@@ -29,12 +29,14 @@ namespace setVariable
 
 /*!
   \class SmallAngleBellowsGenerator
-  \version 1.0
+  \version 1.1
   \author U. Friman-Gayer
-  \date March 2026
+  \date May 2026
   \brief SmallAngleBellowsGenerator for variables
 
   Version history:
+  1.1 - 2026-05-05
+    - Update for SmallAngleBellows v1.1
   1.0 - 2026-03-05
 */
 
@@ -58,6 +60,9 @@ class SmallAngleBellowsGenerator
   std::string bellowsBaseMat;
   std::string pipeMat;
 
+  int useFrontPipe;
+  int useBackPipe;
+
  public:
 
   SmallAngleBellowsGenerator();
@@ -71,6 +76,10 @@ class SmallAngleBellowsGenerator
   void setLength(const double l){length = l;}
   void setNFolds(const int n){nFolds = n;}
   void setNSectors(const int n){nSectors = n;}
+  void setPipes(const bool useFront, const bool useBack){
+    useFrontPipe=useFront;
+    useBackPipe=useBack;
+  }
 
   void generateBellows(
     FuncDataBase&,const std::string&) const;

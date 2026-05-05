@@ -56,7 +56,8 @@ SmallAngleBellowsGenerator::SmallAngleBellowsGenerator() :
   flangeLength(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),length(10.0),
   pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),nFolds(10),
-  nSectors(2),bellowsBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade")
+  nSectors(2),bellowsBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade"),
+  useFrontPipe(1),useBackPipe(1)
 {}
 
 template<typename CF> void
@@ -85,6 +86,8 @@ void SmallAngleBellowsGenerator::generateBellows(
   Control.addVariable(keyName+"NSectors",nSectors);
   Control.addVariable(keyName+"BellowsBaseMat",bellowsBaseMat);
   Control.addVariable(keyName+"PipeMat",pipeMat);
+  Control.addVariable(keyName+"UseFrontPipe",useFrontPipe);
+  Control.addVariable(keyName+"UseBackPipe",useBackPipe);
 }
 
 ///\cond TEMPLATE
