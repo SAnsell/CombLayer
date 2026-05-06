@@ -108,6 +108,7 @@ namespace xraySystem
 
 R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   R3FrontEnd(Key),
+  fm1(new xraySystem::SquareFMask(newName+"FM1")),
   flangePlateA(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateA")),
   flangePlateB(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateB")),
   bellowPreMSM(std::make_shared<constructSystem::Bellows>(newName+"BellowPreMSM")),
@@ -151,7 +152,6 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(dipolePipe);
   // OR.addObject(eTransPipe);
   // OR.addObject(bellowA);
-  // OR.addObject(fm1);
   // OR.addObject(bellowB);
   // OR.addObject(collABPipe);
   // OR.addObject(bellowC);
@@ -185,6 +185,7 @@ R3FrontEndToyama::R3FrontEndToyama(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
+  OR.addObject(fm1);
   OR.addObject(flangePlateA);
   OR.addObject(flangePlateB);
   OR.addObject(bellowPreMSM);

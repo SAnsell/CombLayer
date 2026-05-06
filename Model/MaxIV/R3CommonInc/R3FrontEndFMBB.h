@@ -135,6 +135,7 @@ class R3FrontEndFMBB :
   // /// Pipe from collimator B to heat dump
   // std::shared_ptr<constructSystem::VacuumPipe> collExitPipe;
 
+  std::shared_ptr<xraySystem::SquareFMask> fm1;
   /// head dump port
   std::shared_ptr<constructSystem::PipeTube> heatBox;
   /// Heat dump container
