@@ -223,16 +223,11 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::FlangePlate> revMonoSlitsIn;
   std::shared_ptr<constructSystem::PipeTube> revMonoSlitsTube;
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> revMonoSlits;
-  std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
-  std::shared_ptr<xraySystem::BremBlock> revBeamStop;
+  std::shared_ptr<constructSystem::PipeTube> bc3Tube;
+  std::shared_ptr<xraySystem::BremBlock> bc3;
 
   // /// Flange convert
   // std::shared_ptr<constructSystem::VacuumPipe> slitsBOut;
-
-  // /// BeamStopTube
-  // std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
-  // /// BeamStopBlock
-  // std::shared_ptr<xraySystem::BremBlock> revBeamStop;
 
   /// bellows from second mono
   std::shared_ptr<constructSystem::Bellows> bellowK;
@@ -267,7 +262,7 @@ class danmaxOpticsLine :
   void constructBeamStopTube(Simulation&,
 			     const attachSystem::FixedComp&,const std::string&);
 
-  void constructRevBeamStopTube(Simulation&,
+  void constructBC3Tube(Simulation&,
 				const attachSystem::FixedComp&,
 				const std::string&);
 

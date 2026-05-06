@@ -1112,7 +1112,7 @@ void revBeamStopPackage(FuncDataBase& Control,
   BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsZ",1);
 
   // will be rotated vertical
-  pipeName=viewKey+"RevBeamStopTube";
+  pipeName=viewKey+"BC3Tube";
   SimpleTubeGen.setCF<CF160>(); // [23]
   SimpleTubeGen.setWallThick(0.2); // [23]
   SimpleTubeGen.setCap(1,1);
@@ -1147,9 +1147,9 @@ void revBeamStopPackage(FuncDataBase& Control,
   BremGen.centre();
   BremGen.setCube(10.0,10.0); // [13]
   BremGen.setAperature(0.5); // [13]
-  BremGen.generateBlock(Control,viewKey+"RevBeamStop",
+  BremGen.generateBlock(Control,viewKey+"BC3",
     tubeLength/2.0-tubeLengthAboveOpticalAxis);
-  Control.addVariable(viewKey+"RevBeamStopXAngle",90);
+  Control.addVariable(viewKey+"BC3XAngle",90);
 }
 
 void

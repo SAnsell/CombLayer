@@ -216,8 +216,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
       std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlits","X"),
       std::make_shared<xraySystem::BeamPair>(newName+"RevMonoSlits","Z")
 	}),
-  revBeamStopTube(new constructSystem::PipeTube(newName+"RevBeamStopTube")),
-  revBeamStop(new xraySystem::BremBlock(newName+"RevBeamStop")),
+  bc3Tube(new constructSystem::PipeTube(newName+"BC3Tube")),
+  bc3(new xraySystem::BremBlock(newName+"BC3")),
   bellowK(new constructSystem::Bellows(newName+"BellowK")),
   monoShutter(new xraySystem::MonoShutterR3(newName+"MonoShutter")),
   bellowL(new constructSystem::Bellows(newName+"BellowL"))
@@ -315,8 +315,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(revMonoSlitsTube);
   OR.addObject(revMonoSlits[0]);
   OR.addObject(revMonoSlits[1]);
-  OR.addObject(revBeamStopTube);
-  OR.addObject(revBeamStop);
+  OR.addObject(bc3Tube);
+  OR.addObject(bc3);
   OR.addObject(bellowK);
   OR.addObject(monoShutter);
   OR.addObject(bellowL);
@@ -525,7 +525,7 @@ danmaxOpticsLine::constructViewScreenB(Simulation& System,
 }
 
 void
-danmaxOpticsLine::constructRevBeamStopTube
+danmaxOpticsLine::constructBC3Tube
 (Simulation& System,
  const attachSystem::FixedComp& initFC,
  const std::string& sideName)
@@ -540,7 +540,7 @@ danmaxOpticsLine::constructRevBeamStopTube
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("danmaxOpticsLine","constructRevBeamStopTube");
+  ELog::RegMethod RegA("danmaxOpticsLine","constructBC3Tube");
 
   revMonoSlitsTube->createAll(System,*frontEnd,0);
 
@@ -578,14 +578,14 @@ danmaxOpticsLine::constructRevBeamStopTube
 			   (revMonoSlits[0]->getCentre() + revMonoSlits[1]->getCentre())/2,Y);
   /// end: split for FLUKA
 
-  revBeamStopTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  revBeamStopTube->createAll(System,*revMonoSlitsTube,"back");
+  bc3Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  bc3Tube->createAll(System,*revMonoSlitsTube,"back");
 
-  revBeamStop->addInsertCell(revBeamStopTube->getCell("Void"));
-  revBeamStop->createAll(System,*revBeamStopTube,"Origin");
+  bc3->addInsertCell(bc3Tube->getCell("Void"));
+  bc3->createAll(System,*bc3Tube,"Origin");
 
-  const constructSystem::portItem& VPB=revBeamStopTube->getPort(1);
-  revBeamStopTube->insertAllInCell(System,
+  const constructSystem::portItem& VPB=bc3Tube->getPort(1);
+  bc3Tube->insertAllInCell(System,
     buildZoneDanMAX.createUnit(System,VPB,VPB.getSideIndex("OuterPlate")));
 
   return;
@@ -1155,9 +1155,9 @@ danmaxOpticsLine::buildSplitter(Simulation& System,
 
   constructSystem::constructUnit(System,buildZoneDanMAX,*lensBox,"back",*CRLGateOut);
 
-  constructRevBeamStopTube(System,*CRLGateOut,"back");
+  constructBC3Tube(System,*CRLGateOut,"back");
 
-  constructMonoShutter(System,revBeamStopTube->getPort(1),"OuterPlate");
+  constructMonoShutter(System,bc3Tube->getPort(1),"OuterPlate");
 
   outerCell = buildZoneDanMAX.createUnit(System);
   for (int i=0; i<4; ++i) {
