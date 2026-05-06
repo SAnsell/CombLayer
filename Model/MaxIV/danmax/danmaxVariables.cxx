@@ -303,7 +303,7 @@ frontMaskVariables(FuncDataBase& Control,
   double backHeight = backWidth;
   FMHGen.setFrontRadius(2.9);
   FMHGen.setBackGap(backWidth, backHeight);
-  FMHGen.generate(Control,preName+"FM1H",danmaxVar::absY::FM1,FM1Length);
+  FMHGen.generate(Control,preName+"FM1",danmaxVar::absY::FM1,FM1Length);
 
   // Radius adjusted to XBPM flange [30], Thickness from [4]
   FPGen.setFlange(7.6, 1.99);

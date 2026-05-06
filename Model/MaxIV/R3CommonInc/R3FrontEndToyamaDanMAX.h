@@ -79,7 +79,7 @@ class R3FrontEndToyamaDanMAX :
   public R3FrontEnd
 {
 protected:
-  std::shared_ptr<xraySystem::FixedMaskHybrid> fm1h;
+  std::shared_ptr<xraySystem::FixedMaskHybrid> fm1;
   std::shared_ptr<constructSystem::VacuumPipe> beamPipe1;
   std::shared_ptr<constructSystem::PipeTube> beamPipe2;
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
