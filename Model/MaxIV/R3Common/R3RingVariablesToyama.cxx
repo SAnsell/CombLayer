@@ -63,6 +63,7 @@
 #include "ProximityShieldingGenerator.h"
 #include "CleaningMagnetGenerator.h"
 #include "FlangePlateGenerator.h"
+#include "StepBellowsGenerator.h"
 
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
@@ -72,6 +73,7 @@
 // [3] 236798-Toyama-front-end.step
 // [4] S0-2-0AB01088_DanMAX.pdf
 // [5] FE_02.STEP - CAD file for the DanMAX Front-end
+// [6] Toyama Drawing S5-2-1AJ00545
 
 namespace setVariable
 {
@@ -430,19 +432,27 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   PItemGen.generatePort(Control,heatName+"0",Geometry::Vec3D(0,0,0),ZVec);
   PItemGen.generatePort(Control,heatName+"1",Geometry::Vec3D(0,0,0),-ZVec);
 
-
-  // new Toyama
-
-
-  BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
-  BellowGen.setCF<setVariable::CF40>();
-  BellowGen.generateBellow(Control,frontKey+"BellowPreHA",14.0); // [2]
+  std::string bellowsName = frontKey+"BellowPreHA";
+  StepBellowsGenerator stepBellowsGen;
+  stepBellowsGen.setCF<setVariable::CF63>(); // [63]
+  // Bellows thickness roughly estimated from [63]
+  stepBellowsGen.setBellowsThick(
+    (setVariable::CF63::flangeRadius-setVariable::CF63::innerRadius)/2.0);
+  stepBellowsGen.setLength(14.0); // [2]
+  stepBellowsGen.setStep(-0.85);
+  stepBellowsGen.generateBellows(Control,bellowsName);
+  Control.addVariable(bellowsName+"YAngle",90.0);
+  Control.addVariable(bellowsName+"ZStep",0.85);
 
   HeatAbsorberToyamaGenerator HAGen;
   HAGen.generate(Control,frontKey+"HeatAbsorber",heatAbsorberLength);
   Control.addVariable(frontKey+"HeatAbsorberYStep",heatAbsorberDist);
 
-  BellowGen.generateBellow(Control,frontKey+"BellowPostHA",14.0); // [2]
+  // See BellowPreHA above for more information.
+  bellowsName = frontKey+"BellowPostHA";
+  stepBellowsGen.generateBellows(Control,bellowsName);
+  Control.addVariable(bellowsName+"YAngle",90.0);
+  Control.addVariable(bellowsName+"ZStep",0.85);
 
 
   return;
