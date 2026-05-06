@@ -190,12 +190,12 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   MLM(new xraySystem::MLMono(newName+"MLM")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
   valve9(new xraySystem::CylGateValve(newName+"Valve9")),
-  bsCollInPipe(new constructSystem::VacuumPipe(newName+"BSCollInPipe")),
+  bc2InPipe(new constructSystem::VacuumPipe(newName+"BC2InPipe")),
   wbsSection(new constructSystem::PipeTube(newName+"WBSSection")),
   wbs(std::make_shared<xraySystem::WhiteBeamStop>(newName+"WhiteBeamStop")),
-  BSCollTube(new constructSystem::PipeTube(newName+"BSCollTube")),
-  bsColl(new xraySystem::BremBlock(newName+"BSColl")),
-  bsCollOutPipe(new constructSystem::VacuumPipe(newName+"BSCollOutPipe")),
+  BSCollTube(new constructSystem::PipeTube(newName+"BC2Tube")),
+  bc2(new xraySystem::BremBlock(newName+"BC2")),
+  bc2OutPipe(new constructSystem::VacuumPipe(newName+"BC2OutPipe")),
   monoSlitsTube(new constructSystem::PipeTube(newName+"MonoSlitsTube")),
   monoSlits({
       std::make_shared<xraySystem::BeamPair>(newName+"MonoSlits","X"),
@@ -293,12 +293,12 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(MLM);
   OR.addObject(bellowG);
   OR.addObject(valve9);
-  OR.addObject(bsCollInPipe);
+  OR.addObject(bc2InPipe);
   OR.addObject(wbsSection);
   OR.addObject(wbs);
   OR.addObject(BSCollTube);
-  OR.addObject(bsColl);
-  OR.addObject(bsCollOutPipe);
+  OR.addObject(bc2);
+  OR.addObject(bc2OutPipe);
   OR.addObject(monoSlitsTube);
   OR.addObject(monoSlits[0]);
   OR.addObject(monoSlits[1]);
@@ -773,9 +773,9 @@ danmaxOpticsLine::constructBeamStopTube
 {
   ELog::RegMethod RegA("danmaxOpticsLine","constructBeamStopTube");
 
-  bsCollInPipe->createAll(System,*frontEnd,0);
+  bc2InPipe->createAll(System,*frontEnd,0);
 
-  valve9->createAll(System,*bsCollInPipe,"front");
+  valve9->createAll(System,*bc2InPipe,"front");
   bellowG->setBack(initFC,sideName);
   bellowG->createAll(System,*valve9,"back");
 
@@ -783,11 +783,11 @@ danmaxOpticsLine::constructBeamStopTube
 
   valve9->insertInCell(System,buildZoneDanMAX.createUnit(System,*valve9,"front"));
 
-  int outerCell=buildZoneDanMAX.createUnit(System,*bsCollInPipe,"back");
-  bsCollInPipe->insertAllInCell(System,outerCell);
+  int outerCell=buildZoneDanMAX.createUnit(System,*bc2InPipe,"back");
+  bc2InPipe->insertAllInCell(System,outerCell);
 
   constructSystem::constructUnit
-    (System,buildZoneDanMAX,*bsCollInPipe,"back",*wbsSection);
+    (System,buildZoneDanMAX,*bc2InPipe,"back",*wbsSection);
 
   const constructSystem::portItem& port0 = wbsSection->getPort(0);
   port0.insertInCell(System,outerCell);
@@ -804,19 +804,19 @@ danmaxOpticsLine::constructBeamStopTube
   BSCollTube->insertAllInCell(System,buildZoneDanMAX.createUnit(System,VPB,VPB.getSideIndex("OuterPlate")));
   wbsSection->insertAllInCell(System,buildZoneDanMAX.getLastCell("Unit"));
 
-  bsColl->addInsertCell(BSCollTube->getCell("Void"));
-  bsColl->createAll(System,*BSCollTube,"Origin");
+  bc2->addInsertCell(BSCollTube->getCell("Void"));
+  bc2->createAll(System,*BSCollTube,"Origin");
 
   // White Beam Stop
-  wbs->setCollimator(System,*bsColl, "HoleBxmax");
+  wbs->setCollimator(System,*bc2, "HoleBxmax");
   wbs->createAll(System,*wbsSection,"Origin");
   attachSystem::addToInsertSurfCtrl(System,*wbsSection,"Void", *wbs);
 
   constructSystem::constructUnit
-    (System,buildZoneDanMAX,VPB,"OuterPlate",*bsCollOutPipe);
+    (System,buildZoneDanMAX,VPB,"OuterPlate",*bc2OutPipe);
 
   constructSystem::constructUnit
-    (System,buildZoneDanMAX,*bsCollOutPipe,"back",*monoSlitsTube);
+    (System,buildZoneDanMAX,*bc2OutPipe,"back",*monoSlitsTube);
 
   for(auto i: std::vector<size_t>{0,1}){
     const constructSystem::portItem& port0=monoSlitsTube->getPort(2*i);

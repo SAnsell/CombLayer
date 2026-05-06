@@ -879,7 +879,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::BremBlockGenerator BremGen;
   setVariable::BeamPairGenerator BeamPairGen;
 
-  std::string name=viewKey+"BSCollInPipe";
+  std::string name=viewKey+"BC2InPipe";
   const double port0Radius = 5.08; // [22]
   const double port0WallThick = 0.2; // [22]
   const double beamStopInPipeLength = 2.5; // [22]
@@ -925,7 +925,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   WBSGen.generate(Control,viewKey+"WhiteBeamStop");
 
   // will be rotated vertical
-  name=viewKey+"BSCollTube";
+  name=viewKey+"BC2Tube";
   SimpleTubeGen.setCF<CF160>(); // [22]
   SimpleTubeGen.setWallThick(0.2); // [22]
   SimpleTubeGen.setCap(1,1);
@@ -959,16 +959,16 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.setPipe(port1Radius, port1WallThick);
   PipeGen.setAFlange(1.0, 0.0);
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,viewKey+"BSCollOutPipe",
+  PipeGen.generatePipe(Control,viewKey+"BC2OutPipe",
     port1Length-port1ArtificialSplitLength);
 
   // TODO: Material currently set to pure tungsten (default), but should be DENSIMET [13].
   BremGen.centre();
   BremGen.setCube(10.0,10.0); // [13]
   BremGen.setAperature(0.4); // [13]
-  BremGen.generateBlock(Control,viewKey+"BSColl",
+  BremGen.generateBlock(Control,viewKey+"BC2",
     tubeLength/2.0-tubeLengthAboveOpticalAxis);
-  Control.addVariable(viewKey+"BSCollXAngle",90);
+  Control.addVariable(viewKey+"BC2XAngle",90);
 
   // Tube for Monochromatic Slits
   const double monoSlitsTubeWallThick = 2.0; // [22]

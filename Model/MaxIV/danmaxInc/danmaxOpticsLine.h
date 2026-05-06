@@ -189,16 +189,16 @@ class danmaxOpticsLine :
   /// Gate value BL-V5
   std::shared_ptr<xraySystem::CylGateValve> valve9;
   // Connector from CF40 to larger pipe
-  std::shared_ptr<constructSystem::VacuumPipe> bsCollInPipe;
+  std::shared_ptr<constructSystem::VacuumPipe> bc2InPipe;
   // Short section that contains a port for the White Beam Stop
   std::shared_ptr<constructSystem::PipeTube> wbsSection;
   std::shared_ptr<xraySystem::WhiteBeamStop> wbs;
   /// BeamStopTube
   std::shared_ptr<constructSystem::PipeTube> BSCollTube;
   /// Bremsstrahlung collimator
-  std::shared_ptr<xraySystem::BremBlock> bsColl;
+  std::shared_ptr<xraySystem::BremBlock> bc2;
   // Connector from BS collimator tube to slit tube
-  std::shared_ptr<constructSystem::VacuumPipe> bsCollOutPipe;
+  std::shared_ptr<constructSystem::VacuumPipe> bc2OutPipe;
   /// Slits after beamstop
   std::shared_ptr<constructSystem::PipeTube> monoSlitsTube;
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> monoSlits;
