@@ -29,7 +29,7 @@ namespace xraySystem
 /*!
   \class CM1BeamSplitter
   \author U. Friman-Gayer
-  \version 1.0
+  \version 2.1.0
   \date April 2026
   \brief Beam Splitter and High-Pass Filter in CM1
 
@@ -54,7 +54,7 @@ namespace xraySystem
   probably to avoid specular reflection. However, CM1BeamSplitter provides a special
   mode for specular reflection along the beam path for testing purposes.
 
-  In total, CM1BeamSplitter provides 4 default positions/orientations ("modes") for
+  In total, CM1BeamSplitter provides 5 default positions/orientations ("modes") for
   different use cases. In all of them, it is assumed that the beam travels in the
   positive Y direction, and that the SINCRYS branch is on the negative X side of the
   incoming beam. This class uses the same convention for the pitch, roll, and yaw
@@ -91,11 +91,23 @@ namespace xraySystem
   been compensated. By changing the yaw (ZAngle) of the holder, the specular-reflection
   angle in the X-Y plane can be set in a straighforward way.
 
+  Mode 4: Blocking mode. The holder is oriented and positioned to approximate the
+  worst-case scenario where the beam is unintentionally scattered in CM1 to create
+  large radiation-dose rates on its outside. This mode is intended for studies of
+  accident/misalignment scenarios at the beamline. Finding the exact worst-case 
+  orientation -which is also dependent on the beam properties and the position of the
+  observer- is nontrivial. To approximate the worst case, an orientation is chosen
+  where a large amount of material is in the way of the beam and any secondary
+  radiation. Starting from the position of Mode 2, the holder is shifted in the 
+  negative X direction such that the optical axis is halfway between the two holes.
+
   References:
   [1] JJ X-RAY, SINCRYS beamline - MAXIV, Final Design Report v2, 23087, 2025-07-11
   [2] CAD model CM1_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM1_chamber_2026-03-04.STEP
 
   Version history:
+  2.1.0 - 2026-04-29
+    - Add Mode 4.
   2.0.1 - 2026-04-27
     - Fix cell boundaries in bottom part.
   2.0   - 2026-04-10

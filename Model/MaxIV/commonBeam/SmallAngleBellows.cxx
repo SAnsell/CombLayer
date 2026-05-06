@@ -147,7 +147,14 @@ double SmallAngleBellows::bellowsLength() const
     Length of the bellows parts, i.e. total length without flanges and pipes.
   */
 {
-  return (length-2.0*(flangeLength+bellowsStep));
+  double bL = length;
+  if(useFrontPipe){
+    bL -= flangeLength+bellowsStep;
+  }
+  if(useBackPipe){
+    bL -= flangeLength+bellowsStep;
+  }
+  return bL;
 }
 
 double SmallAngleBellows::bellowsMaterialVolume() const 
@@ -292,8 +299,9 @@ std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const
   part.
  */
 {
+  const bool noPipes = !useFrontPipe && !useBackPipe;
   if(nSectors == 1){
-    if(pipeInnerRadius+bellowsThickPerSector[0] > flangeRadius){
+    if(noPipes || pipeInnerRadius+bellowsThickPerSector[0] > flangeRadius){
       return {
         sectorPlaneID(0,7,100),
         sectorPlaneID(0,8,100)
@@ -307,7 +315,10 @@ std::pair<int,int> SmallAngleBellows::cylindricOuterSurf() const
       nSectorWithMaxRadius = n;
     }
   }
-  if(pipeInnerRadius+bellowsThickPerSector[nSectorWithMaxRadius] > flangeRadius){
+  if(
+    noPipes || pipeInnerRadius+bellowsThickPerSector[nSectorWithMaxRadius]
+    > flangeRadius
+  ){
     return {
       sectorPlaneID(nSectorWithMaxRadius,7,100),
       sectorPlaneID(nSectorWithMaxRadius,8,100)
@@ -391,6 +402,9 @@ SmallAngleBellows::populate(const FuncDataBase& Control)
     Control,keyName+"BellowsMat","SteelUnknownGrade");
   pipeMat=ModelSupport::EvalDefMat(Control,keyName+"PipeMat","SteelUnknownGrade");
 
+  useFrontPipe=static_cast<bool>(Control.EvalDefVar<int>(keyName+"UseFrontPipe",1));
+  useBackPipe=static_cast<bool>(Control.EvalDefVar<int>(keyName+"UseBackPipe",1));
+
   checkInput();
 
   return;
@@ -429,12 +443,16 @@ SmallAngleBellows::createSurfaces()
       ExternalCut::setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
 
-  ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
-  ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(flangeLength+bellowsStep),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+12,
-    center+Yp*(length/2.0-flangeLength),Yp);
-  ModelSupport::buildPlane(SMap,buildIndex+22,
-    center+Yp*(length/2.0-flangeLength-bellowsStep),Yp);
+  if(useFrontPipe){
+    ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
+    ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(flangeLength+bellowsStep),Y);
+  }
+  if(useBackPipe){
+    ModelSupport::buildPlane(SMap,buildIndex+12,
+      center+Yp*(length/2.0-flangeLength),Yp);
+    ModelSupport::buildPlane(SMap,buildIndex+22,
+      center+Yp*(length/2.0-flangeLength-bellowsStep),Yp);
+  }
 
   double phi;
   for(int n = 0; n < nSectors; ++n){
@@ -453,21 +471,24 @@ SmallAngleBellows::createSurfaces()
               Yp,pipeInnerRadius+bellowsThickPerSector[n]);
   }
 
-
   ModelSupport::buildPlane(SMap,buildIndex+101,center,Yp2);
 
-  ModelSupport::buildCylinder(SMap,buildIndex+7,center,
-			      Y,flangeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+17,center,
-			      Y,pipeInnerRadius+pipeWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+27,center,
-			      Y,pipeInnerRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+8,center,
-			      Yp,flangeRadius);
-  ModelSupport::buildCylinder(SMap,buildIndex+18,center,
-			      Yp,pipeInnerRadius+pipeWallThick);
-  ModelSupport::buildCylinder(SMap,buildIndex+28,center,
-			      Yp,pipeInnerRadius);
+  if(useFrontPipe || useBackPipe){
+    ModelSupport::buildCylinder(SMap,buildIndex+7,center,
+              Y,flangeRadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+8,center,
+              Yp,flangeRadius);
+  }
+  if(useFrontPipe){
+    ModelSupport::buildCylinder(SMap,buildIndex+17,center,
+              Y,pipeInnerRadius+pipeWallThick);
+  }
+  if(useBackPipe){
+    ModelSupport::buildCylinder(SMap,buildIndex+18,center,
+              Yp,pipeInnerRadius+pipeWallThick);
+  }
+  ModelSupport::buildCylinder(SMap,buildIndex+27,center,Y,pipeInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+28,center,Yp,pipeInnerRadius);
 }
 
 void
@@ -481,35 +502,58 @@ SmallAngleBellows::createObjects(Simulation& System)
   const HeadRule& frontHR=getRule("front");
   const HeadRule& backHR=getRule("back");
 
-  makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 27")*frontHR);
-  makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"12 -8 28")*backHR);
+  if(useFrontPipe){
+    makeCell("FrontFlange",System,cellIndex++,pipeMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"-11 -7 27")*frontHR);
+    makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 27"));
 
-  makeCell("FrontPipe",System,cellIndex++,pipeMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -17 27"));
+    makeCell("FrontOuterVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -7 17"));
+  }
+  makeCell("FrontVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"-101 -27")*frontHR);
+  if(useBackPipe){
+    makeCell("BackFlange",System,cellIndex++,pipeMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"12 -8 28")*backHR);
+    makeCell("BackPipe",System,cellIndex++,pipeMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -18 28"));
 
-  std::pair<int,int> cylOuterSurf = cylindricOuterSurf();
+    makeCell("BackOuterVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -8 18"));
+  }
+  makeCell("BackVoid",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"101 -28")*backHR);
+
+  const std::pair<int,int> cylOuterSurf = cylindricOuterSurf();
+  HeadRule bellowsFrontHR = useFrontPipe ? 
+    ModelSupport::getHeadRule(SMap,buildIndex,"21") : frontHR;
+  HeadRule bellowsBackHR = useBackPipe ?
+    ModelSupport::getHeadRule(SMap,buildIndex,"-22") : backHR;
   if(nSectors == 1){
     makeCell("FrontBellows",System,cellIndex++,bellowsMatPerSector[0],0.0,
-      ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
+      bellowsFrontHR*
+      ModelSupport::getHeadRule(SMap,buildIndex,"-101 27")
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(0,7,100))).complement()
     );
     makeCell("FrontBellowsVoid",System,cellIndex++,0,0.0,
-      ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
+      bellowsFrontHR*
+      ModelSupport::getHeadRule(SMap,buildIndex,"-101")
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(0,7,100)))
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(cylOuterSurf.first)).complement()
     );
     makeCell("BackBellows",System,cellIndex++,bellowsMatPerSector[0],0.0,
-      ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
+      bellowsBackHR*
+      ModelSupport::getHeadRule(SMap,buildIndex,"101 28")
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(0,8,100))).complement()
     );
     makeCell("BackBellowsVoid",System,cellIndex++,0,0.0,
-      ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
+      bellowsBackHR*
+      ModelSupport::getHeadRule(SMap,buildIndex,"101")
       *ModelSupport::getHeadRule(
         SMap,buildIndex,std::to_string(sectorPlaneID(0,8,100)))
       *ModelSupport::getHeadRule(
@@ -518,7 +562,8 @@ SmallAngleBellows::createObjects(Simulation& System)
   } else {
     for(int n = 0; n < nSectors; ++n){
       makeCell("FrontBellows",System,cellIndex++,bellowsMatPerSector[n],0.0,
-        ModelSupport::getHeadRule(SMap,buildIndex,"21 -101 27")
+        bellowsFrontHR*
+        ModelSupport::getHeadRule(SMap,buildIndex,"-101 27")
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
         *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
@@ -526,7 +571,8 @@ SmallAngleBellows::createObjects(Simulation& System)
           SMap,buildIndex,std::to_string(sectorPlaneID(n,7,100))).complement()
       );
       makeCell("FrontBellowsVoid",System,cellIndex++,0,0.0,
-        ModelSupport::getHeadRule(SMap,buildIndex,"21 -101")
+        bellowsFrontHR*
+        ModelSupport::getHeadRule(SMap,buildIndex,"-101")
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,3))).complement()
         *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,3)))
@@ -537,7 +583,8 @@ SmallAngleBellows::createObjects(Simulation& System)
       );
 
       makeCell("BackBellows",System,cellIndex++,bellowsMatPerSector[n],0.0,
-        ModelSupport::getHeadRule(SMap,buildIndex,"101 -22 28")
+        bellowsBackHR*
+        ModelSupport::getHeadRule(SMap,buildIndex,"101 28")
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
         *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
@@ -545,7 +592,8 @@ SmallAngleBellows::createObjects(Simulation& System)
           SMap,buildIndex,std::to_string(sectorPlaneID(n,8,100))).complement()
       );
       makeCell("BackBellowsVoid",System,cellIndex++,0,0.0,
-        ModelSupport::getHeadRule(SMap,buildIndex,"101 -22")
+        bellowsBackHR*
+        ModelSupport::getHeadRule(SMap,buildIndex,"101")
         *ModelSupport::getHeadRule(
           SMap,buildIndex,std::to_string(sectorPlaneID(n,4))).complement()
         *ModelSupport::getHeadRule(SMap,buildIndex,std::to_string(sectorPlaneID(n+1,4)))
@@ -556,19 +604,6 @@ SmallAngleBellows::createObjects(Simulation& System)
       );
     }
   }
-
-  makeCell("BackPipe",System,cellIndex++,pipeMat,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -18 28"));
-
-  makeCell("FrontVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-101 -27")*frontHR);
-  makeCell("FrontOuterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"11 -21 -7 17"));
-
-  makeCell("BackVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"101 -28")*backHR);
-  makeCell("BackOuterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"22 -12 -8 18"));
 
   addOuterSurf(
     ModelSupport::getHeadRule(SMap,buildIndex,"-101")

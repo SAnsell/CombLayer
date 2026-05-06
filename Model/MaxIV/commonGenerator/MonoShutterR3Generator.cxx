@@ -85,8 +85,8 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   threadRadius(1.5), // [5]
   threadMat("SteelUnknownGrade"), // [1]
   lift(5.0), // [5]
-  entryShutterUpFlag(false),
-  exitShutterUpFlag(false)
+  entryShutterUpFlag(true),
+  exitShutterUpFlag(true)
   /*!
     Constructor and defaults
   */

@@ -42,6 +42,16 @@ namespace xraySystem
   The SqrShield is used in the DanMAX beamline to shield the transfer line from the
   Optics Hutch to the Experimental Hutch 1. In DanMAX, the enlarged region contains
   a pump.
+
+  Version History:
+  2.1 - 2026-04-30
+    - Skin thickness inside and outside may be different.
+  2.0 - 2026-01-14
+    - More customization:
+      - Individual wall-thickness setting for each side.
+      - Region with extended cross section 
+        (but build zone determined by region with small cross section).
+  1.0 - 2019  
 */
 
 class SqrShield :
@@ -60,7 +70,7 @@ class SqrShield :
   double largeRegionLength;         ///< Length of inner void of large section
    ///< Wall thickness
   double topThick, bottomThick, leftThick, rightThick, frontBackThick;
-  double skinThick;                 ///< Skin thickness around wall
+  double skinThickInside,skinThickOutside; ///< Skin thickness around wall
 
   int mat;                ///< Main wall materails
   int skinMat;            ///< Skin material

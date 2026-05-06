@@ -29,17 +29,17 @@ namespace xraySystem
 
 /*!
   \class SmallAngleBellows
-  \version 1.0
+  \version 1.1
   \author U. Friman-Gayer
-  \date March 2026
+  \date May 2026
   \brief Fixed-length cylindric bellows that bend at a small angle
 
-  This class approximates the geometry of cylindric bellows with a small angle between 
+  This class approximates the geometry of cylindric bellows with a small angle between
   the front- and back-surface normal.
-  By default, the initial main axis of the bellows is along the Y axis, and positive 
-  angles bend the bellows towards negative X values.
-  Both at the front and at the back, the bellows have regular cylindric-pipe adapters.
-  In reality, the shape of bent bellows is complex. Here, it is approximated by an 
+  By default, the initial main axis of the bellows is along the Y axis, and positive
+  angles bend the bellows towards negative X values. Both at the front and at the back,
+  the bellows can have regular cylindric-pipe adapters.
+  In reality, the shape of bent bellows is complex. Here, it is approximated by an
   instantaneous step at the bellows' center, as shown below.
        _________
       /         |
@@ -48,10 +48,15 @@ namespace xraySystem
    /    /
   /____/
 
-  By adopting a simple stepwise model for the shape of the bellows' folds, this class 
-  models the radius- and effective-density variations in the bellows when they are 
+  It should be noted that the bend always occurs at the center
+  (half length along Y axis) of the entire element. This includes the optional pipe
+  adapters. This means that pipe adapters can be added or removed without changing the
+  main symmetry axis of the bellows.
+
+  By adopting a simple stepwise model for the shape of the bellows' folds, this class
+  models the radius- and effective-density variations in the bellows when they are
   bent.
-  The bellows' folds' shape is assumed to be a zero-order stepwise function as shown 
+  The bellows' folds' shape is assumed to be a zero-order stepwise function as shown
   below (like simple merlons on a castle wall, for example).
        ________      ________      ________
       |  ____  |    |  ____  |    |  ____  |
@@ -66,25 +71,27 @@ namespace xraySystem
   is conserved, the change in radius and effective density as the bellows are bent can
   be calculated with simple, analytical expressions.
 
-  This class takes into account that bending breaks axial symmetry by dividing the 
-  bellows into a user-defined amount of sectors with constant radius and effective 
+  This class takes into account that bending breaks axial symmetry by dividing the
+  bellows into a user-defined amount of sectors with constant radius and effective
   density.
 
-  The aforementioned assumptions are only a good approximation at small (few degrees) 
+  The aforementioned assumptions are only a good approximation at small (few degrees)
   angles where ..
 
-  - ... the path through the bellows is not obstructed too much by the unrealistic 
+  - ... the path through the bellows is not obstructed too much by the unrealistic
         corners.
   - ... the bending is not so strong that the folds interfere with each other.
-  - ... the difference in radius and effective density between the sectors is not too 
+  - ... the difference in radius and effective density between the sectors is not too
         large.
 
-  As a rule of thumb, this class should only be used for bellows in which there is a 
+  As a rule of thumb, this class should only be used for bellows in which there is a
   line of sight between the front and the back.
-  However, bellows that bend at large angles could be approximated by a combination 
+  However, bellows that bend at large angles could be approximated by a combination
   of small-angle bellows.
 
   Version history:
+  1.1 - 2026-05-05
+    - Optional pipe adapters.
   1.0 - 2026-03-05
 */
 
@@ -111,10 +118,12 @@ class SmallAngleBellows:
   double flangeLength;
   // Radius of the front/back flange.
   double flangeRadius;
-  // Total length of the bellows. Note that the total length is conserved when the 
-  // bellows are bent.
+  // Total length of the bellows. Note that the total length is conserved when the
+  // bellows are bent or when pipe adapters are added/removed using the respective
+  // flags.
   double length;
-  // Radius of the inner volume in all parts of the bellows.
+  // Inner radius in all parts of the bellows, i.e. the optional pipe adapters and
+  // the bellows are assumed to have the same inner radius.
   double pipeInnerRadius;
   // Wall thickness of the front/back pipe.
   double pipeWallThick;
@@ -134,6 +143,9 @@ class SmallAngleBellows:
   int nSectors;
   // Material of the front/back pipes and flanges.
   int pipeMat;
+
+  bool useFrontPipe; // Determines whether pipe adapter at the front is built or not.
+  bool useBackPipe; // Determines whether pipe adapter at the back is built or not.
 
   // List of material with effective density for each sector.
   std::vector<int> bellowsMatPerSector;

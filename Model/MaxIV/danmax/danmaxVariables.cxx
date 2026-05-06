@@ -123,6 +123,7 @@
 // [37] CAD model CM2_chamber_2026-03-04.STEP /mxn/groups/rad/Beamlines/DanMAX/Simulations/CM2_chamber_2026-03-04.STEP
 // [38] Drawing of SINCRYS Guillotine, 257500_B.pdf, 2025-10-06
 // [39] Drawing of SINCRYS Guillotine, 257605_A.pdf, 2025-10-08
+// [40] DanMax Optical Hutch, Calculation note, Technical Note 3541.012-NTE, Caratelli (2017)
 
 namespace setVariable
 {
@@ -372,9 +373,7 @@ opticsHutVariables(FuncDataBase& Control,
 
   OpticsHutchGenerator OGen;
 
-  // Not given in [1]. Use same value as in other beamlines (where this value is also
-  // used without reference).
-  const double skinThick = 0.2;
+  const double skinThick = 0.1; // [40]
   OGen.setSkin(skinThick);
   const double backLead = 5.0; // "Lead Thickness Back Wall" Section A-A [1]
   OGen.setBackLead(backLead);
@@ -476,7 +475,14 @@ connectVariables(FuncDataBase& Control,
   Control.addVariable(connectName+"LeftThick", 0.7); // Detail D and Detail K [9]
   Control.addVariable(connectName+"RightThick", 0.7); // Detail D and Detail K [9]
   Control.addVariable(connectName+"FrontBackThick", 0.7); // Detail D and Detail K [9]
-  Control.addVariable(connectName+"SkinThick", 0.1); // Estimated, not shown in [9]
+  Control.addVariable(connectName+"SkinThickInside", 0.0); // No skin shown in [9]
+  // Roughly read off from Detail D and Detail K in [9].
+  // Detail K indicates a 1-mm thickness for the large region, while Detail D
+  // -which is a little harder to read off- indicates a larger thickness,
+  // possibly 2 mm. Here, use 1 mm everywhere. It seems reasonable that the
+  // manufacturer did not vary the skin thickness if they did not vary the lead
+  // thickness, and the choice is conservative.
+  Control.addVariable(connectName+"SkinThickOutside", 0.1);
   Control.addVariable(connectName+"Mat", "Lead"); // [9]
   Control.addVariable(connectName+"SkinMat", "SteelUnknownGrade");
   Control.addVariable(connectName+"VoidMat", "Void");
@@ -675,7 +681,7 @@ exptHut2Variables(FuncDataBase& Control,
   PGen.setSkin(skinThick); // Measured on site.
 
   // Reference x value for all chicanes
-  const double x0 = (danmaxVar::exptHut2Length*skinThick-backLead)/2.0;
+  const double x0 = (danmaxVar::exptHut2Length-skinThick-backLead)/2.0;
   // Chicane0 and Chicane1 are within 1828 mm from the back wall of Expt. Hutch 2
   // (Section A-A [3]). Assume that their centers are located at 1/4*1828 and 3/4*1828.
   // Positioning uncertainty estimate from the drawing: += 50 mm.
@@ -764,6 +770,7 @@ void viewPackage(FuncDataBase& Control,const std::string& viewKey)
   //
   // Material is actually given as "pCVD Diamond" in [13].
   FlangeGen.setBlade(3.3,1.3,0.2,-45.0,"Diamond",1);
+  FlangeGen.setLift(3.0);
   FlangeGen.generateMount(Control,viewKey+"ViewTubeScreen",0);
 }
 
@@ -851,6 +858,7 @@ viewBPackage(FuncDataBase& Control,const std::string& viewKey)
 
   FlangeGen.setNoPlate();
   FlangeGen.setBlade(0.7,0.7,0.02,-45.0,"Diamond",1); // [13]
+  FlangeGen.setLift(3.0); // [13]
   FlangeGen.generateMount(Control,pipeName+"Screen",0);
 }
 
@@ -1576,9 +1584,13 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(bremColl1Name+"XAngle",90);
 
   // High Pass Filter
-  // Simplified to a pipe with two 'windows' corresponding to the two diamond filters.
+  // Simplified to a pipe with a single 'window' corresponding to the diamond filter.
   PipeGen.setOuterVoid(true);
-  PipeGen.setRectWindow(0.6,0.6,0.06,0.6,0.6,0.04); // [13]
+  // [13] gives the dimensions for two windows, a 600 um upstream window, and a
+  // 400 um downstream window. During a site visit with DanMAX staff in December 2025,
+  // we learned that the thicker upstream window will be removed for the SINCRYS
+  // upgrade.
+  PipeGen.setRectWindow(0.6,0.6,0.0,0.6,0.6,0.04);
   PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
   // Length adjusted to fit the position given in [12]
   const double highPassFilterLength =
@@ -1589,6 +1601,10 @@ opticsVariables(FuncDataBase& Control,
     highPassFilterLength);
   // When using absolute positioning, YStep variables needs to be adjusted.
   Control.addVariable(opticsName+"HighPassFilterYStep",0.0);
+  // Setting the thickness to zero above is already enough to remove the upstream
+  // window. The following line is a more efficient way of excluding it because no
+  // planes will be created and then removed.
+  Control.addVariable(opticsName+"HighPassFilterWindowAType",0);
 
   Control.copyVarSet(beamName+"FrontBeamValve3",opticsName+"Valve5"); // [28]
 
@@ -1677,6 +1693,7 @@ opticsVariables(FuncDataBase& Control,
   // Screen dimensions from [30].
   const double beamViewerS1ScreenThick = 0.015; // [30]
   const double beamViewerS1ScreenSideLength = 1.0; // [30]
+  const double beamViewerS1ScreenLift = 3.0; // [32]
   FlangeGen.setNoPlate();
   // Thread is a conservative approximation. In reality, there is much more material
   // around the crystal, see [30] or [32].
@@ -1686,7 +1703,8 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.setBlade(
     beamViewerS1ScreenSideLength,beamViewerS1ScreenSideLength,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
-  FlangeGen.generateMount(Control,name+"Screen",1);
+  FlangeGen.setLift(beamViewerS1ScreenLift);
+  FlangeGen.generateMount(Control,name+"Screen",0);
 
   // Create variables for run-time control of
   // - CM1BeamSplitter
@@ -1784,7 +1802,7 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.setBlade(
     beamViewerS2ScreenSideLength,beamViewerS2ScreenSideLength,
     beamViewerS2ScreenThick,0.0,"YAG",1); // [32]
-  FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",1);
+  FlangeGen.generateMount(Control,opticsName+"BeamViewerS2Screen",0);
   Control.addVariable(opticsName+"BeamViewerS2ScreenBladeCentreActive",1);
 
   name = opticsName+"CM2Crystal";
@@ -1847,7 +1865,7 @@ opticsVariables(FuncDataBase& Control,
   // IB-C30-UHV slits
   name=opticsName+"SlitTubeS";
   MonoSlitsJJGenerator monoSlitsJJGenerator;
-  monoSlitsJJGenerator.generate(Control,name);
+  monoSlitsJJGenerator.generate(Control,name,1,1,1,1);
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+769.0-monoSlitsJJGenerator.getLength()/2.0); // [33]
@@ -1874,7 +1892,8 @@ opticsVariables(FuncDataBase& Control,
   FlangeGen.setBlade(
     beamViewerS1ScreenSideLength,beamViewerS1ScreenSideLength,
     beamViewerS1ScreenThick,45.0,"Diamond",1);
-  FlangeGen.generateMount(Control,name+"Screen",1);
+  FlangeGen.setLift(beamViewerS1ScreenLift);
+  FlangeGen.generateMount(Control,name+"Screen",0);
 
   // See also comments on ValveS2.
   name = opticsName+"ValveS3";
@@ -2248,8 +2267,9 @@ DANMAXvariables(FuncDataBase& Control)
   // TODO: Should be S235JR [39]
   Control.addVariable(guillotineName+"WallMat","SteelUnknownGrade");
   Control.addVariable(guillotineName+"Mat","SteelUnknownGrade");
-  // Guillotine hole is off center by 45 mm.
-  Control.addVariable(guillotineName+"XStep",-danmaxVar::SINCRYSBranchShift+4.5);
+  // Guillotine hole is off center by 45 mm such that the larger part points towards
+  // the DanMAX beamline [39].
+  Control.addVariable(guillotineName+"XStep",-danmaxVar::SINCRYSBranchShift-4.5);
 
   danmaxVar::shieldVariables<setVariable::CF40>(Control);
   danmaxVar::connectVariables(Control,beamLineName+"ConnectUnit");

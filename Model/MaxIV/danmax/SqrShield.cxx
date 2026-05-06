@@ -108,7 +108,8 @@ SqrShield::populate(const FuncDataBase& Control)
   leftThick=Control.EvalVar<double>(keyName+"LeftThick");
   rightThick=Control.EvalVar<double>(keyName+"RightThick");
   frontBackThick=Control.EvalVar<double>(keyName+"FrontBackThick");
-  skinThick=Control.EvalVar<double>(keyName+"SkinThick");
+  skinThickInside=Control.EvalVar<double>(keyName+"SkinThickInside");
+  skinThickOutside=Control.EvalVar<double>(keyName+"SkinThickOutside");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
@@ -117,16 +118,48 @@ SqrShield::populate(const FuncDataBase& Control)
   return;
 }
 
-double SqrShield::dXYZ(const unsigned int n, const unsigned int i) const {
+double SqrShield::dXYZ(const unsigned int n, const unsigned int i) const
+/*!
+  The shielding is built from up to three layers:
+  * inner skin (skinMat)
+  * actual wall between skins (mat)
+  * outer skin (skinMat)
+  These three layers are separated by n=4 planes, with n=0 being the innermost plane
+  that has an offset of 0.0.
+  Individual layer thicknesses can be set for each of the six sides
+  i=1,2,3,4,5,6 in CombLayer convention.
+  This helper function returns the offset of the separating plane for a given pair of 
+  n and i. With all the plane- and side-dependent logic delegated to dXYZ, the code
+  in createSurfaces is very concise.
+  \param n :: Plane index. Starting from n = 0, going from inner to outer with 
+    increasing value.
+  \param i :: Side index in CombLayer convention.
+*/
+{
   double dY = 0.0;
   switch(n){
     case 0:
       return 0.0;
     case 1:
-      return skinThick;
+      return skinThickInside;
     case 2:
+      switch(i){
+        case 1:
+        case 2:
+          return skinThickInside+frontBackThick;
+        case 3:
+          return skinThickInside+rightThick;
+        case 4:
+          return skinThickInside+leftThick;
+        case 5:
+          return skinThickInside+bottomThick;
+        case 6:
+          return skinThickInside+topThick;
+        default:
+          return 0.0;
+      }
     case 3:
-      dY = (n-1)*skinThick;
+      dY = skinThickInside+skinThickOutside;
       switch(i){
         case 1:
         case 2:
@@ -211,49 +244,83 @@ SqrShield::createObjects(Simulation& System)
   const HeadRule frontHR(getFrontRule());
   const HeadRule backHR(getBackRule());
 
+  const bool skinInside = skinThickInside > Geometry::zeroTol;
+  const bool skinOutside = skinThickOutside > Geometry::zeroTol;
+
   makeCell("FrontOuterVoid",System,cellIndex++,voidMat,0.0,ModelSupport::getHeadRule
     (SMap,buildIndex,"133 -134 135 -136 (-33:34:-35:36) -41")*frontHR);
-  makeCell("FrontOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"33 -34 35 -36 (-23:24:-25:26) -41")*frontHR);
+  if(skinOutside){
+    makeCell("FrontOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+      (SMap,buildIndex,"33 -34 35 -36 (-23:24:-25:26) -41")*frontHR);
+  }
   makeCell("FrontWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
     (SMap,buildIndex,"23 -24 25 -26 (-13:14:-15:16) -31")*frontHR);
-  makeCell("FrontInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6) -11")*frontHR);
+  if(skinInside){
+    makeCell("FrontInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+      (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6) -11")*frontHR);
+  }
 
   makeCell("LargeRegionVoid",System,cellIndex++,voidMat,0.0,ModelSupport::getHeadRule
     (SMap,buildIndex,"103 -104 105 -106 (-3:4:-5:6) 11 -12"));
-  makeCell("LargeRegionOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"133 -134 135 -136 (-123:124:-125:126) 41 -42")*frontHR);
+  if(skinOutside){
+    makeCell("LargeRegionOuterSkin",System,cellIndex++,skinMat,0.0,
+      ModelSupport::getHeadRule(
+        SMap,buildIndex,"133 -134 135 -136 (-123:124:-125:126) 41 -42")*frontHR);
+  }
   makeCell("LargeRegionWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
     (SMap,buildIndex,"123 -124 125 -126 (-113:114:-115:116) 31 -32")*frontHR);
-  makeCell("LargeRegionInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"113 -114 115 -116 (-103:104:-105:106) 11 -12")*frontHR);
+  if(skinInside){
+    makeCell("LargeRegionInnerSkin",System,cellIndex++,skinMat,0.0,
+      ModelSupport::getHeadRule(
+        SMap,buildIndex,"113 -114 115 -116 (-103:104:-105:106) 11 -12")*frontHR);
+  }
 
-  makeCell("LargeRegionFrontInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) -11 21")*frontHR);
+  if(skinInside){
+    makeCell("LargeRegionFrontInnerSkin",System,cellIndex++,skinMat,0.0,
+      ModelSupport::getHeadRule(
+        SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) -11 21")*frontHR);
+  }
   makeCell("LargeRegionFrontWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
     (SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) -21 31")*frontHR);
-  makeCell("LargeRegionFrontOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"123 -124 125 -126 (-23:24:-25:26) -31 41")*frontHR);
+  if(skinOutside){
+    makeCell("LargeRegionFrontOuterSkin",System,cellIndex++,skinMat,0.0,
+      ModelSupport::getHeadRule(
+        SMap,buildIndex,"123 -124 125 -126 (-23:24:-25:26) -31 41")*frontHR);
+  }
 
-  makeCell("LargeRegionBackInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) 12 -22")*backHR);
+  if(skinInside){
+    makeCell("LargeRegionBackInnerSkin",System,cellIndex++,skinMat,0.0,
+      ModelSupport::getHeadRule(
+        SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) 12 -22")*backHR);
+  }
   makeCell("LargeRegionBackWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
     (SMap,buildIndex,"113 -114 115 -116 (-13:14:-15:16) 22 -32")*backHR);
-  makeCell("LargeRegionBackOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"123 -124 125 -126 (-23:24:-25:26) 32 -42")*backHR);
+  if(skinOutside){
+    makeCell("LargeRegionBackOuterSkin",System,cellIndex++,skinMat,0.0,
+      ModelSupport::getHeadRule(
+        SMap,buildIndex,"123 -124 125 -126 (-23:24:-25:26) 32 -42")*backHR);
+  }
 
   makeCell("BackOuterVoid",System,cellIndex++,voidMat,0.0,ModelSupport::getHeadRule
     (SMap,buildIndex,"133 -134 135 -136 (-33:34:-35:36) 42")*backHR);
-  makeCell("BackOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"33 -34 35 -36 (-23:24:-25:26) 42")*backHR);
+  if(skinOutside){
+    makeCell("BackOuterSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+      (SMap,buildIndex,"33 -34 35 -36 (-23:24:-25:26) 42")*backHR);
+  }
   makeCell("BackWall",System,cellIndex++,mat,0.0,ModelSupport::getHeadRule
     (SMap,buildIndex,"23 -24 25 -26 (-13:14:-15:16) 32")*backHR);
-  makeCell("BackInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
-    (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6) 12")*backHR);
+  if(skinInside){
+    makeCell("BackInnerSkin",System,cellIndex++,skinMat,0.0,ModelSupport::getHeadRule
+      (SMap,buildIndex,"13 -14 15 -16 (-3:4:-5:6) 12")*backHR);
+  }
 
-  addOuterSurf(ModelSupport::getHeadRule
-    (SMap,buildIndex,"133 -134 135 -136")*frontHR*backHR);
+  if(skinOutside){
+    addOuterSurf(ModelSupport::getHeadRule
+      (SMap,buildIndex,"133 -134 135 -136")*frontHR*backHR);
+  } else {
+    addOuterSurf(ModelSupport::getHeadRule
+      (SMap,buildIndex,"123 -124 125 -126")*frontHR*backHR);
+  }
 
   return;
 }
