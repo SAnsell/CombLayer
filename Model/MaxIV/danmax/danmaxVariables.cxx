@@ -124,7 +124,7 @@
 // [38] Drawing of SINCRYS Guillotine, 257500_B.pdf, 2025-10-06
 // [39] Drawing of SINCRYS Guillotine, 257605_A.pdf, 2025-10-08
 // [40] DanMax Optical Hutch, Calculation note, Technical Note 3541.012-NTE, Caratelli (2017)
-
+// [41] /mxn/groups/rad/Beamlines/DanMAX/Drawings/Front End/PDF drawings/S1-2-2AG00580.pdf
 namespace setVariable
 {
 
@@ -299,8 +299,8 @@ frontMaskVariables(FuncDataBase& Control,
   // MSM not used
   // const double MSMdist(1600.0);
 
-  double backWidth = 1.1; // ???
-  double backHeight = backWidth;
+  double backWidth = 1.12; // [41]
+  double backHeight = backWidth;  // [41]
   FMHGen.setFrontRadius(2.9);
   FMHGen.setBackGap(backWidth, backHeight);
   FMHGen.generate(Control,preName+"FM1",danmaxVar::absY::FM1,FM1Length);
