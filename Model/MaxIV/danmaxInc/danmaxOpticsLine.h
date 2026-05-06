@@ -111,8 +111,8 @@ class danmaxOpticsLine :
   /// bellows from trigger outward
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Bremsstrahlung Collimator 1 (tube and collimator)
-  std::shared_ptr<constructSystem::PipeTube> bremColl1Tube;
-  std::shared_ptr<xraySystem::BremBlock> bremColl1;
+  std::shared_ptr<constructSystem::PipeTube> bc1Tube;
+  std::shared_ptr<xraySystem::BremBlock> bc1;
   /// High Pass Filter
   std::shared_ptr<constructSystem::VacuumPipe> highPassFilter;
   /// Second gate valve in Optics Hutch (common branch)
@@ -246,7 +246,7 @@ class danmaxOpticsLine :
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
-  void constructBremColl1Tube(Simulation&,
+  void constructBC1Tube(Simulation&,
 			 const attachSystem::FixedComp&,const std::string&);
 
   void constructSlitTube(Simulation&,

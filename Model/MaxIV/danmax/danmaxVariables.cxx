@@ -1552,7 +1552,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setBellowStep(1.0);
   BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
 
-  const std::string bremColl1TubeName = opticsName+"BremColl1Tube";
+  const std::string bremColl1TubeName = opticsName+"BC1Tube";
   SimpleTubeGen.setCF<setVariable::CF160>();
   SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.generateTube(Control,bremColl1TubeName,bremcoll1Height);
@@ -1568,7 +1568,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(bremColl1TubeName+"YStep",
     danmaxVar::absY::bremColl1-bremColl1Length/2.0);
 
-  const std::string bremColl1Name = opticsName+"BremColl1";
+  const std::string bremColl1Name = opticsName+"BC1";
   // TODO: Material currently set to pure tungsten (default), but should be
   // DENSIMET [13].
   BremGen.centre();

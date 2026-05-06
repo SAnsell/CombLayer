@@ -132,8 +132,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   triggerPipe(new xraySystem::TriggerTube(newName+"TriggerUnit")),
   valve4(new xraySystem::CylGateValve(newName+"Valve4")),
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
-  bremColl1Tube(new constructSystem::PipeTube(newName+"BremColl1Tube")),
-  bremColl1(new xraySystem::BremBlock(newName+"BremColl1")),
+  bc1Tube(new constructSystem::PipeTube(newName+"BC1Tube")),
+  bc1(new xraySystem::BremBlock(newName+"BC1")),
   highPassFilter(new constructSystem::VacuumPipe(newName+"HighPassFilter")),
   valve5(new xraySystem::CylGateValve(newName+"Valve5")),
   pipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
@@ -236,8 +236,8 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(valve4);
 
   OR.addObject(bellowA);
-  OR.addObject(bremColl1Tube);
-  OR.addObject(bremColl1);
+  OR.addObject(bc1Tube);
+  OR.addObject(bc1);
   OR.addObject(highPassFilter);
   OR.addObject(valve5);
   OR.addObject(pipeA);
@@ -375,7 +375,7 @@ danmaxOpticsLine::createSurfaces()
 }
 
 void
-danmaxOpticsLine::constructBremColl1Tube
+danmaxOpticsLine::constructBC1Tube
    (Simulation& System,
     const attachSystem::FixedComp& initFC,
     const std::string& sideName)
@@ -386,13 +386,13 @@ danmaxOpticsLine::constructBremColl1Tube
     \param sideName :: start link point
   */
 {
-  ELog::RegMethod RegA("danmaxOpticsLine","constructBremColl1Tube");
+  ELog::RegMethod RegA("danmaxOpticsLine","constructBC1Tube");
 
-  bremColl1Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  bremColl1Tube->createAll(System,*frontEnd,0);
+  bc1Tube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  bc1Tube->createAll(System,*frontEnd,0);
 
-  const constructSystem::portItem& VPA=bremColl1Tube->getPort(0);
-  const constructSystem::portItem& VPB=bremColl1Tube->getPort(1);
+  const constructSystem::portItem& VPA=bc1Tube->getPort(0);
+  const constructSystem::portItem& VPB=bc1Tube->getPort(1);
 
   bellowA->setBack(VPA.getLinkSurf(2));
   bellowA->createAll(System,initFC,sideName);
@@ -400,10 +400,10 @@ danmaxOpticsLine::constructBremColl1Tube
     buildZone.createUnit(System,VPA,VPA.getSideIndex("#OuterPlate")));
 
   int outerCell=buildZone.createUnit(System,VPB,VPB.getSideIndex("OuterPlate"));
-  bremColl1Tube->insertAllInCell(System,outerCell);
+  bc1Tube->insertAllInCell(System,outerCell);
 
-  bremColl1->addInsertCell(bremColl1Tube->getCell("Void"));
-  bremColl1->createAll(System,*bremColl1Tube,"Origin");
+  bc1->addInsertCell(bc1Tube->getCell("Void"));
+  bc1->createAll(System,*bc1Tube,"Origin");
 
   // When using absolute positioning, YStep variables needs to be adjusted.
   const bool useHighPassFilterAbsY = false;
@@ -1208,7 +1208,7 @@ danmaxOpticsLine::buildObjects(Simulation& System)
 
   valve4->insertInCell(System,buildZone.createUnit(System,*valve4,"back"));
 
-  constructBremColl1Tube(System, *valve4, "back");
+  constructBC1Tube(System, *valve4, "back");
 
   constructSystem::constructUnit
     (System,buildZone,*highPassFilter,"back",*valve5);
