@@ -156,6 +156,7 @@
 #include "TDCBeamDumpGenerator.h"
 #include "FixedMaskHybridGenerator.h"
 #include "SmallAngleBellowsGenerator.h"
+#include "StepBellowsGenerator.h"
 #include "WhiteBeamStopGenerator.h"
 
 namespace setVariable
@@ -684,6 +685,13 @@ SingleItemVariables(FuncDataBase& Control)
     SmallAngleBellowsGenerator.generateBellows(
       Control,"SmallAngleBellows"+std::to_string(i));
   }
+
+  // StepBellows
+  setVariable::StepBellowsGenerator stepBellowsGenerator(1.5,20.0);
+  stepBellowsGenerator.generateBellows(Control,"StepBellows1");
+  stepBellowsGenerator.setLength(30.0);
+  stepBellowsGenerator.setStep(-2.0);
+  stepBellowsGenerator.generateBellows(Control,"StepBellows2");
 
   // Lead Clad Pipe
   setVariable::LeadPipeGenerator LeadGen;

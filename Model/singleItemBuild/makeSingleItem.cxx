@@ -210,6 +210,7 @@
 #include "FixedMaskHybrid.h"
 #include "SqrShield.h"
 #include "SmallAngleBellows.h"
+#include "StepBellows.h"
 #include "cylinderUnit.h"
 #include "WhiteBeamStop.h"
 #include "CM1BeamSplitter.h"
@@ -248,9 +249,9 @@ makeSingleItem::build(Simulation& System,
     ({
       "default",
 	"CM1BeamSplitter","CM2Crystal","Cylinder","WhiteBeamStop",
-	"SmallAngleBellows","CornerPipe","ChopperPit","CylGateValve","SingleChopper",
-	"GateValveCube","GateValveCylinder", "GTFGateValve", "CleaningMagnet",
-	"CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
+	"SmallAngleBellows","StepBellows","CornerPipe","ChopperPit","CylGateValve",
+  "SingleChopper","GateValveCube","GateValveCylinder", "GTFGateValve",
+  "CleaningMagnet","CorrectorMag","Jaws","LQuadF","LQuadH","LSexupole",
 	"DCMTank","MagnetBlock","Sexupole","MagnetM1","MagnetU1",
         "Octupole","CeramicGap","MainBeamDump",
 	"EBeamStop","FMask","R3ChokeChamber",
@@ -319,6 +320,25 @@ makeSingleItem::build(Simulation& System,
         smallAngleBellows[i]->addInsertCell(voidCell);
         smallAngleBellows[i]->createAll(System,*smallAngleBellows[i-1],"back");
       }
+
+      return;
+    }
+  if (item == "StepBellows" )
+    {
+      std::shared_ptr<xraySystem::StepBellows> stepBellows1(
+        new xraySystem::StepBellows("StepBellows1")
+      );
+      std::shared_ptr<xraySystem::StepBellows> stepBellows2(
+        new xraySystem::StepBellows("StepBellows2")
+      );
+
+      OR.addObject(stepBellows1);
+      OR.addObject(stepBellows2);
+
+      stepBellows1->addAllInsertCell(voidCell);
+      stepBellows1->createAll(System,World::masterOrigin(),0);
+      stepBellows2->addAllInsertCell(voidCell);
+      stepBellows2->createAll(System,*stepBellows1,"back");
 
       return;
     }
