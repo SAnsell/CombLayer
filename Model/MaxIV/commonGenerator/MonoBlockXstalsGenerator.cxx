@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/MonoBlockXstalsGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -46,17 +46,26 @@
 
 #include "MonoBlockXstalsGenerator.h"
 
+// [1] email from MJ 260505
+
 namespace setVariable
 {
 
 MonoBlockXstalsGenerator::MonoBlockXstalsGenerator() :
   gap(0.7),phiA(0.0),phiB(0.0),
-  widthA(5.0),heightA(2.0),lengthA(5.0),
-  widthB(3.0),heightB(2.0),lengthB(10.0),
+  widthA(5.0),  // [1]
+  heightA(2.0), // [1]
+  lengthA(5.0), // [1]
+  widthB(3.0),  // [1]
+  heightB(2.0), // [1]
+  lengthB(10.0),// [1]
   baseALength(11.0),baseAHeight(1.5),baseAWidth(6.0),
   topALength(9.0),topAHeight(1.5),topAWidth(5.0),
   baseBLength(14.0),baseBHeight(1.5),baseBWidth(6.0),
   topBLength(12.5),topBHeight(1.5),topBWidth(3.0),
+  parked(1), // crystals are in the parked position by default
+  parkedOffset(3.0), // [1]
+  parkedGap(0.6), // [1]
   xtalMat("Silicon300K"),baseMat("Copper")
   /*!
     Constructor and defaults
@@ -64,7 +73,7 @@ MonoBlockXstalsGenerator::MonoBlockXstalsGenerator() :
 {}
 
 MonoBlockXstalsGenerator::MonoBlockXstalsGenerator
-(const MonoBlockXstalsGenerator& A) : 
+(const MonoBlockXstalsGenerator& A) :
   gap(A.gap),phiA(A.phiA),phiB(A.phiB),widthA(A.widthA),
   heightA(A.heightA),lengthA(A.lengthA),widthB(A.widthB),
   heightB(A.heightB),lengthB(A.lengthB),baseALength(A.baseALength),
@@ -73,7 +82,11 @@ MonoBlockXstalsGenerator::MonoBlockXstalsGenerator
   topAWidth(A.topAWidth),baseBLength(A.baseBLength),
   baseBHeight(A.baseBHeight),baseBWidth(A.baseBWidth),
   topBLength(A.topBLength),topBHeight(A.topBHeight),
-  topBWidth(A.topBWidth),xtalMat(A.xtalMat),baseMat(A.baseMat)
+  topBWidth(A.topBWidth),
+  parked(1),
+  parkedOffset(3.0),
+  parkedGap(0.6),
+  xtalMat(A.xtalMat),baseMat(A.baseMat)
   /*!
     Copy constructor
     \param A :: MonoBlockXstalsGenerator to copy
@@ -118,13 +131,13 @@ MonoBlockXstalsGenerator::operator=(const MonoBlockXstalsGenerator& A)
 }
 
 
-  
-MonoBlockXstalsGenerator::~MonoBlockXstalsGenerator() 
+
+MonoBlockXstalsGenerator::~MonoBlockXstalsGenerator()
  /*!
    Destructor
  */
 {}
-  
+
 
 void
 MonoBlockXstalsGenerator::generateXstal
@@ -132,16 +145,16 @@ MonoBlockXstalsGenerator::generateXstal
  const double yStep,const double theta) const
   /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
+    \param yStep :: y-offset
     \param theta :: Theta angle
   */
 {
   ELog::RegMethod RegA("MonoBlockXstalsGenerator","generateXstal");
-  
+
   Control.addVariable(keyName+"YStep",yStep);
-  
+
   Control.addVariable(keyName+"Gap",gap);
   Control.addVariable(keyName+"Theta",theta);
 
@@ -171,16 +184,19 @@ MonoBlockXstalsGenerator::generateXstal
   Control.addVariable(keyName+"TopBLength",topBLength);
   Control.addVariable(keyName+"TopBHeight",topBHeight);
   Control.addVariable(keyName+"TopBWidth",topBWidth);
+  Control.addVariable(keyName+"Parked",parked);
+  Control.addVariable(keyName+"ParkedOffset",parkedOffset);
+  Control.addVariable(keyName+"ParkedGap",parkedGap);
 
   Control.addVariable(keyName+"XtalMat",xtalMat);
   Control.addVariable(keyName+"BaseMat",baseMat);
-  
 
 
 
-    
+
+
   return;
 
 }
-  
+
 }  // NAMESPACE setVariable

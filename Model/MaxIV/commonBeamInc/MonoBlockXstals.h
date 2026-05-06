@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/MonoBlockXstals.h
 *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_MonoBlockXstals_h
@@ -51,11 +51,11 @@ class MonoBlockXstals :
 
   double phiA;              ///< phi angle of first [rot:Y]
   double phiB;              ///< phi angle of second [rot:Y]
-  
+
   double widthA;            ///< Width of block across beam
   double heightA;           ///< Depth into beam
   double lengthA;           ///< Length along beam
-  
+
   double widthB;            ///< Width of block across beam
   double heightB;           ///< Depth into beam
   double lengthB;           ///< Length along beam
@@ -75,7 +75,11 @@ class MonoBlockXstals :
   double topBLength;       ///< Top length
   double topBHeight;       ///< Top thickness
   double topBWidth;        ///< Edge aligned to crystal
-  
+
+  int parked;                   ///< Flag to set crystals in parked position
+  double parkedOffset;         ///< y-Offset between front surfaces of crystals in parked position
+  double parkedGap;             ///< x-Gap between crystals in parked position
+
   int xtalMat;             ///< XStal material
   int baseMat;             ///< Base material
 
@@ -97,10 +101,9 @@ class MonoBlockXstals :
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int) override;
-  
+
 };
 
 }
 
 #endif
- 

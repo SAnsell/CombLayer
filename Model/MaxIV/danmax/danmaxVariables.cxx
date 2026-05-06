@@ -1220,7 +1220,9 @@ hdcmPackage(FuncDataBase& Control,const std::string& monoKey)
   MXtalGen.setB(10.0, 3.0, 2.0); // [24]
   MXtalGen.setBaseB(14.0, 6.0, 1.5); // [24]
 
-  MXtalGen.setGap(0.7);
+  // Crystal parked position. Parameters are based on email from MJ 260505
+  constexpr double gap = 0.6;
+  MXtalGen.setGap(gap);
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0); // yStep, theta
 }
 

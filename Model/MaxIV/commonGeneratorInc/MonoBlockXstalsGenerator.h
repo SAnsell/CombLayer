@@ -68,6 +68,10 @@ class MonoBlockXstalsGenerator
   double topBHeight;        ///< Top thickness
   double topBWidth;         ///< Edge aligned to crystal
 
+  int parked;                   ///< Flag to set crystals in parked position
+  double parkedOffset;         ///< Offset between front surfaces of crystals in parked position
+  double parkedGap;             ///< x-Gap between crystals in parked position
+
   std::string xtalMat;      ///< XStal material
   std::string baseMat;      ///< Base material
 
