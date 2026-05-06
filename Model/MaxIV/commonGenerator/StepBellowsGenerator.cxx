@@ -71,10 +71,12 @@ StepBellowsGenerator::StepBellowsGenerator(const double s, const double l) :
 
 template<typename CF> void
 StepBellowsGenerator::setCF(){
-  flangeLength=CF40::flangeLength;
-  flangeRadius=CF40::flangeRadius;
-  pipeInnerRadius=CF40::innerRadius;
-  pipeWallThick=CF40::wallThick;
+  flangeLength=CF::flangeLength;
+  flangeRadius=CF::flangeRadius;
+  pipeInnerRadius=CF::innerRadius;
+  pipeWallThick=CF::wallThick;
+
+  bellowsThick = CF::flangeRadius - CF::innerRadius;
 }
 
 void StepBellowsGenerator::generateBellows(
@@ -123,6 +125,7 @@ void StepBellowsGenerator::generateBellows(
 ///\cond TEMPLATE
 
   template void StepBellowsGenerator::setCF<CF40>();
+  template void StepBellowsGenerator::setCF<CF63>();
 
 ///\endcond TEMPLATE
 

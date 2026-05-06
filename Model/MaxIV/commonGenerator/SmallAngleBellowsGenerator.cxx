@@ -62,10 +62,12 @@ SmallAngleBellowsGenerator::SmallAngleBellowsGenerator() :
 
 template<typename CF> void
 SmallAngleBellowsGenerator::setCF(){
-  flangeLength=CF40::flangeLength;
-  flangeRadius=CF40::flangeRadius;
-  pipeInnerRadius=CF40::innerRadius;
-  pipeWallThick=CF40::wallThick;
+  flangeLength=CF::flangeLength;
+  flangeRadius=CF::flangeRadius;
+  pipeInnerRadius=CF::innerRadius;
+  pipeWallThick=CF::wallThick;
+
+  bellowsThick = CF::flangeRadius - CF::innerRadius;
 }
 
 void SmallAngleBellowsGenerator::generateBellows(

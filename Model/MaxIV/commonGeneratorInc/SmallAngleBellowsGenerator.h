@@ -35,9 +35,11 @@ namespace setVariable
   \brief SmallAngleBellowsGenerator for variables
 
   Version history:
-  1.1 - 2026-05-05
+  1.1.1 - 2026-05-06
+    - Fix setCF function.
+  1.1   - 2026-05-05
     - Update for SmallAngleBellows v1.1
-  1.0 - 2026-03-05
+  1.0   - 2026-03-05
 */
 
 class SmallAngleBellowsGenerator
