@@ -102,6 +102,7 @@
 #include "BladeBPMToyama.h"
 #include "StepBellows.h"
 #include "HeatAbsorberStepBellows.h"
+#include "FlangeMount.h"
 
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyamaDanMAX.h"
@@ -141,6 +142,8 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
   flangePlateF(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateF")),
   flangePlateG(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateG")),
+  fluorescentScreen(std::make_shared<xraySystem::FlangeMount>(
+    newName+"FluorescentScreen")),
   bremColl(new xraySystem::BremBlock(newName+"BremColl")),
   bremCollPipe(new constructSystem::VacuumPipe(newName+"BremCollPipe")),
   proxiShieldA(new xraySystem::ProximityShielding(newName+"ProxiShieldA")),
@@ -226,6 +229,7 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   OR.addObject(bellowDA);
   OR.addObject(flangePlateF);
   OR.addObject(flangePlateG);
+  OR.addObject(fluorescentScreen);
   OR.addObject(bremColl);
   OR.addObject(bremCollPipe);
   OR.addObject(proxiShieldA);
@@ -469,7 +473,10 @@ R3FrontEndToyamaDanMAX::buildSupport7(Simulation& System)
   fluorescentScreenTube->intersectPorts(System,1,3);
   fluorescentScreenTube->intersectPorts(System,0,2);
   fluorescentScreenTube->intersectPorts(System,1,2);
-
+  fluorescentScreen->addInsertCell("Body",fluorescentScreenTube->getCell("Void"));
+  fluorescentScreen->addInsertCell("Blade",fluorescentScreenTube->getCell("Void"));
+  fluorescentScreen->setBladeCentre(fluorescentScreenTube->getPort(1).getLinkPt(0));
+  fluorescentScreen->createAll(System,*fluorescentScreenTube,"InnerBack");
 
   // bellows
   bellowJ->createAll(System,FPI,FPI.getSideIndex("OuterPlate"));

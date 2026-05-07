@@ -2058,6 +2058,18 @@ support7DanMAX(FuncDataBase& Control,
   SimpleTubeGen.generateTube(
     Control,frontKey+"FluorescentScreenTube",fluorescentScreenTubeTotalHeight);
 
+  FlangeMountGenerator flangeMountGenerator;
+  const double fluorescentScreenThick = 0.02; // "0.2/DIAMOND" [17]
+  // Very crude model for the thread. Thread material from [17].
+  flangeMountGenerator.setNoPlate();
+  flangeMountGenerator.setThread(fluorescentScreenThick,0.0,"Stainless304");
+  flangeMountGenerator.setLift(4.0); // "ST=40" [17]
+  // In reality, the diamond is a disk with a diameter of 18 mm, but a window limits
+  // the effective area to a approximate rectangle with dimensions 18 mm x 6 mm.
+  // All data below from [17].
+  flangeMountGenerator.setBlade(1.8,0.6,fluorescentScreenThick,45.0,"Diamond",1);
+  flangeMountGenerator.generateMount(Control,frontKey+"FluorescentScreen",0);
+
   // beam ports
   const std::string florName(frontKey+"FluorescentScreenTube");
   Control.addVariable(florName+"NPorts",4);
