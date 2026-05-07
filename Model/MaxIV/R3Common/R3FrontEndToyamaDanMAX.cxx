@@ -458,17 +458,17 @@ R3FrontEndToyamaDanMAX::buildSupport7(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowI,"back");
   bellowI->insertAllInCell(System,outerCell);
 
-  florTubeA->setPortRotation(3,Geometry::Vec3D(1,0,0));
-  florTubeA->createAll(System,*bellowI,2);
-  const constructSystem::portItem& FPI=florTubeA->getPort(1);
+  fluorescentScreenTube->setPortRotation(3,Geometry::Vec3D(1,0,0));
+  fluorescentScreenTube->createAll(System,*bellowI,2);
+  const constructSystem::portItem& FPI=fluorescentScreenTube->getPort(1);
   outerCell=buildZone.createUnit(System,
 				 FPI,FPI.getSideIndex("OuterPlate"));
 
-  florTubeA->insertAllInCell(System,outerCell);
-  florTubeA->intersectPorts(System,0,3);
-  florTubeA->intersectPorts(System,1,3);
-  florTubeA->intersectPorts(System,0,2);
-  florTubeA->intersectPorts(System,1,2);
+  fluorescentScreenTube->insertAllInCell(System,outerCell);
+  fluorescentScreenTube->intersectPorts(System,0,3);
+  fluorescentScreenTube->intersectPorts(System,1,3);
+  fluorescentScreenTube->intersectPorts(System,0,2);
+  fluorescentScreenTube->intersectPorts(System,1,2);
 
 
   // bellows
@@ -476,13 +476,14 @@ R3FrontEndToyamaDanMAX::buildSupport7(Simulation& System)
   outerCell=buildZone.createUnit(System,*bellowJ,2);
   bellowJ->insertAllInCell(System,outerCell);
 
-  insertFlanges(System,*florTubeA,3);
+  insertFlanges(System,*fluorescentScreenTube,3);
 
   constructSystem::constructUnit(System,buildZone,*bellowJ,"back",*valve3);
 
   // Broximity shielding A
   proxiShieldAPipe->createAll(System,*valve3,"back");
-  constructSystem::pipeMagUnit(System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
+  constructSystem::pipeMagUnit(
+    System,buildZone,proxiShieldAPipe,"#front","outerPipe",proxiShieldA);
   constructSystem::pipeTerminate(System,buildZone,proxiShieldAPipe);
 
   constructSystem::constructUnit(System,buildZone,*proxiShieldAPipe,"back",*offPipeA);

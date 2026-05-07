@@ -2024,7 +2024,7 @@ support7DanMAX(FuncDataBase& Control,
   setVariable::BremBlockGenerator BBGen;
 
   constexpr double bellowILength = 10.0; // [4]
-  constexpr double florTubeALength = 12.0; // "Flourescent Screen" [4]
+  constexpr double fluorescentScreenTubeLength = 12.0; // "Flourescent Screen" [4]
   constexpr double bellowJLength = 10.0; // [4]
   constexpr double proxiShieldAPipeLength = 20.0; // [4]
   constexpr double proxiShieldBPipeLength = 20.0; // [4]
@@ -2040,7 +2040,8 @@ support7DanMAX(FuncDataBase& Control,
   constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [4, page1]
   constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
     bremCollTotalLength - shutterLength - proxiShieldAPipeLength -
-    danmaxVar::valve3Length - bellowJLength - florTubeALength - bellowILength;
+    danmaxVar::valve3Length - bellowJLength - fluorescentScreenTubeLength -
+    bellowILength;
   // same as counting from Movable Mask 2
   // 18692.8 + 300 + 140 + 17.5 + 340 = 19490.3
   assert(std::abs(bellowIYstep - 1949.03)<Geometry::zeroTol && "Wrong shutter table length."); // [4]
@@ -2053,17 +2054,19 @@ support7DanMAX(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF63>(); // Closest match with ICF114 given in [17]
   SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.setAFlange(CF63::outerRadius, 0.0);
-  const double florTubeATotalHeight = 15.0; // [18]
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",florTubeATotalHeight);
+  const double fluorescentScreenTubeTotalHeight = 15.0; // [18]
+  SimpleTubeGen.generateTube(
+    Control,frontKey+"FluorescentScreenTube",fluorescentScreenTubeTotalHeight);
 
   // beam ports
-  const std::string florName(frontKey+"FlorTubeA");
+  const std::string florName(frontKey+"FluorescentScreenTube");
   Control.addVariable(florName+"NPorts",4);
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  const double florTubeAHeight = 11.0; // [17]
-  const Geometry::Vec3D portPos(0,0.5*florTubeATotalHeight-florTubeAHeight,0);
+  const double fluorescentScreenTubeHeight = 11.0; // [17]
+  const Geometry::Vec3D portPos(
+    0,0.5*fluorescentScreenTubeTotalHeight-fluorescentScreenTubeHeight,0);
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.setOuterVoid(1);
@@ -2073,8 +2076,8 @@ support7DanMAX(FuncDataBase& Control,
   PItemGen.generatePort(Control,florName+"Port2",portPos,XVec);
   PItemGen.generatePort(Control,florName+"Port3",portPos,-XVec);
 
-  Control.addVariable(florName+"Port0Length",0.5*florTubeALength);
-  Control.addVariable(florName+"Port1Length",0.5*florTubeALength);
+  Control.addVariable(florName+"Port0Length",0.5*fluorescentScreenTubeLength);
+  Control.addVariable(florName+"Port1Length",0.5*fluorescentScreenTubeLength);
   Control.addVariable(florName+"Port2Length",5.85); // [17]
   Control.addVariable(florName+"Port3Length",5.85); // [17]
 
