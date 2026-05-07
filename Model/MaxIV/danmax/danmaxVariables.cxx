@@ -2191,6 +2191,7 @@ DANMAXvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("danmaxVariables[F]","danmaxVariables");
 
   Control.addVariable("sdefType","Wiggler");
+  Control.addVariable("R3RingRingDoorWallID", 4);
 
   setVariable::PipeGenerator PipeGen;
   //  setVariable::LeadPipeGenerator LeadPipeGen;
