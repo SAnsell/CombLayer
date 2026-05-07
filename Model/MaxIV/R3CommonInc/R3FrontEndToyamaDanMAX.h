@@ -66,7 +66,7 @@ namespace xraySystem
   class R3ChokeInsert;
   class BladeBPMToyama;
   class FixedMaskHybrid;
-  class StepBellows;
+  class HeatAbsorberStepBellows;
 
   /*!
     \class R3FrontEndToyamaDanMAX
@@ -98,9 +98,9 @@ protected:
   std::shared_ptr<constructSystem::FlangePlate> flangePlateC;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateD;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateE;
-  std::shared_ptr<xraySystem::StepBellows> bellowPreHA;
+  std::shared_ptr<xraySystem::HeatAbsorberStepBellows> bellowPreHA;
   std::shared_ptr<xraySystem::HeatAbsorberR3Toyama> ha;
-  std::shared_ptr<xraySystem::StepBellows> bellowPostHA;
+  std::shared_ptr<xraySystem::HeatAbsorberStepBellows> bellowPostHA;
   std::shared_ptr<constructSystem::CrossPipe> ionPump3;
   std::shared_ptr<xraySystem::CylGateValve> valve2;
   std::shared_ptr<constructSystem::Bellows> bellowDA;

@@ -101,6 +101,7 @@
 #include "FlangePlate.h"
 #include "BladeBPMToyama.h"
 #include "StepBellows.h"
+#include "HeatAbsorberStepBellows.h"
 
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyamaDanMAX.h"
@@ -130,9 +131,11 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   flangePlateC(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateC")),
   flangePlateD(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateD")),
   flangePlateE(std::make_shared<constructSystem::FlangePlate>(newName+"FlangePlateE")),
-  bellowPreHA(std::make_shared<xraySystem::StepBellows>(newName+"BellowPreHA")),
+  bellowPreHA(std::make_shared<xraySystem::HeatAbsorberStepBellows>(
+    newName+"BellowPreHA",newName+"HeatAbsorber")),
   ha(std::make_shared<xraySystem::HeatAbsorberR3Toyama>(newName+"HeatAbsorber")),
-  bellowPostHA(std::make_shared<xraySystem::StepBellows>(newName+"BellowPostHA")),
+  bellowPostHA(std::make_shared<xraySystem::HeatAbsorberStepBellows>(
+    newName+"BellowPostHA",newName+"HeatAbsorber")),
   ionPump3(new constructSystem::CrossPipe(newName+"IonPump3")),
   valve2(std::make_shared<xraySystem::CylGateValve>(newName+"Valve2")),
   bellowDA(std::make_shared<constructSystem::Bellows>(newName+"BellowDA")),
