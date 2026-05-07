@@ -83,9 +83,9 @@ MonoBlockXstalsGenerator::MonoBlockXstalsGenerator
   baseBHeight(A.baseBHeight),baseBWidth(A.baseBWidth),
   topBLength(A.topBLength),topBHeight(A.topBHeight),
   topBWidth(A.topBWidth),
-  parked(1),
-  parkedOffset(3.0),
-  parkedGap(0.6),
+  parked(A.parked),
+  parkedOffset(A.parkedOffset),
+  parkedGap(A.parkedGap),
   xtalMat(A.xtalMat),baseMat(A.baseMat)
   /*!
     Copy constructor
@@ -124,6 +124,9 @@ MonoBlockXstalsGenerator::operator=(const MonoBlockXstalsGenerator& A)
       topBLength=A.topBLength;
       topBHeight=A.topBHeight;
       topBWidth=A.topBWidth;
+      parked=A.parked;
+      parkedOffset=A.parkedOffset;
+      parkedGap=A.parkedGap;
       xtalMat=A.xtalMat;
       baseMat=A.baseMat;
     }
