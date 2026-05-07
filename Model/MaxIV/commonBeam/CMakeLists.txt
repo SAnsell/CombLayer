@@ -9,7 +9,8 @@ set (commonBeamSources
     Dipole.cxx Duct.cxx FilterHolder.cxx
     FlangeMount.cxx forkHoles.cxx FourPortTube.cxx
     GaugeTube.cxx GrateHolder.cxx GrateMonoBox.cxx
-    GratingMono.cxx GratingUnit.cxx HeatAbsorberR3Toyama.cxx HeatAbsorberToyama.cxx HeatDump.cxx
+    GratingMono.cxx GratingUnit.cxx HeatAbsorberR3Toyama.cxx
+    HeatAbsorberStepBellows.cxx HeatAbsorberToyama.cxx HeatDump.cxx
     HPJaws.cxx IonGauge.cxx IonPumpTube.cxx LObjectSupport.cxx
     LCollimator.cxx Maze.cxx Mirror.cxx
     MLMono.cxx MonoBlockXstals.cxx
@@ -21,8 +22,8 @@ set (commonBeamSources
     SqrCollimator.cxx SquareFMask.cxx StepBellows.cxx Table.cxx
     TankMonoVessel.cxx TriggerTube.cxx TwinPipe.cxx
     Undulator.cxx UTubePipe.cxx ViewScreenTube.cxx
-    WallLead.cxx XrayInputs.cxx XRayHutchBase.cxx FixedMaskHybrid.cxx BladeBPMToyama.cxx
-    WhiteBeamStop.cxx
+    WallLead.cxx XrayInputs.cxx XRayHutchBase.cxx FixedMaskHybrid.cxx
+    BladeBPMToyama.cxx WhiteBeamStop.cxx
 )
 
 add_library (commonBeam SHARED
@@ -77,6 +78,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/GratingMono.cxx
   ${tarDIR}/GratingUnit.cxx
   ${tarDIR}/HeatAbsorberR3Toyama.cxx
+  ${tarDIR}/HeatAbsorberStepBellows.cxx
   ${tarDIR}/HeatAbsorberToyama.cxx
   ${tarDIR}/HeatDump.cxx
   ${tarDIR}/HPJaws.cxx
@@ -159,6 +161,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/GratingMono.h
   ${tarINC}/GratingUnit.h
   ${tarINC}/HeatAbsorberR3Toyama.h
+  ${tarINC}/HeatAbsorberStepBellows.h
   ${tarINC}/HeatAbsorberToyama.h
   ${tarINC}/HeatDump.h
   ${tarINC}/HPJaws.h
