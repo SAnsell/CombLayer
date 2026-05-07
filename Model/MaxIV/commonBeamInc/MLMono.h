@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/MLMono.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_MLMono_h
@@ -53,7 +53,7 @@ class MLMono :
   double widthA;            ///< Width of block across beam
   double heightA;           ///< Depth into beam
   double lengthA;           ///< Length along beam
-  
+
   double widthB;            ///< Width of block across beam
   double heightB;           ///< Depth into beam
   double lengthB;           ///< Length along beam
@@ -73,6 +73,10 @@ class MLMono :
   double supportBBase;        ///< Base/Top thickness
   double supportBPillar;      ///< Side unit radius
   double supportBPillarStep;  ///< Side unit step
+
+  int parked;                   ///< Flag to set crystals in parked position
+  double parkedOffset;         ///< y-Offset between front surfaces of crystals in parked position
+  double parkedGap;             ///< x-Gap between crystals in parked position
 
   int mirrorAMat;             ///< XStal material
   int mirrorBMat;             ///< XStal material
@@ -96,10 +100,9 @@ class MLMono :
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int) override;
-  
+
 };
 
 }
 
 #endif
- 

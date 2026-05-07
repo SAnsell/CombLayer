@@ -113,7 +113,7 @@ namespace xraySystem
 
 R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   R3FrontEnd(Key),
-  fm1h(std::make_shared<xraySystem::FixedMaskHybrid>(newName+"FM1H")),
+  fm1(std::make_shared<xraySystem::FixedMaskHybrid>(newName+"FM1")),
   beamPipe1(std::make_shared<constructSystem::VacuumPipe>(newName+"BeamPipe1")),
   beamPipe2(std::make_shared<constructSystem::PipeTube>(newName+"BeamPipe2")),
   pipeA(std::make_shared<constructSystem::VacuumPipe>(newName+"PumpingUnit1ReplacementPipe")), // TODO: pipeA currently replaces PumpingUnit1
@@ -167,7 +167,6 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   // OR.addObject(dipolePipe);
   // OR.addObject(eTransPipe);
   // OR.addObject(bellowA);
-  // OR.addObject(fm1);
   // OR.addObject(bellowB);
   // OR.addObject(collABPipe);
   // OR.addObject(bellowC);
@@ -201,7 +200,7 @@ R3FrontEndToyamaDanMAX::R3FrontEndToyamaDanMAX(const std::string& Key) :
   // OR.addObject(shutters[0]);
   // OR.addObject(shutters[1]);
   // OR.addObject(offPipeB);
-  OR.addObject(fm1h);
+  OR.addObject(fm1);
   OR.addObject(beamPipe1),
   OR.addObject(beamPipe2),
   OR.addObject(pipeA);
@@ -627,8 +626,8 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
 
   if (stopPoint != "U1Block") {
   // FM1 Built relateive to MASTER coordinate
-    fm1h->createAll(System,*this,0);
-    flangePlateA->createAll(System,*fm1h,"front");
+    fm1->createAll(System,*this,0);
+    flangePlateA->createAll(System,*fm1,"front");
     bellowA->createAll(System,*flangePlateA,"back");
     beamPipe2->createAll(System,*bellowA,"back");
     beamPipe1->createAll(System,*beamPipe2,"back");
@@ -700,8 +699,8 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
   outerCell=buildZone.createUnit(System,*flangePlateA,"front");
   flangePlateA->insertInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*fm1h,"back");
-  fm1h->insertInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*fm1,"back");
+  fm1->insertInCell(System,outerCell);
 
 
   if (stopPoint=="Dipole")
@@ -712,7 +711,7 @@ R3FrontEndToyamaDanMAX::buildObjects(Simulation& System)
       return;
     }
 
-  constructSystem::constructUnit(System,buildZone,*fm1h,"back",*flangePlateB);
+  constructSystem::constructUnit(System,buildZone,*fm1,"back",*flangePlateB);
   constructSystem::constructUnit(System,buildZone,*flangePlateB,"back",*bellowB);
 
   xbpm1->createAll(System,*this,0);

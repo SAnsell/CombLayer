@@ -85,6 +85,7 @@ class R3FrontEndToyama :
   public R3FrontEnd
 {
 protected:
+  std::shared_ptr<xraySystem::SquareFMask> fm1;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateA;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateB;
   std::shared_ptr<constructSystem::Bellows> bellowPreMSM;

@@ -43,8 +43,6 @@ class WhiteBeamStopGenerator
   double width;                 ///< Angle-invariant width
   double height;                ///< Height
   double angle;                 ///< Angle between the incident beam and the beam target surface (#3)
-  bool inBeam;                  ///< Object in beam
-  double offBeamOffset;         ///< Offset when not in beam
 
   std::string mat;              ///< Beam stop material
 

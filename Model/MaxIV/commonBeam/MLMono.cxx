@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/MLMono.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -95,10 +95,22 @@ MLMono::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  gap=Control.EvalVar<double>(keyName+"Gap");
-  thetaA=Control.EvalVar<double>(keyName+"ThetaA");
-  thetaB=Control.EvalVar<double>(keyName+"ThetaB");
-  
+  parked=Control.EvalVar<int>(keyName+"Parked");
+
+  if (parked) {
+    parkedOffset=Control.EvalVar<double>(keyName+"ParkedOffset");
+    parkedGap=Control.EvalVar<double>(keyName+"ParkedGap");
+    gap = parkedGap;
+    thetaA = thetaB = 0.0;
+    xStep = gap/2.0;
+  } else {
+    gap=Control.EvalVar<double>(keyName+"Gap");
+    thetaA=Control.EvalVar<double>(keyName+"ThetaA");
+    thetaB=Control.EvalVar<double>(keyName+"ThetaB");
+    parkedOffset = 0.0;
+    parkedGap = 0.0;
+  }
+
   widthA=Control.EvalVar<double>(keyName+"WidthA");
   heightA=Control.EvalVar<double>(keyName+"HeightA");
   lengthA=Control.EvalVar<double>(keyName+"LengthA");
@@ -115,7 +127,7 @@ MLMono::populate(const FuncDataBase& Control)
   supportAPillar=Control.EvalVar<double>(keyName+"SupportAPillar");
   supportAPillarStep=Control.EvalVar<double>(keyName+"SupportAPillarStep");
 
-  
+
   supportBGap=Control.EvalVar<double>(keyName+"SupportBGap");
   supportBExtra=Control.EvalVar<double>(keyName+"SupportBExtra");
   supportBBackThick=Control.EvalVar<double>(keyName+"SupportBBackThick");
@@ -144,7 +156,7 @@ MLMono::createSurfaces()
 {
   ELog::RegMethod RegA("MLMono","createSurfaces");
 
-  // main xstal CENTRE AT ORIGIN 
+  // main xstal CENTRE AT ORIGIN
   const Geometry::Quaternion QXA
     (Geometry::Quaternion::calcQRotDeg(-thetaA,Z));
   Geometry::Vec3D PX(X);
@@ -153,20 +165,20 @@ MLMono::createSurfaces()
 
   QXA.rotate(PX);
   QXA.rotate(PY);
-  
+
   const Geometry::Quaternion QYA
     (Geometry::Quaternion::calcQRotDeg(phiA,PY));
 
   QYA.rotate(PX);
   QYA.rotate(PZ);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+101,Origin-PY*(lengthA/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(lengthA/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*widthA,PX);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin,PX);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*(heightA/2.0),PZ);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+PZ*(heightA/2.0),PZ);
-  
+
 
   FixedComp::setConnect(0,Origin,PY);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+104));
@@ -176,7 +188,7 @@ MLMono::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+202,Origin+PY*((lengthA+supportAExtra)/2.0),PY);
   ModelSupport::buildPlane
-    (SMap,buildIndex+203,Origin-PX*(widthA+supportAGap),PX);  
+    (SMap,buildIndex+203,Origin-PX*(widthA+supportAGap),PX);
   ModelSupport::buildPlane
     (SMap,buildIndex+205,Origin-PZ*(heightA/2+supportABase),PZ);
   ModelSupport::buildPlane
@@ -211,7 +223,9 @@ MLMono::createSurfaces()
 
   // main xstal CENTRE AT Shifted position [
 
-  const double yDist=gap/tan(2.0*thetaA*M_PI/180.0);
+  const double yDist=parked ?
+    (lengthB-lengthA)/2.0+parkedOffset :
+    gap/tan(2.0*thetaA*M_PI/180.0);
   const Geometry::Quaternion QXB
     (Geometry::Quaternion::calcQRotDeg(-thetaB,Z));
 
@@ -229,7 +243,7 @@ MLMono::createSurfaces()
   QYB.rotate(QZ);
 
   const Geometry::Vec3D BOrg(Origin+PY*yDist+PX*gap);
-  
+
   ModelSupport::buildPlane(SMap,buildIndex+1101,BOrg-QY*(lengthB/2.0),QY);
   ModelSupport::buildPlane(SMap,buildIndex+1102,BOrg+QY*(lengthB/2.0),QY);
   ModelSupport::buildPlane(SMap,buildIndex+1103,BOrg-QX*widthB,QX);
@@ -240,14 +254,14 @@ MLMono::createSurfaces()
   FixedComp::setConnect(1,BOrg,QX);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+1104));
 
-  
+
   // support A:
   ModelSupport::buildPlane
     (SMap,buildIndex+1201,BOrg-QY*((lengthB+supportBExtra)/2.0),QY);
   ModelSupport::buildPlane
     (SMap,buildIndex+1202,BOrg+QY*((lengthB+supportBExtra)/2.0),QY);
   ModelSupport::buildPlane
-    (SMap,buildIndex+1203,BOrg-QX*(widthB+supportBGap),QX);  
+    (SMap,buildIndex+1203,BOrg-QX*(widthB+supportBGap),QX);
   ModelSupport::buildPlane
     (SMap,buildIndex+1205,BOrg-QZ*(heightB/2+supportBBase),QZ);
   ModelSupport::buildPlane
@@ -279,8 +293,8 @@ MLMono::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+1337,QillarD,QZ,supportBPillar);
 
-  
-  return; 
+
+  return;
 }
 
 void
@@ -294,40 +308,40 @@ MLMono::createObjects(Simulation& System)
 
   HeadRule HR;
   // xstal
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -106");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -106");
   makeCell("XStalA",System,cellIndex++,mirrorAMat,0.0,HR);
 
   // Substrate
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -104  106 -206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -104  106 -206");
   makeCell("TopA",System,cellIndex++,baseAMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -104  205 -105");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -104  205 -105");
   makeCell("BaseA",System,cellIndex++,baseAMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -103 105 -106");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -103 105 -106");
   makeCell("GapA",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -212 -203 213 205 -206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -212 -203 213 205 -206");
   makeCell("BackA",System,cellIndex++,baseAMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -211 -203 213 205 -206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -211 -203 213 205 -206");
   makeCell("BackAVoid",System,cellIndex++,0,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 -202 -203 213 205 -206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 -202 -203 213 205 -206");
   makeCell("BackAVoid",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-307 105 -106");
   makeCell("RodA1",System,cellIndex++,baseAMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-317 105 -106");
   makeCell("RodA2",System,cellIndex++,baseAMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -101 103 -104 105 -106 307 317");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -101 103 -104 105 -106 307 317");
   makeCell("SideAVoid",System,cellIndex++,0,0.0,HR);
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 105 -106");
   makeCell("RodA3",System,cellIndex++,baseAMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-337 105 -106");
-  makeCell("RodA4",System,cellIndex++,baseAMat,0.0,HR);  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -202 103 -104 105 -106 327 337");  
+  makeCell("RodA4",System,cellIndex++,baseAMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -202 103 -104 105 -106 327 337");
   makeCell("SideAVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 213 -104 205 -206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 213 -104 205 -206");
   addOuterSurf(HR);
 
 
@@ -335,43 +349,43 @@ MLMono::createObjects(Simulation& System)
   // a picture of it.
 
   // Main crystal
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1101 -1102 1103 -1104 1105 -1106");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1101 -1102 1103 -1104 1105 -1106");
   makeCell("XStalB",System,cellIndex++,mirrorBMat,0.0,HR);
-  
+
   // Substrate
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1203 -1104  1106 -1206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1203 -1104  1106 -1206");
   makeCell("TopB",System,cellIndex++,baseBMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1203 -1104  1205 -1105");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1203 -1104  1205 -1105");
   makeCell("BaseB",System,cellIndex++,baseBMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1203 -1103 1105 -1106");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1203 -1103 1105 -1106");
   makeCell("GapB",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1211 -1212 -1203 1213 1205 -1206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1211 -1212 -1203 1213 1205 -1206");
   makeCell("BackB",System,cellIndex++,baseBMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1211 -1203 1213 1205 -1206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1211 -1203 1213 1205 -1206");
   makeCell("BackBVoid",System,cellIndex++,0,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1212 -1202 -1203 1213 1205 -1206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1212 -1202 -1203 1213 1205 -1206");
   makeCell("BackBVoid",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1307 1105 -1106");
   makeCell("RodB1",System,cellIndex++,baseBMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1317 1105 -1106");
   makeCell("RodB2",System,cellIndex++,baseBMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1101 1103 -1104 1105 -1106 1307 1317");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1101 1103 -1104 1105 -1106 1307 1317");
   makeCell("SideBVoid",System,cellIndex++,0,0.0,HR);
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1327 1105 -1106");
   makeCell("RodB3",System,cellIndex++,baseBMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1337 1105 -1106");
-  makeCell("RodB4",System,cellIndex++,baseBMat,0.0,HR);  
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1102 -1202 1103 -1104 1105 -1106 1327 1337");  
+  makeCell("RodB4",System,cellIndex++,baseBMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1102 -1202 1103 -1104 1105 -1106 1327 1337");
   makeCell("SideBVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1213 -1104 1205 -1206");  
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1213 -1104 1205 -1206");
   addOuterUnionSurf(HR);
 
-  return; 
+  return;
 }
 
 void
@@ -386,7 +400,7 @@ MLMono::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
 
-  
+
   return;
 }
 
@@ -408,7 +422,7 @@ MLMono::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);       
+  insertObjects(System);
 
   return;
 }

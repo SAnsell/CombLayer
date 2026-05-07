@@ -148,8 +148,8 @@ softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   slitTube(new constructSystem::PortTube(newName+"SlitTube")),
   jaws({
-	std::make_shared<xraySystem::BeamPair>(newName+"JawX"),
-	std::make_shared<xraySystem::BeamPair>(newName+"JawZ")
+      std::make_shared<xraySystem::BeamPair>(newName+"Jaw","X"),
+      std::make_shared<xraySystem::BeamPair>(newName+"Jaw","Z")
     }),
   monoVessel(new xraySystem::TankMonoVessel(newName+"MonoVessel")),
   grating(new xraySystem::GratingUnit(newName+"Grating")),

@@ -111,8 +111,8 @@ class danmaxOpticsLine :
   /// bellows from trigger outward
   std::shared_ptr<constructSystem::Bellows> bellowA;
   /// Bremsstrahlung Collimator 1 (tube and collimator)
-  std::shared_ptr<constructSystem::PipeTube> bremColl1Tube;
-  std::shared_ptr<xraySystem::BremBlock> bremColl1;
+  std::shared_ptr<constructSystem::PipeTube> bc1Tube;
+  std::shared_ptr<xraySystem::BremBlock> bc1;
   /// High Pass Filter
   std::shared_ptr<constructSystem::VacuumPipe> highPassFilter;
   /// Second gate valve in Optics Hutch (common branch)
@@ -189,16 +189,16 @@ class danmaxOpticsLine :
   /// Gate value BL-V5
   std::shared_ptr<xraySystem::CylGateValve> valve9;
   // Connector from CF40 to larger pipe
-  std::shared_ptr<constructSystem::VacuumPipe> beamStopInPipe;
-  // Short section that contains a port for the WB stop
-  std::shared_ptr<constructSystem::PipeTube> beamStopSection;
+  std::shared_ptr<constructSystem::VacuumPipe> bc2InPipe;
+  // Short section that contains a port for the White Beam Stop
+  std::shared_ptr<constructSystem::PipeTube> wbsSection;
   std::shared_ptr<xraySystem::WhiteBeamStop> wbs;
   /// BeamStopTube
-  std::shared_ptr<constructSystem::PipeTube> beamStopTube;
-  /// BeamStopBlock
-  std::shared_ptr<xraySystem::BremBlock> beamStop;
-  // Connector from beamstop tube to slit tube
-  std::shared_ptr<constructSystem::VacuumPipe> beamStopOutPipe;
+  std::shared_ptr<constructSystem::PipeTube> BSCollTube;
+  /// Bremsstrahlung collimator
+  std::shared_ptr<xraySystem::BremBlock> bc2;
+  // Connector from BS collimator tube to slit tube
+  std::shared_ptr<constructSystem::VacuumPipe> bc2OutPipe;
   /// Slits after beamstop
   std::shared_ptr<constructSystem::PipeTube> monoSlitsTube;
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> monoSlits;
@@ -223,16 +223,11 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::FlangePlate> revMonoSlitsIn;
   std::shared_ptr<constructSystem::PipeTube> revMonoSlitsTube;
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> revMonoSlits;
-  std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
-  std::shared_ptr<xraySystem::BremBlock> revBeamStop;
+  std::shared_ptr<constructSystem::PipeTube> bc3Tube;
+  std::shared_ptr<xraySystem::BremBlock> bc3;
 
   // /// Flange convert
   // std::shared_ptr<constructSystem::VacuumPipe> slitsBOut;
-
-  // /// BeamStopTube
-  // std::shared_ptr<constructSystem::PipeTube> revBeamStopTube;
-  // /// BeamStopBlock
-  // std::shared_ptr<xraySystem::BremBlock> revBeamStop;
 
   /// bellows from second mono
   std::shared_ptr<constructSystem::Bellows> bellowK;
@@ -246,7 +241,7 @@ class danmaxOpticsLine :
   double outerRight;   ///< Right width for cut rectangle
   double outerTop;     ///< Top lift for cut rectangle
 
-  void constructBremColl1Tube(Simulation&,
+  void constructBC1Tube(Simulation&,
 			 const attachSystem::FixedComp&,const std::string&);
 
   void constructSlitTube(Simulation&,
@@ -267,7 +262,7 @@ class danmaxOpticsLine :
   void constructBeamStopTube(Simulation&,
 			     const attachSystem::FixedComp&,const std::string&);
 
-  void constructRevBeamStopTube(Simulation&,
+  void constructBC3Tube(Simulation&,
 				const attachSystem::FixedComp&,
 				const std::string&);
 

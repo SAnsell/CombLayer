@@ -617,7 +617,7 @@ opticsSlitPackage(FuncDataBase& Control,
   for(size_t i=0;i<2;i++)
     {
       const std::string fname=opticsName+jawKey[i];
-      BeamMGen.generateMount(Control,fname,0);  // outer of beam
+      BeamMGen.generate(Control,fname);
     }
 
   return;

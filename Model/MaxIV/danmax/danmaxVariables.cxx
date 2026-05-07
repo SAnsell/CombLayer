@@ -124,8 +124,9 @@
 // [38] Drawing of SINCRYS Guillotine, 257500_B.pdf, 2025-10-06
 // [39] Drawing of SINCRYS Guillotine, 257605_A.pdf, 2025-10-08
 // [40] DanMax Optical Hutch, Calculation note, Technical Note 3541.012-NTE, Caratelli (2017)
-// [41] S1-7-2AJ00850.pdf
-// [42] S3-5-2AJ00851.pdf
+// [41] /mxn/groups/rad/Beamlines/DanMAX/Drawings/Front End/PDF drawings/S1-2-2AG00580.pdf
+// [42] S1-7-2AJ00850.pdf
+// [43] S3-5-2AJ00851.pdf
 
 namespace setVariable
 {
@@ -301,11 +302,11 @@ frontMaskVariables(FuncDataBase& Control,
   // MSM not used
   // const double MSMdist(1600.0);
 
-  double backWidth = 1.1; // ???
-  double backHeight = backWidth;
+  double backWidth = 1.12; // [41]
+  double backHeight = backWidth;  // [41]
   FMHGen.setFrontRadius(2.9);
   FMHGen.setBackGap(backWidth, backHeight);
-  FMHGen.generate(Control,preName+"FM1H",danmaxVar::absY::FM1,FM1Length);
+  FMHGen.generate(Control,preName+"FM1",danmaxVar::absY::FM1,FM1Length);
 
   // Radius adjusted to XBPM flange [30], Thickness from [4]
   FPGen.setFlange(7.6, 1.99);
@@ -439,7 +440,7 @@ opticsHutVariables(FuncDataBase& Control,
   // It is not clear from [2] what the 650 mm correspond to. Here, it is assumed that
   // this value is measured from the outside wall like all other shielding of this
   // type.
-  Control.addVariable(hutName+"WallShineLength", 65.0);
+  Control.addVariable(hutName+"WallShineLength", 65.0); // TODO: measure - unclear from drawings
   Control.addVariable(hutName+"WallShineOutThick", 1.2); // measured by UFG 251201
   Control.addVariable(hutName+"WallShineOutLength", 20.0); // measured by UFG 251201
 }
@@ -481,7 +482,7 @@ connectVariables(FuncDataBase& Control,
   // Roughly read off from Detail D and Detail K in [9].
   // Detail K indicates a 1-mm thickness for the large region, while Detail D
   // -which is a little harder to read off- indicates a larger thickness,
-  // possibly 2 mm. Here, use 1 mm everywhere. It seems reasonable that the 
+  // possibly 2 mm. Here, use 1 mm everywhere. It seems reasonable that the
   // manufacturer did not vary the skin thickness if they did not vary the lead
   // thickness, and the choice is conservative.
   Control.addVariable(connectName+"SkinThickOutside", 0.1);
@@ -881,32 +882,33 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   setVariable::BremBlockGenerator BremGen;
   setVariable::BeamPairGenerator BeamPairGen;
 
+  std::string name=viewKey+"BC2InPipe";
   const double port0Radius = 5.08; // [22]
   const double port0WallThick = 0.2; // [22]
   const double beamStopInPipeLength = 2.5; // [22]
   PipeGen.setMat("SteelUnknownGrade");
   PipeGen.setCF<CF40>(); // [22]
   PipeGen.setBFlange(port0Radius+port0WallThick, port0WallThick);
-  PipeGen.generatePipe(Control,viewKey+"BeamStopInPipe",
+  PipeGen.generatePipe(Control,name,
     beamStopInPipeLength+CF40::flangeLength+port0WallThick); // [22]
-  Control.addVariable(viewKey+"BeamStopInPipeXStep",danmaxVar::beamMirrorShift);
+  Control.addVariable(name+"XStep",danmaxVar::beamMirrorShift);
   const double beamStopFrontToWBPort =
     beamStopInPipeLength+CF40::flangeLength+5.2; // [22]
-  Control.addVariable(viewKey+"BeamStopInPipeYStep",
+  Control.addVariable(name+"YStep",
     danmaxVar::absY::whiteBeamStop-beamStopFrontToWBPort);
 
   const double port0Length=15.4; // [22]
   const double port0SplitLength=8.0;
 
-  std::string pipeName = viewKey+"BeamStopSection";
+  name = viewKey+"WBSSection";
   SimpleTubeGen.setPipe(port0Radius, port0WallThick, 1.0, 0.0);
-  SimpleTubeGen.generateTube(Control,pipeName,port0Length-port0SplitLength);
-  Control.addVariable(pipeName+"NPorts",2);
+  SimpleTubeGen.generateTube(Control,name,port0Length-port0SplitLength);
+  Control.addVariable(name+"NPorts",2);
   PItemGen.setCF<CF63>(14.0); // [22]
   PItemGen.setPlate(CF63::flangeLength, "SteelUnknownGrade");
   const double port0y = -(port0Length-port0SplitLength)/2.0+
     beamStopFrontToWBPort-beamStopInPipeLength-CF63::flangeLength-port0WallThick-0.8; // approx
-  PItemGen.generatePort(Control,pipeName+"Port0",
+  PItemGen.generatePort(Control,name+"Port0",
 			Geometry::Vec3D(0,port0y,0),
 			Geometry::Vec3D(1,0,0));
 
@@ -918,7 +920,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PItemGen.setPlate(CF40::flangeLength, "SteelUnknownGrade");
   const double port1y = -(port0Length-port0SplitLength)/2.0+
     beamStopFrontToWBPort-beamStopInPipeLength-CF40::flangeLength-port0WallThick; // approx
-  PItemGen.generatePort(Control,pipeName+"Port1",Geometry::Vec3D(0,port1y,0),
+  PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,port1y,0),
 			Geometry::Vec3D(sin(port1angle),cos(port1angle),0));
   PItemGen.setNoWindow();
 
@@ -926,23 +928,23 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   WBSGen.generate(Control,viewKey+"WhiteBeamStop");
 
   // will be rotated vertical
-  pipeName=viewKey+"BeamStopTube";
+  name=viewKey+"BC2Tube";
   SimpleTubeGen.setCF<CF160>(); // [22]
   SimpleTubeGen.setWallThick(0.2); // [22]
   SimpleTubeGen.setCap(1,1);
   const double tubeLengthAboveOpticalAxis = 11.2; // [22]
   const double tubeLengthBelowOpticalAxis = 32.8; // [22]
   const double tubeLength = tubeLengthAboveOpticalAxis+tubeLengthBelowOpticalAxis;
-  SimpleTubeGen.generateTube(Control,pipeName,
+  SimpleTubeGen.generateTube(Control,name,
     tubeLengthAboveOpticalAxis+tubeLengthBelowOpticalAxis);
 
-  Control.addVariable(pipeName+"NPorts",2);
+  Control.addVariable(name+"NPorts",2);
 
   PItemGen.setPort(port0SplitLength-port0WallThick, port0Radius, port0WallThick); // [22]
   PItemGen.setFlange(1.0, 0.0);
   PItemGen.setNoPlate();
   PItemGen.setOuterVoid(0);
-  PItemGen.generatePort(Control,pipeName+"Port0",
+  PItemGen.generatePort(Control,name+"Port0",
 			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),
 			Geometry::Vec3D(0,0,1));
 
@@ -952,7 +954,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   const double port1WallThick = 0.2; // [22]
   PItemGen.setPort(port1ArtificialSplitLength, port1Radius, port1WallThick); // [22]
   PItemGen.setPlate(0.0,"Void");
-  PItemGen.generatePort(Control,pipeName+"Port1",
+  PItemGen.generatePort(Control,name+"Port1",
 			Geometry::Vec3D(0,tubeLength/2.0-tubeLengthAboveOpticalAxis,0),
 			Geometry::Vec3D(0,0,-1));
 
@@ -960,28 +962,28 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   PipeGen.setPipe(port1Radius, port1WallThick);
   PipeGen.setAFlange(1.0, 0.0);
   PipeGen.setBFlangeCF<CF150>();
-  PipeGen.generatePipe(Control,viewKey+"BeamStopOutPipe",
+  PipeGen.generatePipe(Control,viewKey+"BC2OutPipe",
     port1Length-port1ArtificialSplitLength);
 
   // TODO: Material currently set to pure tungsten (default), but should be DENSIMET [13].
   BremGen.centre();
   BremGen.setCube(10.0,10.0); // [13]
   BremGen.setAperature(0.4); // [13]
-  BremGen.generateBlock(Control,viewKey+"BeamStop",
+  BremGen.generateBlock(Control,viewKey+"BC2",
     tubeLength/2.0-tubeLengthAboveOpticalAxis);
-  Control.addVariable(viewKey+"BeamStopXAngle",90);
+  Control.addVariable(viewKey+"BC2XAngle",90);
 
   // Tube for Monochromatic Slits
   const double monoSlitsTubeWallThick = 2.0; // [22]
   // CF150 to fit flange B of port 1 [22]
   SimpleTubeGen.setPipe(
     CF150::flangeRadius-monoSlitsTubeWallThick,monoSlitsTubeWallThick,1.0,0.0); // [22]
-  pipeName = viewKey+"MonoSlitsTube";
+  name = viewKey+"MonoSlitsTube";
   const double monoSlitsTubeLength = 2.0*(
     danmaxVar::absY::monoSlits-danmaxVar::absY::bremColl2-port1Length);
   SimpleTubeGen.generateTube(
-    Control,pipeName,monoSlitsTubeLength);
-  Control.addVariable(pipeName+"NPorts",4);
+    Control,name,monoSlitsTubeLength);
+  Control.addVariable(name+"NPorts",4);
   PItemGen.setCF<CF16>(12.0); // Estimated
   PItemGen.setPlate(CF40::flangeLength,"SteelUnknownGrade");
   const double bladeThick = 0.2; // [22]
@@ -990,16 +992,16 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   const double bladeWidth = 5.0; // [13]
   const double innerBladePos = 0.5*(bladeXZDist-bladeOffset-bladeThick);
   const double outerBladePos = 0.5*(bladeXZDist+bladeOffset+bladeThick);
-  PItemGen.generatePort(Control,pipeName+"Port0",
+  PItemGen.generatePort(Control,name+"Port0",
 			Geometry::Vec3D(0,-outerBladePos,0.5*bladeWidth),
 			Geometry::Vec3D(-1,0,0));
-  PItemGen.generatePort(Control,pipeName+"Port1",
+  PItemGen.generatePort(Control,name+"Port1",
 			Geometry::Vec3D(0,-innerBladePos,-0.5*bladeWidth),
 			Geometry::Vec3D(-1,0,0));
-  PItemGen.generatePort(Control,pipeName+"Port2",
+  PItemGen.generatePort(Control,name+"Port2",
 			Geometry::Vec3D(0.5*bladeWidth,innerBladePos,0),
 			Geometry::Vec3D(0,0,1));
-  PItemGen.generatePort(Control,pipeName+"Port3",
+  PItemGen.generatePort(Control,name+"Port3",
 			Geometry::Vec3D(-0.5*bladeWidth,outerBladePos,0),
 			Geometry::Vec3D(0,0,1));
 
@@ -1020,11 +1022,11 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BeamPairGen.setXYStep(
     -0.5*bladeThick-2.0*bladeOffset,-0.5*bladeWidth,
     0.0,-0.5*bladeWidth);
-  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsX",1);
+  BeamPairGen.generate(Control,viewKey+"MonoSlitsX");
   BeamPairGen.setXYStep(
     0.5*bladeWidth,-0.5*bladeThick-2.0*bladeOffset,
     0.5*bladeWidth,0.0);
-  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsZ",1);
+  BeamPairGen.generate(Control,viewKey+"MonoSlitsZ");
 
   FlangePlateGenerator flangePlateGen;
   flangePlateGen.setCF<CF150>(CF40::innerRadius); // [22]
@@ -1106,14 +1108,14 @@ void revBeamStopPackage(FuncDataBase& Control,
   BeamPairGen.setXYStep(
     -0.5*bladeThick-2.0*bladeOffset,-0.5*bladeWidth,
     0.0,-0.5*bladeWidth);
-  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsX",1);
+  BeamPairGen.generate(Control,viewKey+"RevMonoSlitsX");
   BeamPairGen.setXYStep(
     0.5*bladeWidth,-0.5*bladeThick-2.0*bladeOffset,
     0.5*bladeWidth,0.0);
-  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsZ",1);
+  BeamPairGen.generate(Control,viewKey+"RevMonoSlitsZ");
 
   // will be rotated vertical
-  pipeName=viewKey+"RevBeamStopTube";
+  pipeName=viewKey+"BC3Tube";
   SimpleTubeGen.setCF<CF160>(); // [23]
   SimpleTubeGen.setWallThick(0.2); // [23]
   SimpleTubeGen.setCap(1,1);
@@ -1148,9 +1150,9 @@ void revBeamStopPackage(FuncDataBase& Control,
   BremGen.centre();
   BremGen.setCube(10.0,10.0); // [13]
   BremGen.setAperature(0.5); // [13]
-  BremGen.generateBlock(Control,viewKey+"RevBeamStop",
+  BremGen.generateBlock(Control,viewKey+"BC3",
     tubeLength/2.0-tubeLengthAboveOpticalAxis);
-  Control.addVariable(viewKey+"RevBeamStopXAngle",90);
+  Control.addVariable(viewKey+"BC3XAngle",90);
 }
 
 void
@@ -1221,7 +1223,9 @@ hdcmPackage(FuncDataBase& Control,const std::string& monoKey)
   MXtalGen.setB(10.0, 3.0, 2.0); // [24]
   MXtalGen.setBaseB(14.0, 6.0, 1.5); // [24]
 
-  MXtalGen.setGap(0.7);
+  // Crystal parked position. Parameters are based on email from MJ 260505
+  constexpr double gap = 0.6;
+  MXtalGen.setGap(gap);
   MXtalGen.generateXstal(Control,monoKey+"MBXstals",0.0,3.0); // yStep, theta
 }
 
@@ -1458,9 +1462,9 @@ opticsSlitPackage(FuncDataBase& Control,
   // Top (JawX B) -> Right (JawZ A) -> Bottom (JawX A) -> Left (JawZ B)
   const double bladeOffset = 3.6; // [27]
   BeamMGen.setXYStep(0.0,bladeOffset,0.0,-bladeOffset);
-  BeamMGen.generateMount(Control,opticsName+"JawX",1);
+  BeamMGen.generate(Control,opticsName+"JawX");
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
-  BeamMGen.generateMount(Control,opticsName+"JawZ",1);
+  BeamMGen.generate(Control,opticsName+"JawZ");
 }
 
 void
@@ -1551,7 +1555,7 @@ opticsVariables(FuncDataBase& Control,
   BellowGen.setBellowStep(1.0);
   BellowGen.generateBellow(Control,opticsName+"BellowB",16.0);
 
-  const std::string bremColl1TubeName = opticsName+"BremColl1Tube";
+  const std::string bremColl1TubeName = opticsName+"BC1Tube";
   SimpleTubeGen.setCF<setVariable::CF160>();
   SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.generateTube(Control,bremColl1TubeName,bremcoll1Height);
@@ -1567,7 +1571,7 @@ opticsVariables(FuncDataBase& Control,
   Control.addVariable(bremColl1TubeName+"YStep",
     danmaxVar::absY::bremColl1-bremColl1Length/2.0);
 
-  const std::string bremColl1Name = opticsName+"BremColl1";
+  const std::string bremColl1Name = opticsName+"BC1";
   // TODO: Material currently set to pure tungsten (default), but should be
   // DENSIMET [13].
   BremGen.centre();
@@ -1587,9 +1591,9 @@ opticsVariables(FuncDataBase& Control,
   // High Pass Filter
   // Simplified to a pipe with a single 'window' corresponding to the diamond filter.
   PipeGen.setOuterVoid(true);
-  // [13] gives the dimensions for two windows, a 600 um upstream window, and a 
+  // [13] gives the dimensions for two windows, a 600 um upstream window, and a
   // 400 um downstream window. During a site visit with DanMAX staff in December 2025,
-  // we learned that the thicker upstream window will be removed for the SINCRYS 
+  // we learned that the thicker upstream window will be removed for the SINCRYS
   // upgrade.
   PipeGen.setRectWindow(0.6,0.6,0.0,0.6,0.6,0.04);
   PipeGen.setWindowMat("Diamond", "Diamond"); // [13]
@@ -1717,10 +1721,10 @@ opticsVariables(FuncDataBase& Control,
   const double CM2PortLength = 32.0-CF250::outerRadius; // [30]
   Control.addVariable(beamName+"CM2PortLength", CM2PortLength);
   Control.addVariable(beamName+"SINCRYSAngle", sinCrysBranchCenterAngleDeg);
-  Control.addVariable(beamName+"SINCRYSBranchShift", SINCRYSBranchShift); 
-  Control.addVariable(beamName+"SINCRYSCenterAngle", sinCrysBranchCenterAngleDeg); 
+  Control.addVariable(beamName+"SINCRYSBranchShift", SINCRYSBranchShift);
+  Control.addVariable(beamName+"SINCRYSCenterAngle", sinCrysBranchCenterAngleDeg);
   Control.addVariable(beamName+"SINCRYSCM1ToCardanBellowsUpstream",
-    CM1Port12Length+valve3Length+2.0*beamViewerS1PortLength); 
+    CM1Port12Length+valve3Length+2.0*beamViewerS1PortLength);
 
   SmallAngleBellowsGenerator smallAngleBellowsGen;
   const double cardanBellowsLength = 18.0; // [30]
@@ -1759,7 +1763,7 @@ opticsVariables(FuncDataBase& Control,
   PItemGen.setPlate(0.0,"Void");
   PItemGen.generatePort(Control,name+"Port0",Geometry::Vec3D(0,0,0),vSinCrys);
   PItemGen.generatePort(Control,name+"Port1",Geometry::Vec3D(0,0,0),ZVec);
-  
+
   Geometry::Vec3D YVec(0.0,1.0,0.0);
   Geometry::Vec3D beamViewer2Dir = vSinCrys;
   // [32] gives the angle between the crystal and the incoming beam in CM2
@@ -1790,7 +1794,7 @@ opticsVariables(FuncDataBase& Control,
   const double beamViewerS2ScreenThick = 0.005; // [34]
   const double beamViewerS2ScreenSideLength = 1.0; // [34]
   FlangeGen.setNoPlate();
-  // Thread is a conservative approximation. In reality, there is much more material 
+  // Thread is a conservative approximation. In reality, there is much more material
   // around the crystal, see [32] or [34].
   FlangeGen.setThread(beamViewerS2ScreenThick,
     beamViewerS2PortLength-beamViewerS2ScreenSideLength/2.0,
@@ -1798,7 +1802,7 @@ opticsVariables(FuncDataBase& Control,
   );
   // Angle w.r.t. the beam is 45 degrees according to [32], but this angle is already
   // fixed by the beam-port angle. In reality, the angle is actually -45 degrees w.r.t.
-  // the beam, because the screen is mounted in a way that is not possible with the 
+  // the beam, because the screen is mounted in a way that is not possible with the
   // FlangeMount class (I believe).
   FlangeGen.setBlade(
     beamViewerS2ScreenSideLength,beamViewerS2ScreenSideLength,
@@ -1809,8 +1813,8 @@ opticsVariables(FuncDataBase& Control,
   name = opticsName+"CM2Crystal";
   Control.addVariable(name+"Mode",2);
 
-  // Gate valve 2 is a different type than valve 1, which can be seen by comparing 
-  // [30] and [34]. Due to its outer shape, assumed that it is similar to 
+  // Gate valve 2 is a different type than valve 1, which can be seen by comparing
+  // [30] and [34]. Due to its outer shape, assumed that it is similar to
   // FrontBeamValve1.
   name = opticsName+"ValveS2";
   Control.copyVarSet(beamName+"FrontBeamValve1",name); // [34]
@@ -1858,7 +1862,7 @@ opticsVariables(FuncDataBase& Control,
     Control,opticsName+"TransfocatorToSlitsBellows",10.0); // Dummy length
   // Between the bellows and the slits, there are actually two CF40 pipes.
   // The one upstream contains a port for a vacuum pump (see, for example, [34]).
-  // Here, everything is implemented as a single pipe, and the pump and its 
+  // Here, everything is implemented as a single pipe, and the pump and its
   // port are not modeled.
   PipeGen.generatePipe(
     Control,opticsName+"TransfocatorToSlitsPipe2",25.0);
@@ -2227,7 +2231,7 @@ DANMAXvariables(FuncDataBase& Control)
   // set its material to Void.
   XBPMGen.setInsertPreMat("Void");
   // Apart from the insert inner radius, the dimensions of the two XBPMs
-  // are the same [41][42].
+  // are the same [42][43].
   std::string XBPMName = frontKey+"XBPM1";
   XBPMGen.generate(Control,XBPMName, danmaxVar::absY::XBPM1);
   Control.addVariable(XBPMName+"InsertInnerRadius",0.75);

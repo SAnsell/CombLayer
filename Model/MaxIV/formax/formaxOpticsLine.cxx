@@ -147,8 +147,8 @@ formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   bremPipeB(new constructSystem::VacuumPipe(newName+"BremPipeB")),
   diagBoxA(new constructSystem::PortTube(newName+"DiagBoxA")),
   jaws({
-      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJawX"),
-      std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJawZ")
+    std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJaw","X"),
+    std::make_shared<xraySystem::BeamPair>(newName+"DiagBoxAJaw","Z")
     }),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   gateTubeB(new xraySystem::CylGateValve(newName+"GateTubeB")),

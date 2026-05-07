@@ -46,10 +46,11 @@ class WhiteBeamStop : public attachSystem::ContainedComp,
   double width;                 ///< Angle-invariant width
   double height;                ///< Height
   double angle;                 ///< Angle between the incident beam and the beam target surface (#3)
-  bool inBeam;                  ///< Object in beam
-  double offBeamOffset;         ///< Offset when not in beam
 
   int mat;                      ///< Beam stop material
+
+  attachSystem::FixedComp* bsCol; ///< Bremsstrahlung collimator
+  std::string bsSide; ///< Bremsstrahlung collimator aperture link name
 
   void populate(const FuncDataBase&);
   void createSurfaces();
@@ -64,9 +65,8 @@ class WhiteBeamStop : public attachSystem::ContainedComp,
   virtual WhiteBeamStop* clone() const;
   virtual ~WhiteBeamStop();
 
-  bool isInBeam() const {return inBeam;}
-
   using attachSystem::FixedComp::createAll;
+  void setCollimator(Simulation&,attachSystem::FixedComp&,const std::string&);
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };

@@ -98,8 +98,20 @@ MonoBlockXstals::populate(const FuncDataBase& Control)
 
   FixedRotate::populate(Control);
 
-  gap=Control.EvalVar<double>(keyName+"Gap");
-  theta=Control.EvalVar<double>(keyName+"Theta");
+  parked=Control.EvalVar<int>(keyName+"Parked");
+
+  if (parked) {
+    parkedOffset=Control.EvalVar<double>(keyName+"ParkedOffset");
+    parkedGap=Control.EvalVar<double>(keyName+"ParkedGap");
+    gap = parkedGap;
+    theta = 0.0;
+    xStep = gap/2.0;
+  } else {
+    gap=Control.EvalVar<double>(keyName+"Gap");
+    theta=Control.EvalVar<double>(keyName+"Theta");
+    parkedOffset = 0.0;
+    parkedGap = 0.0;
+  }
   phiA=Control.EvalDefVar<double>(keyName+"PhiA",0.0);
   phiB=Control.EvalDefVar<double>(keyName+"PhiB",0.0);
 
@@ -177,9 +189,10 @@ MonoBlockXstals::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+AZ*(heightA/2.0),AZ);
 
   // crystal 2: (left hand side BX points to centre)
-  const Geometry::Vec3D bOrg= (std::abs(theta)>Geometry::zeroTol) ?
-    Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))-X*gap :
-    Origin+Y*(lengthB/2.0)-X*gap; // parked position: is y-offset correct ([1] fig B-9) ?
+  const Geometry::Vec3D bOrg= parked ?
+    Origin+Y*((lengthB-lengthA)/2.0+parkedOffset)-X*gap :
+    Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))-X*gap;
+
   ModelSupport::buildPlane(SMap,buildIndex+201,bOrg-BY*(lengthB/2.0),BY);
   ModelSupport::buildPlane(SMap,buildIndex+202,bOrg+BY*(lengthB/2.0),BY);
   ModelSupport::buildPlane(SMap,buildIndex+203,bOrg-BX*widthB,BX);

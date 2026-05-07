@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   processInc/SimProcess.h
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef SimProcess_SimProcess_h
@@ -30,19 +30,19 @@ class FuncDataBase;
 
 /*!
   \namespace SimProcess
-  \version 1.0
-  \author S. Ansell
-  \date September 2008
+  \version 1.1
+  \author S. Ansell and K. Batkov
+  \date May 2026
   \brief Process functions to act on a Simuation instance
  */
 
 namespace SimProcess
 {
 
-  void writeMany(SimMCNP&,const std::string&,const int);
-  void writeIndexSim(SimMCNP&,const std::string&,const int);
-  void writeIndexSimPHITS(SimPHITS&,const std::string&,const int);
-  void writeIndexSimFLUKA(SimFLUKA&,const std::string&,const int);
+  std::string getInputFileName(const std::string&,const int, const int);
+  void writeIndexSim(SimMCNP&,const std::string&,const int,const int);
+  void writeIndexSimPHITS(SimPHITS&,const std::string&,const int,const int);
+  void writeIndexSimFLUKA(SimFLUKA&,const std::string&,const int,const int);
 
   template<typename T,typename U>
   T getDefIndexVar(const FuncDataBase&,const std::string&,

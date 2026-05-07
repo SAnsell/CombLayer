@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/BeamPair.h
 *
  * Copyright (c) 2004-2022 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_BeamPair_h
@@ -42,27 +42,28 @@ class BeamPair :
   public attachSystem::CellMap
 {
  private:
-  
+
+  const std::string baseName;   ///< Base name
   bool upFlag;             ///< Up/down
 
   double outLiftA;          ///< lift [when raised from beam cent]
   double outLiftB;          ///< lift [when raised from beam cent]
   double gapA;             ///< Gap from centre point (top +ve up)
   double gapB;             ///< Gap from centre point (base +ve down)
-  
-  double supportRadius;    ///< Radius of support  
+
+  double supportRadius;    ///< Radius of support
 
   double xStepA;           ///< xstep of unit A
   double yStepA;           ///< yStep of unit A
   double xStepB;           ///< xStep of unit B
   double yStepB;           ///< yStep of unit B
-  
+
   double blockXYAngle;     ///< Rotation angle about Z
-  double height;           ///< height total 
+  double height;           ///< height total
   double width;            ///< width accross beam
   double length;           ///< Thickness in normal direction to reflection
 
-  ///< Determines whether water pipes are horizontal (length = block width) or 
+  ///< Determines whether water pipes are horizontal (length = block width) or
   ///< vertical (length = block height)
   int waterPipesHorizontal;
   ///< Number of water pipes.
@@ -71,7 +72,7 @@ class BeamPair :
   double waterRadius;      ///< inner water pipe radius
 
   int blockMat;            ///< block material
-  int waterMat;            ///< block material    
+  int waterMat;            ///< block material
   int supportMat;          ///< support material
 
   // Functions:
@@ -85,10 +86,10 @@ class BeamPair :
   void createObjects(Simulation&);
   void createLinks();
   std::vector<Geometry::Vec3D> calcEdgePoints() const;
-    
+
  public:
 
-  BeamPair(const std::string&);
+  BeamPair(const std::string&,const std::string&);
   BeamPair(const BeamPair&);
   BeamPair& operator=(const BeamPair&);
   ~BeamPair() override;
@@ -97,10 +98,9 @@ class BeamPair :
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int) override;
-  
+
 };
 
 }
 
 #endif
- 
