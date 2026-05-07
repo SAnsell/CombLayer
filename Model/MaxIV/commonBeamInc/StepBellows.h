@@ -60,6 +60,9 @@ namespace xraySystem
   refer to the documentation of the SmallAngleBellows class.
   Due to the defintion of the angle in SmallAngleBellows, a positive value for step will
   parallel shift the outgoing axis in the negative X direction.
+
+  Version history:
+  1.0   - 2026-05-07
 */
 
 class StepBellows:

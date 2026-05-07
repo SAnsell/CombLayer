@@ -29,7 +29,7 @@ namespace setVariable
 
 /*!
   \class StepBellowsGenerator
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
   \date May 2026
   \brief StepBellowsGenerator for variables
@@ -47,6 +47,10 @@ namespace setVariable
   * useFrontPipe/useBackPipe: It is assumed that the central connection does not use
     pipe adapters, but it is possible to switch off the pipe adapters at the front of
     the front bellows and at the back of the back bellows.
+
+  Version history:
+  1.0   - 2026-05-07
+    - Compatible with StepBellows v1.0
 */
 
 class StepBellowsGenerator

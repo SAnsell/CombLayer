@@ -38,6 +38,7 @@ namespace xraySystem
 
   Version history:
   1.0   - 2026-05-07
+    - Compatible with StepBellows v1.0
 */
 class HeatAbsorberStepBellows final:
   public StepBellows
