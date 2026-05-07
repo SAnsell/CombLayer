@@ -69,6 +69,8 @@ class HeatAbsorberR3ToyamaGenerator
 
  public:
 
+  void setInOutRange(const double ior){inOutRange = ior;}
+
   HeatAbsorberR3ToyamaGenerator();
   HeatAbsorberR3ToyamaGenerator(const HeatAbsorberR3ToyamaGenerator&);
   HeatAbsorberR3ToyamaGenerator& operator=(const HeatAbsorberR3ToyamaGenerator&);

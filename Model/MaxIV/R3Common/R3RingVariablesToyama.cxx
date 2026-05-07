@@ -59,7 +59,7 @@
 #include "MagnetM1Generator.h"
 #include "MagnetU1Generator.h"
 #include "BremBlockGenerator.h"
-#include "HeatAbsorberToyamaGenerator.h"
+#include "HeatAbsorberR3ToyamaGenerator.h"
 #include "ProximityShieldingGenerator.h"
 #include "CleaningMagnetGenerator.h"
 #include "FlangePlateGenerator.h"
@@ -439,10 +439,12 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   stepBellowsGen.setBellowsThick(
     (setVariable::CF63::flangeRadius-setVariable::CF63::innerRadius)/2.0);
   stepBellowsGen.setLength(14.0); // [2]
-  stepBellowsGen.setStep(-0.85); // [63]
+  const double heatAbsorberInOutRange = 1.7; // [63]
+  stepBellowsGen.setStep(-heatAbsorberInOutRange/2.0);
   stepBellowsGen.generateBellows(Control,bellowsName);
 
-  HeatAbsorberToyamaGenerator HAGen;
+  HeatAbsorberR3ToyamaGenerator HAGen;
+  HAGen.setInOutRange(heatAbsorberInOutRange);
   HAGen.generate(Control,frontKey+"HeatAbsorber",heatAbsorberLength);
   Control.addVariable(frontKey+"HeatAbsorberYStep",heatAbsorberDist);
 
