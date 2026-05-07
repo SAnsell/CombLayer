@@ -70,6 +70,8 @@ class BladeBPMToyamaGenerator
 
  public:
 
+  void setInsertPreMat(const std::string ipm){insertPreMat=ipm;}
+
   BladeBPMToyamaGenerator();
   BladeBPMToyamaGenerator(const BladeBPMToyamaGenerator&);
   BladeBPMToyamaGenerator& operator=(const BladeBPMToyamaGenerator&);

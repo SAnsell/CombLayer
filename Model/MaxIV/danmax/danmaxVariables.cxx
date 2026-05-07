@@ -124,6 +124,8 @@
 // [38] Drawing of SINCRYS Guillotine, 257500_B.pdf, 2025-10-06
 // [39] Drawing of SINCRYS Guillotine, 257605_A.pdf, 2025-10-08
 // [40] DanMax Optical Hutch, Calculation note, Technical Note 3541.012-NTE, Caratelli (2017)
+// [41] S1-7-2AJ00850.pdf
+// [42] S3-5-2AJ00851.pdf
 
 namespace setVariable
 {
@@ -2220,10 +2222,18 @@ DANMAXvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,frontKey+"PumpingUnit2ReplacementPipe",35.0); // [4] - replacement for pumping unit, length is dummy (defined by FM1 absolute y-offset)
 
   setVariable::BladeBPMToyamaGenerator XBPMGen;
-
-  XBPMGen.generate(Control,frontKey+"XBPM1", danmaxVar::absY::XBPM1);
-  XBPMGen.generate(Control,frontKey+"XBPM2", danmaxVar::absY::XBPM2);
-
+  // The "InsertPre" part of the XBPM is relatively complicated.
+  // Since the present implementation of this part is not a conservative approximation
+  // set its material to Void.
+  XBPMGen.setInsertPreMat("Void");
+  // Apart from the insert inner radius, the dimensions of the two XBPMs
+  // are the same [41][42].
+  std::string XBPMName = frontKey+"XBPM1";
+  XBPMGen.generate(Control,XBPMName, danmaxVar::absY::XBPM1);
+  Control.addVariable(XBPMName+"InsertInnerRadius",0.75);
+  XBPMName = frontKey+"XBPM2";
+  XBPMGen.generate(Control,XBPMName, danmaxVar::absY::XBPM2);
+  Control.addVariable(XBPMName+"InsertInnerRadius",1.0);
 
   danmaxVar::frontMaskVariables(Control,frontKey);
 
