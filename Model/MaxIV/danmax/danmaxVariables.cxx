@@ -1019,11 +1019,11 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BeamPairGen.setXYStep(
     -0.5*bladeThick-2.0*bladeOffset,-0.5*bladeWidth,
     0.0,-0.5*bladeWidth);
-  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsX",1);
+  BeamPairGen.generate(Control,viewKey+"MonoSlitsX");
   BeamPairGen.setXYStep(
     0.5*bladeWidth,-0.5*bladeThick-2.0*bladeOffset,
     0.5*bladeWidth,0.0);
-  BeamPairGen.generateMount(Control,viewKey+"MonoSlitsZ",1);
+  BeamPairGen.generate(Control,viewKey+"MonoSlitsZ");
 
   FlangePlateGenerator flangePlateGen;
   flangePlateGen.setCF<CF150>(CF40::innerRadius); // [22]
@@ -1105,11 +1105,11 @@ void revBeamStopPackage(FuncDataBase& Control,
   BeamPairGen.setXYStep(
     -0.5*bladeThick-2.0*bladeOffset,-0.5*bladeWidth,
     0.0,-0.5*bladeWidth);
-  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsX",1);
+  BeamPairGen.generate(Control,viewKey+"RevMonoSlitsX");
   BeamPairGen.setXYStep(
     0.5*bladeWidth,-0.5*bladeThick-2.0*bladeOffset,
     0.5*bladeWidth,0.0);
-  BeamPairGen.generateMount(Control,viewKey+"RevMonoSlitsZ",1);
+  BeamPairGen.generate(Control,viewKey+"RevMonoSlitsZ");
 
   // will be rotated vertical
   pipeName=viewKey+"BC3Tube";
@@ -1459,9 +1459,9 @@ opticsSlitPackage(FuncDataBase& Control,
   // Top (JawX B) -> Right (JawZ A) -> Bottom (JawX A) -> Left (JawZ B)
   const double bladeOffset = 3.6; // [27]
   BeamMGen.setXYStep(0.0,bladeOffset,0.0,-bladeOffset);
-  BeamMGen.generateMount(Control,opticsName+"JawX",1);
+  BeamMGen.generate(Control,opticsName+"JawX");
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
-  BeamMGen.generateMount(Control,opticsName+"JawZ",1);
+  BeamMGen.generate(Control,opticsName+"JawZ");
 }
 
 void

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/BeamMountGenerator.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_BeamPairGenerator_h
@@ -43,16 +43,16 @@ class BeamPairGenerator
   double outLiftB;          ///< lift [when raised from beam cent]
   double gapA;             ///< Gap from centre point (top +ve up)
   double gapB;             ///< Gap from centre point (base +ve down)
-  
+
   double supportRadius;    ///< Radius of support
 
-  ///< Determines whether water pipes are horizontal (length = block width) or 
+  ///< Determines whether water pipes are horizontal (length = block width) or
   ///< vertical (length = block height)
   int waterPipesHorizontal;
   ///< Number of water pipes.
   ///< They will be built such that they are evenly distributed inside the blocks.
   int nWaterPipes;
-  double waterRadius;    ///< Radius of support  
+  double waterRadius;    ///< Radius of support
   std::string waterMat;    ///< water material
   std::string supportMat;  ///< support material
 
@@ -60,12 +60,12 @@ class BeamPairGenerator
   double yStepA;           ///< yStep of unit A
   double xStepB;           ///< xStep of unit B
   double yStepB;           ///< yStep of unit B
-  
+
   double xyAngle;          ///< Rotation angle about Z
-  double height;           ///< height total 
+  double height;           ///< height total
   double width;            ///< width accross beam
-  double length;           ///< Thickness in normal direction to reflection  
-  std::string blockMat;    ///< Base material    
+  double length;           ///< Thickness in normal direction to reflection
+  std::string blockMat;    ///< Base material
 
  public:
 
@@ -81,12 +81,10 @@ class BeamPairGenerator
   void setBlock(const double,const double,
 		      const double,const double,const std::string&);
   void setWaterPipes(const int, const int);
-  void generateMount(FuncDataBase&,const std::string&,
-		     const int) const;
+  void generate(FuncDataBase&,const std::string&) const;
 
 };
 
 }
 
 #endif
- 

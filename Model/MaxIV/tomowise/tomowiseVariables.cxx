@@ -1131,7 +1131,7 @@ diagUnit(FuncDataBase& Control,const std::string& Name)
     {
       const std::string fname=Name+jawKey[i];
       if (i) BeamMGen.setXYStep(-1.2,-2.5,1.2,2.5);
-      BeamMGen.generateMount(Control,fname,0);  // out of beam
+      BeamMGen.generate(Control,fname);
     }
 
   return;

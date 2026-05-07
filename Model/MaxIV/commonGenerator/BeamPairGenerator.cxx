@@ -162,14 +162,12 @@ BeamPairGenerator::setXYStep(const double xA,const double yA,
 }
 
 void
-BeamPairGenerator::generateMount(FuncDataBase& Control,
-				  const std::string& keyName,
-				  const int upFlag) const
+BeamPairGenerator::generate(FuncDataBase& Control,
+				  const std::string& keyName) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables
     \param keyName :: head name for variable
-    \param upFlag :: true if item open/withdrawn
   */
 {
   ELog::RegMethod RegA("BeamPairGenerator","generatorMount");
