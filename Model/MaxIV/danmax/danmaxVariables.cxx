@@ -1401,6 +1401,7 @@ opticsSlitPackage(FuncDataBase& Control,
   setVariable::JawValveGenerator JawGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::BeamPairGenerator BeamMGen;
+  setVariable::FlangeMountGenerator flangeMountGenerator;
 
   const std::string sName=opticsName+"SlitTube";
   const double tubeLength = 48.5; // Outer length [27]
@@ -1465,6 +1466,14 @@ opticsSlitPackage(FuncDataBase& Control,
   BeamMGen.generate(Control,opticsName+"JawX");
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
   BeamMGen.generate(Control,opticsName+"JawZ");
+
+  // All dimensions from [13]
+  const double beamViewer1ScreenThick = 0.02;
+  flangeMountGenerator.setNoPlate();
+  flangeMountGenerator.setThread(beamViewer1ScreenThick,0.0,"SteelUnknownGrade");
+  flangeMountGenerator.setLift(3.0);
+  flangeMountGenerator.setBlade(0.7,0.7,beamViewer1ScreenThick,45.0,"Diamond",1);
+  flangeMountGenerator.generateMount(Control,opticsName+"BeamViewer1Screen",0);
 }
 
 void
