@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   danmax/CM2Crystal.cxx
  *
  * Copyright (c) 2026 by U. Friman-Gayer
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -100,7 +100,7 @@ CM2Crystal::populate(const FuncDataBase& Control)
 
   crystalHeight=Control.EvalDefVar<double>(keyName+"CrystalHeight",0.77);
   // The pitch, roll, and yaw angle and the pivot point have been determined in the
-  // same way as described in CM1BeamSplitter. Here, the three points sampled 
+  // same way as described in CM1BeamSplitter. Here, the three points sampled
   // from the corresponding CAD model [2] were:
   //
   // v0 = ( 0.0,   0.110,  0.00)
@@ -125,9 +125,9 @@ CM2Crystal::populate(const FuncDataBase& Control)
 
   // Materials
   crystalMaterial=ModelSupport::EvalDefMat(
-    Control,keyName+"CrystalMaterial","Diamond");
+    Control,keyName+"CrystalMat","Diamond");
   holderMaterial=ModelSupport::EvalDefMat(
-    Control,keyName+"HolderMaterial","Copper"); // [1]
+    Control,keyName+"HolderMat","Copper"); // [1]
 
   const std::string beamName = "DanMAX";
   CM1Y = Control.EvalVar<double>(beamName+"CM1Y");
@@ -155,8 +155,8 @@ CM2Crystal::createSurfaces()
   double zAngle = M_PI_2;
   if(mode == 2){
     // In mode 2, assume that the orientation of the CM1 splitter crystal corresponds
-    // to Bragg scattering at the SINCRYS center angle. The actual relation between 
-    // the crystal-surface angle and the crystal-lattice orientation is neither given 
+    // to Bragg scattering at the SINCRYS center angle. The actual relation between
+    // the crystal-surface angle and the crystal-lattice orientation is neither given
     // in the main reference [32], nor is FLUKA capable of simulating Bragg scattering.
     // Therefore, this is more a cosmetic issue.
     zAngle -= (SINCRYSAngle-SINCRYSCenterAngle)/2.0;
