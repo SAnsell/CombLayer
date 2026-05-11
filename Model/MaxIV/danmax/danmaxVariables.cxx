@@ -2287,8 +2287,8 @@ DANMAXvariables(FuncDataBase& Control)
   Control.addVariable(guillotineName+"Height",40.0);
   // Roughly estimated from drawing. Uncertainty +- 2 mm.
   Control.addVariable(guillotineName+"WallThick",2.0);
-  // Hole diameter of 41 mm is the same as JoinPipeB outer diameter.
-  Control.addVariable(guillotineName+"ClearGap",0.0);
+  // Rough estimate of ClearGap from site visit.
+  Control.addVariable(guillotineName+"ClearGap",0.2);
   Control.addVariable(guillotineName+"WallMat","SteelUnknownGrade");
   Control.addVariable(guillotineName+"Mat","Lead");
 
