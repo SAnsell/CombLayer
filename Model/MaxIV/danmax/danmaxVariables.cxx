@@ -435,6 +435,12 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"FloorShineThick", 0.6); // [1]
   Control.addVariable(hutName+"FloorShineLength", 50.0); // full length [1]
 
+  // Length not shown in [1]. Detail K does not show the entire element, and there is
+  // no entry in the table as for the floor/wall shine.
+  // Value below was measured in a site visit.
+  Control.addVariable(hutName+"RoofShineLength",50.0);
+  Control.addVariable(hutName+"RoofShineThick",0.6); // [1], Detail K
+
   // The dimensions (width*thickness*height) of the wall-shine elements are given in 
   // rows 3 and 4 of the table in Ref. [1].
   // The width includes a smaller part which is folded around a corner. This part
