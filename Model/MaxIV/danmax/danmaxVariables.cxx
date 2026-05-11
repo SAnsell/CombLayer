@@ -435,12 +435,15 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"FloorShineThick", 0.6); // [1]
   Control.addVariable(hutName+"FloorShineLength", 50.0); // full length [1]
 
-  Control.addVariable(hutName+"WallShineThick", 0.6); // Detail G [2]
-  // In Detail G [2], the length of the wall-shine element is given as 650 mm.
-  // It is not clear from [2] what the 650 mm correspond to. Here, it is assumed that
-  // this value is measured from the outside wall like all other shielding of this
-  // type.
-  Control.addVariable(hutName+"WallShineLength", 65.0); // TODO: measure - unclear from drawings
+  // The dimensions (width*thickness*height) of the wall-shine elements are given in 
+  // rows 3 and 4 of the table in Ref. [1].
+  // The width includes a smaller part which is folded around a corner. This part
+  // is neglected for all wall-shine elements in the simulation.
+  // Including the fold, the wall-shine element are 590 mm and 650 mm wide,
+  // respectively, but from Detail E and G, it can be seen that the long parts have
+  // approximately the same width of 500 mm.
+  Control.addVariable(hutName+"WallShineThick", 0.6);
+  Control.addVariable(hutName+"WallShineLength", 50.0);
   Control.addVariable(hutName+"WallShineOutThick", 1.2); // measured by UFG 251201
   Control.addVariable(hutName+"WallShineOutLength", 20.0); // measured by UFG 251201
 }

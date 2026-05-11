@@ -53,7 +53,7 @@ namespace setVariable
 
 OpticsHutchGenerator::OpticsHutchGenerator() :
   XRayHutchBaseGenerator(),
-  wallShineThick(0.6), wallShineLength(59.0),
+  wallShineThick(0.6), wallShineLength(50.0),
   wallShineOutThick(1.2), wallShineOutLength(20.0),
   roofShineLength(20.0),
   roofShineThick(0.6)

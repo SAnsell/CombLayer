@@ -183,24 +183,20 @@ OpticsStepHutch::createObjects(Simulation& System)
       makeCell("OuterWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
 
       if (floorShineLength-innerOutVoid<Geometry::zeroTol) {
-	HR=ModelSupport::getHeadRule(SMap,buildIndex,"303 -1003 -302 -305");
-	makeCell("OuterWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
+        HR=ModelSupport::getHeadRule(SMap,buildIndex,"303 -1003 -302 -305");
+        makeCell("OuterWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR*floor*frontWall);
       }
 
       // Big void cell
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-112 1003 (-304:-301) -605");
       if (floorShineLength-backPlateInnerThick>Geometry::zeroTol)
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-302:305");
+	      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-302:305");
 
       if (floorShineLength-innerOutVoid>Geometry::zeroTol)
-	HR*=ModelSupport::getHeadRule(SMap,buildIndex,"303:305");
+	      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"303:305");
 
-      // Wall shine along the ring side wall
-      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"-403:-341");
-
-      // Wall shine along the ratchet-end wall inside OH
-      HR*=ModelSupport::getHeadRule(SMap,buildIndex,"501:503");
-
+        // Wall shine along the ratchet-end wall inside OH
+        HR*=ModelSupport::getHeadRule(SMap,buildIndex,"501:503");
     }
   else
     {
@@ -262,11 +258,11 @@ OpticsStepHutch::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"202 -212 214 -16");
   makeCell("flatIWall",System,cellIndex++,skinMat,0.0,HR*floor*sideWall);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -403 -305");
-  makeCell("FlatWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -305");
+  makeCell("FlatWallFloorShine",System,cellIndex++,floorShineMat,0.0,HR*floor*sideWall);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 -403 305 -605");
-  makeCell("FlatWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"301 -202 304 (-341:-403) 305 -605");
+  makeCell("FlatWallFloorShineVoid",System,cellIndex++,voidMat,0.0,HR*sideWall);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"212 -222 224 -26");
   makeCell("flatPbWall",System,cellIndex++,pbMat,0.0,HR*floor*sideWall);
@@ -294,8 +290,8 @@ OpticsStepHutch::createObjects(Simulation& System)
   }
 
   // Wall shine along the ring side wall
-  HR=ModelSupport::getHeadRule(SMap,buildIndex, "341 -202 403 -605");
-  makeCell("RingSideWallWallShine",System,cellIndex++,floorShineMat,0.0,HR*sideWall*floor);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex, "341 -202 403 -605 305");
+  makeCell("RingSideWallWallShine",System,cellIndex++,floorShineMat,0.0,HR*sideWall);
 
   // Wall shine along the ratchet-end wall inside OH
   HR=ModelSupport::getHeadRule(SMap,buildIndex, "-501 3 -503 -605");
