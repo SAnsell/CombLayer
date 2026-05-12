@@ -1575,7 +1575,7 @@ FixedComp::getSideIndex(const std::string& sideName) const
       if (mc!=keyMap.end())
         return negScale*static_cast<long int>(mc->second+1);
 
-      if (partName=="Origin" || partName=="origin")
+      if (partName=="Origin" || partName=="origin") // TODO: move above previous if?
         return 0;
     }
   throw ColErr::InContainerError<std::string>
