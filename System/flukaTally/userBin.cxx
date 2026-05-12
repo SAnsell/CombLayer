@@ -61,7 +61,8 @@ userBin::userBin(const std::string& tallyName,
 		   const int ID,const int outID) :
   flukaTally(tallyName,ID,outID),
   meshType(10),particle("208"),
-  Pts({0,0,0})
+  Pts({0,0,0}),
+  hasLinkTransform(false)
   /*!
     Constructor
     \param outID :: Identity number of tally [fortranOut]
@@ -72,7 +73,10 @@ userBin::userBin(const userBin& A) :
   flukaTally(A),
   meshType(A.meshType),particle(A.particle),
   Pts(A.Pts),minCoord(A.minCoord),
-  maxCoord(A.maxCoord)
+  maxCoord(A.maxCoord),
+  hasLinkTransform(A.hasLinkTransform),
+  linkOrigin(A.linkOrigin),
+  linkX(A.linkX),linkY(A.linkY),linkZ(A.linkZ)
   /*!
     Copy constructor
     \param A :: userBin to copy
@@ -95,6 +99,11 @@ userBin::operator=(const userBin& A)
       Pts=A.Pts;
       minCoord=A.minCoord;
       maxCoord=A.maxCoord;
+      hasLinkTransform=A.hasLinkTransform;
+      linkOrigin=A.linkOrigin;
+      linkX=A.linkX;
+      linkY=A.linkY;
+      linkZ=A.linkZ;
     }
   return *this;
 }
@@ -142,6 +151,29 @@ userBin::setDoseType(const std::string& P,
   return;
 }
 
+
+void
+userBin::setLinkTransform(const Geometry::Vec3D& origin,
+			  const Geometry::Vec3D& X,
+			  const Geometry::Vec3D& Y,
+			  const Geometry::Vec3D& Z)
+  /*!
+    Store the link point world position and orientation axes so that
+    write() can emit ROT-DEFIni / ROTPRBIN cards aligning the USRBIN
+    mesh with the link point's local frame.
+    \param origin :: Link point world position
+    \param X :: Link point X axis (world frame)
+    \param Y :: Link point Y axis (world frame)
+    \param Z :: Link point Z axis (world frame)
+  */
+{
+  hasLinkTransform = true;
+  linkOrigin = origin;
+  linkX = X;
+  linkY = Y;
+  linkZ = Z;
+  return;
+}
 
 void
 userBin::setIndex(const std::array<size_t,3>& IDX)
@@ -211,26 +243,129 @@ userBin::writeAuxScore(std::ostream& OX) const
 void
 userBin::write(std::ostream& OX) const
   /*!
-    Write out the mesh tally into the tally region
+    Write out the mesh tally into the tally region.
+    When a link transform has been set via setLinkTransform(), three
+    ROT-DEFIni cards and one ROTPRBIN card are emitted so that the
+    USRBIN mesh follows the link point under geometry rotations.
+    The USRBIN extents are expressed in the link point's local frame.
     \param OX :: Output stream
    */
 {
   std::ostringstream cx;
-
   const int outputUnit(getOutUnit());
-  cx<<"USRBIN "<<meshType<<" "<<particle<<" "
-    <<outputUnit<<" "<<maxCoord;
-  cx<<" "<<keyName;
-  StrFunc::writeFLUKA(cx.str(),OX);
 
-  cx.str("");
-  cx<<"USRBIN "<<minCoord<<" ";
+  if (hasLinkTransform)
+    {
+      // --- ROT-DEFIni: encode the transformation world → local frame ---
+      //
+      // The link point's rotation matrix R = [linkX | linkY | linkZ]
+      // (columns are the local axes expressed in world coordinates).
+      // We need the inverse: R^T = Rx(-gamma) * Ry(-beta) * Rz(-alpha),
+      // using ZYX Euler angles extracted from R:
+      //   R = Rz(alpha) * Ry(beta) * Rx(gamma)
+      //
+      // FLUKA ROT-DEFIni with Theta=0:
+      //   j=3, Phi=alpha  →  Rz(-alpha)
+      //   j=2, Phi=beta   →  Ry(-beta)
+      //   j=1, Phi=gamma  →  Rx(-gamma)
+      // Three cards with the same SDUM are composed left-to-right
+      // (later card is outermost), giving: Rx(-gamma)*Ry(-beta)*Rz(-alpha)=R^T.
+      // The translation (-linkOrigin) is carried by the first card.
 
-  for(size_t i=0;i<3;i++)
-    cx<<Pts[i]<<" ";
-  cx<<"  & ";
-  StrFunc::writeFLUKA(cx.str(),OX);
-  writeAuxScore(OX);
+      const double toDeg = 180.0 / M_PI;
+      const double cosB = std::sqrt(linkX[0]*linkX[0] + linkX[1]*linkX[1]);
+
+      double alpha, beta, gamma;
+      beta = std::atan2(-linkX[2], cosB) * toDeg;
+
+      if (cosB > 1e-10)
+        {
+          alpha = std::atan2(linkX[1], linkX[0]) * toDeg;
+          gamma = std::atan2(linkY[2], linkZ[2]) * toDeg;
+        }
+      else
+        {
+          // Gimbal lock: beta = ±90°.  Set alpha = 0, derive gamma from Y.
+          alpha = 0.0;
+          if (linkX[2] < 0)   // beta = +90°
+            gamma = std::atan2(linkY[0], linkY[1]) * toDeg;
+          else                // beta = -90°
+            gamma = std::atan2(-linkY[0], linkY[1]) * toDeg;
+        }
+
+      // Transformation index: use |outputUnit| as the ROT-DEFIni index i.
+      const int rotIdx = std::abs(outputUnit);
+      const std::string rotName = "R" + std::to_string(rotIdx);
+
+      // Card 1: j=3 (z-rotation by alpha), carry the translation -linkOrigin.
+      cx << "ROT-DEFI "
+         << (3 + rotIdx * 1000) << " "
+         << 0.0 << " " << alpha << " "
+         << (-linkOrigin) << " "
+         << rotName;
+      StrFunc::writeFLUKA(cx.str(), OX);
+
+      // Card 2: j=2 (y-rotation by beta), no translation.
+      cx.str("");
+      cx << "ROT-DEFI "
+         << (2 + rotIdx * 1000) << " "
+         << 0.0 << " " << beta << " "
+         << 0.0 << " " << 0.0 << " " << 0.0 << " "
+         << rotName;
+      StrFunc::writeFLUKA(cx.str(), OX);
+
+      // Card 3: j=1 (x-rotation by gamma), no translation.
+      cx.str("");
+      cx << "ROT-DEFI "
+         << (1 + rotIdx * 1000) << " "
+         << 0.0 << " " << gamma << " "
+         << 0.0 << " " << 0.0 << " " << 0.0 << " "
+         << rotName;
+      StrFunc::writeFLUKA(cx.str(), OX);
+
+      // --- USRBIN: extents in the link point's local frame ---
+      const Geometry::Vec3D localMin = minCoord - linkOrigin;
+      const Geometry::Vec3D localMax = maxCoord - linkOrigin;
+
+      cx.str("");
+      cx << "USRBIN " << meshType << " " << particle << " "
+         << outputUnit << " " << localMax << " " << keyName;
+      StrFunc::writeFLUKA(cx.str(), OX);
+
+      cx.str("");
+      cx << "USRBIN " << localMin << " ";
+      for (size_t i=0; i<3; i++)
+        cx << Pts[i] << " ";
+      cx << "  & ";
+      StrFunc::writeFLUKA(cx.str(), OX);
+
+      writeAuxScore(OX);
+
+      // --- ROTPRBIN: associate the ROT-DEFIni with this USRBIN ---
+      cx.str("");
+      cx << "ROTPRBIN "
+         << 0.0 << " "
+         << rotIdx << " "
+         << 0.0 << " "
+         << keyName << " "
+         << keyName << " "
+         << 0.0;
+      StrFunc::writeFLUKA(cx.str(), OX);
+    }
+  else
+    {
+      cx << "USRBIN " << meshType << " " << particle << " "
+         << outputUnit << " " << maxCoord << " " << keyName;
+      StrFunc::writeFLUKA(cx.str(), OX);
+
+      cx.str("");
+      cx << "USRBIN " << minCoord << " ";
+      for (size_t i=0; i<3; i++)
+        cx << Pts[i] << " ";
+      cx << "  & ";
+      StrFunc::writeFLUKA(cx.str(), OX);
+      writeAuxScore(OX);
+    }
 
   flukaTally::write(OX);
   return;
