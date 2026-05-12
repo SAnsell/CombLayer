@@ -84,42 +84,10 @@ calcXYZ(const objectGroups& OGrp,
   attachSystem::FixedUnit A("tmpComp",0);
   A.createUnitVector(*FC,sideIndex);
 
-  //
-  // Construct the 8 corners of the cube:
-  // then calculate the maximum in all directions
-  //
-  std::vector<Geometry::Vec3D> Cube(8);
-  Cube[0]=APos;
-  Cube[7]=BPos;
-  for(size_t i=0;i<3;i++)
-    {
-      Cube[i+1]=APos;
-      Cube[i+1][i]=BPos[i];
-    }
-  for(size_t i=0;i<3;i++)
-    {
-      Cube[i+5]=BPos;
-      Cube[i+5][i]=APos[i];
-    }
-
-  Geometry::Vec3D Pt=A.getX()*Cube[0][0]+
-    A.getY()*Cube[0][1]+A.getZ()*Cube[0][2];
-
-  Geometry::Vec3D PtMax(Pt);
-  Geometry::Vec3D PtMin(Pt);
-  for(size_t i=1;i<8;i++)
-    {
-      Pt=A.getX()*Cube[i][0]+A.getY()*Cube[i][1]+A.getZ()*Cube[i][2];
-      for(size_t j=0;j<3;j++)
-	{
-	  if (Pt[j]>PtMax[j]) PtMax[j]=Pt[j];
-	  if (Pt[j]<PtMin[j]) PtMin[j]=Pt[j];
-	}
-    }
-
-  ELog::EM<<"Center == "<<A.getCentre()<<ELog::endDiag;
-  APos=PtMin+A.getCentre();
-  BPos=PtMax+A.getCentre();
+  // APos/BPos are offsets from the mesh origin (0,0,0).
+  // Translate so that the mesh origin coincides with the link point.
+  APos += A.getCentre();
+  BPos += A.getCentre();
 
   return;
 }
