@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   generalProcess/Process.cxx
  *
  * Copyright (c) 2004-2024 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <iostream>
@@ -107,7 +107,7 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
 	  impValue=IParam.getValueError<double>
 	    ("wIMP",setIndex,1," IMP value for wIMP");
 	}
-      
+
       const std::set<int> cells=
 	ModelSupport::getActiveCell(System,cellName);
       for(const int CN : cells)
@@ -115,7 +115,7 @@ setWImp(Simulation& System,const mainSystem::inputParam& IParam)
     }
   return;
 }
-  
+
 std::set<int>
 getActiveMaterial(const Simulation& System,
 		  std::string material)
@@ -129,18 +129,18 @@ getActiveMaterial(const Simulation& System,
 
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
-  
+
   std::set<int> activeMat=System.getActiveMaterial();
   if (material=="All" || material=="all")
     return activeMat;
-  
+
   bool negKey(0);
   if (material.size()>1 && material.back()=='-')
     {
       negKey=1;
       material.pop_back();
     }
-  
+
   if (!DB.hasKey(material))
     throw ColErr::InContainerError<std::string>
       (material,"Material not in material database");
@@ -154,7 +154,7 @@ getActiveMaterial(const Simulation& System,
   if (activeMat.find(matID)==activeMat.end())
     throw ColErr::InContainerError<std::string>
       (material,"Not present in model");
-  
+
   std::set<int> activeOut;
   activeOut.insert(matID);
   return activeOut;
@@ -165,9 +165,9 @@ getActiveCell(const objectGroups& OGrp,
 	      const std::string& cell)
   /*!
     Given a cell find the active cells
-    \param OGrp :: Active group						
+    \param OGrp :: Active group
     \param cell : cell name to use
-    \return set of active cell numbers 
+    \return set of active cell numbers
   */
 {
   ELog::RegMethod RegA("Process[F]","getActiveCell");
@@ -177,7 +177,7 @@ getActiveCell(const objectGroups& OGrp,
   activeCell.erase(1);
   return activeCell;
 }
-  
+
 void
 setDefRotation(const objectGroups& OGrp,
 	       const mainSystem::inputParam& IParam)
@@ -196,7 +196,7 @@ setDefRotation(const objectGroups& OGrp,
       MR.addRotation(Geometry::Vec3D(0,1,0),
 		     Geometry::Vec3D(0,0,0),
 		     90.0);
-      //Move XY to -X-Y 
+      //Move XY to -X-Y
       MR.addRotation(Geometry::Vec3D(0,0,1),
 		     Geometry::Vec3D(0,0,0),
 		     -90.0);
@@ -238,7 +238,7 @@ procAngle(const objectGroups& OGrp,
   */
 {
   ELog::RegMethod RegA("Process[F]","procAngle");
-  
+
   masterRotate& MR = masterRotate::Instance();
 
   const std::string AItem=
@@ -279,7 +279,7 @@ procAngle(const objectGroups& OGrp,
         IParam.getDefValue<std::string>("2","angle",index,2);
 
       const long int sideIndex=GIPtr->getSideIndex(CItem);
-          
+
       Geometry::Vec3D LP=GIPtr->getLinkPt(sideIndex);
       LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
       LP.makeUnit();
@@ -297,9 +297,9 @@ procAngle(const objectGroups& OGrp,
         OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
-      
+
       const long int sideIndex=GIPtr->getSideIndex(CItem);
-      
+
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->calcLinkAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
 
@@ -307,7 +307,7 @@ procAngle(const objectGroups& OGrp,
 	{
 	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
 	    (Geometry::Vec3D(0,1,0),YRotAxis,ZRotAxis);
-	  
+
 	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
 			 -180.0*QR.getTheta()/M_PI);
 	}
@@ -315,11 +315,10 @@ procAngle(const objectGroups& OGrp,
 	{
 	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
 	    (Geometry::Vec3D(0,0,1),YRotAxis,ZRotAxis);
-	  ELog::EM<<"Axis == "<<XRotAxis<<ELog::endDiag;
-	  ELog::EM<<"Axis == "<<YRotAxis<<ELog::endDiag;
-	  ELog::EM<<"Axis == "<<ZRotAxis<<ELog::endDiag;
-
-	  ELog::EM<<"Axis == "<<QR.getAxis()<<ELog::endDiag;
+	  // ELog::EM<<"Axis == "<<XRotAxis<<ELog::endDiag;
+	  // ELog::EM<<"Axis == "<<YRotAxis<<ELog::endDiag;
+	  // ELog::EM<<"Axis == "<<ZRotAxis<<ELog::endDiag;
+	  // ELog::EM<<"Axis == "<<QR.getAxis()<<ELog::endDiag;
 	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
 			 -180.0*QR.getTheta()/M_PI);
 	}
@@ -327,7 +326,7 @@ procAngle(const objectGroups& OGrp,
 	{
 	  const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
 	    (Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
-	  
+
 	  MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
 			 -180.0*QR.getTheta()/M_PI);
 	}
@@ -339,12 +338,12 @@ procAngle(const objectGroups& OGrp,
       const attachSystem::FixedComp* GIPtr=
         OGrp.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
-        IParam.getDefValue<std::string>("2","angle",index,2);      
+        IParam.getDefValue<std::string>("2","angle",index,2);
 
       Geometry::Vec3D YAxis=GIPtr->getLinkAxis(CItem);
       YAxis=YAxis.cutComponent(Geometry::Vec3D(0,0,1)).unit();  // Y' in the plane of Z=0
       const double rAngle=YAxis.dotProd(Geometry::Vec3D(0,1,0));
-      
+
       MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
 		     -180.0*rAngle/M_PI);
     }
@@ -364,7 +363,7 @@ procAngle(const objectGroups& OGrp,
       const double rotAngle=
         IParam.getValue<double>("angle",index,itemIndex);
       MR.addRotation(rotAxis,Geometry::Vec3D(0,0,0),
-                     -rotAngle);		  
+                     -rotAngle);
     }
   else if (AItem=="help" || AItem=="Help")
     {
@@ -381,7 +380,7 @@ procAngle(const objectGroups& OGrp,
     }
   else
     throw ColErr::InContainerError<std::string>(AItem,"angle input error");
-      
+
   return;
 }
 
@@ -399,7 +398,7 @@ procOffset(const objectGroups& OGrp,
   */
 {
   ELog::RegMethod RegA("Process[F]","procOffset");
-  masterRotate& MR = masterRotate::Instance();  
+  masterRotate& MR = masterRotate::Instance();
 
   const std::string AItem=
     IParam.getValue<std::string>(keyID,index);
@@ -429,7 +428,7 @@ procOffset(const objectGroups& OGrp,
 
   return;
 }
-  
-  
+
+
 
 } // NAMESPACE ModelSupport
