@@ -437,13 +437,12 @@ R3Ring::createLinks()
 	(SurfMap::getSurfPtr("FlatOuter",(i+NInnerSurf-1) % NInnerSurf));
 
       if (FlatInner && FlatOuter) {
-	FixedComp::nameSideIndex(2*NInnerSurf+i+1,"FlatInner"+std::to_string(i));
+	const Geometry::Vec3D OuterWallInner= FlatInner->getNormal();
+	FixedComp::nameSideIndex(2*NInnerSurf+i+1,"OuterWallInner"+std::to_string(i));
 	FixedComp::setLinkSurf(2*NInnerSurf+i+1,-FlatInner->getName());
-	const auto point = (SurInter::getPoint(FlatInner, BWall, pz) + SurInter::getPoint(FlatInner, BInner, pz))/2.0;
-	FixedComp::setConnect(2*NInnerSurf+i+1,point,-Y);
+	const Geometry::Vec3D point = (SurInter::getPoint(FlatInner, BWall, pz) + SurInter::getPoint(FlatInner, BInner, pz))/2.0;
+	FixedComp::setConnect(2*NInnerSurf+i+1,point,-OuterWallInner);
       }
-
-
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
 

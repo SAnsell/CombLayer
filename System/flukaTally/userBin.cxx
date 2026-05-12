@@ -3,7 +3,7 @@
 
  * File:   flukaTally/userBin.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -292,6 +292,10 @@ userBin::write(std::ostream& OX) const
           else                // beta = -90°
             gamma = std::atan2(-linkY[0], linkY[1]) * toDeg;
         }
+      // Wrap all angles to [0°, 360°) for FLUKA conventions
+      if (alpha < 0.0) alpha += 360.0;
+      if (beta  < 0.0) beta  += 360.0;
+      if (gamma < 0.0) gamma += 360.0;
 
       // Transformation index: use |outputUnit| as the ROT-DEFIni index i.
       const int rotIdx = std::abs(outputUnit);
