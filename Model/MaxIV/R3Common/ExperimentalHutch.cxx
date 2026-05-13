@@ -654,7 +654,7 @@ ExperimentalHutch::createLinks()
   // inner surf
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"innerLeftWall");
+  nameSideIndex(13,"OuterWallInner"); // former: innerLeftWall
 
   setConnect(14,Origin+X*(ringWidth-sideWallThick)+Y*((length-backWallThick)/2.0),-X);
   setLinkSurf(14,-SMap.realSurf(buildIndex+4));
@@ -715,7 +715,7 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  PItem->addInsertCell("Inner",getCell("OuterSkinOuterWall"));
 	  PItem->addInsertCell("Main",getCell("FloorShineOuterWallVoid"));
 	  PItem->addInsertCell("Main",getCell("OuterLeftVoid",0));
-	  PItem->setCutSurf("innerWall",*this,"innerLeftWall");
+	  PItem->setCutSurf("innerWall",*this,"OuterWallInner"); // former: innerLeftWall
 	  PItem->setCutSurf("outerWall",*this,"leftWall");
 	  PItem->createAll(System,*this,getSideIndex("leftWall"));
 	}

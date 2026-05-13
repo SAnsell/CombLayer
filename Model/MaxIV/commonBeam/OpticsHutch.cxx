@@ -164,7 +164,7 @@ OpticsHutch::createSurfaces()
   SurfMap::makePlane("outerBack",SMap,buildIndex+32,
 		     Origin+Y*(length),Y);
 
-  SurfMap::makePlane("outerWall",SMap,buildIndex+33,
+  SurfMap::makePlane("OuterWallOuter",SMap,buildIndex+33,
 			   Origin-X*(outWidth),X);
 
   SurfMap::makePlane("roof",SMap,buildIndex+36,
@@ -433,7 +433,7 @@ OpticsHutch::createLinks()
   // -backWallThick is just for backward compatibility
   setConnect(3,Origin-X*(outWidth)+Y*((length-backWallThick)/2.0),-X);
   setLinkSurf(3,-SMap.realSurf(buildIndex+33));
-  nameSideIndex(3,"outerWall");
+  nameSideIndex(3,"OuterWallOuter"); // former: outerWall
 
   for(size_t i=0;i<holeRadius.size();i++)
     {
@@ -457,7 +457,7 @@ OpticsHutch::createLinks()
 
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"innerLeftWall");
+  nameSideIndex(13,"OuterWallInner"); // former: innerLeftWall
 
   setConnect(14,Origin+Y*(length+backPlateOuterThick),Y);
   setLinkSurf(14,SMap.realSurf(buildIndex+2002));
@@ -498,8 +498,8 @@ OpticsHutch::createChicane(Simulation& System)
       // set surfaces:
 
       PItem->setCutSurf("innerWall",this->getSurfRule("innerWall"));
-      PItem->setCutSurf("outerWall",this->getSurfRule("#outerWall"));
-      PItem->createAll(System,*this,getSideIndex("outerWall"));
+      PItem->setCutSurf("outerWall",this->getSurfRule("#OuterWallOuter"));
+      PItem->createAll(System,*this,getSideIndex("OuterWallOuter"));
       PChicane.push_back(PItem);
     }
   return;
