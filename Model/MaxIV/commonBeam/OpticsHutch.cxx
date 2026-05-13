@@ -453,7 +453,7 @@ OpticsHutch::createLinks()
   // use
   setConnect(12,Origin+Y*(length-backWallThick-backPlateInnerThick),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+112));
-  nameSideIndex(12,"innerBack");
+  nameSideIndex(12,"BackWallInner");
 
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));

@@ -174,9 +174,9 @@ ExperimentalHutch::createSurfaces()
 
   // Inner void
   if (pbBackThick>Geometry::zeroTol)
-    SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*(length-steelThick-pbBackThick),Y);
+    SurfMap::makePlane("BackWallInner",SMap,buildIndex+2,Origin+Y*(length-steelThick-pbBackThick),Y);
   else
-    SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*(length),Y);
+    SurfMap::makePlane("BackWallInner",SMap,buildIndex+2,Origin+Y*(length),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outWidth-steelThick-pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(ringWidth-steelThick-pbWallThick),X);
@@ -280,7 +280,7 @@ ExperimentalHutch::createSurfaces()
 
   if (backVoid>Geometry::zeroTol)
     {
-      SurfMap::makePlane("innerBackVoid",SMap,buildIndex+42,
+      SurfMap::makePlane("BackWallInnerVoid",SMap,buildIndex+42,
 			 Origin+Y*(length-steelThick-pbBackThick-backVoid),Y);
     }
 
@@ -648,8 +648,7 @@ ExperimentalHutch::createLinks()
 
   setConnect(12,Origin+Y*(length-backWallThick),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
-
-  nameSideIndex(12,"innerBack");
+  nameSideIndex(12,"BackWallInner");
 
   // inner surf
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
@@ -739,7 +738,7 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  PItem->addInsertCell("Main",getCell("BackVoid"));
 	  if (outerBackVoid>Geometry::zeroTol)
 	    PItem->addInsertCell("Main",getCell("OuterBackVoid"));
-	  PItem->setCutSurf("innerWall",*this,"innerBack");
+	  PItem->setCutSurf("innerWall",*this,"BackWallInner");
 	  PItem->setCutSurf("outerWall",*this,"backWall");
 	  PItem->createAll(System,*this,getSideIndex("backWall"));
 	  ELog::EM<<"Chicante == "<<PItem->getLinkPt(0)<<ELog::endDiag;
