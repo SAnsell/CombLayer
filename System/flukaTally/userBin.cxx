@@ -311,22 +311,26 @@ userBin::write(std::ostream& OX) const
       StrFunc::writeFLUKA(cx.str(), OX);
 
       // Card 2: j=2 (y-rotation by beta), no translation.
-      cx.str("");
-      cx << "ROT-DEFI "
-         << (2 + rotIdx * 1000) << " "
-         << 0.0 << " " << beta << " "
-         << 0.0 << " " << 0.0 << " " << 0.0 << " "
-         << rotName;
-      StrFunc::writeFLUKA(cx.str(), OX);
+      if (std::abs(beta)>Geometry::zeroTol) { // TODO: also check translation
+	cx.str("");
+	cx << "ROT-DEFI "
+	   << (2 + rotIdx * 1000) << " "
+	   << 0.0 << " " << beta << " "
+	   << 0.0 << " " << 0.0 << " " << 0.0 << " "
+	   << rotName;
+	StrFunc::writeFLUKA(cx.str(), OX);
+      }
 
       // Card 3: j=1 (x-rotation by gamma), no translation.
-      cx.str("");
-      cx << "ROT-DEFI "
-         << (1 + rotIdx * 1000) << " "
-         << 0.0 << " " << gamma << " "
-         << 0.0 << " " << 0.0 << " " << 0.0 << " "
-         << rotName;
-      StrFunc::writeFLUKA(cx.str(), OX);
+      if (std::abs(gamma)>Geometry::zeroTol) { // TODO: also check translation
+	cx.str("");
+	cx << "ROT-DEFI "
+	   << (1 + rotIdx * 1000) << " "
+	   << 0.0 << " " << gamma << " "
+	   << 0.0 << " " << 0.0 << " " << 0.0 << " "
+	   << rotName;
+	StrFunc::writeFLUKA(cx.str(), OX);
+      }
 
       // --- USRBIN: extents in the link point's local frame ---
       const Geometry::Vec3D localMin = minCoord - linkOrigin;
@@ -348,13 +352,7 @@ userBin::write(std::ostream& OX) const
 
       // --- ROTPRBIN: associate the ROT-DEFIni with this USRBIN ---
       cx.str("");
-      cx << "ROTPRBIN "
-         << 0.0 << " "
-         << rotIdx << " "
-         << 0.0 << " "
-         << keyName << " "
-         << keyName << " "
-         << 0.0;
+      cx << "ROTPRBIN - " << rotName << " - " << keyName << " - - ";
       StrFunc::writeFLUKA(cx.str(), OX);
     }
   else
