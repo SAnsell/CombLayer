@@ -658,7 +658,7 @@ ExperimentalHutch::createLinks()
 
   setConnect(14,Origin+X*(ringWidth-sideWallThick)+Y*((length-backWallThick)/2.0),-X);
   setLinkSurf(14,-SMap.realSurf(buildIndex+4));
-  nameSideIndex(14,"innerRightWall");
+  nameSideIndex(14,"InnerWallInner");
 
   if (frontPlateActive) {
     const double T = (pbFrontThick>Geometry::zeroTol) ?
@@ -726,7 +726,7 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  PItem->addInsertCell("Inner",getCell("OuterSkinRingWall"));
 	  //PItem->addInsertCell("Main",getCell("RightWallVoid"));
 	  PItem->addInsertCell("Main",getCell("OuterRightVoid",0));
-	  PItem->setCutSurf("innerWall",*this,"innerRightWall");
+	  PItem->setCutSurf("innerWall",*this,"InnerWallInner");
 	  PItem->setCutSurf("outerWall",*this,"rightWall");
 	  PItem->createAll(System,*this,getSideIndex("rightWall"));
 	}
