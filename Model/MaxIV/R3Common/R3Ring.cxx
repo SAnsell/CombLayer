@@ -394,7 +394,7 @@ R3Ring::createLinks()
 {
   ELog::RegMethod RegA("R3Ring","createLinks");
 
-  FixedComp::setNConnect(3*(NInnerSurf+1));
+  FixedComp::setNConnect(4*(NInnerSurf+1));
 
   std::vector<Geometry::Vec3D> innerPts;
   std::vector<Geometry::Vec3D> outerPts;
@@ -440,8 +440,14 @@ R3Ring::createLinks()
 	const Geometry::Vec3D OuterWallInner= FlatInner->getNormal();
 	FixedComp::nameSideIndex(2*NInnerSurf+i+1,"OuterWallInner"+std::to_string(i));
 	FixedComp::setLinkSurf(2*NInnerSurf+i+1,-FlatInner->getName());
-	const Geometry::Vec3D point = (SurInter::getPoint(FlatInner, BWall, pz) + SurInter::getPoint(FlatInner, BInner, pz))/2.0;
+	Geometry::Vec3D point = (SurInter::getPoint(FlatInner, BWall, pz) + SurInter::getPoint(FlatInner, BInner, pz))/2.0;
 	FixedComp::setConnect(2*NInnerSurf+i+1,point,-OuterWallInner);
+
+	const Geometry::Vec3D OuterWallOuter= FlatOuter->getNormal();
+	FixedComp::nameSideIndex(3*NInnerSurf+i,"OuterWallOuter"+std::to_string(i));
+	FixedComp::setLinkSurf(3*NInnerSurf+i,FlatOuter->getName());
+	point = (SurInter::getPoint(FlatOuter, BWall, pz) + SurInter::getPoint(FlatOuter, BInner, pz))/2.0;
+	FixedComp::setConnect(3*NInnerSurf+i,point,OuterWallOuter);
       }
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
