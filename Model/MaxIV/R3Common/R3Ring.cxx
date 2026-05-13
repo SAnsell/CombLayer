@@ -179,7 +179,7 @@ R3Ring::createSurfaces()
 
   // length of flat extent either side of mid point
   double LLength=(icosagonRadius+icosagonWallThick)*
-    sin(M_PI/static_cast<double>(NInnerSurf));
+    tan(M_PI/static_cast<double>(NInnerSurf));
 
   std::vector<Geometry::Vec3D> outerPts;
   std::vector<Geometry::Vec3D> outerX;

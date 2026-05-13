@@ -1520,7 +1520,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string opticsName(beamName+"OpticsLine");
 
   Control.addVariable(opticsName+"OuterLeft",190.0);
-  Control.addVariable(opticsName+"OuterRight",60.0);
+  Control.addVariable(opticsName+"OuterRight",55.0);
   Control.addVariable(opticsName+"OuterTop",70.0);
 
   setVariable::PipeGenerator PipeGen;
