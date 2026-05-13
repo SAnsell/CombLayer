@@ -3,7 +3,7 @@
 
  * File:   R3Common/ExperimentalHutch.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell & Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell & Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -639,7 +639,7 @@ ExperimentalHutch::createLinks()
   //  -backWallThick is not really needed, added for backward compatibility
   setConnect(3,Origin+X*(ringWidth)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(3,SMap.realSurf(buildIndex+34));
-  nameSideIndex(3,"rightWall");
+  nameSideIndex(3,"InnerWallOuter");
 
   // TODO: take into account !isActive("frontWall")
   setLinkSurf(11,SMap.realSurf(buildIndex+31));
@@ -727,8 +727,8 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  //PItem->addInsertCell("Main",getCell("RightWallVoid"));
 	  PItem->addInsertCell("Main",getCell("OuterRightVoid",0));
 	  PItem->setCutSurf("innerWall",*this,"InnerWallInner");
-	  PItem->setCutSurf("outerWall",*this,"rightWall");
-	  PItem->createAll(System,*this,getSideIndex("rightWall"));
+	  PItem->setCutSurf("outerWall",*this,"InnerWallOuter");
+	  PItem->createAll(System,*this,getSideIndex("InnerWallOuter"));
 	}
       else if (wallName=="Back")
 	{
