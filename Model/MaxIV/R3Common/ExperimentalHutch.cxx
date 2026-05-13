@@ -627,8 +627,7 @@ ExperimentalHutch::createLinks()
 
   setConnect(1,Origin+Y*(length),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+32));
-
-  nameSideIndex(1,"backWall");
+  nameSideIndex(1,"BackWallOuter");
 
   // outer lead wall
   //  -backWallThick is not really needed, added for backward compatibility
@@ -739,8 +738,8 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  if (outerBackVoid>Geometry::zeroTol)
 	    PItem->addInsertCell("Main",getCell("OuterBackVoid"));
 	  PItem->setCutSurf("innerWall",*this,"BackWallInner");
-	  PItem->setCutSurf("outerWall",*this,"backWall");
-	  PItem->createAll(System,*this,getSideIndex("backWall"));
+	  PItem->setCutSurf("outerWall",*this,"BackWallOuter");
+	  PItem->createAll(System,*this,getSideIndex("BackWallOuter"));
 	  ELog::EM<<"Chicante == "<<PItem->getLinkPt(0)<<ELog::endDiag;
 	}
       PChicane.push_back(PItem);
