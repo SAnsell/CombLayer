@@ -75,7 +75,7 @@ namespace xraySystem
 {
 
 R3Ring::R3Ring(const std::string& Key) :
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedOffset(Key,12), // NConnect is overriden in createLinks
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -394,7 +394,13 @@ R3Ring::createLinks()
 {
   ELog::RegMethod RegA("R3Ring","createLinks");
 
-  FixedComp::setNConnect(2*(NInnerSurf+1));
+  FixedComp::setNConnect(3*(NInnerSurf+1));
+
+  std::vector<Geometry::Vec3D> innerPts;
+  std::vector<Geometry::Vec3D> outerPts;
+  std::vector<Geometry::Vec3D> outerX;
+
+  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(60000);
 
   double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
   for(size_t i=0;i<NInnerSurf;i++)
@@ -425,8 +431,22 @@ R3Ring::createLinks()
 	  FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
 	}
 
+      const Geometry::Plane* FlatInner=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("FlatInner",(i+NInnerSurf-1) % NInnerSurf));
+      const Geometry::Plane* FlatOuter=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("FlatOuter",(i+NInnerSurf-1) % NInnerSurf));
+
+      if (FlatInner && FlatOuter) {
+	FixedComp::nameSideIndex(2*NInnerSurf+i+1,"FlatInner"+std::to_string(i));
+	FixedComp::setLinkSurf(2*NInnerSurf+i+1,-FlatInner->getName());
+	const auto point = (SurInter::getPoint(FlatInner, BWall, pz) + SurInter::getPoint(FlatInner, BInner, pz))/2.0;
+	FixedComp::setConnect(2*NInnerSurf+i+1,point,-Y);
+      }
+
+
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
+
   return;
 }
 

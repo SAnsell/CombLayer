@@ -3,7 +3,7 @@
 
  * File:   flukaTally/flukaTallyBuilder.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ tallySelection(SimFLUKA& System,
       else if (TType=="yield")
 	userYieldConstruct::processYield(System,IParam,i);
       else
-	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
+	ELog::EM<<"Unable to understand FLUKA estimator type :"<<TType<<ELog::endErr;
 
     }
   //if (IParam.flag("Txml"))

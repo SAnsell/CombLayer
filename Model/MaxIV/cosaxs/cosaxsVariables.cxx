@@ -1060,6 +1060,7 @@ COSAXSvariables(FuncDataBase& Control)
 
 
   Control.addVariable("sdefType","Wiggler");
+  Control.addVariable("R3RingRingDoorWallID", 10);
 
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;

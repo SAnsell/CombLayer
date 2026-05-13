@@ -1178,6 +1178,7 @@ MICROMAXvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("micromaxVariables[F]","MICROMAXvariables");
 
   Control.addVariable("sdefType","Wiggler");
+  Control.addVariable("R3RingRingDoorWallID", 12);
 
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;

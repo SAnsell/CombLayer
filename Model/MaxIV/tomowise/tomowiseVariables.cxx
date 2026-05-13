@@ -1545,6 +1545,7 @@ TOMOWISEvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("tomowiseVariables[F]","TOMOWISEvariables");
 
   Control.addVariable("sdefType","Wiggler");
+  Control.addVariable("R3RingRingDoorWallID", 7);
 
   setVariable::PipeGenerator PipeGen;
   PipeGen.setNoWindow();

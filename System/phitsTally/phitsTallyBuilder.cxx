@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   phitsTally/phitsTallyBuilder.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,12 +67,12 @@ tallySelection(SimPHITS& System,
   */
 {
   ELog::RegMethod RegA("phitsTallyBuilder","tallySelection(basic)");
-  
+
   System.populateCells();
   System.createObjSurfMap();
 
   for(size_t i=0;i<IParam.setCnt("tally");i++)
-    {      
+    {
       const size_t NItems=IParam.itemCnt("tally",i);
       if (NItems==0)
 	ELog::EM<<"-T needs arguments. Call '-T help' for help."
@@ -91,17 +91,17 @@ tallySelection(SimPHITS& System,
       else if (TType=="mesh")
 	ttrackMeshConstruct::processMesh(System,IParam,i);
       else
-	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
+	ELog::EM<<"Unable to understand PHITS tally type :"<<TType<<ELog::endErr;
     }
 
   //if (IParam.flag("Txml"))
     //   tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
-      
+
   return;
 }
 
-void  
-helpTallyType(const std::string& HType) 
+void
+helpTallyType(const std::string& HType)
   /*!
     Simple help for types
     \param HType :: specialization if present that help is required for
@@ -119,7 +119,7 @@ helpTallyType(const std::string& HType)
       ELog::EM<<"-- mesh : \n";
       ELog::EM<<"-- dump : \n";
     }
-  
+
   ELog::EM<<ELog::endBasic;
   return;
 }

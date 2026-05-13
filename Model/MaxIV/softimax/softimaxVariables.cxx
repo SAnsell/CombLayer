@@ -938,6 +938,7 @@ SOFTIMAXvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("softimaxVariables[F]","softimaxVariables");
 
   Control.addVariable("sdefType","Wiggler");
+  Control.addVariable("R3RingRingDoorWallID", 18);
 
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
