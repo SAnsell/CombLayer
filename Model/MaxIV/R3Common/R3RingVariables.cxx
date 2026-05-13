@@ -70,15 +70,34 @@
 // References [4-15] refer to construction drawings of MAX IV by the company Wihlborgs.
 // The given paths are relative to the top-level directory:
 // CDDIR = /mxn/groups/rad/Kvalitetshandbok-MAXIV/30_Normaldrift/1_SAR/Construction drawings/Wihlborgs complete
-// Many drawings follow a systematic naming scheme that includes the beamline number
-// N (1 <= N <= 20). In the file paths, N should be inserted as a zero-padded, 
-// two-digit integer, i.e. for beamline 3, Refs. [14] and [15] are the files
+// Many drawings follow a systematic naming scheme that includes the beamline/sector
+// number N (1 <= N <= 20).
+//
+// In Refs. [5] and [6], where one file exists for each sector, N should be
+// inserted as a zero-padded, two-digit integer, i.e. for sector 3, Refs. [14] and
+// [15] are the files
 //
 // .../K_15-1_A10-031.pdf
 //      and
 // .../K_20-2_603.pdf
 //
 // respectively.
+//
+// In Ref. [4], where one file describes the geometry of a pair of sectors, a
+// mathematical expression is given to calculate the file index. For example, for
+// sector 4, Ref. [4] is the file
+//
+// .../K_20-2_648.pdf
+//
+// because
+//
+// 647+⌊(4-1)/2⌋ = 647+⌊1.5⌋ = 647+1 = 648
+//
+// Refs. [7] and [8] contain the dimensions of the icosagon wall doors. Ref. [7] is
+// referred to by Refs. [5] for N=1,2, and 20 (sectors with the thicker icosagon wall),
+// while Ref. [8] is referred to by all the remaining sectors except N=17. It is
+// assumed that the label has simply been forgotten there and that Ref. [8] also 
+// applies to sector N=17 for reasons of symmetry.
 // 
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
@@ -87,18 +106,11 @@
 //     http://localhost:8080/maxiv/work-log/tomowise/toyama_formax_fe_mechanical_drawings.pdf/view
 // [3] TomoWISE Mask Evaluation (email from PI 20 Feb 2025)
 //
-// [4] Outer Wall Inner Side for Sectors 1,2: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_647.pdf
-// [5] Outer Wall Inner Side for Sectors 3,4: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_648.pdf
-// [6] Outer Wall Inner Side for Sectors 5,6: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_649.pdf
-// [7] Outer Wall Inner Side for Sectors 7,8: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_650.pdf
-// [8] Outer Wall Inner Side for Sectors 9,10: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_651.pdf
-// [9] Outer Wall Inner Side for Sectors 11,12: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_652.pdf
-// [10] Outer Wall Inner Side for Sectors 13,14: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_653.pdf
-// [11] Outer Wall Inner Side for Sectors 15,16: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_654.pdf
-// [12] Outer Wall Inner Side for Sectors 17,18: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_655.pdf
-// [13] Outer Wall Inner Side for Sectors 19,20: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_656.pdf
-// [14] Sector Top View Showing Icosagon Wall and Outer Wall: {CDDIR}/04 K_15-1 Planer - Grund- och golv - Mått/K_15-1_A10-{NN}1.pdf
-// [15] Icosagon Wall Inner Side: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_6{NN}.pdf
+// [4] Outer Wall Inner Side: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_{647+⌊(N-1)/2⌋}.pdf
+// [5] Sector Top View Showing Icosagon Wall and Outer Wall: {CDDIR}/04 K_15-1 Planer - Grund- och golv - Mått/K_15-1_A10-{NN}1.pdf
+// [6] Icosagon Wall Inner Side: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_6{NN}.pdf
+// [7] Icosagon Wall Door for Sectors 1,2,20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_611.pdf
+// [8] Icosagon Wall Door for Sectors 3-16, and 18-20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_621.pdf
 
 namespace setVariable
 {
@@ -178,6 +190,32 @@ R3RingVariables(FuncDataBase& Control)
   const std::string preName("R3Ring");
 
   Control.addVariable(preName+"FullOuterRadius",14000.0); // Arbitrary
+  // Radius of the incircle of the Icosagon Wall.
+  // At positions where the icosagon wall consists of parallel walls only, the
+  // following layers can be found in all sectors [5]
+  // (going radially from inside to outside):
+  //
+  // * 300 mm concrete
+  // * 100 mm gap (dimensions not shown in [5], but in [7] and [8])
+  // * 150 mm gap
+  // * 100 mm gap
+  // * 1250 mm (N=1,2, and 20) or 750 mm (all others) concrete
+  //
+  // (For N=1,2, and 20, it should be noted that there is an error in the drawings
+  // where the last three layers are falsely given as "150+100+750". By comparison to
+  // the nearby door dimensions and the drawings for all other sectors, it is clear
+  // that this should be "150+100+1250").
+  //
+  // In reference [6], the total wall length at the inside of the icosagon wall can be
+  // read off by summing the six or seven dimensions given at the top of the A-A cut.
+  // For all sectors except N=2,3,19, and 20 (i.e the sector where a change of the
+  // icosagon-wall thickness occurs), this corresponds to the length between the two
+  // sector planes, as can be verified by comparing to Ref. [14].
+  // For all sectors except N=1,2,3,19, and 20, the inner-wall has the same length of
+  // 24808 mm. For N=1 (24644 mm), the difference is on the order of 20 centimeters,
+  // for N=2,3,19, and 20, it is on the order of 2 meters.
+  // In the present implementation, which needs a regular icosagon, the majority wall
+  // length of 24808 mm is used to obtain the incircle radius.
   Control.addVariable(preName+"IcosagonRadius",7865.0);       // U
   Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
   // Icosagon Wall Thickness from [14] (all N except 1, 2, and 20).
