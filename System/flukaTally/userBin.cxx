@@ -378,6 +378,20 @@ userBin::write(std::ostream& OX) const
                     }
                 }
 
+          // Permute bin counts from local-frame order to world-frame order.
+          // R = [linkX|linkY|linkZ]: for world axis i the nonzero entry in
+          // row i identifies which local axis j (0=X,1=Y,2=Z) maps there.
+          std::array<size_t, 3> worldPts;
+          for (int i = 0; i < 3; i++)
+            {
+              if (std::abs(linkX[i]) > 0.5)
+                worldPts[i] = Pts[0];
+              else if (std::abs(linkY[i]) > 0.5)
+                worldPts[i] = Pts[1];
+              else
+                worldPts[i] = Pts[2];
+            }
+
           cx << "USRBIN " << meshType << " " << particle << " "
              << outputUnit << " " << wMax << " " << keyName;
           StrFunc::writeFLUKA(cx.str(), OX);
@@ -385,7 +399,7 @@ userBin::write(std::ostream& OX) const
           cx.str("");
           cx << "USRBIN " << wMin << " ";
           for (size_t i = 0; i < 3; i++)
-            cx << Pts[i] << " ";
+            cx << worldPts[i] << " ";
           cx << "  & ";
           StrFunc::writeFLUKA(cx.str(), OX);
 
