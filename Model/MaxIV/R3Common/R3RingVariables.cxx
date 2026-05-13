@@ -180,11 +180,16 @@ R3RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"FullOuterRadius",14000.0); // Arbitrary
   Control.addVariable(preName+"IcosagonRadius",7865.0);       // U
   Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
-  Control.addVariable(preName+"IcosagonWallThick",90.0);
+  // Icosagon Wall Thickness from [14] (all N except 1, 2, and 20).
+  // TODO: The given value is the nominal thickness of the wall, not the thickness of
+  // the concrete. For a more realistic model, use the concrete thickness and adjust
+  // OffsetCornerXY accordingly.
+  Control.addVariable(preName+"IcosagonWallThick",100.0);
   Control.addVariable(preName+"OffsetCornerX",716.0);
   Control.addVariable(preName+"OffsetCornerY",556.0);
   Control.addVariable(preName+"OuterWall",110.0);
-  Control.addVariable(preName+"OuterWallCut",-40.0);
+  // Adjusted for (roughly) 600 mm distance to optical axis for a DanMAX-type beamline.
+  Control.addVariable(preName+"OuterWallCut",-30.0);
   // In reality, REW have different thickness, but we have the same for all.
   Control.addVariable(preName+"RatchetWall",160.0); // for TomoWISE (standard thickness) K_20-6_633
   ELog::EM << "Bulk shielding thick depends on the beamline. Currently, the same for all" << ELog::endWarn;
