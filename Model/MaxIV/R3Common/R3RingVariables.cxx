@@ -67,12 +67,38 @@
 
 #include "maxivVariables.h"
 
+// References [4-15] refer to construction drawings of MAX IV by the company Wihlborgs.
+// The given paths are relative to the top-level directory:
+// CDDIR = /mxn/groups/rad/Kvalitetshandbok-MAXIV/30_Normaldrift/1_SAR/Construction drawings/Wihlborgs complete
+// Many drawings follow a systematic naming scheme that includes the beamline number
+// N (1 <= N <= 20). In the file paths, N should be inserted as a zero-padded, 
+// two-digit integer, i.e. for beamline 3, Refs. [14] and [15] are the files
+//
+// .../K_15-1_A10-031.pdf
+//      and
+// .../K_20-2_603.pdf
+//
+// respectively.
+// 
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
 //     http://localhost:8080/maxiv/work-log/micromax/pictures/front-end/formax-and-micromax-frontend-technical-specification.pdf/view
 // [2] Toyama ForMAX Mechanical drawings
 //     http://localhost:8080/maxiv/work-log/tomowise/toyama_formax_fe_mechanical_drawings.pdf/view
 // [3] TomoWISE Mask Evaluation (email from PI 20 Feb 2025)
+//
+// [4] Outer Wall Inner Side for Sectors 1,2: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_647.pdf
+// [5] Outer Wall Inner Side for Sectors 3,4: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_648.pdf
+// [6] Outer Wall Inner Side for Sectors 5,6: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_649.pdf
+// [7] Outer Wall Inner Side for Sectors 7,8: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_650.pdf
+// [8] Outer Wall Inner Side for Sectors 9,10: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_651.pdf
+// [9] Outer Wall Inner Side for Sectors 11,12: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_652.pdf
+// [10] Outer Wall Inner Side for Sectors 13,14: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_653.pdf
+// [11] Outer Wall Inner Side for Sectors 15,16: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_654.pdf
+// [12] Outer Wall Inner Side for Sectors 17,18: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_655.pdf
+// [13] Outer Wall Inner Side for Sectors 19,20: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_656.pdf
+// [14] Sector Top View Showing Icosagon Wall and Outer Wall: {CDDIR}/04 K_15-1 Planer - Grund- och golv - Mått/K_15-1_A10-{NN}1.pdf
+// [15] Icosagon Wall Inner Side: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_6{NN}.pdf
 
 namespace setVariable
 {
@@ -151,7 +177,7 @@ R3RingVariables(FuncDataBase& Control)
 
   const std::string preName("R3Ring");
 
-  Control.addVariable(preName+"FullOuterRadius",14000.0);
+  Control.addVariable(preName+"FullOuterRadius",14000.0); // Arbitrary
   Control.addVariable(preName+"IcosagonRadius",7865.0);       // U
   Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
   Control.addVariable(preName+"IcosagonWallThick",90.0);
