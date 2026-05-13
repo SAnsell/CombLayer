@@ -428,6 +428,7 @@ OpticsHutch::createLinks()
 
   setConnect(1,Origin+Y*(length),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+32));
+  nameSideIndex(1,"BackWallOuter");
 
   // outer lead wall
   // -backWallThick is just for backward compatibility
