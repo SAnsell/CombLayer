@@ -1848,6 +1848,25 @@ DBMaterial::initMaterial()
 		 " 74186.80c   0.243537 ", "", MLib);
   Mptr->setDensity(-18.0);
 
+  // Densiment D180 Tungsten Alloy
+  // Same as TungstenHPM1800
+  Mptr = &createMaterial("TungstenD180",
+		 " 26054.80c   0.002603 "
+		 " 26056.80c   0.040855 "
+		 " 26057.80c   0.000944 "
+		 " 26058.80c   0.000126 "
+		 " 28058.80c   0.067296 "
+		 " 28060.80c   0.025922 "
+		 " 28061.80c   0.001127 "
+		 " 28062.80c   0.003593 "
+		 " 28064.80c   0.000915 "
+		 " 74180.80c   0.001028 "
+		 " 74182.80c   0.227005 "
+		 " 74183.80c   0.122582 "
+		 " 74184.80c   0.262469 "
+		 " 74186.80c   0.243537 ", "", MLib);
+  Mptr->setDensity(-18.0);
+
   // Kulite K1800 Tungsten Alloy
   // Reference:https://www.elmetkulite.com/tungsten-heavy-alloy
   // MatMCNP: TungstenK1800.inp
