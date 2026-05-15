@@ -58,7 +58,7 @@ BremBlockGenerator::BremBlockGenerator() :
   holeMidDist(4.8),holeMidWidth(0.7),holeMidHeight(0.7),
   holeBWidth(1.0),holeBHeight(1.0),
 
-  voidMat("Void"),mainMat("Tungsten")
+  voidMat("Void"),mainMat("TungstenD180")
 
   /*!
     Constructor and defaults
