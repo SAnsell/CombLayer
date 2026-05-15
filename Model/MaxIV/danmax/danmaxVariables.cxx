@@ -1011,7 +1011,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BeamPairGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
   BeamPairGen.setThread(0.5*bladeThick,"Nickel"); // Estimated
   // Height from [13]
-  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenCarbide"); // [13]
+  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenK1800"); // email AR 260513
   // Cooling is achieved through water-cooled fingers attached to the blades
   // (not modeled). This is different from Diagnostic Module 2.
   BeamPairGen.setWaterPipes(0,0);
@@ -1099,7 +1099,7 @@ void revBeamStopPackage(FuncDataBase& Control,
   BeamPairGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
   BeamPairGen.setThread(0.5*bladeThick,"Nickel"); // Estimated
   // Height from [13]
-  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenCarbide");
+  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenK1800"); // email AR 260513
   BeamPairGen.setWaterPipes(0,0);
 
   // Seen from upstream, the beam hits the jaws in the following order [23]:
