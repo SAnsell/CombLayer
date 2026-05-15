@@ -2105,7 +2105,7 @@ support7DanMAX(FuncDataBase& Control,
   PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
   BeamMGen.setThread(1.0,"Nickel");
   BeamMGen.setLift(6.0,0.0); // [7]
-  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten"); // [7]
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"TungstenS18"); // [7], material: email from AR 260513
 
   // Build bocks symmetrically around center of shutter box
   // such that the center-center distance is 25 cm;
@@ -2170,7 +2170,7 @@ support7DanMAX(FuncDataBase& Control,
   Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
 
   BBGen.centre();
-  BBGen.setMaterial("Tungsten", "Void");
+  BBGen.setMaterial("TungstenS18", "Void");
   BBGen.setLength(bremCollLength);
   BBGen.setRadius(bremCollRadius);
   BBGen.setAperature(-1.0, 1.5, 0.7,  1.5, 0.7,   1.5, 0.7); // [6]

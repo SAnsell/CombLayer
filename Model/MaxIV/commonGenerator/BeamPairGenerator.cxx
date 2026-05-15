@@ -58,7 +58,7 @@ BeamPairGenerator::BeamPairGenerator() :
   xStepA(0.4),yStepA(-0.8),
   xStepB(-0.4),yStepB(0.8),
   xyAngle(0.0),height(2.0),width(4.0),
-  length(1.0),blockMat("Tungsten")
+  length(1.0),blockMat("TungstenS18")
   /*!
     Constructor and defaults
   */
