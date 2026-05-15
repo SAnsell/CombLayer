@@ -1871,6 +1871,25 @@ DBMaterial::initMaterial()
 			 " 27059.80c   0.002816 ", "", MLib);
   Mptr->setDensity(-18.0);
 
+  // Triament S18 Tungsten Alloy
+  // Referemce: https://wolfram-industrie.de/wp-content/uploads/2023/08/wolfram-industrie-triamet-en.pdf
+  // MatMCNP: TungstenS18.inp
+  Mptr = &createMaterial("TungstenS18",
+			 " 74180.80c   0.001034 "
+			 " 74182.80c   0.228236 "
+			 " 74183.80c   0.123248 "
+			 " 74184.80c   0.263893 "
+			 " 74186.80c   0.244859 "
+			 " 28058.80c   0.067661 "
+			 " 28060.80c   0.026063 "
+			 " 28061.80c   0.001133 "
+			 " 28062.80c   0.003612 "
+			 " 28064.80c   0.000920 "
+			 " 29063.80c   0.027205 "
+			 " 29065.80c   0.012137 ","",MLib);
+  Mptr->setDensity(-18.0);
+
+
 
   return;
 }
