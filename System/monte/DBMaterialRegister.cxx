@@ -1829,7 +1829,7 @@ DBMaterial::initMaterial()
   // https://www.tungsten.com/material-info/tungsten-heavy-alloy-w-ni-fe-cu
 
   // HPM 1800 Tungsten Alloy
-  // Reference: https://www.elmetkulite.com/tungsten-heavy-alloy/k1800
+  // Reference: https://www.hcstarcksolutions.com/wp-content/uploads/Tungsten-Heavy-Alloy-Composites-High-Density-PD-7100.pdf
   // MatMCNP: TungstenHPM1800.inp
   Mptr = &createMaterial("TungstenHPM1800",
 		 " 26054.80c   0.002603 "
@@ -1847,6 +1847,30 @@ DBMaterial::initMaterial()
 		 " 74184.80c   0.262469 "
 		 " 74186.80c   0.243537 ", "", MLib);
   Mptr->setDensity(-18.0);
+
+  // Kulite K1800 Tungsten Alloy
+  // Reference:https://www.elmetkulite.com/tungsten-heavy-alloy
+  // MatMCNP: TungstenK1800.inp
+  Mptr = &createMaterial("TungstenK1800",
+			 " 26054.80c   0.002432 "
+			 " 26056.80c   0.038170 "
+			 " 26057.80c   0.000882 "
+			 " 26058.80c   0.000117 "
+			 " 28058.80c   0.059666 "
+			 " 28060.80c   0.022983 "
+			 " 28061.80c   0.000999 "
+			 " 28062.80c   0.003186 "
+			 " 28064.80c   0.000811 "
+			 " 74180.80c   0.001029 "
+			 " 74182.80c   0.227236 "
+			 " 74183.80c   0.122707 "
+			 " 74184.80c   0.262736 "
+			 " 74186.80c   0.243786 "
+			 " 29063.80c   0.007223 "
+			 " 29065.80c   0.003222 "
+			 " 27059.80c   0.002816 ", "", MLib);
+  Mptr->setDensity(-18.0);
+
 
   return;
 }
