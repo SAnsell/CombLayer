@@ -176,6 +176,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
       std::make_shared<xraySystem::BeamPair>(newName+"Jaw","X"),
       std::make_shared<xraySystem::BeamPair>(newName+"Jaw","Z")
 	}),
+  beamViewer1Screen(new xraySystem::FlangeMount(newName+"BeamViewer1Screen")),
   valve6(new xraySystem::CylGateValve(newName+"Valve6")),
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
   hdcmVessel(new xraySystem::DCMTank(newName+"HDCMVessel")),
@@ -278,6 +279,7 @@ danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   OR.addObject(slitTube);
   OR.addObject(jaws[0]);
   OR.addObject(jaws[1]);
+  OR.addObject(beamViewer1Screen);
 
   OR.addObject(valve6);
   OR.addObject(bellowE);
@@ -754,6 +756,11 @@ danmaxOpticsLine::constructSlitTube(Simulation& System,
   jaws[1]->addInsertCell("SupportB",slitTube->getCell("SplitVoid",1));
   jaws[1]->addInsertCell("BlockB",slitTube->getCell("SplitVoid",1));
   jaws[1]->createAll(System,*slitTube,0,port1,port1.getSideIndex("InnerPlate"));
+
+  const constructSystem::portItem& port3=slitTube->getPort(3);
+  beamViewer1Screen->addAllInsertCell(port3.getCell("Void"));
+  beamViewer1Screen->addAllInsertCell(slitTube->getCell("SplitVoid",3));
+  beamViewer1Screen->createAll(System,port3,"#InnerPlate");
 
   return;
 }

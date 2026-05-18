@@ -205,7 +205,7 @@ protected:
   // /// bellows for florescence system
   // std::shared_ptr<constructSystem::Bellows> bellowI;
   // /// florescence screen tube
-  // std::shared_ptr<constructSystem::PipeTube> florTubeA;
+  // std::shared_ptr<constructSystem::PipeTube> fluorescentScreenTube;
   // /// bellows for florescence system
   // std::shared_ptr<constructSystem::Bellows> bellowJ;
   // /// Gate box B

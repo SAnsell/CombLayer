@@ -435,12 +435,21 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"FloorShineThick", 0.6); // [1]
   Control.addVariable(hutName+"FloorShineLength", 50.0); // full length [1]
 
-  Control.addVariable(hutName+"WallShineThick", 0.6); // Detail G [2]
-  // In Detail G [2], the length of the wall-shine element is given as 650 mm.
-  // It is not clear from [2] what the 650 mm correspond to. Here, it is assumed that
-  // this value is measured from the outside wall like all other shielding of this
-  // type.
-  Control.addVariable(hutName+"WallShineLength", 65.0); // TODO: measure - unclear from drawings
+  // Length not shown in [1]. Detail K does not show the entire element, and there is
+  // no entry in the table as for the floor/wall shine.
+  // Value below was measured in a site visit.
+  Control.addVariable(hutName+"RoofShineLength",50.0);
+  Control.addVariable(hutName+"RoofShineThick",0.6); // [1], Detail K
+
+  // The dimensions (width*thickness*height) of the wall-shine elements are given in 
+  // rows 3 and 4 of the table in Ref. [1].
+  // The width includes a smaller part which is folded around a corner. This part
+  // is neglected for all wall-shine elements in the simulation.
+  // Including the fold, the wall-shine element are 590 mm and 650 mm wide,
+  // respectively, but from Detail E and G, it can be seen that the long parts have
+  // approximately the same width of 500 mm.
+  Control.addVariable(hutName+"WallShineThick", 0.6);
+  Control.addVariable(hutName+"WallShineLength", 50.0);
   Control.addVariable(hutName+"WallShineOutThick", 1.2); // measured by UFG 251201
   Control.addVariable(hutName+"WallShineOutLength", 20.0); // measured by UFG 251201
 }
@@ -1401,6 +1410,7 @@ opticsSlitPackage(FuncDataBase& Control,
   setVariable::JawValveGenerator JawGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::BeamPairGenerator BeamMGen;
+  setVariable::FlangeMountGenerator flangeMountGenerator;
 
   const std::string sName=opticsName+"SlitTube";
   const double tubeLength = 48.5; // Outer length [27]
@@ -1465,6 +1475,14 @@ opticsSlitPackage(FuncDataBase& Control,
   BeamMGen.generate(Control,opticsName+"JawX");
   BeamMGen.setXYStep(-bladeOffset,0.0,bladeOffset,0.0);
   BeamMGen.generate(Control,opticsName+"JawZ");
+
+  // All dimensions from [13]
+  const double beamViewer1ScreenThick = 0.02;
+  flangeMountGenerator.setNoPlate();
+  flangeMountGenerator.setThread(beamViewer1ScreenThick,0.0,"SteelUnknownGrade");
+  flangeMountGenerator.setLift(3.0);
+  flangeMountGenerator.setBlade(0.7,0.7,beamViewer1ScreenThick,45.0,"Diamond",1);
+  flangeMountGenerator.generateMount(Control,opticsName+"BeamViewer1Screen",0);
 }
 
 void
@@ -1502,7 +1520,7 @@ opticsVariables(FuncDataBase& Control,
   const std::string opticsName(beamName+"OpticsLine");
 
   Control.addVariable(opticsName+"OuterLeft",190.0);
-  Control.addVariable(opticsName+"OuterRight",60.0);
+  Control.addVariable(opticsName+"OuterRight",55.0);
   Control.addVariable(opticsName+"OuterTop",70.0);
 
   setVariable::PipeGenerator PipeGen;
@@ -2024,7 +2042,7 @@ support7DanMAX(FuncDataBase& Control,
   setVariable::BremBlockGenerator BBGen;
 
   constexpr double bellowILength = 10.0; // [4]
-  constexpr double florTubeALength = 12.0; // "Flourescent Screen" [4]
+  constexpr double fluorescentScreenTubeLength = 12.0; // "Flourescent Screen" [4]
   constexpr double bellowJLength = 10.0; // [4]
   constexpr double proxiShieldAPipeLength = 20.0; // [4]
   constexpr double proxiShieldBPipeLength = 20.0; // [4]
@@ -2040,7 +2058,8 @@ support7DanMAX(FuncDataBase& Control,
   constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [4, page1]
   constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
     bremCollTotalLength - shutterLength - proxiShieldAPipeLength -
-    danmaxVar::valve3Length - bellowJLength - florTubeALength - bellowILength;
+    danmaxVar::valve3Length - bellowJLength - fluorescentScreenTubeLength -
+    bellowILength;
   // same as counting from Movable Mask 2
   // 18692.8 + 300 + 140 + 17.5 + 340 = 19490.3
   assert(std::abs(bellowIYstep - 1949.03)<Geometry::zeroTol && "Wrong shutter table length."); // [4]
@@ -2053,17 +2072,31 @@ support7DanMAX(FuncDataBase& Control,
   SimpleTubeGen.setCF<CF63>(); // Closest match with ICF114 given in [17]
   SimpleTubeGen.setCap(1,1);
   SimpleTubeGen.setAFlange(CF63::outerRadius, 0.0);
-  const double florTubeATotalHeight = 15.0; // [18]
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",florTubeATotalHeight);
+  const double fluorescentScreenTubeTotalHeight = 15.0; // [18]
+  SimpleTubeGen.generateTube(
+    Control,frontKey+"FluorescentScreenTube",fluorescentScreenTubeTotalHeight);
+
+  FlangeMountGenerator flangeMountGenerator;
+  const double fluorescentScreenThick = 0.02; // "0.2/DIAMOND" [17]
+  // Very crude model for the thread. Thread material from [17].
+  flangeMountGenerator.setNoPlate();
+  flangeMountGenerator.setThread(fluorescentScreenThick,0.0,"Stainless304");
+  flangeMountGenerator.setLift(4.0); // "ST=40" [17]
+  // In reality, the diamond is a disk with a diameter of 18 mm, but a window limits
+  // the effective area to a approximate rectangle with dimensions 18 mm x 6 mm.
+  // All data below from [17].
+  flangeMountGenerator.setBlade(1.8,0.6,fluorescentScreenThick,45.0,"Diamond",1);
+  flangeMountGenerator.generateMount(Control,frontKey+"FluorescentScreen",0);
 
   // beam ports
-  const std::string florName(frontKey+"FlorTubeA");
+  const std::string florName(frontKey+"FluorescentScreenTube");
   Control.addVariable(florName+"NPorts",4);
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);
 
-  const double florTubeAHeight = 11.0; // [17]
-  const Geometry::Vec3D portPos(0,0.5*florTubeATotalHeight-florTubeAHeight,0);
+  const double fluorescentScreenTubeHeight = 11.0; // [17]
+  const Geometry::Vec3D portPos(
+    0,0.5*fluorescentScreenTubeTotalHeight-fluorescentScreenTubeHeight,0);
   PItemGen.setCF<setVariable::CF40>(CF100::outerRadius+2.0);
   PItemGen.setPlate(0.0,"Void");
   PItemGen.setOuterVoid(1);
@@ -2073,8 +2106,8 @@ support7DanMAX(FuncDataBase& Control,
   PItemGen.generatePort(Control,florName+"Port2",portPos,XVec);
   PItemGen.generatePort(Control,florName+"Port3",portPos,-XVec);
 
-  Control.addVariable(florName+"Port0Length",0.5*florTubeALength);
-  Control.addVariable(florName+"Port1Length",0.5*florTubeALength);
+  Control.addVariable(florName+"Port0Length",0.5*fluorescentScreenTubeLength);
+  Control.addVariable(florName+"Port1Length",0.5*fluorescentScreenTubeLength);
   Control.addVariable(florName+"Port2Length",5.85); // [17]
   Control.addVariable(florName+"Port3Length",5.85); // [17]
 
@@ -2264,8 +2297,8 @@ DANMAXvariables(FuncDataBase& Control)
   Control.addVariable(guillotineName+"Height",40.0);
   // Roughly estimated from drawing. Uncertainty +- 2 mm.
   Control.addVariable(guillotineName+"WallThick",2.0);
-  // Hole diameter of 41 mm is the same as JoinPipeB outer diameter.
-  Control.addVariable(guillotineName+"ClearGap",0.0);
+  // Rough estimate of ClearGap from site visit.
+  Control.addVariable(guillotineName+"ClearGap",0.2);
   Control.addVariable(guillotineName+"WallMat","SteelUnknownGrade");
   Control.addVariable(guillotineName+"Mat","Lead");
 

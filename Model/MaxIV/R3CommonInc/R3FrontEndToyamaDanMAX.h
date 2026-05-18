@@ -50,6 +50,7 @@ namespace xraySystem
   class HeatAbsorberR3Toyama;
   class ProximityShielding;
   class CylGateValve;
+  class FlangeMount;
   class HeatDump;
   class LCollimator;
   class SqrCollimator;
@@ -106,6 +107,7 @@ protected:
   std::shared_ptr<constructSystem::Bellows> bellowDA;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateF;
   std::shared_ptr<constructSystem::FlangePlate> flangePlateG;
+  std::shared_ptr<xraySystem::FlangeMount> fluorescentScreen;
 
   // Bremsstrahlung collimator
   std::shared_ptr<xraySystem::BremBlock> bremColl;

@@ -179,7 +179,7 @@ support7(FuncDataBase& Control,
 
   // Lengths are based on [2]
   constexpr double bellowILength = 10.0;
-  constexpr double florTubeALength = 12.0; //
+  constexpr double fluorescentScreenTubeLength = 12.0; //
   constexpr double bellowJLength = 10.0;
   constexpr double valve3Length = 7.2; //
   constexpr double proxiShieldAPipeLength = 21.5;
@@ -196,7 +196,7 @@ support7(FuncDataBase& Control,
   constexpr double proxiShieldBPipeEnd = 2110.0 - 2.97; // [2, page1]
   constexpr double bellowIYstep = proxiShieldBPipeEnd - proxiShieldBPipeLength -
     bremCollTotalLength - shutterLength - proxiShieldAPipeLength - valve3Length -
-    bellowJLength - florTubeALength - bellowILength;
+    bellowJLength - fluorescentScreenTubeLength - bellowILength;
   // same as counting from Movable Mask 2
   // 18692.8 + 300 + 140 + 17.5 + 325
 
@@ -209,11 +209,11 @@ support7(FuncDataBase& Control,
 
   SimpleTubeGen.setCF<CF66_TDC>();
   SimpleTubeGen.setCap();
-  SimpleTubeGen.generateTube(Control,frontKey+"FlorTubeA",16.0);
-  Control.addVariable(frontKey+"FlorTubeARadius",7.63/2-0.2);
+  SimpleTubeGen.generateTube(Control,frontKey+"FluorescentScreenTube",16.0);
+  Control.addVariable(frontKey+"FluorescentScreenTubeRadius",7.63/2-0.2);
 
   // beam ports
-  const std::string florName(frontKey+"FlorTubeA");
+  const std::string florName(frontKey+"FluorescentScreenTube");
   Control.addVariable(florName+"NPorts",4);
   const Geometry::Vec3D XVec(1,0,0);
   const Geometry::Vec3D ZVec(0,0,1);

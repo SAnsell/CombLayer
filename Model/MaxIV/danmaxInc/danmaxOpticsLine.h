@@ -160,6 +160,7 @@ class danmaxOpticsLine :
   std::shared_ptr<constructSystem::PortTube> slitTube;
   /// Jaws for the slit tube (x/z pair)
   std::array<std::shared_ptr<xraySystem::BeamPair>,2> jaws;
+  std::shared_ptr<xraySystem::FlangeMount> beamViewer1Screen;
   // Gate after slittube
   std::shared_ptr<xraySystem::CylGateValve> valve6;
   /// bellows to laue mono:
