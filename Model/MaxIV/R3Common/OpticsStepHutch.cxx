@@ -372,6 +372,17 @@ OpticsStepHutch::createLinks()
   FixedComp::addLinkSurf(15,SMap.realSurf(buildIndex+302));
   FixedComp::nameSideIndex(15,"BackPlateFloorShine");
 
+  Geometry::Vec3D BPoint(Y*((length+ringStepLength)/2.0));
+  Geometry::Vec3D SPoint(X*(ringStepWidth-outerThick-pbWallThick-innerThick));
+  setConnect(16,Origin+SPoint+BPoint,-X);
+  setLinkSurf(16,SMap.realSurf(buildIndex+204));
+  nameSideIndex(16,"RingWallStepInner");
+
+  SPoint+=X*(innerThick+pbWallThick+outerThick);
+  setConnect(17,Origin+SPoint+BPoint,X);
+  setLinkSurf(17,-SMap.realSurf(buildIndex+234));
+  nameSideIndex(17,"RingWallStepOuter");
+
   return;
 }
 
