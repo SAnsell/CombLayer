@@ -422,6 +422,7 @@ OpticsHutch::createLinks()
   const double steelThick(innerThick+outerThick);
   const double backWallThick(pbBackThick+steelThick);
   const double sideWallThick(pbWallThick+steelThick);
+  const double roofThick(pbRoofThick+steelThick);
 
   setConnect(0,Origin,Y);
   setLinkSurf(0,ExternalCut::getValidRule("RingWall",Origin+Y*(length-backWallThick)));
@@ -463,6 +464,14 @@ OpticsHutch::createLinks()
   setConnect(14,Origin+Y*(length+backPlateOuterThick),Y);
   setLinkSurf(14,SMap.realSurf(buildIndex+2002));
   nameSideIndex(14,"backPlateOuter");
+
+  setConnect(15,Origin+Z*(height-roofThick),-Z);
+  setLinkSurf(15,-SMap.realSurf(buildIndex+6));
+  nameSideIndex(15,"RoofInner");
+
+  setConnect(16,Origin+Z*(height),Z);
+  setLinkSurf(16,SMap.realSurf(buildIndex+36));
+  nameSideIndex(16,"RoofOuter");
 
   return;
 }
