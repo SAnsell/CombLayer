@@ -383,6 +383,26 @@ OpticsStepHutch::createLinks()
   setLinkSurf(17,-SMap.realSurf(buildIndex+234));
   nameSideIndex(17,"RingWallStepOuter");
 
+  const Geometry::Vec3D corner1 =
+    SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+202),
+		       SMap.realPtr<Geometry::Surface>(buildIndex+204),
+		       SMap.realPtr<Geometry::Surface>(60000));
+
+  const Geometry::Vec3D cornerIn =
+    SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+202),
+		       SMap.realPtr<Geometry::Surface>(buildIndex+403),
+		       SMap.realPtr<Geometry::Surface>(60000));
+
+  const Geometry::Vec3D pIn = (corner1 + cornerIn)/2.0;
+
+  setConnect(18,pIn,-Y);
+  setLinkSurf(18,-SMap.realSurf(buildIndex+202));
+  nameSideIndex(18,"BackWallStepInner");
+
+  setConnect(19,pIn + Y*(innerThick+pbBackThick+outerThick),Y);
+  setLinkSurf(19,SMap.realSurf(buildIndex+232));
+  nameSideIndex(19,"BackWallStepOuter");
+
   return;
 }
 
