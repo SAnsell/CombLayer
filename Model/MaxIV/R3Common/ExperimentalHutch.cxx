@@ -666,6 +666,13 @@ ExperimentalHutch::createLinks()
     nameSideIndex(15,"frontPlate");
   }
 
+  setConnect(16,Origin+Z*(height-steelThick-pbRoofThick),-Z);
+  setLinkSurf(16,-SMap.realSurf(buildIndex+6));
+  nameSideIndex(16,"RoofInner");
+
+  setConnect(17,Origin+Z*(height),Z);
+  setLinkSurf(17,SMap.realSurf(buildIndex+36));
+  nameSideIndex(17,"RoofOuter");
 
 
   return;
