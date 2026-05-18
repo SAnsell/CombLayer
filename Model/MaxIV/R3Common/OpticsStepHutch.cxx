@@ -388,12 +388,12 @@ OpticsStepHutch::createLinks()
 		       SMap.realPtr<Geometry::Surface>(buildIndex+204),
 		       SMap.realPtr<Geometry::Surface>(60000));
 
-  const Geometry::Vec3D cornerIn =
+  const Geometry::Vec3D corner2 =
     SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+202),
 		       SMap.realPtr<Geometry::Surface>(buildIndex+403),
 		       SMap.realPtr<Geometry::Surface>(60000));
 
-  const Geometry::Vec3D pIn = (corner1 + cornerIn)/2.0;
+  const Geometry::Vec3D pIn = (corner1 + corner2)/2.0;
 
   setConnect(18,pIn,-Y);
   setLinkSurf(18,-SMap.realSurf(buildIndex+202));

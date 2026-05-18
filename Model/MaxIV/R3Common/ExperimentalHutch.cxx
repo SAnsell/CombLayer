@@ -65,6 +65,7 @@
 #include "SurfMap.h"
 #include "PortChicane.h"
 #include "forkHoles.h"
+#include "SurInter.h"
 
 #include "XRayHutchBase.h"
 #include "ExperimentalHutch.h"
@@ -674,6 +675,34 @@ ExperimentalHutch::createLinks()
   setLinkSurf(17,SMap.realSurf(buildIndex+36));
   nameSideIndex(17,"RoofOuter");
 
+  // Tilted wall
+  if (cornerLength > Geometry::zeroTol) {
+    const Geometry::Quaternion Qxy=
+      Geometry::Quaternion::calcQRotDeg(-cornerAngle,Z);
+    const Geometry::Vec3D CX=Qxy.makeRotate(X);
+
+    const Geometry::Vec3D corner1 =
+      SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+2),
+			 SMap.realPtr<Geometry::Surface>(buildIndex+303),
+			 SMap.realPtr<Geometry::Surface>(60000));
+    const Geometry::Vec3D corner2 =
+      SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+3),
+			 SMap.realPtr<Geometry::Surface>(buildIndex+303),
+			 SMap.realPtr<Geometry::Surface>(60000));
+
+    const Geometry::Vec3D pIn = (corner1 + corner2)/2.0;
+
+    setConnect(18,pIn,CX);
+    setLinkSurf(18,SMap.realSurf(buildIndex+303));
+    nameSideIndex(18,"TiltedWallInner");
+
+    const Geometry::Vec3D pOut = pIn - CX*(innerThick+pbTiltedThick+outerThick);
+
+    setConnect(18,pOut,-CX);
+    setLinkSurf(18,SMap.realSurf(buildIndex+333));
+    nameSideIndex(18,"TiltedWallOuter");
+
+  }
 
   return;
 }
