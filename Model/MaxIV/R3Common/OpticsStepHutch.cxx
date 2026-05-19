@@ -368,20 +368,20 @@ OpticsStepHutch::createLinks()
 
   OpticsHutch::createLinks();
 
-  FixedComp::setLinkSurf(15,-SMap.realSurf(buildIndex+305));
-  FixedComp::addLinkSurf(15,SMap.realSurf(buildIndex+302));
-  FixedComp::nameSideIndex(15,"BackPlateFloorShine");
+  FixedComp::setLinkSurf(17,-SMap.realSurf(buildIndex+305));
+  FixedComp::addLinkSurf(17,SMap.realSurf(buildIndex+302));
+  FixedComp::nameSideIndex(17,"BackPlateFloorShine");
 
   Geometry::Vec3D BPoint(Y*((length+ringStepLength)/2.0));
   Geometry::Vec3D SPoint(X*(ringStepWidth-outerThick-pbWallThick-innerThick));
-  setConnect(16,Origin+SPoint+BPoint,-X);
-  setLinkSurf(16,SMap.realSurf(buildIndex+204));
-  nameSideIndex(16,"RingWallStepInner");
+  setConnect(18,Origin+SPoint+BPoint,-X);
+  setLinkSurf(18,SMap.realSurf(buildIndex+204));
+  nameSideIndex(18,"RingWallStepInner");
 
   SPoint+=X*(innerThick+pbWallThick+outerThick);
-  setConnect(17,Origin+SPoint+BPoint,X);
-  setLinkSurf(17,-SMap.realSurf(buildIndex+234));
-  nameSideIndex(17,"RingWallStepOuter");
+  setConnect(19,Origin+SPoint+BPoint,X);
+  setLinkSurf(19,-SMap.realSurf(buildIndex+234));
+  nameSideIndex(19,"RingWallStepOuter");
 
   const Geometry::Vec3D corner1 =
     SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+202),
@@ -395,13 +395,13 @@ OpticsStepHutch::createLinks()
 
   const Geometry::Vec3D pIn = (corner1 + corner2)/2.0;
 
-  setConnect(18,pIn,-Y);
-  setLinkSurf(18,-SMap.realSurf(buildIndex+202));
-  nameSideIndex(18,"BackWallStepInner");
+  setConnect(20,pIn,-Y);
+  setLinkSurf(20,-SMap.realSurf(buildIndex+202));
+  nameSideIndex(20,"BackWallStepInner");
 
-  setConnect(19,pIn + Y*(innerThick+pbBackThick+outerThick),Y);
-  setLinkSurf(19,SMap.realSurf(buildIndex+232));
-  nameSideIndex(19,"BackWallStepOuter");
+  setConnect(21,pIn + Y*(innerThick+pbBackThick+outerThick),Y);
+  setLinkSurf(21,SMap.realSurf(buildIndex+232));
+  nameSideIndex(21,"BackWallStepOuter");
 
   return;
 }
