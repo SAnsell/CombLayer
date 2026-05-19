@@ -446,6 +446,10 @@ OpticsHutch::createLinks()
       setLinkSurf(8+2*i,SMap.realSurf(buildIndex+117));
       nameSideIndex(7+2*i,"exitHole"+std::to_string(i));
       nameSideIndex(8+2*i,"exitHole"+std::to_string(i)+"Radius");
+
+      if ((8+2*i) > 10) {
+	ELog::EM << "Error: wrong link point numbering - overrides the link points defined later. Fix the Optics(Step)Hutch link point numbering so that they work for any number of holes." << ELog::endErr;
+      }
     }
 
   setConnect(11,Origin,Y);
