@@ -403,7 +403,8 @@ R3Ring::createLinks()
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(60000);
 
   double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
-  for(size_t i=0;i<NInnerSurf;i++)
+  size_t i;
+  for(i=0;i<NInnerSurf;i++)
     {
       const Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
       const Geometry::Vec3D PtX(Origin+Axis*beamRadius);
@@ -451,6 +452,12 @@ R3Ring::createLinks()
       }
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
+
+  FixedComp::setConnect(i,Origin+Z*height,-Z);
+  FixedComp::setLinkSurf(i,-SMap.realSurf(buildIndex+6));
+  FixedComp::nameSideIndex(i,"RoofInner");
+
+  i++;
 
   return;
 }
