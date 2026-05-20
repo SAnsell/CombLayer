@@ -698,9 +698,9 @@ ExperimentalHutch::createLinks()
 
     const Geometry::Vec3D pOut = pIn - CX*(innerThick+pbTiltedThick+outerThick);
 
-    setConnect(18,pOut,-CX);
-    setLinkSurf(18,SMap.realSurf(buildIndex+333));
-    nameSideIndex(18,"TiltedWallOuter");
+    setConnect(19,pOut,-CX);
+    setLinkSurf(19,SMap.realSurf(buildIndex+333));
+    nameSideIndex(19,"TiltedWallOuter");
 
   }
 
