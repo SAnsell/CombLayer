@@ -441,7 +441,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RoofShineLength",50.0);
   Control.addVariable(hutName+"RoofShineThick",0.6); // [1], Detail K
 
-  // The dimensions (width*thickness*height) of the wall-shine elements are given in 
+  // The dimensions (width*thickness*height) of the wall-shine elements are given in
   // rows 3 and 4 of the table in Ref. [1].
   // The width includes a smaller part which is folded around a corner. This part
   // is neglected for all wall-shine elements in the simulation.

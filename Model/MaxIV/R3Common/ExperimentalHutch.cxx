@@ -106,7 +106,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   cornerLength=Control.EvalDefVar<double>(keyName+"CornerLength",-100.0);
 
   pbTiltedThick=Control.EvalVar<double>(keyName+"PbTiltedThick");
-  pbFrontThick=Control.EvalDefVar<double>(keyName+"PbFrontThick",-1.0);
+  pbFrontThick=Control.EvalVar<double>(keyName+"PbFrontThick");
 
   fHoleRadius=Control.EvalDefVar<double>(keyName+"FHoleRadius",1.0);
   fHoleXStep=Control.EvalDefVar<double>(keyName+"FHoleXStep",0.0);
@@ -641,9 +641,11 @@ ExperimentalHutch::createLinks()
   setLinkSurf(3,SMap.realSurf(buildIndex+34));
   nameSideIndex(3,"InnerWallOuter");
 
-  // TODO: take into account !isActive("frontWall")
+  if (pbFrontThick>Geometry::zeroTol)
+    setConnect(11,Origin+Y*(outerThick+pbFrontThick+innerThick),Y);
+  else
+    setConnect(11,Origin,Y);
   setLinkSurf(11,SMap.realSurf(buildIndex+31));
-  setConnect(11,Origin+Y*(outerThick+pbFrontThick+innerThick),Y);
   nameSideIndex(11,"FrontWallInner");
 
   if (pbBackThick>Geometry::zeroTol)
