@@ -646,7 +646,10 @@ ExperimentalHutch::createLinks()
   setConnect(11,Origin+Y*(outerThick+pbFrontThick+innerThick),Y);
   nameSideIndex(11,"FrontWallInner");
 
-  setConnect(12,Origin+Y*(length-backWallThick),-Y);
+  if (pbBackThick>Geometry::zeroTol)
+    setConnect(12,Origin+Y*(length-backWallThick),-Y);
+  else
+    setConnect(12,Origin+Y*(length),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
   nameSideIndex(12,"BackWallInner");
 
