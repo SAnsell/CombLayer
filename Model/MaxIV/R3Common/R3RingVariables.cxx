@@ -69,7 +69,7 @@
 
 // References [4-15] refer to construction drawings of MAX IV by the company Wihlborgs.
 // The given paths are relative to the top-level directory:
-// CDDIR = /mxn/groups/rad/Kvalitetshandbok-MAXIV/30_Normaldrift/1_SAR/Construction drawings/Wihlborgs complete
+// CDDIR = /mxn/groups/rad/Kvalitetshandbok-MAXIV/30_Normaldrift/1_SAR/Construction drawings/Wihlborgs complete/K
 // Many drawings follow a systematic naming scheme that includes the beamline/sector
 // number N (1 <= N <= 20).
 //
@@ -98,7 +98,9 @@
 // while Ref. [8] is referred to by all the remaining sectors except N=17. It is
 // assumed that the label has simply been forgotten there and that Ref. [8] also 
 // applies to sector N=17 for reasons of symmetry.
-// 
+// The situation is analogous for Refs. [9] and [10] where the former applies to
+// sectors N=1,2, and 20, and the latter to all others (special case N=17).
+//
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
 //     http://localhost:8080/maxiv/work-log/micromax/pictures/front-end/formax-and-micromax-frontend-technical-specification.pdf/view
@@ -111,6 +113,8 @@
 // [6] Icosagon Wall Inner Side: {CDDIR}/07 K_20-2 Väggelevationer - Mått/K_20-2_6{NN}.pdf
 // [7] Icosagon Wall Door for Sectors 1,2,20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_611.pdf
 // [8] Icosagon Wall Door for Sectors 3-16, and 18-20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_621.pdf
+// [9] Storage Ring Tunnel Cross Section for Sectors 1,2,20, : {CDDIR}/08 K_20-6 Sektioner/K_20-6_610.pdf
+// [10] Storage Ring Tunnel Cross Section for Sectors 3-16, and 18-20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_620.pdf
 
 namespace setVariable
 {
@@ -208,15 +212,19 @@ R3RingVariables(FuncDataBase& Control)
   //
   // In reference [6], the total wall length at the inside of the icosagon wall can be
   // read off by summing the six or seven dimensions given at the top of the A-A cut.
-  // For all sectors except N=2,3,19, and 20 (i.e the sector where a change of the
+  // For all sectors except N=2, 3, 19, and 20 (i.e the sectors where a change of the
   // icosagon-wall thickness occurs), this corresponds to the length between the two
-  // sector planes, as can be verified by comparing to Ref. [14].
-  // For all sectors except N=1,2,3,19, and 20, the inner-wall has the same length of
-  // 24808 mm. For N=1 (24644 mm), the difference is on the order of 20 centimeters,
-  // for N=2,3,19, and 20, it is on the order of 2 meters.
+  // sector planes, as can be verified by comparing to Ref. [5].
+  // For all sectors except N=1, 2, 3, 19, and 20, the inner wall has the same length
+  // of 24808 mm. For N=1 (24644 mm), the difference is on the order of 20 centimeters,
+  // for N=2, 3, 19, and 20, it is on the order of 2 meters.
   // In the present implementation, which needs a regular icosagon, the majority wall
   // length of 24808 mm is used to obtain the incircle radius.
-  Control.addVariable(preName+"IcosagonRadius",7865.0);       // U
+  const double icosagonWallLength = 2480.8;
+  // The present implementation does not include the innermost layer
+  // (300 mm concrete + 100 mm gap)
+  const double icosagonInnerWallThick = 40.0;
+  Control.addVariable(preName+"IcosagonRadius",icosagonWallLength/(2.0*tan(M_PI/20.0))+icosagonInnerWallThick);
   Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
   // Icosagon Wall Thickness from [14] (all N except 1, 2, and 20).
   // TODO: The given value is the nominal thickness of the wall, not the thickness of
