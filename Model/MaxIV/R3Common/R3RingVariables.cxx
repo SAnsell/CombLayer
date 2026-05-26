@@ -224,13 +224,16 @@ R3RingVariables(FuncDataBase& Control)
   // The present implementation does not include the innermost layer
   // (300 mm concrete + 100 mm gap)
   const double icosagonInnerWallThick = 40.0;
-  Control.addVariable(preName+"IcosagonRadius",icosagonWallLength/(2.0*tan(M_PI/20.0))+icosagonInnerWallThick);
+  // Of the given 1250 mm (N=1,2, and 20) or 750 mm (all others), the innermost 250 mm
+  // are part of a gap.
+  const double icosagonWallGapThick = 25.0;
+  Control.addVariable(preName+"IcosagonRadius",
+    icosagonWallLength/(2.0*tan(M_PI/20.0))
+    +icosagonInnerWallThick+icosagonWallGapThick
+  );
   Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
-  // Icosagon Wall Thickness from [14] (all N except 1, 2, and 20).
-  // TODO: The given value is the nominal thickness of the wall, not the thickness of
-  // the concrete. For a more realistic model, use the concrete thickness and adjust
-  // OffsetCornerXY accordingly.
-  Control.addVariable(preName+"IcosagonWallThick",100.0);
+  // Icosagon Wall Thickness from [5] (using the value for all N except 1, 2, and 20).
+  Control.addVariable(preName+"IcosagonWallThick",100.0-icosagonWallGapThick);
   Control.addVariable(preName+"OffsetCornerX",716.0);
   Control.addVariable(preName+"OffsetCornerY",556.0);
   Control.addVariable(preName+"OuterWall",110.0);
