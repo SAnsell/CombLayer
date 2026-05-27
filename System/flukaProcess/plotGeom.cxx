@@ -143,7 +143,7 @@ plotGeom::write(std::ostream& OX) const
 {
   std::ostringstream cx;
 
-  cx<<"PLOTGEOM 0 "<<matRegion<<" 0 0 79.0 0";
+  cx<<"PLOTGEOM 0 "<<matRegion<<" 0 - 79 - ";
   StrFunc::writeFLUKA(cx.str(),OX);
   OX<<" "<<title.substr(0,78)<<"\n";
 

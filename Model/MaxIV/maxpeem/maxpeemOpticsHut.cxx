@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   maxpeem/maxpeemOpticsHut.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -51,7 +51,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "LinkUnit.h"  
+#include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedRotate.h"
@@ -68,7 +68,7 @@
 namespace xraySystem
 {
 
-maxpeemOpticsHut::maxpeemOpticsHut(const std::string& Key) : 
+maxpeemOpticsHut::maxpeemOpticsHut(const std::string& Key) :
   attachSystem::FixedOffset(Key,18),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -80,7 +80,7 @@ maxpeemOpticsHut::maxpeemOpticsHut(const std::string& Key) :
   */
 {}
 
-maxpeemOpticsHut::~maxpeemOpticsHut() 
+maxpeemOpticsHut::~maxpeemOpticsHut()
   /*!
     Destructor
   */
@@ -94,7 +94,7 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("maxpeemOpticsHut","populate");
-  
+
   FixedOffset::populate(Control);
 
   height=Control.EvalVar<double>(keyName+"Height");
@@ -144,10 +144,10 @@ maxpeemOpticsHut::populate(const FuncDataBase& Control)
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
-  
+
   return;
 }
- 
+
 void
 maxpeemOpticsHut::createSurfaces()
   /*!
@@ -175,14 +175,14 @@ maxpeemOpticsHut::createSurfaces()
   SurfMap::setSurf("InnerCorner",SMap.realSurf(buildIndex+14));
   SurfMap::setSurf("InnerShort",SMap.realSurf(buildIndex+24));
   SurfMap::setSurf("InnerRoof",SMap.realSurf(buildIndex+6));
-  
+
   if (innerFarVoid>Geometry::zeroTol)
     ModelSupport::buildPlane
-      (SMap,buildIndex+1003,Origin-X*(outWidth-innerFarVoid),X);  
+      (SMap,buildIndex+1003,Origin-X*(outWidth-innerFarVoid),X);
 
   const Geometry::Plane* SPtr=
     SMap.realPtr<const Geometry::Plane>(buildIndex+14);
-  
+
   // Inner void [large volme
   double TF(innerSkin);
   double TW(innerSkin);
@@ -234,7 +234,7 @@ maxpeemOpticsHut::createSurfaces()
       ModelSupport::buildCylinder(SMap,BI+1007,Origin+HPt,Y,holeRadius[i]);
       BI+=100;
     }
-  
+
   if (inletRadius>Geometry::zeroTol)
     ModelSupport::buildCylinder
       (SMap,buildIndex+7,Origin+X*inletXStep+Z*inletZStep,Y,inletRadius);
@@ -286,7 +286,7 @@ maxpeemOpticsHut::createObjects(Simulation& System)
       BI+=100;
     }
 
-  
+
   std::list<int> matList({innerMat,pbMat,outerMat});
   int HI(buildIndex);
   for(const std::string layer : {"Inner","Lead","Outer"})
@@ -295,13 +295,13 @@ maxpeemOpticsHut::createObjects(Simulation& System)
       matList.pop_front();
       HR=ModelSupport::getHeadRule(SMap,HI,"1 -2 -104 (-114:-124) (4:(14 24)) -6 ");
       makeCell("Ring"+layer,System,cellIndex++,mat,0.0,HR*floorHR);
-      
+
       HR=ModelSupport::getHeadRule(SMap,HI,"1 -2 -3 103 -6");
       makeCell("Far"+layer,System,cellIndex++,mat,0.0,HR*floorHR);
-      
+
       HR=ModelSupport::getHeadRule(SMap,HI,"1 -2 103 -104 (-114:-124) 6 -106");
       makeCell("Roof"+layer,System,cellIndex++,mat,0.0,HR);
-      
+
       HR=ModelSupport::getSetHeadRule(SMap,HI,"2 -102 103 -104 -106");
       makeCell("Back"+layer,System,cellIndex++,mat,0.0,HR*floorHR*holeCut);
 
@@ -342,9 +342,9 @@ maxpeemOpticsHut::createObjects(Simulation& System)
       HR=ModelSupport::getHeadRule(SMap,buildIndex,HI,"-2M -303 1303 -6M");
       makeCell("OuterFarVoid",System,cellIndex++,0,0.0,HR*floorHR*ringWallHR);
     }
-  
+
   HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"301 -3002 1303 -304 (-314:-324) -306");
-  addOuterSurf(HR);  
+  addOuterSurf(HR);
 
   return;
 }
@@ -411,11 +411,11 @@ maxpeemOpticsHut::createChicane(Simulation& System)
              -- FarOuter : cell in wall
        - Link Points:
            -- innerFarWall
-           -- farWall 
+           -- farWall
 
     Note that linkPt:farWall is used as the primary 0,0,0 centre
 
-    \param System :: Simulation 
+    \param System :: Simulation
   */
 {
   ELog::RegMethod Rega("maxpeemOpticsHut","createChicane");
@@ -445,7 +445,7 @@ maxpeemOpticsHut::createChicane(Simulation& System)
       // set surfaces:
 
       PItem->setCutSurf("innerWall",*this,"innerFarWall");
-      PItem->setCutSurf("outerWall",*this,"farWall");
+      PItem->setCutSurf("OuterWallOuter",*this,"farWall");
 
       PItem->createAll(System,*this,getSideIndex("farWall"));
 
@@ -468,15 +468,15 @@ maxpeemOpticsHut::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createCentredUnitVector(FC,FIndex,outerSkin+innerSkin+pbFrontThick);
-  
-  createSurfaces();    
+
+  createSurfaces();
   createObjects(System);
-  
+
   createLinks();
   createChicane(System);
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem

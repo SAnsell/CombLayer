@@ -196,7 +196,7 @@ FORMAX::build(Simulation& System,
   if (stopPoint=="exptHut") return;
   exptBeam->addInsertCell(exptHut->getCell("Void"));
   exptBeam->setCutSurf("front",*exptHut,
-			 exptHut->getSideIndex("innerFront"));
+			 exptHut->getSideIndex("FrontWallInner"));
   exptBeam->setCutSurf("back",*exptHut,
 			 exptHut->getSideIndex("innerBack"));
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));

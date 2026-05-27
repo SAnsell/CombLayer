@@ -191,7 +191,7 @@ DANMAX::build(Simulation& System,
   opticsBeam->setCutSurf("front",*opticsHut,
 			 opticsHut->getSideIndex("innerFront"));
   opticsBeam->setCutSurf("back",*opticsHut,
-			 opticsHut->getSideIndex("innerBack"));
+			 opticsHut->getSideIndex("BackWallInner"));
   opticsBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
   opticsBeam->setCutSurf("BackPlateFloorShine",opticsHut->getFullRule("#BackPlateFloorShine"));
   opticsBeam->setPreInsert(joinPipe);
@@ -240,7 +240,7 @@ DANMAX::build(Simulation& System,
     }
   );
   connectUnit->setFront(*opticsHut,"backPlateOuter");
-  connectUnit->setBack(*exptHut2,"innerBack");
+  connectUnit->setBack(*exptHut2,"BackWallInner");
 
   connectUnit->createAll(System,*exptHut2,"#front");
 
@@ -250,14 +250,14 @@ DANMAX::build(Simulation& System,
 
   guillotineOHToEH2->addAllInsertCell(opticsBeam->getCell("LastVoid"));
   guillotineOHToEH2->setCutSurf("inner",*joinPipeB,"outerPipe");
-  guillotineOHToEH2->createAll(System,*opticsHut,"innerBack");
+  guillotineOHToEH2->createAll(System,*opticsHut,"BackWallInner");
 
   joinPipeSINCRYS->createAll(System,*opticsBeam->getLastCompSINCRYS(),2);
   joinPipeSINCRYS->insertAllInCell(System,exptHut2->getCell("Void"));
 
   guillotineOHToEH2SINCRYS->addAllInsertCell(opticsBeam->getCell("LastVoidSINCRYS"));
   guillotineOHToEH2SINCRYS->setCutSurf("inner",*joinPipeSINCRYS,"outerPipe");
-  guillotineOHToEH2SINCRYS->createAll(System,*opticsHut,"innerBack");
+  guillotineOHToEH2SINCRYS->createAll(System,*opticsHut,"BackWallInner");
 
   if (stopPoint=="exptHut2") return;
 

@@ -3,7 +3,7 @@
 
  * File:   tally/TallyBuilder.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ tallySelection(SimMCNP& System,
       else if (TType=="SSW" || TType=="ssw")
 	sswConstruct::processSSW(System,IParam,i);
       else
-	ELog::EM<<"Unable to understand tally type: "<<TType<<
+	ELog::EM<<"Unable to understand MCNP tally type: "<<TType<<
 	  ". Call '-T help' for help." << ELog::endErr;
     }
 

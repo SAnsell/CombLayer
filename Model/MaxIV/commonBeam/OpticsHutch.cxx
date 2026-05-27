@@ -164,7 +164,7 @@ OpticsHutch::createSurfaces()
   SurfMap::makePlane("outerBack",SMap,buildIndex+32,
 		     Origin+Y*(length),Y);
 
-  SurfMap::makePlane("outerWall",SMap,buildIndex+33,
+  SurfMap::makePlane("OuterWallOuter",SMap,buildIndex+33,
 			   Origin-X*(outWidth),X);
 
   SurfMap::makePlane("roof",SMap,buildIndex+36,
@@ -422,18 +422,20 @@ OpticsHutch::createLinks()
   const double steelThick(innerThick+outerThick);
   const double backWallThick(pbBackThick+steelThick);
   const double sideWallThick(pbWallThick+steelThick);
+  const double roofThick(pbRoofThick+steelThick);
 
   setConnect(0,Origin,Y);
   setLinkSurf(0,ExternalCut::getValidRule("RingWall",Origin+Y*(length-backWallThick)));
 
   setConnect(1,Origin+Y*(length),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+32));
+  nameSideIndex(1,"BackWallOuter");
 
   // outer lead wall
   // -backWallThick is just for backward compatibility
   setConnect(3,Origin-X*(outWidth)+Y*((length-backWallThick)/2.0),-X);
   setLinkSurf(3,-SMap.realSurf(buildIndex+33));
-  nameSideIndex(3,"outerWall");
+  nameSideIndex(3,"OuterWallOuter"); // former: outerWall
 
   for(size_t i=0;i<holeRadius.size();i++)
     {
@@ -444,6 +446,10 @@ OpticsHutch::createLinks()
       setLinkSurf(8+2*i,SMap.realSurf(buildIndex+117));
       nameSideIndex(7+2*i,"exitHole"+std::to_string(i));
       nameSideIndex(8+2*i,"exitHole"+std::to_string(i)+"Radius");
+
+      if ((8+2*i) > 10) {
+	ELog::EM << "Error: wrong link point numbering - overrides the link points defined later. Fix the Optics(Step)Hutch link point numbering so that they work for any number of holes." << ELog::endErr;
+      }
     }
 
   setConnect(11,Origin,Y);
@@ -453,15 +459,23 @@ OpticsHutch::createLinks()
   // use
   setConnect(12,Origin+Y*(length-backWallThick-backPlateInnerThick),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+112));
-  nameSideIndex(12,"innerBack");
+  nameSideIndex(12,"BackWallInner");
 
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"innerLeftWall");
+  nameSideIndex(13,"OuterWallInner"); // former: innerLeftWall
 
   setConnect(14,Origin+Y*(length+backPlateOuterThick),Y);
   setLinkSurf(14,SMap.realSurf(buildIndex+2002));
   nameSideIndex(14,"backPlateOuter");
+
+  setConnect(15,Origin+Z*(height-roofThick),-Z);
+  setLinkSurf(15,-SMap.realSurf(buildIndex+6));
+  nameSideIndex(15,"RoofInner");
+
+  setConnect(16,Origin+Z*(height),Z);
+  setLinkSurf(16,SMap.realSurf(buildIndex+36));
+  nameSideIndex(16,"RoofOuter");
 
   return;
 }
@@ -498,8 +512,8 @@ OpticsHutch::createChicane(Simulation& System)
       // set surfaces:
 
       PItem->setCutSurf("innerWall",this->getSurfRule("innerWall"));
-      PItem->setCutSurf("outerWall",this->getSurfRule("#outerWall"));
-      PItem->createAll(System,*this,getSideIndex("outerWall"));
+      PItem->setCutSurf("outerWall",this->getSurfRule("#OuterWallOuter"));
+      PItem->createAll(System,*this,getSideIndex("OuterWallOuter"));
       PChicane.push_back(PItem);
     }
   return;

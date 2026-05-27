@@ -205,7 +205,7 @@ MICROMAX::build(Simulation& System,
   exptBeam->setInsertCell(exptHut->getCells("Void"));
   exptBeam->setOuterMat(exptHut->getInnerMat());
   exptBeam->setCutSurf("front",*exptHut,
-			 exptHut->getSideIndex("innerFront"));
+			 exptHut->getSideIndex("FrontWallInner"));
   exptBeam->setCutSurf("back",*exptHut,
 			 exptHut->getSideIndex("innerBack"));
   exptBeam->setCutSurf("floor",r3Ring->getSurf("Floor"));
@@ -231,7 +231,7 @@ MICROMAX::build(Simulation& System,
   exptBeamB->setInsertCell(exptHutB->getCells("Void"));
   exptBeamB->setOuterMat(exptHutB->getInnerMat());
   exptBeamB->setCutSurf("front",*exptHutB,
-			 exptHutB->getSideIndex("innerFront"));
+			 exptHutB->getSideIndex("FrontWallInner"));
   exptBeamB->setCutSurf("back",*exptHutB,
 			 exptHutB->getSideIndex("innerBack"));
   exptBeamB->setCutSurf("floor",r3Ring->getSurf("Floor"));

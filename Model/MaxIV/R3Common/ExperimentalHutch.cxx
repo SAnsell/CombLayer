@@ -3,7 +3,7 @@
 
  * File:   R3Common/ExperimentalHutch.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell & Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell & Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "SurfMap.h"
 #include "PortChicane.h"
 #include "forkHoles.h"
+#include "SurInter.h"
 
 #include "XRayHutchBase.h"
 #include "ExperimentalHutch.h"
@@ -105,7 +106,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   cornerLength=Control.EvalDefVar<double>(keyName+"CornerLength",-100.0);
 
   pbTiltedThick=Control.EvalVar<double>(keyName+"PbTiltedThick");
-  pbFrontThick=Control.EvalDefVar<double>(keyName+"PbFrontThick",-1.0);
+  pbFrontThick=Control.EvalVar<double>(keyName+"PbFrontThick");
 
   fHoleRadius=Control.EvalDefVar<double>(keyName+"FHoleRadius",1.0);
   fHoleXStep=Control.EvalDefVar<double>(keyName+"FHoleXStep",0.0);
@@ -174,9 +175,9 @@ ExperimentalHutch::createSurfaces()
 
   // Inner void
   if (pbBackThick>Geometry::zeroTol)
-    SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*(length-steelThick-pbBackThick),Y);
+    SurfMap::makePlane("BackWallInner",SMap,buildIndex+2,Origin+Y*(length-steelThick-pbBackThick),Y);
   else
-    SurfMap::makePlane("innerBack",SMap,buildIndex+2,Origin+Y*(length),Y);
+    SurfMap::makePlane("BackWallInner",SMap,buildIndex+2,Origin+Y*(length),Y);
 
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outWidth-steelThick-pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(ringWidth-steelThick-pbWallThick),X);
@@ -280,7 +281,7 @@ ExperimentalHutch::createSurfaces()
 
   if (backVoid>Geometry::zeroTol)
     {
-      SurfMap::makePlane("innerBackVoid",SMap,buildIndex+42,
+      SurfMap::makePlane("BackWallInnerVoid",SMap,buildIndex+42,
 			 Origin+Y*(length-steelThick-pbBackThick-backVoid),Y);
     }
 
@@ -627,8 +628,7 @@ ExperimentalHutch::createLinks()
 
   setConnect(1,Origin+Y*(length),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+32));
-
-  nameSideIndex(1,"backWall");
+  nameSideIndex(1,"BackWallOuter");
 
   // outer lead wall
   //  -backWallThick is not really needed, added for backward compatibility
@@ -639,26 +639,30 @@ ExperimentalHutch::createLinks()
   //  -backWallThick is not really needed, added for backward compatibility
   setConnect(3,Origin+X*(ringWidth)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(3,SMap.realSurf(buildIndex+34));
-  nameSideIndex(3,"rightWall");
+  nameSideIndex(3,"InnerWallOuter");
 
-  // TODO: take into account !isActive("frontWall")
+  if (pbFrontThick>Geometry::zeroTol)
+    setConnect(11,Origin+Y*(outerThick+pbFrontThick+innerThick),Y);
+  else
+    setConnect(11,Origin,Y);
   setLinkSurf(11,SMap.realSurf(buildIndex+31));
-  setConnect(11,Origin+Y*(outerThick+pbFrontThick+innerThick),Y);
-  nameSideIndex(11,"innerFront");
+  nameSideIndex(11,"FrontWallInner");
 
-  setConnect(12,Origin+Y*(length-backWallThick),-Y);
+  if (pbBackThick>Geometry::zeroTol)
+    setConnect(12,Origin+Y*(length-backWallThick),-Y);
+  else
+    setConnect(12,Origin+Y*(length),-Y);
   setLinkSurf(12,-SMap.realSurf(buildIndex+2));
-
-  nameSideIndex(12,"innerBack");
+  nameSideIndex(12,"BackWallInner");
 
   // inner surf
   setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
   setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"innerLeftWall");
+  nameSideIndex(13,"OuterWallInner"); // former: innerLeftWall
 
   setConnect(14,Origin+X*(ringWidth-sideWallThick)+Y*((length-backWallThick)/2.0),-X);
   setLinkSurf(14,-SMap.realSurf(buildIndex+4));
-  nameSideIndex(14,"innerRightWall");
+  nameSideIndex(14,"InnerWallInner");
 
   if (frontPlateActive) {
     const double T = (pbFrontThick>Geometry::zeroTol) ?
@@ -668,7 +672,42 @@ ExperimentalHutch::createLinks()
     nameSideIndex(15,"frontPlate");
   }
 
+  setConnect(16,Origin+Z*(height-steelThick-pbRoofThick),-Z);
+  setLinkSurf(16,-SMap.realSurf(buildIndex+6));
+  nameSideIndex(16,"RoofInner");
 
+  setConnect(17,Origin+Z*(height),Z);
+  setLinkSurf(17,SMap.realSurf(buildIndex+36));
+  nameSideIndex(17,"RoofOuter");
+
+  // Tilted wall
+  if (cornerLength > Geometry::zeroTol) {
+    const Geometry::Quaternion Qxy=
+      Geometry::Quaternion::calcQRotDeg(-cornerAngle,Z);
+    const Geometry::Vec3D CX=Qxy.makeRotate(X);
+
+    const Geometry::Vec3D corner1 =
+      SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+2),
+			 SMap.realPtr<Geometry::Surface>(buildIndex+303),
+			 SMap.realPtr<Geometry::Surface>(60000));
+    const Geometry::Vec3D corner2 =
+      SurInter::getPoint(SMap.realPtr<Geometry::Surface>(buildIndex+3),
+			 SMap.realPtr<Geometry::Surface>(buildIndex+303),
+			 SMap.realPtr<Geometry::Surface>(60000));
+
+    const Geometry::Vec3D pIn = (corner1 + corner2)/2.0;
+
+    setConnect(18,pIn,CX);
+    setLinkSurf(18,SMap.realSurf(buildIndex+303));
+    nameSideIndex(18,"TiltedWallInner");
+
+    const Geometry::Vec3D pOut = pIn - CX*(innerThick+pbTiltedThick+outerThick);
+
+    setConnect(19,pOut,-CX);
+    setLinkSurf(19,SMap.realSurf(buildIndex+333));
+    nameSideIndex(19,"TiltedWallOuter");
+
+  }
 
   return;
 }
@@ -715,7 +754,7 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  PItem->addInsertCell("Inner",getCell("OuterSkinOuterWall"));
 	  PItem->addInsertCell("Main",getCell("FloorShineOuterWallVoid"));
 	  PItem->addInsertCell("Main",getCell("OuterLeftVoid",0));
-	  PItem->setCutSurf("innerWall",*this,"innerLeftWall");
+	  PItem->setCutSurf("innerWall",*this,"OuterWallInner"); // former: innerLeftWall
 	  PItem->setCutSurf("outerWall",*this,"leftWall");
 	  PItem->createAll(System,*this,getSideIndex("leftWall"));
 	}
@@ -726,9 +765,9 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  PItem->addInsertCell("Inner",getCell("OuterSkinRingWall"));
 	  //PItem->addInsertCell("Main",getCell("RightWallVoid"));
 	  PItem->addInsertCell("Main",getCell("OuterRightVoid",0));
-	  PItem->setCutSurf("innerWall",*this,"innerRightWall");
-	  PItem->setCutSurf("outerWall",*this,"rightWall");
-	  PItem->createAll(System,*this,getSideIndex("rightWall"));
+	  PItem->setCutSurf("innerWall",*this,"InnerWallInner");
+	  PItem->setCutSurf("outerWall",*this,"InnerWallOuter");
+	  PItem->createAll(System,*this,getSideIndex("InnerWallOuter"));
 	}
       else if (wallName=="Back")
 	{
@@ -739,9 +778,9 @@ ExperimentalHutch::createChicane(Simulation& System)
 	  PItem->addInsertCell("Main",getCell("BackVoid"));
 	  if (outerBackVoid>Geometry::zeroTol)
 	    PItem->addInsertCell("Main",getCell("OuterBackVoid"));
-	  PItem->setCutSurf("innerWall",*this,"innerBack");
-	  PItem->setCutSurf("outerWall",*this,"backWall");
-	  PItem->createAll(System,*this,getSideIndex("backWall"));
+	  PItem->setCutSurf("innerWall",*this,"BackWallInner");
+	  PItem->setCutSurf("outerWall",*this,"BackWallOuter");
+	  PItem->createAll(System,*this,getSideIndex("BackWallOuter"));
 	  ELog::EM<<"Chicante == "<<PItem->getLinkPt(0)<<ELog::endDiag;
 	}
       PChicane.push_back(PItem);

@@ -63,7 +63,7 @@ class SimFLUKA : public Simulation
   const std::string alignment;    ///< the alignemnt string
 
   std::string defType;            ///< Default physics type
-  bool basicGeom;                 ///< Use basic geometry [DNF form only]
+  bool complexGeom;               ///< Use complex geometry [DNF+CSG form]
   double geomPrecision;           ///< Precision (*1e-6) to use [def 0.0001]
   bool writeVariable;             ///< Prevent the writing of variables
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
@@ -141,8 +141,8 @@ class SimFLUKA : public Simulation
   /// set rndseed [move to physics]
   void setRND(const long int N) { rndSeed=N; }
 
-  /// set the basic geometry
-  void setBasicGeom() { basicGeom=1; }
+  /// set the complex geometry
+  void setComplexGeom() { complexGeom=1; }
   /// set the geomtry precision
   void setGeomPrecision(const double D) { geomPrecision=D; }
 

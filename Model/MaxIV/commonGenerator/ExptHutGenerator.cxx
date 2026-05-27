@@ -57,7 +57,7 @@ ExptHutGenerator::ExptHutGenerator() :
   ringWidth(200.0),
   cornerAngle(45.0),
   cornerYStep(100000.0),
-  pbFrontThick(-1.0),
+  pbFrontThick(0.0),
   fHoleRadius(3.0),fHoleXStep(0.0),fHoleZStep(0.0),
   frontVoid(0.0),backVoid(0.0)
   /*!

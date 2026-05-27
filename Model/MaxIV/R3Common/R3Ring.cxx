@@ -75,7 +75,7 @@ namespace xraySystem
 {
 
 R3Ring::R3Ring(const std::string& Key) :
-  attachSystem::FixedOffset(Key,12),
+  attachSystem::FixedOffset(Key,12), // NConnect is overriden in createLinks
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -394,10 +394,17 @@ R3Ring::createLinks()
 {
   ELog::RegMethod RegA("R3Ring","createLinks");
 
-  FixedComp::setNConnect(2*(NInnerSurf+1));
+  FixedComp::setNConnect(4*(NInnerSurf+1));
+
+  std::vector<Geometry::Vec3D> innerPts;
+  std::vector<Geometry::Vec3D> outerPts;
+  std::vector<Geometry::Vec3D> outerX;
+
+  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(60000);
 
   double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
-  for(size_t i=0;i<NInnerSurf;i++)
+  size_t i;
+  for(i=0;i<NInnerSurf;i++)
     {
       const Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
       const Geometry::Vec3D PtX(Origin+Axis*beamRadius);
@@ -425,8 +432,33 @@ R3Ring::createLinks()
 	  FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
 	}
 
+      const Geometry::Plane* FlatInner=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("FlatInner",(i+NInnerSurf-1) % NInnerSurf));
+      const Geometry::Plane* FlatOuter=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("FlatOuter",(i+NInnerSurf-1) % NInnerSurf));
+
+      if (FlatInner && FlatOuter) {
+	const Geometry::Vec3D OuterWallInner= FlatInner->getNormal();
+	FixedComp::nameSideIndex(2*NInnerSurf+i+1,"OuterWallInner"+std::to_string(i));
+	FixedComp::setLinkSurf(2*NInnerSurf+i+1,-FlatInner->getName());
+	Geometry::Vec3D point = (SurInter::getPoint(FlatInner, BWall, pz) + SurInter::getPoint(FlatInner, BInner, pz))/2.0;
+	FixedComp::setConnect(2*NInnerSurf+i+1,point,-OuterWallInner);
+
+	const Geometry::Vec3D OuterWallOuter= FlatOuter->getNormal();
+	FixedComp::nameSideIndex(3*NInnerSurf+i,"OuterWallOuter"+std::to_string(i));
+	FixedComp::setLinkSurf(3*NInnerSurf+i,FlatOuter->getName());
+	point = (SurInter::getPoint(FlatOuter, BWall, pz) + SurInter::getPoint(FlatOuter, BInner, pz))/2.0;
+	FixedComp::setConnect(3*NInnerSurf+i,point,OuterWallOuter);
+      }
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
+
+  FixedComp::setConnect(i,Origin+Z*height,-Z);
+  FixedComp::setLinkSurf(i,-SMap.realSurf(buildIndex+6));
+  FixedComp::nameSideIndex(i,"RoofInner");
+
+  i++;
+
   return;
 }
 

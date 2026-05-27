@@ -59,6 +59,17 @@ class userBinConstruct
 			  const Geometry::Vec3D&,const Geometry::Vec3D&,
 			  const std::array<size_t,3>&);
 
+  static void createTally(SimFLUKA&,
+			  const std::string&,
+			  const std::string&,
+			  const int,
+			  const Geometry::Vec3D&,const Geometry::Vec3D&,
+			  const std::array<size_t,3>&,
+			  const Geometry::Vec3D&,
+			  const Geometry::Vec3D&,
+			  const Geometry::Vec3D&,
+			  const Geometry::Vec3D&);
+
 
   static std::string convertTallyType(const std::string&);
 

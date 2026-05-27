@@ -441,7 +441,7 @@ opticsHutVariables(FuncDataBase& Control,
   Control.addVariable(hutName+"RoofShineLength",50.0);
   Control.addVariable(hutName+"RoofShineThick",0.6); // [1], Detail K
 
-  // The dimensions (width*thickness*height) of the wall-shine elements are given in 
+  // The dimensions (width*thickness*height) of the wall-shine elements are given in
   // rows 3 and 4 of the table in Ref. [1].
   // The width includes a smaller part which is folded around a corner. This part
   // is neglected for all wall-shine elements in the simulation.
@@ -1020,7 +1020,7 @@ beamStopPackage(FuncDataBase& Control,const std::string& viewKey)
   BeamPairGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
   BeamPairGen.setThread(0.5*bladeThick,"Nickel"); // Estimated
   // Height from [13]
-  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenCarbide"); // [13]
+  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenK1800"); // email AR 260513
   // Cooling is achieved through water-cooled fingers attached to the blades
   // (not modeled). This is different from Diagnostic Module 2.
   BeamPairGen.setWaterPipes(0,0);
@@ -1108,7 +1108,7 @@ void revBeamStopPackage(FuncDataBase& Control,
   BeamPairGen.setGap(-0.1,-0.1); // "Maximum overlap" given as 2 mm in [13]
   BeamPairGen.setThread(0.5*bladeThick,"Nickel"); // Estimated
   // Height from [13]
-  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenCarbide");
+  BeamPairGen.setBlock(bladeWidth,3.5,bladeThick,0.0,"TungstenK1800"); // email AR 260513
   BeamPairGen.setWaterPipes(0,0);
 
   // Seen from upstream, the beam hits the jaws in the following order [23]:
@@ -2138,7 +2138,7 @@ support7DanMAX(FuncDataBase& Control,
   PItemGen.setPlate(setVariable::CF50::flangeLength,"Stainless304");
   BeamMGen.setThread(1.0,"Nickel");
   BeamMGen.setLift(6.0,0.0); // [7]
-  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"Tungsten"); // [7]
+  BeamMGen.setCentreBlock(6.0,6.0,20.0,0.0,"TungstenS18"); // [7], material: email from AR 260513
 
   // Build bocks symmetrically around center of shutter box
   // such that the center-center distance is 25 cm;
@@ -2203,7 +2203,7 @@ support7DanMAX(FuncDataBase& Control,
   Control.addVariable(name+"FlangeBInnerRadius",bremCollRadius);
 
   BBGen.centre();
-  BBGen.setMaterial("Tungsten", "Void");
+  BBGen.setMaterial("TungstenS18", "Void");
   BBGen.setLength(bremCollLength);
   BBGen.setRadius(bremCollRadius);
   BBGen.setAperature(-1.0, 1.5, 0.7,  1.5, 0.7,   1.5, 0.7); // [6]
@@ -2224,6 +2224,7 @@ DANMAXvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("danmaxVariables[F]","danmaxVariables");
 
   Control.addVariable("sdefType","Wiggler");
+  Control.addVariable("R3RingRingDoorWallID", 4);
 
   setVariable::PipeGenerator PipeGen;
   //  setVariable::LeadPipeGenerator LeadPipeGen;

@@ -1826,11 +1826,12 @@ DBMaterial::initMaterial()
   Mptr->setMXitem(6000, 80, 'c', "h", "06012");
   Mptr->setDensity(-15.6);
 
-  // HPM 1800 / Kulite K1800 Tungsten Alloy
-  // Reference: https://www.tungsten.com/material-info/tungsten-heavy-alloy-w-ni-fe-cu
-  // Also known as: HA180, HD 18D, SD180, CMW 3950, K1800, M3950
-  // MatMCNP: TungstenK1800.inp
-  Mptr = &createMaterial("TungstenK1800",
+  // https://www.tungsten.com/material-info/tungsten-heavy-alloy-w-ni-fe-cu
+
+  // HPM 1800 Tungsten Alloy
+  // Reference: https://www.hcstarcksolutions.com/wp-content/uploads/Tungsten-Heavy-Alloy-Composites-High-Density-PD-7100.pdf
+  // MatMCNP: TungstenHPM1800.inp
+  Mptr = &createMaterial("TungstenHPM1800",
 		 " 26054.80c   0.002603 "
 		 " 26056.80c   0.040855 "
 		 " 26057.80c   0.000944 "
@@ -1846,6 +1847,68 @@ DBMaterial::initMaterial()
 		 " 74184.80c   0.262469 "
 		 " 74186.80c   0.243537 ", "", MLib);
   Mptr->setDensity(-18.0);
+
+  // Densiment D180 Tungsten Alloy
+  // Same as TungstenHPM1800
+  Mptr = &createMaterial("TungstenD180",
+		 " 26054.80c   0.002603 "
+		 " 26056.80c   0.040855 "
+		 " 26057.80c   0.000944 "
+		 " 26058.80c   0.000126 "
+		 " 28058.80c   0.067296 "
+		 " 28060.80c   0.025922 "
+		 " 28061.80c   0.001127 "
+		 " 28062.80c   0.003593 "
+		 " 28064.80c   0.000915 "
+		 " 74180.80c   0.001028 "
+		 " 74182.80c   0.227005 "
+		 " 74183.80c   0.122582 "
+		 " 74184.80c   0.262469 "
+		 " 74186.80c   0.243537 ", "", MLib);
+  Mptr->setDensity(-18.0);
+
+  // Kulite K1800 Tungsten Alloy
+  // Reference:https://www.elmetkulite.com/tungsten-heavy-alloy
+  // MatMCNP: TungstenK1800.inp
+  Mptr = &createMaterial("TungstenK1800",
+			 " 26054.80c   0.002432 "
+			 " 26056.80c   0.038170 "
+			 " 26057.80c   0.000882 "
+			 " 26058.80c   0.000117 "
+			 " 28058.80c   0.059666 "
+			 " 28060.80c   0.022983 "
+			 " 28061.80c   0.000999 "
+			 " 28062.80c   0.003186 "
+			 " 28064.80c   0.000811 "
+			 " 74180.80c   0.001029 "
+			 " 74182.80c   0.227236 "
+			 " 74183.80c   0.122707 "
+			 " 74184.80c   0.262736 "
+			 " 74186.80c   0.243786 "
+			 " 29063.80c   0.007223 "
+			 " 29065.80c   0.003222 "
+			 " 27059.80c   0.002816 ", "", MLib);
+  Mptr->setDensity(-18.0);
+
+  // Triament S18 Tungsten Alloy
+  // Referemce: https://wolfram-industrie.de/wp-content/uploads/2023/08/wolfram-industrie-triamet-en.pdf
+  // MatMCNP: TungstenS18.inp
+  Mptr = &createMaterial("TungstenS18",
+			 " 74180.80c   0.001034 "
+			 " 74182.80c   0.228236 "
+			 " 74183.80c   0.123248 "
+			 " 74184.80c   0.263893 "
+			 " 74186.80c   0.244859 "
+			 " 28058.80c   0.067661 "
+			 " 28060.80c   0.026063 "
+			 " 28061.80c   0.001133 "
+			 " 28062.80c   0.003612 "
+			 " 28064.80c   0.000920 "
+			 " 29063.80c   0.027205 "
+			 " 29065.80c   0.012137 ","",MLib);
+  Mptr->setDensity(-18.0);
+
+
 
   return;
 }

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   generalProcess/meshConstruct.cxx
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -51,7 +51,7 @@
 #include "localRotate.h"
 #include "masterRotate.h"
 
-#include "meshConstruct.h" 
+#include "meshConstruct.h"
 
 
 
@@ -62,20 +62,28 @@ namespace meshConstruct
 {
 void
 calcXYZ(const objectGroups& OGrp,
-		       const std::string& object,const std::string& linkPos,
-		       Geometry::Vec3D& APos,Geometry::Vec3D& BPos) 
+	       const std::string& object,const std::string& linkPos,
+	       Geometry::Vec3D& APos,Geometry::Vec3D& BPos,
+	       Geometry::Vec3D& origin,
+	       Geometry::Vec3D& X,Geometry::Vec3D& Y,Geometry::Vec3D& Z)
   /*!
-    Calculate the grid positions relative to an object
-    Note that for the mesh it must align on 
+    Calculate the grid positions relative to an object link point.
+    APos/BPos are offsets in the link point's local frame; this function
+    translates them to world coordinates and also returns the link point's
+    world position (origin) and orientation axes (X, Y, Z) so that callers
+    can emit ROT-DEFIni cards for mesh tallies.
     \param OGrp :: Object group
     \param object :: object name
-    \param linkPos :: link position
-    \param APos :: Lower corner [output]
-    \param BPos :: Upper corner [output]
+    \param linkPos :: link position name/index
+    \param APos :: Lower corner [in/out: local offset → world coordinate]
+    \param BPos :: Upper corner [in/out: local offset → world coordinate]
+    \param origin :: Link point world position [output]
+    \param X :: Link point X axis in world frame [output]
+    \param Y :: Link point Y axis in world frame [output]
+    \param Z :: Link point Z axis in world frame [output]
    */
 {
   ELog::RegMethod RegA("meshConstruct","calcXYZ");
-
 
   const attachSystem::FixedComp* FC=
     OGrp.getObjectThrow<attachSystem::FixedComp>(object,"FixedComp");
@@ -84,43 +92,35 @@ calcXYZ(const objectGroups& OGrp,
   attachSystem::FixedUnit A("tmpComp",0);
   A.createUnitVector(*FC,sideIndex);
 
-  //
-  // Construct the 8 corners of the cube:
-  // then calculate the maximum in all directions
-  //
-  std::vector<Geometry::Vec3D> Cube(8);
-  Cube[0]=APos;
-  Cube[7]=BPos;
-  for(size_t i=0;i<3;i++)
-    {
-      Cube[i+1]=APos;
-      Cube[i+1][i]=BPos[i];
-    }
-  for(size_t i=0;i<3;i++)
-    {
-      Cube[i+5]=BPos;
-      Cube[i+5][i]=APos[i];
-    }
+  origin = A.getCentre();
+  X = A.getX();
+  Y = A.getY();
+  Z = A.getZ();
 
-  Geometry::Vec3D Pt=A.getX()*Cube[0][0]+
-    A.getY()*Cube[0][1]+A.getZ()*Cube[0][2];
+  // APos/BPos are offsets from the mesh origin (0,0,0).
+  // Translate so that the mesh origin coincides with the link point.
+  APos += origin;
+  BPos += origin;
 
-  Geometry::Vec3D PtMax(Pt);
-  Geometry::Vec3D PtMin(Pt);
-  for(size_t i=1;i<8;i++)
-    {
-      Pt=A.getX()*Cube[i][0]+A.getY()*Cube[i][1]+A.getZ()*Cube[i][2];
-      for(size_t j=0;j<3;j++)
-	{
-	  if (Pt[j]>PtMax[j]) PtMax[j]=Pt[j];
-	  if (Pt[j]<PtMin[j]) PtMin[j]=Pt[j];
-	}
-    }
+  return;
+}
 
-  ELog::EM<<"Center == "<<A.getCentre()<<ELog::endDiag;
-  APos=PtMin+A.getCentre();
-  BPos=PtMax+A.getCentre();
-
+void
+calcXYZ(const objectGroups& OGrp,
+	       const std::string& object,const std::string& linkPos,
+	       Geometry::Vec3D& APos,Geometry::Vec3D& BPos)
+  /*!
+    Calculate the grid positions relative to an object link point.
+    Convenience overload that discards the link transform information.
+    \param OGrp :: Object group
+    \param object :: object name
+    \param linkPos :: link position name/index
+    \param APos :: Lower corner [in/out]
+    \param BPos :: Upper corner [in/out]
+   */
+{
+  Geometry::Vec3D origin, X, Y, Z;
+  calcXYZ(OGrp, object, linkPos, APos, BPos, origin, X, Y, Z);
   return;
 }
 
@@ -133,7 +133,7 @@ getObjectMesh(const objectGroups& OGrp,
 			     const size_t offset,
 			     Geometry::Vec3D& APt,
 			     Geometry::Vec3D& BPt,
-			     std::array<size_t,3>& Nxyz)     
+			     std::array<size_t,3>& Nxyz)
   /*!
     Get mesh grid for the tally
     \param OGrp :: object group
@@ -148,21 +148,71 @@ getObjectMesh(const objectGroups& OGrp,
 {
   ELog::RegMethod RegA("meshConstruct","getObjectMesh");
 
-  size_t itemIndex(offset+2);   
+  size_t itemIndex(offset+2);
   const std::string place=
     IParam.getValueError<std::string>(itemName,Index,offset,"position not given");
   const std::string linkName=
-    IParam.getValueError<std::string>(itemName,Index,offset+1,"front/back/side not given");      
+    IParam.getValueError<std::string>(itemName,Index,offset+1,"front/back/side not given");
 
   APt=IParam.getCntVec3D(itemName,Index,itemIndex,"Low Corner");
   BPt=IParam.getCntVec3D(itemName,Index,itemIndex,"High Corner");
-  
+
   Nxyz[0]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NXpts");
   Nxyz[1]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NYpts");
   Nxyz[2]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NZpts");
-  
+
   calcXYZ(OGrp,place,linkName,APt,BPt);
-  
+
+  return;
+}
+
+void
+getObjectMesh(const objectGroups& OGrp,
+		     const mainSystem::inputParam& IParam,
+		     const std::string& itemName,
+		     const size_t Index,
+		     const size_t offset,
+		     Geometry::Vec3D& APt,
+		     Geometry::Vec3D& BPt,
+		     std::array<size_t,3>& Nxyz,
+		     Geometry::Vec3D& linkOrigin,
+		     Geometry::Vec3D& linkX,
+		     Geometry::Vec3D& linkY,
+		     Geometry::Vec3D& linkZ)
+  /*!
+    Get mesh grid for the tally, also returning the link point
+    world position and orientation axes for ROT-DEFIni generation.
+    \param OGrp :: object group
+    \param IParam :: Main input parameters
+    \param itemName :: Name to search
+    \param Index :: index of the -T card
+    \param offset :: start point in T card to take position from
+    \param APt :: Low box corner [in/out: local offset → world coordinate]
+    \param BPt :: Upper box corner [in/out: local offset → world coordinate]
+    \param Nxyz :: number of points
+    \param linkOrigin :: Link point world position [output]
+    \param linkX :: Link point X axis [output]
+    \param linkY :: Link point Y axis [output]
+    \param linkZ :: Link point Z axis [output]
+  */
+{
+  ELog::RegMethod RegA("meshConstruct","getObjectMesh");
+
+  size_t itemIndex(offset+2);
+  const std::string place=
+    IParam.getValueError<std::string>(itemName,Index,offset,"position not given");
+  const std::string linkName=
+    IParam.getValueError<std::string>(itemName,Index,offset+1,"front/back/side not given");
+
+  APt=IParam.getCntVec3D(itemName,Index,itemIndex,"Low Corner");
+  BPt=IParam.getCntVec3D(itemName,Index,itemIndex,"High Corner");
+
+  Nxyz[0]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NXpts");
+  Nxyz[1]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NYpts");
+  Nxyz[2]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NZpts");
+
+  calcXYZ(OGrp,place,linkName,APt,BPt,linkOrigin,linkX,linkY,linkZ);
+
   return;
 }
 
@@ -192,25 +242,25 @@ getFreeMesh(const mainSystem::inputParam& IParam,
 
   APt=IParam.getCntVec3D(itemName,Index,itemIndex,"Low Corner");
   BPt=IParam.getCntVec3D(itemName,Index,itemIndex,"High Corner");
-  
+
   // Rotation:
   const std::string revStr=
     IParam.getDefValue<std::string>("",itemName,Index,itemIndex);
-  if (revStr=="r") 
+  if (revStr=="r")
     {
       ELog::EM<<"Reverse rotating"<<ELog::endDiag;
       APt=MR.reverseRotate(APt);
       BPt=MR.reverseRotate(BPt);
     }
-      
+
   Nxyz[0]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NXpts");
   Nxyz[1]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NYpts");
   Nxyz[2]=IParam.getValueError<size_t>(itemName,Index,itemIndex++,"NZpts");
 
   return;
 }
-  
-const std::string& 
+
+const std::string&
 getDoseConversion()
   /*!
     Return the dose string  for a mshtr
@@ -241,7 +291,7 @@ getDoseConversion()
   return fcdString;
 }
 
-const std::string& 
+const std::string&
 getPhotonDoseConversion()
   /*!
     Return the dose string  for a mshtr
@@ -270,9 +320,9 @@ getPhotonDoseConversion()
 
   return fcdString;
 }
-  
+
 void
-writeHelp(std::ostream& OX) 
+writeHelp(std::ostream& OX)
   /*!
     Write out help
     \param OX :: Output stream

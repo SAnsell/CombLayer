@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   danmax/CM1BeamSplitter.cxx
  *
  * Copyright (c) 2026 by U. Friman-Gayer
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -125,11 +125,11 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
     keyName+"FilterHoleUpstreamRadius",0.15);
 
   // In the CAD model [2], the splitter crystal has an orientation that results from
-  // a rotation about a nontrivial axis (i.e. neither base axes nor any of the 
-  // body axes of the holder). Furthermore, the crystal has an irregular polygonal 
+  // a rotation about a nontrivial axis (i.e. neither base axes nor any of the
+  // body axes of the holder). Furthermore, the crystal has an irregular polygonal
   // shape.
   //
-  // The orientation was determined from three points on the inside wall of the 
+  // The orientation was determined from three points on the inside wall of the
   // crystal pit in [2] (arbitrary offset, base coordinate system, values in mm):
   //
   // v0 = (0.96,  0.00,  7.56)
@@ -142,7 +142,7 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
   // The pivot point for the 3D rotations of the crystal has been determined by trial
   // and error to reproduce the sample points with +- 0.1 mm precision.
   //
-  // The polygonal shape of the crystal is approximated as a rectangle here, assuming 
+  // The polygonal shape of the crystal is approximated as a rectangle here, assuming
   // that the beam never hits the bare copper areas of the pit. The gap between the
   // pit walls and the crystal is assumed to be of the same size as for the filter
   // crystal, and the same on all sides.
@@ -187,11 +187,11 @@ CM1BeamSplitter::populate(const FuncDataBase& Control)
 
   // Materials
   filterCrystalMaterial=ModelSupport::EvalDefMat(
-    Control,keyName+"FilterCrystalMaterial","Diamond"); // "CVD Diamond" [1]
+    Control,keyName+"FilterCrystalMat","Diamond"); // "CVD Diamond" [1]
   holderMaterial=ModelSupport::EvalDefMat(
-    Control,keyName+"HolderMaterial","Copper"); // [1]
+    Control,keyName+"HolderMat","Copper"); // [1]
   splitterCrystalMaterial=ModelSupport::EvalDefMat(
-    Control,keyName+"SplitterCrystalMaterial","Diamond");
+    Control,keyName+"SplitterCrystalMat","Diamond");
 
   const std::string beamName = "DanMAX";
   SINCRYSAngle = Control.EvalVar<double>(beamName+"SINCRYSAngle")*M_PI/180.0;
@@ -222,7 +222,7 @@ void CM1BeamSplitter::updateInternalReferenceVectors(
   Geometry::Vec3D &filterHoleOffsetVector,Geometry::Vec3D &frontCornerOffset,
   Geometry::Vec3D &holeDir,Geometry::Vec3D &holeX,Geometry::Vec3D &splitterHoleOffset){
     /*!
-    Based on the current Origin and coordinate vectors, calculate some reference 
+    Based on the current Origin and coordinate vectors, calculate some reference
     vectors (positions and axes) relative to FixedComp::Origin.
 
     \param filterHoleOffsetVector :: Origin of the filter hole on the front surface of
@@ -286,8 +286,8 @@ CM1BeamSplitter::createSurfaces()
   double zAngle = 0.0;
   if(mode == 2){
     // In mode 2, assume that the orientation of the CM1 splitter crystal corresponds
-    // to Bragg scattering at the SINCRYS center angle. The actual relation between 
-    // the crystal-surface angle and the crystal-lattice orientation is neither given 
+    // to Bragg scattering at the SINCRYS center angle. The actual relation between
+    // the crystal-surface angle and the crystal-lattice orientation is neither given
     // in the main reference [32], nor is FLUKA capable of simulating Bragg scattering.
     // Therefore, this is more a cosmetic issue.
     zAngle = (SINCRYSAngle-SINCRYSCenterAngle)/2.0;

@@ -424,13 +424,11 @@ makeMaxIV::buildR3Ring(Simulation& System,
       // To build other beamlines vrt ExitCentre, apply similar
       // changes in PIndex and prevIndex as done in TOMOWISE::build()
       {"DANMAX","ExitCentre4"},
-      {"TOMOWISE","ExitCentre1"}, // should be 7, but if not 1 then
-				  // RingDoor is built in the wrong
-				  // ring sector
+      {"TOMOWISE","ExitCentre7"},
+      // !!! see note above !!!
       {"BALDER","OpticCentre8"},
       {"FORMAX","OpticCentre9"},
-      {"COSAXS","OpticCentre10"}, // if not 1, then RingDoor is built
-				  // in the wrong ring sector
+      {"COSAXS","OpticCentre10"},
       {"MICROMAX","OpticCentre12"},
       {"SOFTIMAX","OpticCentre18"}
     });

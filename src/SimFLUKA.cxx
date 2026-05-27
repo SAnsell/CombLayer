@@ -86,7 +86,7 @@
 SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
-  defType("PRECISION"),basicGeom(0),geomPrecision(0.0001),
+  defType("PRECISION"),complexGeom(0),geomPrecision(0.0001),
   writeVariable(1),lowEnergyNeutron(1),cernFluka(0),
   nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics()),
@@ -100,7 +100,7 @@ SimFLUKA::SimFLUKA() :
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
   alignment(A.alignment),defType(A.defType),
-  basicGeom(A.basicGeom),geomPrecision(A.geomPrecision),
+  complexGeom(A.complexGeom),geomPrecision(A.geomPrecision),
   writeVariable(A.writeVariable),
   lowEnergyNeutron(A.lowEnergyNeutron),
   nps(A.nps),rndSeed(A.rndSeed),
@@ -126,7 +126,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
     {
       Simulation::operator=(A);
       defType=A.defType;
-      basicGeom=A.basicGeom;
+      complexGeom=A.complexGeom;
       writeVariable=A.writeVariable;
       lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
@@ -801,7 +801,7 @@ SimFLUKA::write(const std::string& Fname) const
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
   std::ostringstream cx;
   cx<<"GEOBEGIN";
-  cx<<((basicGeom) ? " - " : " 1 ");
+  cx<<((complexGeom) ? " 1 " : " - ");
   cx<<geomPrecision<<" - - - - COMBNAME";
   StrFunc::writeFLUKA(cx.str(),OX);
 
