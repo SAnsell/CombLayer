@@ -115,7 +115,11 @@
 // [8] Icosagon Wall Door for Sectors 3-16, and 18-20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_621.pdf
 // [9] Storage Ring Tunnel Cross Section for Sectors 1,2,20, : {CDDIR}/08 K_20-6 Sektioner/K_20-6_610.pdf
 // [10] Storage Ring Tunnel Cross Section for Sectors 3-16, and 18-20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_620.pdf
-// [11] MAX IV Overview Drawing, Preliminary Ring Dimensions: /mxn/groups/rad/Kvalitetshandbok-MAXIV/30_Normaldrift/1_SAR/Construction drawings/Briefing documents/2012-04-20/8-10.pdf
+// [11] Preliminary MAX IV Overview Drawing, Ring Dimensions: /mxn/groups/rad/Kvalitetshandbok-MAXIV/30_Normaldrift/1_SAR/Construction drawings/Briefing documents/2012-04-20/8-10.pdf
+// [12] Ratchet End Wall Detail for Sectors 2-18 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_633.pdf
+// [13] Ratchet End Wall Detail for Sector 1 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_634.pdf
+// [14] Ratchet End Wall Detail for Sector 19 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_635.pdf
+// [15] Ratchet End Wall Detail for Sector 20 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_636.pdf
 
 namespace setVariable
 {
@@ -284,12 +288,15 @@ R3RingVariables(FuncDataBase& Control)
   const double outerWallRadius = 2705.9*icosagonSideLengthToIncircleRadius;
   Control.addVariable(preName+"OffsetCornerY",
     outerWallRadius-(icosagonRadius+icosagonWallThick));
-  Control.addVariable(preName+"OffsetCornerX",716.0);
-  Control.addVariable(preName+"OuterWall",110.0);
+  Control.addVariable(preName+"OffsetCornerX",710.0);
+  // For the Outer Wall and Ratchet Wall dimensions, values that fit most of the
+  // sectors (N = 2-18) [12] are chosen here. These dimensions are also used for
+  // sectors 1, 19, and 20 although their wall design differs (see [13], [14],
+  // and [15], respectively).
+  Control.addVariable(preName+"OuterWall",110.0); // [12]
   // Adjusted for (roughly) 600 mm distance to optical axis for a DanMAX-type beamline.
   Control.addVariable(preName+"OuterWallCut",-30.0);
-  // In reality, REW have different thickness, but we have the same for all.
-  Control.addVariable(preName+"RatchetWall",160.0); // for TomoWISE (standard thickness) K_20-6_633
+  Control.addVariable(preName+"RatchetWall",160.0); // [12]
   ELog::EM << "Bulk shielding thick depends on the beamline. Currently, the same for all" << ELog::endWarn;
 
   Control.addVariable(preName+"Insulation",10.0);
