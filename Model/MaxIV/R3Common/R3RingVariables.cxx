@@ -3,7 +3,7 @@
 
  * File:   R3Common/R3RingVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by S. Ansell and U. Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,9 +189,20 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 void
 R3RingVariables(FuncDataBase& Control)
   /*!
-    Function to set the control variables and constants
-    for the R3 concrete shielding walls
-    \param Control :: Function data base to add constants too
+    Set control variables and constants for the R3 ring.
+
+    The present implementation is a simplification of the true ring geometry in the
+    sense that it is closer to an ideal icosagon and assumes that all sectors have the
+    same wall dimensions. The simplification is a good approximation for most beamlines
+    along the ring. The model is only a rough approximation for the sectors near the 
+    injection (1, 2, 19, and 20) which may feature thicker walls and a different
+    ratchet-wall geometry.
+
+    For more details, see the docstrings of individual variables. They describe how the
+    variables were inferred from construction drawings and what approximations were
+    made.
+
+    \param Control :: Function data base to add constants to
   */
 {
   ELog::RegMethod RegA("R3RingVariables[F]","R3RingVariables");
@@ -238,7 +249,6 @@ R3RingVariables(FuncDataBase& Control)
     +icosagonInnerWallThick+icosagonWallGapThick
   );
   Control.addVariable(preName+"IcosagonRadius",icosagonRadius);
-  Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
   // Icosagon Wall Thickness from [5] (using the value for all N except 1, 2, and 20).
   const double icosagonWallThick = 100.0-icosagonWallGapThick;
   Control.addVariable(preName+"IcosagonWallThick",icosagonWallThick);
@@ -293,10 +303,26 @@ R3RingVariables(FuncDataBase& Control)
   // sectors (N = 2-18) [12] are chosen here. These dimensions are also used for
   // sectors 1, 19, and 20 although their wall design differs (see [13], [14],
   // and [15], respectively).
+  // Due to the way the ring is constructed here, this choice also has an impact
+  // on the beam radius.
   Control.addVariable(preName+"OuterWall",110.0); // [12]
   // Adjusted for (roughly) 600 mm distance to optical axis for a DanMAX-type beamline.
   Control.addVariable(preName+"OuterWallCut",-30.0);
   Control.addVariable(preName+"RatchetWall",160.0); // [12]
+  // Adjust the beam radius such that it exits the Ratchet Wall at the correct position
+  // for sectors N = 2-18 (see discussion above).
+  //
+  // Previously, the value of BeamRadius was set in the expression
+  //
+  // Control.addVariable(preName+"BeamRadius",8409.0-48.0); // 528m circum.
+  //
+  // No reference was given for these values. They result in a beam radius of
+  // 8361 cm which would correspond to a circumference of 525 m. Since a radius
+  // of 8409 cm results in the correct circumference as given in the original comment,
+  // it is assumed that the 48 cm were subtracted later to fix a discrepancy in the
+  // model.
+  // The current BeamRadius has a value of 8392 cm (527 m circumference).
+  Control.addVariable(preName+"BeamRadius",outerWallRadius-150.0); // [12]
   ELog::EM << "Bulk shielding thick depends on the beamline. Currently, the same for all" << ELog::endWarn;
 
   Control.addVariable(preName+"Insulation",10.0);
