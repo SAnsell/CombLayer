@@ -115,6 +115,7 @@
 // [8] Icosagon Wall Door for Sectors 3-16, and 18-20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_621.pdf
 // [9] Storage Ring Tunnel Cross Section for Sectors 1,2,20, : {CDDIR}/08 K_20-6 Sektioner/K_20-6_610.pdf
 // [10] Storage Ring Tunnel Cross Section for Sectors 3-16, and 18-20: {CDDIR}/08 K_20-6 Sektioner/K_20-6_620.pdf
+// [11] MAX IV Overview Drawing, Preliminary Ring Dimensions: /mxn/groups/rad/Kvalitetshandbok-MAXIV/30_Normaldrift/1_SAR/Construction drawings/Briefing documents/2012-04-20/8-10.pdf
 
 namespace setVariable
 {
@@ -227,15 +228,63 @@ R3RingVariables(FuncDataBase& Control)
   // Of the given 1250 mm (N=1,2, and 20) or 750 mm (all others), the innermost 250 mm
   // are part of a gap.
   const double icosagonWallGapThick = 25.0;
-  Control.addVariable(preName+"IcosagonRadius",
-    icosagonWallLength/(2.0*tan(M_PI/20.0))
+  const double icosagonSideLengthToIncircleRadius = 1.0/(2.0*tan(M_PI/20.0));
+  const double icosagonRadius = (
+    icosagonWallLength*icosagonSideLengthToIncircleRadius
     +icosagonInnerWallThick+icosagonWallGapThick
   );
+  Control.addVariable(preName+"IcosagonRadius",icosagonRadius);
   Control.addVariable(preName+"BeamRadius",8409.0-48.0);       // 528m circum.
   // Icosagon Wall Thickness from [5] (using the value for all N except 1, 2, and 20).
-  Control.addVariable(preName+"IcosagonWallThick",100.0-icosagonWallGapThick);
+  const double icosagonWallThick = 100.0-icosagonWallGapThick;
+  Control.addVariable(preName+"IcosagonWallThick",icosagonWallThick);
+  // Outer Wall dimensions.
+  // The Outer Wall is based on a icosagonal shape like the inner Icosagon Wall.
+  // However, it looks more like a circular-saw blade due to the presence of the
+  // ratchet end walls in each sector that provide an interface for the beamlines.
+  //
+  // Detailed drawings for the vicinity of the ratchet end walls in each sector are
+  // available [5]. They even include the icosagon wall, but the author could neither
+  // find a numerical value of the distance between the Icosagon Wall and the Outer
+  // Wall, nor the length of the Outer-Wall sections. Therefore, these values have
+  // been obtained and validated in a self consistent procedure which is described
+  // below:
+  //
+  // For N = 1 and 2, the distance between two ratchet end walls on the inside of the
+  // Outer Wall can be obtained by summing all dimensions in the top drawing in [4].
+  // For all other sectors, no such information could be found. In the most general
+  // case, all sectors would have individual lengths. However, by reconstructing the
+  // Outer Wall in an external program, it could be demonstrated that a closed wall
+  // can be built when all lengths are assumed to have the same value as N = 1 and 2.
+  // Using this inner-wall length of 26679 mm from Ref. [4], a side length for the
+  // inscribed icosagon of the Outer Wall can be determined. For 13 out of 20 sectors,
+  // a value of 27059 mm is found. The standard deviation of all sectors is 1.4 mm with
+  // a maximum deviation from the mean value of 5 mm. Even the largest deviation is on
+  // the order of the rounding errors in the drawings. In the following, the majority
+  // side length of 27059 mm will be used.
+  //
+  // From the inscribed icosagon side length of 27059 mm, one obtains an incircle
+  // radius of 85422 mm. With the dimensions of the Icosagon Wall above
+  // (IcosagonRadius = 78966 mm plus 750 mm wall thickness), the width of the
+  // storage-ring tunnel (outside of Icosagon Wall to inside of Outer Wall) is found
+  // to be 5706 mm. In terms of this class, this should be the value of OffsetCornerY.
+  // Previously, a value of 5560 mm was used.  To the knowledge of the author,
+  // OffsetCornerY is not given explicitly in the available drawings (except for a
+  // value 5600 mm in Ref. [11], which is marked as preliminary).
+  // However, it can be read off from Refs. [9] and [10] which show cross sections of
+  // the storage-ring tunnel.
+  // The resulting values of 5584(13) mm [9] and 5595 (18) mm [10] are in agreement
+  // with each other, indicating that the tunnel width is the same in all sectors
+  // (i.e additional wall thickness is added on the inside for the Icosagon Wall and on
+  // the outside for the Outer Wall). It also agrees with the previously used value.
+  // The origin of the ~140-mm discrepancy with the derived value of 5706 mm might be
+  // attributed to the assumption that the Outer Wall is a regular icosagon.
+  // The derived value will be used below for OffsetCornerY since it is based on
+  // explicitly given dimensions.
+  const double outerWallRadius = 2705.9*icosagonSideLengthToIncircleRadius;
+  Control.addVariable(preName+"OffsetCornerY",
+    outerWallRadius-(icosagonRadius+icosagonWallThick));
   Control.addVariable(preName+"OffsetCornerX",716.0);
-  Control.addVariable(preName+"OffsetCornerY",556.0);
   Control.addVariable(preName+"OuterWall",110.0);
   // Adjusted for (roughly) 600 mm distance to optical axis for a DanMAX-type beamline.
   Control.addVariable(preName+"OuterWallCut",-30.0);
