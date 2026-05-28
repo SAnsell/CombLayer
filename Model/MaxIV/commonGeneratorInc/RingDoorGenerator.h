@@ -74,6 +74,7 @@ class RingDoorGenerator
   ~RingDoorGenerator();
 
 
+  double getTotalOuterWidth();
   void setInner(const double,const double,const double);
   void setOuter(const double,const double);
   /// Set the gap

@@ -179,7 +179,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   /*!
     Construct variables for R3RingDoors
     \param Control :: Control value
-    \param preName :: Prename (r3ring typically)
+    \param preName :: Prename (R3Ring typically)
   */
 {
   ELog::RegMethod RegA("R3RingVariables[F]","R3RingDoors");
@@ -188,8 +188,9 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 
   Control.addVariable(preName+"RingDoorWallID",1);
 
-  RGen.generateDoor(Control,preName+"RingDoor",2400.0);
-  return;
+  // For all sectors except N = 20, the ring door is at a distance of 2100 mm from the
+  // downstream side of the ratchet end wall [5].
+  RGen.generateDoor(Control,preName+"RingDoor",-210.0-RGen.getTotalOuterWidth()/2.0);
 }
 
 void

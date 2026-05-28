@@ -133,6 +133,15 @@ RingDoorGenerator::~RingDoorGenerator()
  */
 {}
 
+double
+RingDoorGenerator::getTotalOuterWidth(){
+  double w = outerWidth;
+  if(innerWidth > outerWidth){
+    w = innerWidth;
+  }
+  return w + 2.0*gapSpace;
+}
+
 void
 RingDoorGenerator::setInner(const double W,
 			    const double H,

@@ -376,7 +376,7 @@ R3Ring::createDoor(Simulation& System)
       doorPtr->addAllInsertCell
 	(getCell("OuterFlatEnd",doorActive % NInnerSurf));
 
-      doorPtr->createAll(System,*this,static_cast<long int>(doorActive+1));
+      doorPtr->createAll(System,*this,"ExitCentre"+std::to_string(doorActive));
 
     }
   return;
