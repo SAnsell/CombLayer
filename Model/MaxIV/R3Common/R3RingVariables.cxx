@@ -386,7 +386,6 @@ R3RingVariables(FuncDataBase& Control)
   // model.
   // The current BeamRadius has a value of 8392 cm (527 m circumference).
   Control.addVariable(preName+"BeamRadius",outerWallRadius-150.0); // [12]
-  ELog::EM << "Bulk shielding thick depends on the beamline. Currently, the same for all" << ELog::endWarn;
 
   Control.addVariable(preName+"Insulation",10.0);
   Control.addVariable(preName+"InsulationCut",400.0);
