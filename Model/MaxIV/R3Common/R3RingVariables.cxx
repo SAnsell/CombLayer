@@ -119,6 +119,13 @@
 // [13] Ratchet End Wall Detail for Sector 1 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_634.pdf
 // [14] Ratchet End Wall Detail for Sector 19 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_635.pdf
 // [15] Ratchet End Wall Detail for Sector 20 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_636.pdf
+//
+// Version History:
+// 1.1 - 2026-05-28
+//  - Revision of ring-wall dimensions.
+// 1.0 - 2026-05-01
+//  - Original version. Version number and date assigned in retrospect to a point in
+//    time before work on v1.1 started.
 
 namespace setVariable
 {
