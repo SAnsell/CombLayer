@@ -293,6 +293,11 @@ userBin::write(std::ostream& OX) const
             gamma = std::atan2(-linkY[0], linkY[1]) * toDeg;
         }
 
+      // Wrap all angles to [0°, 360°) for FLUKA conventions
+      if (alpha < 0.0) alpha += 360.0;
+      if (beta  < 0.0) beta  += 360.0;
+      if (gamma < 0.0) gamma += 360.0;
+
       // Transformation index: use |outputUnit| as the ROT-DEFIni index i.
       const int rotIdx = std::abs(outputUnit);
       const std::string rotName = "R" + std::to_string(rotIdx);
