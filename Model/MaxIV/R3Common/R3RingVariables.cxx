@@ -296,19 +296,82 @@ R3RingVariables(FuncDataBase& Control)
   // The derived value will be used below for OffsetCornerY since it is based on
   // explicitly given dimensions.
   const double outerWallRadius = 2705.9*icosagonSideLengthToIncircleRadius;
-  Control.addVariable(preName+"OffsetCornerY",
-    outerWallRadius-(icosagonRadius+icosagonWallThick));
-  Control.addVariable(preName+"OffsetCornerX",710.0);
+  const double offsetCornerY = outerWallRadius-(icosagonRadius+icosagonWallThick);
+  Control.addVariable(preName+"OffsetCornerY",offsetCornerY);
   // For the Outer Wall and Ratchet Wall dimensions, values that fit most of the
   // sectors (N = 2-18) [12] are chosen here. These dimensions are also used for
   // sectors 1, 19, and 20 although their wall design differs (see [13], [14],
   // and [15], respectively).
   // Due to the way the ring is constructed here, this choice also has an impact
   // on the beam radius.
-  Control.addVariable(preName+"OuterWall",110.0); // [12]
-  // Adjusted for (roughly) 600 mm distance to optical axis for a DanMAX-type beamline.
+  const double outerWallThick = 110.0; // [12]
+  Control.addVariable(preName+"OuterWall",outerWallThick);
   Control.addVariable(preName+"OuterWallCut",-30.0);
-  Control.addVariable(preName+"RatchetWall",160.0); // [12]
+  const double ratchetWallThickness = 160.0; // [12]
+  Control.addVariable(preName+"RatchetWall",ratchetWallThickness);
+  // The variable OffsetCornerX is the other parameter that determines the relative
+  // positioning of the Outer Wall with respect to the Icosagon Wall.
+  // Previously, the value was set to 716.0 without any reference.
+  // In the following, OffsetCornerX is calculated from known quantities to reproduce
+  // the correct dimensions of the Ratchet End Wall.
+  // The drawing below illustrates the geometry. OffsetCornerX is inferred from the
+  // condition that the line between P1 and P2 have an angle of 18 deg w.r.t. the
+  // baseline.
+  //
+  //                           P2
+  //                            *
+  //                             \
+  //                              \ Ratchet Wall Inner Length
+  //             P1                \
+  //              *                 |
+  //               \                |
+  //  OffsetCornerY \               | OffsetCornerY
+  //                 \______________|
+  //                   OffsetCornerX
+  //
+  // The ratchet wall inner length is also calculated from other known quantities.
+  // The drawing below illustrates the geometry. The asterisk notes the intersection
+  // between the ratchet end wall upstream side and the outer wall inside which 
+  // determines the ratchet wall inner length.
+  //
+  //                     Ratchet Wall Thickness
+  //                    ______________
+  //       Outer Wall Thickness |     |
+  //                    ________|     |  
+  //                            |     |
+  //  Ratchet Wall Inner Length |     |____  Ratchet Wall Step Length
+  //                            |          \
+  //                            *           \
+  //                             \           \
+  //                              \
+  //                               \    Outer Wall Thickness
+  const double icosagonAngle = M_PI*0.1;
+  const double sin18 = sin(icosagonAngle);
+  const double cos18 = cos(icosagonAngle);
+  const double tan18 = tan(icosagonAngle);
+  // Distance from inside of Outer Wall to Ratchet Wall step.
+  // 1500 mm + 600 mm [12]
+  const double ratchetWallStepToOuterWall = 210.0;
+  // For the given sectors, Ref. [5] shows a value of 1036 mm for this quantity for the
+  // majority of sectors (15). Two sectors have 1034 mm, and one sector has 1038 mm.
+  // The discrepancies are possibly rounding issues and negligibly small. Therefore,
+  // 1036 mm is used here.
+  const double ratchetWallStepLength = 103.6;
+  // See comment above on the derivation of this auxiliary quantity which is not given
+  // in the drawings to the knowledge of the author.
+  const double ratchetWallInnerLength = -(
+    tan18*(ratchetWallThickness+ratchetWallStepLength-outerWallThick*sin18)
+    -ratchetWallStepToOuterWall-outerWallThick*cos18
+  );
+  // See comment above on the derivation of OffsetCornerX.
+  const double offsetCornerX = (
+    offsetCornerY
+    +cos(icosagonAngle)*(ratchetWallInnerLength-offsetCornerY)
+    +tan18*sin(icosagonAngle)*(
+      ratchetWallInnerLength-offsetCornerY
+    )
+  )/tan18;
+  Control.addVariable(preName+"OffsetCornerX",offsetCornerX);
   // Adjust the beam radius such that it exits the Ratchet Wall at the correct position
   // for sectors N = 2-18 (see discussion above).
   //
