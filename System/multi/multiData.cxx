@@ -513,6 +513,30 @@ multiData<T>::operator*=(const multiData<T>& A)
 }
 
 template<typename T>
+template<typename U>
+multiData<T>&
+multiData<T>::operator*=(const multiData<U>& A)
+  /*!
+    Multiplication of other multiData [complex / double]
+    \param A :: Dataset to subtract from this
+  */
+{
+  if constexpr (std::is_arithmetic<T>::value &&
+		std::is_arithmetic<U>::value)
+    {
+      throwMatchCheck(A,"operator*=");
+      
+      std::transform(flatData.begin(),flatData.end(),
+		     A.flatData.begin(),flatData.begin(),
+		     [](const T& a,const U& b) ->T
+		     { return a*b; }
+		     );
+    }
+  
+  return *this;
+}
+
+template<typename T>
 multiData<T>&
 multiData<T>::operator/=(const multiData<T>& A)
   /*!
@@ -1797,6 +1821,7 @@ template multiData<double>::multiData(const size_t,const std::vector<float>&);
 
 template std::ostream& operator<<(std::ostream&,const multiData<int>&);
 template std::ostream& operator<<(std::ostream&,const multiData<float>&);
+template std::ostream& operator<<(std::ostream&,const multiData<double>&);
 template std::ostream& operator<<(std::ostream&,const multiData<std::string>&);
 template std::ostream& operator<<(std::ostream&,const multiData<size_t>&);
 template std::ostream& operator<<

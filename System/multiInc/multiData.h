@@ -1,9 +1,9 @@
 /********************************************************************* 
-  C++Azint : 2D-Detector to Q-Data processor
+  CombLayer : MCNP(X) Input builder
  
- * File:   include/multiDAta.h
+ * File:   include/multiData.h
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,7 +108,24 @@ class multiData
   multiData<T>& operator-=(const multiData<T>&);
   multiData<T>& operator*=(const multiData<T>&);
   multiData<T>& operator/=(const multiData<T>&);
-  
+
+  template<typename U>
+  multiData<T>& operator+=(const U&);
+  template<typename U>
+  multiData<T>& operator-=(const U&);
+  template<typename U>
+  multiData<T>& operator*=(const U&);
+    template<typename U>
+  multiData<T>& operator/=(const U&);
+  template<typename U>
+  multiData<T>& operator+=(const multiData<U>&);
+  template<typename U>
+  multiData<T>& operator-=(const multiData<U>&);
+  template<typename U>
+  multiData<T>& operator*=(const multiData<U>&);
+  template<typename U>
+  multiData<T>& operator/=(const multiData<U>&);
+
   bool operator==(const multiData<T>&) const;
   bool operator!=(const multiData<T>&) const;
   

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  C++Azint : 2D-Detector to Q-Data processor
+  CombLayer : MCNP(X) Input builder
  
- * File:   include/dataSlice.h
+ * File:   System/multiInc/dataSlice.h
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,10 +55,19 @@ struct sliceUnit
   sliceUnit operator[](std::size_t index) const
     {return{ dataPtr+index * *stride, stride+1 };  }
 
+  const T& conv() const { return *dataPtr; }
+  T& conv()  { return *dataPtr; }
+  
+  /// reference () operator (to get data member)
+  T& operator()() const { return *dataPtr; }
+  /// data member (non-const)
+  T& operator()() { return *dataPtr; }
+
   /// reference () operator (to get data member)
   operator const T& () const { return *dataPtr; }
   /// data member (non-const)
   operator T& () { return *dataPtr; }   
+
   /// point operator
   const T& operator->() const { return *dataPtr; }
 
