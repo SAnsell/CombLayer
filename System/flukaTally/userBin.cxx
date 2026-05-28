@@ -3,7 +3,7 @@
 
  * File:   flukaTally/userBin.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,83 +256,6 @@ userBin::write(std::ostream& OX) const
 
   if (hasLinkTransform)
     {
-      // --- ROT-DEFIni: encode the transformation world → local frame ---
-      //
-      // The link point's rotation matrix R = [linkX | linkY | linkZ]
-      // (columns are the local axes expressed in world coordinates).
-      // We need the inverse: R^T = Rx(-gamma) * Ry(-beta) * Rz(-alpha),
-      // using ZYX Euler angles extracted from R:
-      //   R = Rz(alpha) * Ry(beta) * Rx(gamma)
-      //
-      // FLUKA ROT-DEFIni with Theta=0:
-      //   j=3, Phi=alpha  →  Rz(-alpha)
-      //   j=2, Phi=beta   →  Ry(-beta)
-      //   j=1, Phi=gamma  →  Rx(-gamma)
-      // Three cards with the same SDUM are composed left-to-right
-      // (later card is outermost), giving: Rx(-gamma)*Ry(-beta)*Rz(-alpha)=R^T.
-      // The translation (-linkOrigin) is carried by the first card.
-
-      const double toDeg = 180.0 / M_PI;
-      const double cosB = std::sqrt(linkX[0]*linkX[0] + linkX[1]*linkX[1]);
-
-      double alpha, beta, gamma;
-      beta = std::atan2(-linkX[2], cosB) * toDeg;
-
-      if (cosB > 1e-10)
-        {
-          alpha = std::atan2(linkX[1], linkX[0]) * toDeg;
-          gamma = std::atan2(linkY[2], linkZ[2]) * toDeg;
-        }
-      else
-        {
-          // Gimbal lock: beta = ±90°.  Set alpha = 0, derive gamma from Y.
-          alpha = 0.0;
-          if (linkX[2] < 0)   // beta = +90°
-            gamma = std::atan2(linkY[0], linkY[1]) * toDeg;
-          else                // beta = -90°
-            gamma = std::atan2(-linkY[0], linkY[1]) * toDeg;
-        }
-
-      // Wrap all angles to [0°, 360°) for FLUKA conventions
-      if (alpha < 0.0) alpha += 360.0;
-      if (beta  < 0.0) beta  += 360.0;
-      if (gamma < 0.0) gamma += 360.0;
-
-      // Transformation index: use |outputUnit| as the ROT-DEFIni index i.
-      const int rotIdx = std::abs(outputUnit);
-      const std::string rotName = "R" + std::to_string(rotIdx);
-
-      // Card 1: j=3 (z-rotation by alpha), carry the translation -linkOrigin.
-      cx << "ROT-DEFI "
-         << (3 + rotIdx * 1000) << " "
-         << 0.0 << " " << alpha << " "
-         << (-linkOrigin) << " "
-         << rotName;
-      StrFunc::writeFLUKA(cx.str(), OX);
-
-      // Card 2: j=2 (y-rotation by beta), no translation.
-      if (std::abs(beta)>Geometry::zeroTol) { // TODO: also check translation
-	cx.str("");
-	cx << "ROT-DEFI "
-	   << (2 + rotIdx * 1000) << " "
-	   << 0.0 << " " << beta << " "
-	   << 0.0 << " " << 0.0 << " " << 0.0 << " "
-	   << rotName;
-	StrFunc::writeFLUKA(cx.str(), OX);
-      }
-
-      // Card 3: j=1 (x-rotation by gamma), no translation.
-      if (std::abs(gamma)>Geometry::zeroTol) { // TODO: also check translation
-	cx.str("");
-	cx << "ROT-DEFI "
-	   << (1 + rotIdx * 1000) << " "
-	   << 0.0 << " " << gamma << " "
-	   << 0.0 << " " << 0.0 << " " << 0.0 << " "
-	   << rotName;
-	StrFunc::writeFLUKA(cx.str(), OX);
-      }
-
-      // --- USRBIN: extents in the link point's local frame ---
       const Geometry::Vec3D localMin = minCoord - linkOrigin;
       const Geometry::Vec3D localMax = maxCoord - linkOrigin;
 
