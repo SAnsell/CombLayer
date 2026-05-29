@@ -77,6 +77,7 @@ class RingDoorGenerator
   double getTotalOuterWidth();
   void setInner(const double,const double,const double);
   void setOuter(const double,const double);
+  void setUnderStep(const double, const double, const double);
   /// Set the gap
   void setGap(const double G) { gapSpace=G; }
   /// Set the material

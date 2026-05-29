@@ -175,6 +175,16 @@ RingDoorGenerator::setOuter(const double W,
   return;
 }
 
+void
+RingDoorGenerator::setUnderStep(
+          const double width,
+			    const double height,
+			    const double xSep)
+{
+  underStepWidth = width;
+  underStepHeight = height;
+  underStepXSep = xSep;
+}
 				  
 void
 RingDoorGenerator::generateDoor(FuncDataBase& Control,

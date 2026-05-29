@@ -119,6 +119,9 @@
 // [13] Ratchet End Wall Detail for Sector 1 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_634.pdf
 // [14] Ratchet End Wall Detail for Sector 19 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_635.pdf
 // [15] Ratchet End Wall Detail for Sector 20 : {CDDIR}/08 K_20-6 Sektioner/K_20-6_636.pdf
+// [16] R3 Ring Concrete Doors Overview: {CDDIR}/09 K_20-6 Betongblock och betongdörrar/K_20-6_1000.pdf
+// [17] R3 Ring Concrete Door BD12: {CDDIR}/09 K_20-6 Betongblock och betongdörrar/K_20-6_1001.pdf
+// [18] R3 Ring Concrete Door BD12: {CDDIR}/09 K_20-6 Betongblock och betongdörrar/K_20-6_1002.pdf
 //
 // Version History:
 // 1.1 - 2026-05-28
@@ -188,6 +191,13 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
 
   Control.addVariable(preName+"RingDoorWallID",1);
 
+  // There are two types of R3 ring doors, BD12 (all sectors except N = 1, 2, and 20)
+  // and BD13 (sectors 1, 2, and 20) [16].
+  // The given dimensions are valid for both types (see [17] and [18]) except for the
+  // thickness. Using the smaller thickness from [17].
+  RGen.setOuter(238.0, 220.0);
+  RGen.setInner(218.0, 205.0, 55.0);
+  RGen.setUnderStep(47.0, 7.0, 104.0); // [17]
   // For all sectors except N = 20, the ring door is at a distance of 2100 mm from the
   // downstream side of the ratchet end wall [5].
   RGen.generateDoor(Control,preName+"RingDoor",-210.0-RGen.getTotalOuterWidth()/2.0);
