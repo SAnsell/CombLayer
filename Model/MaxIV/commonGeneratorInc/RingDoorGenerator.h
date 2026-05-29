@@ -80,6 +80,10 @@ class RingDoorGenerator
   void setUnderStep(const double, const double, const double);
   /// Set the gap
   void setGap(const double G) { gapSpace=G; }
+  void setTopGaps(const double inner, const double outer){
+    innerTopGap = inner;
+    outerTopGap = outer;
+  }
   /// Set the material
   void setDoorMat(const std::string& M) { doorMat=M; }
 

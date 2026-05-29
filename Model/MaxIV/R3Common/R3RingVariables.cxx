@@ -122,6 +122,7 @@
 // [16] R3 Ring Concrete Doors Overview: {CDDIR}/09 K_20-6 Betongblock och betongdörrar/K_20-6_1000.pdf
 // [17] R3 Ring Concrete Door BD12: {CDDIR}/09 K_20-6 Betongblock och betongdörrar/K_20-6_1001.pdf
 // [18] R3 Ring Concrete Door BD12: {CDDIR}/09 K_20-6 Betongblock och betongdörrar/K_20-6_1002.pdf
+// [19] R3 Ring Concrete Doors Cross Section: {CDDIR}/08 K_20-6 Sektioner/K_20-6_619.pdf
 //
 // Version History:
 // 1.1 - 2026-05-28
@@ -197,6 +198,8 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   // thickness. Using the smaller thickness from [17].
   RGen.setOuter(238.0, 220.0);
   RGen.setInner(218.0, 205.0, 55.0);
+  // From comparison of [17] and [19].
+  RGen.setTopGaps(5.0, 5.0);
   RGen.setUnderStep(47.0, 7.0, 104.0); // [17]
   // For all sectors except N = 20, the ring door is at a distance of 2100 mm from the
   // downstream side of the ratchet end wall [5].
