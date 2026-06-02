@@ -215,6 +215,7 @@
 #include "WhiteBeamStop.h"
 #include "CM1BeamSplitter.h"
 #include "CM2Crystal.h"
+#include "MonoBlockXstals.h"
 
 #include "makeSingleItem.h"
 
@@ -265,18 +266,18 @@ makeSingleItem::build(Simulation& System,
 	"Scrapper","TWCavity","Bellow", "LeadPipe","OffsetFlangePipe",
 	"RectanglePipe","UTubePipe","VacuumPipe","WindowPipe",
 	"HalfElectronPipe","HeimdalCave","LegoBrick",
-	"MultiPipe","PipeTube","PortTube", "PowerFilter", "ProximityShielding", "BlankTube","ButtonBPM",
-	"PrismaChamber","uVac", "UndVac","UndulatorVacuum",
-	"IonPTube","IonGauge","CollTube",
-	"NBeamStop","MagTube","TriggerTube",
+	"MultiPipe","PipeTube","PortTube", "PowerFilter", "ProximityShielding", "BlankTube",
+  "ButtonBPM","PrismaChamber","uVac", "UndVac","UndulatorVacuum","IonPTube",
+  "IonGauge","CollTube","NBeamStop","MagTube","TriggerTube",
 	"BremTube","HPJaws","BoxJaws","HPCombine","ViewTube",
 	"DiffPumpXIADP03","CRLTube","ExperimentalHutch",
 	"ConnectorTube","LocalShield","FlangeDome","DomeConnector",
 	"MonoShutter","MonoShutterR3","MonoSlitsJJ","RoundMonoShutter","TubeDetBox",
   "TDCBeamDump","GuideUnit","PlateUnit","BenderUnit","MLMdetail",
-        "ConcreteDoor", "IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
-	"M1detail","M1Full", "MovableSafetyMask", "HeatAbsorberToyama",
-	"HeatAbsorberR3Toyama", "FixedMaskHybrid", "SqrShield", "Help","help"
+  "ConcreteDoor","IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
+	"M1detail","M1Full","MovableSafetyMask","HeatAbsorberToyama",
+	"HeatAbsorberR3Toyama","FixedMaskHybrid","SqrShield","MonoBlockXstals","Help",
+  "help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -2042,6 +2043,18 @@ makeSingleItem::build(Simulation& System,
 	blockZone.createAll(System,World::masterOrigin(),0);
 
 	return;
+      }
+
+    if (item == "MonoBlockXstals")
+      {
+        const auto monoBlockXstals = std::make_shared<xraySystem::MonoBlockXstals>(
+          "MonoBlockXstals");
+        OR.addObject(monoBlockXstals);
+
+        monoBlockXstals->addInsertCell(voidCell);
+        monoBlockXstals->createAll(System,World::masterOrigin(),0);
+
+        return;
       }
 
     if (item == "Cylinder") {
