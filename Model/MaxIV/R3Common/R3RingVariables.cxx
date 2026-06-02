@@ -442,8 +442,8 @@ R3RingVariables(FuncDataBase& Control)
   // See comment above on the derivation of OffsetCornerX.
   const double offsetCornerX = (
     offsetCornerY
-    +cos(icosagonAngle)*(ratchetWallInnerLength-offsetCornerY)
-    +tan18*sin(icosagonAngle)*(
+    +cos18*(ratchetWallInnerLength-offsetCornerY)
+    +tan18*sin18*(
       ratchetWallInnerLength-offsetCornerY
     )
   )/tan18;
