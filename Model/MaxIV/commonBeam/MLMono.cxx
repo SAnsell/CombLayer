@@ -335,6 +335,17 @@ MLMono::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MLMono","createObjects");
 
+  HeadRule disasterMaskAFrontHR = (
+    fabs(disasterMaskAYStep) > Geometry::zeroTol ?
+    ModelSupport::getHeadRule(SMap,buildIndex,"111") :
+    ModelSupport::getHeadRule(SMap,buildIndex,"201")
+  );
+  HeadRule frontAHR = (
+    disasterMaskAYStep < -Geometry::zeroTol ?
+    ModelSupport::getHeadRule(SMap,buildIndex,"111") :
+    ModelSupport::getHeadRule(SMap,buildIndex,"201")
+  );
+
   HeadRule HR;
   // xstal
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"101 -102 103 -104 105 -106");
@@ -359,16 +370,18 @@ MLMono::createObjects(Simulation& System)
   makeCell("RodA1",System,cellIndex++,baseAMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-317 105 -106");
   makeCell("RodA2",System,cellIndex++,baseAMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -101 103 -104 105 -106 307 317 (112:113)");
-  makeCell("SideAVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 103 -104 105 -106 307 317 (112:113)");
+  makeCell("SideAVoid",System,cellIndex++,0,0.0,HR*frontAHR);
 
   makeCell("DisasterMaskA",System,cellIndex++,disasterMaskAMat,0.0,
     ModelSupport::getHeadRule(
-      SMap,buildIndex,"201 -112 -122 -113 -104 105 -106 307"
-    )
+      SMap,buildIndex,"-112 -122 -113 -104 105 -106 307"
+    )*disasterMaskAFrontHR
   );
   makeCell("DisasterMaskACorner",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"201 122 -104 105 -106"));
+    ModelSupport::getHeadRule(SMap,buildIndex,"122 -104 105 -106")
+    *disasterMaskAFrontHR
+  );
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 105 -106");
@@ -378,8 +391,9 @@ MLMono::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -202 103 -104 105 -106 327 337");
   makeCell("SideAVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 213 -104 205 -206");
-  addOuterSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-202 213 -104 205 -206");
+  addOuterSurf(HR*frontAHR);
+
 
 
   // Currently the second Mirror is a copy of the above but we don't yet have
