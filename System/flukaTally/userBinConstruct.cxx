@@ -92,6 +92,48 @@ userBinConstruct::createTally(SimFLUKA& System,
   return;
 }
 
+void
+userBinConstruct::createTally(SimFLUKA& System,
+			      const std::string& name,
+			      const std::string& PType,
+			      const int fortranTape,
+			      const Geometry::Vec3D& APt,
+			      const Geometry::Vec3D& BPt,
+			      const std::array<size_t,3>& MPts,
+			      const Geometry::Vec3D& linkOrigin,
+			      const Geometry::Vec3D& linkX,
+			      const Geometry::Vec3D& linkY,
+			      const Geometry::Vec3D& linkZ)
+  /*!
+    Create a mesh tally with a link-point transform so that
+    ROT-DEFIni / ROTPRBIN cards are written to align the USRBIN mesh
+    with the link point's local frame.
+    \param System :: SimFLUKA to add tallies
+    \param name :: tally name
+    \param PType :: processed particle type
+    \param fortranTape :: output stream
+    \param APt :: Lower point (world frame, origin at link point)
+    \param BPt :: Upper point (world frame, origin at link point)
+    \param MPts :: Number of bins
+    \param linkOrigin :: Link point world position
+    \param linkX :: Link point X axis
+    \param linkY :: Link point Y axis
+    \param linkZ :: Link point Z axis
+  */
+{
+  ELog::RegMethod RegA("userBinConstruct","createTally(linkTransform)");
+
+  userBin UB(fortranTape,fortranTape);
+  UB.setKeyName(name);
+  UB.setParticle(PType);
+  UB.setCoordinates(APt,BPt);
+  UB.setIndex(MPts);
+  UB.setLinkTransform(linkOrigin,linkX,linkY,linkZ);
+  System.addTally(UB);
+
+  return;
+}
+
 std::string
 userBinConstruct::convertTallyType(const std::string& TType)
   /*!
@@ -148,12 +190,21 @@ userBinConstruct::processMesh(SimFLUKA& System,
   std::array<size_t,3> Nxyz;
 
   if (PType=="object")
-    mainSystem::meshConstruct::getObjectMesh
-      (System,IParam,"tally",Index,4,APt,BPt,Nxyz);
-  else if (PType=="free")
-    mainSystem::meshConstruct::getFreeMesh(IParam,"tally",Index,4,APt,BPt,Nxyz);
-
-  userBinConstruct::createTally(System,tallyName,tallyParticle,-nextId,APt,BPt,Nxyz);
+    {
+      Geometry::Vec3D linkOrigin, linkX, linkY, linkZ;
+      mainSystem::meshConstruct::getObjectMesh
+        (System,IParam,"tally",Index,4,APt,BPt,Nxyz,
+	 linkOrigin,linkX,linkY,linkZ);
+      userBinConstruct::createTally(System,tallyName,tallyParticle,-nextId,
+				    APt,BPt,Nxyz,
+				    linkOrigin,linkX,linkY,linkZ);
+    }
+  else
+    {
+      if (PType=="free")
+        mainSystem::meshConstruct::getFreeMesh(IParam,"tally",Index,4,APt,BPt,Nxyz);
+      userBinConstruct::createTally(System,tallyName,tallyParticle,-nextId,APt,BPt,Nxyz);
+    }
 
   return;
 }

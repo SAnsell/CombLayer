@@ -38,11 +38,17 @@ class userBin : public flukaTally
 
   int meshType;                     ///< type / 10 / 0 for mesh
   std::string particle;             ///< particle/type
-    
+
   std::array<size_t,3> Pts;      ///< N-Points
-  Geometry::Vec3D minCoord;      ///< Min coordinate
-  Geometry::Vec3D maxCoord;      ///< Max coordinate
-  
+  Geometry::Vec3D minCoord;      ///< Min coordinate (world frame)
+  Geometry::Vec3D maxCoord;      ///< Max coordinate (world frame)
+
+  bool hasLinkTransform;         ///< Whether to write ROT-DEFIni/ROTPRBIN
+  Geometry::Vec3D linkOrigin;    ///< Link point world position
+  Geometry::Vec3D linkX;         ///< Link point X axis (world frame)
+  Geometry::Vec3D linkY;         ///< Link point Y axis (world frame)
+  Geometry::Vec3D linkZ;         ///< Link point Z axis (world frame)
+
   void writeMesh(std::ostream&) const;
   
  public:
@@ -62,6 +68,10 @@ class userBin : public flukaTally
   
   void setParticle(const std::string&);
   void setDoseType(const std::string&,const std::string&) override;
+  void setLinkTransform(const Geometry::Vec3D&,
+			const Geometry::Vec3D&,
+			const Geometry::Vec3D&,
+			const Geometry::Vec3D&);
  
   void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);

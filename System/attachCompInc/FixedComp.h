@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   attachCompInc/FixedComp.h
  *
  * Copyright (c) 2004-2023 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef attachSystem_FixedComp_h
@@ -37,7 +37,7 @@ class HeadRule;
 namespace attachSystem
 {
   class FixedGroup;
-  
+
 /*!
   \class FixedComp
   \version 1.0
@@ -46,43 +46,43 @@ namespace attachSystem
   \brief Component that is at a fixed position
 */
 
-class FixedComp  
+class FixedComp
 {
  private:
 
   HeadRule getUSLink(const size_t) const;
   HeadRule getUSLinkComplement(const size_t) const;
   int getUSLinkSurf(const size_t) const;
-  
+
  protected:
-  
+
   const std::string keyName;       ///< Key Name
   ModelSupport::surfRegister SMap; ///< Surface register
   const int buildIndex;            ///< Index of surface offset
-  int cellIndex;                   ///< Cell index    
+  int cellIndex;                   ///< Cell index
 
   std::map<std::string,size_t> keyMap; ///< Keynames to linkPt index
 
-  Geometry::Vec3D X;            ///< X-coordinate 
-  Geometry::Vec3D Y;            ///< Y-coordinate 
-  Geometry::Vec3D Z;            ///< Z-coordinate 
-  Geometry::Vec3D Origin;       ///< Origin  
+  Geometry::Vec3D X;            ///< X-coordinate
+  Geometry::Vec3D Y;            ///< Y-coordinate
+  Geometry::Vec3D Z;            ///< Z-coordinate
+  Geometry::Vec3D Origin;       ///< Origin
 
   Geometry::Vec3D orientateAxis; ///< Axis for reorientation
-  long int primeAxis;            ///< X/Y/Z Axis for reorientation 
+  long int primeAxis;            ///< X/Y/Z Axis for reorientation
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
-  
+
   void makeOrthogonal();
 
   const HeadRule& getUSMainRule(const size_t) const;
   const HeadRule& getUSCommonRule(const size_t) const;
-  
+
   void setUSLinkComplement(const size_t,const FixedComp&,const size_t);
   void setUSLinkCopy(const size_t,const FixedComp&,const size_t);
 
   //  virtual std::string getLinkString(const long int) const;
-  
+
  public:
 
   static void computeZOffPlane(const Geometry::Vec3D&,
@@ -101,7 +101,7 @@ class FixedComp
   FixedComp& operator=(const FixedComp&);
   virtual ~FixedComp() {}     ///< Destructor
 
-  const LinkUnit& operator[](const size_t) const; 
+  const LinkUnit& operator[](const size_t) const;
 
   /// have cells been built
   bool hasActiveCells() const
@@ -109,7 +109,7 @@ class FixedComp
 
   void reOrientate();
   void reOrientate(const size_t,const Geometry::Vec3D&);
-  
+
   // Operator Set:
   virtual void createUnitVector(const FixedComp&);
   virtual void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
@@ -123,7 +123,7 @@ class FixedComp
   virtual void createUnitVector(const Geometry::Vec3D&,
 				const Geometry::Vec3D&,
 				const Geometry::Vec3D&);
-  
+
   virtual void createUnitVector(const Geometry::Vec3D&,
 				const Geometry::Vec3D&,
 				const Geometry::Vec3D&,
@@ -148,7 +148,7 @@ class FixedComp
 
   void reverseX();
   void reverseZ();
-  
+
   void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setLineConnect(const size_t,const Geometry::Vec3D&,
 		      const Geometry::Vec3D&);
@@ -189,17 +189,17 @@ class FixedComp
 
   /// Get keyname
   const std::string& getKeyName() const { return keyName; }
-  /// Access X
-  const Geometry::Vec3D& getX() const { return X; }  
+  /// Access X direction
+  const Geometry::Vec3D& getX() const { return X; }
   /// Access Y direction
-  const Geometry::Vec3D& getY() const { return Y; }  
+  const Geometry::Vec3D& getY() const { return Y; }
   /// Access Z direction
   const Geometry::Vec3D& getZ() const { return Z; }
   /// Access centre
-  virtual const Geometry::Vec3D& getCentre() const  { return Origin; }  
+  virtual const Geometry::Vec3D& getCentre() const  { return Origin; }
   virtual int getExitWindow(const long int,std::vector<int>&) const;
   virtual const Geometry::Vec3D& getExit() const;
-  
+
   void nameSideIndex(const size_t,const std::string&);
   void nameSideIndex(const std::map<std::string,size_t>&);
   void copyLinkObjects(const FixedComp&);
@@ -210,12 +210,12 @@ class FixedComp
   const LinkUnit& getSignedRefLU(const long int)  const;
   const LinkUnit& getLU(const size_t)  const;
   LinkUnit& getLU(const size_t);
-  
+
   LinkUnit getSignedLU(const long int) const;
   bool hasSideIndex(const std::string&) const;
   long int getSideIndex(const std::string&) const;
   std::string getSideName(const long int) const;
-  
+
   std::vector<Geometry::Vec3D> getAllLinkPts() const;
 
   bool hasLinkPt(const long int) const;
@@ -223,15 +223,15 @@ class FixedComp
 
   bool hasLinkSurf(const long int) const;
   bool hasLinkSurf(const std::string&) const;
-  
+
   Geometry::Vec3D getLinkPt(const std::string&) const;
   Geometry::Vec3D getLinkAxis(const std::string&) const;
   int getLinkSurf(const std::string&) const;
-  
+
   Geometry::Vec3D getLinkPt(const long int) const;
   Geometry::Vec3D getLinkAxis(const long int) const;
   Geometry::Vec3D getLinkZAxis(const long int) const;
-  
+
 
   double getLinkDistance(const std::string&,const std::string&) const;
   double getLinkDistance(const long int,const long int) const;
@@ -247,7 +247,7 @@ class FixedComp
 
   HeadRule getCommonRule(const std::string&) const;
   HeadRule getCommonRule(const long int) const;
-  
+
   long int findLinkAxis(const Geometry::Vec3D&) const;
 
   /// access next cell if need
@@ -255,7 +255,7 @@ class FixedComp
   /// access next cell as needed
   int getNextCell() const { return cellIndex; }
 
-  
+
   void calcLinkAxis(const long int,Geometry::Vec3D&,
 		    Geometry::Vec3D&,Geometry::Vec3D&) const;
 
@@ -285,7 +285,7 @@ class FixedComp
   std::vector<int> splitObjectAbsolute
     (Simulation&,const int,const int,
      const Geometry::Vec3D&,const Geometry::Vec3D&);
-  
+
   std::vector<int> splitObjectAbsolute
     (Simulation&,const int,const int, const std::vector<Geometry::Vec3D>&,
      const std::vector<Geometry::Vec3D>&);
@@ -306,4 +306,3 @@ class FixedComp
 }
 
 #endif
- 

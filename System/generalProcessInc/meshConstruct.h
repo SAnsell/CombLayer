@@ -55,6 +55,12 @@ namespace meshConstruct
 		      const std::string&,const std::string&,
 		      Geometry::Vec3D&,Geometry::Vec3D&) ;
 
+   void calcXYZ(const objectGroups&,
+		      const std::string&,const std::string&,
+		      Geometry::Vec3D&,Geometry::Vec3D&,
+		      Geometry::Vec3D&,
+		      Geometry::Vec3D&,Geometry::Vec3D&,Geometry::Vec3D&);
+
    void getObjectMesh(const objectGroups&,
 			    const mainSystem::inputParam&,
 			    const std::string&,
@@ -62,6 +68,16 @@ namespace meshConstruct
 			    Geometry::Vec3D&,
 			    Geometry::Vec3D&,
 			    std::array<size_t,3>&);
+
+   void getObjectMesh(const objectGroups&,
+			    const mainSystem::inputParam&,
+			    const std::string&,
+			    const size_t,const size_t,
+			    Geometry::Vec3D&,
+			    Geometry::Vec3D&,
+			    std::array<size_t,3>&,
+			    Geometry::Vec3D&,
+			    Geometry::Vec3D&,Geometry::Vec3D&,Geometry::Vec3D&);
 
    void getFreeMesh(const mainSystem::inputParam&,
 			  const std::string&,
