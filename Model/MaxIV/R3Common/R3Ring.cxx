@@ -70,6 +70,7 @@
 
 #include "RingDoor.h"
 #include "R3Ring.h"
+#include "R3RingWallDuct.h"
 
 namespace xraySystem
 {
@@ -131,7 +132,19 @@ R3Ring::populate(const FuncDataBase& Control)
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
-  return;
+
+  nDucts=Control.EvalVar<int>(keyName+"NDucts");
+  outerWallDucts=std::vector<R3RingWallDuct>(nDucts);
+
+  std::string ductName;
+  for(size_t i = 0; i < outerWallDucts.size(); ++i){
+    ductName = keyName+"OuterWallDuct"+std::to_string(i);
+    outerWallDucts[i].distFromRatchetWall=Control.EvalVar<double>(
+      ductName+"DistFromRatchetWall"
+    );
+    outerWallDucts[i].floorHeight=Control.EvalVar<double>(ductName+"FloorHeight");
+    outerWallDucts[i].holeDiameter=Control.EvalVar<double>(ductName+"HoleDiameter");
+  }
 }
 
 void
@@ -200,6 +213,7 @@ R3Ring::createSurfaces()
   for(size_t i=0;i<NInnerSurf;i++)
     {
       const size_t li((!i) ? NInnerSurf-1 : i-1);
+      const size_t ni(i==NInnerSurf-1 ? 0 : i+1);
       const Geometry::Vec3D& APt(outerPts[i]);
       const Geometry::Vec3D& XX(outerX[li]);
       const Geometry::Vec3D& YY(outerY[i]);
@@ -207,6 +221,19 @@ R3Ring::createSurfaces()
 
       SurfMap::makePlane("BeamInner",SMap,surfN+1,APt,XX);
       SurfMap::makePlane("#FlatInner",SMap,surfN+3,APt,YY);
+
+      for(size_t j = 0; j < outerWallDucts.size(); ++j){
+        ModelSupport::buildCylinder(
+          SMap,
+          buildIndex+2200+i*(outerWallDucts.size()*10)+j*10+7,
+          (
+            outerPts[ni]
+            -outerX[i]*outerWallDucts[j].distFromRatchetWall
+            +Z*outerWallDucts[j].floorHeight
+          ),
+          outerY[i],outerWallDucts[j].holeDiameter/2.0
+        );
+      }
 
       // outer wall
       SurfMap::makePlane("BeamOuter",SMap,surfN+1001,APt+XX*ratchetWall,XX);
@@ -309,9 +336,18 @@ R3Ring::createObjects(Simulation& System)
       makeCell("Roof",System,cellIndex++,0,0.0,HR*roofInsulationHR);
       makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofTopHR);
 
+      std::string ductHRStr = "";
+      for(size_t j = 0; j < outerWallDucts.size(); ++j){
+        ductHRStr += " ";
+        ductHRStr += std::to_string(j*10+7);
+      }
+      HeadRule ductHR=ModelSupport::getHeadRule(
+        SMap,buildIndex+2200+(i == 0 ? NInnerSurf-1 : i-1)*outerWallDucts.size()*10,ductHRStr
+      );
+
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 3M -1008M -1002 -1503M");
-      makeCell("InnerFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+      makeCell("InnerFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR*ductHR);
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 1008M -1009M  -1002 -1508M");
@@ -323,11 +359,12 @@ R3Ring::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 1009M -1003M -1002 -1503M");
-      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR*ductHR);
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1002 3M -1003M -1 -1503M");
-      makeCell("OuterFlatEnd",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+
+      makeCell("OuterFlatEnd",System,cellIndex++,wallMat,0.0,HR*fullLayerHR*ductHR);
 
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,"1 -1001 -1003M  3");

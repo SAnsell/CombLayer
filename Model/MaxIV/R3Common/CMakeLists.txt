@@ -69,4 +69,5 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/R3FrontEndToyamaDanMAX.h
   ${tarINC}/R3FrontEndFMBB.h
   ${tarINC}/R3Ring.h
+  ${tarINC}/R3RingWallDuct.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
