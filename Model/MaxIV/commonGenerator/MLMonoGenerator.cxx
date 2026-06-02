@@ -66,8 +66,13 @@ MLMonoGenerator::MLMonoGenerator() :
   parked(1), // crystals are in the parked position by default
   parkedOffset(11.6), // [1]: can be anything from 116 to 698 mm
   parkedGap(0.6), // [1]: the gap is between 0.26 and 0.6 cm -> take the worst case
+  disasterMaskACornerSideLength(0.1),disasterMaskALength(1.15),
+  disasterMaskAWidth(1.5),disasterMaskAYStep(0.0),
+  disasterMaskBCornerSideLength(0.1),disasterMaskBLength(1.1),
+  disasterMaskBWidth(1.5),disasterMaskBYStep(0.0),
   mirrorAMat("Silicon300K"),mirrorBMat("Silicon300K"),
-  baseAMat("Copper"),baseBMat("Copper")
+  baseAMat("Copper"),baseBMat("Copper"),
+  disasterMaskAMat("Tungsten"),disasterMaskBMat("Tungsten")
   /*!
     Constructor and defaults
   */
@@ -134,12 +139,25 @@ MLMonoGenerator::generateMono(FuncDataBase& Control,
   Control.addVariable(keyName+"ParkedOffset",parkedOffset);
   Control.addVariable(keyName+"ParkedGap",parkedGap);
 
+  Control.addVariable(keyName+"DisasterMaskACornerSideLength",
+    disasterMaskACornerSideLength);
+  Control.addVariable(keyName+"DisasterMaskALength",disasterMaskALength);
+  Control.addVariable(keyName+"DisasterMaskAWidth",disasterMaskAWidth);
+  Control.addVariable(keyName+"DisasterMaskAYStep",disasterMaskAYStep);
+  Control.addVariable(keyName+"DisasterMaskBCornerSideLength",
+    disasterMaskBCornerSideLength);
+  Control.addVariable(keyName+"DisasterMaskBLength",disasterMaskBLength);
+  Control.addVariable(keyName+"DisasterMaskBWidth",disasterMaskBWidth);
+  Control.addVariable(keyName+"DisasterMaskBYStep",disasterMaskBYStep);
+
   Control.addVariable(keyName+"MirrorAMat",mirrorAMat);
   Control.addVariable(keyName+"MirrorBMat",mirrorBMat);
 
   Control.addVariable(keyName+"BaseAMat",baseAMat);
   Control.addVariable(keyName+"BaseBMat",baseBMat);
 
+  Control.addVariable(keyName+"DisasterMaskAMat",disasterMaskAMat);
+  Control.addVariable(keyName+"DisasterMaskBMat",disasterMaskBMat);
 
   return;
 

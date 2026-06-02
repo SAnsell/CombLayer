@@ -78,10 +78,21 @@ class MLMono :
   double parkedOffset;         ///< y-Offset between front surfaces of crystals in parked position
   double parkedGap;             ///< x-Gap between crystals in parked position
 
+  double disasterMaskAWidth;   ///< Mask width
+  double disasterMaskALength;  ///< Mask length
+  double disasterMaskACornerSideLength;  ///< Mask corner side length
+  double disasterMaskAYStep;   ///< Mask y step (if 0, aligned with support front)
+  double disasterMaskBWidth;   ///< Mask width
+  double disasterMaskBLength;  ///< Mask length
+  double disasterMaskBCornerSideLength;  ///< Mask corner side length
+  double disasterMaskBYStep;   ///< Mask y step (if 0, aligned with support front)
+
   int mirrorAMat;             ///< XStal material
   int mirrorBMat;             ///< XStal material
   int baseAMat;               ///< Base material
-  int baseBMat;              ///< Base material
+  int baseBMat;               ///< Base material
+  int disasterMaskAMat;       ///< Disaster Mask material
+  int disasterMaskBMat;       ///< Disaster Mask material
 
   // Functions:
 

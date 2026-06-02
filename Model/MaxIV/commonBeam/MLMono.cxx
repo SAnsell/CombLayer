@@ -59,6 +59,10 @@
 #include "SurfMap.h"
 #include "ContainedComp.h"
 #include "MLMono.h"
+#include "BaseModVisit.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 
 
 namespace xraySystem
@@ -127,7 +131,6 @@ MLMono::populate(const FuncDataBase& Control)
   supportAPillar=Control.EvalVar<double>(keyName+"SupportAPillar");
   supportAPillarStep=Control.EvalVar<double>(keyName+"SupportAPillarStep");
 
-
   supportBGap=Control.EvalVar<double>(keyName+"SupportBGap");
   supportBExtra=Control.EvalVar<double>(keyName+"SupportBExtra");
   supportBBackThick=Control.EvalVar<double>(keyName+"SupportBBackThick");
@@ -136,6 +139,16 @@ MLMono::populate(const FuncDataBase& Control)
   supportBPillar=Control.EvalVar<double>(keyName+"SupportBPillar");
   supportBPillarStep=Control.EvalVar<double>(keyName+"SupportBPillarStep");
 
+  disasterMaskAWidth=Control.EvalVar<double>(keyName+"DisasterMaskAWidth");
+  disasterMaskALength=Control.EvalVar<double>(keyName+"DisasterMaskALength");
+  disasterMaskACornerSideLength=Control.EvalVar<double>(
+    keyName+"DisasterMaskACornerSideLength");
+  disasterMaskAYStep=Control.EvalVar<double>(keyName+"DisasterMaskAYStep");
+  disasterMaskBWidth=Control.EvalVar<double>(keyName+"DisasterMaskBWidth");
+  disasterMaskBLength=Control.EvalVar<double>(keyName+"DisasterMaskBLength");
+  disasterMaskBCornerSideLength=Control.EvalVar<double>(
+    keyName+"DisasterMaskBCornerSideLength");
+  disasterMaskBYStep=Control.EvalVar<double>(keyName+"DisasterMaskBYStep");
 
   mirrorAMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorAMat");
   mirrorBMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorBMat");
@@ -143,6 +156,8 @@ MLMono::populate(const FuncDataBase& Control)
   baseAMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseAMat");
   baseBMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseBMat");
 
+  disasterMaskAMat=ModelSupport::EvalMat<int>(Control,keyName+"DisasterMaskAMat");
+  disasterMaskBMat=ModelSupport::EvalMat<int>(Control,keyName+"DisasterMaskBMat");
 
   return;
 }
@@ -176,6 +191,8 @@ MLMono::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+102,Origin+PY*(lengthA/2.0),PY);
   ModelSupport::buildPlane(SMap,buildIndex+103,Origin-PX*widthA,PX);
   ModelSupport::buildPlane(SMap,buildIndex+104,Origin,PX);
+  ModelSupport::buildShiftedPlane(
+    SMap,buildIndex+113,buildIndex+104,-PX,disasterMaskAWidth);
   ModelSupport::buildPlane(SMap,buildIndex+105,Origin-PZ*(heightA/2.0),PZ);
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+PZ*(heightA/2.0),PZ);
 
@@ -183,8 +200,20 @@ MLMono::createSurfaces()
   FixedComp::setConnect(0,Origin,PY);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+104));
   // support A:
-  ModelSupport::buildPlane
+  Geometry::Plane *disasterMaskFrontPlane = ModelSupport::buildPlane
     (SMap,buildIndex+201,Origin-PY*((lengthA+supportAExtra)/2.0),PY);
+  if(fabs(disasterMaskAYStep) > Geometry::zeroTol){
+    disasterMaskFrontPlane = ModelSupport::buildPlane(SMap,buildIndex+111,
+      Origin-PY*((lengthA+supportAExtra)/2.0-disasterMaskAYStep),PY);
+  }
+  ModelSupport::buildShiftedPlane(
+    SMap,buildIndex+112,disasterMaskFrontPlane,disasterMaskALength);
+  ModelSupport::buildPlane(SMap,buildIndex+122,
+    Origin-PY*((lengthA+supportAExtra)/2.0-disasterMaskAYStep
+    -M_SQRT1_2*disasterMaskACornerSideLength)
+    -PX*(M_SQRT1_2*disasterMaskACornerSideLength),PX-PY
+  );
+
   ModelSupport::buildPlane
     (SMap,buildIndex+202,Origin+PY*((lengthA+supportAExtra)/2.0),PY);
   ModelSupport::buildPlane
@@ -221,7 +250,7 @@ MLMono::createSurfaces()
     (SMap,buildIndex+337,PillarD,PZ,supportAPillar);
 
 
-  // main xstal CENTRE AT Shifted position [
+  // main xstal CENTRE AT Shifted position
 
   const double yDist=parked ?
     (lengthB-lengthA)/2.0+parkedOffset :
@@ -330,8 +359,16 @@ MLMono::createObjects(Simulation& System)
   makeCell("RodA1",System,cellIndex++,baseAMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-317 105 -106");
   makeCell("RodA2",System,cellIndex++,baseAMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -101 103 -104 105 -106 307 317");
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -101 103 -104 105 -106 307 317 (112:113)");
   makeCell("SideAVoid",System,cellIndex++,0,0.0,HR);
+
+  makeCell("DisasterMaskA",System,cellIndex++,disasterMaskAMat,0.0,
+    ModelSupport::getHeadRule(
+      SMap,buildIndex,"201 -112 -122 -113 -104 105 -106 307"
+    )
+  );
+  makeCell("DisasterMaskACorner",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"201 122 -104 105 -106"));
 
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 105 -106");

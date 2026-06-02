@@ -69,10 +69,21 @@ class MLMonoGenerator
   double parkedOffset;         ///< Offset between front surfaces of crystals in parked position
   double parkedGap;             ///< x-Gap between crystals in parked position
 
+  double disasterMaskACornerSideLength;  ///< Mask corner side length
+  double disasterMaskALength;  ///< Mask length
+  double disasterMaskAWidth;   ///< Mask width
+  double disasterMaskAYStep;   ///< Mask y step (if 0, aligned with support front)
+  double disasterMaskBCornerSideLength;  ///< Mask corner side length
+  double disasterMaskBLength;  ///< Mask length
+  double disasterMaskBWidth;   ///< Mask width
+  double disasterMaskBYStep;   ///< Mask y step (if 0, aligned with support front)
+
   std::string mirrorAMat;             ///< XStal material
   std::string mirrorBMat;             ///< XStal material
   std::string baseAMat;               ///< Base material
   std::string baseBMat;               ///< Base material
+  std::string disasterMaskAMat;               ///< Disaster Mask material
+  std::string disasterMaskBMat;               ///< Disaster Mask material
 
  public:
 
