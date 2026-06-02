@@ -159,6 +159,7 @@
 #include "StepBellowsGenerator.h"
 #include "WhiteBeamStopGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
+#include "MLMonoGenerator.h"
 
 namespace setVariable
 {
@@ -1048,6 +1049,10 @@ SingleItemVariables(FuncDataBase& Control)
   // MonoBlockXstals
   MonoBlockXstalsGenerator monoBlockXstalsGen;
   monoBlockXstalsGen.generateXstal(Control,"MonoBlockXstals", 0.0, 1.0);
+
+  // MLMono
+  MLMonoGenerator MLMonoGen;
+  MLMonoGen.generateMono(Control,"MLMono",0.0,1.0,1.0);
 
   // CM1BeamSplitter
   Control.addVariable("DanMAXSINCRYSAngle",16.177);

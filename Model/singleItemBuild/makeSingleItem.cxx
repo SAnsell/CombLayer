@@ -216,6 +216,7 @@
 #include "CM1BeamSplitter.h"
 #include "CM2Crystal.h"
 #include "MonoBlockXstals.h"
+#include "MLMono.h"
 
 #include "makeSingleItem.h"
 
@@ -276,8 +277,8 @@ makeSingleItem::build(Simulation& System,
   "TDCBeamDump","GuideUnit","PlateUnit","BenderUnit","MLMdetail",
   "ConcreteDoor","IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full","MovableSafetyMask","HeatAbsorberToyama",
-	"HeatAbsorberR3Toyama","FixedMaskHybrid","SqrShield","MonoBlockXstals","Help",
-  "help"
+	"HeatAbsorberR3Toyama","FixedMaskHybrid","SqrShield","MonoBlockXstals","MLMono",
+  "Help","help"
     });
 
   ModelSupport::objectRegister& OR=
@@ -2053,6 +2054,18 @@ makeSingleItem::build(Simulation& System,
 
         monoBlockXstals->addInsertCell(voidCell);
         monoBlockXstals->createAll(System,World::masterOrigin(),0);
+
+        return;
+      }
+    
+    if (item == "MLMono")
+      {
+        const auto MLMono = std::make_shared<xraySystem::MLMono>(
+          "MLMono");
+        OR.addObject(MLMono);
+
+        MLMono->addInsertCell(voidCell);
+        MLMono->createAll(System,World::masterOrigin(),0);
 
         return;
       }
