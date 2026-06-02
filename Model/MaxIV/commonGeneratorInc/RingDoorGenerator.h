@@ -63,7 +63,8 @@ class RingDoorGenerator
   std::string underBMat;        ///< material for lift point (right)
   std::string tubeMat;          ///< base material
   std::string doorMat;          ///< door material
-    
+
+  bool useTubes;
 
  public:
 
@@ -72,7 +73,6 @@ class RingDoorGenerator
   RingDoorGenerator(const RingDoorGenerator&);
   RingDoorGenerator& operator=(const RingDoorGenerator&);
   ~RingDoorGenerator();
-
 
   double getTotalOuterWidth();
   void setInner(const double,const double,const double);
@@ -83,9 +83,9 @@ class RingDoorGenerator
   void setTopGaps(const double inner, const double outer){
     innerTopGap = inner;
     outerTopGap = outer;
-  }
-  /// Set the material
+}
   void setDoorMat(const std::string& M) { doorMat=M; }
+  void setUseTubes(const bool use){ useTubes = use; }
 
   void generateDoor(FuncDataBase&,const std::string&,
 		    const double) const;

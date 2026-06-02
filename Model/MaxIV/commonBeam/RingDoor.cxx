@@ -114,6 +114,8 @@ RingDoor::populate(const FuncDataBase& Control)
   underBMat=ModelSupport::EvalDefMat(Control,keyName+"UnderBMat",0);
   tubeMat=ModelSupport::EvalMat<int>(Control,keyName+"TubeMat");
   doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
+
+  useTubes=static_cast<bool>(Control.EvalVar<int>(keyName+"UseTubes"));
   
   return;
 }
@@ -211,12 +213,14 @@ RingDoor::createSurfaces()
     (SMap,buildIndex+1014,Origin+X*(underStepWidth+underStepXSep/2.0),X);
 
   // Tubes:
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+507,Origin-X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+517,Origin+Z*tubeZStep,Y,tubeRadius);
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+527,Origin+X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
+  if(useTubes){
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+507,Origin-X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+517,Origin+Z*tubeZStep,Y,tubeRadius);
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+527,Origin+X*tubeXStep+Z*tubeZStep,Y,tubeRadius);
+  }
     
   return;
 }
@@ -264,12 +268,14 @@ RingDoor::createObjects(Simulation& System)
   makeCell("OuterGap",System,cellIndex++,0,0.0,HR*outerHR*floorHR);
 
   // Tubes
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-507");
-  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-517");
-  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527");
-  makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
+  if(useTubes){
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-507");
+    makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-517");
+    makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"-527");
+    makeCell("OuterGap",System,cellIndex++,tubeMat,0.0,HR*outerHR*innerHR);
+  }
 
   // Lift points
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1003 -1004 -1005");
@@ -280,15 +286,15 @@ RingDoor::createObjects(Simulation& System)
   makeCell("LiftB",System,cellIndex++,underBMat,
 	   0.0,HR*outerHR*innerHR*floorHR);
 
-
-  
   // main door
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"33 -34 -36");
   addOuterSurf("Door",HR);
 
   // extra tubes
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-507 : -517 : -527)");
-  addOuterSurf("Tubes",HR);
+  if(useTubes){
+    HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-507 : -517 : -527)");
+    addOuterSurf("Tubes",HR);
+  }
   return;
 }
 

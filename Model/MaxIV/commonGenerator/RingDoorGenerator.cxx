@@ -58,7 +58,8 @@ RingDoorGenerator::RingDoorGenerator(const bool) :
   underStepHeight(6.5),underStepWidth(47.0),
   underStepXSep(80.0),
   underAMat("Void"),underBMat("Void"),
-  tubeMat("Void"),doorMat("Concrete")
+  tubeMat("Void"),doorMat("Concrete"),
+  useTubes(true)
   /*!
     Constructor and defaults
   */
@@ -73,7 +74,8 @@ RingDoorGenerator::RingDoorGenerator() :
   underStepHeight(7.0),underStepWidth(48.0),
   underStepXSep(96.0),
   underAMat("Void"),underBMat("Void"),
-  tubeMat("Void"),doorMat("Concrete")
+  tubeMat("Void"),doorMat("Concrete"),
+  useTubes(true)
   /*!
     Constructor and defaults
   */
@@ -88,7 +90,7 @@ RingDoorGenerator::RingDoorGenerator(const RingDoorGenerator& A) :
   underStepHeight(A.underStepHeight),underStepWidth(A.underStepWidth),
   underStepXSep(A.underStepXSep),
   underAMat(A.underAMat),underBMat(A.underBMat),
-  tubeMat(A.tubeMat),doorMat(A.doorMat)
+  tubeMat(A.tubeMat),doorMat(A.doorMat),useTubes(A.useTubes)
   /*!
     Copy constructor
     \param A :: RingDoorGenerator to copy
@@ -123,6 +125,7 @@ RingDoorGenerator::operator=(const RingDoorGenerator& A)
       underBMat=A.underBMat;
       doorMat=A.doorMat;
       tubeMat=A.tubeMat;
+      useTubes=A.useTubes;
     }
   return *this;
 }
@@ -226,6 +229,8 @@ RingDoorGenerator::generateDoor(FuncDataBase& Control,
   Control.addVariable(keyName+"UnderBMat",underBMat);
   Control.addVariable(keyName+"TubeMat",tubeMat);
   Control.addVariable(keyName+"DoorMat",doorMat);
+
+  Control.addVariable(keyName+"UseTubes",static_cast<int>(useTubes));
        
   return;
 
