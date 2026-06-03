@@ -27,10 +27,23 @@ namespace setVariable
 
 /*!
   \class MLMonoGenerator
-  \author S. Ansell
-  \version 1.0
-  \date October 2019
-  \brief Double Mirror Mono arrangement
+  \author S. Ansell, K. Batkov, and U. Friman-Gayer
+  \version 1.1
+  \date June 2026
+  \brief Variable generator for MLMono
+
+  Using dimensions of an FMB Oxford MLM for DanMAX as default.
+
+  References:
+  [1] Email from MJ 260506
+  [2] /mxn/groups/rad/Beamlines/DanMAX/Optics/FDR_DCM_MLM/Stp Files/MLM/ADM0342 - MLM Top Level.stp
+  [3] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
+
+  Version History:
+  1.1 - 2026-06-03
+    - Add references and update default parameters.
+    - Update for MLMono v1.1
+  1.0 - 2019
 */
 
 class MLMonoGenerator
