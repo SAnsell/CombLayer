@@ -68,7 +68,7 @@ MLMonoGenerator::MLMonoGenerator() :
   parkedGap(0.6), // [1]: the gap is between 0.26 and 0.6 cm -> take the worst case
   disasterMaskACornerSideLength(0.1),disasterMaskALength(1.15),
   disasterMaskAWidth(1.5),disasterMaskAYStep(0.0),
-  disasterMaskBCornerSideLength(0.1),disasterMaskBLength(1.1),
+  disasterMaskBCornerSideLength(0.1),disasterMaskBLength(1.15),
   disasterMaskBWidth(1.5),disasterMaskBYStep(0.0),
   mirrorAMat("Silicon300K"),mirrorBMat("Silicon300K"),
   baseAMat("Copper"),baseBMat("Copper"),

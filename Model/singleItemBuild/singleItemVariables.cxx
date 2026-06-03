@@ -1058,11 +1058,13 @@ SingleItemVariables(FuncDataBase& Control)
 
   MLMonoGen.generateMono(Control,"MLMono1",0.0,1.0,1.0);
   Control.addVariable("MLMono1YStep",30.0);
-  Control.addVariable("MLMono1DisasterMaskAYStep",-0.1);
+  Control.addVariable("MLMono1DisasterMaskAYStep",-0.025);
+  Control.addVariable("MLMono1DisasterMaskBYStep",-0.025);
 
   MLMonoGen.generateMono(Control,"MLMono2",0.0,1.0,1.0);
   Control.addVariable("MLMono2YStep",60.0);
   Control.addVariable("MLMono2DisasterMaskAYStep",0.025);
+  Control.addVariable("MLMono2DisasterMaskBYStep",0.025);
 
   // CM1BeamSplitter
   Control.addVariable("DanMAXSINCRYSAngle",16.177);
