@@ -223,7 +223,7 @@ R3Ring::createSurfaces()
       SurfMap::makePlane("BeamInner",SMap,surfN+1,APt,XX);
       SurfMap::makePlane("#FlatInner",SMap,surfN+3,APt,YY);
 
-      if(i == ductsActive-1){
+      if(i == ductsActive-1 || i == (ductsActive % NInnerSurf)){
         for(int j = 0; j < nDucts; ++j){
           ModelSupport::buildCylinder(
             SMap,
@@ -350,7 +350,7 @@ R3Ring::createObjects(Simulation& System)
       HeadRule ductDoorHR;
       HeadRule ductInsulationHR;
 
-      if((i % NInnerSurf) == ductsActive){
+      if(i == (ductsActive % NInnerSurf) || i == ((ductsActive + 1) % NInnerSurf)){
         sectorDuctBuildIndex = buildIndex+2200+(i == 0 ? NInnerSurf-1 : i-1)*nDucts*10;
         for(size_t j = 0; j < outerWallDucts.size(); ++j){
           ductHR = ModelSupport::getHeadRule(
