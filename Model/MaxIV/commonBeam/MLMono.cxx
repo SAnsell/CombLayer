@@ -200,14 +200,14 @@ MLMono::createSurfaces()
   FixedComp::setConnect(0,Origin,PY);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+104));
   // support A:
-  Geometry::Plane *disasterMaskFrontPlane = ModelSupport::buildPlane
+  Geometry::Plane *disasterMaskAFrontPlane = ModelSupport::buildPlane
     (SMap,buildIndex+201,Origin-PY*((lengthA+supportAExtra)/2.0),PY);
   if(fabs(disasterMaskAYStep) > Geometry::zeroTol){
-    disasterMaskFrontPlane = ModelSupport::buildPlane(SMap,buildIndex+111,
+    disasterMaskAFrontPlane = ModelSupport::buildPlane(SMap,buildIndex+111,
       Origin-PY*((lengthA+supportAExtra)/2.0-disasterMaskAYStep),PY);
   }
   ModelSupport::buildShiftedPlane(
-    SMap,buildIndex+112,disasterMaskFrontPlane,disasterMaskALength);
+    SMap,buildIndex+112,disasterMaskAFrontPlane,disasterMaskALength);
   ModelSupport::buildPlane(SMap,buildIndex+122,
     Origin-PY*((lengthA+supportAExtra)/2.0-disasterMaskAYStep
     -M_SQRT1_2*disasterMaskACornerSideLength)
@@ -277,16 +277,28 @@ MLMono::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1102,BOrg+QY*(lengthB/2.0),QY);
   ModelSupport::buildPlane(SMap,buildIndex+1103,BOrg-QX*widthB,QX);
   ModelSupport::buildPlane(SMap,buildIndex+1104,BOrg,QX);
+  ModelSupport::buildShiftedPlane(
+    SMap,buildIndex+1113,buildIndex+1104,-QX,disasterMaskBWidth);
   ModelSupport::buildPlane(SMap,buildIndex+1105,BOrg-QZ*(heightB/2.0),QZ);
   ModelSupport::buildPlane(SMap,buildIndex+1106,BOrg+QZ*(heightB/2.0),QZ);
 
   FixedComp::setConnect(1,BOrg,QX);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+1104));
-
+  Geometry::Plane *disasterMaskBFrontPlane = ModelSupport::buildPlane
+    (SMap,buildIndex+1201,BOrg-QY*((lengthB+supportBExtra)/2.0),QY);
+  if(fabs(disasterMaskBYStep) > Geometry::zeroTol){
+    disasterMaskBFrontPlane = ModelSupport::buildPlane(SMap,buildIndex+1111,
+      BOrg-QY*((lengthB+supportBExtra)/2.0-disasterMaskBYStep),QY);
+  }
+  ModelSupport::buildShiftedPlane(
+    SMap,buildIndex+1112,disasterMaskBFrontPlane,disasterMaskBLength);
+  ModelSupport::buildPlane(SMap,buildIndex+1122,
+    BOrg-QY*((lengthB+supportBExtra)/2.0-disasterMaskBYStep
+    -M_SQRT1_2*disasterMaskBCornerSideLength)
+    -QX*(M_SQRT1_2*disasterMaskBCornerSideLength),QX-QY
+  );
 
   // support A:
-  ModelSupport::buildPlane
-    (SMap,buildIndex+1201,BOrg-QY*((lengthB+supportBExtra)/2.0),QY);
   ModelSupport::buildPlane
     (SMap,buildIndex+1202,BOrg+QY*((lengthB+supportBExtra)/2.0),QY);
   ModelSupport::buildPlane
@@ -334,6 +346,8 @@ MLMono::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("MLMono","createObjects");
+
+  // Crystal A
 
   bool disasterMaskANonzeroYStep = false;
   bool disasterMaskAProtrudes = false;
@@ -416,10 +430,22 @@ MLMono::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-202 213 -104 205 -206");
   addOuterSurf(HR*frontAHR);
 
+  // Crystal B
 
+  bool disasterMaskBNonzeroYStep = false;
+  bool disasterMaskBProtrudes = false;
 
-  // Currently the second Mirror is a copy of the above but we don't yet have
-  // a picture of it.
+  HeadRule disasterMaskBFrontHR = ModelSupport::getHeadRule(SMap,buildIndex,"1201");
+  HeadRule frontBHR = ModelSupport::getHeadRule(SMap,buildIndex,"1201");
+
+  if(fabs(disasterMaskBYStep) > Geometry::zeroTol){
+    disasterMaskBNonzeroYStep = true;
+    disasterMaskBFrontHR = ModelSupport::getHeadRule(SMap,buildIndex,"1111");
+  }
+  if(disasterMaskBYStep < -Geometry::zeroTol){
+    disasterMaskBProtrudes = true;
+    frontBHR = ModelSupport::getHeadRule(SMap,buildIndex,"1111");
+  }
 
   // Main crystal
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1101 -1102 1103 -1104 1105 -1106");
@@ -432,6 +458,17 @@ MLMono::createObjects(Simulation& System)
   makeCell("BaseB",System,cellIndex++,baseBMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1203 -1103 1105 -1106");
   makeCell("GapB",System,cellIndex++,0,0.0,HR);
+  if(disasterMaskBProtrudes){
+    makeCell("TopBVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"1111 -1201 1213 -1104  1106 -1206")
+    );
+    makeCell("BaseBVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"1111 -1201 1213 -1104 1205 -1105")
+    );
+    makeCell("GapBVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"1111 -1201 1213 -1103 1105 -1106")
+    );
+  }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1211 -1212 -1203 1213 1205 -1206");
   makeCell("BackB",System,cellIndex++,baseBMat,0.0,HR);
@@ -444,9 +481,25 @@ MLMono::createObjects(Simulation& System)
   makeCell("RodB1",System,cellIndex++,baseBMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1317 1105 -1106");
   makeCell("RodB2",System,cellIndex++,baseBMat,0.0,HR);
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1101 1103 -1104 1105 -1106 1307 1317");
-  makeCell("SideBVoid",System,cellIndex++,0,0.0,HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1101 1103 -1104 1105 -1106 1307 1317 (1112:1113)");
+  makeCell("SideBVoid",System,cellIndex++,0,0.0,HR*frontBHR);
 
+  makeCell("DisasterMaskB",System,cellIndex++,disasterMaskBMat,0.0,
+    ModelSupport::getHeadRule(
+      SMap,buildIndex,"-1112 -1122 -1113 -1104 1105 -1106 1307"
+    )*disasterMaskBFrontHR
+  );
+  makeCell("DisasterMaskBCorner",System,cellIndex++,0,0.0,
+    ModelSupport::getHeadRule(SMap,buildIndex,"1122 -1104 1105 -1106")
+    *disasterMaskBFrontHR
+  );
+  if(disasterMaskBNonzeroYStep && !disasterMaskBProtrudes){
+    makeCell("DisasterMaskBVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(
+        SMap,buildIndex,"-1113 -1104 1105 -1106"
+      )*frontBHR*disasterMaskBFrontHR.complement()
+    );
+  }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1327 1105 -1106");
   makeCell("RodB3",System,cellIndex++,baseBMat,0.0,HR);
@@ -455,8 +508,8 @@ MLMono::createObjects(Simulation& System)
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1102 -1202 1103 -1104 1105 -1106 1327 1337");
   makeCell("SideBVoid",System,cellIndex++,0,0.0,HR);
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex,"1201 -1202 1213 -1104 1205 -1206");
-  addOuterUnionSurf(HR);
+  HR=ModelSupport::getHeadRule(SMap,buildIndex,"-1202 1213 -1104 1205 -1206");
+  addOuterUnionSurf(HR*frontBHR);
 
   return;
 }
