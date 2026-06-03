@@ -27,10 +27,23 @@ namespace setVariable
 
 /*!
   \class MLMonoGenerator
-  \author S. Ansell
-  \version 1.0
-  \date October 2019
-  \brief Double Mirror Mono arrangement
+  \author S. Ansell, K. Batkov, and U. Friman-Gayer
+  \version 1.1
+  \date June 2026
+  \brief Variable generator for MLMono
+
+  Using dimensions of an FMB Oxford MLM for DanMAX as default.
+
+  References:
+  [1] Email from MJ 260506
+  [2] /mxn/groups/rad/Beamlines/DanMAX/Optics/FDR_DCM_MLM/Stp Files/MLM/ADM0342 - MLM Top Level.stp
+  [3] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
+
+  Version History:
+  1.1 - 2026-06-03
+    - Add references and update default parameters.
+    - Update for MLMono v1.1
+  1.0 - 2019
 */
 
 class MLMonoGenerator
@@ -69,10 +82,21 @@ class MLMonoGenerator
   double parkedOffset;         ///< Offset between front surfaces of crystals in parked position
   double parkedGap;             ///< x-Gap between crystals in parked position
 
+  double disasterMaskACornerSideLength;  ///< Mask corner side length
+  double disasterMaskALength;  ///< Mask length
+  double disasterMaskAWidth;   ///< Mask width
+  double disasterMaskAYStep;   ///< Mask y step (if 0, aligned with support front)
+  double disasterMaskBCornerSideLength;  ///< Mask corner side length
+  double disasterMaskBLength;  ///< Mask length
+  double disasterMaskBWidth;   ///< Mask width
+  double disasterMaskBYStep;   ///< Mask y step (if 0, aligned with support front)
+
   std::string mirrorAMat;             ///< XStal material
   std::string mirrorBMat;             ///< XStal material
   std::string baseAMat;               ///< Base material
   std::string baseBMat;               ///< Base material
+  std::string disasterMaskAMat;               ///< Disaster Mask material
+  std::string disasterMaskBMat;               ///< Disaster Mask material
 
  public:
 
