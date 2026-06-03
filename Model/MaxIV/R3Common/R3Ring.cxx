@@ -326,7 +326,6 @@ R3Ring::createObjects(Simulation& System)
   int INext(buildIndex+1000);
 
   int sectorDuctBuildIndex;
-  std::string ductHRStr;
 
   for(int i=0;i<NInnerSurf;i++)
     {
@@ -344,33 +343,30 @@ R3Ring::createObjects(Simulation& System)
       // the ring door and the ones that run through the longer part which has an
       // insulation layer.
       // At the moment, it is assumed that the ducts are fully in one of the two parts.
-      std::string ductDoorHRStr = "";
-      std::string ductInsulationHRStr = "";
+      HeadRule ductHR;
+      HeadRule ductDoorHR;
+      HeadRule ductInsulationHR;
+
       sectorDuctBuildIndex = buildIndex+2200+(i == 0 ? NInnerSurf-1 : i-1)*nDucts*10;
       for(size_t j = 0; j < outerWallDucts.size(); ++j){
-        ductHRStr = std::to_string(j*10+7);
+        ductHR = ModelSupport::getHeadRule(
+            SMap,sectorDuctBuildIndex,"-"+std::to_string(j*10+7)
+        );
 
         makeCell(
           "OuterWallDuct" + std::to_string(j) + "Void",
           System,cellIndex++,
           0,0.0,
           ModelSupport::getHeadRule(SMap,BNext,BPrev,"3M -1003M")
-          *ModelSupport::getHeadRule(
-            SMap,sectorDuctBuildIndex,"-"+ductHRStr
-          )
+          *ductHR
         );
 
         if(outerWallDucts[j].distFromRatchetWall > insulationCut){
-          ductInsulationHRStr += " " + ductHRStr;
+          ductInsulationHR = ductInsulationHR * ductHR.complement();
         } else {
-          ductDoorHRStr += " " + ductHRStr;
+          ductDoorHR = ductDoorHR * ductHR.complement();
         }
       }
-
-      HeadRule ductDoorHR=ModelSupport::getHeadRule(
-        SMap,sectorDuctBuildIndex,ductDoorHRStr);
-      HeadRule ductInsulationHR=ModelSupport::getHeadRule(
-        SMap,sectorDuctBuildIndex,ductInsulationHRStr);
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 3M -1008M -1002 -1503M");
