@@ -1051,8 +1051,18 @@ SingleItemVariables(FuncDataBase& Control)
   monoBlockXstalsGen.generateXstal(Control,"MonoBlockXstals", 0.0, 1.0);
 
   // MLMono
+  // Build three MLMono objects (i.e. 6 crystals) to demonstrate the impact of the
+  // DisasterMask[AB]YStep parameters.
   MLMonoGenerator MLMonoGen;
-  MLMonoGen.generateMono(Control,"MLMono",0.0,1.0,1.0);
+  MLMonoGen.generateMono(Control,"MLMono0",0.0,1.0,1.0);
+
+  MLMonoGen.generateMono(Control,"MLMono1",0.0,1.0,1.0);
+  Control.addVariable("MLMono1YStep",30.0);
+  Control.addVariable("MLMono1DisasterMaskAYStep",-0.1);
+
+  MLMonoGen.generateMono(Control,"MLMono2",0.0,1.0,1.0);
+  Control.addVariable("MLMono2YStep",60.0);
+  Control.addVariable("MLMono2DisasterMaskAYStep",0.025);
 
   // CM1BeamSplitter
   Control.addVariable("DanMAXSINCRYSAngle",16.177);

@@ -2060,12 +2060,14 @@ makeSingleItem::build(Simulation& System,
     
     if (item == "MLMono")
       {
-        const auto MLMono = std::make_shared<xraySystem::MLMono>(
-          "MLMono");
-        OR.addObject(MLMono);
-
-        MLMono->addInsertCell(voidCell);
-        MLMono->createAll(System,World::masterOrigin(),0);
+        std::vector<std::shared_ptr<xraySystem::MLMono>> mlmono;
+        for(size_t i = 0; i < 3; ++i){
+          mlmono.push_back(std::make_shared<xraySystem::MLMono>(
+          "MLMono"+std::to_string(i)));
+          OR.addObject(mlmono[i]);
+          mlmono[i]->addInsertCell(voidCell);
+          mlmono[i]->createAll(System,World::masterOrigin(),0);
+        }
 
         return;
       }
