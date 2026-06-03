@@ -335,16 +335,20 @@ MLMono::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MLMono","createObjects");
 
-  HeadRule disasterMaskAFrontHR = (
-    fabs(disasterMaskAYStep) > Geometry::zeroTol ?
-    ModelSupport::getHeadRule(SMap,buildIndex,"111") :
-    ModelSupport::getHeadRule(SMap,buildIndex,"201")
-  );
-  HeadRule frontAHR = (
-    disasterMaskAYStep < -Geometry::zeroTol ?
-    ModelSupport::getHeadRule(SMap,buildIndex,"111") :
-    ModelSupport::getHeadRule(SMap,buildIndex,"201")
-  );
+  bool disasterMaskANonzeroYStep = false;
+  bool disasterMaskAProtrudes = false;
+
+  HeadRule disasterMaskAFrontHR = ModelSupport::getHeadRule(SMap,buildIndex,"201");
+  HeadRule frontAHR = ModelSupport::getHeadRule(SMap,buildIndex,"201");
+
+  if(fabs(disasterMaskAYStep) > Geometry::zeroTol){
+    disasterMaskANonzeroYStep = true;
+    disasterMaskAFrontHR = ModelSupport::getHeadRule(SMap,buildIndex,"111");
+  }
+  if(disasterMaskAYStep < -Geometry::zeroTol){
+    disasterMaskAProtrudes = true;
+    frontAHR = ModelSupport::getHeadRule(SMap,buildIndex,"111");
+  }
 
   HeadRule HR;
   // xstal
@@ -358,6 +362,18 @@ MLMono::createObjects(Simulation& System)
   makeCell("BaseA",System,cellIndex++,baseAMat,0.0,HR);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"201 -202 203 -103 105 -106");
   makeCell("GapA",System,cellIndex++,0,0.0,HR);
+  if(disasterMaskAProtrudes){
+    makeCell("TopAVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"111 -201 213 -104 106 -206")
+    );
+    makeCell("BaseAVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"111 -201 213 -104 205 -105")
+    );
+    makeCell("GapAVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"111 -201 213 -103 105 -106")
+    );
+  }
+
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"211 -212 -203 213 205 -206");
   makeCell("BackA",System,cellIndex++,baseAMat,0.0,HR);
@@ -382,7 +398,13 @@ MLMono::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"122 -104 105 -106")
     *disasterMaskAFrontHR
   );
-
+  if(disasterMaskANonzeroYStep && !disasterMaskAProtrudes){
+    makeCell("DisasterMaskAVoid",System,cellIndex++,0,0.0,
+      ModelSupport::getHeadRule(
+        SMap,buildIndex,"-113 -104 105 -106"
+      )*frontAHR*disasterMaskAFrontHR.complement()
+    );
+  }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-327 105 -106");
   makeCell("RodA3",System,cellIndex++,baseAMat,0.0,HR);
