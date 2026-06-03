@@ -2225,6 +2225,7 @@ DANMAXvariables(FuncDataBase& Control)
 
   Control.addVariable("sdefType","Wiggler");
   Control.addVariable("R3RingRingDoorWallID", 4);
+  Control.addVariable("R3RingRingDuctsWallID", 4);
 
   setVariable::PipeGenerator PipeGen;
   //  setVariable::LeadPipeGenerator LeadPipeGen;
