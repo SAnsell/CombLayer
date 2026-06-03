@@ -75,6 +75,7 @@ class R3Ring :
   size_t doorActive;           ///< Flag/sector for door if modeled (+1)
   std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
 
+  int ductsActive;         ///< Flag/sector for ducts if modeled (+1)
   int nDucts;                 ///< Number of ducts
   std::vector<R3RingWallDuct> outerWallDucts; ///< Properties of the ducts
 

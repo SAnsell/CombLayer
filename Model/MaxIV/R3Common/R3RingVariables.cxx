@@ -193,6 +193,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   RingDoorGenerator RGen;
 
   Control.addVariable(preName+"RingDoorWallID",1);
+  Control.addVariable(preName+"RingDuctsWallID",1);
 
   // There are two types of R3 ring doors, BD12 (all sectors except N = 1, 2, and 20)
   // and BD13 (sectors 1, 2, and 20) [16].

@@ -133,6 +133,7 @@ R3Ring::populate(const FuncDataBase& Control)
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
 
+  ductsActive=Control.EvalDefVar<int>(keyName+"RingDuctsWallID",0);
   nDucts=Control.EvalVar<int>(keyName+"NDucts");
   outerWallDucts=std::vector<R3RingWallDuct>(nDucts);
 
@@ -222,17 +223,19 @@ R3Ring::createSurfaces()
       SurfMap::makePlane("BeamInner",SMap,surfN+1,APt,XX);
       SurfMap::makePlane("#FlatInner",SMap,surfN+3,APt,YY);
 
-      for(int j = 0; j < nDucts; ++j){
-        ModelSupport::buildCylinder(
-          SMap,
-          buildIndex+2200+i*(nDucts*10)+j*10+7,
-          (
-            outerPts[ni]
-            -outerX[i]*outerWallDucts[j].distFromRatchetWall
-            +Z*outerWallDucts[j].floorHeight
-          ),
-          outerY[i],outerWallDucts[j].holeDiameter/2.0
-        );
+      if(i == ductsActive-1){
+        for(int j = 0; j < nDucts; ++j){
+          ModelSupport::buildCylinder(
+            SMap,
+            buildIndex+2200+i*(nDucts*10)+j*10+7,
+            (
+              outerPts[ni]
+              -outerX[i]*outerWallDucts[j].distFromRatchetWall
+              +Z*outerWallDucts[j].floorHeight
+            ),
+            outerY[i],outerWallDucts[j].holeDiameter/2.0
+          );
+        }
       }
 
       // outer wall
@@ -347,24 +350,26 @@ R3Ring::createObjects(Simulation& System)
       HeadRule ductDoorHR;
       HeadRule ductInsulationHR;
 
-      sectorDuctBuildIndex = buildIndex+2200+(i == 0 ? NInnerSurf-1 : i-1)*nDucts*10;
-      for(size_t j = 0; j < outerWallDucts.size(); ++j){
-        ductHR = ModelSupport::getHeadRule(
-            SMap,sectorDuctBuildIndex,"-"+std::to_string(j*10+7)
-        );
+      if((i % NInnerSurf) == ductsActive){
+        sectorDuctBuildIndex = buildIndex+2200+(i == 0 ? NInnerSurf-1 : i-1)*nDucts*10;
+        for(size_t j = 0; j < outerWallDucts.size(); ++j){
+          ductHR = ModelSupport::getHeadRule(
+              SMap,sectorDuctBuildIndex,"-"+std::to_string(j*10+7)
+          );
 
-        makeCell(
-          "OuterWallDuct" + std::to_string(j) + "Void",
-          System,cellIndex++,
-          0,0.0,
-          ModelSupport::getHeadRule(SMap,BNext,BPrev,"3M -1003M")
-          *ductHR
-        );
+          makeCell(
+            "OuterWallDuct" + std::to_string(j) + "Void",
+            System,cellIndex++,
+            0,0.0,
+            ModelSupport::getHeadRule(SMap,BNext,BPrev,"3M -1003M")
+            *ductHR
+          );
 
-        if(outerWallDucts[j].distFromRatchetWall > insulationCut){
-          ductInsulationHR = ductInsulationHR * ductHR.complement();
-        } else {
-          ductDoorHR = ductDoorHR * ductHR.complement();
+          if(outerWallDucts[j].distFromRatchetWall > insulationCut){
+            ductInsulationHR = ductInsulationHR * ductHR.complement();
+          } else {
+            ductDoorHR = ductDoorHR * ductHR.complement();
+          }
         }
       }
 
