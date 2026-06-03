@@ -43,9 +43,6 @@
 
 #include "MLMonoGenerator.h"
 
-// References
-// [1] Email from MJ 260506
-
 namespace setVariable
 {
 
@@ -59,15 +56,27 @@ MLMonoGenerator::MLMonoGenerator() :
   lengthB(20.0), // [1]
   supportAGap(0.3),supportAExtra(2.4),
   supportABackThick(0.8),supportABackLength(9.0),
-  supportABase(1.1),supportAPillar(0.5),supportAPillarStep(0.8),
+  supportABase(1.1),
+  // Pillar dimensions from [2]
+  supportAPillar(0.3),supportAPillarStep(0.45),
   supportBGap(0.3),supportBExtra(2.4),
   supportBBackThick(0.8),supportBBackLength(9.0),
-  supportBBase(1.1),supportBPillar(0.5),supportBPillarStep(0.8),
+  supportBBase(1.1),
+  // Pillar dimensions from [2]
+  supportBPillar(0.3),supportBPillarStep(0.45),
   parked(1), // crystals are in the parked position by default
   parkedOffset(11.6), // [1]: can be anything from 116 to 698 mm
   parkedGap(0.6), // [1]: the gap is between 0.26 and 0.6 cm -> take the worst case
+  // All disaster mask dimensions from [2]
+  disasterMaskACornerSideLength(0.2),disasterMaskALength(1.1),
+  disasterMaskAWidth(1.2),disasterMaskAYStep(-0.05),
+  disasterMaskBCornerSideLength(0.2),disasterMaskBLength(0.95),
+  disasterMaskBWidth(1.2),disasterMaskBYStep(0.1),
+  // Mirror materials: assumption, not found in [3].
   mirrorAMat("Silicon300K"),mirrorBMat("Silicon300K"),
-  baseAMat("Copper"),baseBMat("Copper")
+  // All materials below from [3].
+  baseAMat("Copper"),baseBMat("Copper"),
+  disasterMaskAMat("Tungsten"),disasterMaskBMat("Tungsten")
   /*!
     Constructor and defaults
   */
@@ -134,12 +143,25 @@ MLMonoGenerator::generateMono(FuncDataBase& Control,
   Control.addVariable(keyName+"ParkedOffset",parkedOffset);
   Control.addVariable(keyName+"ParkedGap",parkedGap);
 
+  Control.addVariable(keyName+"DisasterMaskACornerSideLength",
+    disasterMaskACornerSideLength);
+  Control.addVariable(keyName+"DisasterMaskALength",disasterMaskALength);
+  Control.addVariable(keyName+"DisasterMaskAWidth",disasterMaskAWidth);
+  Control.addVariable(keyName+"DisasterMaskAYStep",disasterMaskAYStep);
+  Control.addVariable(keyName+"DisasterMaskBCornerSideLength",
+    disasterMaskBCornerSideLength);
+  Control.addVariable(keyName+"DisasterMaskBLength",disasterMaskBLength);
+  Control.addVariable(keyName+"DisasterMaskBWidth",disasterMaskBWidth);
+  Control.addVariable(keyName+"DisasterMaskBYStep",disasterMaskBYStep);
+
   Control.addVariable(keyName+"MirrorAMat",mirrorAMat);
   Control.addVariable(keyName+"MirrorBMat",mirrorBMat);
 
   Control.addVariable(keyName+"BaseAMat",baseAMat);
   Control.addVariable(keyName+"BaseBMat",baseBMat);
 
+  Control.addVariable(keyName+"DisasterMaskAMat",disasterMaskAMat);
+  Control.addVariable(keyName+"DisasterMaskBMat",disasterMaskBMat);
 
   return;
 

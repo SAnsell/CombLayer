@@ -1324,7 +1324,6 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			Geometry::Vec3D(0.0, 0.0, -0.15), // [25]
 			Geometry::Vec3D(-1,0,0));
 
-  // crystals gap 4mm
   MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
 }
 

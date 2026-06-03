@@ -3,7 +3,7 @@
 
  * File:   commonBeamInc/MLMono.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell and U. Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +29,25 @@ namespace xraySystem
 
 /*!
   \class MLMono
-  \author S. Ansell
-  \version 1.0
-  \date October 2019
-  \brief Double Mirror Mono arrangement
+  \author S. Ansell and U. Friman-Gayer
+  \version 1.1
+  \date June 2026
+  \brief Multilayer monochromator (MLM) with two structurally equivalent crystals
+
+  This is a simplified on an FMB Oxford MLM for DanMAX [1,2].
+  It consists of two disjoint crystal elements ("A" and "B") that are structurally
+  equivalent. Rotations and most dimensions of the two elements can be set
+  individually.
+  The typically very thin MLM crystal layers are not modeled.
+  
+  References:
+  [1] S3716 DanMAX MLM Functional Specification Rev05_NEW.pdf
+  [2] /mxn/groups/rad/Beamlines/DanMAX/Optics/FDR_DCM_MLM/Stp Files/MLM/ADM0342 - MLM Top Level.stp
+
+  Version History:
+  1.1 - 2026-06-03
+    - Add disaster masks
+  1.0 - 2019
 */
 
 class MLMono :
@@ -78,10 +93,21 @@ class MLMono :
   double parkedOffset;         ///< y-Offset between front surfaces of crystals in parked position
   double parkedGap;             ///< x-Gap between crystals in parked position
 
+  double disasterMaskAWidth;   ///< Mask width
+  double disasterMaskALength;  ///< Mask length
+  double disasterMaskACornerSideLength;  ///< Mask corner side length
+  double disasterMaskAYStep;   ///< Mask y step (if 0, aligned with support front)
+  double disasterMaskBWidth;   ///< Mask width
+  double disasterMaskBLength;  ///< Mask length
+  double disasterMaskBCornerSideLength;  ///< Mask corner side length
+  double disasterMaskBYStep;   ///< Mask y step (if 0, aligned with support front)
+
   int mirrorAMat;             ///< XStal material
   int mirrorBMat;             ///< XStal material
   int baseAMat;               ///< Base material
-  int baseBMat;              ///< Base material
+  int baseBMat;               ///< Base material
+  int disasterMaskAMat;       ///< Disaster Mask material
+  int disasterMaskBMat;       ///< Disaster Mask material
 
   // Functions:
 
