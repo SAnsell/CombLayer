@@ -163,7 +163,7 @@ R3Ring::createSurfaces()
   int surfN(buildIndex);
 
   std::vector<Geometry::Vec3D> innerPts;
-  for(size_t i=0;i<NInnerSurf;i++)
+  for(int i=0;i<NInnerSurf;i++)
     {
       Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
       const Geometry::Vec3D APt(Origin+Axis*icosagonRadius);
@@ -197,7 +197,7 @@ R3Ring::createSurfaces()
   std::vector<Geometry::Vec3D> outerPts;
   std::vector<Geometry::Vec3D> outerX;
   std::vector<Geometry::Vec3D> outerY;
-  for(size_t i=0;i<NInnerSurf;i++)
+  for(int i=0;i<NInnerSurf;i++)
     {
       Geometry::Vec3D APt=innerPts[i];
       const Geometry::Vec3D YY=(APt-Origin).unit();
@@ -210,7 +210,7 @@ R3Ring::createSurfaces()
     }
   // outer walls [inner] == 2000
   surfN=buildIndex+2000;
-  for(size_t i=0;i<NInnerSurf;i++)
+  for(int i=0;i<NInnerSurf;i++)
     {
       const size_t li((!i) ? NInnerSurf-1 : i-1);
       const size_t ni(i==NInnerSurf-1 ? 0 : i+1);
@@ -222,10 +222,10 @@ R3Ring::createSurfaces()
       SurfMap::makePlane("BeamInner",SMap,surfN+1,APt,XX);
       SurfMap::makePlane("#FlatInner",SMap,surfN+3,APt,YY);
 
-      for(size_t j = 0; j < outerWallDucts.size(); ++j){
+      for(int j = 0; j < nDucts; ++j){
         ModelSupport::buildCylinder(
           SMap,
-          buildIndex+2200+i*(outerWallDucts.size()*10)+j*10+7,
+          buildIndex+2200+i*(nDucts*10)+j*10+7,
           (
             outerPts[ni]
             -outerX[i]*outerWallDucts[j].distFromRatchetWall
@@ -324,7 +324,7 @@ R3Ring::createObjects(Simulation& System)
   int BNext(buildIndex+2000);
   int IPrev(buildIndex+1190);
   int INext(buildIndex+1000);
-  for(size_t i=0;i<NInnerSurf;i++)
+  for(int i=0;i<NInnerSurf;i++)
     {
       // outer
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,"1M -3M  -1");
@@ -342,7 +342,7 @@ R3Ring::createObjects(Simulation& System)
         ductHRStr += std::to_string(j*10+7);
       }
       HeadRule ductHR=ModelSupport::getHeadRule(
-        SMap,buildIndex+2200+(i == 0 ? NInnerSurf-1 : i-1)*outerWallDucts.size()*10,ductHRStr
+        SMap,buildIndex+2200+(i == 0 ? NInnerSurf-1 : i-1)*nDucts*10,ductHRStr
       );
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
@@ -440,7 +440,7 @@ R3Ring::createLinks()
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(60000);
 
   double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
-  size_t i;
+  int i;
   for(i=0;i<NInnerSurf;i++)
     {
       const Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
@@ -493,10 +493,6 @@ R3Ring::createLinks()
   FixedComp::setConnect(i,Origin+Z*height,-Z);
   FixedComp::setLinkSurf(i,-SMap.realSurf(buildIndex+6));
   FixedComp::nameSideIndex(i,"RoofInner");
-
-  i++;
-
-  return;
 }
 
 void

@@ -46,7 +46,7 @@ class R3Ring :
 {
  private:
 
-  const size_t NInnerSurf;           ///< Number of inner surf
+  const int NInnerSurf;           ///< Number of inner surf
   
   double fullOuterRadius;          ///< full outer radius [beamline endpoint]
   
