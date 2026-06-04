@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/MonoShutterR3Generator.h
  *
  * Copyright (c) 2026 by Udo Friman-Gayer
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef setVariable_MonoShutterR3Generator_h
@@ -89,8 +89,8 @@ class MonoShutterR3Generator
   std::string threadMat;
   double lift;
 
-  bool entryShutterUpFlag;
-  bool exitShutterUpFlag;
+  bool entryShutterClosed;
+  bool exitShutterClosed;
 
  public:
 
@@ -98,12 +98,11 @@ class MonoShutterR3Generator
   virtual ~MonoShutterR3Generator();
 
   double getLength() const {return length;};
-    
+
   void generate(FuncDataBase&,const std::string&) const;
-  
+
 };
 
 }
 
 #endif
- 

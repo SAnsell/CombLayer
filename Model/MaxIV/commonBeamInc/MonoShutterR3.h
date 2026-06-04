@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeamInc/MonoShutterR3.h
  *
  * Copyright (c) 2026 by Udo Friman-Gayer
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef xraySystem_MonoShutterR3_h
@@ -42,7 +42,7 @@ namespace xraySystem
   * Three disk-shaped fixed apertures at the following positions:
     * Upstream from shutter 1
     * Between shutter 1 and 2
-    * Downstream from shutter 2. This last aperture has an additional part that 
+    * Downstream from shutter 2. This last aperture has an additional part that
       extends into the exit port.
 
   References:
@@ -112,8 +112,8 @@ class MonoShutterR3 :
   int threadMat;
   double lift;
 
-  bool entryShutterUpFlag;
-  bool exitShutterUpFlag;
+  bool entryShutterClosed;
+  bool exitShutterClosed;
 
  protected:
   void populate(const FuncDataBase&) override;
@@ -121,7 +121,7 @@ class MonoShutterR3 :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   MonoShutterR3(const std::string&);
@@ -134,4 +134,3 @@ class MonoShutterR3 :
 }
 
 #endif
- 

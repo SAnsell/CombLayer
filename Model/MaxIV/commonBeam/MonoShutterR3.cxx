@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonBeam/MonoShutterR3.cxx
  *
  * Copyright (c) 2026 by Udo Friman-Gayer
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -127,8 +127,8 @@ MonoShutterR3::populate(const FuncDataBase& Control)
   threadMat=ModelSupport::EvalMat<int>(Control,keyName+"ThreadMat");
   lift=Control.EvalVar<double>(keyName+"Lift");
 
-  entryShutterUpFlag=Control.EvalVar<int>(keyName+"EntryShutterUpFlag");
-  exitShutterUpFlag=Control.EvalVar<int>(keyName+"ExitShutterUpFlag");
+  entryShutterClosed=Control.EvalVar<int>(keyName+"EntryShutterClosed");
+  exitShutterClosed=Control.EvalVar<int>(keyName+"ExitShutterClosed");
 
   return;
 }
@@ -139,11 +139,11 @@ MonoShutterR3::createSurfaces()
 {
   ELog::RegMethod RegA("MonoShutterR3","createSurfaces");
 
-  // Upstream and downstream aperture have the nominal 4 mm distance to the shutter 
+  // Upstream and downstream aperture have the nominal 4 mm distance to the shutter
   // blocks (Fig. 2.5 in [1]).
-  // For the central aperture, the distance is slightly larger by default, because 
+  // For the central aperture, the distance is slightly larger by default, because
   // it is determined by the distance of the two shutter blocks. In order to position
-  // them at 4 mm distance, the blocks would need to be so close to each other that 
+  // them at 4 mm distance, the blocks would need to be so close to each other that
   // their flanges overlap.
   // In Tab. 2.3 in Ref. [1], "clearance between blocks and apertures in z-dir <= 5 mm"
   // is given, showing that the uncertainty of the 4 mm is relatively large.
@@ -224,12 +224,12 @@ MonoShutterR3::createSurfaces()
 
   ModelSupport::buildPlane(SMap,buildIndex+303,Origin-X*blockWidth/2.0,X);
   ModelSupport::buildPlane(SMap,buildIndex+304,Origin+X*blockWidth/2.0,X);
-  double blockLift = entryShutterUpFlag ? lift : 0.0;
+  double blockLift = entryShutterClosed ? 0.0 : lift;
   ModelSupport::buildPlane(SMap,buildIndex+305,
     Origin+Z*(-blockHeight/2.0+blockLift),Z);
   ModelSupport::buildPlane(SMap,buildIndex+306,Origin+Z*(blockHeight/2.0+blockLift),Z);
 
-  blockLift = exitShutterUpFlag ? lift : 0.0;
+  blockLift = exitShutterClosed ? 0.0 : lift;
   ModelSupport::buildPlane(SMap,buildIndex+315,
     Origin+Z*(-blockHeight/2.0+blockLift),Z);
   ModelSupport::buildPlane(SMap,buildIndex+316,Origin+Z*(blockHeight/2.0+blockLift),Z);
@@ -261,7 +261,7 @@ MonoShutterR3::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+437,
     Origin+Y*(length+shutterDistance)/2.0,Z,threadRadius);
 
-  return; 
+  return;
 }
 
 void
@@ -278,7 +278,7 @@ MonoShutterR3::createObjects(Simulation& System)
   const HeadRule top = ModelSupport::getHeadRule(SMap,buildIndex,"-6");
   const HeadRule entryExitFlangeOuter = ModelSupport::getHeadRule(SMap,buildIndex,"-7");
   const HeadRule mainVesselOuter = ModelSupport::getHeadRule(SMap,buildIndex,"-107");
-  
+
   addOuterSurf(
     entryExitFlangeOuter*front*back
     +mainVesselOuter*ModelSupport::getHeadRule(SMap,buildIndex,"-26")*bottom
@@ -287,7 +287,7 @@ MonoShutterR3::createObjects(Simulation& System)
   makeCell("EntryAdapter",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"-11 37")*front*entryExitFlangeOuter);
   makeCell("EntryAdapterVoid",System,cellIndex++,0,0.0,
-    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -37")*front);  
+    ModelSupport::getHeadRule(SMap,buildIndex,"-11 -37")*front);
   makeCell("EntryFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"11 -61 27")*entryExitFlangeOuter);
   makeCell("EntryExitPipe",System,cellIndex++,vesselMat,0.0,
@@ -310,7 +310,7 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"-15")*mainVesselOuter*bottom);
   makeCell("VesselTopFlange",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"16 337 437")*mainVesselOuter*top);
-  
+
   makeCell("Vessel",System,cellIndex++,vesselMat,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"15 -16 -117 127 27"));
   makeCell("VesselOuterVoid",System,cellIndex++,0,0.0,
@@ -361,7 +361,7 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 15 -305 -127"));
   makeCell("EntryBlockTopVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"301 -302 -16 306 -127 337"));
-  if(entryShutterUpFlag){
+  if(!entryShutterClosed){
     makeCell("EntryBlockThread",System,cellIndex++,threadMat,0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"-26 306 -337"));
   } else {
@@ -395,7 +395,7 @@ MonoShutterR3::createObjects(Simulation& System)
     ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 15 -315 -127"));
   makeCell("ExitBlockTopVoid",System,cellIndex++,0,0.0,
     ModelSupport::getHeadRule(SMap,buildIndex,"311 -312 -16 316 -127 437"));
-  if(exitShutterUpFlag){
+  if(!exitShutterClosed){
     makeCell("ExitBlockThread",System,cellIndex++,threadMat,0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"-26 316 -437"));
   } else {

@@ -85,8 +85,8 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   threadRadius(1.5), // [5]
   threadMat("SteelUnknownGrade"), // [1]
   lift(5.0), // [5]
-  entryShutterUpFlag(true),
-  exitShutterUpFlag(true)
+  entryShutterClosed(false),
+  exitShutterClosed(false)
   /*!
     Constructor and defaults
   */
@@ -152,10 +152,10 @@ void MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlan
   Control.addVariable(keyName+"ThreadMat",threadMat);
   Control.addVariable(keyName+"Lift",lift);
 
-  Control.addVariable(keyName+"EntryShutterUpFlag",
-    static_cast<int>(entryShutterUpFlag));
-  Control.addVariable(keyName+"ExitShutterUpFlag",
-    static_cast<int>(exitShutterUpFlag));
+  Control.addVariable(keyName+"EntryShutterClosed",
+    static_cast<int>(entryShutterClosed));
+  Control.addVariable(keyName+"ExitShutterClosed",
+    static_cast<int>(exitShutterClosed));
 
   return;
 }
