@@ -64,7 +64,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 
-
 namespace xraySystem
 {
 
@@ -106,7 +105,7 @@ MLMono::populate(const FuncDataBase& Control)
     parkedGap=Control.EvalVar<double>(keyName+"ParkedGap");
     gap = parkedGap;
     thetaA = thetaB = 0.0;
-    xStep = gap/2.0;
+    xStep += gap/2.0;
   } else {
     gap=Control.EvalVar<double>(keyName+"Gap");
     thetaA=Control.EvalVar<double>(keyName+"ThetaA");
@@ -271,7 +270,7 @@ MLMono::createSurfaces()
   QYB.rotate(QX);
   QYB.rotate(QZ);
 
-  const Geometry::Vec3D BOrg(Origin+PY*yDist+PX*gap);
+  const Geometry::Vec3D BOrg(Origin+Y*yDist+X*gap);
 
   ModelSupport::buildPlane(SMap,buildIndex+1101,BOrg-QY*(lengthB/2.0),QY);
   ModelSupport::buildPlane(SMap,buildIndex+1102,BOrg+QY*(lengthB/2.0),QY);
