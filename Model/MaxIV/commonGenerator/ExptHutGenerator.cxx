@@ -59,7 +59,9 @@ ExptHutGenerator::ExptHutGenerator() :
   cornerYStep(100000.0),
   pbFrontThick(0.0),
   fHoleRadius(3.0),fHoleXStep(0.0),fHoleZStep(0.0),
-  frontVoid(0.0),backVoid(0.0)
+  frontVoid(0.0),backVoid(0.0),beamStopHeight(30.0),
+  beamStopThick(0.0),beamStopWidth(30.0),beamStopXStep(0.0),
+  beamStopMat("SteelUnknownGrade")
   /*!
     Constructor and defaults
   */
@@ -148,6 +150,14 @@ ExptHutGenerator::generateHut(FuncDataBase& Control,
 
   Control.addVariable(hutName+"FrontVoid",frontVoid);
   Control.addVariable(hutName+"BackVoid",backVoid);
+
+
+  Control.addVariable(hutName+"BeamStopHeight",beamStopHeight);
+  Control.addVariable(hutName+"BeamStopThick",beamStopThick);
+  Control.addVariable(hutName+"BeamStopWidth",beamStopWidth);
+  Control.addVariable(hutName+"BeamStopXStep",beamStopXStep);
+
+  Control.addVariable(hutName+"BeamStopMat",beamStopMat);
 
   return;
 
