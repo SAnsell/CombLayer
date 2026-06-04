@@ -28,6 +28,7 @@ namespace xraySystem
 {
   class Maze;
   class RingDoor;
+  class R3RingWallDuct;
   
 /*!
   \class R3Ring
@@ -45,7 +46,7 @@ class R3Ring :
 {
  private:
 
-  const size_t NInnerSurf;           ///< Number of inner surf
+  const int NInnerSurf;           ///< Number of inner surf
   
   double fullOuterRadius;          ///< full outer radius [beamline endpoint]
   
@@ -74,6 +75,9 @@ class R3Ring :
   size_t doorActive;           ///< Flag/sector for door if modeled (+1)
   std::shared_ptr<xraySystem::RingDoor> doorPtr;  ///< Outer door
 
+  int ductsActive;         ///< Flag/sector for ducts if modeled (+1)
+  int nDucts;                 ///< Number of ducts
+  std::vector<R3RingWallDuct> outerWallDucts; ///< Properties of the ducts
 
   void createFloor(Simulation&);
   void createDoor(Simulation&);

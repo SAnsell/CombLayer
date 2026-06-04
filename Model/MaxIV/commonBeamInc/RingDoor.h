@@ -67,6 +67,8 @@ class RingDoor :
   int tubeMat;                        ///< tube material material
   int doorMat;                        ///< wall material
 
+  bool useTubes;                      ///< Controls construction of tubes
+
   void populate(const FuncDataBase&) override;
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int) override;

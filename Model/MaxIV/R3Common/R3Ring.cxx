@@ -70,6 +70,7 @@
 
 #include "RingDoor.h"
 #include "R3Ring.h"
+#include "R3RingWallDuct.h"
 
 namespace xraySystem
 {
@@ -131,7 +132,20 @@ R3Ring::populate(const FuncDataBase& Control)
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
 
   doorActive=Control.EvalDefVar<size_t>(keyName+"RingDoorWallID",0);
-  return;
+
+  ductsActive=Control.EvalDefVar<int>(keyName+"RingDuctsWallID",0);
+  nDucts=Control.EvalVar<int>(keyName+"NDucts");
+  outerWallDucts=std::vector<R3RingWallDuct>(nDucts);
+
+  std::string ductName;
+  for(size_t i = 0; i < outerWallDucts.size(); ++i){
+    ductName = keyName+"OuterWallDuct"+std::to_string(i);
+    outerWallDucts[i].distFromRatchetWall=Control.EvalVar<double>(
+      ductName+"DistFromRatchetWall"
+    );
+    outerWallDucts[i].floorHeight=Control.EvalVar<double>(ductName+"FloorHeight");
+    outerWallDucts[i].holeDiameter=Control.EvalVar<double>(ductName+"HoleDiameter");
+  }
 }
 
 void
@@ -150,7 +164,7 @@ R3Ring::createSurfaces()
   int surfN(buildIndex);
 
   std::vector<Geometry::Vec3D> innerPts;
-  for(size_t i=0;i<NInnerSurf;i++)
+  for(int i=0;i<NInnerSurf;i++)
     {
       Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
       const Geometry::Vec3D APt(Origin+Axis*icosagonRadius);
@@ -184,7 +198,7 @@ R3Ring::createSurfaces()
   std::vector<Geometry::Vec3D> outerPts;
   std::vector<Geometry::Vec3D> outerX;
   std::vector<Geometry::Vec3D> outerY;
-  for(size_t i=0;i<NInnerSurf;i++)
+  for(int i=0;i<NInnerSurf;i++)
     {
       Geometry::Vec3D APt=innerPts[i];
       const Geometry::Vec3D YY=(APt-Origin).unit();
@@ -197,9 +211,10 @@ R3Ring::createSurfaces()
     }
   // outer walls [inner] == 2000
   surfN=buildIndex+2000;
-  for(size_t i=0;i<NInnerSurf;i++)
+  for(int i=0;i<NInnerSurf;i++)
     {
       const size_t li((!i) ? NInnerSurf-1 : i-1);
+      const size_t ni(i==NInnerSurf-1 ? 0 : i+1);
       const Geometry::Vec3D& APt(outerPts[i]);
       const Geometry::Vec3D& XX(outerX[li]);
       const Geometry::Vec3D& YY(outerY[i]);
@@ -207,6 +222,21 @@ R3Ring::createSurfaces()
 
       SurfMap::makePlane("BeamInner",SMap,surfN+1,APt,XX);
       SurfMap::makePlane("#FlatInner",SMap,surfN+3,APt,YY);
+
+      if(i == ductsActive-1 || i == (ductsActive % NInnerSurf)){
+        for(int j = 0; j < nDucts; ++j){
+          ModelSupport::buildCylinder(
+            SMap,
+            buildIndex+2200+i*(nDucts*10)+j*10+7,
+            (
+              outerPts[ni]
+              -outerX[i]*outerWallDucts[j].distFromRatchetWall
+              +Z*outerWallDucts[j].floorHeight
+            ),
+            outerY[i],outerWallDucts[j].holeDiameter/2.0
+          );
+        }
+      }
 
       // outer wall
       SurfMap::makePlane("BeamOuter",SMap,surfN+1001,APt+XX*ratchetWall,XX);
@@ -297,7 +327,10 @@ R3Ring::createObjects(Simulation& System)
   int BNext(buildIndex+2000);
   int IPrev(buildIndex+1190);
   int INext(buildIndex+1000);
-  for(size_t i=0;i<NInnerSurf;i++)
+
+  int sectorDuctBuildIndex;
+
+  for(int i=0;i<NInnerSurf;i++)
     {
       // outer
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,"1M -3M  -1");
@@ -309,13 +342,46 @@ R3Ring::createObjects(Simulation& System)
       makeCell("Roof",System,cellIndex++,0,0.0,HR*roofInsulationHR);
       makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofTopHR);
 
+      // Distinguish between ducts that run through the part of the door that contains
+      // the ring door and the ones that run through the longer part which has an
+      // insulation layer.
+      // At the moment, it is assumed that the ducts are fully in one of the two parts.
+      HeadRule ductHR;
+      HeadRule ductDoorHR;
+      HeadRule ductInsulationHR;
+
+      if(i == (ductsActive % NInnerSurf) || i == ((ductsActive + 1) % NInnerSurf)){
+        sectorDuctBuildIndex = buildIndex+2200+(i == 0 ? NInnerSurf-1 : i-1)*nDucts*10;
+        for(size_t j = 0; j < outerWallDucts.size(); ++j){
+          ductHR = ModelSupport::getHeadRule(
+              SMap,sectorDuctBuildIndex,"-"+std::to_string(j*10+7)
+          );
+
+          makeCell(
+            "OuterWallDuct" + std::to_string(j) + "Void",
+            System,cellIndex++,
+            0,0.0,
+            ModelSupport::getHeadRule(SMap,BNext,BPrev,"3M -1003M")
+            *ductHR
+          );
+
+          if(outerWallDucts[j].distFromRatchetWall > insulationCut){
+            ductInsulationHR = ductInsulationHR * ductHR.complement();
+          } else {
+            ductDoorHR = ductDoorHR * ductHR.complement();
+          }
+        }
+      }
+
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 3M -1008M -1002 -1503M");
-      makeCell("InnerFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+      makeCell("InnerFlat",System,cellIndex++,wallMat,0.0,
+        HR*fullLayerHR*ductInsulationHR);
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 1008M -1009M  -1002 -1508M");
-      makeCell("InsulationFlat",System,cellIndex++,0,0.0,HR*fullLayerHR);
+      makeCell("InsulationFlat",System,cellIndex++,0,0.0,
+        HR*fullLayerHR*ductInsulationHR);
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 1008M -1009M  -1503M 1508M");
@@ -323,15 +389,17 @@ R3Ring::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1001M 1009M -1003M -1002 -1503M");
-      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
+      makeCell("OuterFlat",System,cellIndex++,wallMat,0.0,
+        HR*fullLayerHR*ductInsulationHR);
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,
 				   "1002 3M -1003M -1 -1503M");
-      makeCell("OuterFlatEnd",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
+      makeCell("OuterFlatEnd",System,cellIndex++,wallMat,0.0,
+        HR*fullLayerHR*ductDoorHR);
 
       HR=ModelSupport::getHeadRule(SMap,BNext,BPrev,"1 -1001 -1003M  3");
-      makeCell("RatchetEndWall",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);  // former FrontWall cell
+      makeCell("RatchetEndWall",System,cellIndex++,wallMat,0.0,HR*fullLayerHR);
 
       HR=ModelSupport::getHeadRule
 	(SMap,BNext,BPrev,buildIndex,"1001 -1003M  (1003:1503) -9007N ");
@@ -403,7 +471,7 @@ R3Ring::createLinks()
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(60000);
 
   double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
-  size_t i;
+  int i;
   for(i=0;i<NInnerSurf;i++)
     {
       const Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
@@ -456,10 +524,6 @@ R3Ring::createLinks()
   FixedComp::setConnect(i,Origin+Z*height,-Z);
   FixedComp::setLinkSurf(i,-SMap.realSurf(buildIndex+6));
   FixedComp::nameSideIndex(i,"RoofInner");
-
-  i++;
-
-  return;
 }
 
 void

@@ -64,6 +64,8 @@
 #include "BremBlockGenerator.h"
 #include "ProximityShieldingGenerator.h"
 
+#include "R3RingWallDuct.h"
+
 #include "maxivVariables.h"
 
 // References [4-15] refer to construction drawings of MAX IV by the company Wihlborgs.
@@ -191,6 +193,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   RingDoorGenerator RGen;
 
   Control.addVariable(preName+"RingDoorWallID",1);
+  Control.addVariable(preName+"RingDuctsWallID",1);
 
   // There are two types of R3 ring doors, BD12 (all sectors except N = 1, 2, and 20)
   // and BD13 (sectors 1, 2, and 20) [16].
@@ -203,7 +206,61 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   RGen.setUnderStep(47.0, 7.0, 104.0); // [17]
   // For all sectors except N = 20, the ring door is at a distance of 2100 mm from the
   // downstream side of the ratchet end wall [5].
+  RGen.setUseTubes(false);
   RGen.generateDoor(Control,preName+"RingDoor",-210.0-RGen.getTotalOuterWidth()/2.0);
+}
+
+void
+R3RingDucts(FuncDataBase& Control,const std::string& preName)
+  /*!
+    Construct variables for R3RingDucts
+
+    The set of ducts through the Outer Wall is the probably (not all drawings in [4]
+    contain all dimensions, but the configurations are visibly similar) the same for
+    all sectors [4]. 
+
+    \param Control :: Control value
+    \param preName :: Prename (R3Ring typically)
+  */
+{
+  ELog::RegMethod RegA("R3RingDucts","R3RingDucts");
+
+  // Using the absolute height [5] and floor height [19] of the ring door to determine
+  // the offset.
+  const double absoluteHeightToFloorHeight = -8390.0 + 110.0;
+
+  std::vector<xraySystem::R3RingWallDuct> outerWallDucts{
+    {140.0, 8455.0+absoluteHeightToFloorHeight, 10.0},
+    {170.0, 8455.0+absoluteHeightToFloorHeight, 10.0},
+    {200.0, 8455.0+absoluteHeightToFloorHeight, 10.0},
+    {230.0, 8455.0+absoluteHeightToFloorHeight, 10.0},
+
+    {534.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
+    {564.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
+    {594.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
+    {624.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
+    {654.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
+    {684.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
+
+    {824.2, 8420.0+absoluteHeightToFloorHeight, 10.0},
+    {854.2, 8420.0+absoluteHeightToFloorHeight, 10.0},
+    {884.2, 8420.0+absoluteHeightToFloorHeight, 10.0},
+    {914.2, 8420.0+absoluteHeightToFloorHeight, 10.0},
+
+    {1279.9, 8420.0+absoluteHeightToFloorHeight, 15.0}
+  };
+
+  Control.addVariable(preName+"NDucts",outerWallDucts.size());
+  std::string ductName;
+  for(size_t i = 0; i < outerWallDucts.size(); ++i){
+    ductName = preName+"OuterWallDuct"+std::to_string(i);
+    Control.addVariable(
+      ductName+"DistFromRatchetWall",outerWallDucts[i].distFromRatchetWall);
+    Control.addVariable(
+      ductName+"FloorHeight",outerWallDucts[i].floorHeight);
+    Control.addVariable(
+      ductName+"HoleDiameter",outerWallDucts[i].holeDiameter);
+  }
 }
 
 void
@@ -386,8 +443,8 @@ R3RingVariables(FuncDataBase& Control)
   // See comment above on the derivation of OffsetCornerX.
   const double offsetCornerX = (
     offsetCornerY
-    +cos(icosagonAngle)*(ratchetWallInnerLength-offsetCornerY)
-    +tan18*sin(icosagonAngle)*(
+    +cos18*(ratchetWallInnerLength-offsetCornerY)
+    +tan18*sin18*(
       ratchetWallInnerLength-offsetCornerY
     )
   )/tan18;
@@ -422,6 +479,8 @@ R3RingVariables(FuncDataBase& Control)
   Control.addVariable(preName+"RoofMat","Concrete");
 
   R3RingDoors(Control,preName);
+
+  R3RingDucts(Control,preName);
 
   return;
 }
