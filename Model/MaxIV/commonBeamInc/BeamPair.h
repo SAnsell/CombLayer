@@ -44,7 +44,7 @@ class BeamPair :
  private:
 
   const std::string baseName;   ///< Base name
-  bool upFlag;             ///< Up/down
+  bool closed;             ///< Up/down
 
   double outLiftA;          ///< lift [when raised from beam cent]
   double outLiftB;          ///< lift [when raised from beam cent]

@@ -94,7 +94,7 @@ BeamPair::populate(const FuncDataBase& Control)
 
   FixedRotateGroup::populate(Control);
 
-  upFlag=Control.EvalDefTail<int>(keyName,baseName,"UpFlag",1);
+  closed=Control.EvalDefTail<int>(keyName,baseName,"Closed",0);
 
   outLiftA=Control.EvalVar<double>(keyName+"OutLiftA");
   outLiftB=Control.EvalVar<double>(keyName+"OutLiftB");
@@ -190,7 +190,7 @@ BeamPair::createSurfaces()
 
   // BLOCK A : [UPPER]
   // action in Y direction:
-  const double blockAY = upFlag ? gapA + outLiftA : gapA;
+  const double blockAY = closed ? gapA : gapA + outLiftA;
   const Geometry::Vec3D bA(bOrigin+X*xStepA+Z*yStepA-Y*blockAY);
   const Geometry::Vec3D wAxis=(bY*Y).unit();
 
@@ -204,7 +204,7 @@ BeamPair::createSurfaces()
 
   // BLOCK B : [LOWER]
   // action in Y direction:
-  const double blockBY = upFlag ? gapB + outLiftB : gapB;
+  const double blockBY = closed ? gapB : gapB + outLiftB;
   const Geometry::Vec3D bB(bOrigin+X*xStepB+Z*yStepB+Y*blockBY);
 
   ModelSupport::buildPlane(SMap,buildIndex+11,bB-bY*(length/2.0),bY);
