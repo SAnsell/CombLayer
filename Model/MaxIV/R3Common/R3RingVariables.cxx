@@ -207,11 +207,7 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   RGen.setInner(218.0, 205.0, 55.0);
   // Gap sizes from comparison of [17] and [19].
   RGen.setTopGaps(5.0, 5.0);
-  // In reality, the gap at the step from the outer part to the inner part is much
-  // smaller, only limited by how close the door can be pushed into the wall.
-  // The RingDoor model, however, applies the following value everywhere, leading to
-  // an overestimation of the gap size.
-  RGen.setGap(1.0);
+  RGen.setGap(1.0,0.2); // Step-gap size is an assumption.
   RGen.setUnderStep(48.0, 7.0, 104.0); // [17]
   // For all sectors except N = 20, the ring door is at a distance of 2100 mm from the
   // downstream side of the ratchet end wall [5].
