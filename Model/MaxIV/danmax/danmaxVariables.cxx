@@ -1251,6 +1251,7 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
   setVariable::VacuumBoxGenerator MBoxGen;
   setVariable::MLMonoGenerator MXtalGen;
 
+  std::string name;
   const double mlmFrontToPort2 = 21.95; // [25] distance b/w flange A front and  port 2 centre
   MBoxGen.setCF<CF40>();   // set ports
   const double MLMWallThick = 1.2; // Walls: front, side, back [25]
@@ -1308,8 +1309,9 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			  CF63::innerRadius, // [25, 36]
 			  "SteelUnknownGrade", // TODO: dummy
 			  "Glass");  // [36]
+  constexpr double port2YStep = -36.0;
   PItemGen.generatePort(Control,monoVesselKey+"Port2",
-			Geometry::Vec3D(0.0, -36.0, 0.0), // [25]
+			Geometry::Vec3D(0.0, port2YStep, 0.0), // [25]
 			Geometry::Vec3D(-1,0,0));
 
   // View port (vessel side, viewing at 2nd crystal surface)
@@ -1324,7 +1326,8 @@ void mirrorMonoPackage(FuncDataBase& Control,const std::string& monoKey)
 			Geometry::Vec3D(0.0, 0.0, -0.15), // [25]
 			Geometry::Vec3D(-1,0,0));
 
-  MXtalGen.generateMono(Control,monoKey+"MLM",-10.0,0.3,0.3);
+  name=monoKey+"MLM"; // DanMAXOpticsLineMLM
+  MXtalGen.generateMono(Control,name,port2YStep,0.3,0.3);
 }
 
 void
