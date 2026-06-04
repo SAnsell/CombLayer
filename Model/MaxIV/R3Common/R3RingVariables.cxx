@@ -125,8 +125,12 @@
 // [17] R3 Ring Concrete Door BD12: {CDDIR}/09 K_20-6 Betongblock och betongdörrar/K_20-6_1001.pdf
 // [18] R3 Ring Concrete Door BD12: {CDDIR}/09 K_20-6 Betongblock och betongdörrar/K_20-6_1002.pdf
 // [19] R3 Ring Concrete Doors Cross Section: {CDDIR}/08 K_20-6 Sektioner/K_20-6_619.pdf
+// [20] CARATELLI Drawing 06769-01-000, /mxn/groups/rad/Kvalitetshandbok-MAXIV/30_Normaldrift/1_SAR/Construction drawings/Beamlines/3 GeV/DanMAX/Caratelli/06769-01-000 SHEET 1-3 et 2-3-f.PDF
 //
 // Version History:
+// 1.2 - 2026-06-04
+//  - Ring-wall ducts
+//  - Revision of ring-wall-door and outer-wall dimensions
 // 1.1 - 2026-05-28
 //  - Revision of ring-wall dimensions.
 // 1.0 - 2026-05-01
@@ -201,9 +205,14 @@ R3RingDoors(FuncDataBase& Control,const std::string& preName)
   // thickness. Using the smaller thickness from [17].
   RGen.setOuter(238.0, 220.0);
   RGen.setInner(218.0, 205.0, 55.0);
-  // From comparison of [17] and [19].
+  // Gap sizes from comparison of [17] and [19].
   RGen.setTopGaps(5.0, 5.0);
-  RGen.setUnderStep(47.0, 7.0, 104.0); // [17]
+  // In reality, the gap at the step from the outer part to the inner part is much
+  // smaller, only limited by how close the door can be pushed into the wall.
+  // The RingDoor model, however, applies the following value everywhere, leading to
+  // an overestimation of the gap size.
+  RGen.setGap(1.0);
+  RGen.setUnderStep(48.0, 7.0, 104.0); // [17]
   // For all sectors except N = 20, the ring door is at a distance of 2100 mm from the
   // downstream side of the ratchet end wall [5].
   RGen.setUseTubes(false);
@@ -225,29 +234,31 @@ R3RingDucts(FuncDataBase& Control,const std::string& preName)
 {
   ELog::RegMethod RegA("R3RingDucts","R3RingDucts");
 
-  // Using the absolute height [5] and floor height [19] of the ring door to determine
-  // the offset.
-  const double absoluteHeightToFloorHeight = -8390.0 + 110.0;
+  // According to [19], the inner ring-door frame is at an absolute height of
+  // 83750 mm, and the height w.r.t. the floor is 2100 mm. The optical axis is
+  // 1300 mm above the floor (see, for example, Ref. [20]).
+  const double absoluteToOpticalAxisHeight = -8375.0+(210.0-130.0);
 
   std::vector<xraySystem::R3RingWallDuct> outerWallDucts{
-    {140.0, 8455.0+absoluteHeightToFloorHeight, 10.0},
-    {170.0, 8455.0+absoluteHeightToFloorHeight, 10.0},
-    {200.0, 8455.0+absoluteHeightToFloorHeight, 10.0},
-    {230.0, 8455.0+absoluteHeightToFloorHeight, 10.0},
+    {140.0, 8455.0+absoluteToOpticalAxisHeight, 10.0},
+    {170.0, 8455.0+absoluteToOpticalAxisHeight, 10.0},
+    {200.0, 8455.0+absoluteToOpticalAxisHeight, 10.0},
+    {230.0, 8455.0+absoluteToOpticalAxisHeight, 10.0},
 
-    {534.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
-    {564.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
-    {594.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
-    {624.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
-    {654.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
-    {684.2, 8420.0+absoluteHeightToFloorHeight, 5.0},
+    {534.2, 8420.0+absoluteToOpticalAxisHeight, 5.0},
+    {564.2, 8420.0+absoluteToOpticalAxisHeight, 5.0},
+    {594.2, 8420.0+absoluteToOpticalAxisHeight, 5.0},
+    {624.2, 8420.0+absoluteToOpticalAxisHeight, 5.0},
+    {654.2, 8420.0+absoluteToOpticalAxisHeight, 5.0},
+    {684.2, 8420.0+absoluteToOpticalAxisHeight, 5.0},
 
-    {824.2, 8420.0+absoluteHeightToFloorHeight, 10.0},
-    {854.2, 8420.0+absoluteHeightToFloorHeight, 10.0},
-    {884.2, 8420.0+absoluteHeightToFloorHeight, 10.0},
-    {914.2, 8420.0+absoluteHeightToFloorHeight, 10.0},
+    {824.2, 8420.0+absoluteToOpticalAxisHeight, 10.0},
+    {854.2, 8420.0+absoluteToOpticalAxisHeight, 10.0},
+    {884.2, 8420.0+absoluteToOpticalAxisHeight, 10.0},
+    {914.2, 8420.0+absoluteToOpticalAxisHeight, 10.0},
+    {944.2, 8420.0+absoluteToOpticalAxisHeight, 5.0},
 
-    {1279.9, 8420.0+absoluteHeightToFloorHeight, 15.0}
+    {1309.9, 8420.0+absoluteToOpticalAxisHeight, 15.0}
   };
 
   Control.addVariable(preName+"NDucts",outerWallDucts.size());
@@ -464,14 +475,15 @@ R3RingVariables(FuncDataBase& Control)
   // The current BeamRadius has a value of 8392 cm (527 m circumference).
   Control.addVariable(preName+"BeamRadius",outerWallRadius-150.0); // [12]
 
-  Control.addVariable(preName+"Insulation",10.0);
+  Control.addVariable(preName+"Insulation",10.0); // [5] and [19]
   Control.addVariable(preName+"InsulationCut",400.0);
-  Control.addVariable(preName+"InsulationDepth",80.0);
+  Control.addVariable(preName+"InsulationDepth",85.0); // [5] and [19]
 
-
+  // Height and depth from comparison of Refs. [19] (ring wall cross section)
+  // and [20] (one of many references that show optical-axis height).
   Control.addVariable(preName+"Height",180.0);
   Control.addVariable(preName+"Depth",130.0);
-  Control.addVariable(preName+"RoofThick",100.0);
+  Control.addVariable(preName+"RoofThick",110.0); // [19]
   Control.addVariable(preName+"FloorThick",100.0);
 
   Control.addVariable(preName+"WallMat","Concrete");
