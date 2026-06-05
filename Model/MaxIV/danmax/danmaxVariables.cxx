@@ -1944,6 +1944,8 @@ opticsVariables(FuncDataBase& Control,
   setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MShutterGen;
   name = opticsName+"MonoShutterS";
   MShutterGen.generate(Control,name);
+  Control.addVariable(name+"ApertureMat", "TungstenHPM1800");
+  Control.addVariable(name+"BlockMat", "TungstenHPM1800");
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+819.0-MShutterGen.getLength()/2.0);
