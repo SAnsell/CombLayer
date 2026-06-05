@@ -74,7 +74,7 @@ MonoShutterR3Generator<MainFlange,EntryExitFlange,ShutterFlange,AdapterFlange>
   blockHeight(5.0), // [2]
   blockLength(5.0), // [2]
   blockWidth(5.0), // [2]
-  blockMat("Tungsten"), // [2] see comment on tungsten material above
+  blockMat("TungstenK1800"), // [2]
   shutterDistance(7.05), // [5]
   shutterPortLength(19.0), // [5]
   shutterPortInnerRadius(ShutterFlange::innerRadius), // [5]

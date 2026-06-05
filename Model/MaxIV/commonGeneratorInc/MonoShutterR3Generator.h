@@ -34,6 +34,8 @@ namespace setVariable
   \brief MonoShutterR3Generator for variables
 
   Version history:
+  2.1.2 - 2026-06-05
+    - Unify default material for tungsten parts.
   2.1.1 - 2026-04-30
     - Blocks are up by default.
   2.1 - 2026-02-23
