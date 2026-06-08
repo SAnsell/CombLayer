@@ -97,6 +97,7 @@ RingDoor::populate(const FuncDataBase& Control)
   innerTopGap=Control.EvalVar<double>(keyName+"InnerTopGap");
   outerTopGap=Control.EvalVar<double>(keyName+"OuterTopGap");
   gapSpace=Control.EvalVar<double>(keyName+"GapSpace");
+  stepGapSpace=Control.EvalVar<double>(keyName+"StepGapSpace");
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
 
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
@@ -197,7 +198,7 @@ RingDoor::createSurfaces()
   ExternalCut::makeShiftedSurf
     (SMap,"innerWall",buildIndex+200,Y,innerThick);
   ExternalCut::makeShiftedSurf
-    (SMap,"innerWall",buildIndex+201,Y,innerThick+gapSpace);
+    (SMap,"innerWall",buildIndex+201,Y,innerThick+stepGapSpace);
 
   // lift step
   ExternalCut::makeShiftedSurf

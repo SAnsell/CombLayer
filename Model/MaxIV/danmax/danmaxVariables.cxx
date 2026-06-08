@@ -127,6 +127,7 @@
 // [41] /mxn/groups/rad/Beamlines/DanMAX/Drawings/Front End/PDF drawings/S1-2-2AG00580.pdf
 // [42] S1-7-2AJ00850.pdf
 // [43] S3-5-2AJ00851.pdf
+// [44] Experimental Hutch 1 Beam Stop Drawings /mxn/groups/rad/Beamlines/DanMAX/Drawings/Hutches/EH_Back_Wall_Shielding/240340_A.pdf, .../240339_A.pdf, and .../240344_A.pdf
 
 namespace setVariable
 {
@@ -569,6 +570,12 @@ exptHut1Variables(FuncDataBase& Control,
   // Detail E and lead thickness from Section A-A in [2]) needs to be subtracted.
   Control.addVariable(hutName+"FloorShineFrontLength",20.0-0.6);
 
+  // Beam-stop parameters from [44]
+  Control.addVariable(hutName+"BeamStopHeight",30.0);
+  Control.addVariable(hutName+"BeamStopThick",5.0);
+  Control.addVariable(hutName+"BeamStopWidth",30.0);
+  Control.addVariable(hutName+"BeamStopMat","Stainless304");
+
   // 5 chicanes, 3 wide ones (#0 - #2) and 2 small ones (#3 and #4).
   // Apart from the values set explicitly here, using default values for, e.g. gap
   // sizes, that have been deemed reasonable by site visits.
@@ -678,6 +685,13 @@ exptHut2Variables(FuncDataBase& Control,
   // Confirmed during site visit.
   Control.addVariable(hutName+"FloorShineFrontLength",0.0);
   Control.addVariable(hutName+"FloorShineBackLength",0.0);
+
+  // Beam-stop parameters assumed to be the same as in Experimental Hutch 1 [44].
+  Control.setVariable(hutName+"BeamStopHeight",30.0);
+  Control.setVariable(hutName+"BeamStopThick",5.0);
+  Control.setVariable(hutName+"BeamStopWidth",30.0);
+  Control.setVariable(hutName+"BeamStopXStep",-danmaxVar::SINCRYSBranchShift);
+  Control.addVariable(hutName+"BeamStopMat","Stainless304");
 
   Control.addVariable(hutName+"NChicane",3);
   PortChicaneGenerator PGen;
@@ -1933,6 +1947,8 @@ opticsVariables(FuncDataBase& Control,
   setVariable::MonoShutterR3Generator<CF200,CF63,CF40,CF40> MShutterGen;
   name = opticsName+"MonoShutterS";
   MShutterGen.generate(Control,name);
+  Control.addVariable(name+"ApertureMat", "TungstenHPM1800");
+  Control.addVariable(name+"BlockMat", "TungstenHPM1800");
   Control.addVariable(name+"XStep",SINCRYSBranchShift);
   Control.addVariable(name+"YStep",
     danmaxVar::absY::CM1+819.0-MShutterGen.getLength()/2.0);

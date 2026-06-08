@@ -75,7 +75,8 @@ namespace xraySystem
 
 ExperimentalHutch::ExperimentalHutch(const std::string& Key) :
   xraySystem::XRayHutchBase(Key),
-  attachSystem::ContainedComp()
+  attachSystem::ContainedComp(),
+  useBeamStop(false)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -126,7 +127,15 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   if (backPlateOuterActive)
     throw ColErr::AbsObjMethod(keyName+": Back wall outer plate is not implemented for ExperimentalHutch yet");
 
-  return;
+  beamStopHeight=Control.EvalVar<double>(keyName+"BeamStopHeight");
+  beamStopXStep=Control.EvalDefVar<double>(keyName+"BeamStopXStep",0.0);
+  beamStopThick=Control.EvalDefVar<double>(keyName+"BeamStopThick",0.0);
+  beamStopWidth=Control.EvalVar<double>(keyName+"BeamStopWidth");
+  if(beamStopThick > Geometry::zeroTol){
+    useBeamStop = true;
+  }
+  
+  beamStopMat=ModelSupport::EvalMat<int>(Control,keyName+"BeamStopMat");
 }
 
 void
@@ -178,11 +187,9 @@ ExperimentalHutch::createSurfaces()
     SurfMap::makePlane("BackWallInner",SMap,buildIndex+2,Origin+Y*(length-steelThick-pbBackThick),Y);
   else
     SurfMap::makePlane("BackWallInner",SMap,buildIndex+2,Origin+Y*(length),Y);
-
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(outWidth-steelThick-pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(ringWidth-steelThick-pbWallThick),X);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height-steelThick-pbRoofThick),Z);
-
 
   if (innerOutVoid>Geometry::zeroTol)
     {
@@ -274,6 +281,15 @@ ExperimentalHutch::createSurfaces()
     ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(frontPlateWidth/2.0),X);
     ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(frontPlateHeight/2.0),Z);
     ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(frontPlateHeight/2.0),Z);
+  }
+
+  // Beam Stop
+  if(useBeamStop){
+    ModelSupport::buildShiftedPlane(SMap,buildIndex+72,buildIndex+2,Y,-beamStopThick);
+    ModelSupport::buildPlane(SMap,buildIndex+73,Origin-X*(beamStopXStep+beamStopWidth/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+74,Origin+X*(-beamStopXStep+beamStopWidth/2.0),X);
+    ModelSupport::buildPlane(SMap,buildIndex+75,Origin-Z*beamStopHeight/2.0,Z);
+    ModelSupport::buildPlane(SMap,buildIndex+76,Origin+Z*beamStopHeight/2.0,Z);
   }
 
 
@@ -384,11 +400,18 @@ ExperimentalHutch::createObjects(Simulation& System)
   }
 
   HR = ModelSupport::getHeadRule(SMap, buildIndex, "-2 44 -4");
-  makeCell("FloorShineRingWall",System,cellIndex++,floorShineMat,0.0,HR*innerWall*tbFloorShine);
-  makeCell("FloorShineRingWallVoid",System,cellIndex++,voidMat,0.0,HR*innerWall*tbFloorShineVoid);
+  makeCell("FloorShineRingWall",System,cellIndex++,floorShineMat,0.0,
+    HR*innerWall*tbFloorShine);
+  makeCell("FloorShineRingWallVoid",System,cellIndex++,voidMat,0.0,
+    HR*innerWall*tbFloorShineVoid);
 
+  const HeadRule beamStopExclude = ModelSupport::getHeadRule(
+    SMap,buildIndex,"(-72:-73:74:-75:76)");
   if (floorShineBackLength>Geometry::zeroTol) {
     HR = ModelSupport::getAltHeadRule(SMap, buildIndex, "62 -2 -303A 43B -44");
+    if(useBeamStop){
+      HR*=beamStopExclude;
+    }
     makeCell("FloorShineBackWall", System, cellIndex++, floorShineMat, 0.0, HR*tbFloorShine);
     makeCell("FloorShineBackWallVoid",System,cellIndex++,voidMat,0.0,HR*tbFloorShineVoid);
   }
@@ -399,6 +422,12 @@ ExperimentalHutch::createObjects(Simulation& System)
 
   // Inner void cell
   HR= ModelSupport::getAltHeadRule(SMap,buildIndex, "-62 43 -44 -6 -343A -6B");
+  if(
+    useBeamStop &&
+    beamStopThick > floorShineBackLength-(outerThick+innerThick+pbBackThick)
+  ){
+    HR *= ModelSupport::getHeadRule(SMap,buildIndex,"(-72:-73:74:-75:76)");
+  }
   makeCell("Void",System,cellIndex++,voidMat,0.0,HR*voidFloor*innerVoid);
 
   // main external void
@@ -504,6 +533,12 @@ ExperimentalHutch::createObjects(Simulation& System)
     makeCell("FrontPlateHole",System,cellIndex++,voidMat,0.0,HR*frontWall);
     HR=ModelSupport::getSetHeadRule(SMap,buildIndex,"-101 103 -104 105 -106 7");
     makeCell("FrontPlate",System,cellIndex++,pbMat,0.0,HR*frontWall);
+  }
+
+  if(useBeamStop){
+    makeCell("BeamStop",System,cellIndex++,beamStopMat,0.0,
+      ModelSupport::getHeadRule(SMap,buildIndex,"72 -2 73 -74 75 -76")
+    );
   }
 
   // Outer void for pipe(s)

@@ -47,6 +47,7 @@ class RingDoorGenerator
   double outerWidth;            ///< width of outer door
 
   double gapSpace;              ///< clearance gaps
+  double stepGapSpace; ///< clearance gap at step from inner to outer part (ideally 0)
   double innerTopGap;           ///< clearance gap top linal
   double outerTopGap;           ///< clearance gaps
 
@@ -79,7 +80,8 @@ class RingDoorGenerator
   void setOuter(const double,const double);
   void setUnderStep(const double, const double, const double);
   /// Set the gap
-  void setGap(const double G) { gapSpace=G; }
+  void setGap(const double G) { gapSpace=G; stepGapSpace=G; }
+  void setGap(const double G, const double SG) { gapSpace=G; stepGapSpace=SG; }
   void setTopGaps(const double inner, const double outer){
     innerTopGap = inner;
     outerTopGap = outer;

@@ -54,6 +54,13 @@ class ExptHutGenerator  :
   double frontVoid;             ///< Extension for inner front void space
   double backVoid;              ///< Extension for inner back void space
 
+  double beamStopHeight;      ///< Beam stop height
+  double beamStopThick;       ///< Beam stop thickness
+  double beamStopWidth;       ///< Beam stop width
+  double beamStopXStep;       ///< Beam stop horizontal offset.
+
+  std::string beamStopMat;            ///< Beam stop material
+
  public:
 
   ExptHutGenerator();

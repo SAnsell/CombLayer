@@ -52,7 +52,7 @@ namespace setVariable
 RingDoorGenerator::RingDoorGenerator(const bool) :
   innerHeight(180.0),innerWidth(218.0),
   innerThick(40.0),outerHeight(210.0),
-  outerWidth(238.0),gapSpace(1.0),
+  outerWidth(238.0),gapSpace(1.0),stepGapSpace(1.0),
   innerTopGap(2.5),outerTopGap(5.0),
   tubeRadius(5.0),tubeXStep(30.0),tubeZStep(140.0),
   underStepHeight(6.5),underStepWidth(47.0),
@@ -68,7 +68,7 @@ RingDoorGenerator::RingDoorGenerator(const bool) :
 RingDoorGenerator::RingDoorGenerator() :
   innerHeight(205.0),innerWidth(220.0),
   innerThick(55.0),outerHeight(220.0),
-  outerWidth(240.0),gapSpace(1.0),
+  outerWidth(240.0),gapSpace(1.0),stepGapSpace(1.0),
   innerTopGap(2.5),outerTopGap(5.0),
   tubeRadius(5.0),tubeXStep(30.0),tubeZStep(140.0),
   underStepHeight(7.0),underStepWidth(48.0),
@@ -84,7 +84,7 @@ RingDoorGenerator::RingDoorGenerator() :
 RingDoorGenerator::RingDoorGenerator(const RingDoorGenerator& A) : 
   innerHeight(A.innerHeight),innerWidth(A.innerWidth),
   innerThick(A.innerThick),outerHeight(A.outerHeight),
-  outerWidth(A.outerWidth),gapSpace(A.gapSpace),
+  outerWidth(A.outerWidth),gapSpace(A.gapSpace),stepGapSpace(A.stepGapSpace),
   innerTopGap(A.innerTopGap),outerTopGap(A.outerTopGap),
   tubeRadius(A.tubeRadius),tubeXStep(A.tubeXStep),tubeZStep(A.tubeZStep),
   underStepHeight(A.underStepHeight),underStepWidth(A.underStepWidth),
@@ -113,6 +113,7 @@ RingDoorGenerator::operator=(const RingDoorGenerator& A)
       outerHeight=A.outerHeight;
       outerWidth=A.outerWidth;
       gapSpace=A.gapSpace;
+      stepGapSpace=A.stepGapSpace;
       innerTopGap=A.innerTopGap;
       outerTopGap=A.outerTopGap;
       tubeRadius=A.tubeRadius;
@@ -214,6 +215,7 @@ RingDoorGenerator::generateDoor(FuncDataBase& Control,
   Control.addVariable(keyName+"InnerTopGap",innerTopGap);
   Control.addVariable(keyName+"OuterTopGap",outerTopGap);
   Control.addVariable(keyName+"GapSpace",gapSpace);
+  Control.addVariable(keyName+"StepGapSpace",stepGapSpace);
     
   Control.addVariable(keyName+"InnerThick",innerThick);
 

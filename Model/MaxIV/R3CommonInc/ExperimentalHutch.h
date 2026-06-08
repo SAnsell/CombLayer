@@ -58,6 +58,14 @@ class ExperimentalHutch :
   double frontVoid;             ///< Extension for inner front void space
   double backVoid;              ///< Extension for inner back void space
 
+  bool useBeamStop;
+  double beamStopHeight;      ///< Beam stop height
+  double beamStopThick;       ///< Beam stop thickness
+  double beamStopWidth;       ///< Beam stop width
+  double beamStopXStep;       ///< Beam stop horizontal offset.
+
+  int beamStopMat;            ///< Beam stop material
+
   void populate(const FuncDataBase&) override;
   void createSurfaces();
   void createObjects(Simulation&);

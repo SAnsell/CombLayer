@@ -28,10 +28,15 @@ namespace xraySystem
 {
   /*!
     \class RingDoor
-    \version 1.0
-    \author S. Ansell
-    \date June 2018
+    \version 1.1
+    \author S. Ansell and U. Friman-Gayer
+    \date June 2026
     \brief Door for the outer wall of the R1/R3 rings
+
+  Version History:
+  1.1 - 2026-06-04
+    - More flexible control of gap sizes.
+  1.0 - 2018-06
   */
   
 class RingDoor :
@@ -50,6 +55,13 @@ class RingDoor :
   double innerTopGap;                 ///< top gap inner
   double outerTopGap;                 ///< top gap outer
   double gapSpace;                    ///< gap
+  // By design, the door should meet the wall where the step from inner to outer part
+  // is, and then be level with the inner and outer side of the wall. In reality, there
+  // will be a small gap left whose size is controlled by this parameter.
+  // Instead of letting the door protude towards the outside for a nonzero value of
+  // stepGapSpace, this model instead reduces (increases) the size of the outer (inner)
+  // part by stepGapSpace so that the door is still level with the walls.
+  double stepGapSpace;            ///< gap at step from inner to outer part (ideally 0)
  
   double outerHeight;                 ///< height of outer gap
   double outerWidth;                  ///< width of outer gap
