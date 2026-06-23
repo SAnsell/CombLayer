@@ -2353,10 +2353,6 @@ DANMAXvariables(FuncDataBase& Control)
   Control.addVariable(exptName+"BeamStopThick",5.0);
   Control.addVariable(exptName+"BeamStopMat","SteelUnknownGrade");
 
-  Control.addVariable(exptName+"SampleYStep",406.0);
-  Control.addVariable(exptName+"SampleRadius",10.0);
-  Control.addVariable(exptName+"SampleMat","Copper");
-
   return;
 }
 
