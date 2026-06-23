@@ -98,12 +98,12 @@ balderExptLine::populate(const FuncDataBase& Control)
   sampleRadius=Control.EvalDefVar<double>(keyName+"SampleRadius",0.0);
   sampleYStep=Control.EvalDefVar<double>(keyName+"SampleYStep",0.0);
 
+  beamStopRadius=Control.EvalDefVar<double>(keyName+"BeamStopRadius",0.0);
   beamStopYStep=Control.EvalDefVar<double>(keyName+"BeamStopYStep",0.0);
-  beamStopThick=Control.EvalVar<double>(keyName+"BeamStopThick");
-  beamStopRadius=Control.EvalVar<double>(keyName+"BeamStopRadius");
+  beamStopThick=Control.EvalDefVar<double>(keyName+"BeamStopThick",0.0);
 
   sampleMat=ModelSupport::EvalDefMat(Control,keyName+"SampleMat",0);
-  beamStopMat=ModelSupport::EvalMat<int>(Control,keyName+"BeamStopMat");
+  beamStopMat=ModelSupport::EvalDefMat(Control,keyName+"BeamStopMat",0);
 
   return;
 }
@@ -120,12 +120,14 @@ balderExptLine::createSurfaces()
     ModelSupport::buildSphere
       (SMap,buildIndex+7,Origin+Y*sampleYStep,sampleRadius);
 
-  ModelSupport::buildCylinder
-    (SMap,buildIndex+107,Origin+Y*beamStopYStep,Y,beamStopRadius);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+101,Origin+Y*(beamStopYStep-beamStopThick/2.0),Y);
-  ModelSupport::buildPlane
-    (SMap,buildIndex+102,Origin+Y*(beamStopYStep+beamStopThick/2.0),Y);
+  if (beamStopRadius>Geometry::zeroTol) {
+    ModelSupport::buildCylinder
+      (SMap,buildIndex+107,Origin+Y*beamStopYStep,Y,beamStopRadius);
+    ModelSupport::buildPlane
+      (SMap,buildIndex+101,Origin+Y*(beamStopYStep-beamStopThick/2.0),Y);
+    ModelSupport::buildPlane
+      (SMap,buildIndex+102,Origin+Y*(beamStopYStep+beamStopThick/2.0),Y);
+  }
 
   return;
 }
@@ -149,10 +151,11 @@ balderExptLine::buildObjects(Simulation& System)
       addOuterSurf(HR);
     }
 
-  HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 -107 ");
-  CellMap::makeCell("BeamStop",System,cellIndex++,beamStopMat,0.0,HR);
-  addOuterUnionSurf(HR);
-
+  if (beamStopRadius>Geometry::zeroTol) {
+    HR=ModelSupport::getHeadRule(SMap,buildIndex," 101 -102 -107 ");
+    CellMap::makeCell("BeamStop",System,cellIndex++,beamStopMat,0.0,HR);
+    addOuterUnionSurf(HR);
+  }
 
   return;
 }

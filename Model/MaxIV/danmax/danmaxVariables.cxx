@@ -2346,13 +2346,6 @@ DANMAXvariables(FuncDataBase& Control)
   danmaxVar::exptHut1Variables(Control,beamLineName);
   danmaxVar::exptHut2Variables(Control,beamLineName);
 
-  const std::string exptName=beamLineName+"ExptLine";
-
-  Control.addVariable(exptName+"BeamStopYStep",806.0);
-  Control.addVariable(exptName+"BeamStopRadius",10.0);
-  Control.addVariable(exptName+"BeamStopThick",5.0);
-  Control.addVariable(exptName+"BeamStopMat","SteelUnknownGrade");
-
   return;
 }
 
