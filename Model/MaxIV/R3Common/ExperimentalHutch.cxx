@@ -134,7 +134,7 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   if(beamStopThick > Geometry::zeroTol){
     useBeamStop = true;
   }
-  
+
   beamStopMat=ModelSupport::EvalMat<int>(Control,keyName+"BeamStopMat");
 }
 
@@ -741,8 +741,29 @@ ExperimentalHutch::createLinks()
     setConnect(19,pOut,-CX);
     setLinkSurf(19,SMap.realSurf(buildIndex+333));
     nameSideIndex(19,"TiltedWallOuter");
-
   }
+
+  // Link points to score particles entering the outer wall
+  // several lp are defined since the wall might be slpit by splitChicane
+
+  setConnect(20,Origin+Y*(length*2.0/3.0)-X*(outWidth-floorShineLength),-X);
+  setLinkSurf(20,-SMap.realSurf(buildIndex+43));
+  nameSideIndex(20,"OuterWallFloorShine1");
+
+  setConnect(21,Origin+Y*(length/3.0)-X*(outWidth-floorShineLength),-X);
+  setLinkSurf(21,-SMap.realSurf(buildIndex+43));
+  nameSideIndex(21,"OuterWallFloorShine2");
+
+  // Link points to score particles exiting the outer wall
+  // several lp are defined since the wall might be slpit by splitChicane
+
+  setConnect(22,Origin+Y*(length*2/3.0)-X*(outWidth+outerOutVoid),X);
+  setLinkSurf(22,SMap.realSurf(buildIndex+1033));
+  nameSideIndex(22,"OuterWallOutVoid1");
+
+  setConnect(23,Origin+Y*(length/3.0)-X*(outWidth+outerOutVoid),X);
+  setLinkSurf(23,SMap.realSurf(buildIndex+1033));
+  nameSideIndex(23,"OuterWallOutVoid2");
 
   return;
 }
