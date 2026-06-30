@@ -707,11 +707,11 @@ ExperimentalHutch::createLinks()
     nameSideIndex(15,"frontPlate");
   }
 
-  setConnect(16,Origin+Z*(height-steelThick-pbRoofThick),-Z);
+  setConnect(16,Origin+X*10.0+Y*10.0+Z*(height-steelThick-pbRoofThick),-Z);
   setLinkSurf(16,-SMap.realSurf(buildIndex+6));
   nameSideIndex(16,"RoofInner");
 
-  setConnect(17,Origin+Z*(height),Z);
+  setConnect(17,Origin+X*10.0+Y*1.0+Z*(height),Z);
   setLinkSurf(17,SMap.realSurf(buildIndex+36));
   nameSideIndex(17,"RoofOuter");
 
@@ -770,10 +770,33 @@ ExperimentalHutch::createLinks()
   setLinkSurf(24,SMap.realSurf(buildIndex+44));
   nameSideIndex(24,"InnerWallFloorShine");
 
-  // Link point to score particles exeting the inner wall
+  // Link point to score particles exiting the inner wall
   setConnect(25,Origin+Y*(length*2.0/3.0)+X*(ringWidth+outerOutVoid),-X);
   setLinkSurf(25,-SMap.realSurf(buildIndex+1034));
   nameSideIndex(25,"InnerWallOutVoid");
+
+  // Link points to score particles entering the back wall
+  // two lp with different x-offset
+  if (floorShineBackLength>Geometry::zeroTol)
+    setConnect(26,Origin+Y*(length-floorShineBackLength),Y);
+  else
+    setConnect(26,Origin+Y*Y*(length-steelThick-pbBackThick),Y);
+  setLinkSurf(26,SMap.realSurf(buildIndex+62));
+  nameSideIndex(26,"BackWallFloorShine1");
+
+  if (floorShineBackLength>Geometry::zeroTol)
+    setConnect(27,Origin+Y*(length-floorShineBackLength)-X*50.0,Y);
+  else
+    setConnect(27,Origin+Y*(length-steelThick-pbBackThick)-X*50.0,Y);
+  setLinkSurf(27,SMap.realSurf(buildIndex+62));
+  nameSideIndex(27,"BackWallFloorShine2");
+
+  // // Link point to score particles exiting the front wall
+  // // with a 50 cm x-offset from the frontWall link point
+  // setConnect(28,Origin+X*40.0,-Y);
+  // setLinkSurf(28,-SMap.realSurf(buildIndex+1));
+  // nameSideIndex(28,"frontWall1");
+
 
   return;
 }
