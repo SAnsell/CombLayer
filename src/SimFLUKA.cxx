@@ -229,9 +229,9 @@ SimFLUKA::getNextFTape() const
       nextFTape=std::abs(FPtr->getOutUnit());
 
   nextFTape++;
-  if (nextFTape>98)
+  if (nextFTape>512)
     throw ColErr::InContainerError<int>
-      (98,"Tallies have exhaused available ftapes [25-98]");
+      (512,"Tallies have exhaused available ftapes [25-512]");
   return nextFTape;
 }
 
