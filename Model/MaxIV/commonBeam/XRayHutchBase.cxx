@@ -69,7 +69,7 @@
 namespace xraySystem
 {
   XRayHutchBase::XRayHutchBase(const std::string& Key) :
-  attachSystem::FixedRotate(Key,24),
+  attachSystem::FixedRotate(Key,26),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),

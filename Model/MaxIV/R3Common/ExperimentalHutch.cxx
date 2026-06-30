@@ -765,6 +765,16 @@ ExperimentalHutch::createLinks()
   setLinkSurf(23,SMap.realSurf(buildIndex+1033));
   nameSideIndex(23,"OuterWallOutVoid2");
 
+  // Link point to score particles entering the inner wall
+  setConnect(24,Origin+Y*(length*2.0/3.0)+X*(ringWidth-floorShineLength),X);
+  setLinkSurf(24,SMap.realSurf(buildIndex+44));
+  nameSideIndex(24,"InnerWallFloorShine");
+
+  // Link point to score particles exeting the inner wall
+  setConnect(25,Origin+Y*(length*2.0/3.0)+X*(ringWidth+outerOutVoid),-X);
+  setLinkSurf(25,-SMap.realSurf(buildIndex+1034));
+  nameSideIndex(25,"InnerWallOutVoid");
+
   return;
 }
 
