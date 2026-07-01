@@ -234,7 +234,7 @@ PortChicane::createObjects(Simulation& System)
   makeCell("RightSide",System,cellIndex++,wallMat,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -14 -5 15");
-  makeCell("Base",System,cellIndex++,wallMat,0.0,HR);
+  makeCell("Base",System,cellIndex++,plateMat,0.0,HR);
 
   if (overHang>Geometry::zeroTol)
     {
@@ -246,7 +246,7 @@ PortChicane::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 23 -24 25 -15");
       makeCell("InnerBaseOver",System,cellIndex++,0,0.0,HR*outerHR);
- 
+
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 23 -13 15 -6");
       makeCell("OuterLeftOver",System,cellIndex++,0,0.0,HR*innerHR);
 
