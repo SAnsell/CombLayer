@@ -218,6 +218,25 @@ userBdx::setCell(const int RA,const int RB)
 }
 
 void
+userBdx::writeAuxScore(std::ostream& OX) const
+  /*!
+    Write an auxScore card
+    \param OX :: Ouput stream
+  */
+{
+  //  ELog::EM << "TODO: fix the usrBdx particle: why is it not uppercase here? " << particle << ELog::endWarn;
+  if (!auxParticle.empty() && (particle=="DOSE-EQ" || particle=="dose-eq")) // todo: fix (see userBin::writeAuxScore)
+    {
+      std::ostringstream cx;
+      cx<<"AUXSCORE USRBDX "<<auxParticle<<" - "<<keyName
+        <<" - - "<<doseType;
+      StrFunc::writeFLUKA(cx.str(),OX);
+    }
+  return;
+}
+
+
+void
 userBdx::write(std::ostream& OX) const
   /*!
     Write out the mesh tally into the tally region
@@ -236,7 +255,8 @@ userBdx::write(std::ostream& OX) const
   cx<<"USRBDX "<<energyB<<" "<<energyA<<" "<<nE<<" ";
   cx<<angleB<<" "<<angleA<<" "<<nA<<" &";
   StrFunc::writeFLUKA(cx.str(),OX);
-  return;
+  writeAuxScore(OX);
+ return;
 }
 
 }  // NAMESPACE flukaSystem

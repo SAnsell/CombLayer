@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   flukaTallyInc/userBdx.h
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef flukaSystem_userBdx_h
@@ -37,7 +37,7 @@ class userBdx : public flukaTally
  private:
 
   std::string particle;             ///< particle/type
-    
+
   bool eLogFlag;                    ///< energy log flag
   bool aLogFlag;                    ///< angle log flag
   bool fluenceFlag;                 ///< fluence score
@@ -50,17 +50,17 @@ class userBdx : public flukaTally
   size_t nA;                        ///< number of angle
   double angleA;                    ///< Angle start
   double angleB;                    ///< Angle end
-  
+
   int cellA;                        ///< start cell
   int cellB;                        ///< end cell
 
   int getLogType() const;
-  
+
  public:
 
   userBdx(const std::string&,const int,const int);
   userBdx(const userBdx&);
-  userBdx* clone() const override; 
+  userBdx* clone() const override;
   userBdx& operator=(const userBdx&);
   ~userBdx() override;
 
@@ -73,8 +73,9 @@ class userBdx : public flukaTally
 		const double,const size_t) override;
   void setEnergy(const bool,const double,
 			 const double,const size_t) override;
-  
-  void write(std::ostream&) const override;  
+
+  void writeAuxScore(std::ostream&) const override;
+  void write(std::ostream&) const override;
 };
 
 }
