@@ -413,6 +413,7 @@ opticsHutVariables(FuncDataBase& Control,
   // Determined by AR and UFG 260112 to be the same as hutch wall thickness.
   // Measured on site to confirm.
   PGen.setPlateThick(opticsHutchWallThick);
+  PGen.setWallThick(opticsHutchWallThick);
   // Assume it is the same as the hutch skin thickness as in Expt. Hutches.
   PGen.setSkin(skinThick);
 
