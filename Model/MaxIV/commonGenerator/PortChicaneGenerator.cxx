@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   commonGenerator/PortChicaneGenerator.cxx
  *
  * Copyright (c) 2004-2021 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -53,14 +53,14 @@ PortChicaneGenerator::PortChicaneGenerator() :
   width(60.0),height(45.0),clearGap(8.0),downGap(10.0),
   overHang(4.0),skinThick(0.3),plateThick(1.2),
   wallThick(0.8),plateMat("Lead"),
-  skinMat("SteelUnknownGrade"),wallMat("SteelUnknownGrade")
+  skinMat("SteelUnknownGrade"),wallMat("Lead")
   /*!
     Constructor and defaults
   */
 {}
 
 
-PortChicaneGenerator::PortChicaneGenerator(const PortChicaneGenerator& A) : 
+PortChicaneGenerator::PortChicaneGenerator(const PortChicaneGenerator& A) :
   width(A.width),height(A.height),clearGap(A.clearGap),
   downGap(A.downGap),overHang(A.overHang),
   skinThick(A.skinThick),plateThick(A.plateThick),
@@ -96,9 +96,9 @@ PortChicaneGenerator::operator=(const PortChicaneGenerator& A)
     }
   return *this;
 }
-  
-  
-PortChicaneGenerator::~PortChicaneGenerator() 
+
+
+PortChicaneGenerator::~PortChicaneGenerator()
  /*!
    Destructor
  */
@@ -110,8 +110,8 @@ PortChicaneGenerator::setSize(const double G,
 			      const double H)
   /*!
     Set length/width/height
-    \param G :: Gap 
-    \param W :: width 
+    \param G :: Gap
+    \param W :: width
     \param H :: height
    */
 {
@@ -150,7 +150,7 @@ PortChicaneGenerator::setWall(const double WT,const std::string& WMat)
   wallMat=WMat;
   return;
 }
-				  
+
 void
 PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
 					  const std::string& keyName,
@@ -158,7 +158,7 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
 					  const double zStep) const
 /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param xStep :: Step left/right fixed centre point
     \param zStep :: Step up/down fixed centre point
@@ -178,7 +178,7 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
 					  const double zStep) const
 /*!
     Primary funciton for setting the variables
-    \param Control :: Database to add variables 
+    \param Control :: Database to add variables
     \param keyName :: head name for variable
     \param wallName :: Wall name Left/Right/Roof etc
     \param xStep :: Step left/right fixed centre point
@@ -197,13 +197,13 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
   Control.addVariable(keyName+"ClearGap",clearGap);
   Control.addVariable(keyName+"DownStep",height-downGap);
   Control.addVariable(keyName+"OverHang",overHang);
-  
+
   Control.addVariable(keyName+"InnerSkin",skinThick);
   Control.addVariable(keyName+"InnerPlate",plateThick);
 
   Control.addVariable(keyName+"OuterSkin",skinThick);
   Control.addVariable(keyName+"OuterPlate",plateThick);
-  
+
   Control.addVariable(keyName+"WallThick",wallThick);
   Control.addVariable(keyName+"BaseThick",wallThick);
 
@@ -214,10 +214,10 @@ PortChicaneGenerator::generatePortChicane(FuncDataBase& Control,
   Control.addVariable(keyName+"SkinMat",skinMat);
   Control.addVariable(keyName+"PlateMat",plateMat);
 
-       
+
   return;
 
 }
 
-  
+
 }  // NAMESPACE setVariable
