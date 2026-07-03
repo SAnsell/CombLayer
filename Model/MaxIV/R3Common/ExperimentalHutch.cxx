@@ -75,8 +75,7 @@ namespace xraySystem
 
 ExperimentalHutch::ExperimentalHutch(const std::string& Key) :
   xraySystem::XRayHutchBase(Key),
-  attachSystem::ContainedComp(),
-  useBeamStop(false)
+  attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -127,14 +126,11 @@ ExperimentalHutch::populate(const FuncDataBase& Control)
   if (backPlateOuterActive)
     throw ColErr::AbsObjMethod(keyName+": Back wall outer plate is not implemented for ExperimentalHutch yet");
 
+  beamStopActive=Control.EvalDefVar<int>(keyName+"BeamStopActive",1);
   beamStopHeight=Control.EvalVar<double>(keyName+"BeamStopHeight");
   beamStopXStep=Control.EvalDefVar<double>(keyName+"BeamStopXStep",0.0);
   beamStopThick=Control.EvalDefVar<double>(keyName+"BeamStopThick",0.0);
   beamStopWidth=Control.EvalVar<double>(keyName+"BeamStopWidth");
-  if(beamStopThick > Geometry::zeroTol){
-    useBeamStop = true;
-  }
-
   beamStopMat=ModelSupport::EvalMat<int>(Control,keyName+"BeamStopMat");
 }
 
@@ -284,7 +280,7 @@ ExperimentalHutch::createSurfaces()
   }
 
   // Beam Stop
-  if(useBeamStop){
+  if(beamStopActive){
     ModelSupport::buildShiftedPlane(SMap,buildIndex+72,buildIndex+2,Y,-beamStopThick);
     ModelSupport::buildPlane(SMap,buildIndex+73,Origin-X*(beamStopXStep+beamStopWidth/2.0),X);
     ModelSupport::buildPlane(SMap,buildIndex+74,Origin+X*(-beamStopXStep+beamStopWidth/2.0),X);
@@ -409,7 +405,7 @@ ExperimentalHutch::createObjects(Simulation& System)
     SMap,buildIndex,"(-72:-73:74:-75:76)");
   if (floorShineBackLength>Geometry::zeroTol) {
     HR = ModelSupport::getAltHeadRule(SMap, buildIndex, "62 -2 -303A 43B -44");
-    if(useBeamStop){
+    if(beamStopActive){
       HR*=beamStopExclude;
     }
     makeCell("FloorShineBackWall", System, cellIndex++, floorShineMat, 0.0, HR*tbFloorShine);
@@ -423,7 +419,7 @@ ExperimentalHutch::createObjects(Simulation& System)
   // Inner void cell
   HR= ModelSupport::getAltHeadRule(SMap,buildIndex, "-62 43 -44 -6 -343A -6B");
   if(
-    useBeamStop &&
+    beamStopActive &&
     beamStopThick > floorShineBackLength-(outerThick+innerThick+pbBackThick)
   ){
     HR *= ModelSupport::getHeadRule(SMap,buildIndex,"(-72:-73:74:-75:76)");
@@ -535,7 +531,7 @@ ExperimentalHutch::createObjects(Simulation& System)
     makeCell("FrontPlate",System,cellIndex++,pbMat,0.0,HR*frontWall);
   }
 
-  if(useBeamStop){
+  if(beamStopActive){
     makeCell("BeamStop",System,cellIndex++,beamStopMat,0.0,
       ModelSupport::getHeadRule(SMap,buildIndex,"72 -2 73 -74 75 -76")
     );
