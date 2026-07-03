@@ -198,8 +198,9 @@ PortChicane::createObjects(Simulation& System)
   const int BPMat((backRemove) ? 0 : plateMat);
 
 
-  if (wallMat!=plateMat)
-    {
+  // the 'else' statement yields geometry errors -> commenting out
+  // if (wallMat!=plateMat)
+  //   {
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 21 23 -24 25 -6");
       makeCell("InnerSkinA",System,cellIndex++,FSkinMat,0.0,HR);
 
@@ -217,15 +218,15 @@ PortChicane::createObjects(Simulation& System)
 
       HR=ModelSupport::getHeadRule(SMap,buildIndex,"32 -42 23 -24 25 -6");
       makeCell("OuterSkinB",System,cellIndex++,BSkinMat,0.0,HR);
-    }
-  else
-    {
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 41 23 -24 25 -6");
-      makeCell("InnerPlate",System,cellIndex++,FPMat,0.0,HR);
+    // }
+  // else
+  //   {
+  //     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 41 23 -24 25 -6");
+  //     makeCell("InnerPlate",System,cellIndex++,FPMat,0.0,HR);
 
-      HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 23 -24 25 -6");
-      makeCell("OuterPlate",System,cellIndex++,BPMat,0.0,HR);
-    }
+  //     HR=ModelSupport::getHeadRule(SMap,buildIndex,"22 -32 23 -24 25 -6");
+  //     makeCell("OuterPlate",System,cellIndex++,BPMat,0.0,HR);
+  //   }
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12 13 -3 5 -106");
   makeCell("LeftSide",System,cellIndex++,wallMat,0.0,HR);
