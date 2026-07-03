@@ -591,6 +591,7 @@ exptHut1Variables(FuncDataBase& Control,
   // Measured on site to confirm.
   const double chicaneWallThick = exptHut1WallThick;
   PGen.setPlateThick(exptHut1WallThick);
+  PGen.setWallThick(exptHut1WallThick);
   PGen.setSkin(skinThick); // Measured on site.
 
   // Reference x value for all chicanes
