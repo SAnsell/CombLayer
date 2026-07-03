@@ -182,6 +182,7 @@ const double opticalAxisHeight = 131.88; // [1] (back view, MEASURED)
 // It was decided to use the value from [1] for all heights.
 const double hutchHeightAboveOpticalAxis = 411.0-opticalAxisHeight;
 const double exptHut1WallThick = 0.4; // "Lead Thickness Side Wall", Section A-A [2]
+const double exptHut2WallThick = 0.2; // "Lead Thickness Side Wall", Section A-A [3]
 // DanMAX has a horizontal double crystal monochromator (HDCM) and a multilayer
 // monochromator (MLM). It is possible to use either the HDCM, or the MLM, or both in
 // combination. In all cases, the nominal offset of the beam as it exits the MLM is
@@ -668,8 +669,8 @@ exptHut2Variables(FuncDataBase& Control,
   const double backLead = Control.EvalVar<double>(beamName+"ExptHut1PbFrontThick");
   const double skinThick = 0.1; // "Steel", Detail E [3]
   EGen.setSkin(skinThick);
-  EGen.setRoofLead(0.2); // "ROOF THK Pb", Section A-A [3]
-  EGen.setWallLead(0.2); // "Lead Thickness Side Wall", Section A-A [3]
+  EGen.setRoofLead(exptHut2WallThick); // "ROOF THK Pb", Section A-A [3]
+  EGen.setWallLead(exptHut2WallThick);
   EGen.setFloorShine(0.6, 20.0); // Detail J [3]
 
   // // "Lead Thickness", back view [1]
@@ -704,8 +705,9 @@ exptHut2Variables(FuncDataBase& Control,
   // Experimental Hutch 1 (!). Measured on site to confirm.
   // Supposedly, the chicane design from hutch 1 was reused when hutch 2 was added
   // later.
-  const double chicaneWallThick = exptHut1WallThick;
+  const double chicaneWallThick = exptHut2WallThick;
   PGen.setPlateThick(chicaneWallThick);
+  PGen.setWallThick(chicaneWallThick);
   PGen.setSkin(skinThick); // Measured on site.
 
   // Reference x value for all chicanes
