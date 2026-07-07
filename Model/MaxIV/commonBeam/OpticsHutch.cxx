@@ -477,6 +477,12 @@ OpticsHutch::createLinks()
   setLinkSurf(16,SMap.realSurf(buildIndex+36));
   nameSideIndex(16,"RoofOuter");
 
+  // Link points to score particles entering the outer wall
+  // (link point numbers 17- ~21 are used by OpticsStepHutch)
+  setConnect(30,Origin+Y*(length/2.0)-X*(outWidth-sideWallThick-innerOutVoid),-X);
+  setLinkSurf(30,-SMap.realSurf(buildIndex+1003));
+  nameSideIndex(30,"OuterWallInnerOutVoid");
+
   return;
 }
 
