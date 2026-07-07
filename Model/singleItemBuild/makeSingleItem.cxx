@@ -1886,7 +1886,7 @@ makeSingleItem::build(Simulation& System,
     if (item == "ExperimentalHutch")
       {
 	std::shared_ptr<xraySystem::ExperimentalHutch>
-	  eh(new xraySystem::ExperimentalHutch("ExptHutch"));
+	  eh(new xraySystem::ExperimentalHutch(item));
 
 	OR.addObject(eh);
 
@@ -2057,7 +2057,7 @@ makeSingleItem::build(Simulation& System,
 
         return;
       }
-    
+
     if (item == "MLMono")
       {
         std::vector<std::shared_ptr<xraySystem::MLMono>> mlmono;
@@ -2083,7 +2083,7 @@ makeSingleItem::build(Simulation& System,
     }
 
     if (item == "CM1BeamSplitter") {
-      std::shared_ptr<xraySystem::CM1BeamSplitter> beamSplitter = 
+      std::shared_ptr<xraySystem::CM1BeamSplitter> beamSplitter =
         std::make_shared<xraySystem::CM1BeamSplitter>("CM1BeamSplitter");
       OR.addObject(beamSplitter);
 
@@ -2092,9 +2092,9 @@ makeSingleItem::build(Simulation& System,
 
       return;
     }
-  
+
     if (item == "CM2Crystal") {
-      std::shared_ptr<xraySystem::CM2Crystal> cm2Crystal = 
+      std::shared_ptr<xraySystem::CM2Crystal> cm2Crystal =
         std::make_shared<xraySystem::CM2Crystal>("CM2Crystal");
       OR.addObject(cm2Crystal);
 
