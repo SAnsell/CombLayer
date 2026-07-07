@@ -373,16 +373,16 @@ PowerFilter::createLinks()
   const double yshift = filterGap/2.0+b1;
 
   FixedComp::setConnect(0,Origin-Y*(yshift+baseLength-holderLength),-Y);
-  FixedComp::setNamedLinkSurf(0,"Back",-SMap.realSurf(buildIndex+121));
+  FixedComp::setLinkSurf("Back",-SMap.realSurf(buildIndex+121));
 
   FixedComp::setConnect(1,Origin+Y*(yshift+baseLength+holderLength),Y);
-  FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+221));
+  FixedComp::setLinkSurf("Front",SMap.realSurf(buildIndex+221));
 
   FixedComp::setConnect(2,Origin-X*(holderWidth/2.0),-X);
-  FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+123));
+  FixedComp::setLinkSurf("Left",-SMap.realSurf(buildIndex+123));
 
   FixedComp::setConnect(3,Origin+X*(holderWidth/2.0),X);
-  FixedComp::setNamedLinkSurf(2,"Right",SMap.realSurf(buildIndex+124));
+  FixedComp::setLinkSurf("Right",SMap.realSurf(buildIndex+124));
 
   // same code as in buildObjects
   bool A = holderDepth - holderHeight - filterZOffset > 0.0;
@@ -393,10 +393,10 @@ PowerFilter::createLinks()
   const double zmax = A ? holderDepth-dz : holderHeight+dz;
 
   FixedComp::setConnect(4,Origin-Z*(zmin),-Z);
-  FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+nzmin));
+  FixedComp::setLinkSurf("Bottom",-SMap.realSurf(buildIndex+nzmin));
 
   FixedComp::setConnect(5,Origin+Z*(zmax),Z);
-  FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+nzmax));
+  FixedComp::setLinkSurf("Top",SMap.realSurf(buildIndex+nzmax));
 
   return;
 }

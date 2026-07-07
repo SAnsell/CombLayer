@@ -211,22 +211,22 @@ GTFWall::createLinks()
   ELog::RegMethod RegA("GTFWall","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setNamedLinkSurf(0,"Back",SurfMap::getSignedSurf("#back"));
+  FixedComp::setLinkSurf("Back",SurfMap::getSignedSurf("#back"));
 
   FixedComp::setConnect(1,Origin+Y*(length),Y);
-  FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("Front",SMap.realSurf(buildIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(width),-X);
-  FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("Left",-SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(3,Origin,X);
-  FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("Right",SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*(depth),-Z);
-  FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("Bottom",-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(5,Origin+Z*(height),Z);
-  FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("Top",SMap.realSurf(buildIndex+6));
 
   return;
 }

@@ -242,41 +242,41 @@ WallCut::createLinks()
     
   if (length>Geometry::zeroTol)
     {
-      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-      FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-      FixedComp::setConnect(1,Origin+Y*(length/2.0),Y); 
+      FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+      FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+      FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+      FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
     }
   else
     {
-      attachSystem::calcBoundaryLink(*this,0,wallBoundary,Origin,-Y);
-      attachSystem::calcBoundaryLink(*this,1,wallBoundary,Origin,Y);
+      attachSystem::calcBoundaryLink(*this,"front",wallBoundary,Origin,-Y);
+      attachSystem::calcBoundaryLink(*this,"back",wallBoundary,Origin,Y);
     }
 
   if (width>Geometry::zeroTol)
     {
-      FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-      FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-      FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-      FixedComp::setConnect(3,Origin+X*(width/2.0),X); 
+      FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+      FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+      FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+      FixedComp::setConnect("right",Origin+X*(width/2.0),X);
     }
   else
     {
-      attachSystem::calcBoundaryLink(*this,2,wallBoundary,Origin,-X);
-      attachSystem::calcBoundaryLink(*this,3,wallBoundary,Origin,X);
+      attachSystem::calcBoundaryLink(*this,"left",wallBoundary,Origin,-X);
+      attachSystem::calcBoundaryLink(*this,"right",wallBoundary,Origin,X);
     }
-  
+
   if (height>Geometry::zeroTol)
     {
-      FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-      FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
-      FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-      FixedComp::setConnect(5,Origin+Z*(height/2.0),Z); 
+      FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+      FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
+      FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+      FixedComp::setConnect("top",Origin+Z*(height/2.0),Z);
     }
   else
     {
-      attachSystem::calcBoundaryLink(*this,4,wallBoundary,Origin,-Z);
-      attachSystem::calcBoundaryLink(*this,5,wallBoundary,Origin,Z);
+      attachSystem::calcBoundaryLink(*this,"base",wallBoundary,Origin,-Z);
+      attachSystem::calcBoundaryLink(*this,"top",wallBoundary,Origin,Z);
     }
 
   

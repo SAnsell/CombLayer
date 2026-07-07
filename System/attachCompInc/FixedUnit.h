@@ -35,30 +35,34 @@ namespace attachSystem
 */
 
 class FixedUnit : public FixedComp
-{  
+{
  public:
 
-  /// Simple constructor
-  FixedUnit(const std::string& K) :
-    FixedComp(0,K) {}
-
   /// Simple constructor [no objectregister]
-  FixedUnit(const std::string& K,const size_t I) :
-    FixedComp(I,K) {}
+  explicit FixedUnit(FixedComp::unregistered_t,const std::string& K) :
+    FixedComp(FixedComp::unregistered,K) {}
+
+  // NOTE: because FixedComp(const std::string&,const size_t) is bound
+  // to the *legacy* (KeyName,NL) constructor (kept for source/behaviour
+  // compatibility with not-yet-migrated (Key,NL) call sites -- NL still
+  // pre-sizes LU there), the 2-argument constructor below does NOT set
+  // a custom resSize -- it always uses the default (10000). Use the
+  // 3-argument constructor for an explicit resSize override.
 
   /// Simple constructor [with objectregister]
-  FixedUnit(const size_t I,const std::string& K) :
-    FixedComp(K,I) {}
+  FixedUnit(const std::string& K,const size_t legacyNL =10000) :
+    FixedComp(K,legacyNL) {}
 
-  /// Simple constructor [extra range]
-  FixedUnit(const std::string& K,const size_t I,const size_t S) :
-    FixedComp(K,I,S) {}
+  /// Simple constructor [with objectregister, explicit reserved range]
+  FixedUnit(const std::string& K,const size_t legacyNL,
+	    const size_t resSize) :
+    FixedComp(K,legacyNL,resSize) {}
 
-  /// Simple constructor with full axis
-  FixedUnit(const std::string& K,const size_t I,
-	    const Geometry::Vec3D& OO,const Geometry::Vec3D& XX, 
+  /// Simple constructor with full axis [no objectregister]
+  FixedUnit(FixedComp::unregistered_t,const std::string& K,
+	    const Geometry::Vec3D& OO,const Geometry::Vec3D& XX,
 	    const Geometry::Vec3D& YY,const Geometry::Vec3D& ZZ) :
-    FixedComp(I,K)
+    FixedComp(FixedComp::unregistered,K)
   {
     FixedComp::createUnitVector(OO,XX,YY,ZZ);
   }
@@ -66,14 +70,14 @@ class FixedUnit : public FixedComp
   /// System to get axis from existing FC
   FixedUnit(const std::string& K,const FixedComp& FC,
 	    const long int index) :
-    FixedComp(0,K) { createUnitVector(FC,index); }
+    FixedComp(FixedComp::unregistered,K) { createUnitVector(FC,index); }
 
   /// System to get axis from existing FC
   FixedUnit(const std::string& K,const FixedComp& FC,
 	    const std::string linkName) :
-    FixedComp(0,K)
+    FixedComp(FixedComp::unregistered,K)
   { createUnitVector(FC,FC.getSideIndex(linkName)); }
-      
+
   FixedUnit(const FixedUnit& A) : FixedComp(A) {}
   FixedUnit(const FixedComp& A) : FixedComp(A) {}
   ~FixedUnit() override {}     ///< Destructor

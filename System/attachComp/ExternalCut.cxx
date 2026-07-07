@@ -460,7 +460,7 @@ ExternalCut::getValidRule(const std::string& extName,
 void
 ExternalCut::createLink(const std::string& extName,
 			attachSystem::FixedComp& FC,
-			const size_t linkIndex,
+			const std::string& linkName,
 			const Geometry::Vec3D& Org,
 			const Geometry::Vec3D& YAxis) const
   /*!
@@ -469,7 +469,7 @@ ExternalCut::createLink(const std::string& extName,
     is used as the link point.
     \param extName :: Cut Unit item
     \param FC :: Fixed component [most likely this]
-    \param linkIndex :: link point to build
+    \param linkName :: link point name to build
     \param Org :: Origin
     \param YAxis :: YAxis
    */
@@ -480,21 +480,21 @@ ExternalCut::createLink(const std::string& extName,
   if (!CU)
     throw ColErr::InContainerError<std::string>
       (extName,"FC:"+FC.getKeyName()+" is not active");
-  
+
   if (CU->main.isEmpty())
     throw ColErr::InContainerError<std::string>
       (extName,"FC:"+FC.getKeyName()+" has no surface rule");
 
   const std::string keyN=FC.getKeyName();
-  FC.setLinkSurf(linkIndex,CU->main.complement());
-  FC.setBridgeSurf(linkIndex,CU->divider);
+  FC.setLinkSurf(linkName,CU->main.complement());
+  FC.setBridgeSurf(linkName,CU->divider);
 
   const Geometry::Vec3D LPoint=
     (!CU->divider.isEmpty()) ?
-    SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider) : 
+    SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,CU->divider) :
     SurInter::getLinePoint(Org+YAxis,-YAxis,CU->main,Org);
 
-  FC.setConnect(linkIndex,LPoint,YAxis);
+  FC.setConnect(linkName,LPoint,YAxis);
   return;
 }
   

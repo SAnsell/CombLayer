@@ -245,7 +245,7 @@ BeamBox::createLinks()
 {
   ELog::RegMethod RegA("BeamBox","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);  // Front and back
+  ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
 
   FixedComp::setConnect(1,Origin+Y*(backThick+length),Y);
   FixedComp::setConnect(2,Origin-X*(wallThick+width/2.0),-X);
@@ -253,11 +253,11 @@ BeamBox::createLinks()
   FixedComp::setConnect(4,Origin-Z*(wallThick+height/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(wallThick+height/2.0),Z);
 
-  FixedComp::setNamedLinkSurf(1,"back",SMap.realSurf(buildIndex+12));
-  FixedComp::setNamedLinkSurf(2,"left",-SMap.realSurf(buildIndex+13));
-  FixedComp::setNamedLinkSurf(3,"right",SMap.realSurf(buildIndex+14));
-  FixedComp::setNamedLinkSurf(4,"base",-SMap.realSurf(buildIndex+15));
-  FixedComp::setNamedLinkSurf(5,"top",SMap.realSurf(buildIndex+16));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   return;
 }

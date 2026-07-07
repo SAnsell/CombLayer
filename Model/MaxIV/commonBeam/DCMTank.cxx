@@ -350,8 +350,8 @@ DCMTank::createLinks()
   const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
 
-  ExternalCut::createLink("front",*this,0,ACentre,-Y);
-  ExternalCut::createLink("back",*this,1,BCentre,Y);
+  ExternalCut::createLink("front",*this,"front",ACentre,-Y);
+  ExternalCut::createLink("back",*this,"back",BCentre,Y);
 
   return;
 }

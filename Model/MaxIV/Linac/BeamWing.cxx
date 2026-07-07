@@ -164,8 +164,8 @@ BeamWing::createLinks()
 {
   ELog::RegMethod RegA("BeamWing","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);  // Front and back
-  ExternalCut::createLink("back",*this,1,Origin,Y);   // Front and back
+  ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
+  ExternalCut::createLink("back",*this,"back",Origin,Y);   // Front and back
   
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);

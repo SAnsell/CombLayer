@@ -271,7 +271,7 @@ Torpedo::createLinks()
   // set Links
   // First point is center line intersect
   const Geometry::Vec3D OP=Origin+Y*innerRadius;
-  ExternalCut::createLink("back",*this,1,OP,Y);
+  ExternalCut::createLink("back",*this,"back",OP,Y);
 
 	     FixedComp::setConnect(2,Origin-X*(Width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(Width/2.0),X);

@@ -258,7 +258,7 @@ TwinPipe::createLinks()
 {
   ELog::RegMethod RegA("TwinPipe","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("front",*this,"front",Origin,-Y);
 
   const Geometry::Vec3D ACent=Origin+X*pipeAXStep+Z*pipeAZStep;
   const Geometry::Vec3D BCent=Origin+X*pipeBXStep+Z*pipeBZStep;

@@ -66,7 +66,7 @@ namespace essSystem
 {
 
 VespaHut::VespaHut(const std::string& Key) : 
-  attachSystem::FixedRotateGroup(Key,"Inner",6,"Mid",6,"Outer",6),
+  attachSystem::FixedRotateGroup(Key,"Inner","Mid","Outer"),
   attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -246,51 +246,51 @@ VespaHut::createLinks()
   attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
 
   // INNER VOID
-  innerFC.setConnect(0,Origin-Y*(voidLength/2.0),-Y);
-  innerFC.setConnect(1,Origin+Y*(voidLength/2.0),Y);
-  innerFC.setConnect(2,Origin-X*(voidWidth/2.0),-X);
-  innerFC.setConnect(3,Origin+X*(voidWidth/2.0),X);
-  innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
-  innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
+  innerFC.setConnect("front",Origin-Y*(voidLength/2.0),-Y);
+  innerFC.setConnect("back",Origin+Y*(voidLength/2.0),Y);
+  innerFC.setConnect("left",Origin-X*(voidWidth/2.0),-X);
+  innerFC.setConnect("right",Origin+X*(voidWidth/2.0),X);
+  innerFC.setConnect("base",Origin-Z*voidDepth,-Z);
+  innerFC.setConnect("top",Origin+Z*voidHeight,Z);
 
-  innerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  innerFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  innerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  innerFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  innerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  innerFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  innerFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  innerFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  innerFC.setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  innerFC.setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  innerFC.setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  innerFC.setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
-  
+
   // MID Fe Layer
-  midFC.setConnect(0,Origin-Y*(feFront+voidLength/2.0),-Y);
-  midFC.setConnect(1,Origin+Y*(feBack+voidLength/2.0),Y);
-  midFC.setConnect(2,Origin-X*(feLeftWall+voidWidth/2.0),-X);
-  midFC.setConnect(3,Origin+X*(feRightWall+voidWidth/2.0),X);
-  midFC.setConnect(4,Origin-Z*(feFloor+voidDepth),-Z);
-  midFC.setConnect(5,Origin+Z*(feRoof+voidHeight),Z);  
+  midFC.setConnect("front",Origin-Y*(feFront+voidLength/2.0),-Y);
+  midFC.setConnect("back",Origin+Y*(feBack+voidLength/2.0),Y);
+  midFC.setConnect("left",Origin-X*(feLeftWall+voidWidth/2.0),-X);
+  midFC.setConnect("right",Origin+X*(feRightWall+voidWidth/2.0),X);
+  midFC.setConnect("base",Origin-Z*(feFloor+voidDepth),-Z);
+  midFC.setConnect("top",Origin+Z*(feRoof+voidHeight),Z);
 
-  midFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  midFC.setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  midFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  midFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  midFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  midFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  midFC.setLinkSurf("front",-SMap.realSurf(buildIndex+11));
+  midFC.setLinkSurf("back",SMap.realSurf(buildIndex+12));
+  midFC.setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  midFC.setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  midFC.setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  midFC.setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
-  
+
     // OUTER VOID
-  outerFC.setConnect(0,Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
-  outerFC.setConnect(1,Origin+Y*(concBack+feBack+voidLength/2.0),Y);
-  outerFC.setConnect(2,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
-  outerFC.setConnect(3,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
-  outerFC.setConnect(4,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
-  outerFC.setConnect(5,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
+  outerFC.setConnect("front",Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
+  outerFC.setConnect("back",Origin+Y*(concBack+feBack+voidLength/2.0),Y);
+  outerFC.setConnect("left",Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
+  outerFC.setConnect("right",Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
+  outerFC.setConnect("base",Origin-Z*(concFloor+feFloor+voidDepth),-Z);
+  outerFC.setConnect("top",Origin+Z*(concRoof+feRoof+voidHeight),Z);
 
-  outerFC.setLinkSurf(0,-SMap.realSurf(buildIndex+21));
-  outerFC.setLinkSurf(1,SMap.realSurf(buildIndex+22));
-  outerFC.setLinkSurf(2,-SMap.realSurf(buildIndex+23));
-  outerFC.setLinkSurf(3,SMap.realSurf(buildIndex+24));
-  outerFC.setLinkSurf(4,-SMap.realSurf(buildIndex+25));
-  outerFC.setLinkSurf(5,SMap.realSurf(buildIndex+26));
+  outerFC.setLinkSurf("front",-SMap.realSurf(buildIndex+21));
+  outerFC.setLinkSurf("back",SMap.realSurf(buildIndex+22));
+  outerFC.setLinkSurf("left",-SMap.realSurf(buildIndex+23));
+  outerFC.setLinkSurf("right",SMap.realSurf(buildIndex+24));
+  outerFC.setLinkSurf("base",-SMap.realSurf(buildIndex+25));
+  outerFC.setLinkSurf("top",SMap.realSurf(buildIndex+26));
 
   
   return;

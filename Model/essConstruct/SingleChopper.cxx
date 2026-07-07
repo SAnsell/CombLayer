@@ -76,7 +76,7 @@ namespace essConstruct
 {
   
 SingleChopper::SingleChopper(const std::string& Key) : 
-  attachSystem::FixedRotateGroup(Key,"Main",8,"Beam",2,"BuildBeam",0),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam","BuildBeam"),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
   motor(new essConstruct::Motor(Key+"Motor")),
@@ -339,33 +339,33 @@ SingleChopper::createLinks()
 
   setDefault("Main");
 
-  mainFC.setConnect(0,Origin-Y*(length/2.0),-Y);
-  mainFC.setConnect(1,Origin+Y*(length/2.0),Y);
-  mainFC.setConnect(2,Origin-X*(width/2.0),-X);
-  mainFC.setConnect(3,Origin+X*(width/2.0),X);
-  mainFC.setConnect(4,Origin-Z*(height/2.0),-Z);
-  mainFC.setConnect(5,Origin+Z*(height/2.0),Z);
-  mainFC.setConnect(6,Origin-X*(width/2.0)+Z*(height/2.0),Z);
-  mainFC.setConnect(7,Origin+X*(width/2.0)+Z*(height/2.0),Z);
+  mainFC.setConnect("front",Origin-Y*(length/2.0),-Y);
+  mainFC.setConnect("back",Origin+Y*(length/2.0),Y);
+  mainFC.setConnect("left",Origin-X*(width/2.0),-X);
+  mainFC.setConnect("right",Origin+X*(width/2.0),X);
+  mainFC.setConnect("base",Origin-Z*(height/2.0),-Z);
+  mainFC.setConnect("top",Origin+Z*(height/2.0),Z);
+  mainFC.setConnect("topLeft",Origin-X*(width/2.0)+Z*(height/2.0),Z);
+  mainFC.setConnect("topRight",Origin+X*(width/2.0)+Z*(height/2.0),Z);
 
-  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
-  mainFC.setLinkSurf(6,SMap.realSurf(buildIndex+6));
-  mainFC.setLinkSurf(7,SMap.realSurf(buildIndex+6));
+  mainFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  mainFC.setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  mainFC.setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  mainFC.setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  mainFC.setLinkSurf("top",SMap.realSurf(buildIndex+6));
+  mainFC.setLinkSurf("topLeft",SMap.realSurf(buildIndex+6));
+  mainFC.setLinkSurf("topRight",SMap.realSurf(buildIndex+6));
 
   // These are protected from ZVertial re-orientation
   const Geometry::Vec3D BC(beamFC.getCentre());
   const Geometry::Vec3D BY(beamFC.getY());
-  
-  beamFC.setConnect(0,BC-BY*(length/2.0),-BY);
-  beamFC.setConnect(1,BC+BY*(length/2.0),BY);
 
-  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  beamFC.setConnect("front",BC-BY*(length/2.0),-BY);
+  beamFC.setConnect("back",BC+BY*(length/2.0),BY);
+
+  beamFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   // copy to main:
   copyLinkObjects(mainFC);

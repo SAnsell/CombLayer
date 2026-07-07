@@ -332,8 +332,8 @@ YagUnit::createLinks()
 {
   ELog::RegMethod RegA("YagUnit","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
-  ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
+  ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
+  ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
   FixedComp::setConnect(2,Origin-Z*(depth+plateThick),Z);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+155));

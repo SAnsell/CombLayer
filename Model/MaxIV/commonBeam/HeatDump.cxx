@@ -66,7 +66,7 @@ namespace xraySystem
 
 HeatDump::HeatDump(const std::string& Key) :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",4),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -355,15 +355,15 @@ HeatDump::createLinks()
   // Beam position is lift/no-lift so 1-2 are no-lift 3-4 are lifted
 
   // currently no divider plane provided -- use with caution
-  beamFC.setLinkSurf(0,SMap.realSurf(buildIndex+7));
-  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+7));
-  beamFC.setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  beamFC.setLinkSurf(3,SMap.realSurf(buildIndex+7));
+  beamFC.setLinkSurf("noLiftFront",SMap.realSurf(buildIndex+7));
+  beamFC.setLinkSurf("noLiftBack",SMap.realSurf(buildIndex+7));
+  beamFC.setLinkSurf("liftFront",SMap.realSurf(buildIndex+7));
+  beamFC.setLinkSurf("liftBack",SMap.realSurf(buildIndex+7));
 
-  beamFC.setConnect(0,bOrigin-bY*radius-bZ*lift,-bY);
-  beamFC.setConnect(1,bOrigin+bY*radius-bZ*lift,bY);
-  beamFC.setConnect(2,bOrigin-bY*radius,-bY);
-  beamFC.setConnect(3,bOrigin+bY*radius,bY);
+  beamFC.setConnect("noLiftFront",bOrigin-bY*radius-bZ*lift,-bY);
+  beamFC.setConnect("noLiftBack",bOrigin+bY*radius-bZ*lift,bY);
+  beamFC.setConnect("liftFront",bOrigin-bY*radius,-bY);
+  beamFC.setConnect("liftBack",bOrigin+bY*radius,bY);
     
   return;
 }

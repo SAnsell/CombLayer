@@ -68,7 +68,7 @@ namespace essSystem
 
 BunkerFeed::BunkerFeed(const std::string& Key,
                        const size_t Index)  :
-  attachSystem::FixedUnit(Key+std::to_string(Index),2),
+  attachSystem::FixedUnit(FixedComp::unregistered,Key+std::to_string(Index)),
   ID(Index),baseName(Key),
   voidTrack(new ModelSupport::BoxLine(keyName))
   /*!

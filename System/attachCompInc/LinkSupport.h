@@ -44,7 +44,7 @@ size_t getPoint(const objectGroups&,
 		const size_t,Geometry::Vec3D&);
  
 void
-calcBoundaryLink(attachSystem::FixedComp&,const size_t,
+calcBoundaryLink(attachSystem::FixedComp&,const std::string&,
 		 const HeadRule&,const Geometry::Vec3D&,
 		 const Geometry::Vec3D&);
 

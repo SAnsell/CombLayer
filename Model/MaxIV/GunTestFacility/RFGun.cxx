@@ -597,10 +597,10 @@ RFGun::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   FixedComp::setConnect(6,Origin+Y*(frontTubeLength-frontPreFlangeThick),Y);
-  FixedComp::setNamedLinkSurf(6,"Cathode", SMap.realSurf(buildIndex+21));
+  FixedComp::setLinkSurf("Cathode", SMap.realSurf(buildIndex+21));
 
   FixedComp::setConnect(7,Origin+Y*(frontTubeLength-frontPreFlangeThick+cavityOffset+irisThick+cavityLength/2.0)-Z*(frameWidth/2.0),-Z);
-  FixedComp::setNamedLinkSurf(7,"InsertLower", SMap.realSurf(buildIndex+1057));
+  FixedComp::setLinkSurf("InsertLower", SMap.realSurf(buildIndex+1057));
 
   return;
 }

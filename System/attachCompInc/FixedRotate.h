@@ -52,10 +52,11 @@ class FixedRotate  : public FixedComp
   
  public:
 
-  explicit FixedRotate(const size_t);
-  FixedRotate(const size_t,const std::string&);
-  FixedRotate(const std::string&,const size_t);
-  FixedRotate(const std::string&,const size_t,const size_t);
+  explicit FixedRotate(FixedComp::unregistered_t,const std::string& ="Null");
+  explicit FixedRotate(const std::string&);
+  // Legacy constructor: size_t (link-point count) is accepted but
+  // ignored, kept for source compatibility -- see FixedComp.h.
+  FixedRotate(const std::string&,const size_t,const size_t =10000);
   FixedRotate(const FixedRotate&);
   FixedRotate& operator=(const FixedRotate&);
   ~FixedRotate() override {}     ///< Destructor

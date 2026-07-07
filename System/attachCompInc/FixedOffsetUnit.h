@@ -60,7 +60,7 @@ class FixedOffsetUnit : public FixedOffset
   /// System to get axis from existing FC and variables (and no name)
   FixedOffsetUnit(const FuncDataBase& Control,
 		  const FixedComp& FC,const long int index) :
-    FixedOffset(0)
+    FixedOffset(FixedComp::unregistered)
   { FixedOffset::populate(Control); createUnitVector(FC,index); }
 
   /// System to get axis from existing FC and variables
@@ -73,7 +73,7 @@ class FixedOffsetUnit : public FixedOffset
   /// System to get axis from existing FC and variables [no name]
   FixedOffsetUnit(const FuncDataBase& Control,const std::string& K,
 		  const FixedComp& FC,const std::string& linkName) :
-    FixedOffset(0,K)
+    FixedOffset(FixedComp::unregistered,K)
   {
     FixedOffset::populate(Control);
     createUnitVector(FC,FC.getSideIndex(linkName));
@@ -83,7 +83,7 @@ class FixedOffsetUnit : public FixedOffset
 		  const Geometry::Vec3D& OG,
 		  const Geometry::Vec3D& YAxis,
 		  const Geometry::Vec3D& ZAxis) :
-    FixedOffset(0,K)
+    FixedOffset(FixedComp::unregistered,K)
     /*
       Create a vector based on existing basis set
       \param K :: keyame

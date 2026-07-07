@@ -500,19 +500,15 @@ portSet::constructPortAxis(const FuncDataBase& Control)
 
 void
 portSet::copyPortLinks
-(size_t offsetIndex,attachSystem::FixedComp& FC) const
+(attachSystem::FixedComp& FC) const
   /*!
     Copy the end point of all the ports into the links
     of the FC item
-    \param index :: offset index to start
+    \param FC :: FixedComp to add the port link points to
   */
 {
   for(size_t i=0;i<Ports.size();i++)
-    {
-      FC.setLinkCopy(offsetIndex,*Ports[i],"OuterPlate");
-      FC.nameSideIndex(offsetIndex,"port"+std::to_string(i));
-      offsetIndex++;
-    }
+    FC.setLinkCopy("port"+std::to_string(i),*Ports[i],"OuterPlate");
   return;
 }
 

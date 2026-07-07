@@ -156,26 +156,26 @@ VoidUnit::createLinks()
   ELog::RegMethod RegA("VoidUnit","createLinks");
 
 
-  ExternalCut::createLink("front",*this,0,Origin,-Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,-Y);
+  ExternalCut::createLink("back",*this,"back",Origin,Y);
 
   // Note length may not properly exist:
   length=getLinkDistance(1,2);
   
   if (width>Geometry::zeroTol)
     {
-      ExternalCut::createLink("left",*this,2,Origin,-X);
-      ExternalCut::createLink("right",*this,3,Origin,X);
+      ExternalCut::createLink("left",*this,"left",Origin,-X);
+      ExternalCut::createLink("right",*this,"right",Origin,X);
     }
   if (width>Geometry::zeroTol)
     {
-      ExternalCut::createLink("left",*this,2,Origin+Y*(length/2.0),-X);
-      ExternalCut::createLink("right",*this,3,Origin+Y*(length/2.0),X);
+      ExternalCut::createLink("left",*this,"left",Origin+Y*(length/2.0),-X);
+      ExternalCut::createLink("right",*this,"right",Origin+Y*(length/2.0),X);
     }
   if (height>Geometry::zeroTol)
     {
-      ExternalCut::createLink("base",*this,4,Origin+Y*(length/2.0),-Z);
-      ExternalCut::createLink("top",*this,5,Origin+Y*(length/2.0),Z);
+      ExternalCut::createLink("base",*this,"base",Origin+Y*(length/2.0),-Z);
+      ExternalCut::createLink("top",*this,"top",Origin+Y*(length/2.0),Z);
     }
   
   

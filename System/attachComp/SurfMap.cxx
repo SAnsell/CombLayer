@@ -349,14 +349,14 @@ SurfMap::combine(const std::string& surfStr) const
 void
 SurfMap::createLink(const std::string& surfName,
 		    attachSystem::FixedComp& FC,
-		    const size_t linkIndex,
+		    const std::string& linkName,
 		    const Geometry::Vec3D& Org,
 		    const Geometry::Vec3D& YAxis) const
   /*!
     Generate the line link from the origin along YAxis
     \param extName :: Cut Unit item
     \param FC :: Fixed component [most likely this]
-    \param linkIndex :: link point to build
+    \param linkName :: link point name to build
     \param Org :: Origin
     \param YAxis :: YAxis
    */
@@ -369,8 +369,8 @@ SurfMap::createLink(const std::string& surfName,
     throw ColErr::InContainerError<std::string>
       (surfName,"Surface not found");
 
-  FC.setLinkSurf(linkIndex,getSignedSurf(surfName));
-  FC.setConnect(linkIndex,SurInter::getLinePoint(Org,YAxis,SPtr,Org),YAxis);
+  FC.setLinkSurf(linkName,getSignedSurf(surfName));
+  FC.setConnect(linkName,SurInter::getLinePoint(Org,YAxis,SPtr,Org),YAxis);
 
   return;
 }

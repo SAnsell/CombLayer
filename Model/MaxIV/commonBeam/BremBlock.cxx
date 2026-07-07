@@ -291,7 +291,7 @@ BremBlock::createLinks()
   FrontBackCut::createBackLinks(*this,Origin,Y);
 
   FixedComp::setConnect(2,Origin+X*(holeBWidth/2.0)+Y*length,X);
-  FixedComp::setNamedLinkSurf(2,"HoleBxmax",SMap.realSurf(buildIndex+1003));
+  FixedComp::setLinkSurf("HoleBxmax",SMap.realSurf(buildIndex+1003));
 
   return;
 }

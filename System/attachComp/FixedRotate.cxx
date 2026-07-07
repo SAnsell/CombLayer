@@ -51,51 +51,39 @@
 namespace attachSystem
 {
 
-FixedRotate::FixedRotate(const std::string& KN,const size_t NL) :
-  FixedComp(KN,NL),
+FixedRotate::FixedRotate(const std::string& KN) :
+  FixedComp(KN),
   preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
   xStep(0.0),yStep(0.0),zStep(0.0),
   xAngle(0.0),yAngle(0.0),zAngle(0.0),flipX(0)
  /*!
-    Constructor 
+    Constructor
     \param KN :: KeyName
-    \param NL :: Number of links
   */
 {}
-
-FixedRotate::FixedRotate(const size_t NL,const std::string& KN) :
-  FixedComp(NL,KN),
-  preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
-  xStep(0.0),yStep(0.0),zStep(0.0),
-  xAngle(0.0),yAngle(0.0),zAngle(0.0),flipX(0)
- /*!
-    Constructor 
-    \param KN :: KeyName
-    \param NL :: Number of links
-  */
-{}
-
-  
-FixedRotate::FixedRotate(const size_t NL) :
-  FixedRotate(NL,"Null")
- /*!
-    Null version Constructor 
-    \param NL :: Number of links
-  */
-{}
-
 
 FixedRotate::FixedRotate(const std::string& KN,const size_t NL,
-			   const size_t resSize) :
+			 const size_t resSize) :
   FixedComp(KN,NL,resSize),
   preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
   xStep(0.0),yStep(0.0),zStep(0.0),
   xAngle(0.0),yAngle(0.0),zAngle(0.0),flipX(0)
  /*!
-    Constructor 
+    Legacy constructor retained for source compatibility -- see
+    FixedComp.h.
     \param KN :: KeyName
-    \param NL :: Number of links
-    \param resSize :: Reserved Space						
+    \param resSize :: Reserved Space
+  */
+{}
+
+FixedRotate::FixedRotate(FixedComp::unregistered_t,const std::string& KN) :
+  FixedComp(FixedComp::unregistered,KN),
+  preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
+  xStep(0.0),yStep(0.0),zStep(0.0),
+  xAngle(0.0),yAngle(0.0),zAngle(0.0),flipX(0)
+ /*!
+    Null version Constructor
+    \param KN :: KeyName [not registered]
   */
 {}
 

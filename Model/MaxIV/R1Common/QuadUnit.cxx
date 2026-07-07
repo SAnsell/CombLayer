@@ -248,8 +248,8 @@ QuadUnit::createLinks()
    */
 {
   ELog::RegMethod RegA("QuadUnit","createLinks");
-  ExternalCut::createLink("front",*this,0,Origin,Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,Y);
+  ExternalCut::createLink("back",*this,"back",Origin,Y);
 
   const Geometry::Vec3D midPt((getLinkPt(1)+getLinkPt(2))/2.0);
 

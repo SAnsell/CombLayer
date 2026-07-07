@@ -38,9 +38,9 @@ class FixedRotateUnit : public FixedRotate
 {  
  public:
 
-  /// Simple constructor
-  FixedRotateUnit(const size_t I,const std::string& K) :
-    FixedRotate(I,K) {}
+  /// Simple constructor [no objectregister]
+  FixedRotateUnit(FixedComp::unregistered_t,const std::string& K) :
+    FixedRotate(FixedComp::unregistered,K) {}
   /// Simple constructor
   FixedRotateUnit(const std::string& K,const size_t I) :
     FixedRotate(K,I) {}
@@ -63,7 +63,7 @@ class FixedRotateUnit : public FixedRotate
   /// System to get axis from existing FC and variables (and no name)
   FixedRotateUnit(const FuncDataBase& Control,
 		  const FixedComp& FC,const long int index) :
-    FixedRotate(0)
+    FixedRotate(FixedComp::unregistered)
   { FixedRotate::populate(Control); createUnitVector(FC,index); }
 
   /// System to get axis from existing FC and variables
@@ -76,7 +76,7 @@ class FixedRotateUnit : public FixedRotate
   /// System to get axis from existing FC and variables [no name]
   FixedRotateUnit(const FuncDataBase& Control,const std::string& K,
 		  const FixedComp& FC,const std::string& linkName) :
-    FixedRotate(0,K)
+    FixedRotate(FixedComp::unregistered,K)
   {
     FixedRotate::populate(Control);
     createUnitVector(FC,FC.getSideIndex(linkName));
@@ -86,7 +86,7 @@ class FixedRotateUnit : public FixedRotate
 		  const Geometry::Vec3D& OG,
 		  const Geometry::Vec3D& YAxis,
 		  const Geometry::Vec3D& ZAxis) :
-    FixedRotate(0,K)
+    FixedRotate(FixedComp::unregistered,K)
     /*
       Create a vector based on existing basis set
       \param K :: keyame

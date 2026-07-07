@@ -73,7 +73,7 @@ namespace shutterSystem
 {
 
 BulkInsert::BulkInsert(const size_t ID,const std::string& Key) : 
-  attachSystem::FixedGroup(Key+std::to_string(ID+1),"Main",6,"Beam",2),
+  attachSystem::FixedGroup(Key+std::to_string(ID+1),"Main","Beam"),
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::ExternalCut(),attachSystem::CellMap(),
   baseName(Key),

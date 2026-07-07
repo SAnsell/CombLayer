@@ -70,7 +70,7 @@ namespace moderatorSystem
 
 OrthoInsert::OrthoInsert(const std::string& Key)  :
   attachSystem::ContainedGroup("GSide","HSide"),
-  attachSystem::FixedUnit(Key,0)
+  attachSystem::FixedUnit(FixedComp::unregistered,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search

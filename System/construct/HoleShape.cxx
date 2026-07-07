@@ -466,8 +466,8 @@ HoleShape::createLinks()
 {
   ELog::RegMethod RegA("HoleShape","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,Y);
+  ExternalCut::createLink("back",*this,"back",Origin,Y);
 
   return;
 }

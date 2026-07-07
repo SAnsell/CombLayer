@@ -397,8 +397,8 @@ Scrapper::createLinks()
 {
   ELog::RegMethod RegA("Scrapper","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
-  ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
+  ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
+  ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
   FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+107));
   FixedComp::nameSideIndex(3,"Outer");

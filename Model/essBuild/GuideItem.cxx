@@ -76,7 +76,7 @@ namespace essSystem
 
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::FixedRotateGroup(Key+std::to_string(Index),
-                                 "Main",6,"Beam",6),
+                                 "Main","Beam"),
   attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::ExternalCut(),
   attachSystem::SurfMap(),
@@ -514,37 +514,37 @@ GuideItem::createLinks()
 			   beamOrigin+bY*ROuter);
   
 
-  beamFC.setConnect(0,beamEnter,-bY);
+  beamFC.setConnect("front",beamEnter,-bY);
 
-  beamFC.setLinkSurf(0,innerHR.complement());
-  beamFC.setBridgeSurf(0,divideHR);
+  beamFC.setLinkSurf("front",innerHR.complement());
+  beamFC.setBridgeSurf("front",divideHR);
 
   const int GI=50*static_cast<int>(nSegment)+buildIndex;
-  beamFC.setConnect(1,beamExit,bY);
-  beamFC.setLinkSurf(1,outerHR);
-  beamFC.setBridgeSurf(1,divideHR);
+  beamFC.setConnect("back",beamExit,bY);
+  beamFC.setLinkSurf("back",outerHR);
+  beamFC.setBridgeSurf("back",divideHR);
   if (!filled)
     {
       const Geometry::Vec3D MidPt((beamOrigin+bY*RInner+beamExit)/2.0);
-      beamFC.setConnect(2,MidPt-bX*(beamWidth/2.0),-bX);
-      beamFC.setConnect(3,MidPt+bX*(beamWidth/2.0),bX);
-      beamFC.setConnect(4,MidPt-bZ*(beamWidth/2.0),-bZ);
-      beamFC.setConnect(5,MidPt+bZ*(beamWidth/2.0),bZ);
+      beamFC.setConnect("left",MidPt-bX*(beamWidth/2.0),-bX);
+      beamFC.setConnect("right",MidPt+bX*(beamWidth/2.0),bX);
+      beamFC.setConnect("base",MidPt-bZ*(beamWidth/2.0),-bZ);
+      beamFC.setConnect("top",MidPt+bZ*(beamWidth/2.0),bZ);
 
-      beamFC.setLinkSurf(2,-SMap.realSurf(buildIndex+1103));
-      beamFC.setLinkSurf(3,SMap.realSurf(buildIndex+1104));
-      beamFC.setLinkSurf(4,-SMap.realSurf(buildIndex+1105));
-      beamFC.setLinkSurf(5,SMap.realSurf(buildIndex+1106));
+      beamFC.setLinkSurf("left",-SMap.realSurf(buildIndex+1103));
+      beamFC.setLinkSurf("right",SMap.realSurf(buildIndex+1104));
+      beamFC.setLinkSurf("base",-SMap.realSurf(buildIndex+1105));
+      beamFC.setLinkSurf("top",SMap.realSurf(buildIndex+1106));
     }
 
   /// TARGET CENTRE TRACKING:
-  mainFC.setConnect(0,beamEnter-Geometry::Vec3D(0,0,beamEnter[2]),-bY);
-  mainFC.setLinkSurf(0,innerHR.complement());
-  mainFC.setBridgeSurf(0,divideHR);
+  mainFC.setConnect("front",beamEnter-Geometry::Vec3D(0,0,beamEnter[2]),-bY);
+  mainFC.setLinkSurf("front",innerHR.complement());
+  mainFC.setBridgeSurf("front",divideHR);
 
-  mainFC.setConnect(1,beamExit-Geometry::Vec3D(0,0,beamExit[2]),bY);
-  mainFC.setLinkSurf(1,outerHR);
-  mainFC.setBridgeSurf(1,divideHR);
+  mainFC.setConnect("back",beamExit-Geometry::Vec3D(0,0,beamExit[2]),bY);
+  mainFC.setLinkSurf("back",outerHR);
+  mainFC.setBridgeSurf("back",divideHR);
     
 
   return;

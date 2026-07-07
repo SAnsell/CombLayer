@@ -219,24 +219,24 @@ WhiteBeamStop::createLinks()
   // ELog::EM << "PX: " << PX << ELog::endDiag;
 
   // FixedComp::setConnect(0,Origin+X*(offset),-PX);
-  // FixedComp::setNamedLinkSurf(0,"Left",SurfMap::getSignedSurf("#left"));
+  // FixedComp::setLinkSurf("Left",SurfMap::getSignedSurf("#left"));
 
   // FixedComp::setConnect(1,Origin+PX*(width)+X*(offset),PX);
-  // FixedComp::setNamedLinkSurf(1,"Right",SurfMap::getSignedSurf("right"));
+  // FixedComp::setLinkSurf("Right",SurfMap::getSignedSurf("right"));
 
   // ELog::EM<<"*** "<<keyName<<": "<<getLinkPt("Right")<<" "<<getLinkSurf("Right")<<ELog::endDiag;
 
   // FixedComp::setConnect(2,Origin-Y*(dl)+X*(dw),-Y);
-  // FixedComp::setNamedLinkSurf(2,"Back",SurfMap::getSignedSurf("#back"));
+  // FixedComp::setLinkSurf("Back",SurfMap::getSignedSurf("#back"));
 
   // FixedComp::setConnect(3,Origin+Y*(dl)+X*(dw),X);
-  // FixedComp::setNamedLinkSurf(3,"Front",SurfMap::getSignedSurf("front"));
+  // FixedComp::setLinkSurf("Front",SurfMap::getSignedSurf("front"));
 
   // FixedComp::setConnect(4,Origin-Z*(height/2.0)+X*(dw),-Z);
-  // FixedComp::setNamedLinkSurf(4,"Bottom",SurfMap::getSignedSurf("#bottom"));
+  // FixedComp::setLinkSurf("Bottom",SurfMap::getSignedSurf("#bottom"));
 
   // FixedComp::setConnect(5,Origin+Z*(height/2.0)+X*(dw),Z);
-  // FixedComp::setNamedLinkSurf(5,"Top",SurfMap::getSignedSurf("#bottom"));
+  // FixedComp::setLinkSurf("Top",SurfMap::getSignedSurf("#bottom"));
 
 
   return;
