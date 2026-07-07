@@ -68,7 +68,7 @@ namespace constructSystem
 
 portItem::portItem(std::string baseKey,
 		   const std::string& Key) :
-  attachSystem::FixedComp(Key,8),
+  attachSystem::FixedComp(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -85,7 +85,7 @@ portItem::portItem(std::string baseKey,
 {}
 
 portItem::portItem(const std::string& Key) :
-  attachSystem::FixedComp(Key,8),
+  attachSystem::FixedComp(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -406,59 +406,50 @@ portItem::createLinks()
 {
   ELog::RegMethod RegA("portItem","createLinks");
 
-  FixedComp::nameSideIndex(0,"BasePoint");
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("BasePoint",Origin,-Y);
+  FixedComp::setLinkSurf("BasePoint",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::nameSideIndex(1,"OuterPlate");
-  
   if (capThick>Geometry::zeroTol)
     {
-      FixedComp::setConnect(1,Origin+Y*(length+capThick),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
+      FixedComp::setConnect("OuterPlate",Origin+Y*(length+capThick),Y);
+      FixedComp::setLinkSurf("OuterPlate",SMap.realSurf(buildIndex+202));
     }
   else
     {
-      FixedComp::setConnect(1,Origin+Y*length,Y);
-      FixedComp::setLinkSurf(1,getComplementRule("portEnd"));
+      FixedComp::setConnect("OuterPlate",Origin+Y*length,Y);
+      FixedComp::setLinkSurf("OuterPlate",getComplementRule("portEnd"));
     }
-  FixedComp::nameSideIndex(2,"InnerRadius");
-  FixedComp::setConnect(2,Origin+Y*(length/2.0)+X*radius,X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+7));
-  FixedComp::setBridgeSurf(2,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("InnerRadius",Origin+Y*(length/2.0)+X*radius,X);
+  FixedComp::setLinkSurf("InnerRadius",-SMap.realSurf(buildIndex+7));
+  FixedComp::setBridgeSurf("InnerRadius",SMap.realSurf(buildIndex+1));
 
-  FixedComp::nameSideIndex(3,"WallRadius");
-  FixedComp::setConnect(3,Origin+Y*(length/2.0)+X*(wall+radius),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
-  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("WallRadius",Origin+Y*(length/2.0)+X*(wall+radius),X);
+  FixedComp::setLinkSurf("WallRadius",-SMap.realSurf(buildIndex+17));
+  FixedComp::setBridgeSurf("WallRadius",SMap.realSurf(buildIndex+1));
 
-  FixedComp::nameSideIndex(4,"InnerPlate");
-  FixedComp::setConnect(4,Origin+Y*length,-Y);
-  FixedComp::setLinkSurf(4,getRule("portEnd"));
+  FixedComp::setConnect("InnerPlate",Origin+Y*length,-Y);
+  FixedComp::setLinkSurf("InnerPlate",getRule("portEnd"));
 
-  FixedComp::nameSideIndex(5,"VoidRadius");
-  FixedComp::setConnect(5,Origin+Y*length,-Y);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+27));
-  FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("VoidRadius",Origin+Y*length,-Y);
+  FixedComp::setLinkSurf("VoidRadius",-SMap.realSurf(buildIndex+27));
+  FixedComp::setBridgeSurf("VoidRadius",SMap.realSurf(buildIndex+1));
 
-  FixedComp::nameSideIndex(6,"FlangePlate");
   const Geometry::Vec3D flangePoint=
     Origin+Y*(length-flangeLength);
-  
-  FixedComp::setConnect(6,flangePoint,Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+102));
 
-  
-  FixedComp::nameSideIndex(7,"OuterRadius");
+  FixedComp::setConnect("FlangePlate",flangePoint,Y);
+  FixedComp::setLinkSurf("FlangePlate",SMap.realSurf(buildIndex+102));
+
+
   if (outerFlag)
     {
-      FixedComp::setConnect(7,Origin+X*flangeRadius,X);
-      FixedComp::setBridgeSurf(7,SMap.realSurf(buildIndex+27));
+      FixedComp::setConnect("OuterRadius",Origin+X*flangeRadius,X);
+      FixedComp::setBridgeSurf("OuterRadius",SMap.realSurf(buildIndex+27));
     }
   else
     {
-      FixedComp::setConnect(7,Origin+X*(wall+radius),X);
-      FixedComp::setBridgeSurf(7,SMap.realSurf(buildIndex+17));
+      FixedComp::setConnect("OuterRadius",Origin+X*(wall+radius),X);
+      FixedComp::setBridgeSurf("OuterRadius",SMap.realSurf(buildIndex+17));
     }
 
   return;

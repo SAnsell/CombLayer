@@ -67,7 +67,7 @@ namespace constructSystem
 {
 
 PipeCollimator::PipeCollimator(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -176,10 +176,10 @@ PipeCollimator::createLinks()
 {
   ELog::RegMethod RegA("PipeCollimator","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));      
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
   
   return;
 }

@@ -387,11 +387,11 @@ BlockZone::createLinks(const attachSystem::FixedComp& FC,
   const Geometry::Vec3D APt=frontHR.trackPoint(Origin,Y);
   const Geometry::Vec3D BPt=backHR.trackPoint(Origin,Y);
 
-  FixedComp::setLinkSurf(0,frontHR.complement());
-  FixedComp::setLinkSurf(1,backHR.complement());
+  FixedComp::setLinkSurf("front",frontHR.complement());
+  FixedComp::setLinkSurf("back",backHR.complement());
 
-  FixedComp::setConnect(0,APt,-Y);
-  FixedComp::setConnect(1,BPt,Y);
+  FixedComp::setConnect("front",APt,-Y);
+  FixedComp::setConnect("back",BPt,Y);
 
   return;
 }

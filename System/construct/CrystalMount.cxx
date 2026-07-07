@@ -66,7 +66,7 @@ namespace constructSystem
 
 CrystalMount::CrystalMount(const std::string& Key,
                            const size_t Index) :
-  attachSystem::FixedRotate(Key+std::to_string(Index),8),
+  attachSystem::FixedRotate(Key+std::to_string(Index)),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   baseName(Key),ID(Index)
@@ -258,36 +258,36 @@ CrystalMount::createLinks()
 {
   ELog::RegMethod RegA("CrystalMount","createLinks");
   
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(gap+thick+baseThick),-Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  FixedComp::setConnect("back",Origin+Y*(gap+thick+baseThick),-Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+22));
 
   const Geometry::Vec3D MidY(Origin+Y*((thick+gap+baseThick)/2.0));
   const double T(gap+wallThick);
   
-  FixedComp::setConnect(2,MidY-X*(T+width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
+  FixedComp::setConnect("left",MidY-X*(T+width/2.0),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+23));
 
-  FixedComp::setConnect(3,MidY+X*(T+width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
+  FixedComp::setConnect("right",MidY+X*(T+width/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+24));
 
-  FixedComp::setConnect(4,MidY-Z*(T+length/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
+  FixedComp::setConnect("base",MidY-Z*(T+length/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+25));
 
-  FixedComp::setConnect(5,MidY+Z*(T+length/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
+  FixedComp::setConnect("top",MidY+Z*(T+length/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+26));
 
 
   const Geometry::Vec3D incomingAxis=(Origin-viewPoint).unit();
-  FixedComp::setConnect(6,viewPoint,-incomingAxis);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("6",viewPoint,-incomingAxis);
+  FixedComp::setLinkSurf("6",SMap.realSurf(buildIndex+1));
 
   const Geometry::Vec3D outgoingAxis=
     -Y*(2.0*incomingAxis.dotProd(Y))+incomingAxis;
-  FixedComp::setConnect(7,Origin,outgoingAxis);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("7",Origin,outgoingAxis);
+  FixedComp::setLinkSurf("7",-SMap.realSurf(buildIndex+1));
 
   return;
 }

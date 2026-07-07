@@ -66,7 +66,7 @@ namespace constructSystem
 {
 
 PinHole::PinHole(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   CollA(new constructSystem::RotaryCollimator(Key+"CollA")),
@@ -192,19 +192,19 @@ PinHole::createLinks()
   
   ELog::RegMethod RegA("PinHole","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setConnect(3,Origin+X*radius,X);
-  FixedComp::setConnect(4,Origin-Z*radius,-Z);
-  FixedComp::setConnect(5,Origin+Z*radius,Z);
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect("left",Origin-X*radius,-X);
+  FixedComp::setConnect("right",Origin+X*radius,X);
+  FixedComp::setConnect("base",Origin-Z*radius,-Z);
+  FixedComp::setConnect("top",Origin+Z*radius,Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+7));
   
   return;
 }

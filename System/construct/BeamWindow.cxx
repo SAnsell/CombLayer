@@ -66,7 +66,7 @@ namespace ts1System
 
 BeamWindow::BeamWindow(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::ExternalCut()
   /*!
@@ -202,11 +202,11 @@ BeamWindow::createLinks()
   */
 {
   // set Links:
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+Y*(incThick1+waterThick+incThick2),Y);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin+Y*(incThick1+waterThick+incThick2),Y);
 
   return;
 }

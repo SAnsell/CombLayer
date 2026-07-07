@@ -382,25 +382,25 @@ Bellows::createLinks()
   // stuff for intersection
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-  FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setConnect(3,Origin+X*radius,X);
-  FixedComp::setConnect(4,Origin-Z*radius,-Z);
-  FixedComp::setConnect(5,Origin+Z*radius,Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("left",Origin-X*radius,-X);
+  FixedComp::setConnect("right",Origin+X*radius,X);
+  FixedComp::setConnect("base",Origin-Z*radius,-Z);
+  FixedComp::setConnect("top",Origin+Z*radius,Z);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(6,Origin-Z*(radius+bellowThick),-Z);
-  FixedComp::setConnect(7,Origin+Z*(radius+bellowThick),Z);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+27));
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+27));
+  FixedComp::setConnect("6",Origin-Z*(radius+bellowThick),-Z);
+  FixedComp::setConnect("7",Origin+Z*(radius+bellowThick),Z);
+  FixedComp::setLinkSurf("6",SMap.realSurf(buildIndex+27));
+  FixedComp::setLinkSurf("7",SMap.realSurf(buildIndex+27));
 
   // pipe wall
-  FixedComp::setConnect(8,Origin-Z*(radius+pipeThick),-Z);
-  FixedComp::setConnect(9,Origin+Z*(radius+pipeThick),Z);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("8",Origin-Z*(radius+pipeThick),-Z);
+  FixedComp::setConnect("9",Origin+Z*(radius+pipeThick),Z);
+  FixedComp::setLinkSurf("8",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("9",SMap.realSurf(buildIndex+17));
 
 
   return;

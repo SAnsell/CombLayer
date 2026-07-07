@@ -65,7 +65,7 @@ namespace constructSystem
 {
 
 JawSet::JawSet(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   JawX(new constructSystem::Jaws(Key+"Vert")),
@@ -182,10 +182,10 @@ JawSet::createLinks()
   
   ELog::RegMethod RegA("JawSet","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin+Y*length,Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
   
   return;
 }

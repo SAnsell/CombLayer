@@ -76,11 +76,7 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-  FixedComp::nameSideIndex(6,"midPoint");
-}
+{}
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) :
   GeneralPipe(A)
@@ -170,39 +166,39 @@ VacuumPipe::createLinks()
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
   // Round pipe
-  FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setConnect(3,Origin+X*radius,X);
-  FixedComp::setConnect(4,Origin-Z*radius,-Z);
-  FixedComp::setConnect(5,Origin+Z*radius,Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("left",Origin-X*radius,-X);
+  FixedComp::setConnect("right",Origin+X*radius,X);
+  FixedComp::setConnect("base",Origin-Z*radius,-Z);
+  FixedComp::setConnect("top",Origin+Z*radius,Z);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(7,Origin-Z*(radius+pipeThick),-Z);
-  FixedComp::setConnect(8,Origin+Z*(radius+pipeThick),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("outerPipe",Origin-Z*(radius+pipeThick),-Z);
+  FixedComp::setConnect("pipeOuterTop",Origin+Z*(radius+pipeThick),Z);
+  FixedComp::setLinkSurf("outerPipe",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("pipeOuterTop",SMap.realSurf(buildIndex+17));
 
-  FixedComp::nameSideIndex(7,"outerPipe");
-  FixedComp::nameSideIndex(7,"pipeOuterBase");
-  FixedComp::nameSideIndex(8,"pipeOuterTop");
+  // "pipeOuterBase" is a second alias for the same link point as "outerPipe"
+  FixedComp::nameSideIndex
+    (static_cast<size_t>(std::abs(getSideIndex("outerPipe"))-1),"pipeOuterBase");
 
 
   // MID Point: [NO SURF]
   const Geometry::Vec3D midPt=
     (getLinkPt(1)+getLinkPt(2))/2.0;
-  FixedComp::setConnect(6,midPt,Y);
+  FixedComp::setConnect("midPoint",midPt,Y);
 
   if (flangeA.type==1)
-    FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+107));
+    FixedComp::setLinkSurf("9",SMap.realSurf(buildIndex+107));
   else
-    FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+105));
+    FixedComp::setLinkSurf("9",-SMap.realSurf(buildIndex+105));
 
   if (flangeB.type==1)
-    FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+107));
+    FixedComp::setLinkSurf("10",SMap.realSurf(buildIndex+107));
   else
-    FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
+    FixedComp::setLinkSurf("10",SMap.realSurf(buildIndex+106));
 
 
   return;

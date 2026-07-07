@@ -213,18 +213,14 @@ LeadPipe::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);   // Front and back
   
-  FixedComp::setConnect(2,Origin+Z*radius,Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("inner",Origin+Z*radius,Z);
+  FixedComp::setLinkSurf("inner",SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(3,Origin+Z*(radius+pipeThick),Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("pipe",Origin+Z*(radius+pipeThick),Z);
+  FixedComp::setLinkSurf("pipe",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(4,Origin+Z*(radius+pipeThick+claddingThick),Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+27));
-  
-  FixedComp::nameSideIndex(2,"inner");
-  FixedComp::nameSideIndex(3,"pipe");
-  FixedComp::nameSideIndex(4,"outer");
+  FixedComp::setConnect("outer",Origin+Z*(radius+pipeThick+claddingThick),Z);
+  FixedComp::setLinkSurf("outer",SMap.realSurf(buildIndex+27));
   
   return;
 }

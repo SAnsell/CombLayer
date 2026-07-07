@@ -71,7 +71,7 @@ namespace constructSystem
 {
 
 DomeConnector::DomeConnector(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -245,8 +245,8 @@ DomeConnector::createLinks()
   size_t linkIndex(0);
   if (portRotateIndex==1)  // back
     {
-      FixedComp::setConnect(0,Origin+Y*(joinStep+flatLen),Y);
-      FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+2));
+      FixedComp::setConnect(std::to_string(0),Origin+Y*(joinStep+flatLen),Y);
+      FixedComp::setLinkSurf(std::to_string(0),SMap.realSurf(buildIndex+2));
       Origin+=Y*(joinStep+flatLen);
       Y*=-1.0;
       X*=-1.0;
@@ -255,12 +255,12 @@ DomeConnector::createLinks()
 
   PSet.copyPortLinks(*this);
 
-  FixedComp::setLinkSurf(linkIndex,SMap.realSurf(buildIndex+8));
-  FixedComp::setBridgeSurf(linkIndex,-SMap.realSurf(buildIndex+101));
-  FixedComp::setConnect(linkIndex,Origin-Y*curveStep,Y);
+  FixedComp::setLinkSurf(std::to_string(linkIndex),SMap.realSurf(buildIndex+8));
+  FixedComp::setBridgeSurf(std::to_string(linkIndex),-SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect(std::to_string(linkIndex),Origin-Y*curveStep,Y);
   linkIndex=1-linkIndex;
-  FixedComp::setConnect(linkIndex,Origin+Y*(joinStep+flatLen),Y);
-  FixedComp::setLinkSurf(linkIndex,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect(std::to_string(linkIndex),Origin+Y*(joinStep+flatLen),Y);
+  FixedComp::setLinkSurf(std::to_string(linkIndex),SMap.realSurf(buildIndex+2));
 
   //  ExternalCut::createLink("plate",*this,"front",Origin,-Y);  //front and back
   //  ExternalCut::createLink("plate",*this,"back",Origin,Y);  //front and back

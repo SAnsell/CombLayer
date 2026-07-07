@@ -69,7 +69,7 @@ namespace constructSystem
 {
 
 Jaws::Jaws(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -333,23 +333,23 @@ Jaws::createLinks()
 {
   ELog::RegMethod RegA("Jaws","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(YHeight/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin-Y*(YHeight/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(YHeight/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*(YHeight/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(wallThick+XHeight/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect("left",Origin-X*(wallThick+XHeight/2.0),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
  
-  FixedComp::setConnect(3,Origin+X*(wallThick+XHeight/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setConnect("right",Origin+X*(wallThick+XHeight/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
 
-  FixedComp::setConnect(4,Origin-Z*(wallThick+ZHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect("base",Origin-Z*(wallThick+ZHeight/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
 
-  FixedComp::setConnect(5,Origin+Z*(wallThick+ZHeight/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("top",Origin+Z*(wallThick+ZHeight/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   return;
 }

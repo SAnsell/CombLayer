@@ -63,7 +63,7 @@ namespace constructSystem
 {
 
 JawUnit::JawUnit(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,10),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -244,37 +244,37 @@ JawUnit::createLinks()
 {
   ELog::RegMethod RegA("JawUnit","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(zThick+jawGap/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
-  
-  FixedComp::setConnect(1,Origin+Y*(xThick+jawGap/2.0),-Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+102));
+  FixedComp::setConnect("0",Origin-Y*(zThick+jawGap/2.0),-Y);
+  FixedComp::setLinkSurf("0",-SMap.realSurf(buildIndex+201));
+
+  FixedComp::setConnect("1",Origin+Y*(xThick+jawGap/2.0),-Y);
+  FixedComp::setLinkSurf("1",-SMap.realSurf(buildIndex+102));
 
   // x values (4):
-  FixedComp::setConnect(2,Origin-X*(xOpen/2.0-xOffset),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+103));
+  FixedComp::setConnect("2",Origin-X*(xOpen/2.0-xOffset),-X);
+  FixedComp::setLinkSurf("2",-SMap.realSurf(buildIndex+103));
 
-  FixedComp::setConnect(3,Origin+X*(xOpen/2.0+xOffset),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+154));
+  FixedComp::setConnect("3",Origin+X*(xOpen/2.0+xOffset),X);
+  FixedComp::setLinkSurf("3",SMap.realSurf(buildIndex+154));
 
-  FixedComp::setConnect(4,Origin-Z*(xHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+105));
+  FixedComp::setConnect("4",Origin-Z*(xHeight/2.0),-Z);
+  FixedComp::setLinkSurf("4",-SMap.realSurf(buildIndex+105));
 
-  FixedComp::setConnect(5,Origin+Z*(xHeight/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+106));
+  FixedComp::setConnect("5",Origin+Z*(xHeight/2.0),Z);
+  FixedComp::setLinkSurf("5",SMap.realSurf(buildIndex+106));
 
   // z values (4):
-  FixedComp::setConnect(6,Origin-X*(xWidth/2.0),-X);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+203));
+  FixedComp::setConnect("6",Origin-X*(xWidth/2.0),-X);
+  FixedComp::setLinkSurf("6",-SMap.realSurf(buildIndex+203));
 
-  FixedComp::setConnect(7,Origin+X*(xWidth/2.0),X);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+204));
+  FixedComp::setConnect("7",Origin+X*(xWidth/2.0),X);
+  FixedComp::setLinkSurf("7",SMap.realSurf(buildIndex+204));
 
-  FixedComp::setConnect(8,Origin-Z*(zOpen/2.0-zOffset),-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+205));
+  FixedComp::setConnect("8",Origin-Z*(zOpen/2.0-zOffset),-Z);
+  FixedComp::setLinkSurf("8",-SMap.realSurf(buildIndex+205));
 
-  FixedComp::setConnect(9,Origin+Z*(zOpen/2.0+zOffset),Z);
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+256));
+  FixedComp::setConnect("9",Origin+Z*(zOpen/2.0+zOffset),Z);
+  FixedComp::setLinkSurf("9",SMap.realSurf(buildIndex+256));
 
   return;
 }

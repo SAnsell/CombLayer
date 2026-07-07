@@ -71,13 +71,7 @@ PortTube::PortTube(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  FixedComp::nameSideIndex(2,"mainPipe");
-  FixedComp::nameSideIndex(6,"portAPipe");
-  FixedComp::nameSideIndex(8,"portBPipe");
-  FixedComp::nameSideIndex(10,"portA");
-  FixedComp::nameSideIndex(11,"portB");
-}
+{}
 
   
 PortTube::~PortTube() 
@@ -308,45 +302,44 @@ PortTube::createLinks()
   FrontBackCut::createFrontLinks(*this,inOrg,Y); 
   FrontBackCut::createBackLinks(*this,outOrg,Y);  
 
-  FixedComp::setConnect(2,Origin-X*(radius+wallThick),-X);
-  FixedComp::setConnect(3,Origin+X*(radius+wallThick),X);
-  FixedComp::setConnect(4,Origin-Z*(radius+wallThick),-Z);
-  FixedComp::setConnect(5,Origin+Z*(radius+wallThick),Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("mainPipe",Origin-X*(radius+wallThick),-X);
+  FixedComp::setConnect("3",Origin+X*(radius+wallThick),X);
+  FixedComp::setConnect("4",Origin-Z*(radius+wallThick),-Z);
+  FixedComp::setConnect("5",Origin+Z*(radius+wallThick),Z);
+  FixedComp::setLinkSurf("mainPipe",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("3",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("4",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("5",SMap.realSurf(buildIndex+17));
 
   const Geometry::Vec3D AVec(Origin+X*portAXStep+Z*portAZStep);
   const Geometry::Vec3D BVec(Origin+X*portBXStep+Z*portBZStep);
-  FixedComp::setConnect(6,AVec-Z*(portARadius+portAThick),-Z);
-  FixedComp::setConnect(7,AVec+Z*(portARadius+portAThick),Z);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+117));
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+117));
+  FixedComp::setConnect("portAPipe",AVec-Z*(portARadius+portAThick),-Z);
+  FixedComp::setConnect("OuterRadius",AVec+Z*(portARadius+portAThick),Z);
+  FixedComp::setLinkSurf("portAPipe",SMap.realSurf(buildIndex+117));
+  FixedComp::setLinkSurf("OuterRadius",SMap.realSurf(buildIndex+117));
 
-  FixedComp::setConnect(8,BVec-Z*(portBRadius+portBThick),-Z);
-  FixedComp::setConnect(9,BVec+Z*(portBRadius+portBThick),Z);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+217));
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+217));
+  FixedComp::setConnect("portBPipe",BVec-Z*(portBRadius+portBThick),-Z);
+  FixedComp::setConnect("9",BVec+Z*(portBRadius+portBThick),Z);
+  FixedComp::setLinkSurf("portBPipe",SMap.realSurf(buildIndex+217));
+  FixedComp::setLinkSurf("9",SMap.realSurf(buildIndex+217));
 
-  FixedComp::setConnect(10,AVec-Y*(wallThick+length/2.0),-Y);
-  FixedComp::setConnect(11,BVec+Y*(wallThick+length/2.0),Y);
-  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect("portA",AVec-Y*(wallThick+length/2.0),-Y);
+  FixedComp::setConnect("portB",BVec+Y*(wallThick+length/2.0),Y);
+  FixedComp::setLinkSurf("portA",-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf("portB",SMap.realSurf(buildIndex+12));
 
-  FixedComp::setConnect(12,Origin,Y);
+  FixedComp::setConnect("12",Origin,Y);
 
   if (!outerVoid)
     {
-      FixedComp::setConnect(13,Origin+Z*(radius+wallThick),Z);
-      FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+17));
+      FixedComp::setConnect("13",Origin+Z*(radius+wallThick),Z);
+      FixedComp::setLinkSurf("13",SMap.realSurf(buildIndex+17));
     }
   else
     {
-      FixedComp::setConnect(13,Origin+Z*flangeBRadius,Z);
-      FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+107));
+      FixedComp::setConnect("13",Origin+Z*flangeBRadius,Z);
+      FixedComp::setLinkSurf("13",SMap.realSurf(buildIndex+107));
     }
-  nameSideIndex(7,"OuterRadius");
 
   
   return;

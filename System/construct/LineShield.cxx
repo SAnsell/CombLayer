@@ -70,7 +70,7 @@ namespace constructSystem
 {
 
 LineShield::LineShield(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap()
@@ -375,10 +375,10 @@ LineShield::createLinks()
 {
   ELog::RegMethod RegA("LineShield","createLinks");
 
-  FixedComp::setConnect(2,Origin-X*left,-X);
-  FixedComp::setConnect(3,Origin+X*right,X);
-  FixedComp::setConnect(4,Origin-Z*depth,-Z);
-  FixedComp::setConnect(5,Origin+Z*height,Z);
+  FixedComp::setConnect("left",Origin-X*left,-X);
+  FixedComp::setConnect("right",Origin+X*right,X);
+  FixedComp::setConnect("base",Origin-Z*depth,-Z);
+  FixedComp::setConnect("top",Origin+Z*height,Z);
 
   const int WI(buildIndex+(static_cast<int>(nWallLayers)-1)*10);
   const int RI(buildIndex+(static_cast<int>(nRoofLayers)-1)*10);
@@ -386,10 +386,10 @@ LineShield::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(WI+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(FI+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(RI+6));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(WI+3));
+  FixedComp::setLinkSurf("right",SMap.realSurf(WI+4));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(FI+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(RI+6));
   return;
 }
   

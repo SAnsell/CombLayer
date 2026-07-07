@@ -70,7 +70,7 @@ namespace attachSystem
 
 WrapperCell::WrapperCell(std::string  baseKey,
 			 const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -261,13 +261,13 @@ WrapperCell::createLinks()
 
   if (interAA.SNum)
     {
-      FixedComp::setConnect(0,Origin-Y*interAA.D,-Y);
-      FixedComp::setLinkSurf(0,interAA.SNum);
+      FixedComp::setConnect("front",Origin-Y*interAA.D,-Y);
+      FixedComp::setLinkSurf("front",interAA.SNum);
     }
   if (interBB.SNum)
     {
-      FixedComp::setConnect(1,Origin-Y*interBB.D,Y);
-      FixedComp::setLinkSurf(1,interBB.SNum);
+      FixedComp::setConnect("back",Origin-Y*interBB.D,Y);
+      FixedComp::setLinkSurf("back",interBB.SNum);
     }
   return;
 }

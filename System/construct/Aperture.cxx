@@ -67,7 +67,7 @@ namespace constructSystem
 {
 
 Aperture::Aperture(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,14),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap()
@@ -215,37 +215,37 @@ Aperture::createLinks()
   ELog::RegMethod RegA("VacuumBox","createLinks");
 
 
-  FixedComp::setConnect(0,Origin-Y*(thick/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(thick/2.0),Y);
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);  
+  FixedComp::setConnect("front",Origin-Y*(thick/2.0),-Y);
+  FixedComp::setConnect("back",Origin+Y*(thick/2.0),Y);
+  FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   // 8 corners [FRONT/BACK]
   for(size_t i=0;i<4;i++)
     {
-      FixedComp::setLinkSurf(i+6,-SMap.realSurf(buildIndex+1));
-      FixedComp::setLinkSurf(i+10,SMap.realSurf(buildIndex+2));
+      FixedComp::setLinkSurf(std::to_string(i+6),-SMap.realSurf(buildIndex+1));
+      FixedComp::setLinkSurf(std::to_string(i+10),SMap.realSurf(buildIndex+2));
     }
   Geometry::Vec3D platePt(Origin-Y*(thick/2.0));
-  FixedComp::setConnect(6,platePt-X*(width/2.0),-X);
-  FixedComp::setConnect(7,platePt+X*(width/2.0),X);
-  FixedComp::setConnect(8,platePt-Z*(height/2.0),-Z);
-  FixedComp::setConnect(9,platePt+Z*(height/2.0),Z);
+  FixedComp::setConnect("6",platePt-X*(width/2.0),-X);
+  FixedComp::setConnect("7",platePt+X*(width/2.0),X);
+  FixedComp::setConnect("8",platePt-Z*(height/2.0),-Z);
+  FixedComp::setConnect("9",platePt+Z*(height/2.0),Z);
 
   platePt=Origin+Y*(thick/2.0);
-  FixedComp::setConnect(10,platePt-X*(width/2.0),-X);
-  FixedComp::setConnect(11,platePt+X*(width/2.0),X);
-  FixedComp::setConnect(12,platePt-Z*(height/2.0),-Z);
-  FixedComp::setConnect(13,platePt+Z*(height/2.0),Z);
+  FixedComp::setConnect("10",platePt-X*(width/2.0),-X);
+  FixedComp::setConnect("11",platePt+X*(width/2.0),X);
+  FixedComp::setConnect("12",platePt-Z*(height/2.0),-Z);
+  FixedComp::setConnect("13",platePt+Z*(height/2.0),Z);
   
   
   return;

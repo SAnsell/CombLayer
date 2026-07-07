@@ -63,7 +63,7 @@ namespace constructSystem
 {
 
 SupplyPipe::SupplyPipe(const std::string& Key)  :
-  attachSystem::FixedComp(Key,2),optName(""),
+  attachSystem::FixedComp(Key),optName(""),
   NSegIn(0),wallOffset(2),
   Coaxial(Key+"CoAx"),nAngle(12)
   /*!
@@ -298,16 +298,16 @@ SupplyPipe::createLinks()
 {
   ELog::RegMethod RegA("SupplyPipe","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Coaxial.getPt().back(),Y);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Coaxial.getPt().back(),Y);
 
   HeadRule EndCap(Coaxial.first().getCap(0));
   EndCap.makeComplement();
-  FixedComp::setLinkSurf(0,EndCap);
+  FixedComp::setLinkSurf("front",EndCap);
 
   EndCap=Coaxial.last().getCap(1);
   EndCap.makeComplement();
-  FixedComp::setLinkSurf(1,EndCap);
+  FixedComp::setLinkSurf("back",EndCap);
 
   return;
 }

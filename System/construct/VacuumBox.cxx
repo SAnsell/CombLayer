@@ -67,8 +67,8 @@ namespace constructSystem
 {
 
 VacuumBox::VacuumBox(const std::string& Key,
-		       const bool flag) : 
-  attachSystem::FixedRotate(Key,10),
+		       const bool flag) :
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   centreOrigin(flag)
@@ -399,29 +399,22 @@ VacuumBox::createLinks()
   FrontBackCut::createFrontLinks(*this,ACentre,Y); 
   FrontBackCut::createBackLinks(*this,BCentre,BAxis);  
 
-  FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
-  FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
+  FixedComp::setConnect("left",Origin-X*((feWidth+voidWidth)/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*((feWidth+voidWidth)/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(feDepth+voidDepth),-Z);
+  FixedComp::setConnect("top",Origin+Z*(feHeight+voidHeight),Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
 
-  FixedComp::setConnect(7,ACentre+Z*(portATubeRadius+portAWallThick),Z);
-  FixedComp::setConnect(8,ACentre+Z*(portBTubeRadius+portBWallThick),Z);
+  FixedComp::setConnect("frontPortWall",ACentre+Z*(portATubeRadius+portAWallThick),Z);
+  FixedComp::setConnect("backPortWall",ACentre+Z*(portBTubeRadius+portBWallThick),Z);
 
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+117));
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+217));
-  
-  FixedComp::nameSideIndex(2,"left");
-  FixedComp::nameSideIndex(3,"right");
-  FixedComp::nameSideIndex(4,"base");
-  FixedComp::nameSideIndex(5,"top");
-  FixedComp::nameSideIndex(7,"frontPortWall");
-  FixedComp::nameSideIndex(8,"backPortWall");
+  FixedComp::setLinkSurf("frontPortWall",SMap.realSurf(buildIndex+117));
+  FixedComp::setLinkSurf("backPortWall",SMap.realSurf(buildIndex+217));
 
 
   return;

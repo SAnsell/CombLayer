@@ -66,7 +66,7 @@ namespace constructSystem
 {
 
 Cryostat::Cryostat(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   active(1)
@@ -519,11 +519,11 @@ Cryostat::createLinks()
   ELog::RegMethod RegA("Cryostat","createLinks");
 
   
-  FixedComp::setConnect(0,Origin-Y*(tailRadius+tailThick),-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+307));
+  FixedComp::setConnect("front",Origin-Y*(tailRadius+tailThick),-Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+307));
 
-  FixedComp::setConnect(1,Origin+Y*(tailRadius+tailThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+307));
+  FixedComp::setConnect("back",Origin+Y*(tailRadius+tailThick),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+307));
 
   return;
 }

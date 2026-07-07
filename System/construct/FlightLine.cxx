@@ -76,7 +76,7 @@ namespace moderatorSystem
 
 FlightLine::FlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   plateIndex(0),nLayer(0)
@@ -233,26 +233,26 @@ FlightLine::createSurfaces()
   for(size_t i=3;i<7;i++)
     {
       const int sNum(buildIndex+static_cast<int>(10*nLayer+i));
-      FixedComp::setLinkSurf(i-1,signVal*SMap.realSurf(sNum));
+      FixedComp::setLinkSurf(std::to_string(i-1),signVal*SMap.realSurf(sNum));
       const int tNum(buildIndex+static_cast<int>(i));
-      FixedComp::setLinkSurf(i+5,signVal*SMap.realSurf(tNum));
+      FixedComp::setLinkSurf(std::to_string(i+5),signVal*SMap.realSurf(tNum));
       signVal*=-1;
-    } 
+    }
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin,Y);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0)-xDircA*layT,-xDircA);
-  FixedComp::setConnect(3,Origin+X*(width/2.0)+xDircB*layT,xDircB);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0)-zDircA*layT,-zDircA);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0)+zDircB*layT,zDircB);
+  FixedComp::setConnect("2",Origin-X*(width/2.0)-xDircA*layT,-xDircA);
+  FixedComp::setConnect("3",Origin+X*(width/2.0)+xDircB*layT,xDircB);
+  FixedComp::setConnect("4",Origin-Z*(height/2.0)-zDircA*layT,-zDircA);
+  FixedComp::setConnect("5",Origin+Z*(height/2.0)+zDircB*layT,zDircB);
 
-  FixedComp::setConnect(6,Origin,-Y);
-  FixedComp::setConnect(7,Origin,Y);
-  FixedComp::setConnect(8,Origin-X*(width/2.0),-xDircA);
-  FixedComp::setConnect(9,Origin+X*(width/2.0),xDircB);
-  FixedComp::setConnect(10,Origin-Z*(height/2.0),-zDircA);
-  FixedComp::setConnect(11,Origin+Z*(height/2.0),zDircB);
+  FixedComp::setConnect("6",Origin,-Y);
+  FixedComp::setConnect("7",Origin,Y);
+  FixedComp::setConnect("8",Origin-X*(width/2.0),-xDircA);
+  FixedComp::setConnect("9",Origin+X*(width/2.0),xDircB);
+  FixedComp::setConnect("10",Origin-Z*(height/2.0),-zDircA);
+  FixedComp::setConnect("11",Origin+Z*(height/2.0),zDircB);
 
   return;
 }
@@ -541,8 +541,8 @@ FlightLine::createAll(Simulation& System,
        " as flightline cannot current track from centre origin");
 
   createCapSurfaces(FC,sideIndex);
-  FixedComp::setLinkCopy(0,FC,sideIndex);
-  FixedComp::setLinkCopy(6,FC,sideIndex);
+  FixedComp::setLinkCopy("front",FC,sideIndex);
+  FixedComp::setLinkCopy("6",FC,sideIndex);
 
   createObjects(System,FC,sideIndex);
   insertObjects(System);       

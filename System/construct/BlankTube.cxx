@@ -70,7 +70,6 @@ BlankTube::BlankTube(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  nameSideIndex(2,"Flange");
   ContainedGroup::addCC("Flange");
 }
 
@@ -237,12 +236,12 @@ BlankTube::createLinks()
   FrontBackCut::createFrontLinks(*this,Origin,Y); 
   FrontBackCut::createBackLinks(*this,Origin,Y);  
   // get link points
-  FixedComp::setConnect(2,FixedComp::getLinkPt(1),-Y);
-  FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
+  FixedComp::setConnect("Flange",FixedComp::getLinkPt(1),-Y);
+  FixedComp::setConnect("3",FixedComp::getLinkPt(2),Y);
 
   // make a composite flange
   const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
-  FixedComp::setLinkComp(2,HR*getFrontRule());
+  FixedComp::setLinkComp("Flange",HR*getFrontRule());
 
 
   // inner links
@@ -259,16 +258,13 @@ BlankTube::createLinks()
       innerFrontVec = Origin-Y*(length/2.0-flangeCapThick);
     }
   
-  FixedComp::setConnect(4,innerFrontVec,Y);
-  FixedComp::setLinkSurf(4,innerFrontSurf);
-  nameSideIndex(4,"InnerFront");
+  FixedComp::setConnect("InnerFront",innerFrontVec,Y);
+  FixedComp::setLinkSurf("InnerFront",innerFrontSurf);
 
-  FixedComp::setConnect(5,Origin+Y*(length/2.0-blankThick),Y);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+102));
-  nameSideIndex(5,"InnerBack");
+  FixedComp::setConnect("InnerBack",Origin+Y*(length/2.0-blankThick),Y);
+  FixedComp::setLinkSurf("InnerBack",-SMap.realSurf(buildIndex+102));
 
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
-  nameSideIndex(6,"InnerSide");
+  FixedComp::setLinkSurf("InnerSide",-SMap.realSurf(buildIndex+7));
 
   
   return;

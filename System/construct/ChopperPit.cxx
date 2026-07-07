@@ -66,7 +66,7 @@ namespace constructSystem
 {
 
 ChopperPit::ChopperPit(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,18),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -319,22 +319,19 @@ ChopperPit::createFrontLinks()
   ELog::RegMethod RegA("ChopperPit","createLinks");
 
 
-  setConnect(0,Origin-Y*(voidLength/2.0),-Y);
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-	  
+  setConnect("innerFront",Origin-Y*(voidLength/2.0),-Y);
+  setLinkSurf("innerFront",-SMap.realSurf(buildIndex+1));
+
   // Fe system [front face is link surf]
 
-  setConnect(6,Origin-Y*(feFront+voidLength/2.0),-Y);
-  setLinkSurf(6,-SMap.realSurf(buildIndex+11));
+  setConnect("midFront",Origin-Y*(feFront+voidLength/2.0),-Y);
+  setLinkSurf("midFront",-SMap.realSurf(buildIndex+11));
 
   // Conc esction
-  setConnect(12,Origin-Y*(concFront+feFront+voidLength/2.0),Y);
-  setLinkSurf(12,-SMap.realSurf(buildIndex+21));
+  setConnect("outerFront",Origin-Y*(concFront+feFront+voidLength/2.0),Y);
+  setLinkSurf("outerFront",-SMap.realSurf(buildIndex+21));
 
   createCommonLinks();
-  FixedComp::nameSideIndex(0,"innerFront");
-  FixedComp::nameSideIndex(6,"midFront");
-  FixedComp::nameSideIndex(12,"outerFront");
 
   return;
 }
@@ -360,30 +357,28 @@ ChopperPit::createCommonLinks()
 
   const double* LPtr(L);
   int BI(buildIndex);
+  const std::array<std::string,3> prefixArr{"inner","mid","outer"};
   for(size_t index=0;index<18;index+=6)
     {
-      setConnect(index+1,Origin+Y*D[0],Y);
-      setConnect(index+2,Origin-X*D[1],-X);
-      setConnect(index+3,Origin+X*D[2],X);
-      setConnect(index+4,Origin-Z*D[3],-Z);
-      setConnect(index+5,Origin+Z*D[4],Z);
+      const std::string& prefix=prefixArr[index/6];
+      setConnect(prefix+"Back",Origin+Y*D[0],Y);
+      setConnect(prefix+"Left",Origin-X*D[1],-X);
+      setConnect(prefix+"Right",Origin+X*D[2],X);
+      setConnect(prefix+"Base",Origin-Z*D[3],-Z);
+      setConnect(prefix+"Top",Origin+Z*D[4],Z);
 
-      setLinkSurf(index+1,SMap.realSurf(BI+2));
-      setLinkSurf(index+2,-SMap.realSurf(BI+3));
-      setLinkSurf(index+3,SMap.realSurf(BI+4));
-      setLinkSurf(index+4,-SMap.realSurf(BI+5));
-      setLinkSurf(index+5,SMap.realSurf(BI+6));
+      setLinkSurf(prefix+"Back",SMap.realSurf(BI+2));
+      setLinkSurf(prefix+"Left",-SMap.realSurf(BI+3));
+      setLinkSurf(prefix+"Right",SMap.realSurf(BI+4));
+      setLinkSurf(prefix+"Base",-SMap.realSurf(BI+5));
+      setLinkSurf(prefix+"Top",SMap.realSurf(BI+6));
 
       for(size_t i=0;i<5;i++)
 	D[i] += *LPtr++;
 
       BI+=10;
     }
-  FixedComp::nameSideIndex(1,"innerBack");
-  FixedComp::nameSideIndex(7,"midBack");
-  FixedComp::nameSideIndex(13,"outerBack");
-  
-  
+
   return;
 }
 
@@ -409,9 +404,8 @@ ChopperPit::addFrontWall(const attachSystem::FixedComp& WFC,
     \param WFC :: Front line
   */
 {
-  FixedComp::setLinkCopy(0,WFC,sideIndex);
+  FixedComp::setLinkCopy("innerFront",WFC,sideIndex);
   setCutSurf("front",WFC,sideIndex);
-  FixedComp::nameSideIndex(0,"innerFront");
 
   return;
 }
