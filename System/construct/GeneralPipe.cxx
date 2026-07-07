@@ -81,11 +81,7 @@ GeneralPipe::GeneralPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-  FixedComp::nameSideIndex(6,"midPoint");
-}
+{}
 
 GeneralPipe::GeneralPipe(const std::string& Key,
 			   const size_t nLink) :
@@ -99,11 +95,7 @@ GeneralPipe::GeneralPipe(const std::string& Key,
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-  FixedComp::nameSideIndex(6,"midPoint");
-}
+{}
 
 GeneralPipe::GeneralPipe(const GeneralPipe& A) :
   attachSystem::FixedRotate(A),

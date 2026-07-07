@@ -190,52 +190,51 @@ insertPlate::createLinks()
 {
   ELog::RegMethod RegA("insertPlate","createLinks");
 
-  FixedComp::setNConnect(14);
   FrontBackCut::createLinks(*this,Origin,Y);
-  
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0),Z);
+
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   // corners
   const Geometry::Vec3D frontPt=getLinkPt(1);
-  FixedComp::setConnect(6,frontPt-X*(width/2.0)-Z*(height/2.0),-X-Z);
-  FixedComp::setConnect(7,frontPt+X*(width/2.0)-Z*(height/2.0),X-Z);
-  FixedComp::setConnect(8,frontPt-X*(width/2.0)+Z*(height/2.0),-X+Z);
-  FixedComp::setConnect(9,frontPt+X*(width/2.0)+Z*(height/2.0),X+Z);
+  FixedComp::setConnect("frontLeftBase",frontPt-X*(width/2.0)-Z*(height/2.0),-X-Z);
+  FixedComp::setConnect("frontRightBase",frontPt+X*(width/2.0)-Z*(height/2.0),X-Z);
+  FixedComp::setConnect("frontLeftTop",frontPt-X*(width/2.0)+Z*(height/2.0),-X+Z);
+  FixedComp::setConnect("frontRightTop",frontPt+X*(width/2.0)+Z*(height/2.0),X+Z);
 
   // Back corner:
   const Geometry::Vec3D backPt=getLinkPt(2);
-  FixedComp::setConnect(10,backPt-X*(width/2.0)-Z*(height/2.0),-X-Z);
-  FixedComp::setConnect(11,backPt+X*(width/2.0)-Z*(height/2.0),X-Z);
-  FixedComp::setConnect(12,backPt-X*(width/2.0)+Z*(height/2.0),-X+Z);
-  FixedComp::setConnect(13,backPt+X*(width/2.0)+Z*(height/2.0),X+Z);
+  FixedComp::setConnect("backLeftBase",backPt-X*(width/2.0)-Z*(height/2.0),-X-Z);
+  FixedComp::setConnect("backRightBase",backPt+X*(width/2.0)-Z*(height/2.0),X-Z);
+  FixedComp::setConnect("backLeftTop",backPt-X*(width/2.0)+Z*(height/2.0),-X+Z);
+  FixedComp::setConnect("backRightTop",backPt+X*(width/2.0)+Z*(height/2.0),X+Z);
 
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("frontLeftBase",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("frontRightBase",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("frontLeftTop",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("frontRightTop",SMap.realSurf(buildIndex+4));
 
-  FixedComp::addLinkSurf(6,-SMap.realSurf(buildIndex+5));
-  FixedComp::addLinkSurf(7,-SMap.realSurf(buildIndex+5));
-  FixedComp::addLinkSurf(8,SMap.realSurf(buildIndex+6));
-  FixedComp::addLinkSurf(9,SMap.realSurf(buildIndex+6));
+  FixedComp::addLinkSurf("frontLeftBase",-SMap.realSurf(buildIndex+5));
+  FixedComp::addLinkSurf("frontRightBase",-SMap.realSurf(buildIndex+5));
+  FixedComp::addLinkSurf("frontLeftTop",SMap.realSurf(buildIndex+6));
+  FixedComp::addLinkSurf("frontRightTop",SMap.realSurf(buildIndex+6));
 
-  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(12,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("backLeftBase",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("backRightBase",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("backLeftTop",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("backRightTop",SMap.realSurf(buildIndex+4));
 
-  FixedComp::addLinkSurf(10,-SMap.realSurf(buildIndex+5));
-  FixedComp::addLinkSurf(11,-SMap.realSurf(buildIndex+5));
-  FixedComp::addLinkSurf(12,SMap.realSurf(buildIndex+6));
-  FixedComp::addLinkSurf(13,SMap.realSurf(buildIndex+6));
+  FixedComp::addLinkSurf("backLeftBase",-SMap.realSurf(buildIndex+5));
+  FixedComp::addLinkSurf("backRightBase",-SMap.realSurf(buildIndex+5));
+  FixedComp::addLinkSurf("backLeftTop",SMap.realSurf(buildIndex+6));
+  FixedComp::addLinkSurf("backRightTop",SMap.realSurf(buildIndex+6));
 
   return;
 }

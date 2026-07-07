@@ -68,7 +68,7 @@ namespace constructSystem
 {
 
 RingSeal::RingSeal(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -293,19 +293,19 @@ RingSeal::createLinks()
 {
   ELog::RegMethod RegA("RingSeal","createLinks");
 
-  setConnect(0,Origin-Y*(thick/2.0),-Y);
-  setConnect(1,Origin+Y*(thick/2.0),Y);
-  setConnect(2,Origin-X*(radius+deltaRad/2.0),-X);
-  setConnect(3,Origin+X*(radius+deltaRad/2.0),X);
-  setConnect(4,Origin-Z*(radius+deltaRad/2.0),-Z);
-  setConnect(5,Origin+Z*(radius+deltaRad/2.0),Z);
+  setConnect("front",Origin-Y*(thick/2.0),-Y);
+  setConnect("back",Origin+Y*(thick/2.0),Y);
+  setConnect("left",Origin-X*(radius+deltaRad/2.0),-X);
+  setConnect("right",Origin+X*(radius+deltaRad/2.0),X);
+  setConnect("base",Origin-Z*(radius+deltaRad/2.0),-Z);
+  setConnect("top",Origin+Z*(radius+deltaRad/2.0),Z);
 
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  setLinkSurf(2,SMap.realSurf(buildIndex+17));
-  setLinkSurf(3,SMap.realSurf(buildIndex+17));
-  setLinkSurf(4,SMap.realSurf(buildIndex+17));
-  setLinkSurf(5,SMap.realSurf(buildIndex+17));
+  setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  setLinkSurf("left",SMap.realSurf(buildIndex+17));
+  setLinkSurf("right",SMap.realSurf(buildIndex+17));
+  setLinkSurf("base",SMap.realSurf(buildIndex+17));
+  setLinkSurf("top",SMap.realSurf(buildIndex+17));
   
   return;
 }

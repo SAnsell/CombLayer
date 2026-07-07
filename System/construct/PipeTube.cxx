@@ -75,8 +75,6 @@ PipeTube::PipeTube(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  nameSideIndex(2,"FlangeA");
-  nameSideIndex(3,"FlangeB");
   ContainedGroup::addCC("FlangeA");
   ContainedGroup::addCC("FlangeB");
 }
@@ -287,8 +285,8 @@ PipeTube::createLinks()
   FrontBackCut::createFrontLinks(*this,Origin,Y); 
   FrontBackCut::createBackLinks(*this,Origin,Y);  
   // getlinke points
-  FixedComp::setConnect(2,FixedComp::getLinkPt(1),-Y);
-  FixedComp::setConnect(3,FixedComp::getLinkPt(2),Y);
+  FixedComp::setConnect("FlangeA",FixedComp::getLinkPt(1),-Y);
+  FixedComp::setConnect("FlangeB",FixedComp::getLinkPt(2),Y);
 
   // make a composite flange
   HeadRule HR;
@@ -297,9 +295,9 @@ PipeTube::createLinks()
   const HeadRule frontSurf(getFrontRule());
   const HeadRule backSurf(getBackRule());
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-101 -107");
-  FixedComp::setLinkComp(2,HR*frontSurf);
+  FixedComp::setLinkComp("FlangeA",HR*frontSurf);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"102 -207");
-  FixedComp::setLinkComp(3,HR*backSurf);
+  FixedComp::setLinkComp("FlangeB",HR*backSurf);
 
   // inner links
   int innerFrontSurf, innerBackSurf;
@@ -325,28 +323,24 @@ PipeTube::createLinks()
       innerBackVec  = Origin+Y*(length/2.0-flangeBCapThick);
     }
   
-  FixedComp::setConnect(4,innerFrontVec,Y);
-  FixedComp::setLinkSurf(4,innerFrontSurf);
-  nameSideIndex(4,"InnerFront");
+  FixedComp::setConnect("InnerFront",innerFrontVec,Y);
+  FixedComp::setLinkSurf("InnerFront",innerFrontSurf);
 
-  FixedComp::setConnect(5,innerBackVec,Y);
-  FixedComp::setLinkSurf(5,-innerBackSurf);
-  nameSideIndex(5,"InnerBack");
+  FixedComp::setConnect("InnerBack",innerBackVec,Y);
+  FixedComp::setLinkSurf("InnerBack",-innerBackSurf);
 
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
-  nameSideIndex(6,"InnerSide");
+  FixedComp::setLinkSurf("InnerSide",-SMap.realSurf(buildIndex+7));
 
   if (!outerVoid)
     {
-      FixedComp::setConnect(8,Origin+Z*(radius+wallThick),Z);
-      FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
+      FixedComp::setConnect("OuterRadius",Origin+Z*(radius+wallThick),Z);
+      FixedComp::setLinkSurf("OuterRadius",SMap.realSurf(buildIndex+17));
     }
   else
     {
-      FixedComp::setConnect(8,Origin+Z*flangeBRadius,Z);
-      FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+107));
+      FixedComp::setConnect("OuterRadius",Origin+Z*flangeBRadius,Z);
+      FixedComp::setLinkSurf("OuterRadius",SMap.realSurf(buildIndex+107));
     }
-  nameSideIndex(8,"OuterRadius");
 
   
   return;

@@ -237,10 +237,10 @@ RingFlange::addWindow(Simulation& System)
       addOuterUnionSurf(HR*radSurf);
 
       // Add links:	  
-      setConnect(6,Origin+Y*(windowStep-windowThick/2.0),-Y);
-      setConnect(7,Origin+Y*(windowStep+windowThick/2.0),Y);
-      setLinkSurf(6,-SMap.realSurf(windowIndex+1));
-      setLinkSurf(7,SMap.realSurf(windowIndex+2));
+      setConnect("6",Origin+Y*(windowStep-windowThick/2.0),-Y);
+      setConnect("7",Origin+Y*(windowStep+windowThick/2.0),Y);
+      setLinkSurf("6",-SMap.realSurf(windowIndex+1));
+      setLinkSurf("7",SMap.realSurf(windowIndex+2));
     }
   
   return;

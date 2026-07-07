@@ -77,11 +77,7 @@ CornerPipe::CornerPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-  FixedComp::nameSideIndex(6,"midPoint");
-}
+{}
 
 CornerPipe::~CornerPipe()
   /*!
@@ -343,19 +339,19 @@ CornerPipe::createLinks()
   ELog::RegMethod RegA("CornerPipe","createLinks");
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0+wallThick),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0+wallThick),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
+  FixedComp::setConnect("left",Origin-X*(width/2.0+wallThick),-X);
+  FixedComp::setConnect("right",Origin+X*(width/2.0+wallThick),X);
+  FixedComp::setConnect("outerPipe",Origin-Z*(height/2.0+wallThick),-Z);
+  FixedComp::setConnect("pipeOuterTop",Origin+Z*(height/2.0+wallThick),Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+23));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+24));
+  FixedComp::setLinkSurf("outerPipe",-SMap.realSurf(buildIndex+25));
+  FixedComp::setLinkSurf("pipeOuterTop",SMap.realSurf(buildIndex+26));
 
-  FixedComp::nameSideIndex(4,"outerPipe");
-  FixedComp::nameSideIndex(4,"pipeOuterBase");
-  FixedComp::nameSideIndex(5,"pipeOuterTop");
+  // "pipeOuterBase" is a second alias for the same link point as "outerPipe"
+  FixedComp::nameSideIndex
+    (static_cast<size_t>(std::abs(getSideIndex("outerPipe"))-1),"pipeOuterBase");
 
   // corner tracks
 
@@ -369,15 +365,10 @@ CornerPipe::createLinks()
   const Geometry::Vec3D ptD(Origin+X*(width/2.0+wallThick)-
 			     Z*(height/2.0+wallThick));
 
-  FixedComp::setConnect(6,ptA,Y);
-  FixedComp::setConnect(7,ptB,Y);
-  FixedComp::setConnect(8,ptC,Y);
-  FixedComp::setConnect(9,ptD,Y);
-
-  FixedComp::nameSideIndex(6,"cornerA");
-  FixedComp::nameSideIndex(7,"cornerB");
-  FixedComp::nameSideIndex(8,"cornerC");
-  FixedComp::nameSideIndex(9,"cornerD");
+  FixedComp::setConnect("cornerA",ptA,Y);
+  FixedComp::setConnect("cornerB",ptB,Y);
+  FixedComp::setConnect("cornerC",ptC,Y);
+  FixedComp::setConnect("cornerD",ptD,Y);
 
   return;
 }

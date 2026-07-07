@@ -77,10 +77,7 @@ CrossPipe::CrossPipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  nameSideIndex(4,"baseFlange");
-  nameSideIndex(5,"topFlange");
-}
+{}
 
 CrossPipe::CrossPipe(const CrossPipe& A) :
   attachSystem::FixedRotate(A),attachSystem::ContainedComp(A),
@@ -300,15 +297,15 @@ CrossPipe::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-X*horrRadius,-X);
-  FixedComp::setConnect(3,Origin+X*horrRadius,X);
-  FixedComp::setConnect(4,Origin-Z*depth,-Z);
-  FixedComp::setConnect(5,Origin+Z*height,Z);
+  FixedComp::setConnect("left",Origin-X*horrRadius,-X);
+  FixedComp::setConnect("right",Origin+X*horrRadius,X);
+  FixedComp::setConnect("baseFlange",Origin-Z*depth,-Z);
+  FixedComp::setConnect("topFlange",Origin+Z*height,Z);
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("baseFlange",SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("topFlange",SMap.realSurf(buildIndex+6));
 
   return;
 }

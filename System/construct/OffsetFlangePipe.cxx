@@ -74,10 +74,7 @@ OffsetFlangePipe::OffsetFlangePipe(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  nameSideIndex(9,"FlangeACentre");
-  nameSideIndex(10,"FlangeBCentre");
-}
+{}
 
 OffsetFlangePipe::OffsetFlangePipe(const OffsetFlangePipe& A) :
   GeneralPipe(A),
@@ -289,32 +286,34 @@ OffsetFlangePipe::createLinks()
 
   //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-  FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setConnect(3,Origin+X*radius,X);
-  FixedComp::setConnect(4,Origin-Z*radius,-Z);
-  FixedComp::setConnect(5,Origin+Z*radius,Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("left",Origin-X*radius,-X);
+  FixedComp::setConnect("right",Origin+X*radius,X);
+  FixedComp::setConnect("base",Origin-Z*radius,-Z);
+  FixedComp::setConnect("top",Origin+Z*radius,Z);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+7));
 
   // pipe wall
-  FixedComp::setConnect(7,Origin-Z*(radius+pipeThick),-Z);
-  FixedComp::setConnect(8,Origin+Z*(radius+pipeThick),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("outerPipe",Origin-Z*(radius+pipeThick),-Z);
+  FixedComp::setConnect("pipeOuterTop",Origin+Z*(radius+pipeThick),Z);
+  FixedComp::setLinkSurf("outerPipe",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("pipeOuterTop",SMap.realSurf(buildIndex+17));
 
-  FixedComp::nameSideIndex(7,"outerPipe");
-  FixedComp::nameSideIndex(7,"pipeOuterBase");
-  FixedComp::nameSideIndex(8,"pipeOuterTop");
+  // "pipeOuterBase" is a second alias for the same link point as "outerPipe"
+  FixedComp::nameSideIndex
+    (static_cast<size_t>(std::abs(getSideIndex("outerPipe"))-1),"pipeOuterBase");
 
   // flange mid point
-  FixedComp::setLinkCopy(9,*this,1);
-  FixedComp::setLinkCopy(10,*this,2);
+  FixedComp::setLinkCopy("FlangeACentre",*this,"front");
+  FixedComp::setLinkCopy("FlangeBCentre",*this,"back");
   FixedComp::setConnect
-    (9,FixedComp::getLinkPt(1)+X*flangeAXStep+Z*flangeAZStep,flangeAYAxis);
+    ("FlangeACentre",FixedComp::getLinkPt(1)+X*flangeAXStep+Z*flangeAZStep,
+     flangeAYAxis);
   FixedComp::setConnect
-    (10,FixedComp::getLinkPt(2)+X*flangeBXStep+Z*flangeBZStep,flangeBYAxis);
+    ("FlangeBCentre",FixedComp::getLinkPt(2)+X*flangeBXStep+Z*flangeBZStep,
+     flangeBYAxis);
 
   return;
 }

@@ -69,7 +69,7 @@ namespace constructSystem
 {
 
 BasicFlightLine::BasicFlightLine(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -330,37 +330,37 @@ BasicFlightLine::createLinks()
   for(size_t i=0;i<nLayer;i++)
     layT+=lThick[i];
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(sNum+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(sNum+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(sNum+5));
-  FixedComp::setLinkSurf(5,-SMap.realSurf(sNum+6));
+  FixedComp::setLinkSurf("2",-SMap.realSurf(sNum+3));
+  FixedComp::setLinkSurf("3",SMap.realSurf(sNum+4));
+  FixedComp::setLinkSurf("4",-SMap.realSurf(sNum+5));
+  FixedComp::setLinkSurf("5",-SMap.realSurf(sNum+6));
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0)-xDircA*layT,-xDircA);
-  FixedComp::setConnect(3,Origin+X*(width/2.0)+xDircB*layT,xDircB);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0)-zDircA*layT,-zDircA);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0)+zDircB*layT,-zDircB);
-  FixedComp::setConnect(6,Origin,-Y);
-  FixedComp::setConnect(7,Origin,Y);
+  FixedComp::setConnect("2",Origin-X*(width/2.0)-xDircA*layT,-xDircA);
+  FixedComp::setConnect("3",Origin+X*(width/2.0)+xDircB*layT,xDircB);
+  FixedComp::setConnect("4",Origin-Z*(height/2.0)-zDircA*layT,-zDircA);
+  FixedComp::setConnect("5",Origin+Z*(height/2.0)+zDircB*layT,-zDircB);
+  FixedComp::setConnect("6",Origin,-Y);
+  FixedComp::setConnect("7",Origin,Y);
 
   // Inner surfaces:
-  FixedComp::setConnect(8,Origin-X*(width/2.0),-xDircA);
-  FixedComp::setConnect(9,Origin+X*(width/2.0),xDircB);
-  FixedComp::setConnect(10,Origin-Z*(height/2.0),-zDircA);
-  FixedComp::setConnect(11,Origin+Z*(height/2.0),-zDircB);
+  FixedComp::setConnect("8",Origin-X*(width/2.0),-xDircA);
+  FixedComp::setConnect("9",Origin+X*(width/2.0),xDircB);
+  FixedComp::setConnect("10",Origin-Z*(height/2.0),-zDircA);
+  FixedComp::setConnect("11",Origin+Z*(height/2.0),-zDircB);
 
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("8",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("9",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("10",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("11",-SMap.realSurf(buildIndex+6));
   if (tapFlag & 1)
     {
-      FixedComp::addLinkSurf(4,-SMap.realSurf(buildIndex+505));
-      FixedComp::addLinkSurf(10,-SMap.realSurf(buildIndex+505));
+      FixedComp::addLinkSurf("4",-SMap.realSurf(buildIndex+505));
+      FixedComp::addLinkSurf("10",-SMap.realSurf(buildIndex+505));
     }
   if (tapFlag & 2)
     {
-      FixedComp::addLinkSurf(5,SMap.realSurf(buildIndex+506));
-      FixedComp::addLinkSurf(11,SMap.realSurf(buildIndex+506));
+      FixedComp::addLinkSurf("5",SMap.realSurf(buildIndex+506));
+      FixedComp::addLinkSurf("11",SMap.realSurf(buildIndex+506));
     }
   
 

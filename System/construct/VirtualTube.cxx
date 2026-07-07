@@ -79,7 +79,7 @@ namespace constructSystem
 {
 
 VirtualTube::VirtualTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,15),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -304,8 +304,7 @@ VirtualTube::applyPortRotation()
   ELog::RegMethod RegA("VirtualTube","applyPortRotation");
 
   // create extra link:
-  nameSideIndex(7,"OrgOrigin");
-  FixedComp::setConnect(7,Origin,Y);
+  FixedComp::setConnect("OrgOrigin",Origin,Y);
 
   if (!portConnectIndex) return;
   if (portConnectIndex>Ports.size()+3)
