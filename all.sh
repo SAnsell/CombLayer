@@ -57,11 +57,11 @@ $parallel "./singleItem --singleItem {} $opts $inp" ::: \
  LSexupole LocalShield M1detail MagTube MagnetBlock MagnetM1 \
  MagnetU1 MonoShutter MultiPipe NBeamStop Octupole OffsetFlangePipe PipeTube \
  PortTube PrismaChamber Quadrupole  \
- R3ChokeChamber RoundMonoShutter Scrapper Sexupole SlitsMask SixPort StriplineBPM \
+ R3ChokeChamber RoundMonoShutter Scrapper Sexupole SlitsMask SixPort SqrShield StriplineBPM \
  TDCBeamDump TWCavity TargetShield Torus TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
  UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac RFGun HeatAbsorberToyama \
  HeatAbsorberR3Toyama MLMono || exit
-# SqrShield
+
 exit
 
 ## Need to fix the cooling pads on the reflector

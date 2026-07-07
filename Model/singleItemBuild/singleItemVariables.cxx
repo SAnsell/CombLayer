@@ -303,7 +303,6 @@ SingleItemVariables(FuncDataBase& Control)
 
   // collimator block
   setVariable::SqrFMaskGenerator FMaskGen;
-  // B is standard
   FMaskGen.generateColl(Control,"FMask",0.0,15.0);
 
   FMaskGen.setPipeRadius(-10.0);// negative - no water pipes
@@ -1038,6 +1037,8 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable(name+"Mat", "Lead");
   Control.addVariable(name+"SkinMat", "SteelUnknownGrade");
   Control.addVariable(name+"VoidMat", "Void");
+  Control.addVariable(name+"SkinThickInside", 0.1);
+  Control.addVariable(name+"SkinThickOutside", 0.1);
 
   // Cylinder
   name = "Cylinder";
