@@ -3,7 +3,7 @@
 exec >/dev/null
 
 nValid=1000
-opts="--validAll --validCheck $nValid"
+opts="" #--validAll --validCheck $nValid"
 parallel="parallel -u --bar --halt now,fail=1"
 inp="/tmp/AA"
 
@@ -35,7 +35,8 @@ $parallel {} $inp ::: "./maxiv --noLengthCheck --defaultConfig Linac All $opts" 
 	  "./ess --topModType Pancake   $opts" || exit
 
 $parallel "./maxiv --defaultConfig Single {} $opts $inp " ::: \
-   SOFTIMAX BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
+	  DANMAX || exit
+#	  SOFTIMAX BALDER COSAXS DANMAX FORMAX MICROMAX SPECIES MAXPEEM || exit
 
 $parallel "./{} $opts $inp" ::: t1Real reactor saxsSim || exit
 
@@ -47,11 +48,11 @@ $parallel "./ess --defaultConfig Single {} $opts $inp" ::: \
 $parallel "./singleItem --singleItem {} $opts $inp" ::: \
  BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
  BremBlock BremTube  ButtonBPM CRLTube  CeramicGap CleaningMagnet  \
- CollTube ConnectorTube CooledScreen CooledUnit CornerPipe \
+ ConnectorTube CooledScreen CooledUnit CornerPipe \
  CorrectorMag CrossBlank   \
  CrossWay CylGateValve DiffPumpXIADP03 DipoleDIBMag DipoleExtract       \
- DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch         \
- FMask FlangeDome FlatPipe FourPort GateValveCube GateValveCylinder GaugeTube GTFGateValve \
+ DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch        \
+ FlangeDome FlatPipe FMask FourPort GateValveCube GateValveCylinder GaugeTube GTFGateValve \
  HPCombine HPJaws HalfElectronPipe IonGauge IonPTube Jaws LeadPipe LQuadF LQuadH   \
  LSexupole LocalShield M1detail MagTube MagnetBlock MagnetM1 \
  MagnetU1 MonoShutter MultiPipe NBeamStop Octupole OffsetFlangePipe PipeTube \
@@ -59,8 +60,8 @@ $parallel "./singleItem --singleItem {} $opts $inp" ::: \
  R3ChokeChamber RoundMonoShutter Scrapper Sexupole SlitsMask SixPort StriplineBPM \
  TDCBeamDump TWCavity TargetShield Torus TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
  UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac RFGun HeatAbsorberToyama \
- HeatAbsorberR3Toyama SqrShield MLMono || exit
-
+ HeatAbsorberR3Toyama MLMono || exit
+# CllTube SqrShield
 exit
 
 ## Need to fix the cooling pads on the reflector

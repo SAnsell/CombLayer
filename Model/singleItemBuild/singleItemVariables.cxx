@@ -304,7 +304,7 @@ SingleItemVariables(FuncDataBase& Control)
   // collimator block
   setVariable::SqrFMaskGenerator FMaskGen;
   // B is standard
-  //  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
+  FMaskGen.generateColl(Control,"FMask",0.0,15.0);
 
   FMaskGen.setPipeRadius(-10.0);// negative - no water pipes
   // FMaskGen.setCF<CF63>();
