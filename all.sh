@@ -48,7 +48,7 @@ $parallel "./ess --defaultConfig Single {} $opts $inp" ::: \
 $parallel "./singleItem --singleItem {} $opts $inp" ::: \
  BeamDivider BeamScrapper Bellow BlankTube BoxJaws         \
  BremBlock BremTube  ButtonBPM CRLTube  CeramicGap CleaningMagnet  \
- ConnectorTube CooledScreen CooledUnit CornerPipe \
+ CollTube ConnectorTube CooledScreen CooledUnit CornerPipe \
  CorrectorMag CrossBlank   \
  CrossWay CylGateValve DiffPumpXIADP03 DipoleDIBMag DipoleExtract       \
  DipoleSndBend EArrivalMon EBeamStop EPSeparator ExperimentalHutch        \
@@ -61,7 +61,7 @@ $parallel "./singleItem --singleItem {} $opts $inp" ::: \
  TDCBeamDump TWCavity TargetShield Torus TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
  UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac RFGun HeatAbsorberToyama \
  HeatAbsorberR3Toyama MLMono || exit
-# CllTube SqrShield
+# SqrShield
 exit
 
 ## Need to fix the cooling pads on the reflector
