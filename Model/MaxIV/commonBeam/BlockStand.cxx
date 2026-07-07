@@ -67,7 +67,7 @@ namespace xraySystem
 
 BlockStand::BlockStand(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedOffset(Key),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
   /*!
@@ -209,10 +209,10 @@ BlockStand::createLinks()
 {
   ELog::RegMethod RegA("BlockStand","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));      
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
   
   return;
 }

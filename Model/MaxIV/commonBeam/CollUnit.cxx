@@ -69,7 +69,7 @@ namespace xraySystem
 
 CollUnit::CollUnit(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
  /*!

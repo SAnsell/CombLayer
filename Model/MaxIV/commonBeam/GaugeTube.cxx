@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 GaugeTube::GaugeTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -185,8 +185,8 @@ GaugeTube::createSurfaces()
     (SMap,buildIndex+327,sideOrg,sideX,flangeXRadius);
   
   // link point
-  FixedComp::setConnect(2,Origin+sideX*(sideLength+plateThick),sideX);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+323));
+  FixedComp::setConnect("left",Origin+sideX*(sideLength+plateThick),sideX);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+323));
   
   return;
 }
@@ -265,14 +265,14 @@ GaugeTube::createLinks()
   ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
 
-  FixedComp::setConnect(3,Origin+X*(yRadius+wallThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("right",Origin+X*(yRadius+wallThick),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(4,Origin-Z*(yRadius+wallThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("base",Origin-Z*(yRadius+wallThick),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(5,Origin+Z*(yRadius+wallThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("top",Origin+Z*(yRadius+wallThick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+17));
   
   return;
 }

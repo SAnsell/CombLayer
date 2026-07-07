@@ -255,11 +255,11 @@ BeamBox::createLinks()
 
   ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
 
-  FixedComp::setConnect(1,Origin+Y*(backThick+length),Y);
-  FixedComp::setConnect(2,Origin-X*(wallThick+width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(wallThick+width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(wallThick+height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(wallThick+height/2.0),Z);
+  FixedComp::setConnect("back",Origin+Y*(backThick+length),Y);
+  FixedComp::setConnect("left",Origin-X*(wallThick+width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(wallThick+width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(wallThick+height/2.0),-Z);
+  FixedComp::setConnect("top",Origin+Z*(wallThick+height/2.0),Z);
 
   FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
   FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));

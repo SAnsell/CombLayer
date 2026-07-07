@@ -73,7 +73,7 @@ namespace xraySystem
 {
 
 MonoShutter::MonoShutter(const std::string& Key) :
-  attachSystem::FixedRotate(Key,3),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB",
 			       "ShutterA","ShutterB"),
   attachSystem::ExternalCut(),
@@ -249,12 +249,12 @@ MonoShutter::createLinks()
 {
   ELog::RegMethod RControl("MonoShutter","createLinks");
   
-  setLinkCopy(0,*shutterPipe,1);
-  setLinkCopy(1,*shutterPipe,2);
+  setLinkCopy("front",*shutterPipe,1);
+  setLinkCopy("back",*shutterPipe,2);
   const constructSystem::portItem& PIA=shutterPipe->getPort(0);
   const constructSystem::portItem& PIB=shutterPipe->getPort(1);
   const Geometry::Vec3D CP=(PIA.getCentre()+PIB.getCentre())/2.0;
-  setConnect(2,CP,Y);   // center origin between plates
+  setConnect("2",CP,Y);   // center origin between plates
   
   return;
 }

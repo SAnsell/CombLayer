@@ -210,22 +210,22 @@ GTFWall::createLinks()
 {
   ELog::RegMethod RegA("GTFWall","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect("Back",Origin,-Y);
   FixedComp::setLinkSurf("Back",SurfMap::getSignedSurf("#back"));
 
-  FixedComp::setConnect(1,Origin+Y*(length),Y);
+  FixedComp::setConnect("Front",Origin+Y*(length),Y);
   FixedComp::setLinkSurf("Front",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(width),-X);
+  FixedComp::setConnect("Left",Origin-X*(width),-X);
   FixedComp::setLinkSurf("Left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin,X);
+  FixedComp::setConnect("Right",Origin,X);
   FixedComp::setLinkSurf("Right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(depth),-Z);
+  FixedComp::setConnect("Bottom",Origin-Z*(depth),-Z);
   FixedComp::setLinkSurf("Bottom",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height),Z);
+  FixedComp::setConnect("Top",Origin+Z*(height),Z);
   FixedComp::setLinkSurf("Top",SMap.realSurf(buildIndex+6));
 
   return;

@@ -76,7 +76,7 @@ namespace xraySystem
 RoundMonoShutter::RoundMonoShutter(const std::string& Key) :
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB",
 			       "ShutterA","ShutterB"),
-  attachSystem::FixedRotate(Key,3),
+  attachSystem::FixedRotate(Key),
   attachSystem::ExternalCut(),
   attachSystem::SurfMap(),
   attachSystem::CellMap(),
@@ -264,11 +264,11 @@ RoundMonoShutter::createLinks()
 {
   ELog::RegMethod RControl("RoundMonoShutter","createLinks");
   
-  setLinkCopy(0,*shutterPipe,1);
-  setLinkCopy(1,*shutterPipe,2);
+  setLinkCopy("front",*shutterPipe,1);
+  setLinkCopy("back",*shutterPipe,2);
 
   const Geometry::Vec3D CP=(portA->getCentre()+portB->getCentre())/2.0;
-  setConnect(2,CP,Y);   // center origin between plates
+  setConnect("2",CP,Y);   // center origin between plates
 
   return;
 }

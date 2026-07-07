@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 Sexupole::Sexupole(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -79,8 +79,8 @@ Sexupole::Sexupole(const std::string& Key) :
 {}
 
 Sexupole::Sexupole(std::string  Base,
-		   const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+		   const std::string& Key) :
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -301,11 +301,11 @@ Sexupole::createLinks()
 {
   ELog::RegMethod RegA("Sexupole","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);     
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   return;
 }

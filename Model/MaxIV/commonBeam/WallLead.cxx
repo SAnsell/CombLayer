@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 WallLead::WallLead(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::FrontBackCut()

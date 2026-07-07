@@ -69,7 +69,7 @@ namespace xraySystem
 {
 
 FlangeMount::FlangeMount(const std::string& Key) :
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Flange","Body","Blade"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
@@ -78,9 +78,7 @@ FlangeMount::FlangeMount(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  nameSideIndex(6,"bladeCentre");
-}
+{}
 
 FlangeMount::FlangeMount(const FlangeMount& A) :
   attachSystem::FixedRotate(A),
@@ -333,8 +331,8 @@ FlangeMount::createLinks()
   const Geometry::Vec3D BCent(Origin+PZ*(threadLength-lift));
 
   // Mid point of blade centre
-  FixedComp::setConnect(6,BCent,-PY);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+105));
+  FixedComp::setConnect("bladeCentre",BCent,-PY);
+  FixedComp::setLinkSurf("bladeCentre",SMap.realSurf(buildIndex+105));
 
   return;
 }

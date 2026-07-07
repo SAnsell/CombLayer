@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 ViewScreenTube::ViewScreenTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -316,16 +316,15 @@ ViewScreenTube::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
   
-  FixedComp::setConnect(2,Origin-Z*depth,Z);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("2",Origin-Z*depth,Z);
+  FixedComp::setLinkSurf("2",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(3,Origin+Z*(height+plateThick),Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+26));
+  FixedComp::setConnect("3",Origin+Z*(height+plateThick),Z);
+  FixedComp::setLinkSurf("3",SMap.realSurf(buildIndex+26));
 
-  FixedComp::setConnect(4,Origin+X*(radius+wallThick),X);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("OuterRadius",Origin+X*(radius+wallThick),X);
+  FixedComp::setLinkSurf("OuterRadius",SMap.realSurf(buildIndex+17));
 
-  nameSideIndex(4,"OuterRadius");
   return;
 }
 

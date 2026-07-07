@@ -205,7 +205,7 @@ SoilRoof::createLinks()
 {
   ELog::RegMethod RegA("SoilRoof","createLinks");
 
-  FixedComp::setConnect(0,Origin+Z*height,Z);
+  FixedComp::setConnect("SoilTop",Origin+Z*height,Z);
   FixedComp::setLinkSurf("SoilTop",SurfMap::getSignedSurf("SoilTop"));
 
   return;

@@ -70,7 +70,7 @@ namespace xraySystem
 {
 
 SideShield::SideShield(const std::string& mainKey) :
-  attachSystem::FixedRotate(mainKey,6),
+  attachSystem::FixedRotate(mainKey),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
@@ -83,7 +83,7 @@ SideShield::SideShield(const std::string& mainKey) :
 
 SideShield::SideShield(std::string  baseKey,
 		       const std::string& mainKey) :
-  attachSystem::FixedRotate(mainKey,6),
+  attachSystem::FixedRotate(mainKey),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
@@ -199,11 +199,11 @@ SideShield::createLinks()
 {
   ELog::RegMethod RegA("SideShield","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin,-Y);
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setConnect(1,Origin+Y*depth,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*depth,Y);
 
   return;
 }

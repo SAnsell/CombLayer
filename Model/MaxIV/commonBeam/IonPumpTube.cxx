@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 IonPumpTube::IonPumpTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -268,17 +268,17 @@ IonPumpTube::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-X*(radius+wallThick),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+417));
+  FixedComp::setConnect("left",Origin-X*(radius+wallThick),-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+417));
 
-  FixedComp::setConnect(3,Origin+X*(radius+wallThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+417));
+  FixedComp::setConnect("right",Origin+X*(radius+wallThick),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+417));
 
-  FixedComp::setConnect(4,Origin-Z*(depth+plateThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+425));
+  FixedComp::setConnect("base",Origin-Z*(depth+plateThick),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+425));
 
-  FixedComp::setConnect(5,Origin+Z*(height+plateThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+426));
+  FixedComp::setConnect("top",Origin+Z*(height+plateThick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+426));
   
   return;
 }

@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 GrateHolder::GrateHolder(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -241,19 +241,19 @@ GrateHolder::createLinks()
 {
   ELog::RegMethod RegA("GrateHolder","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(gLength/2.0+endThick),-Y);
-  FixedComp::setConnect(1,Origin+Y*(gLength/2.0+endThick),Y);
-  FixedComp::setConnect(2,Origin-X*(gWidth/2.0+sideThick),-X);
-  FixedComp::setConnect(3,Origin+X*(gWidth/2.0+sideThick),X);
-  FixedComp::setConnect(4,Origin,-Z);
-  FixedComp::setConnect(5,Origin+Z*endHeight,Z);
+  FixedComp::setConnect("front",Origin-Y*(gLength/2.0+endThick),-Y);
+  FixedComp::setConnect("back",Origin+Y*(gLength/2.0+endThick),Y);
+  FixedComp::setConnect("left",Origin-X*(gWidth/2.0+sideThick),-X);
+  FixedComp::setConnect("right",Origin+X*(gWidth/2.0+sideThick),X);
+  FixedComp::setConnect("base",Origin,-Z);
+  FixedComp::setConnect("top",Origin+Z*endHeight,Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+26));
 
   return;
 }

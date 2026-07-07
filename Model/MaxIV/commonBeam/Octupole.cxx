@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 Octupole::Octupole(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -80,7 +80,7 @@ Octupole::Octupole(const std::string& Key) :
 
 Octupole::Octupole(std::string  Base,
 		   const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -296,11 +296,11 @@ Octupole::createLinks()
 {
   ELog::RegMethod RegA("Octupole","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);     
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);     
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   return;
 }

@@ -229,15 +229,15 @@ UTubePipe::createLinks()
 
   //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-  FixedComp::setConnect(2,Origin-X*(pipeThick+height/2.0+width/2.0),-X);
-  FixedComp::setConnect(3,Origin-X*(pipeThick+height/2.0+width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(pipeThick+height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(pipeThick+height/2.0),Z);
+  FixedComp::setConnect("left",Origin-X*(pipeThick+height/2.0+width/2.0),-X);
+  FixedComp::setConnect("right",Origin-X*(pipeThick+height/2.0+width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(pipeThick+height/2.0),-Z);
+  FixedComp::setConnect("top",Origin+Z*(pipeThick+height/2.0),Z);
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+18));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+18));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   return;
 }

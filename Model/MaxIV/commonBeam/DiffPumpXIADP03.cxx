@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 DiffPumpXIADP03::DiffPumpXIADP03(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -303,26 +303,25 @@ DiffPumpXIADP03::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);
   ExternalCut::createLink("back",*this,"back",Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
 
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+32));
+  FixedComp::setLinkSurf("6",-SMap.realSurf(buildIndex+32));
   const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(buildIndex+32);
-  FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,*PPtr),-Y);
+  FixedComp::setConnect("6",SurInter::getLinePoint(Origin,-Y,*PPtr),-Y);
 
   SurfMap::createLink("innerBack",*this, "innerBack", Origin, -Y);
 
-  FixedComp::nameSideIndex(7,"innerBack");
   return;
 }
 

@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 Maze::Maze(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Inner"),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()
