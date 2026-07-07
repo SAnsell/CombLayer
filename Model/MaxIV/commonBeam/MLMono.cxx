@@ -68,7 +68,7 @@ namespace xraySystem
 {
 
 MLMono::MLMono(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -196,8 +196,8 @@ MLMono::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+106,Origin+PZ*(heightA/2.0),PZ);
 
 
-  FixedComp::setConnect(0,Origin,PY);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+104));
+  FixedComp::setConnect("front",Origin,PY);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+104));
   // support A:
   Geometry::Plane *disasterMaskAFrontPlane = ModelSupport::buildPlane
     (SMap,buildIndex+201,Origin-PY*((lengthA+supportAExtra)/2.0),PY);
@@ -281,8 +281,8 @@ MLMono::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+1105,BOrg-QZ*(heightB/2.0),QZ);
   ModelSupport::buildPlane(SMap,buildIndex+1106,BOrg+QZ*(heightB/2.0),QZ);
 
-  FixedComp::setConnect(1,BOrg,QX);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+1104));
+  FixedComp::setConnect("back",BOrg,QX);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+1104));
   Geometry::Plane *disasterMaskBFrontPlane = ModelSupport::buildPlane
     (SMap,buildIndex+1201,BOrg-QY*((lengthB+supportBExtra)/2.0),QY);
   if(fabs(disasterMaskBYStep) > Geometry::zeroTol){
@@ -522,8 +522,8 @@ MLMono::createLinks()
   ELog::RegMethod RegA("MLMono","createLinks");
 
     // top surface going back down beamline to ring
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+106));
 
 
   return;

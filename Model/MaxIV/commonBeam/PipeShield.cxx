@@ -75,7 +75,7 @@ namespace xraySystem
 {
 
 PipeShield::PipeShield(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Wings"),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::ExternalCut()

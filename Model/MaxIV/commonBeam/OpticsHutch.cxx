@@ -424,64 +424,53 @@ OpticsHutch::createLinks()
   const double sideWallThick(pbWallThick+steelThick);
   const double roofThick(pbRoofThick+steelThick);
 
-  setConnect(0,Origin,Y);
-  setLinkSurf(0,ExternalCut::getValidRule("RingWall",Origin+Y*(length-backWallThick)));
+  setConnect("front",Origin,Y);
+  setLinkSurf("front",ExternalCut::getValidRule("RingWall",Origin+Y*(length-backWallThick)));
 
-  setConnect(1,Origin+Y*(length),Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+32));
-  nameSideIndex(1,"BackWallOuter");
+  setConnect("BackWallOuter",Origin+Y*(length),Y);
+  setLinkSurf("BackWallOuter",SMap.realSurf(buildIndex+32));
 
   // outer lead wall
   // -backWallThick is just for backward compatibility
-  setConnect(3,Origin-X*(outWidth)+Y*((length-backWallThick)/2.0),-X);
-  setLinkSurf(3,-SMap.realSurf(buildIndex+33));
-  nameSideIndex(3,"OuterWallOuter"); // former: outerWall
+  setConnect("OuterWallOuter",Origin-X*(outWidth)+Y*((length-backWallThick)/2.0),-X); // former: outerWall
+  setLinkSurf("OuterWallOuter",-SMap.realSurf(buildIndex+33));
 
   for(size_t i=0;i<holeRadius.size();i++)
     {
       const Geometry::Vec3D HO(holeOffset[i].getInBasis(X,Y,Z));
-      setConnect(7+2*i,Origin+HO+Y*(length),Y);
-      setLinkSurf(7+2*i,SMap.realSurf(buildIndex+32));
-      setConnect(8+i*2,Origin+HO+Z*holeRadius[i]+Y*(length),Z);
-      setLinkSurf(8+2*i,SMap.realSurf(buildIndex+117));
-      nameSideIndex(7+2*i,"exitHole"+std::to_string(i));
-      nameSideIndex(8+2*i,"exitHole"+std::to_string(i)+"Radius");
+      setConnect("exitHole"+std::to_string(i),Origin+HO+Y*(length),Y);
+      setLinkSurf("exitHole"+std::to_string(i),SMap.realSurf(buildIndex+32));
+      setConnect("exitHole"+std::to_string(i)+"Radius",Origin+HO+Z*holeRadius[i]+Y*(length),Z);
+      setLinkSurf("exitHole"+std::to_string(i)+"Radius",SMap.realSurf(buildIndex+117));
 
       if ((8+2*i) > 10) {
 	ELog::EM << "Error: wrong link point numbering - overrides the link points defined later. Fix the Optics(Step)Hutch link point numbering so that they work for any number of holes." << ELog::endErr;
       }
     }
 
-  setConnect(11,Origin,Y);
-  setLinkSurf(11,ExternalCut::getValidRule("RingWall",Origin+Y*(length-backWallThick)));
-  nameSideIndex(11,"innerFront");
+  setConnect("innerFront",Origin,Y);
+  setLinkSurf("innerFront",ExternalCut::getValidRule("RingWall",Origin+Y*(length-backWallThick)));
 
   // use
-  setConnect(12,Origin+Y*(length-backWallThick-backPlateInnerThick),-Y);
-  setLinkSurf(12,-SMap.realSurf(buildIndex+112));
-  nameSideIndex(12,"BackWallInner");
+  setConnect("BackWallInner",Origin+Y*(length-backWallThick-backPlateInnerThick),-Y);
+  setLinkSurf("BackWallInner",-SMap.realSurf(buildIndex+112));
 
-  setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
-  setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"OuterWallInner"); // former: innerLeftWall
+  setConnect("OuterWallInner",Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X); // former: innerLeftWall
+  setLinkSurf("OuterWallInner",SMap.realSurf(buildIndex+3));
 
-  setConnect(14,Origin+Y*(length+backPlateOuterThick),Y);
-  setLinkSurf(14,SMap.realSurf(buildIndex+2002));
-  nameSideIndex(14,"backPlateOuter");
+  setConnect("backPlateOuter",Origin+Y*(length+backPlateOuterThick),Y);
+  setLinkSurf("backPlateOuter",SMap.realSurf(buildIndex+2002));
 
-  setConnect(15,Origin+Z*(height-roofThick),-Z);
-  setLinkSurf(15,-SMap.realSurf(buildIndex+6));
-  nameSideIndex(15,"RoofInner");
+  setConnect("RoofInner",Origin+Z*(height-roofThick),-Z);
+  setLinkSurf("RoofInner",-SMap.realSurf(buildIndex+6));
 
-  setConnect(16,Origin+Z*(height),Z);
-  setLinkSurf(16,SMap.realSurf(buildIndex+36));
-  nameSideIndex(16,"RoofOuter");
+  setConnect("RoofOuter",Origin+Z*(height),Z);
+  setLinkSurf("RoofOuter",SMap.realSurf(buildIndex+36));
 
   // Link points to score particles entering the outer wall
   // (link point numbers 17- ~21 are used by OpticsStepHutch)
-  setConnect(30,Origin+Y*(length/2.0)-X*(outWidth-sideWallThick-innerOutVoid),-X);
-  setLinkSurf(30,-SMap.realSurf(buildIndex+1003));
-  nameSideIndex(30,"OuterWallInnerOutVoid");
+  setConnect("OuterWallInnerOutVoid",Origin+Y*(length/2.0)-X*(outWidth-sideWallThick-innerOutVoid),-X);
+  setLinkSurf("OuterWallInnerOutVoid",-SMap.realSurf(buildIndex+1003));
 
   return;
 }

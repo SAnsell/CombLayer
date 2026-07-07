@@ -70,7 +70,7 @@ namespace xraySystem
 {
 
 RingDoor::RingDoor(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Door","Tubes"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()

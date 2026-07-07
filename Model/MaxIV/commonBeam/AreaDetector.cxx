@@ -66,7 +66,7 @@ namespace xraySystem
 
 AreaDetector::AreaDetector(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
  /*!
@@ -180,23 +180,23 @@ AreaDetector::createLinks()
 {
   ELog::RegMethod RegA("AreaDetector","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*screenDepth,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin-Y*screenDepth,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(wallThick+length-screenDepth),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect("back",Origin+Y*(wallThick+length-screenDepth),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
 
-  FixedComp::setConnect(2,Origin-X*(wallThick+width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect("left",Origin-X*(wallThick+width/2.0),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
 
-  FixedComp::setConnect(3,Origin+X*(wallThick+width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setConnect("right",Origin+X*(wallThick+width/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
 
-  FixedComp::setConnect(4,Origin-Z*(wallThick+height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect("base",Origin-Z*(wallThick+height/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
 
-  FixedComp::setConnect(5,Origin+Z*(wallThick+height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("top",Origin+Z*(wallThick+height/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   return;
 }

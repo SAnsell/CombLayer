@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 SqrCollimator::SqrCollimator(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Default constructor
@@ -247,16 +247,16 @@ SqrCollimator::createLinks()
 {
   ELog::RegMethod RegA("SqrCollimator","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   const Geometry::Vec3D Axis[]={-X,X,-Z,Z};
   for(size_t i=0;i<4;i++)
     {
-      FixedComp::setConnect(i+2,Origin+Axis[i]*radius,Axis[i]);
-      FixedComp::setLinkSurf(i+2,SMap.realSurf(buildIndex+7));
+      FixedComp::setConnect(std::to_string(i+2),Origin+Axis[i]*radius,Axis[i]);
+      FixedComp::setLinkSurf(std::to_string(i+2),SMap.realSurf(buildIndex+7));
     }
   return;
 }

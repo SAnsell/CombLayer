@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 MonoShutterR3::MonoShutterR3(const std::string& Key) :
-  attachSystem::FixedRotate(Key,3),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::SurfMap(),

@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 GratingMono::GratingMono(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
@@ -72,10 +72,7 @@ GratingMono::GratingMono(const std::string& Key) :
     \param Key :: Name of construction key
     \param Index :: Index number
   */
-{
-  nameSideIndex(0,"beamIn");
-  nameSideIndex(1,"beamOut");
-}
+{}
 
 
 GratingMono::~GratingMono()
@@ -231,12 +228,12 @@ GratingMono::createLinks()
 
 
   // top surface going back down beamline to ring
-  FixedComp::setConnect(0,MCentre,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+106));
+  FixedComp::setConnect("beamIn",MCentre,-Y);
+  FixedComp::setLinkSurf("beamIn",SMap.realSurf(buildIndex+106));
 
   // top surface going to experimental area
-  FixedComp::setConnect(1,GCentre,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+205));
+  FixedComp::setConnect("beamOut",GCentre,Y);
+  FixedComp::setLinkSurf("beamOut",SMap.realSurf(buildIndex+205));
 
   return;
 }

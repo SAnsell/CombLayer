@@ -87,7 +87,7 @@ namespace xraySystem
 {
 
 Dipole::Dipole(const std::string& Key) :
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -97,13 +97,11 @@ Dipole::Dipole(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  FixedComp::nameSideIndex(6,"Centre");
-}
+{}
 
 Dipole::Dipole(std::string  Base,
 	       const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -237,9 +235,9 @@ Dipole::createSurfaces()
   ModelSupport::buildPlane
     (SMap,buildIndex+202,coilOrg+YCoil*(coilLength/2.0+coilEndRadius),YCoil);
 
-  FixedComp::setConnect(0,coilOrg-YCoil*(coilLength/2.0+coilEndRadius),YCoil);
-  FixedComp::setConnect(1,coilOrg+YCoil*(coilLength/2.0+coilEndRadius),YCoil);
-  FixedComp::setConnect(6,coilOrg,YCoil);
+  FixedComp::setConnect("front",coilOrg-YCoil*(coilLength/2.0+coilEndRadius),YCoil);
+  FixedComp::setConnect("back",coilOrg+YCoil*(coilLength/2.0+coilEndRadius),YCoil);
+  FixedComp::setConnect("Centre",coilOrg,YCoil);
 
   return;
 }
@@ -356,8 +354,8 @@ Dipole::createLinks()
 {
   ELog::RegMethod RegA("Dipole","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+201));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+202));
 
   return;
 }

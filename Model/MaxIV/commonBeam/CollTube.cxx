@@ -67,7 +67,7 @@ namespace xraySystem
 {
 
 CollTube::CollTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -374,48 +374,39 @@ CollTube::createLinks()
 {
   ELog::RegMethod RegA("CollTube","createLinks");
 
-  nameSideIndex(2,"OuterRadius");
-  
   ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-X*(mainRadius+wallThick),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+417));
+  FixedComp::setConnect("OuterRadius",Origin-X*(mainRadius+wallThick),-X);
+  FixedComp::setLinkSurf("OuterRadius",SMap.realSurf(buildIndex+417));
 
-  FixedComp::setConnect(3,Origin+X*(mainRadius+wallThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+417));
+  FixedComp::setConnect("right",Origin+X*(mainRadius+wallThick),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+417));
 
-  FixedComp::setConnect(4,Origin-Z*(depth+plateThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+425));
+  FixedComp::setConnect("base",Origin-Z*(depth+plateThick),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+425));
 
-  FixedComp::setConnect(5,Origin+Z*(height+plateThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+426));
+  FixedComp::setConnect("top",Origin+Z*(height+plateThick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+426));
 
   // point on vertical cylinder [-ve]
-  FixedComp::setConnect(6,Origin+Y*(zRadius+wallThick)-
+  FixedComp::setConnect("VertOuterWall",Origin+Y*(zRadius+wallThick)-
 			Z*((mainRadius+depth)/2.0),Z);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+417));
+  FixedComp::setLinkSurf("VertOuterWall",SMap.realSurf(buildIndex+417));
 
   // point on vertical cylinder [+ve]
-  FixedComp::setConnect(7,Origin+Y*(zRadius+wallThick)+
+  FixedComp::setConnect("7",Origin+Y*(zRadius+wallThick)+
 			Z*((mainRadius+height)/2.0),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+417));
+  FixedComp::setLinkSurf("7",SMap.realSurf(buildIndex+417));
 
   // point on vertical cylinder [+ve]
-  FixedComp::setConnect(8,Origin-Z*((mainRadius+depth)/2.0),Z);
-  
-  FixedComp::setConnect(9,Origin-Z*depth,-Z);
-  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+405));
+  FixedComp::setConnect("VertCentre",Origin-Z*((mainRadius+depth)/2.0),Z);
 
-  FixedComp::setConnect(10,Origin+Z*height,Z);
-  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+406));
+  FixedComp::setConnect("BaseFlange",Origin-Z*depth,-Z);
+  FixedComp::setLinkSurf("BaseFlange",-SMap.realSurf(buildIndex+405));
 
-
-
-  FixedComp::nameSideIndex(6,"VertOuterWall");
-  FixedComp::nameSideIndex(8,"VertCentre");
-  FixedComp::nameSideIndex(9,"BaseFlange");
-  FixedComp::nameSideIndex(10,"TopFlange");
+  FixedComp::setConnect("TopFlange",Origin+Z*height,Z);
+  FixedComp::setLinkSurf("TopFlange",-SMap.realSurf(buildIndex+406));
 
 
   

@@ -67,7 +67,7 @@ namespace xraySystem
 {
 
 GratingUnit::GratingUnit(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

@@ -63,7 +63,7 @@ namespace xraySystem
 {
 
 LCollimator::LCollimator(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -164,10 +164,10 @@ LCollimator::createLinks()
 {
   ELog::RegMethod RegA("LCollimator","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   return;
 }

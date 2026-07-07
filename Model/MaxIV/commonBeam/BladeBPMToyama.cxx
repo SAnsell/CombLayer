@@ -69,7 +69,7 @@ namespace xraySystem
 
 BladeBPMToyama::BladeBPMToyama(const std::string& Key)  :
   attachSystem::ContainedGroup("Base", "Feedthrough"),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()

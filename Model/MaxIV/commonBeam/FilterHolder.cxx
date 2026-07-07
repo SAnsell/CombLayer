@@ -63,7 +63,7 @@ namespace xraySystem
 
 FilterHolder::FilterHolder(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap()
  /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -302,23 +302,23 @@ FilterHolder::createLinks()
 {
   ELog::RegMethod RegA("FilterHolder","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(thick/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin-Y*(thick/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(thick/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*(thick/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(depth),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("base",Origin-Z*(depth),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Z*(height),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

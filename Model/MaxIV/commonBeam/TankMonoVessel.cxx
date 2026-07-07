@@ -67,7 +67,7 @@ namespace xraySystem
 {
 
 TankMonoVessel::TankMonoVessel(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -412,8 +412,8 @@ TankMonoVessel::createLinks()
     (voidRadius*voidRadius+topGap*topGap)/(2.0*topGap);
   const Geometry::Vec3D topCent=Origin-Z*(xPlus-voidHeight-topRadius);
 
-  FixedComp::setConnect(2,topCent,Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+108));
+  FixedComp::setConnect("2",topCent,Z);
+  FixedComp::setLinkSurf("2",SMap.realSurf(buildIndex+108));
 
 
   return;

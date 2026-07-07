@@ -1552,7 +1552,7 @@ InjectionHall::createLinks()
   FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
   FixedComp::nameSideIndex(7,"BTGSide");
 
-  FixedComp::setConnect(8,getLinkPt("BTGSide")
+  FixedComp::setConnect("BTGTopMiddleSide",getLinkPt("BTGSide")
 			-X*(btgThick)
 			+Z*(btgHeight-floorDepth+roofHeight)/2.0
 			,X);
@@ -1567,17 +1567,17 @@ InjectionHall::createLinks()
   const Geometry::Vec3D MidPt=
     (sideA.trackPoint(backWallPt,X)+
      sideB.trackPoint(backWallPt,X))/2.0 - X*70.0;
-  FixedComp::setConnect(9,MidPt,Y);
+  FixedComp::setConnect("FemtoMAX",MidPt,Y);
   FixedComp::setLinkSurf("FemtoMAX",SurfMap::getSignedSurf("BackWallBack"));
 
   // Back shielding wall and the BSP01 storage room
   FixedComp::setConnect
-    (10,getLinkPt("FemtoMAX")+X*(femtoMAXWallOffset),Y);
+    ("BSP01",getLinkPt("FemtoMAX")+X*(femtoMAXWallOffset),Y);
   FixedComp::setLinkSurf("BSP01",SurfMap::getSignedSurf("BackWallBack"));
 
   const Geometry::Vec3D MidPt11(Origin+X*midTXStep+Y*midTYStep);
 
-  FixedComp::setConnect(11,MidPt11-Y*midTThick,Y);
+  FixedComp::setConnect("MidWall",MidPt11-Y*midTThick,Y);
   FixedComp::setLinkSurf("MidWall",SurfMap::getSignedSurf("MidWall"));
 
   FixedComp::setConnect(12,Origin+Y*(backWallYStep-bdRoomBackSteelThick)-X*(-bdRoomXStep),-Y);

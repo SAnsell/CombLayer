@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 BremMonoColl::BremMonoColl(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Flange"),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),

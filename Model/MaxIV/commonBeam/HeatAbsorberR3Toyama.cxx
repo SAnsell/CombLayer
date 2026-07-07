@@ -60,7 +60,7 @@ namespace xraySystem
 
 HeatAbsorberR3Toyama::HeatAbsorberR3Toyama(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
@@ -328,21 +328,17 @@ HeatAbsorberR3Toyama::createLinks()
 
   const Geometry::Vec3D midPoint = Origin+Y*length/2.0;
 
-  FixedComp::setConnect(3,midPoint-X*absorberWidth/2.0,-X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+3));
-  FixedComp::nameSideIndex(3, "left");
+  FixedComp::setConnect("left",midPoint-X*absorberWidth/2.0,-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(4,midPoint+X*absorberWidth/2.0,X);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+4));
-  FixedComp::nameSideIndex(4, "right");
+  FixedComp::setConnect("right",midPoint+X*absorberWidth/2.0,X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(5,midPoint-Z*absorberHeight/2.0,-Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+5));
-  FixedComp::nameSideIndex(5, "bottom");
+  FixedComp::setConnect("bottom",midPoint-Z*absorberHeight/2.0,-Z);
+  FixedComp::setLinkSurf("bottom",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(6,midPoint+Z*absorberHeight/2.0,Z);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+6));
-  FixedComp::nameSideIndex(6, "top");
+  FixedComp::setConnect("top",midPoint+Z*absorberHeight/2.0,Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 }
 
 void

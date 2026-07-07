@@ -68,7 +68,7 @@ namespace xraySystem
 
 MonoBox::MonoBox(const std::string& Key,
 		       const bool flag) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),

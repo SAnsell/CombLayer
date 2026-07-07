@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 Undulator::Undulator(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -361,11 +361,11 @@ Undulator::createLinks()
 {
   ELog::RegMethod RegA("Undulator","createLinks");
   
-  setConnect(0,Origin-Y*(supportLength/2.0),-Y);
-  setConnect(1,Origin+Y*(supportLength/2.0),Y);
-  
-  setLinkSurf(0,-SMap.realSurf(buildIndex+101));
-  setLinkSurf(1,SMap.realSurf(buildIndex+102));
+  setConnect("front",Origin-Y*(supportLength/2.0),-Y);
+  setConnect("back",Origin+Y*(supportLength/2.0),Y);
+
+  setLinkSurf("front",-SMap.realSurf(buildIndex+101));
+  setLinkSurf("back",SMap.realSurf(buildIndex+102));
 
   return;
 }

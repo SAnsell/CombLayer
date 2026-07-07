@@ -72,7 +72,7 @@ SmallAngleBellows::SmallAngleBellows(const std::string& Key):
     Constructor
     \param Key :: Key name
   */
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -625,11 +625,11 @@ SmallAngleBellows::createLinks()
 {
   ELog::RegMethod RegA("SmallAngleBellows","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+Y*length/2.0+Yp*length/2.0,Yp);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin+Y*length/2.0+Yp*length/2.0,Yp);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   return;
 }

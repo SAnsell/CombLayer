@@ -75,7 +75,7 @@ StepBellows::StepBellows(const std::string& Key):
     Constructor
     \param Key :: Key name
   */
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("FrontBellows","BackBellows"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -197,8 +197,8 @@ StepBellows::createLinks()
 {
   ELog::RegMethod RegA("StepBellows","createLinks");
 
-  setLinkCopy(0,*frontBellows,1);
-  setLinkCopy(1,*backBellows,2);
+  setLinkCopy("front",*frontBellows,1);
+  setLinkCopy("back",*backBellows,2);
 
   return;
 }

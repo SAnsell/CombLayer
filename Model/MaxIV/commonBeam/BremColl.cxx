@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 BremColl::BremColl(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Extension"),
   attachSystem::CellMap(),
   attachSystem::ExternalCut()

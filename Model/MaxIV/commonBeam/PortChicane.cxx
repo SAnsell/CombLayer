@@ -68,7 +68,7 @@ namespace xraySystem
 
 PortChicane::PortChicane(const std::string& Key) :
   attachSystem::ContainedGroup("Main","Inner","Sides"),
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -76,12 +76,7 @@ PortChicane::PortChicane(const std::string& Key) :
     Default constructor
     \param Key :: Key name for variables
   */
-{
-  nameSideIndex(7,"innerLeft");
-  nameSideIndex(8,"innerRight");
-  nameSideIndex(2,"outerLeft");
-  nameSideIndex(3,"outerRight");
-}
+{}
 
 
 void
@@ -301,37 +296,37 @@ PortChicane::createLinks()
   Geometry::Vec3D backPt=
     SurInter::getLinePoint(Origin,Y,SMap.realSurfPtr(buildIndex+42),Origin);
 
-  FixedComp::setConnect(0,frontPt,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));
+  FixedComp::setConnect("front",frontPt,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+41));
 
-  FixedComp::setConnect(1,backPt,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
+  FixedComp::setConnect("back",backPt,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+42));
 
   // outer cross
-  FixedComp::setConnect(2,frontPt-X*(wallThick+overHang+width/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
+  FixedComp::setConnect("outerLeft",frontPt-X*(wallThick+overHang+width/2.0),-X);
+  FixedComp::setLinkSurf("outerLeft",-SMap.realSurf(buildIndex+23));
 
-  FixedComp::setConnect(3,frontPt+X*(wallThick+overHang+width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
+  FixedComp::setConnect("outerRight",frontPt+X*(wallThick+overHang+width/2.0),X);
+  FixedComp::setLinkSurf("outerRight",SMap.realSurf(buildIndex+24));
 
-  FixedComp::setConnect(4,frontPt-Z*(baseThick+overHang+height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
+  FixedComp::setConnect("base",frontPt-Z*(baseThick+overHang+height/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+25));
 
-  FixedComp::setConnect(5,frontPt+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",frontPt+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   // inner corners
-  FixedComp::setConnect(7,backPt-X*(wallThick+overHang+width/2.0),-X);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+23));
+  FixedComp::setConnect("innerLeft",backPt-X*(wallThick+overHang+width/2.0),-X);
+  FixedComp::setLinkSurf("innerLeft",-SMap.realSurf(buildIndex+23));
 
-  FixedComp::setConnect(8,backPt+X*(wallThick+overHang+width/2.0),X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+24));
+  FixedComp::setConnect("innerRight",backPt+X*(wallThick+overHang+width/2.0),X);
+  FixedComp::setLinkSurf("innerRight",SMap.realSurf(buildIndex+24));
 
-  FixedComp::setConnect(9,backPt-Z*(baseThick+overHang+height/2.0),-Z);
-  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+25));
+  FixedComp::setConnect("9",backPt-Z*(baseThick+overHang+height/2.0),-Z);
+  FixedComp::setLinkSurf("9",-SMap.realSurf(buildIndex+25));
 
-  FixedComp::setConnect(10,backPt+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("10",backPt+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf("10",SMap.realSurf(buildIndex+6));
 
 
   return;

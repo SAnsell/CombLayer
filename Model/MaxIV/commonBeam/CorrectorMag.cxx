@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 CorrectorMag::CorrectorMag(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -79,7 +79,7 @@ CorrectorMag::CorrectorMag(const std::string& Key) :
 
 CorrectorMag::CorrectorMag(std::string  Base,
 		   const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -391,11 +391,11 @@ CorrectorMag::createLinks(const bool extraFlag)
 
   if (!extraFlag)
     {
-      FixedComp::setConnect(0,Origin-Y*(magLength/2.0),-Y);     
-      FixedComp::setConnect(1,Origin+Y*(magLength/2.0),Y);     
-      
-      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+      FixedComp::setConnect("front",Origin-Y*(magLength/2.0),-Y);
+      FixedComp::setConnect("back",Origin+Y*(magLength/2.0),Y);
+
+      FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
+      FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
     }
   else
     {
@@ -404,11 +404,11 @@ CorrectorMag::createLinks(const bool extraFlag)
       const Geometry::Vec3D COrgB
 	(Origin+Y*(magInnerLength/2.0+pipeClampThick+pipeClampYStep));
 
-      FixedComp::setConnect(0,COrgA,-Y);     
-      FixedComp::setConnect(1,COrgB,Y);     
-      
-      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+3001));
-      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+3102));
+      FixedComp::setConnect("front",COrgA,-Y);
+      FixedComp::setConnect("back",COrgB,Y);
+
+      FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+3001));
+      FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+3102));
     }
       
   return;

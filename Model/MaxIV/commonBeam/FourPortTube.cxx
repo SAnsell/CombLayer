@@ -67,7 +67,7 @@ namespace xraySystem
 {
 
 FourPortTube::FourPortTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -300,11 +300,11 @@ FourPortTube::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-X*(sideALength+plateThick),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+323));
+  FixedComp::setConnect("left",Origin-X*(sideALength+plateThick),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+323));
 
-  FixedComp::setConnect(3,Origin+X*(sideBLength+plateThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+343));
+  FixedComp::setConnect("right",Origin+X*(sideBLength+plateThick),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+343));
 
   return;
 }

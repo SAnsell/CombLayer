@@ -86,7 +86,7 @@ namespace xraySystem
 
 CRLTube::CRLTube(const std::string& Key) :
   attachSystem::ContainedGroup("Main","PortA","PortB"),
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut(),

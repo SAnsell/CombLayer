@@ -69,7 +69,7 @@ namespace xraySystem
 
 PowerFilter::PowerFilter(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   constructSystem::BeamAxis()
@@ -372,16 +372,16 @@ PowerFilter::createLinks()
   const double dz = filterZOffset/2.0;
   const double yshift = filterGap/2.0+b1;
 
-  FixedComp::setConnect(0,Origin-Y*(yshift+baseLength-holderLength),-Y);
+  FixedComp::setConnect("Back",Origin-Y*(yshift+baseLength-holderLength),-Y);
   FixedComp::setLinkSurf("Back",-SMap.realSurf(buildIndex+121));
 
-  FixedComp::setConnect(1,Origin+Y*(yshift+baseLength+holderLength),Y);
+  FixedComp::setConnect("Front",Origin+Y*(yshift+baseLength+holderLength),Y);
   FixedComp::setLinkSurf("Front",SMap.realSurf(buildIndex+221));
 
-  FixedComp::setConnect(2,Origin-X*(holderWidth/2.0),-X);
+  FixedComp::setConnect("Left",Origin-X*(holderWidth/2.0),-X);
   FixedComp::setLinkSurf("Left",-SMap.realSurf(buildIndex+123));
 
-  FixedComp::setConnect(3,Origin+X*(holderWidth/2.0),X);
+  FixedComp::setConnect("Right",Origin+X*(holderWidth/2.0),X);
   FixedComp::setLinkSurf("Right",SMap.realSurf(buildIndex+124));
 
   // same code as in buildObjects
@@ -392,10 +392,10 @@ PowerFilter::createLinks()
   const double zmin = A ? holderDepth-dz : holderHeight+dz;
   const double zmax = A ? holderDepth-dz : holderHeight+dz;
 
-  FixedComp::setConnect(4,Origin-Z*(zmin),-Z);
+  FixedComp::setConnect("Bottom",Origin-Z*(zmin),-Z);
   FixedComp::setLinkSurf("Bottom",-SMap.realSurf(buildIndex+nzmin));
 
-  FixedComp::setConnect(5,Origin+Z*(zmax),Z);
+  FixedComp::setConnect("Top",Origin+Z*(zmax),Z);
   FixedComp::setLinkSurf("Top",SMap.realSurf(buildIndex+nzmax));
 
   return;

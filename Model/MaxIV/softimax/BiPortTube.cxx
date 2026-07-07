@@ -435,11 +435,11 @@ BiPortTube::createLinks()
   ExternalCut::createLink("frontA",*this,"frontA",beamAPt,-beamAAxis);
   ExternalCut::createLink("frontB",*this,"frontB",beamBPt,-beamBAxis);
 
-  FixedComp::setConnect(4,beamCPt,beamAAxis);
-  FixedComp::setLinkSurf("outA",SMap.realSurf(buildIndex+3002));  
+  FixedComp::setConnect("outA",beamCPt,beamAAxis);
+  FixedComp::setLinkSurf("outA",SMap.realSurf(buildIndex+3002));
 
 
-  FixedComp::setConnect(5,beamDPt,beamBAxis);
+  FixedComp::setConnect("outB",beamDPt,beamBAxis);
   FixedComp::setLinkSurf("outB",SMap.realSurf(buildIndex+4002));  
   
 

@@ -67,7 +67,7 @@ namespace xraySystem
 {
 
 Table::Table(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main"),
   attachSystem::CellMap(),
   attachSystem::SurfMap()

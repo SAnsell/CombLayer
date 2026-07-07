@@ -70,7 +70,7 @@ namespace xraySystem
 
 CooledScreen::CooledScreen(const std::string& Key)  :
   attachSystem::ContainedGroup("Payload","Connect","Outer"),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   constructSystem::BeamAxis(),

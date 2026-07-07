@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 Mirror::Mirror(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -227,8 +227,8 @@ Mirror::createSurfaces()
   Geometry::Vec3D Yrefl(PY);
   Geometry::Quaternion::calcQRotDeg(-theta,X).rotate(Yrefl);
 
-  FixedComp::setConnect(1,Origin+PZ*baseTop,Yrefl);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+205));
+  FixedComp::setConnect("back",Origin+PZ*baseTop,Yrefl);
+  FixedComp::setLinkSurf("back",-SMap.realSurf(buildIndex+205));
 
   return;
 }

@@ -66,7 +66,7 @@ namespace xraySystem
 
 SquareFMask::SquareFMask(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -435,8 +435,8 @@ SquareFMask::createLinks()
   const double R(std::max(flangeAOutRadius,flangeBOutRadius));
   for(size_t i=0;i<4;i++)
     {
-      FixedComp::setConnect(i+2,Origin+Axis[i]*R,Axis[i]);
-      FixedComp::setLinkSurf(i+2,SMap.realSurf(buildIndex+surfN));
+      FixedComp::setConnect(std::to_string(i+2),Origin+Axis[i]*R,Axis[i]);
+      FixedComp::setLinkSurf(std::to_string(i+2),SMap.realSurf(buildIndex+surfN));
     }
   return;
 }
