@@ -160,11 +160,13 @@
 #include "WhiteBeamStopGenerator.h"
 #include "MonoBlockXstalsGenerator.h"
 #include "MLMonoGenerator.h"
+#include "XRayHutchBaseGenerator.h"
+#include "ExptHutGenerator.h"
 
 namespace setVariable
 {
 
-void exptHutVariables(FuncDataBase&,const std::string&,const double);
+void exptHutVariables(FuncDataBase&,const std::string&);
 void localShieldVariables(FuncDataBase&);
 void m1chamberDetails(FuncDataBase&);
 void targetShieldVariables(FuncDataBase&);
@@ -942,7 +944,7 @@ SingleItemVariables(FuncDataBase& Control)
   //                      bendRadius,bendAngle);
 
   // expt hutch
-  exptHutVariables(Control,"",0.0);
+  exptHutVariables(Control,"");
   localShieldVariables(Control);
 
   // Concrete door
@@ -1216,66 +1218,94 @@ localShieldVariables(FuncDataBase& Control)
 
 void
 exptHutVariables(FuncDataBase& Control,
-		 const std::string& beamName,
-		 const double beamXStep)
+		 const std::string& beamName)
   /*!
-    Optics hut variables
+    Optics hut variables (based on DanMAX Experimental Hutch 1)
     \param Control :: DataBase to add
     \param beamName :: Beamline name
-    \param bremXStep :: Offset of beam from main centre line
   */
 {
   ELog::RegMethod RegA("singleItemVariables[F]","exptHutVariables");
 
-  const double beamOffset(-0.6);
+  const double beamMirrorShift = -1.0;
+  const double exptHut1WallThick = 0.4;
+  const double opticsHutOuterWidth = 259.7;
+  const double opticalAxisHeight = 131.88;
+  const double hutchHeightAboveOpticalAxis = 411.0-opticalAxisHeight;
 
-  const std::string hutName(beamName+"ExptHutch");
+  setVariable::ExptHutGenerator EGen;
 
-  Control.addVariable(hutName+"Height",200.0);
-  Control.addVariable(hutName+"Length",858.4);
-  Control.addVariable(hutName+"OutWidth",198.50);
-  Control.addVariable(hutName+"RingWidth",248.6);
-  Control.addVariable(hutName+"InnerThick",1.1);
-  Control.addVariable(hutName+"PbBackThick",1.0);
-  Control.addVariable(hutName+"PbRoofThick",0.6);
-  Control.addVariable(hutName+"PbWallThick",0.4);
-  Control.addVariable(hutName+"OuterThick",1.1);
-  Control.addVariable(hutName+"CornerLength",720.0);
-  Control.addVariable(hutName+"CornerAngle",45.0);
+  const std::string hutName(beamName+"ExperimentalHutch");
 
-  Control.addVariable(hutName+"InnerOutVoid",10.0);
-  Control.addVariable(hutName+"OuterOutVoid",10.0);
+  EGen.setFrontLead(0.4);
+  EGen.setFrontHole(beamMirrorShift,0.0,3.6);
+  EGen.setCorner(atan(167.4/281.5)*180.0/M_PI,281.5);
+  const double backLead = 0.6;
+  EGen.setBackLead(backLead);
+  const double skinThick = 0.1;
+  EGen.setSkin(skinThick);
+  EGen.setRoofLead(0.4);
+  EGen.setWallLead(exptHut1WallThick);
+  EGen.setFloorShine(0.6, 20.0);
 
-  Control.addVariable(hutName+"VoidMat","Void");
-  Control.addVariable(hutName+"SkinMat","Stainless304");
-  Control.addVariable(hutName+"PbMat","Lead");
+  const double hutchLength = 1401.3;
+  EGen.generateHut(Control,hutName,0.0, hutchLength);
 
-  Control.addVariable(hutName+"HoleXStep",beamXStep-beamOffset);
-  Control.addVariable(hutName+"HoleZStep",0.0);
-  Control.addVariable(hutName+"HoleRadius",3.0);
-  Control.addVariable(hutName+"HoleMat","Void");
+  Control.addVariable(hutName+"RingWidth",204.8);
+  Control.addVariable(hutName+"OutWidth",opticsHutOuterWidth);
+  Control.addVariable(hutName+"Height",hutchHeightAboveOpticalAxis);
+  Control.addVariable(hutName+"FloorShineFrontLength",19.4);
 
-  // lead shield on pipe
-  Control.addVariable(hutName+"PShieldXStep",beamXStep-beamOffset);
-  Control.addVariable(hutName+"PShieldYStep",0.3);
-  Control.addVariable(hutName+"PShieldLength",1.0);
-  Control.addVariable(hutName+"PShieldWidth",10.0);
-  Control.addVariable(hutName+"PShieldHeight",10.0);
-  Control.addVariable(hutName+"PShieldWallThick",0.2);
-  Control.addVariable(hutName+"PShieldClearGap",0.3);
-  Control.addVariable(hutName+"PShieldWallMat","Stainless304");
-  Control.addVariable(hutName+"PShieldMat","Lead");
+  Control.addVariable(hutName+"BeamStopHeight",30.0);
+  Control.addVariable(hutName+"BeamStopThick",5.0);
+  Control.addVariable(hutName+"BeamStopWidth",30.0);
+  Control.addVariable(hutName+"BeamStopMat","Stainless304");
 
-  Control.addVariable(hutName+"NChicane",2);
+  Control.addVariable(hutName+"NChicane",5);
   PortChicaneGenerator PGen;
-  PGen.setSize(4.0,40.0,30.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane0","Left",150.0,-5.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane1","Left",-270.0,-5.0);
-  /*
-  PGen.generatePortChicane(Control,hutName+"Chicane1",370.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane2",-70.0,-25.0);
-  PGen.generatePortChicane(Control,hutName+"Chicane3",-280.0,-25.0);
-  */
+  double chicaneHeight = 60.0;
+  PGen.setHeight(chicaneHeight);
+  const double chicaneWidth = 60.0;
+  PGen.setWidth(chicaneWidth);
+  const double chicaneWallThick = exptHut1WallThick;
+  PGen.setPlateThick(exptHut1WallThick);
+  PGen.setWallThick(exptHut1WallThick);
+  PGen.setSkin(skinThick);
+
+  const double x0 = -(hutchLength-2.0*skinThick-backLead)/2.0;
+
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane0","Left",
+    x0+1015.5,
+    -opticalAxisHeight+80.0+chicaneHeight/2.0
+  );
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane1","Left",
+    x0+415.5,
+    -opticalAxisHeight+110.0+chicaneHeight/2.0
+  );
+  const double smallChicaneWidth = 30.0;
+  const double chicane4WallDist = 22.5;
+  const double chicane2chicane4Dist = 24.0;
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane2","Left",
+    x0+chicane4WallDist+smallChicaneWidth+3.0*chicaneWallThick+chicane2chicane4Dist
+    +0.5*chicaneWidth,
+    -opticalAxisHeight+80.0+chicaneHeight/2.0
+  );
+  chicaneHeight = 68.0;
+  PGen.setHeight(chicaneHeight);
+  PGen.setWidth(smallChicaneWidth);
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane3","Left",
+    x0+715.5,
+    -opticalAxisHeight+72.0+chicaneHeight/2.0
+  );
+  PGen.generatePortChicane(
+    Control,hutName+"Chicane4","Left",
+    x0+smallChicaneWidth/2.0+chicaneWallThick+chicane4WallDist,
+    -opticalAxisHeight+72.0+chicaneHeight/2.0
+  );
 
   return;
 }
