@@ -71,7 +71,7 @@ namespace constructSystem
 {
 
 JawFlange::JawFlange(const std::string& Key) : 
-  attachSystem::FixedRotateGroup(Key,"Main",2,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam"),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   cutCell(0)

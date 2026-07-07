@@ -51,35 +51,25 @@
 namespace attachSystem
 {
 
-FixedOffset::FixedOffset(const size_t NL,const std::string& KN) :
-  FixedComp(NL,KN),
+FixedOffset::FixedOffset(FixedComp::unregistered_t,const std::string& KN) :
+  FixedComp(FixedComp::unregistered,KN),
   preXYAngle(0.0),preZAngle(0.0),
   xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0)
  /*!
-    Null version Constructor 
-    \param NL :: Number of links
+    Null version Constructor
     \param KN :: KeyName [not registered]
   */
 {}
 
-FixedOffset::FixedOffset(const size_t NL) :
-  FixedOffset(NL,"Null")
- /*!
-    Null version Constructor 
-    \param NL :: Number of links
-  */
-{}
-
-FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
-  FixedComp(KN,NL),
+FixedOffset::FixedOffset(const std::string& KN) :
+  FixedComp(KN),
   preXYAngle(0.0),preZAngle(0.0),
   xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0)
  /*!
-    Constructor 
+    Constructor
     \param KN :: KeyName
-    \param NL :: Number of links
   */
 {}
 
@@ -90,9 +80,9 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL,
   xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0)
  /*!
-    Constructor 
+    Legacy constructor retained for source compatibility -- see
+    FixedComp.h.
     \param KN :: KeyName
-    \param NL :: Number of links
     \param resSize :: Reserved space
   */
 {}

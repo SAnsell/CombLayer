@@ -71,7 +71,7 @@ namespace ModelSupport
 {
 
 LayerDivide1D::LayerDivide1D(const std::string& Key)  :
-  FixedUnit(Key,0),CellMap(),SurfMap(),
+  FixedUnit(FixedComp::unregistered,Key),CellMap(),SurfMap(),
   WallID("Split")
   /*!
     Constructor BUT ALL variable are left unpopulated.

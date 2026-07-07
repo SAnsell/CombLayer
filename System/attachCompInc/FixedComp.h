@@ -54,6 +54,8 @@ class FixedComp
   HeadRule getUSLinkComplement(const size_t) const;
   int getUSLinkSurf(const size_t) const;
 
+  size_t getOrCreateLinkIndex(const std::string&);
+
  protected:
 
   const std::string keyName;       ///< Key Name
@@ -83,17 +85,67 @@ class FixedComp
 
   //  virtual std::string getLinkString(const long int) const;
 
+  // Legacy numeric-index link-point API. Retained only so that
+  // name-keyed wrappers (and code not yet migrated) can still reach
+  // the underlying LU slot by position; new/migrated code must use
+  // the name-keyed overloads below instead.
+  void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void setLineConnect(const size_t,const Geometry::Vec3D&,
+		      const Geometry::Vec3D&);
+
+  void setLinkSurf(const size_t,const int);
+  void setLinkSurf(const size_t,const std::string&);
+  void setLinkSurf(const size_t,const HeadRule&);
+  void setLinkSurf(const size_t,const HeadRule&,const bool,
+		   const HeadRule&,const bool);
+
+  void setLinkComp(const size_t,const int);
+  void setLinkComp(const size_t,const std::string&);
+  void setLinkComp(const size_t,const HeadRule&);
+
+  void addLinkSurf(const size_t,const int);
+  void addLinkSurf(const size_t,const std::string&);
+  void addLinkSurf(const size_t,const HeadRule&);
+
+  void addLinkComp(const size_t,const int);
+  void addLinkComp(const size_t,const std::string&);
+  void addLinkComp(const size_t,const HeadRule&);
+
+  void setBridgeSurf(const size_t,const int);
+  void setBridgeSurf(const size_t,const HeadRule&);
+  void addBridgeSurf(const size_t,const int);
+  void addBridgeSurf(const size_t,const std::string&);
+
+  void setLinkCopy(const size_t,const FixedComp&,const std::string&);
+  void setLinkCopy(const size_t,const FixedComp&,const long int);
+
+  void nameSideIndex(const size_t,const std::string&);
+  void nameSideIndex(const std::map<std::string,size_t>&);
+  void setNConnect(const size_t);
+
  public:
+
+  /// Tag type selecting the non-registered constructors (no objectRegister entry)
+  struct unregistered_t {};
+  /// Tag value selecting the non-registered constructors
+  static constexpr unregistered_t unregistered{};
 
   static void computeZOffPlane(const Geometry::Vec3D&,
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
 
-  explicit FixedComp(const size_t);
-  explicit FixedComp(const size_t,std::string );
+  explicit FixedComp(unregistered_t,std::string ="Null");
+  explicit FixedComp(const std::string&);
+  // Legacy constructor kept for source compatibility with call sites not
+  // yet migrated off the old link-point-count argument: the size_t
+  // parameter is accepted but ignored (LU grows on demand instead).
+  // Intentionally NOT collapsible with the single-string constructor
+  // above -- doing so would silently reinterpret existing 2-argument
+  // (KeyName,NL) call sites as (KeyName,resSize), corrupting the surface
+  // number reservation. Remove once all call sites are migrated.
   FixedComp(const std::string&,const size_t,const size_t =10000);
-  FixedComp(const std::string&,const size_t,Geometry::Vec3D );
-  FixedComp(const std::string&,const size_t,
+  FixedComp(const std::string&,Geometry::Vec3D );
+  FixedComp(const std::string&,
 	    Geometry::Vec3D ,const Geometry::Vec3D&,
 	    const Geometry::Vec3D&,const Geometry::Vec3D&);
   FixedComp(const FixedComp&);
@@ -149,41 +201,38 @@ class FixedComp
   void reverseX();
   void reverseZ();
 
-  void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
-  void setLineConnect(const size_t,const Geometry::Vec3D&,
+  // Name-keyed link-point API: the name is obligatory and the first
+  // use of a given name allocates its LU slot on demand -- the
+  // numeric index is purely an internal detail from here on.
+  void setConnect(const std::string&,const Geometry::Vec3D&,
+		  const Geometry::Vec3D&);
+  void setLineConnect(const std::string&,const Geometry::Vec3D&,
 		      const Geometry::Vec3D&);
   void setBasicExtent(const double,const double,const double);
 
-
-  template<typename T>
-  void setNamedLinkSurf(const size_t,const std::string&,const T&);
-
-  void setLinkSurf(const size_t,const int);
-  void setLinkSurf(const size_t,const std::string&);
-  void setLinkSurf(const size_t,const HeadRule&);
-
-  void setLinkComp(const size_t,const int);
-  void setLinkComp(const size_t,const std::string&);
-  void setLinkComp(const size_t,const HeadRule&);
-
-  void setLinkSurf(const size_t,const HeadRule&,const bool,
+  void setLinkSurf(const std::string&,const int);
+  void setLinkSurf(const std::string&,const std::string&);
+  void setLinkSurf(const std::string&,const HeadRule&);
+  void setLinkSurf(const std::string&,const HeadRule&,const bool,
 		   const HeadRule&,const bool);
 
-  void addLinkSurf(const size_t,const int);
-  void addLinkSurf(const size_t,const std::string&);
-  void addLinkSurf(const size_t,const HeadRule&);
+  void setLinkComp(const std::string&,const int);
+  void setLinkComp(const std::string&,const std::string&);
+  void setLinkComp(const std::string&,const HeadRule&);
 
-  void addLinkComp(const size_t,const int);
-  void addLinkComp(const size_t,const std::string&);
-  void addLinkComp(const size_t,const HeadRule&);
+  void addLinkSurf(const std::string&,const int);
+  void addLinkSurf(const std::string&,const std::string&);
+  void addLinkSurf(const std::string&,const HeadRule&);
 
-  void setBridgeSurf(const size_t,const int);
-  void setBridgeSurf(const size_t,const HeadRule&);
-  void addBridgeSurf(const size_t,const int);
-  void addBridgeSurf(const size_t,const std::string&);
+  void addLinkComp(const std::string&,const int);
+  void addLinkComp(const std::string&,const std::string&);
+  void addLinkComp(const std::string&,const HeadRule&);
 
-  void setLinkCopy(const size_t,const FixedComp&,const std::string&);
-  void setLinkCopy(const size_t,const FixedComp&,const long int);
+  void setBridgeSurf(const std::string&,const int);
+  void setBridgeSurf(const std::string&,const HeadRule&);
+  void addBridgeSurf(const std::string&,const int);
+  void addBridgeSurf(const std::string&,const std::string&);
+
   void setLinkCopy(const std::string&,const FixedComp&,const long int);
   void setLinkCopy(const std::string&,const FixedComp&,const std::string&);
 
@@ -200,12 +249,9 @@ class FixedComp
   virtual int getExitWindow(const long int,std::vector<int>&) const;
   virtual const Geometry::Vec3D& getExit() const;
 
-  void nameSideIndex(const size_t,const std::string&);
-  void nameSideIndex(const std::map<std::string,size_t>&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
   size_t NConnect() const { return LU.size(); }
-  void setNConnect(const size_t);
 
   const LinkUnit& getSignedRefLU(const long int)  const;
   const LinkUnit& getLU(const size_t)  const;

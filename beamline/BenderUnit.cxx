@@ -315,8 +315,8 @@ BenderUnit::createLinks()
   if (resetYRotation)
     applyAngleRotate(0,-yAngle,0);
 
-  ExternalCut::createLink("front",*this,0,Origin,-Y);
-  ExternalCut::createLink("back",*this,1,endPt,bY);
+  ExternalCut::createLink("front",*this,"front",Origin,-Y);
+  ExternalCut::createLink("back",*this,"back",endPt,bY);
 
   setLinkSurf(2,SMap.realSurf(buildIndex+5));
   setLinkSurf(3,SMap.realSurf(buildIndex+6));

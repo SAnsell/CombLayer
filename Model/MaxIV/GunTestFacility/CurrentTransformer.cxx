@@ -268,7 +268,7 @@ CurrentTransformer::createLinks()
   FixedComp::setBridgeSurf(5,SMap.realSurf(60000));
 
   FixedComp::setConnect(6,Origin+Y*(length),Y);
-  FixedComp::setNamedLinkSurf(6,"InnerBack",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("InnerBack",SMap.realSurf(buildIndex+2));
 
   return;
 }

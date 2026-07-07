@@ -210,8 +210,8 @@ LeadPipe::createLinks()
 {
   ELog::RegMethod RegA("LeadPipe","createLinks");
   
-  ExternalCut::createLink("front",*this,0,Origin,Y);  // Front and back
-  ExternalCut::createLink("back",*this,1,Origin,Y);   // Front and back
+  ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
+  ExternalCut::createLink("back",*this,"back",Origin,Y);   // Front and back
   
   FixedComp::setConnect(2,Origin+Z*radius,Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));

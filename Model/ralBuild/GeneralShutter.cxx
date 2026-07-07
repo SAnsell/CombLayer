@@ -69,7 +69,7 @@ namespace shutterSystem
 {
 
 GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
-  FixedGroup(Key+std::to_string(ID),"Main",8,"Beam",2),
+  FixedGroup(Key+std::to_string(ID),"Main","Beam"),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),

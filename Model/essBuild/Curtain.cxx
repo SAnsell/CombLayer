@@ -72,7 +72,7 @@ namespace essSystem
 {
 
 Curtain::Curtain(const std::string& Key)  :
-  attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",16),
+  attachSystem::FixedGroup(Key,"Top","Mid","Lower"),
   attachSystem::ContainedGroup("Top","Mid","Lower","RoofCut"),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -430,16 +430,16 @@ Curtain::createLinks()
       const Geometry::Vec3D Axis(Y*cos(angle)+X*sin(angle));
       const Geometry::Vec3D OutPt=Origin+Axis*(wallRadius+wallThick);
       const Geometry::Vec3D InPt=Origin+Axis*wallRadius;
-      baseFC.setConnect(i,OutPt-Z*depth,Axis);
-      baseFC.setConnect(i+4,InPt-Z*depth,-Axis);
+      baseFC.setConnect(std::to_string(i),OutPt-Z*depth,Axis);
+      baseFC.setConnect(std::to_string(i+4),InPt-Z*depth,-Axis);
 
-      baseFC.setConnect(i+8,OutPt+Z*height,Axis);
-      baseFC.setConnect(i+12,InPt+Z*height,-Axis);
+      baseFC.setConnect(std::to_string(i+8),OutPt+Z*height,Axis);
+      baseFC.setConnect(std::to_string(i+12),InPt+Z*height,-Axis);
 
-      baseFC.setConnect(i,OutPt,Axis);
-      baseFC.setConnect(i+4,InPt,-Axis);
-      baseFC.setLinkSurf(i,SMap.realSurf(buildIndex+27));
-      baseFC.setLinkSurf(i+8,SMap.realSurf(buildIndex+27));   
+      baseFC.setConnect(std::to_string(i),OutPt,Axis);
+      baseFC.setConnect(std::to_string(i+4),InPt,-Axis);
+      baseFC.setLinkSurf(std::to_string(i),SMap.realSurf(buildIndex+27));
+      baseFC.setLinkSurf(std::to_string(i+8),SMap.realSurf(buildIndex+27));
     }
 
   return;

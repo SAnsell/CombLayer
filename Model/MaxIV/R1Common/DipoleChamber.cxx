@@ -297,10 +297,10 @@ DipoleChamber::createLinks()
 {
   ELog::RegMethod RegA("DipoleChamber","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
-  ExternalCut::createLink("exit",*this,2,Origin,Y);
-  //  ExternalCut::createLink("back",*this,1,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,Y);
+  ExternalCut::createLink("back",*this,"back",Origin,Y);
+  ExternalCut::createLink("exit",*this,"exit",Origin,Y);
+  //  ExternalCut::createLink("back",*this,"back",Origin,Y);
 
   // construct from Surface 12:
 

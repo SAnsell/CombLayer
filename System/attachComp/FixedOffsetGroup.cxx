@@ -78,80 +78,62 @@ offset::copy(double& PreXYA,double& PreZA,
 }
   
 FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
-				   const std::string& KN,
-				   const size_t NL) :
-  FixedGroup(mainKey,KN,NL),preXYAngle(0.0),
+				   const std::string& KN) :
+  FixedGroup(mainKey,KN),preXYAngle(0.0),
   preZAngle(0.0),xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0)
  /*!
-    Constructor 
-    \param mainKey :: BaseName 
+    Constructor
+    \param mainKey :: BaseName
     \param KN :: KeyName
-    \param NL :: Number of links
   */
 {}
 
 FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
 				   const std::string& AKey,
-				   const size_t ANL,
-				   const std::string& BKey,
-				   const size_t BNL) :
-  FixedGroup(mainKey,AKey,ANL,BKey,BNL),
+				   const std::string& BKey) :
+  FixedGroup(mainKey,AKey,BKey),
   preXYAngle(0.0),preZAngle(0.0),xStep(0.0),yStep(0.0),zStep(0.0),
-  xyAngle(0.0),zAngle(0.0)  
+  xyAngle(0.0),zAngle(0.0)
  /*!
-    Constructor 
+    Constructor
     \param mainKey :: KeyName [main system]
     \param AKey :: Key unit
-    \param ANL :: A Number of links
     \param BKey :: Key unit
-    \param BNL :: B Number of links
   */
 {}
 
 FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
                                    const std::string& AKey,
-                                   const size_t ANL,
                                    const std::string& BKey,
-                                   const size_t BNL,
-                                   const std::string& CKey,
-                                   const size_t CNL) :
-  FixedGroup(mainKey,AKey,ANL,BKey,BNL,CKey,CNL),
+                                   const std::string& CKey) :
+  FixedGroup(mainKey,AKey,BKey,CKey),
   preXYAngle(0.0),preZAngle(0.0),xStep(0.0),yStep(0.0),zStep(0.0),
-  xyAngle(0.0),zAngle(0.0)  
+  xyAngle(0.0),zAngle(0.0)
  /*!
-    Constructor 
+    Constructor
     \param mainKey :: KeyName [main system]
     \param AKey :: Key unit
-    \param ANL :: A Number of links
     \param BKey :: Key unit
-    \param BNL :: B Number of links
     \param CKey :: Key unit
-    \param CNL :: B Number of links
   */
 {}
 
 FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
                                    const std::string& AKey,
-                                   const size_t ANL,
                                    const std::string& BKey,
-                                   const size_t BNL,
                                    const std::string& CKey,
-                                   const size_t CNL,
-                                   const std::string& DKey,
-                                   const size_t DNL) :
-  FixedGroup(mainKey,AKey,ANL,BKey,BNL,CKey,CNL,DKey,DNL),
+                                   const std::string& DKey) :
+  FixedGroup(mainKey,AKey,BKey,CKey,DKey),
   preXYAngle(0.0),preZAngle(0.0),xStep(0.0),yStep(0.0),zStep(0.0),
-  xyAngle(0.0),zAngle(0.0)  
+  xyAngle(0.0),zAngle(0.0)
  /*!
-    Constructor 
+    Constructor
     \param mainKey :: KeyName [main system]
     \param AKey :: Key unit
-    \param ANL :: A Number of links
     \param BKey :: Key unit
-    \param BNL :: B Number of links
     \param CKey :: Key unit
-    \param CNL :: B Number of links
+    \param DKey :: Key unit
   */
 {}
 

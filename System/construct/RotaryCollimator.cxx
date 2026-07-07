@@ -71,7 +71,7 @@ namespace constructSystem
 {
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
-  attachSystem::FixedGroup(Key,"Main",16,"Beam",3,"Hole",0),
+  attachSystem::FixedGroup(Key,"Main","Beam","Hole"),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   holeIndex(0),nHole(0),nLayers(0)
@@ -317,17 +317,17 @@ RotaryCollimator::createLinks()
     SurInter::interceptRule(HM,beamFC.getCentre()+beamFC.getY()*thick,
 			    beamFC.getY());
 
-  beamFC.setConnect(0,PtA.first,-beamFC.getY());
-  beamFC.setConnect(1,PtB.first,beamFC.getY());
-  beamFC.setConnect(2,(PtB.first+PtA.first)/2,
+  beamFC.setConnect("front",PtA.first,-beamFC.getY());
+  beamFC.setConnect("back",PtB.first,beamFC.getY());
+  beamFC.setConnect("mid",(PtB.first+PtA.first)/2,
                     beamFC.getY());  // mid point [NO SURF]
-  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  beamFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  mainFC.setConnect(0,Origin,-Y);
-  mainFC.setConnect(1,Origin+Y*thick,Y);
-  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  mainFC.setConnect("front",Origin,-Y);
+  mainFC.setConnect("back",Origin+Y*thick,Y);
+  mainFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   const size_t nExtra(6);
   const double angleStep(2.0*M_PI/nExtra);
@@ -335,8 +335,9 @@ RotaryCollimator::createLinks()
   for(size_t i=0;i<nExtra;i++)
     {
       const Geometry::Vec3D Axis(X*cos(angle)+Z*sin(angle));
-      mainFC.setConnect(i+2,Origin+Y*(thick/2.0)+Axis*radius,Axis);
-      mainFC.setLinkSurf(i+2,SMap.realSurf(buildIndex+7));
+      const std::string extraName="extra"+std::to_string(i);
+      mainFC.setConnect(extraName,Origin+Y*(thick/2.0)+Axis*radius,Axis);
+      mainFC.setLinkSurf(extraName,SMap.realSurf(buildIndex+7));
       angle+=angleStep;
     }
   // Front/back points as well
@@ -344,29 +345,30 @@ RotaryCollimator::createLinks()
   for(size_t i=0;i<4;i++)
     {
       // front
-      mainFC.setConnect(i+8,Origin+ADir[i]*radius,-Y);
-      mainFC.setLinkSurf(i+8,-SMap.realSurf(buildIndex+1));
+      mainFC.setConnect("frontEdge"+std::to_string(i),
+			 Origin+ADir[i]*radius,-Y);
+      mainFC.setLinkSurf("frontEdge"+std::to_string(i),
+			 -SMap.realSurf(buildIndex+1));
       // back
-      mainFC.setConnect(i+12,Origin+Y*thick+ADir[i]*radius,Y);
-      mainFC.setLinkSurf(i+12,SMap.realSurf(buildIndex+2));
+      mainFC.setConnect("backEdge"+std::to_string(i),
+			 Origin+Y*thick+ADir[i]*radius,Y);
+      mainFC.setLinkSurf("backEdge"+std::to_string(i),
+			 SMap.realSurf(buildIndex+2));
     }
 
   // Process holes:
-  if (nHole)
+  for(size_t i=0;i<nHole;i++)
     {
-      holeFC.setNConnect(3*nHole);
-      size_t index(0);
-      for(size_t i=0;i<nHole;i++)
-        {
-          holeFC.setLinkCopy(index,*Holes[i],1);
-          holeFC.setLinkCopy(index+1,*Holes[i],2);
-          const Geometry::Vec3D midPt((Holes[i]->getLinkPt(1)+
-                                      Holes[i]->getLinkPt(2))/2.0);
-          holeFC.setConnect(index+2,midPt,Holes[i]->getLinkAxis(1));
-          index+=3;
-        }
+      const std::string holeFront="hole"+std::to_string(i)+"Front";
+      const std::string holeBack="hole"+std::to_string(i)+"Back";
+      const std::string holeMid="hole"+std::to_string(i)+"Mid";
+      holeFC.setLinkCopy(holeFront,*Holes[i],"front");
+      holeFC.setLinkCopy(holeBack,*Holes[i],"back");
+      const Geometry::Vec3D midPt((Holes[i]->getLinkPt("front")+
+				  Holes[i]->getLinkPt("back"))/2.0);
+      holeFC.setConnect(holeMid,midPt,Holes[i]->getLinkAxis("front"));
     }
-  
+
   return;
 }
   

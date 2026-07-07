@@ -231,7 +231,8 @@ TDCsegment::createBeamLink(const FuncDataBase& Control)
   FixedComp::nameSideIndex(6,"Beam");
   setLinkCopy(6,*this,-1);    // copy surface and correct direction
 
-  attachSystem::FixedRotateUnit BPoint(0,"BeamPoint");
+  attachSystem::FixedRotateUnit BPoint(attachSystem::FixedComp::unregistered,
+				       "BeamPoint");
   Geometry::Vec3D BeamOrg=this->getLinkPt(1);
   Geometry::Vec3D BeamAxis=this->getLinkAxis(-1);
 

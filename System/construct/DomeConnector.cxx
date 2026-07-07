@@ -253,7 +253,7 @@ DomeConnector::createLinks()
       linkIndex=1;
     }
 
-  PSet.copyPortLinks(2,*this);
+  PSet.copyPortLinks(*this);
 
   FixedComp::setLinkSurf(linkIndex,SMap.realSurf(buildIndex+8));
   FixedComp::setBridgeSurf(linkIndex,-SMap.realSurf(buildIndex+101));
@@ -262,8 +262,8 @@ DomeConnector::createLinks()
   FixedComp::setConnect(linkIndex,Origin+Y*(joinStep+flatLen),Y);
   FixedComp::setLinkSurf(linkIndex,SMap.realSurf(buildIndex+2));
 
-  //  ExternalCut::createLink("plate",*this,0,Origin,-Y);  //front and back
-  //  ExternalCut::createLink("plate",*this,1,Origin,Y);  //front and back
+  //  ExternalCut::createLink("plate",*this,"front",Origin,-Y);  //front and back
+  //  ExternalCut::createLink("plate",*this,"back",Origin,Y);  //front and back
   return;
 }
 

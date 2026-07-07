@@ -259,7 +259,7 @@ EPContinue::createLinks()
 {
   ELog::RegMethod RegA("EPContinue","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,Y);
   /*
   // photon/electron
   setConnect(1,Origin+Y*length,Y);

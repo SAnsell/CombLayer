@@ -65,7 +65,7 @@ namespace delftSystem
 {
 
 BeamTube::BeamTube(const std::string& Key)  :
-  attachSystem::FixedRotateGroup(Key,"Main",3,"Beam",3),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam"),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   innerVoid(0)

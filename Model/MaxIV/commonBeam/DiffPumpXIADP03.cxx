@@ -300,8 +300,8 @@ DiffPumpXIADP03::createLinks()
 {
   ELog::RegMethod RegA("DiffPumpXIADP03","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,Y);
+  ExternalCut::createLink("back",*this,"back",Origin,Y);
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
@@ -320,7 +320,7 @@ DiffPumpXIADP03::createLinks()
   const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(buildIndex+32);
   FixedComp::setConnect(6,SurInter::getLinePoint(Origin,-Y,*PPtr),-Y);
 
-  SurfMap::createLink("innerBack",*this, 7, Origin, -Y);
+  SurfMap::createLink("innerBack",*this, "innerBack", Origin, -Y);
 
   FixedComp::nameSideIndex(7,"innerBack");
   return;

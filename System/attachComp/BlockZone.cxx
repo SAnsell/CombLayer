@@ -77,7 +77,7 @@ operator<<(std::ostream& OX,const BlockZone& A)
 }
 
 BlockZone::BlockZone() :
-  attachSystem::FixedComp(2,"BZtemp"),
+  attachSystem::FixedComp(FixedComp::unregistered,"BZtemp"),
   attachSystem::CellMap(),
   voidMat(0)
   /*!
@@ -86,7 +86,7 @@ BlockZone::BlockZone() :
 {}
   
 BlockZone::BlockZone(const std::string& key) :
-  attachSystem::FixedComp(key,6),
+  attachSystem::FixedComp(key),
   attachSystem::CellMap(),
   voidMat(0)
   /*!

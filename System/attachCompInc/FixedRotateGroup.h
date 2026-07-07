@@ -98,17 +98,16 @@ class FixedRotateGroup  : public FixedGroup
   
  public:
 
+  FixedRotateGroup(const std::string&,const std::string&);
   FixedRotateGroup(const std::string&,const std::string&,
-		   const size_t);
+		   const std::string&);
   FixedRotateGroup(const std::string&,const std::string&,
-		   const size_t,const std::string&,const size_t);
+		   const std::string&,
+		   const std::string&);
   FixedRotateGroup(const std::string&,const std::string&,
-		   const size_t,const std::string&,const size_t,
-		   const std::string&,const size_t);
-  FixedRotateGroup(const std::string&,const std::string&,const size_t,
-		   const std::string&,const size_t,
-		   const std::string&,const size_t,
-		   const std::string&,const size_t);
+		   const std::string&,
+		   const std::string&,
+		   const std::string&);
   FixedRotateGroup(const FixedRotateGroup&);
   FixedRotateGroup& operator=(const FixedRotateGroup&);
   ~FixedRotateGroup() override {}     ///< Destructor

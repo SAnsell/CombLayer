@@ -357,7 +357,7 @@ speciesOpticsHut::createLinks()
   const double extraBack(innerSkin+outerSkin+pbBackThick);
   const double extraWall(innerSkin+outerSkin+pbWallThick);
 
-  ExternalCut::createLink("RingWall",*this,0,Origin,Y);
+  ExternalCut::createLink("RingWall",*this,"front",Origin,Y);
 
   setConnect(1,Origin+Y*(length+extraBack),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+302));

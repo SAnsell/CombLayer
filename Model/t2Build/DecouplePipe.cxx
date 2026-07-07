@@ -67,7 +67,7 @@ namespace moderatorSystem
 {
 
 DecouplePipe::DecouplePipe(const std::string& Key)  :
-  attachSystem::FixedUnit(Key,0),
+  attachSystem::FixedUnit(FixedComp::unregistered,Key),
   Outer("dOuter"),
   HeIn("HeIn"),
   HeOut("HeOut"),

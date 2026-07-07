@@ -63,7 +63,7 @@ namespace essSystem
 {
 
 BunkerQuake::BunkerQuake(const std::string& bunkerName) :
-  attachSystem::FixedUnit(bunkerName+"Quake",0)
+  attachSystem::FixedUnit(FixedComp::unregistered,bunkerName+"Quake")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof

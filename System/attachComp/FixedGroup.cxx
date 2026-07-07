@@ -50,42 +50,36 @@ namespace attachSystem
 {
 
 FixedGroup::FixedGroup(const std::string& mainKey,
-		       const std::string& AKey,
-		       const size_t ANL) :
-  FixedComp(mainKey,0)
+		       const std::string& AKey) :
+  FixedComp(mainKey)
   /*!
-    Constructor 
+    Constructor
     \param mainKey :: mainKey
     \param AKey :: Key one
-    \param ANL :: Size of Fixed group
   */
 {
   ELog::RegMethod RegA("FixedGroup","constructor(1Group)");
 
-  registerKey(AKey,ANL);
+  registerKey(AKey);
   setDefault(AKey);
 }
 
 
 FixedGroup::FixedGroup(const std::string& mainKey,
 		       const std::string& AKey,
-		       const size_t ANL,
-		       const std::string& BKey,
-		       const size_t BNL) :
-  FixedComp(mainKey,0)
+		       const std::string& BKey) :
+  FixedComp(mainKey)
   /*!
-    Constructor 
+    Constructor
     \param mainKey :: mainKey
     \param AKey :: Key one
-    \param ANL :: Size of Fixed group
     \param BKey :: Key Two
-    \param BNL :: Size of Fixed group
   */
 {
   ELog::RegMethod RegA("FixedGroup","constructor(2Group)");
 
-  registerKey(AKey,ANL);
-  registerKey(BKey,BNL);
+  registerKey(AKey);
+  registerKey(BKey);
 
   setDefault(AKey);
   setSecondary(BKey);
@@ -93,28 +87,22 @@ FixedGroup::FixedGroup(const std::string& mainKey,
 
 FixedGroup::FixedGroup(const std::string& mainKey,
 		       const std::string& AKey,
-		       const size_t ANL,
 		       const std::string& BKey,
-		       const size_t BNL,
-		       const std::string& CKey,
-		       const size_t CNL) :
-  FixedComp(mainKey,0)
+		       const std::string& CKey) :
+  FixedComp(mainKey)
   /*!
-    Constructor 
+    Constructor
     \param mainKey :: mainKey
     \param AKey :: Key one
-    \param ANL :: Size of Fixed group
     \param BKey :: Key Two
-    \param BNL :: Size of Fixed group
     \param CKey :: Key Three
-    \param CNL :: Size of Fixed group
   */
 {
   ELog::RegMethod RegA("FixedGroup","constructor(3Group)");
 
-  registerKey(AKey,ANL);
-  registerKey(BKey,BNL);
-  registerKey(CKey,CNL);
+  registerKey(AKey);
+  registerKey(BKey);
+  registerKey(CKey);
 
   setDefault(AKey);
   setSecondary(BKey);
@@ -122,33 +110,25 @@ FixedGroup::FixedGroup(const std::string& mainKey,
 
 FixedGroup::FixedGroup(const std::string& mainKey,
 		       const std::string& AKey,
-		       const size_t ANL,
 		       const std::string& BKey,
-		       const size_t BNL,
 		       const std::string& CKey,
-		       const size_t CNL,
-		       const std::string& DKey,
-		       const size_t DNL) :
-  FixedComp(mainKey,0)
+		       const std::string& DKey) :
+  FixedComp(mainKey)
   /*!
-    Constructor 
+    Constructor
     \param mainKey :: mainKey
     \param AKey :: Key one
-    \param ANL :: Size of Fixed group 1
     \param BKey :: Key Two
-    \param BNL :: Size of Fixed group 2
     \param CKey :: Key Three
-    \param CNL :: Size of Fixed group 3 
     \param DKey :: Key Four
-    \param DNL :: Size of Fixed group 4
   */
 {
   ELog::RegMethod RegA("FixedGroup","constructor(4Group)");
 
-  registerKey(AKey,ANL);
-  registerKey(BKey,BNL);
-  registerKey(CKey,CNL);
-  registerKey(DKey,DNL);
+  registerKey(AKey);
+  registerKey(BKey);
+  registerKey(CKey);
+  registerKey(DKey);
 
   setDefault(AKey);
   setSecondary(BKey);
@@ -194,16 +174,15 @@ FixedGroup::~FixedGroup()
 {}
 
 void
-FixedGroup::registerKey(const std::string& AKey,const size_t NL)
+FixedGroup::registerKey(const std::string& AKey)
   /*!
     Register a key with objectRegister
     \param AKey :: Map keyname
-    \param NL :: Number of links
    */
 {
   ELog::RegMethod RegA("FixedGroup","registerKey");
 
-  CompTYPE FCUnit(new FixedUnit(keyName+AKey,NL));  
+  CompTYPE FCUnit(new FixedUnit(FixedComp::unregistered,keyName+AKey));
   FMap.insert(FTYPE::value_type(AKey,FCUnit));
   return;
 }
@@ -233,22 +212,21 @@ FixedGroup::getAllKeys() const
 }
   
 FixedComp&
-FixedGroup::addKey(const std::string& Key,const size_t NL)
+FixedGroup::addKey(const std::string& Key)
   /*!
     Add a component to the group
     \param Key :: Key to add
-    \param NL :: Number of links
     \return Fixed
   */
 {
   ELog::RegMethod RegA("FixedGroup","addKey");
-  
+
   FTYPE::iterator mc=FMap.find(Key);
   if (mc!=FMap.end())
     throw ColErr::InContainerError<std::string>
       (Key,"Key present in FMap:"+keyName);
 
-  registerKey(Key,NL);
+  registerKey(Key);
   mc=FMap.find(Key);
   return *(mc->second);
 }

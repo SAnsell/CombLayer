@@ -68,7 +68,7 @@ namespace tdcSystem
 {
 
 TDCBeamDump::TDCBeamDump(const std::string& Key)  :
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",4),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam"),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -339,23 +339,23 @@ TDCBeamDump::createLinks()
   attachSystem::FixedComp& mainFC=getKey("Main");
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  mainFC.setConnect(0,Origin,-Y);
-  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  mainFC.setConnect("front",Origin,-Y);
+  mainFC.setLinkSurf("front",-SMap.realSurf(buildIndex+11));
 
-  mainFC.setConnect(1,Origin+Y*(totalLength),Y);
-  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+32));
+  mainFC.setConnect("back",Origin+Y*(totalLength),Y);
+  mainFC.setLinkSurf("back",SMap.realSurf(buildIndex+32));
 
-  mainFC.setConnect(2,Origin-X*(bulkWidthLeft+skinThick),-X);
-  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  mainFC.setConnect("left",Origin-X*(bulkWidthLeft+skinThick),-X);
+  mainFC.setLinkSurf("left",-SMap.realSurf(buildIndex+13));
 
-  mainFC.setConnect(3,Origin+X*(bulkWidthRight+skinThick),X);
-  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  mainFC.setConnect("right",Origin+X*(bulkWidthRight+skinThick),X);
+  mainFC.setLinkSurf("right",SMap.realSurf(buildIndex+14));
 
-  mainFC.setConnect(4,Origin-Z*(bulkDepth+skinThick),-Z);
-  mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  mainFC.setConnect("base",Origin-Z*(bulkDepth+skinThick),-Z);
+  mainFC.setLinkSurf("base",-SMap.realSurf(buildIndex+15));
 
-  mainFC.setConnect(5,Origin+Z*(bulkHeight+skinThick),Z);
-  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  mainFC.setConnect("top",Origin+Z*(bulkHeight+skinThick),Z);
+  mainFC.setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   return;
 }

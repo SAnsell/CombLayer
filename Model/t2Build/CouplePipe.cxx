@@ -66,7 +66,7 @@ namespace moderatorSystem
 {
 
 CouplePipe::CouplePipe(const std::string& Key)  :
-  attachSystem::FixedUnit(Key,0),
+  attachSystem::FixedUnit(FixedComp::unregistered,Key),
   GOuter("gOuter"),HInner("hInner")
   /*!
     Constructor BUT ALL variable are left unpopulated.

@@ -558,8 +558,8 @@ UndulatorVacuum::createLinks()
   const double length
     (segLength*static_cast<double>(nSegment)+preLength*2.0);
 
-  ExternalCut::createLink("front",*this,0,Origin,-Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,-Y);
+  ExternalCut::createLink("back",*this,"back",Origin,Y);
   // Note outer links done in 
 
   FixedComp::setConnect(6,Origin+Y*(length/2.0),Y);

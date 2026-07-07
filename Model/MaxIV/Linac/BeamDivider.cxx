@@ -296,8 +296,8 @@ BeamDivider::createLinks()
   const Geometry::Vec3D RAxis(X*sin(ang)+Y*cos(ang));
 
   //front and back
-  ExternalCut::createLink("front",*this,0,Origin,Y);
-  ExternalCut::createLink("back",*this,1,mainOrg,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,Y);
+  ExternalCut::createLink("back",*this,"back",mainOrg,Y);
 
   FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+502));
   FixedComp::setLineConnect(2,exitOrg,RAxis);

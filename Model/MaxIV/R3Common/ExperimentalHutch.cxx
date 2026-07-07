@@ -581,8 +581,8 @@ ExperimentalHutch::createLinks()
 
   const double extraWall(innerThick+outerThick+pbWallThick);
 
-  ExternalCut::createLink("frontWall",*this,0,Origin,-Y);
-  
+  ExternalCut::createLink("frontWall",*this,"front",Origin,-Y);
+
   setConnect(1,Origin+Y*(length+extraWall),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+32));
 

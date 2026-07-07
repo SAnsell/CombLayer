@@ -48,10 +48,11 @@ class FixedOffset  : public FixedComp
   
  public:
 
-  explicit FixedOffset(const size_t);
-  FixedOffset(const size_t,const std::string&);
-  FixedOffset(const std::string&,const size_t);
-  FixedOffset(const std::string&,const size_t,const size_t);
+  explicit FixedOffset(FixedComp::unregistered_t,const std::string& ="Null");
+  explicit FixedOffset(const std::string&);
+  // Legacy constructor: size_t (link-point count) is accepted but
+  // ignored, kept for source compatibility -- see FixedComp.h.
+  FixedOffset(const std::string&,const size_t,const size_t =10000);
   FixedOffset(const FixedOffset&);
   FixedOffset& operator=(const FixedOffset&);
   ~FixedOffset() override {}     ///< Destructor

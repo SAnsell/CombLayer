@@ -78,17 +78,16 @@ class FixedOffsetGroup  : public FixedGroup
   
  public:
 
+  FixedOffsetGroup(const std::string&,const std::string&);
   FixedOffsetGroup(const std::string&,const std::string&,
-		   const size_t);
+		   const std::string&);
   FixedOffsetGroup(const std::string&,const std::string&,
-		   const size_t,const std::string&,const size_t);
+		   const std::string&,
+		   const std::string&);
   FixedOffsetGroup(const std::string&,const std::string&,
-		   const size_t,const std::string&,const size_t,
-		   const std::string&,const size_t);
-  FixedOffsetGroup(const std::string&,const std::string&,const size_t,
-		   const std::string&,const size_t,
-		   const std::string&,const size_t,
-		   const std::string&,const size_t);
+		   const std::string&,
+		   const std::string&,
+		   const std::string&);
   FixedOffsetGroup(const FixedOffsetGroup&);
   FixedOffsetGroup& operator=(const FixedOffsetGroup&);
   ~FixedOffsetGroup() override {}     ///< Destructor

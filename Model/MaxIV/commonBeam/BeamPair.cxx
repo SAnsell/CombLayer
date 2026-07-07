@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 BeamPair::BeamPair(const std::string& Key) :
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam"),
   attachSystem::ContainedGroup("BlockA","BlockB","SupportA","SupportB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()

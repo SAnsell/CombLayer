@@ -301,8 +301,8 @@ RingDoor::createLinks()
 {
   ELog::RegMethod RegA("RingDoor","createLinks");
 
-  ExternalCut::createLink("innerWall",*this,0,Origin,-Y);
-  ExternalCut::createLink("outerWall",*this,1,Origin,Y);
+  ExternalCut::createLink("innerWall",*this,"front",Origin,-Y);
+  ExternalCut::createLink("outerWall",*this,"back",Origin,Y);
   
   return;
 }

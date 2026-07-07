@@ -175,8 +175,8 @@ FlangeDome::createLinks()
 {
   ELog::RegMethod RegA("FlangeDome","createLinks");
 
-  ExternalCut::createLink("plate",*this,0,Origin,-Y);  //front and back
-  ExternalCut::createLink("plate",*this,1,Origin,Y);  //front and back
+  ExternalCut::createLink("plate",*this,"front",Origin,-Y);  //front and back
+  ExternalCut::createLink("plate",*this,"back",Origin,Y);  //front and back
 
   return;
 }

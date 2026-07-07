@@ -527,7 +527,7 @@ R3ChokeChamber::createLinks()
   ELog::RegMethod RegA("R3ChokeChamber","createLinks");
 
   // inlet centre
-  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("front",*this,"front",Origin,-Y);
 
   FixedComp::setConnect(1,Origin+Y*photonLength,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));

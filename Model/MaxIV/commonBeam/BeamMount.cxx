@@ -66,7 +66,7 @@ namespace xraySystem
 
 BeamMount::BeamMount(const std::string& Key) :
   attachSystem::ContainedGroup("Block","Support"),
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!

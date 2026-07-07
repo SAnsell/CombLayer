@@ -336,8 +336,8 @@ TWCavity::createLinks()
 {
   ELog::RegMethod RegA("TWCavity","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);
-  ExternalCut::createLink("back",*this,1,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,Y);
+  ExternalCut::createLink("back",*this,"back",Origin,Y);
 
   FixedComp::setConnect(6,(getLinkPt(1)+getLinkPt(2))/2.0,getLinkAxis(1));
 

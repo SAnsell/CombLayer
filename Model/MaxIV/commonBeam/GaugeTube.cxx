@@ -261,8 +261,8 @@ GaugeTube::createLinks()
 {
   ELog::RegMethod RegA("GaugeTube","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);  //front and back
-  ExternalCut::createLink("back",*this,1,Origin,Y);  //front and back
+  ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
+  ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
 
   FixedComp::setConnect(3,Origin+X*(yRadius+wallThick),X);

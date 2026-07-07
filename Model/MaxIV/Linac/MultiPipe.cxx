@@ -238,7 +238,7 @@ MultiPipe::createLinks()
 {
   ELog::RegMethod RegA("MultiPipe","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("front",*this,"front",Origin,-Y);
   // Note outer links done in 
 
   return;

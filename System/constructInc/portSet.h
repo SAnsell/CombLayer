@@ -102,8 +102,8 @@ class portSet
   getPortInfo(const size_t) const ;
   
   void constructPortAxis(const FuncDataBase&);
-  void copyPortLinks(const size_t,attachSystem::FixedComp&) const;
-  
+  void copyPortLinks(attachSystem::FixedComp&) const;
+
   void createPorts(Simulation&,MonteCarlo::Object*,
 		   const HeadRule&,const HeadRule&);
   void createPorts(Simulation&,const std::string&);

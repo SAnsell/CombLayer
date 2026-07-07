@@ -680,46 +680,46 @@ namespace MAXIV::GunTestFacility
     // TODO: Check and use names for the links below:
 
     FixedComp::setConnect(0,Origin-Y*(gunRoomLength/2.0+outerWallThick),-Y);
-    FixedComp::setNamedLinkSurf(0,"Back",-SMap.realSurf(buildIndex+11));
+    FixedComp::setLinkSurf("Back",-SMap.realSurf(buildIndex+11));
 
     FixedComp::setConnect(1,Origin+Y*(gunRoomLength/2.0+backWallThick+hallLength+internalWallThick),Y);
-    FixedComp::setNamedLinkSurf(1,"Front",SMap.realSurf(buildIndex+42));
+    FixedComp::setLinkSurf("Front",SMap.realSurf(buildIndex+42));
 
     FixedComp::setConnect(2,Origin-X*(gunRoomWidth/2.0+midWallThick+klystronRoomWidth+
 				      2*internalWallThick+trspRoomWidth+stairRoomWidth+
 				      outerWallThick),-X);
-    FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+83));
+    FixedComp::setLinkSurf("Left",-SMap.realSurf(buildIndex+83));
 
     FixedComp::setConnect(3,Origin+X*(gunRoomWidth/2.0+outerWallThick),X);
-    FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+24));
+    FixedComp::setLinkSurf("Right",SMap.realSurf(buildIndex+24));
 
     FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
-    FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+15));
+    FixedComp::setLinkSurf("Bottom",-SMap.realSurf(buildIndex+15));
 
     FixedComp::setConnect(5,Origin+Z*(height+roofGunTestThick),Z);
-    FixedComp::setNamedLinkSurf(5,"RoofGunTestTop",SMap.realSurf(buildIndex+16));
+    FixedComp::setLinkSurf("RoofGunTestTop",SMap.realSurf(buildIndex+16));
 
 
     FixedComp::setConnect(6,Origin-X*(gunRoomWidth/2.0+midWallThick),X);
-    FixedComp::setNamedLinkSurf(6,"MidWallBack",SMap.realSurf(buildIndex+13));
+    FixedComp::setLinkSurf("MidWallBack",SMap.realSurf(buildIndex+13));
 
     FixedComp::setConnect(7,Origin-X*(gunRoomWidth/2.0),-X);
-    FixedComp::setNamedLinkSurf(7,"MidWallFront",-SMap.realSurf(buildIndex+3));
+    FixedComp::setLinkSurf("MidWallFront",-SMap.realSurf(buildIndex+3));
 
     FixedComp::setConnect(8,Origin-X*(gunRoomWidth/2.0+outerWallThick),X);
-    FixedComp::setNamedLinkSurf(8,"MazeWallFrontBack",SMap.realSurf(buildIndex+34));
+    FixedComp::setLinkSurf("MazeWallFrontBack",SMap.realSurf(buildIndex+34));
 
     FixedComp::setConnect(9,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth),Y);
-    FixedComp::setNamedLinkSurf(9,"DoorWallBack",SMap.realSurf(buildIndex+31));
+    FixedComp::setLinkSurf("DoorWallBack",SMap.realSurf(buildIndex+31));
 
     FixedComp::setConnect(10,Origin+Y*(gunRoomLength/2.0+backWallThick+mazeWidth+outerWallThick),Y);
-    FixedComp::setNamedLinkSurf(10,"DoorWallFront",SMap.realSurf(buildIndex+32));
+    FixedComp::setLinkSurf("DoorWallFront",SMap.realSurf(buildIndex+32));
 
     FixedComp::setConnect(11,Origin+Z*(height),Z);
-    FixedComp::setNamedLinkSurf(11,"RoofGunTestBottom",SMap.realSurf(buildIndex+6));
+    FixedComp::setLinkSurf("RoofGunTestBottom",SMap.realSurf(buildIndex+6));
 
     FixedComp::setConnect(12,Origin+Y*(gunRoomLength/2),-Y);
-    FixedComp::setNamedLinkSurf(12,"BackWallEast",SMap.realSurf(buildIndex+2));
+    FixedComp::setLinkSurf("BackWallEast",SMap.realSurf(buildIndex+2));
 
     return;
   }

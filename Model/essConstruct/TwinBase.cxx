@@ -71,8 +71,8 @@ namespace essConstruct
 {
 
 TwinBase::TwinBase(const std::string& Key) : 
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2,
-				 "MotorTop",3,"MotorBase",3),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam",
+				 "MotorTop","MotorBase"),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
   motorA(new essConstruct::Motor(Key+"MotorA")),
@@ -465,47 +465,47 @@ TwinBase::createLinks()
   attachSystem::FixedComp& motorAFC=FixedGroup::getKey("MotorTop");
   attachSystem::FixedComp& motorBFC=FixedGroup::getKey("MotorBase");
 
-  mainFC.setConnect(0,Origin-Y*(length/2.0),-Y);
-  mainFC.setConnect(1,Origin+Y*(length/2.0),Y);
-  mainFC.setConnect(2,Origin-X*mainRadius,-X);
-  mainFC.setConnect(3,Origin+X*mainRadius,X);
-  mainFC.setConnect(4,Origin-Z*(mainRadius+stepHeight/2.0),-Z);
-  mainFC.setConnect(4,Origin+Z*(mainRadius+stepHeight/2.0),Z);
+  mainFC.setConnect("front",Origin-Y*(length/2.0),-Y);
+  mainFC.setConnect("back",Origin+Y*(length/2.0),Y);
+  mainFC.setConnect("left",Origin-X*mainRadius,-X);
+  mainFC.setConnect("right",Origin+X*mainRadius,X);
+  mainFC.setConnect("base",Origin-Z*(mainRadius+stepHeight/2.0),-Z);
+  mainFC.setConnect("base",Origin+Z*(mainRadius+stepHeight/2.0),Z);
 
-  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+8));
+  mainFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  mainFC.setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  mainFC.setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  mainFC.setLinkSurf("base",SMap.realSurf(buildIndex+7));
+  mainFC.setLinkSurf("top",SMap.realSurf(buildIndex+8));
 
   // These are protected from ZVertial re-orientation
   const Geometry::Vec3D BC(beamFC.getCentre());
   const Geometry::Vec3D BY(beamFC.getY());
-  
-  beamFC.setConnect(0,BC-BY*(length/2.0),-BY);
-  beamFC.setConnect(1,BC+BY*(length/2.0),BY);
 
-  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  beamFC.setConnect("front",BC-BY*(length/2.0),-BY);
+  beamFC.setConnect("back",BC+BY*(length/2.0),BY);
+
+  beamFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   const Geometry::Vec3D& LC=motorAFC.getCentre();
-  motorAFC.setConnect(0,LC-Y*(length/2.0),-Y);
-  motorAFC.setConnect(1,LC+Y*(length/2.0),Y);
-  motorAFC.setConnect(2,LC,Y);
-  
-  motorAFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  motorAFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  motorAFC.setLinkSurf(2,SMap.realSurf(buildIndex+2));
+  motorAFC.setConnect("front",LC-Y*(length/2.0),-Y);
+  motorAFC.setConnect("back",LC+Y*(length/2.0),Y);
+  motorAFC.setConnect("mid",LC,Y);
+
+  motorAFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  motorAFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  motorAFC.setLinkSurf("mid",SMap.realSurf(buildIndex+2));
 
   const Geometry::Vec3D& TC=motorAFC.getCentre();
-  motorBFC.setConnect(0,TC-Y*(length/2.0),-Y);
-  motorBFC.setConnect(1,TC+Y*(length/2.0),Y);
-  motorBFC.setConnect(2,TC,Y);
-  
-  motorBFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  motorBFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  motorBFC.setLinkSurf(2,SMap.realSurf(buildIndex+2));
+  motorBFC.setConnect("front",TC-Y*(length/2.0),-Y);
+  motorBFC.setConnect("back",TC+Y*(length/2.0),Y);
+  motorBFC.setConnect("mid",TC,Y);
+
+  motorBFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  motorBFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  motorBFC.setLinkSurf("mid",SMap.realSurf(buildIndex+2));
 
 
 

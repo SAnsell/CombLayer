@@ -50,21 +50,21 @@ class FixedGroup : public FixedComp
   Geometry::Vec3D bZ;          ///< Secondary Z
   Geometry::Vec3D bOrigin;     ///< Secondary origin
   
-  void registerKey(const std::string&,const size_t);
+  void registerKey(const std::string&);
   void setBeamCoord(const std::string&);
-  
+
  public:
-  
-  FixedGroup(const std::string&,const std::string&,const size_t);
-  FixedGroup(const std::string&,const std::string&,const size_t,
-	     const std::string&,const size_t);
-  FixedGroup(const std::string&,const std::string&,const size_t,
-	     const std::string&,const size_t,
-	     const std::string&,const size_t);
-  FixedGroup(const std::string&,const std::string&,const size_t,
-	     const std::string&,const size_t,
-	     const std::string&,const size_t,
-	     const std::string&,const size_t);
+
+  FixedGroup(const std::string&,const std::string&);
+  FixedGroup(const std::string&,const std::string&,
+	     const std::string&);
+  FixedGroup(const std::string&,const std::string&,
+	     const std::string&,
+	     const std::string&);
+  FixedGroup(const std::string&,const std::string&,
+	     const std::string&,
+	     const std::string&,
+	     const std::string&);
 
   FixedGroup(const FixedGroup&);
   FixedGroup& operator=(const FixedGroup&);
@@ -89,8 +89,8 @@ class FixedGroup : public FixedComp
   /// Size accessor
   size_t nGroups() const { return FMap.size(); }
   std::set<std::string> getAllKeys() const;
-  bool hasKey(const std::string&) const;  
-  FixedComp& addKey(const std::string&,const size_t);
+  bool hasKey(const std::string&) const;
+  FixedComp& addKey(const std::string&);
   virtual FixedComp& getKey(const std::string&);
   virtual const FixedComp& getKey(const std::string&) const;
 

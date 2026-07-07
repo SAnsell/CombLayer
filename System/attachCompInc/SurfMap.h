@@ -147,7 +147,7 @@ class SurfMap : public BaseMap
 		    const Geometry::Vec3D&,const double);
   
   void createLink(const std::string&,attachSystem::FixedComp&,
-		  const size_t,const Geometry::Vec3D&,
+		  const std::string&,const Geometry::Vec3D&,
 		  const Geometry::Vec3D&) const;
 
   

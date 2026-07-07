@@ -248,7 +248,7 @@ LowBeamBox::createLinks()
 {
   ELog::RegMethod RegA("LowBeamBox","createLinks");
 
-  ExternalCut::createLink("front",*this,0,Origin,Y);  // Front and back
+  ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
 
   FixedComp::setConnect(1,Origin+Y*(backThick+length),Y);
   FixedComp::setConnect(2,Origin-X*(wallThick+width/2.0),-X);

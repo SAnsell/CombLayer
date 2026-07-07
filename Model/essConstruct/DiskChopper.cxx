@@ -67,7 +67,7 @@ namespace essConstruct
 {
 
 DiskChopper::DiskChopper(const std::string& Key) : 
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main","Beam"),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   centreFlag(0),offsetFlag(0),nDisk(0)
   /*!
@@ -369,35 +369,35 @@ DiskChopper::createLinks()
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
-  mainFC.setConnect(0,Origin,-Y);
-  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  mainFC.setConnect("front",Origin,-Y);
+  mainFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
   const int CLast(buildIndex+static_cast<int>(nDisk-1)*500);
   double L(-diskGap);  // one less gap !
   for(const DiskBlades& DRef : DInfo)
     L+=DRef.getThick()+diskGap;
 
-  mainFC.setConnect(1,Origin+Y*L,Y);
-  mainFC.setLinkSurf(1,SMap.realSurf(CLast+2));
-  
-  mainFC.setConnect(2,Origin+Y*(L/2.0)-X*outerRadius,-X);
-  mainFC.setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  mainFC.setConnect("back",Origin+Y*L,Y);
+  mainFC.setLinkSurf("back",SMap.realSurf(CLast+2));
 
-  mainFC.setConnect(3,Origin+Y*(L/2.0)-Z*outerRadius,-Z);
-  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  mainFC.setConnect("left",Origin+Y*(L/2.0)-X*outerRadius,-X);
+  mainFC.setLinkSurf("left",SMap.realSurf(buildIndex+17));
 
-  mainFC.setConnect(4,Origin+Y*(L/2.0)+Z*outerRadius,Z);
-  mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  mainFC.setConnect("base",Origin+Y*(L/2.0)-Z*outerRadius,-Z);
+  mainFC.setLinkSurf("base",SMap.realSurf(buildIndex+17));
 
-  mainFC.setConnect(5,Origin+Y*(L/2.0)+X*outerRadius,X);
-  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+17));
+  mainFC.setConnect("top",Origin+Y*(L/2.0)+Z*outerRadius,Z);
+  mainFC.setLinkSurf("top",SMap.realSurf(buildIndex+17));
+
+  mainFC.setConnect("right",Origin+Y*(L/2.0)+X*outerRadius,X);
+  mainFC.setLinkSurf("right",SMap.realSurf(buildIndex+17));
 
   // MAIN BEAM:
-  beamFC.setConnect(0,beamOrigin,-beamAxis);
-  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  beamFC.setConnect("front",beamOrigin,-beamAxis);
+  beamFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  beamFC.setConnect(1,beamOrigin+Y*L,beamAxis);
-  beamFC.setLinkSurf(1,SMap.realSurf(CLast+2));
+  beamFC.setConnect("back",beamOrigin+Y*L,beamAxis);
+  beamFC.setLinkSurf("back",SMap.realSurf(CLast+2));
   
   return;
 }

@@ -312,8 +312,8 @@ PrismaChamber::createLinks()
 
   const Geometry::Vec3D portCent(Origin+X*beamXStep);
   
-  ExternalCut::createLink("front",*this,0,portCent,Y);  //front and back
-  ExternalCut::createLink("back",*this,1,portCent,Y);  //front and back
+  ExternalCut::createLink("front",*this,"front",portCent,Y);  //front and back
+  ExternalCut::createLink("back",*this,"back",portCent,Y);  //front and back
 
   FixedComp::setConnect(2,Origin-X*(sideLength+plateThick),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+323));

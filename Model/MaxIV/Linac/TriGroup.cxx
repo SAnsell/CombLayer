@@ -432,7 +432,7 @@ TriGroup::createLinks()
   ELog::RegMethod RegA("TriGroup","createLinks");
 
   //stuff for intersection
-  ExternalCut::createLink("front",*this,0,Origin,Y);  //front
+  ExternalCut::createLink("front",*this,"front",Origin,Y);  //front
 
   FixedComp::setConnect(1,Origin+Y*(topLength+mainLength),Y);
   // connect 3 + 4 set in createSurfaces

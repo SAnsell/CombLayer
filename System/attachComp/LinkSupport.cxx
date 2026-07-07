@@ -167,17 +167,17 @@ getPoint(const objectGroups& OGrp,
 }
 
 void
-calcBoundaryLink(attachSystem::FixedComp& FC,const size_t linkIndex,
+calcBoundaryLink(attachSystem::FixedComp& FC,const std::string& linkName,
 		 const HeadRule& boundary,
 		 const Geometry::Vec3D& Origin,
 		 const Geometry::Vec3D& Axis)
   /*!
-    Calculates the intersecting surface and point 
+    Calculates the intersecting surface and point
     of a line with a headRule. The surfaces is the out
     going surface and the point is the intersection point
-    along with the axis.  
+    along with the axis.
     \param FC :: FixedComp to add link point to
-    \param linkIndex :: link Index    
+    \param linkName :: link name
     \param boundary :: link Index
     \param Origin :: Origin of line
     \param Axis :: Axis of line
@@ -190,8 +190,8 @@ calcBoundaryLink(attachSystem::FixedComp& FC,const size_t linkIndex,
   const int SN=result.SNum;
   if (SN)
     {
-      FC.setLinkSurf(linkIndex,SN);
-      FC.setConnect(linkIndex,result.Pt,Axis);
+      FC.setLinkSurf(linkName,SN);
+      FC.setConnect(linkName,result.Pt,Axis);
     }
   return;
 }

@@ -311,8 +311,8 @@ BasicFlightLine::createLinks()
 {
   ELog::RegMethod RegA("BasicFlightLine","createLinks");
 
-  ExternalCut::createLink("Inner",*this,0,Origin,-Y);
-  ExternalCut::createLink("Outer",*this,1,Origin,Y);
+  ExternalCut::createLink("Inner",*this,"front",Origin,-Y);
+  ExternalCut::createLink("Outer",*this,"back",Origin,Y);
   
   Geometry::Vec3D xDircA(X); 
   Geometry::Vec3D xDircB(X);

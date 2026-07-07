@@ -289,7 +289,7 @@ DipoleSndBend::createLinks()
    */
 {
   ELog::RegMethod RegA("DipoleSndBend","createLinks");
-  ExternalCut::createLink("front",*this,0,Origin,Y);
+  ExternalCut::createLink("front",*this,"front",Origin,Y);
 
   const Geometry::Quaternion QYA
     (Geometry::Quaternion::calcQRotDeg(arcAngle,-Z));

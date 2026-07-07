@@ -70,10 +70,10 @@ setBeamAxis(attachSystem::FixedRotate& beamAxis,
   
   beamAxis.populate(Control);
   beamAxis.createUnitVector(GItem,0);
-  beamAxis.setLinkCopy(0,GItem.getKey("Main"),1);
-  beamAxis.setLinkCopy(1,GItem.getKey("Main"),2);
-  beamAxis.setLinkCopy(2,GItem.getKey("Beam"),1);
-  beamAxis.setLinkCopy(3,GItem.getKey("Beam"),2);
+  beamAxis.setLinkCopy("front",GItem.getKey("Main"),1);
+  beamAxis.setLinkCopy("back",GItem.getKey("Main"),2);
+  beamAxis.setLinkCopy("beamFront",GItem.getKey("Beam"),1);
+  beamAxis.setLinkCopy("beamBack",GItem.getKey("Beam"),2);
 
   // change to unsigned !!!
   beamAxis.linkShift(2); 

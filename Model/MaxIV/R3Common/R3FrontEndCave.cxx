@@ -277,7 +277,7 @@ R3FrontEndCave::createLinks()
 {
   ELog::RegMethod RegA("R3FrontEndCave","createLinks");
   
-  ExternalCut::createLink("front",*this,0,Origin,-Y);
+  ExternalCut::createLink("front",*this,"front",Origin,-Y);
 
   setConnect(1,Origin+Y*(frontWallThick+length),Y);
   setLinkSurf(1,SMap.realSurf(buildIndex+12));

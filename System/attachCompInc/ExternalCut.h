@@ -96,7 +96,7 @@ class ExternalCut
   void setCutDivider(const std::string&,const HeadRule&);
 
   void createLink(const std::string&,attachSystem::FixedComp&,
-		  const size_t,const Geometry::Vec3D&,
+		  const std::string&,const Geometry::Vec3D&,
 		  const Geometry::Vec3D&) const;
 
   /// Flag accessor

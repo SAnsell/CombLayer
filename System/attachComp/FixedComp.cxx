@@ -56,22 +56,26 @@
 namespace attachSystem
 {
 
-FixedComp::FixedComp(const size_t NL,std::string  KN) :
+FixedComp::FixedComp(FixedComp::unregistered_t,std::string  KN) :
   keyName(std::move(KN)),buildIndex(0),
   cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
-  Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
+  Z(Geometry::Vec3D(0,0,1)),primeAxis(0)
  /*!
     Non-registered Constructor
-    \param NL :: Number of links
+    \param KN :: KeyName
   */
 {}
 
-FixedComp::FixedComp(const size_t NL) :
-  FixedComp(NL,"Null")
+FixedComp::FixedComp(const std::string& KN) :
+  keyName(KN),
+  buildIndex(ModelSupport::objectRegister::Instance().cell(KN,10000)),
+  cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
+  X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
+  Z(Geometry::Vec3D(0,0,1)),primeAxis(0)
  /*!
-    Non-registered Constructor
-    \param NL :: Number of links
+    Constructor
+    \param KN :: KeyName
   */
 {}
 
@@ -83,29 +87,32 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
  /*!
-    Constructor
+    Legacy constructor retained for source compatibility with call
+    sites not yet migrated off the link-point-count argument: NL still
+    pre-sizes LU (as it always did) since not-yet-migrated createLinks()
+    bodies may still poke LU by raw numeric index and rely on the slots
+    already existing.
     \param KN :: KeyName
-    \param NL :: Number of links
-    \param resSize :: Reserved size for indexes [default: 10000]
+    \param NL :: legacy number-of-links (still used to pre-size LU here)
+    \param resSize :: Reserved size for indexes [normally 10000]
   */
 {}
 
-FixedComp::FixedComp(const std::string& KN,const size_t NL,
+FixedComp::FixedComp(const std::string& KN,
 		     Geometry::Vec3D  O) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
   cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
-  Z(Geometry::Vec3D(0,0,1)),Origin(std::move(O)),primeAxis(0),LU(NL)
+  Z(Geometry::Vec3D(0,0,1)),Origin(std::move(O)),primeAxis(0)
   /*!
     Constructor
     \param KN :: KeyName
-    \param NL :: Number of links
     \param O :: Origin Point
   */
 {}
 
-FixedComp::FixedComp(const std::string& KN,const size_t NL,
+FixedComp::FixedComp(const std::string& KN,
 		     Geometry::Vec3D  O,
 		     const Geometry::Vec3D& xV,
 		     const Geometry::Vec3D& yV,
@@ -114,11 +121,10 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
   cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(xV.unit()),Y(yV.unit()),Z(zV.unit()),
-  Origin(std::move(O)),primeAxis(0),LU(NL)
+  Origin(std::move(O)),primeAxis(0)
   /*!
     Constructor with defined axis / origin
     \param KN :: KeyName
-    \param NL :: Number of links
     \param O :: Origin Point
     \param xV :: X direction
     \param yV :: Y direction
@@ -165,6 +171,28 @@ FixedComp::operator=(const FixedComp& A)
   return *this;
 }
 
+size_t
+FixedComp::getOrCreateLinkIndex(const std::string& name)
+  /*!
+    Find the LU index bound to name, creating a new (empty) slot
+    on first use of that name.
+    \param name :: link point name
+    \return index into LU
+  */
+{
+  const std::map<std::string,size_t>::const_iterator mc=keyMap.find(name);
+  if (mc!=keyMap.end())
+    {
+      const size_t index=mc->second;
+      if (index>=LU.size())
+	LU.resize(index+1);
+      return index;
+    }
+  const size_t index=LU.size();
+  LU.push_back(LinkUnit());
+  keyMap.emplace(name,index);
+  return index;
+}
 
 void
 FixedComp::setAxisControl(const long int axisIndex,
@@ -867,6 +895,42 @@ FixedComp::addLinkSurf(const size_t Index,const HeadRule& HR)
 }
 
 void
+FixedComp::addLinkSurf(const std::string& name,const int SN)
+  /*!
+    Add a surface to output
+    \param name :: Link name
+    \param SN :: Surface number [inward looking]
+  */
+{
+  addLinkSurf(getOrCreateLinkIndex(name),SN);
+  return;
+}
+
+void
+FixedComp::addLinkSurf(const std::string& name,const std::string& SList)
+  /*!
+    Add a surface to output
+    \param name :: Link name
+    \param SList :: String to process
+  */
+{
+  addLinkSurf(getOrCreateLinkIndex(name),SList);
+  return;
+}
+
+void
+FixedComp::addLinkSurf(const std::string& name,const HeadRule& HR)
+  /*!
+    Add a surface to output
+    \param name :: Link name
+    \param HR :: Surface rule to add
+  */
+{
+  addLinkSurf(getOrCreateLinkIndex(name),HR);
+  return;
+}
+
+void
 FixedComp::addLinkComp(const size_t Index,const int SN)
   /*!
     Add a surface to output
@@ -915,22 +979,39 @@ FixedComp::addLinkComp(const size_t Index,const HeadRule& HR)
   return;
 }
 
-template<typename T>
 void
-FixedComp::setNamedLinkSurf(const size_t Index,
-			    const std::string& linkName,
-			    const T& SUnit)
+FixedComp::addLinkComp(const std::string& name,const int SN)
   /*!
-    Set a surface to output and set the link name
-    \param Index :: Link number
-    \param linkName :: Link name to set(use)
-    \param SUnit :: String/HeadRule/int to process
+    Add a surface to output (in complement)
+    \param name :: Link name
+    \param SN :: Surface number [inward looking]
   */
 {
-  ELog::RegMethod RegA("FixedComp","setNamedLinkSurf(string,string)");
+  addLinkComp(getOrCreateLinkIndex(name),SN);
+  return;
+}
 
-  setLinkSurf(Index,SUnit);
-  nameSideIndex(Index,linkName);
+void
+FixedComp::addLinkComp(const std::string& name,const std::string& SList)
+  /*!
+    Add a surface to output (in complement)
+    \param name :: Link name
+    \param SList :: String to process
+  */
+{
+  addLinkComp(getOrCreateLinkIndex(name),SList);
+  return;
+}
+
+void
+FixedComp::addLinkComp(const std::string& name,const HeadRule& HR)
+  /*!
+    Add a surface to output (in complement)
+    \param name :: Link name
+    \param HR :: Surface rule to add
+  */
+{
+  addLinkComp(getOrCreateLinkIndex(name),HR);
   return;
 }
 
@@ -985,6 +1066,42 @@ FixedComp::setLinkSurf(const size_t Index,
 }
 
 void
+FixedComp::setLinkSurf(const std::string& name,const int SN)
+  /*!
+    Set a surface to output
+    \param name :: Link name
+    \param SN :: Surface number [inward looking]
+  */
+{
+  setLinkSurf(getOrCreateLinkIndex(name),SN);
+  return;
+}
+
+void
+FixedComp::setLinkSurf(const std::string& name,const std::string& SList)
+  /*!
+    Set a surface to output
+    \param name :: Link name
+    \param SList :: String to process
+  */
+{
+  setLinkSurf(getOrCreateLinkIndex(name),SList);
+  return;
+}
+
+void
+FixedComp::setLinkSurf(const std::string& name,const HeadRule& HR)
+  /*!
+    Set a surface to output
+    \param name :: Link name
+    \param HR :: HeadRule to add
+  */
+{
+  setLinkSurf(getOrCreateLinkIndex(name),HR);
+  return;
+}
+
+void
 FixedComp::setLinkComp(const size_t Index,const int SN)
   /*!
     Set a surface to output (in complement)
@@ -1035,6 +1152,42 @@ FixedComp::setLinkComp(const size_t Index,
   return;
 }
 
+void
+FixedComp::setLinkComp(const std::string& name,const int SN)
+  /*!
+    Set a surface to output (in complement)
+    \param name :: Link name
+    \param SN :: Surface number [inward looking]
+  */
+{
+  setLinkComp(getOrCreateLinkIndex(name),SN);
+  return;
+}
+
+void
+FixedComp::setLinkComp(const std::string& name,const std::string& SList)
+  /*!
+    Set a surface to output inc complement
+    \param name :: Link name
+    \param SList :: String to process
+  */
+{
+  setLinkComp(getOrCreateLinkIndex(name),SList);
+  return;
+}
+
+void
+FixedComp::setLinkComp(const std::string& name,const HeadRule& HR)
+  /*!
+    Set a surface to output in complement
+    \param name :: Link name
+    \param HR :: HeadRule to add
+  */
+{
+  setLinkComp(getOrCreateLinkIndex(name),HR);
+  return;
+}
+
 
 void
 FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
@@ -1070,6 +1223,23 @@ FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
   return;
 }
 
+void
+FixedComp::setLinkSurf(const std::string& name,const HeadRule& HR,
+		       const bool compFlag,const HeadRule& BR,
+		       const bool bridgeCompFlag)
+  /*!
+    Set a link surface based on both a rule and
+    a bridging rule
+    \param name :: Link name
+    \param HR :: HeadRule to add
+    \param compFlag :: make primary rule complementary
+    \param BR :: Bridge rule to add
+    \param bridgeCompFlag :: make bridge surface complementary
+  */
+{
+  setLinkSurf(getOrCreateLinkIndex(name),HR,compFlag,BR,bridgeCompFlag);
+  return;
+}
 
 
 void
@@ -1141,6 +1311,54 @@ FixedComp::addBridgeSurf(const size_t Index,
 }
 
 void
+FixedComp::setBridgeSurf(const std::string& name,const int SN)
+  /*!
+    Set a surface to bridge output
+    \param name :: Link name
+    \param SN :: Surface number [inward looking]
+  */
+{
+  setBridgeSurf(getOrCreateLinkIndex(name),SN);
+  return;
+}
+
+void
+FixedComp::setBridgeSurf(const std::string& name,const HeadRule& HR)
+  /*!
+    Set a surface to bridge output
+    \param name :: Link name
+    \param HR :: HeadRule for bridge
+  */
+{
+  setBridgeSurf(getOrCreateLinkIndex(name),HR);
+  return;
+}
+
+void
+FixedComp::addBridgeSurf(const std::string& name,const int SN)
+  /*!
+    Add a surface to output
+    \param name :: Link name
+    \param SN :: Surface number [inward looking]
+  */
+{
+  addBridgeSurf(getOrCreateLinkIndex(name),SN);
+  return;
+}
+
+void
+FixedComp::addBridgeSurf(const std::string& name,const std::string& SList)
+  /*!
+    Add a surface to output
+    \param name :: Link name
+    \param SList :: String to process
+  */
+{
+  addBridgeSurf(getOrCreateLinkIndex(name),SList);
+  return;
+}
+
+void
 FixedComp::setConnect(const size_t Index,
 		      const Geometry::Vec3D& C,
 		      const Geometry::Vec3D& A)
@@ -1185,6 +1403,37 @@ FixedComp::setLineConnect(const size_t Index,
   LObj.setConnectPt(Pt);
   LObj.setAxis(A);
 
+  return;
+}
+
+void
+FixedComp::setConnect(const std::string& name,
+		      const Geometry::Vec3D& C,
+		      const Geometry::Vec3D& A)
+ /*!
+   Set the axis of the linked component
+   \param name :: Link name
+   \param C :: Centre coordinate
+   \param A :: Axis direciton
+ */
+{
+  setConnect(getOrCreateLinkIndex(name),C,A);
+  return;
+}
+
+void
+FixedComp::setLineConnect(const std::string& name,
+			  const Geometry::Vec3D& C,
+			  const Geometry::Vec3D& A)
+ /*!
+   Set the axis of the linked component by intersecting
+   a line with the surface
+   \param name :: Link name
+   \param C :: Centre coordinate
+   \param A :: Axis direciton
+ */
+{
+  setLineConnect(getOrCreateLinkIndex(name),C,A);
   return;
 }
 
@@ -1293,11 +1542,7 @@ FixedComp::setLinkCopy(const std::string& indexName,
 {
   ELog::RegMethod RegA("FixedComp","setLinkCopy("+sideName+")");
 
-  const long int LI=getSideIndex(indexName);
-  if (!LI)
-    throw ColErr::InContainerError<std::string>(indexName,"indexName zero");
-
-  const size_t Index=static_cast<size_t>(std::abs(LI-1));
+  const size_t Index=getOrCreateLinkIndex(indexName);
   setLinkCopy(Index,FC,FC.getSideIndex(sideName));
   return;
 }
@@ -1317,12 +1562,7 @@ FixedComp::setLinkCopy(const std::string& indexName,
   ELog::RegMethod RegA("FixedComp",
 		       "setLinkCopy(S="+std::to_string(sideIndex)+")");
 
-  const long int LI=getSideIndex(indexName);
-  if (!LI)
-    throw ColErr::InContainerError<std::string>
-        (indexName,"FC["+keyName+"]::indexName zero");
-
-  const size_t Index=static_cast<size_t>(std::abs(LI-1));
+  const size_t Index=getOrCreateLinkIndex(indexName);
   setLinkCopy(Index,FC,sideIndex);
   return;
 }
@@ -1492,7 +1732,8 @@ FixedComp::nameSideIndex(const size_t lP,
   if (mc!=keyMap.end())
     {
       if (mc->second!=lP)
-	ColErr::InContainerError<std::string>(linkName,"linkName exists");
+	throw ColErr::InContainerError<std::string>
+	  (linkName,"linkName["+keyName+"] exists with different index");
     }
   else
     keyMap.emplace(linkName,lP);
@@ -2407,18 +2648,5 @@ FixedComp::createAll(Simulation& System,
   this->createAll(System,FG.getKey(groupName),sideIndex);
   return;
 }
-
-///\cond  TEMPLATE
-
-template void FixedComp::setNamedLinkSurf
-(const size_t,const std::string&,const std::string&);
-
-template void FixedComp::setNamedLinkSurf
-(const size_t,const std::string&,const int&);
-
-template void FixedComp::setNamedLinkSurf
-(const size_t,const std::string&,const HeadRule&);
-
-///\endcond  TEMPLATE
 
 }  // NAMESPACE attachSystem

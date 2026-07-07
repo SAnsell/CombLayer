@@ -67,7 +67,7 @@ namespace constructSystem
 {
 
 BeamShutter::BeamShutter(const std::string& Key) :
-  attachSystem::FixedRotateGroup(Key,"Main",6,"Void",2,"Beam",2),
+  attachSystem::FixedRotateGroup(Key,"Main","Void","Beam"),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -256,36 +256,36 @@ BeamShutter::createLinks()
   attachSystem::FixedComp& voidFC=FixedGroup::getKey("Void");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  mainFC.setConnect(0,Origin,-Y);
-  mainFC.setConnect(1,Origin+Y*length,Y);
-  mainFC.setConnect(2,Origin-X*(surroundThick+width/2.0),-X);
-  mainFC.setConnect(3,Origin+X*(surroundThick+width/2.0),X);
-  mainFC.setConnect(4,Origin-Z*(surroundThick+height/2.0),-Z);
-  mainFC.setConnect(5,Origin-Z*(surroundThick+height/2.0),Z);
+  mainFC.setConnect("front",Origin,-Y);
+  mainFC.setConnect("back",Origin+Y*length,Y);
+  mainFC.setConnect("left",Origin-X*(surroundThick+width/2.0),-X);
+  mainFC.setConnect("right",Origin+X*(surroundThick+width/2.0),X);
+  mainFC.setConnect("base",Origin-Z*(surroundThick+height/2.0),-Z);
+  mainFC.setConnect("top",Origin-Z*(surroundThick+height/2.0),Z);
 
   const int CN(static_cast<int>(nLayers)*10+buildIndex);
-  mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  mainFC.setLinkSurf(1,SMap.realSurf(CN+1));
-  mainFC.setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  mainFC.setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  mainFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  mainFC.setLinkSurf("back",SMap.realSurf(CN+1));
+  mainFC.setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  mainFC.setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  mainFC.setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  mainFC.setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   // These are protected from ZVertial re-orientation
   const Geometry::Vec3D& BC(beamFC.getCentre());
-  
-  beamFC.setConnect(0,BC,-Y);
-  beamFC.setConnect(1,BC+Y*length,Y);
-  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  beamFC.setLinkSurf(1,SMap.realSurf(CN+1));
+
+  beamFC.setConnect("front",BC,-Y);
+  beamFC.setConnect("back",BC+Y*length,Y);
+  beamFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf("back",SMap.realSurf(CN+1));
 
   // These are protected from ZVertial re-orientation
   const Geometry::Vec3D& VC(voidFC.getCentre());
-  
-  voidFC.setConnect(0,VC,-Y);
-  voidFC.setConnect(1,VC+Y*length,Y);
-  voidFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  voidFC.setLinkSurf(1,SMap.realSurf(CN+1));
+
+  voidFC.setConnect("front",VC,-Y);
+  voidFC.setConnect("back",VC+Y*length,Y);
+  voidFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  voidFC.setLinkSurf("back",SMap.realSurf(CN+1));
 
   return;
 }

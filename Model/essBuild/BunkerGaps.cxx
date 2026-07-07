@@ -63,7 +63,7 @@ namespace essSystem
 {
 
 BunkerGaps::BunkerGaps(const std::string& bunkerName) :
-  attachSystem::FixedUnit(bunkerName+"Gaps",0)
+  attachSystem::FixedUnit(FixedComp::unregistered,bunkerName+"Gaps")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof

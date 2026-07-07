@@ -481,16 +481,16 @@ SlitsMask::createLinks()
   FrontBackCut::createLinks(*this,Origin,Y);
 
   FixedComp::setConnect(2,Origin-X*(leftPortLength+outerFlangeCapThick),-X);
-  FixedComp::setNamedLinkSurf(2,"Left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("Left",-SMap.realSurf(buildIndex+3));
 
   FixedComp::setConnect(3,Origin+X*(rightPortLength+outerFlangeCapThick),X);
-  FixedComp::setNamedLinkSurf(3,"Right",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("Right",SMap.realSurf(buildIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*(bottomPortLength+outerFlangeCapThick),-Z);
-  FixedComp::setNamedLinkSurf(4,"Bottom",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("Bottom",-SMap.realSurf(buildIndex+5));
 
   FixedComp::setConnect(5,Origin+Z*(topPortLength+outerFlangeCapThick),Z);
-  FixedComp::setNamedLinkSurf(5,"Top",SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("Top",SMap.realSurf(buildIndex+6));
 
   return;
 }

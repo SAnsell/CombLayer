@@ -332,8 +332,8 @@ FrontBackCut::createLinks(attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("FrontBackCut","createLinks");
 
-  ExternalCut::createLink("front",FC,0,Org,-YAxis);
-  ExternalCut::createLink("back",FC,1,Org,YAxis);
+  ExternalCut::createLink("front",FC,"front",Org,-YAxis);
+  ExternalCut::createLink("back",FC,"back",Org,YAxis);
   return;
 }
   
@@ -350,7 +350,7 @@ FrontBackCut::createFrontLinks(attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("FrontBackCut","createFrontLinks");
 
-  ExternalCut::createLink("front",FC,0,Org,-YAxis);
+  ExternalCut::createLink("front",FC,"front",Org,-YAxis);
   return;
 }
 
@@ -367,7 +367,7 @@ FrontBackCut::createBackLinks(attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("FrontBackCut","createBackLinks");
 
-  ExternalCut::createLink("back",FC,1,Org,YAxis);
+  ExternalCut::createLink("back",FC,"back",Org,YAxis);
   return;
 }
 
