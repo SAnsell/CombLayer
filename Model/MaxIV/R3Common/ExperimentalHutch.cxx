@@ -583,40 +583,31 @@ ExperimentalHutch::createLinks()
 
   ExternalCut::createLink("frontWall",*this,"front",Origin,-Y);
 
-  setConnect(1,Origin+Y*(length+extraWall),Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+32));
+  setConnect("backWall",Origin+Y*(length+extraWall),Y);
+  setLinkSurf("backWall",SMap.realSurf(buildIndex+32));
 
-  nameSideIndex(1,"backWall");
-  
   // outer lead wall
-  setConnect(2,Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
-  setLinkSurf(2,-SMap.realSurf(buildIndex+33));
-  nameSideIndex(2,"leftWall");
+  setConnect("leftWall",Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
+  setLinkSurf("leftWall",-SMap.realSurf(buildIndex+33));
   // outer surf
-  setConnect(3,Origin+X*(extraWall+ringWidth)+Y*(length/2.0),X);
-  setLinkSurf(3,SMap.realSurf(buildIndex+34));
-  nameSideIndex(3,"rightWall");
+  setConnect("rightWall",Origin+X*(extraWall+ringWidth)+Y*(length/2.0),X);
+  setLinkSurf("rightWall",SMap.realSurf(buildIndex+34));
 
-  setConnect(11,Origin,Y);
-  setConnect(12,Origin+Y*length,-Y);
+  setConnect("innerFront",Origin,Y);
+  setConnect("innerBack",Origin+Y*length,-Y);
 
   if (!isActive("frontWall"))
-    setLinkSurf(11,SMap.realSurf(buildIndex+1));
+    setLinkSurf("innerFront",SMap.realSurf(buildIndex+1));
   else
-    setLinkSurf(11,getRule("frontWall"));
-  setLinkSurf(12,-SMap.realSurf(buildIndex+2));
-
-  nameSideIndex(11,"innerFront");
-  nameSideIndex(12,"innerBack");
+    setLinkSurf("innerFront",getRule("frontWall"));
+  setLinkSurf("innerBack",-SMap.realSurf(buildIndex+2));
 
   // inner surf
-  setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);
-  setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"innerLeftWall");
+  setConnect("innerLeftWall",Origin-X*outWidth+Y*(length/2.0),X);
+  setLinkSurf("innerLeftWall",SMap.realSurf(buildIndex+3));
 
-  setConnect(14,Origin+X*ringWidth+Y*(length/2.0),-X);
-  setLinkSurf(14,-SMap.realSurf(buildIndex+4));
-  nameSideIndex(14,"innerRightWall");
+  setConnect("innerRightWall",Origin+X*ringWidth+Y*(length/2.0),-X);
+  setLinkSurf("innerRightWall",-SMap.realSurf(buildIndex+4));
 
   return;
 }

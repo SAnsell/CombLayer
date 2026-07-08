@@ -268,10 +268,10 @@ Segment30::createLinks()
 {
   ELog::RegMethod RegA("Segment30","createLinks");
 
-  setLinkCopy(0,*gauge,1);
-  setLinkCopy(1,*pipeB,2);
+  setLinkCopy("front",*gauge,1);
+  setLinkCopy("back",*pipeB,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   buildZone->setBack(FixedComp::getFullRule("back"));
   return;

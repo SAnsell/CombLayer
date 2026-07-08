@@ -72,7 +72,7 @@ namespace tdcSystem
 
 BeamWing::BeamWing(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -175,15 +175,15 @@ BeamWing::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);   // Front and back
   
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0),Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
 
   return;

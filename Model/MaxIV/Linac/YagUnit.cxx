@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 YagUnit::YagUnit(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -314,11 +314,11 @@ YagUnit::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
-  FixedComp::setConnect(2,Origin-Z*(depth+plateThick),Z);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+155));
+  FixedComp::setConnect("base",Origin-Z*(depth+plateThick),Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+155));
 
-  FixedComp::setConnect(3,Origin+Z*(height+plateThick),Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+156));
+  FixedComp::setConnect("top",Origin+Z*(height+plateThick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+156));
 
   return;
 }

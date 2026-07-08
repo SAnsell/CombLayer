@@ -67,7 +67,7 @@ namespace tdcSystem
 {
 
 UndulatorVacuum::UndulatorVacuum(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -562,8 +562,7 @@ UndulatorVacuum::createLinks()
   ExternalCut::createLink("back",*this,"back",Origin,Y);
   // Note outer links done in 
 
-  FixedComp::setConnect(6,Origin+Y*(length/2.0),Y);
-  FixedComp::nameSideIndex(6,"centre");
+  FixedComp::setConnect("centre",Origin+Y*(length/2.0),Y);
   return;
 }
     

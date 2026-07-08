@@ -68,7 +68,7 @@ namespace tdcSystem
 {
 
 TriGroup::TriGroup(const std::string& Key) :
-  attachSystem::FixedRotate(Key,9),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Top","Mid","Bend",
 			       "BendStr"),
   attachSystem::CellMap(),
@@ -154,6 +154,19 @@ TriGroup::createSurfaces()
 {
   ELog::RegMethod RegA("TriGroup","createSurfaces");
 
+  // Pre-register the link-point names in their original numeric order
+  // (0=front,1=straightExit,2=viewExit,3=magnetExit,4="4") -- this
+  // method sets "viewExit"/"magnetExit"/"4" here, before createLinks()
+  // (which runs later and establishes "front"/"straightExit") ever
+  // touches this object, so without this the lazily-assigned indices
+  // would not match the numeric consumer references elsewhere
+  // (e.g. Segment44's setLinkCopy(...,triBend,"5")).
+  nameSideIndex(0,"front");
+  nameSideIndex(1,"straightExit");
+  nameSideIndex(2,"viewExit");
+  nameSideIndex(3,"magnetExit");
+  nameSideIndex(4,"4");
+
   // Inner void
   if (!isActive("front"))
     {
@@ -216,7 +229,7 @@ TriGroup::createSurfaces()
   const Geometry::Vec3D mZ=QV.makeRotate(Z);
   const Geometry::Vec3D mOrg=
     Origin+mY*(mainLength/cos(M_PI*midZAngle/180.0));
-  FixedComp::setConnect(2,mOrg+mY*midLength,mY);
+  FixedComp::setConnect("viewExit",mOrg+mY*midLength,mY);
 
   const Geometry::Quaternion QVlow =
     Geometry::Quaternion::calcQRotDeg(-midZAngle-midOpeningAngle,X);
@@ -305,12 +318,12 @@ TriGroup::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+422,cExit-bY*bendFlangeLength,bY);
   ModelSupport::buildCylinder(SMap,buildIndex+427,cExit,bY,bendFlangeRadius);
 
-  FixedComp::setConnect(3,cExit,bY);
+  FixedComp::setConnect("magnetExit",cExit,bY);
   //  ELog::EM<<"Exit Point == "<<cExit<<ELog::endDiag;
   //  ELog::EM<<"Exit angle == "<<180.0*atan(bY[2]/bY[1])/M_PI<<ELog::endDiag;
 
   // Mid splitting point
-  FixedComp::setConnect(4,mOrg+mY*midLength-mZ*midFlangeRadius,(mY+bY).unit());
+  FixedComp::setConnect("4",mOrg+mY*midLength-mZ*midFlangeRadius,(mY+bY).unit());
 
   return;
 }
@@ -434,29 +447,22 @@ TriGroup::createLinks()
   //stuff for intersection
   ExternalCut::createLink("front",*this,"front",Origin,Y);  //front
 
-  FixedComp::setConnect(1,Origin+Y*(topLength+mainLength),Y);
+  FixedComp::setConnect("straightExit",Origin+Y*(topLength+mainLength),Y);
   // connect 3 + 4 set in createSurfaces
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+102));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+402));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+202));
-
-  FixedComp::nameSideIndex(1,"straightExit");
-  FixedComp::nameSideIndex(2,"viewExit");
-  FixedComp::nameSideIndex(3,"magnetExit");
+  FixedComp::setLinkSurf("straightExit",SMap.realSurf(buildIndex+102));
+  FixedComp::setLinkSurf("viewExit",SMap.realSurf(buildIndex+202));
+  FixedComp::setLinkSurf("magnetExit",SMap.realSurf(buildIndex+402));
+  FixedComp::setLinkSurf("4",SMap.realSurf(buildIndex+202));
 
   // top lift point : Out is an complemnt of the volume
   HeadRule HR;
-  FixedComp::setConnect(7,Origin+Z*(wallThick+mainHeight/2.0),Z);
+  FixedComp::setConnect("outerPipe",Origin+Z*(wallThick+mainHeight/2.0),Z);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-13 : 14 : -15 : 16)");
-  FixedComp::setLinkSurf(7,HR);
+  FixedComp::setLinkSurf("outerPipe",HR);
 
-  FixedComp::nameSideIndex(7,"outerPipe");
-
-  FixedComp::setConnect(8,Origin+Y*(mainLength+wallThick),Y);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+12));
-  FixedComp::nameSideIndex(8,"EndWall");
+  FixedComp::setConnect("EndWall",Origin+Y*(mainLength+wallThick),Y);
+  FixedComp::setLinkSurf("EndWall",SMap.realSurf(buildIndex+12));
 
 
   return;

@@ -239,28 +239,28 @@ M1Mirror::createSurfaces()
   const Geometry::Vec3D pipePtB=
     SurInter::getLinePoint(pBaseB,-Z,SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(7,pipePtA,-Z);
-  FixedComp::setConnect(8,pipePtB,-Z);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("downPipeA",pipePtA,-Z);
+  FixedComp::setConnect("downPipeB",pipePtB,-Z);
+  FixedComp::setLinkSurf("downPipeA",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("downPipeB",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(9,slotOrg-X*(slotWidth/2.0),-X);
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect("slotBase",slotOrg-X*(slotWidth/2.0),-X);
+  FixedComp::setLinkSurf("slotBase",SMap.realSurf(buildIndex+13));
 
-  FixedComp::setConnect(10,slotOrg+X*(slotWidth/2.0),X);
-  FixedComp::setLinkSurf(10,-SMap.realSurf(buildIndex+14));
+  FixedComp::setConnect("slotTop",slotOrg+X*(slotWidth/2.0),X);
+  FixedComp::setLinkSurf("slotTop",-SMap.realSurf(buildIndex+14));
 
-  FixedComp::setConnect(11,slotOrg-Z*(height/2.0-slotDepth),Z);
-  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect("slotAMid",slotOrg-Z*(height/2.0-slotDepth),Z);
+  FixedComp::setLinkSurf("slotAMid",-SMap.realSurf(buildIndex+15));
 
-  FixedComp::setConnect(12,slotOrg-Z*(height/2.0-slotDepth),Z);
-  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("slotBMid",slotOrg-Z*(height/2.0-slotDepth),Z);
+  FixedComp::setLinkSurf("slotBMid",SMap.realSurf(buildIndex+16));
 
   // key normal orientation
-  FixedComp::setConnect(13,pipePtA,Y);
-  FixedComp::setConnect(14,pipePtB,Y);
-  FixedComp::setLinkSurf(13,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(14,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("normPipeA",pipePtA,Y);
+  FixedComp::setConnect("normPipeB",pipePtB,Y);
+  FixedComp::setLinkSurf("normPipeA",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("normPipeB",-SMap.realSurf(buildIndex+5));
 
   
   return;
@@ -371,46 +371,33 @@ M1Mirror::createLinks()
 
   // link points are defined in the end of createSurfaces
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*width,-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("outSide",Origin-X*width,-X);
+  FixedComp::setLinkSurf("outSide",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("mirrorSide",Origin,X);
+  FixedComp::setLinkSurf("mirrorSide",SMap.realSurf(buildIndex+4));
+  // alias: preserved from original dual-name registration
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("mirrorSide"))-1),
+		"beamSide");
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
-  FixedComp::setConnect(6,Origin-X*width,Y);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("backPlateOrg",Origin-X*width,Y);
+  FixedComp::setLinkSurf("backPlateOrg",-SMap.realSurf(buildIndex+3));
 
   // note no surf for base widht:
-  FixedComp::setConnect(15,Origin-X*(width/2.0),Y);
+  FixedComp::setConnect("centreAxis",Origin-X*(width/2.0),Y);
 
-  nameSideIndex(2,"outSide");
-  nameSideIndex(3,"beamSide");
-  nameSideIndex(3,"mirrorSide");
-  nameSideIndex(4,"base");
-  nameSideIndex(5,"top");
-  nameSideIndex(6,"backPlateOrg");
-  nameSideIndex(7,"downPipeA");
-  nameSideIndex(8,"downPipeB");
-  nameSideIndex(9,"slotBase");
-  nameSideIndex(10,"slotTop");
-  nameSideIndex(11,"slotAMid");
-  nameSideIndex(12,"slotBMid");
-  nameSideIndex(13,"normPipeA");
-  nameSideIndex(14,"normPipeB");
-  nameSideIndex(15,"centreAxis");
-  
   return;
 }
 

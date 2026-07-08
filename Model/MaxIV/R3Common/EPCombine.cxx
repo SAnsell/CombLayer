@@ -75,7 +75,7 @@ namespace xraySystem
 {
 
 EPCombine::EPCombine(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -84,13 +84,7 @@ EPCombine::EPCombine(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key Name
   */
-{
-  nameSideIndex(1,"Flange");
-  nameSideIndex(2,"Photon");
-  nameSideIndex(3,"Electron");
-  nameSideIndex(4,"PhotonEdge");
-  nameSideIndex(5,"ElectronEdge");
-}
+{}
 
 
 EPCombine::~EPCombine() 
@@ -345,22 +339,25 @@ EPCombine::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);
 
   // photon/electron
-  setConnect(1,Origin+Y*length,Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  setConnect("back",Origin+Y*length,Y);
+  setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  setConnect(2,photOrg-X*photonXStep+Y*length,Y);  
-  setLinkSurf(2,SMap.realSurf(buildIndex+2));
-  
+  // "Flange" is a second alias for the same link point as "back"
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("back"))-1),"Flange");
+
+  setConnect("Photon",photOrg-X*photonXStep+Y*length,Y);
+  setLinkSurf("Photon",SMap.realSurf(buildIndex+2));
+
   // electron surface is intersect from 102 normal into surface 2
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
-  FixedComp::setLineConnect(3,elecOrg,elecYAxis);
+  FixedComp::setLinkSurf("Electron",SMap.realSurf(buildIndex+2));
+  FixedComp::setLineConnect("Electron",elecOrg,elecYAxis);
 
   const Geometry::Vec3D WOrigin(Origin+X*wallXStep);
-  FixedComp::setConnect(4,WOrigin-X*(wallWidth/2.0),X);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("PhotonEdge",WOrigin-X*(wallWidth/2.0),X);
+  FixedComp::setLinkSurf("PhotonEdge",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(5,WOrigin+X*(wallWidth/2.0),X);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("ElectronEdge",WOrigin+X*(wallWidth/2.0),X);
+  FixedComp::setLinkSurf("ElectronEdge",SMap.realSurf(buildIndex+4));
   
   return;
 }

@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 EPSeparator::EPSeparator(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -73,11 +73,7 @@ EPSeparator::EPSeparator(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  nameSideIndex(1,"Flange");
-  nameSideIndex(2,"Photon");
-  nameSideIndex(3,"Electron");
-}
+{}
 
 
 EPSeparator::~EPSeparator()  
@@ -247,16 +243,19 @@ EPSeparator::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);
 
   // photon/electron
-  setConnect(1,Origin+Y*length,Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  setConnect("back",Origin+Y*length,Y);
+  setLinkSurf("back",SMap.realSurf(buildIndex+2));
+
+  // "Flange" is a second alias for the same link point as "back"
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("back"))-1),"Flange");
 
   // Photon centre line [exit]
-  setConnect(2,photOrg+Y*length,Y);  
-  setLinkSurf(2,SMap.realSurf(buildIndex+2));
-  
+  setConnect("Photon",photOrg+Y*length,Y);
+  setLinkSurf("Photon",SMap.realSurf(buildIndex+2));
+
   // electron surface is intersect from 102 normal into surface 2
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
-  FixedComp::setLineConnect(3,elecOrg,elecYAxis);
+  FixedComp::setLinkSurf("Electron",SMap.realSurf(buildIndex+2));
+  FixedComp::setLineConnect("Electron",elecOrg,elecYAxis);
   
   return;
 }

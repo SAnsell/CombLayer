@@ -175,12 +175,12 @@ Segment16::createLinks()
 {
   ELog::RegMethod RegA("Segment16","createLinks");
 
-  setLinkCopy(0,*bellowA,1);
-  setLinkCopy(1,*pipeC,2);
+  setLinkCopy("front",*bellowA,1);
+  setLinkCopy("back",*pipeC,2);
 
-  //  setLinkCopy(1,*bellowA,2);
+  //  setLinkCopy("back",*bellowA,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
   return;
 }
 

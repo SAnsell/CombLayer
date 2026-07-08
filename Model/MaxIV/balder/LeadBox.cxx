@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 LeadBox::LeadBox(const std::string& Key) :
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key),
   attachSystem::ContainedGroup("Main","Walls","MainWall",
 			       "FrontWall","BackWall"),
   attachSystem::CellMap(),
@@ -300,11 +300,11 @@ LeadBox::createLinks()
   const double PT((plateFlag) ? plateThick : 0.0);
   const int surfPlus((plateFlag) ? buildIndex+10 : buildIndex);
 
-  FixedComp::setConnect(0,Origin-Y*(PT+wallThick+length/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(PT+wallThick+length/2.0),Y);
-  
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfPlus+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfPlus+12));
+  FixedComp::setConnect("front",Origin-Y*(PT+wallThick+length/2.0),-Y);
+  FixedComp::setConnect("back",Origin+Y*(PT+wallThick+length/2.0),Y);
+
+  FixedComp::setLinkSurf("front",-SMap.realSurf(surfPlus+11));
+  FixedComp::setLinkSurf("back",SMap.realSurf(surfPlus+12));
   
 
   return;

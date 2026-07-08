@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 DipoleSndBend::DipoleSndBend(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Beam","Extra"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -301,8 +301,8 @@ DipoleSndBend::createLinks()
      +X*(-xStep+curveRadius*(1.0-cos(M_PI*arcAngle/180.0)))
      +Y*(curveRadius*sin(M_PI*arcAngle/180.0)));
 
-  FixedComp::setConnect(1,endPoint,PY);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",endPoint,PY);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   // mid point
   const Geometry::Quaternion QMA
@@ -314,8 +314,7 @@ DipoleSndBend::createLinks()
      +X*(-xStep+curveRadius*(1.0-cos(M_PI*arcAngle/360.0)))
      +Y*(curveRadius*sin(M_PI*arcAngle/360.0)));
 
-  FixedComp::setConnect(6,midPoint,MY);
-  FixedComp::nameSideIndex(6,"dipoleCentre");
+  FixedComp::setConnect("dipoleCentre",midPoint,MY);
   return;
 }
 

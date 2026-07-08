@@ -68,8 +68,8 @@
 namespace xraySystem
 {
 
-speciesOpticsHut::speciesOpticsHut(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,18),
+speciesOpticsHut::speciesOpticsHut(const std::string& Key) :
+  attachSystem::FixedOffset(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -359,36 +359,30 @@ speciesOpticsHut::createLinks()
 
   ExternalCut::createLink("RingWall",*this,"front",Origin,Y);
 
-  setConnect(1,Origin+Y*(length+extraBack),Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+302));
+  setConnect("back",Origin+Y*(length+extraBack),Y);
+  setLinkSurf("back",SMap.realSurf(buildIndex+302));
 
     // outer surf
-  setConnect(3,Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
-  setLinkSurf(3,-SMap.realSurf(buildIndex+303));
-  nameSideIndex(3,"farWall");
+  setConnect("farWall",Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
+  setLinkSurf("farWall",-SMap.realSurf(buildIndex+303));
   // outer surf
-  setConnect(4,Origin-X*(extraWall+ringLongWidth)+Y*(length/2.0),X);
-  setLinkSurf(4,SMap.realSurf(buildIndex+304));
-  nameSideIndex(4,"ringWall");
+  setConnect("ringWall",Origin-X*(extraWall+ringLongWidth)+Y*(length/2.0),X);
+  setLinkSurf("ringWall",SMap.realSurf(buildIndex+304));
 
   // inner surf front
-  setConnect(7,Origin,Y);
-  setLinkSurf(7,SMap.realSurf(buildIndex+1));
-  nameSideIndex(7,"innerFront");
+  setConnect("innerFront",Origin,Y);
+  setLinkSurf("innerFront",SMap.realSurf(buildIndex+1));
 
   // inner surf back
-  setConnect(8,Origin+Y*length,-Y);
-  setLinkSurf(8,-SMap.realSurf(buildIndex+2));
-  nameSideIndex(8,"innerBack");
+  setConnect("innerBack",Origin+Y*length,-Y);
+  setLinkSurf("innerBack",-SMap.realSurf(buildIndex+2));
 
     // inner surf
-  setConnect(13,Origin-X*outWidth+Y*(length/2.0),X);
-  setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"innerFarWall");
+  setConnect("innerFarWall",Origin-X*outWidth+Y*(length/2.0),X);
+  setLinkSurf("innerFarWall",SMap.realSurf(buildIndex+3));
 
-  setConnect(14,Origin-X*ringLongWidth+Y*(length/2.0),-X);
-  setLinkSurf(14,-SMap.realSurf(buildIndex+4));
-  nameSideIndex(14,"innerRingWall");
+  setConnect("innerRingWall",Origin-X*ringLongWidth+Y*(length/2.0),-X);
+  setLinkSurf("innerRingWall",-SMap.realSurf(buildIndex+4));
 
   return;
 }

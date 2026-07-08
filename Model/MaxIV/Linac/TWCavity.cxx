@@ -67,7 +67,7 @@ namespace tdcSystem
 
 TWCavity::TWCavity(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -75,9 +75,7 @@ TWCavity::TWCavity(const std::string& Key)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-  nameSideIndex(6,"MidPoint");
-}
+{}
 
 TWCavity::TWCavity(const TWCavity& A) :
   attachSystem::ContainedComp(A),
@@ -339,7 +337,7 @@ TWCavity::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);
   ExternalCut::createLink("back",*this,"back",Origin,Y);
 
-  FixedComp::setConnect(6,(getLinkPt(1)+getLinkPt(2))/2.0,getLinkAxis(1));
+  FixedComp::setConnect("MidPoint",(getLinkPt(1)+getLinkPt(2))/2.0,getLinkAxis(1));
 
   return;
 }

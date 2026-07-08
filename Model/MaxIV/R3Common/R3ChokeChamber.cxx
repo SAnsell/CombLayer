@@ -68,7 +68,7 @@ namespace xraySystem
 {
 
 R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Photon","Electron","Inlet","Side"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -80,10 +80,6 @@ R3ChokeChamber::R3ChokeChamber(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  nameSideIndex(2,"photon");
-  nameSideIndex(3,"electron");
-  nameSideIndex(4,"side");
-  nameSideIndex(8,"innerSide");
 }
 
 
@@ -529,22 +525,22 @@ R3ChokeChamber::createLinks()
   // inlet centre
   ExternalCut::createLink("front",*this,"front",Origin,-Y);
 
-  FixedComp::setConnect(1,Origin+Y*photonLength,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+202));
+  FixedComp::setConnect("back",Origin+Y*photonLength,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+202));
   // Link
-  FixedComp::setConnect(2,photOrg+Y*(photonLength+inletLength),Y);
+  FixedComp::setConnect("photon",photOrg+Y*(photonLength+inletLength),Y);
   FixedComp::setConnect
-    (3,elecOrg+elecYAxis*(electronLength+inletLength),elecYAxis);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+202));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+302));
+    ("electron",elecOrg+elecYAxis*(electronLength+inletLength),elecYAxis);
+  FixedComp::setLinkSurf("photon",SMap.realSurf(buildIndex+202));
+  FixedComp::setLinkSurf("electron",SMap.realSurf(buildIndex+302));
 
   // side (outward)
-  FixedComp::setConnect(4,Origin-X*(sideLength+sideCapThick),-X);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+452));
+  FixedComp::setConnect("side",Origin-X*(sideLength+sideCapThick),-X);
+  FixedComp::setLinkSurf("side",-SMap.realSurf(buildIndex+452));
 
     // side (inward)
-  FixedComp::setConnect(8,Origin-X*sideLength,X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+402));
+  FixedComp::setConnect("innerSide",Origin-X*sideLength,X);
+  FixedComp::setLinkSurf("innerSide",SMap.realSurf(buildIndex+402));
   
   return;
 }

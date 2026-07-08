@@ -67,7 +67,7 @@ namespace xraySystem
 
 CurrentTransformer::CurrentTransformer(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -251,21 +251,21 @@ CurrentTransformer::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect(2,Origin-X*(outerRadius/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+37));
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(40000));
+  FixedComp::setConnect("left",Origin-X*(outerRadius/2.0),-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+37));
+  FixedComp::setBridgeSurf("left",-SMap.realSurf(40000));
 
-  FixedComp::setConnect(3,Origin+X*(outerRadius/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+37));
-  FixedComp::setBridgeSurf(3,SMap.realSurf(40000));
+  FixedComp::setConnect("right",Origin+X*(outerRadius/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+37));
+  FixedComp::setBridgeSurf("right",SMap.realSurf(40000));
 
-  FixedComp::setConnect(4,Origin-Z*(outerRadius/2.0),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+37));
-  FixedComp::setBridgeSurf(4,-SMap.realSurf(60000));
+  FixedComp::setConnect("base",Origin-Z*(outerRadius/2.0),-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+37));
+  FixedComp::setBridgeSurf("base",-SMap.realSurf(60000));
 
-  FixedComp::setConnect(5,Origin+Z*(outerRadius/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+37));
-  FixedComp::setBridgeSurf(5,SMap.realSurf(60000));
+  FixedComp::setConnect("top",Origin+Z*(outerRadius/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+37));
+  FixedComp::setBridgeSurf("top",SMap.realSurf(60000));
 
   FixedComp::setConnect("InnerBack",Origin+Y*(length),Y);
   FixedComp::setLinkSurf("InnerBack",SMap.realSurf(buildIndex+2));

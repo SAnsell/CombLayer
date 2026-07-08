@@ -238,16 +238,13 @@ Segment12::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*bellowA,1);
+  setLinkCopy("front",*bellowA,"front");
 
-  setLinkCopy(1,*bellowLB,2);  // straigh exit
-  setLinkCopy(2,*bellowRB,2);  // magnet exit
+  setLinkCopy("straightExit",*bellowLB,"back");  // straigh exit
+  setLinkCopy("magnetExit",*bellowRB,"back");  // magnet exit
 
-  FixedComp::nameSideIndex(1,"straightExit");
-  FixedComp::nameSideIndex(2,"magnetExit");
-
-  joinItems.push_back(FixedComp::getFullRule(2));
-  joinItems.push_back(FixedComp::getFullRule(3));
+  joinItems.push_back(FixedComp::getFullRule("straightExit"));
+  joinItems.push_back(FixedComp::getFullRule("magnetExit"));
   return;
 }
 

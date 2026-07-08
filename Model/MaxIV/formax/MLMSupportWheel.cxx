@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 MLMSupportWheel::MLMSupportWheel(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -240,24 +240,20 @@ MLMSupportWheel::createLinks()
 {
   ELog::RegMethod RegA("MLMSupportWheel","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*wheelOuterRadius,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+27));
+  FixedComp::setConnect("front",Origin-Y*wheelOuterRadius,-Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+27));
 
-  FixedComp::setConnect(1,Origin+Y*wheelOuterRadius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+27));
+  FixedComp::setConnect("back",Origin+Y*wheelOuterRadius,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+27));
 
-  FixedComp::setConnect(4,Origin-Z*(wheelHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("Base",Origin-Z*(wheelHeight/2.0),-Z);
+  FixedComp::setLinkSurf("Base",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(wheelHeight/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("Top",Origin+Z*(wheelHeight/2.0),Z);
+  FixedComp::setLinkSurf("Top",SMap.realSurf(buildIndex+6));
 
-  FixedComp::setConnect(6,Origin-Z*(wheelHeight/2.0),Y);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+5));
-
-  nameSideIndex(4,"Base");
-  nameSideIndex(5,"Top");
-  nameSideIndex(6,"BasePt");
+  FixedComp::setConnect("BasePt",Origin-Z*(wheelHeight/2.0),Y);
+  FixedComp::setLinkSurf("BasePt",-SMap.realSurf(buildIndex+5));
   
   
   return;

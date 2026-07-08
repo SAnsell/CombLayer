@@ -152,7 +152,7 @@ Segment29::createSplitInnerZone()
   HeadRule HSurroundB=buildZone->getSurround();
 
   // create surfaces
-  attachSystem::FixedUnit FA("FA");
+  attachSystem::FixedUnit FA(attachSystem::FixedComp::unregistered,"FA");
   FA.createPairVector(*pipeAA,-1,*pipeBA,-1);
 
   if (!prevSegPtr || !prevSegPtr->hasSurf("TopDivider"))
@@ -288,18 +288,18 @@ Segment29::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*pipeAA,1);
-  setLinkCopy(1,*endVoid,2);
-  setLinkCopy(2,*pipeBA,1);
-  setLinkCopy(3,*endVoid,2);
+  setLinkCopy("front",*pipeAA,"front");
+  // "frontFlat"/"backFlat" are second aliases for the same link points
+  // as "front"/"back"
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("front"))-1),
+		"frontFlat");
+  setLinkCopy("back",*endVoid,"back");
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("back"))-1),
+		"backFlat");
+  setLinkCopy("frontMid",*pipeBA,"front");
+  setLinkCopy("backMid",*endVoid,"back");
 
-
-  FixedComp::nameSideIndex(0,"frontFlat");
-  FixedComp::nameSideIndex(1,"backFlat");
-  FixedComp::nameSideIndex(2,"frontMid");
-  FixedComp::nameSideIndex(3,"backMid");
-
-  //    setLinkCopy(1,*triPipeA,2);
+  //    setLinkCopy("backFlat",*triPipeA,"back");
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
 
   buildZone->setBack(ExternalCut::getRule("BackWallFront"));

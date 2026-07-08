@@ -314,12 +314,12 @@ Segment47::createLinks()
 {
   ELog::RegMethod RegA("Segment47","createLinks");
 
-  setLinkCopy(0,*pipeA,1);
-  setLinkCopy(1,*pipeE,2);
+  setLinkCopy("front",*pipeA,1);
+  setLinkCopy("back",*pipeE,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
-  buildZone->setBack(FixedComp::getFullRule(2));
+  buildZone->setBack(FixedComp::getFullRule("back"));
   return;
 }
 

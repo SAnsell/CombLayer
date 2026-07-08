@@ -182,14 +182,13 @@ Segment25::createLinks()
 {
   ELog::RegMethod RegA("Segment25","createLinks");
   
-  setLinkCopy(0,*bellowA,1);
-  setLinkCopy(1,*bellowAA,2);
-  setLinkCopy(2,*bellowBA,2);
-  setLinkCopy(3,*bellowCA,2);
-
-  FixedComp::nameSideIndex(1,"backFlat");
-  FixedComp::nameSideIndex(2,"backMid");
-  FixedComp::nameSideIndex(3,"backLower");
+  setLinkCopy("front",*bellowA,"front");
+  setLinkCopy("back",*bellowAA,"back");
+  // "backFlat" is a second alias for the same link point as "back"
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("back"))-1),
+		"backFlat");
+  setLinkCopy("backMid",*bellowBA,"back");
+  setLinkCopy("backLower",*bellowCA,"back");
 
   joinItems.push_back(FixedComp::getFullRule("backFlat"));
   joinItems.push_back(FixedComp::getFullRule("backMid"));

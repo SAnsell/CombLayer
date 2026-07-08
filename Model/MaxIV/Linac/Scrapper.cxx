@@ -65,7 +65,7 @@ namespace tdcSystem
 {
 
 Scrapper::Scrapper(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
@@ -400,16 +400,13 @@ Scrapper::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+107));
-  FixedComp::nameSideIndex(3,"Outer");
+  FixedComp::setLinkSurf("Outer",SMap.realSurf(buildIndex+107));
 
   FixedComp::setLinkSurf
-    (4,ModelSupport::getHeadRule(SMap,buildIndex,0,"1327 : -60000M"));
-  FixedComp::nameSideIndex(4,"OuterTop");
+    ("OuterTop",ModelSupport::getHeadRule(SMap,buildIndex,0,"1327 : -60000M"));
 
   FixedComp::setLinkSurf
-    (5,ModelSupport::getHeadRule(SMap,buildIndex,0,"327 : 60000M"));
-  FixedComp::nameSideIndex(5,"OuterBottom");
+    ("OuterBottom",ModelSupport::getHeadRule(SMap,buildIndex,0,"327 : 60000M"));
 
 
   return;

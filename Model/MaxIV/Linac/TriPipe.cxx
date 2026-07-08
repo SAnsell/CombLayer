@@ -68,7 +68,7 @@ namespace tdcSystem
 {
 
 TriPipe::TriPipe(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Pipe","FlangeA","FlangeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -278,15 +278,15 @@ TriPipe::createLinks()
 
   const double H((frontHeight+backHeight)/2.0);
   const double W((frontWidth+backWidth)/2.0);
-  FixedComp::setConnect(2,Origin-X*(wallThick+H+W),-X);
-  FixedComp::setConnect(3,Origin-X*(wallThick+H+W),X);
-  FixedComp::setConnect(4,Origin-Z*(wallThick+H+W),-Z);
-  FixedComp::setConnect(5,Origin+Z*(wallThick+H+W),Z);
-  
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("left",Origin-X*(wallThick+H+W),-X);
+  FixedComp::setConnect("right",Origin-X*(wallThick+H+W),X);
+  FixedComp::setConnect("base",Origin-Z*(wallThick+H+W),-Z);
+  FixedComp::setConnect("top",Origin+Z*(wallThick+H+W),Z);
+
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   ELog::EM<<"Link Pt "<<getLinkPt(0)<<ELog::endDiag;
@@ -294,11 +294,9 @@ TriPipe::createLinks()
 
   // top lift point : Out is an complemnt of the volume
   HeadRule HR;
-  FixedComp::setConnect(7,Origin+Z*(wallThick+H),Z);
+  FixedComp::setConnect("outerPipe",Origin+Z*(wallThick+H),Z);
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"(-13 : 14 : -15 : 16)");
-  FixedComp::setLinkSurf(7,HR);
-
-  FixedComp::nameSideIndex(7,"outerPipe");
+  FixedComp::setLinkSurf("outerPipe",HR);
 
   return;
 }

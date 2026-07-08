@@ -70,7 +70,7 @@ namespace tdcSystem
 {
 
 LBeamStop::LBeamStop(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -208,36 +208,29 @@ LBeamStop::createLinks()
 {
   ELog::RegMethod RegA("LBeamStop","createLinks");
 
-  FixedComp::setConnect(0,Origin,Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
-  FixedComp::nameSideIndex(0,"front");
+  FixedComp::setConnect("front",Origin,Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+21));
 
-  FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
-  FixedComp::nameSideIndex(1,"back");
+  FixedComp::setConnect("back",Origin+Y*length,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+22));
 
   // inner
-  FixedComp::setConnect(2,Origin+Y*innerRadius,Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::nameSideIndex(2,"InnerSide");
+  FixedComp::setConnect("InnerSide",Origin+Y*innerRadius,Y);
+  FixedComp::setLinkSurf("InnerSide",SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(3,Origin+Y*(innerVoidLen+innerLength),Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+2));
-  FixedComp::nameSideIndex(3,"InnerBack");
+  FixedComp::setConnect("InnerBack",Origin+Y*(innerVoidLen+innerLength),Y);
+  FixedComp::setLinkSurf("InnerBack",SMap.realSurf(buildIndex+2));
 
   // mid
-  FixedComp::setConnect(4,Origin+Y*midRadius,Y);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
-  FixedComp::nameSideIndex(4,"MidSide");
+  FixedComp::setConnect("MidSide",Origin+Y*midRadius,Y);
+  FixedComp::setLinkSurf("MidSide",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(5,Origin+Y*(midVoidLen+midLength),Y);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+12));
-  FixedComp::nameSideIndex(5,"MidBack");
+  FixedComp::setConnect("MidBack",Origin+Y*(midVoidLen+midLength),Y);
+  FixedComp::setLinkSurf("MidBack",SMap.realSurf(buildIndex+12));
 
   // outer
-  FixedComp::setConnect(6,Origin+Y*outerRadius,Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+27));
-  FixedComp::nameSideIndex(6,"OuterSide");
+  FixedComp::setConnect("OuterSide",Origin+Y*outerRadius,Y);
+  FixedComp::setLinkSurf("OuterSide",SMap.realSurf(buildIndex+27));
 
   // OuterBack is the same as "back"
 

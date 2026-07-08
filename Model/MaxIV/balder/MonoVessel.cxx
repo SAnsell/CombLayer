@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 MonoVessel::MonoVessel(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap()
   /*!
@@ -352,10 +352,10 @@ MonoVessel::createLinks()
 {
   ELog::RegMethod RegA("MonoVessel","createLinks");
 
-  FixedComp::setConnect(0,inPortPt-Y*inPortLen,Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+101));
-  FixedComp::setConnect(1,outPortPt+Y*outPortLen,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+201));
+  FixedComp::setConnect("front",inPortPt-Y*inPortLen,Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("back",outPortPt+Y*outPortLen,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+201));
   return;
 }
 

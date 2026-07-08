@@ -425,20 +425,28 @@ Curtain::createLinks()
   // Lower first:
   //  const double angleStep((M_PI/180.0)*(rightPhase-leftPhase)/3.0);
   double angle(M_PI*leftPhase/180.0);
+  // index 0/1 are the pre-seeded "front"/"back" link names -- must not
+  // be stringified as "0"/"1" or those slots never get populated.
+  auto linkName=[](const size_t v) -> std::string
+    {
+      if (v==0) return "front";
+      if (v==1) return "back";
+      return std::to_string(v);
+    };
   for(size_t i=0;i<4;i++)
     {
       const Geometry::Vec3D Axis(Y*cos(angle)+X*sin(angle));
       const Geometry::Vec3D OutPt=Origin+Axis*(wallRadius+wallThick);
       const Geometry::Vec3D InPt=Origin+Axis*wallRadius;
-      baseFC.setConnect(std::to_string(i),OutPt-Z*depth,Axis);
+      baseFC.setConnect(linkName(i),OutPt-Z*depth,Axis);
       baseFC.setConnect(std::to_string(i+4),InPt-Z*depth,-Axis);
 
       baseFC.setConnect(std::to_string(i+8),OutPt+Z*height,Axis);
       baseFC.setConnect(std::to_string(i+12),InPt+Z*height,-Axis);
 
-      baseFC.setConnect(std::to_string(i),OutPt,Axis);
+      baseFC.setConnect(linkName(i),OutPt,Axis);
       baseFC.setConnect(std::to_string(i+4),InPt,-Axis);
-      baseFC.setLinkSurf(std::to_string(i),SMap.realSurf(buildIndex+27));
+      baseFC.setLinkSurf(linkName(i),SMap.realSurf(buildIndex+27));
       baseFC.setLinkSurf(std::to_string(i+8),SMap.realSurf(buildIndex+27));
     }
 

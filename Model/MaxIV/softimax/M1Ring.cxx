@@ -181,19 +181,16 @@ M1Ring::createLinks()
   
   const Geometry::Vec3D IOrg(Origin+Y*innerYStep);
 
-  FixedComp::setConnect(0,IOrg-Y*(innerLength/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  
-  FixedComp::setConnect(1,IOrg+Y*(innerLength/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect("front",IOrg-Y*(innerLength/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
+
+  FixedComp::setConnect("back",IOrg+Y*(innerLength/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
   // link points are defined in the end of createSurfaces
 
-  FixedComp::setConnect(2,Origin,Y);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("innerRing",Origin,Y);
+  FixedComp::setLinkSurf("innerRing",-SMap.realSurf(buildIndex+17));
   // link points are defined in the end of createSurfaces
-
-  
-  nameSideIndex(2,"innerRing");
 
   const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 -12");
   setCutSurf("RingGap",HR);

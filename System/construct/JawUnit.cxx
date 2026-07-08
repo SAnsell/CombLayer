@@ -244,11 +244,11 @@ JawUnit::createLinks()
 {
   ELog::RegMethod RegA("JawUnit","createLinks");
 
-  FixedComp::setConnect("0",Origin-Y*(zThick+jawGap/2.0),-Y);
-  FixedComp::setLinkSurf("0",-SMap.realSurf(buildIndex+201));
+  FixedComp::setConnect("front",Origin-Y*(zThick+jawGap/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+201));
 
-  FixedComp::setConnect("1",Origin+Y*(xThick+jawGap/2.0),-Y);
-  FixedComp::setLinkSurf("1",-SMap.realSurf(buildIndex+102));
+  FixedComp::setConnect("back",Origin+Y*(xThick+jawGap/2.0),-Y);
+  FixedComp::setLinkSurf("back",-SMap.realSurf(buildIndex+102));
 
   // x values (4):
   FixedComp::setConnect("2",Origin-X*(xOpen/2.0-xOffset),-X);

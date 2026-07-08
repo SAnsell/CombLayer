@@ -67,7 +67,7 @@ namespace xraySystem
 {
 
 QuadUnit::QuadUnit(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -254,8 +254,7 @@ QuadUnit::createLinks()
   const Geometry::Vec3D midPt((getLinkPt(1)+getLinkPt(2))/2.0);
 
   // note : no surface
-  FixedComp::setConnect(2,midPt,Y);
-  FixedComp::nameSideIndex(2,"midPoint");
+  FixedComp::setConnect("midPoint",midPt,Y);
   
   return;
 }

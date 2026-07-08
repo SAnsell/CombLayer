@@ -300,14 +300,13 @@ Segment46::createLinks()
 {
   ELog::RegMethod RegA("Segment46","createLinks");
 
-  setLinkCopy(0,*pipeA,1);
-  setLinkCopy(1,*bellowD,2);
+  setLinkCopy("front",*pipeA,"front");
+  setLinkCopy("back",*bellowD,"back");
 
-  FixedComp::setConnect(2,Origin,Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+5005));
-  FixedComp::nameSideIndex(2,"buildZoneCut");
+  FixedComp::setConnect("buildZoneCut",Origin,Y);
+  FixedComp::setLinkSurf("buildZoneCut",SMap.realSurf(buildIndex+5005));
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("buildZoneCut"));
 
   buildZone->setBack(bellowD->getFullRule("back"));
 

@@ -69,7 +69,7 @@ namespace xraySystem
 
 EntryPipe::EntryPipe(const std::string& Key,
 		     const int flag) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Pipe","Flange"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -79,10 +79,7 @@ EntryPipe::EntryPipe(const std::string& Key,
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-}
+{}
 
 
 EntryPipe::~EntryPipe()

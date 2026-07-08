@@ -154,10 +154,10 @@ Segment34::createLinks()
 {
   ELog::RegMethod RegA("Segment34","createLinks");
 
-  setLinkCopy(0,*flatA,1);
-  setLinkCopy(1,*bellow,2);
+  setLinkCopy("front",*flatA,1);
+  setLinkCopy("back",*bellow,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   return;
 }

@@ -276,9 +276,10 @@ Segment45::createLinks()
 {
   ELog::RegMethod RegA("Segment45","createLinks");
 
-  setLinkCopy(0,*ceramic,1);
-  setLinkCopy(1,*pipeB,2);
-  nameSideIndex(1,"buildZoneCut");
+  setLinkCopy("front",*ceramic,"front");
+  setLinkCopy("back",*pipeB,"back");
+  // "buildZoneCut" is a second alias for the same link point as "back"
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("back"))-1),"buildZoneCut");
   joinItems.push_back(FixedComp::getFullRule("back"));
 
 

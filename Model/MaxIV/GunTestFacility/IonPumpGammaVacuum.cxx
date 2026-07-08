@@ -66,7 +66,7 @@ namespace MAXIV
 
 IonPumpGammaVacuum::IonPumpGammaVacuum(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::FrontBackCut()
@@ -340,11 +340,11 @@ IonPumpGammaVacuum::createLinks()
   // FixedComp::setConnect(3,Origin+X*(pistonWidth/2.0+wallThick),X);
   // FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

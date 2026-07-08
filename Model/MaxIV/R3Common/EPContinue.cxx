@@ -86,7 +86,7 @@ namespace xraySystem
 {
 
 EPContinue::EPContinue(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -96,11 +96,7 @@ EPContinue::EPContinue(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key Name
   */
-{
-  nameSideIndex(1,"Flange");
-  nameSideIndex(2,"Photon");
-  nameSideIndex(3,"Electron");
-}
+{}
 
 
 EPContinue::~EPContinue() 

@@ -64,7 +64,7 @@ namespace tdcSystem
 {
 
 SPFCameraShield::SPFCameraShield(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -308,32 +308,23 @@ SPFCameraShield::createLinks()
 {
   ELog::RegMethod RegA("SPFCameraShield","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*((length+wallThick)/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
+  FixedComp::setConnect("front",Origin-Y*((length+wallThick)/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+201));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0+wallThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0+wallThick),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0-wallThick),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect("left",Origin-X*(width/2.0-wallThick),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(width),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+205));
+  FixedComp::setConnect("bottom",Origin-Z*(width),-Z);
+  FixedComp::setLinkSurf("bottom",-SMap.realSurf(buildIndex+205));
 
-  FixedComp::setConnect(5,Origin+Z*(height+wallThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+36));
-
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-
-  FixedComp::nameSideIndex(2,"left");
-  FixedComp::nameSideIndex(3,"right");
-
-  FixedComp::nameSideIndex(4,"bottom");
-  FixedComp::nameSideIndex(5,"top");
+  FixedComp::setConnect("top",Origin+Z*(height+wallThick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+36));
 
   return;
 }

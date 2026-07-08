@@ -69,7 +69,7 @@ namespace xraySystem
 {
 
 HalfElectronPipe::HalfElectronPipe(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Half","Full"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -79,9 +79,6 @@ HalfElectronPipe::HalfElectronPipe(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  FixedComp::nameSideIndex(1,"Flange");
-  FixedComp::nameSideIndex(2,"Photon");
-  FixedComp::nameSideIndex(3,"Electron");
 }
 
 
@@ -265,15 +262,14 @@ HalfElectronPipe::createLinks()
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
   // Photon centre line [exit]
-  setConnect(2,Origin+Y*fullLength,Y);
-  setLinkSurf(2,SMap.realSurf(buildIndex+2));
+  setConnect("Photon",Origin+Y*fullLength,Y);
+  setLinkSurf("Photon",SMap.realSurf(buildIndex+2));
 
-  setLinkSurf(3,SMap.realSurf(buildIndex+2));
-  setLineConnect(3,endPoint,elecAxis);
+  setLinkSurf("Electron",SMap.realSurf(buildIndex+2));
+  setLineConnect("Electron",endPoint,elecAxis);
 
-  FixedComp::nameSideIndex(4,"midPlane");
-  setConnect(4,endPoint,elecAxis);
-  setLinkSurf(4,SMap.realSurf(buildIndex+102));
+  setConnect("midPlane",endPoint,elecAxis);
+  setLinkSurf("midPlane",SMap.realSurf(buildIndex+102));
 
 
   return;

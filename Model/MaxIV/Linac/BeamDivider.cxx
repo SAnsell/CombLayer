@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 BeamDivider::BeamDivider(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup
   ("Box","Main","Exit","FlangeB","FlangeE","FlangeA"),
   attachSystem::FrontBackCut(),
@@ -299,14 +299,12 @@ BeamDivider::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);
   ExternalCut::createLink("back",*this,"back",mainOrg,Y);
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+502));
-  FixedComp::setLineConnect(2,exitOrg,RAxis);
+  FixedComp::setLinkSurf("exit",SMap.realSurf(buildIndex+502));
+  FixedComp::setLineConnect("exit",exitOrg,RAxis);
 
   const HeadRule HR=ModelSupport::getHeadRule(SMap,buildIndex,"-13:14:-15:16");
-  FixedComp::setLinkSurf(3,HR);
-  FixedComp::nameSideIndex(3,"outerBox");
+  FixedComp::setLinkSurf("outerBox",HR);
 
-  FixedComp::nameSideIndex(2,"exit");
   return;
 }
 
