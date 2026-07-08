@@ -228,12 +228,14 @@ GratingMono::createLinks()
 
 
   // top surface going back down beamline to ring
-  FixedComp::setConnect("beamIn",MCentre,-Y);
-  FixedComp::setLinkSurf("beamIn",SMap.realSurf(buildIndex+106));
+  FixedComp::setConnect("front",MCentre,-Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+106));
+  FixedComp::nameSideIndex(0,"beamIn");
 
   // top surface going to experimental area
-  FixedComp::setConnect("beamOut",GCentre,Y);
-  FixedComp::setLinkSurf("beamOut",SMap.realSurf(buildIndex+205));
+  FixedComp::setConnect("back",GCentre,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+205));
+  FixedComp::nameSideIndex(1,"beamOut");
 
   return;
 }

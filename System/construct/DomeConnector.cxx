@@ -253,14 +253,18 @@ DomeConnector::createLinks()
       linkIndex=1;
     }
 
-  PSet.copyPortLinks(*this);
-
   FixedComp::setLinkSurf((linkIndex==0)?"front":"back",SMap.realSurf(buildIndex+8));
   FixedComp::setBridgeSurf((linkIndex==0)?"front":"back",-SMap.realSurf(buildIndex+101));
   FixedComp::setConnect((linkIndex==0)?"front":"back",Origin-Y*curveStep,Y);
   linkIndex=1-linkIndex;
   FixedComp::setConnect((linkIndex==0)?"front":"back",Origin+Y*(joinStep+flatLen),Y);
   FixedComp::setLinkSurf((linkIndex==0)?"front":"back",SMap.realSurf(buildIndex+2));
+
+  // Port links ("port0","port1",...) are new names not yet in keyMap --
+  // must be established only after front/back are both fully finalised
+  // above, otherwise a fresh port name can land in the same not-yet-grown
+  // LU slot that a later front/back write then clobbers.
+  PSet.copyPortLinks(*this);
 
   //  ExternalCut::createLink("plate",*this,"front",Origin,-Y);  //front and back
   //  ExternalCut::createLink("plate",*this,"back",Origin,Y);  //front and back

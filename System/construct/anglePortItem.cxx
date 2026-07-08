@@ -309,19 +309,21 @@ anglePortItem::createLinks()
 {
   ELog::RegMethod RegA("anglePortItem","createLinks");
 
-  FixedComp::setConnect("BasePoint",Origin,-Y);
-  FixedComp::setLinkSurf("BasePoint",-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::nameSideIndex(0,"BasePoint");
 
   if (capThick>Geometry::zeroTol)
     {
-      FixedComp::setConnect("OuterPlate",Origin+Y*(length+capThick),Y);
-      FixedComp::setLinkSurf("OuterPlate",SMap.realSurf(buildIndex+202));
+      FixedComp::setConnect("back",Origin+Y*(length+capThick),Y);
+      FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+202));
     }
   else
     {
-      FixedComp::setConnect("OuterPlate",Origin+Y*length,Y);
-      FixedComp::setLinkSurf("OuterPlate",SMap.realSurf(buildIndex+2));
+      FixedComp::setConnect("back",Origin+Y*length,Y);
+      FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
     }
+  FixedComp::nameSideIndex(1,"OuterPlate");
 
   FixedComp::setConnect("InnerRadius",Origin+Y*(length/2.0)+X*radius,X);
   FixedComp::setLinkSurf("InnerRadius",-SMap.realSurf(buildIndex+7));

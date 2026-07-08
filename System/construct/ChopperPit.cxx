@@ -65,7 +65,7 @@
 namespace constructSystem
 {
 
-ChopperPit::ChopperPit(const std::string& Key) : 
+ChopperPit::ChopperPit(const std::string& Key) :
   attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
@@ -74,7 +74,25 @@ ChopperPit::ChopperPit(const std::string& Key) :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  // Pre-register all 18 names at their original numeric positions --
+  // otherwise "midFront" (the first fresh name normally established,
+  // right after "front") would land in raw slot 1, which is "back"'s
+  // pre-seeded slot, and later get silently clobbered when "back"/
+  // "innerBack" is set. Done here (not in createLinks()) since
+  // addFrontWall() can run before createLinks() ever does.
+  const std::array<std::string,3> prefixArr{"inner","mid","outer"};
+  for(size_t index=0;index<18;index+=6)
+    {
+      const std::string& prefix=prefixArr[index/6];
+      nameSideIndex(index,prefix+"Front");
+      nameSideIndex(index+1,prefix+"Back");
+      nameSideIndex(index+2,prefix+"Left");
+      nameSideIndex(index+3,prefix+"Right");
+      nameSideIndex(index+4,prefix+"Base");
+      nameSideIndex(index+5,prefix+"Top");
+    }
+}
 
 ChopperPit::ChopperPit(const ChopperPit& A) : 
   attachSystem::FixedRotate(A),
@@ -318,9 +336,8 @@ ChopperPit::createFrontLinks()
 {
   ELog::RegMethod RegA("ChopperPit","createLinks");
 
-
-  setConnect("innerFront",Origin-Y*(voidLength/2.0),-Y);
-  setLinkSurf("innerFront",-SMap.realSurf(buildIndex+1));
+  setConnect("front",Origin-Y*(voidLength/2.0),-Y);
+  setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
   // Fe system [front face is link surf]
 
@@ -345,12 +362,12 @@ ChopperPit::createCommonLinks()
 {
   ELog::RegMethod RegA("ChopperPit","createLinks");
 
-  // note we have already done front 
+  // note we have already done front
   double D[5]=
     {voidLength/2.0,
      voidWidth/2.0,voidWidth/2.0,
      voidDepth,voidHeight};
-  
+
   const double L[]=
     {feBack,feWidth,feWidth,feDepth,feHeight,
      concBack,concWidth,concWidth,concDepth,concHeight};
@@ -361,13 +378,14 @@ ChopperPit::createCommonLinks()
   for(size_t index=0;index<18;index+=6)
     {
       const std::string& prefix=prefixArr[index/6];
-      setConnect(prefix+"Back",Origin+Y*D[0],Y);
+      const std::string backName=(index==0) ? "back" : prefix+"Back";
+      setConnect(backName,Origin+Y*D[0],Y);
       setConnect(prefix+"Left",Origin-X*D[1],-X);
       setConnect(prefix+"Right",Origin+X*D[2],X);
       setConnect(prefix+"Base",Origin-Z*D[3],-Z);
       setConnect(prefix+"Top",Origin+Z*D[4],Z);
 
-      setLinkSurf(prefix+"Back",SMap.realSurf(BI+2));
+      setLinkSurf(backName,SMap.realSurf(BI+2));
       setLinkSurf(prefix+"Left",-SMap.realSurf(BI+3));
       setLinkSurf(prefix+"Right",SMap.realSurf(BI+4));
       setLinkSurf(prefix+"Base",-SMap.realSurf(BI+5));
@@ -404,8 +422,9 @@ ChopperPit::addFrontWall(const attachSystem::FixedComp& WFC,
     \param WFC :: Front line
   */
 {
-  FixedComp::setLinkCopy("innerFront",WFC,sideIndex);
+  FixedComp::setLinkCopy("front",WFC,sideIndex);
   setCutSurf("front",WFC,sideIndex);
+  FixedComp::nameSideIndex(0,"innerFront");
 
   return;
 }

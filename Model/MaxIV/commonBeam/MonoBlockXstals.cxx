@@ -305,12 +305,14 @@ MonoBlockXstals::createLinks()
     Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))+Z*gap;
 
   // top surface going back down beamline to ring
-  FixedComp::setConnect("beamIn",Origin,-Y);
-  FixedComp::setLinkSurf("beamIn",SMap.realSurf(buildIndex+106));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+106));
+  FixedComp::nameSideIndex(0,"beamIn");
 
   // top surface going to experimental area
-  FixedComp::setConnect("beamOut",BOrg,Y);
-  FixedComp::setLinkSurf("beamOut",SMap.realSurf(buildIndex+205));
+  FixedComp::setConnect("back",BOrg,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+205));
+  FixedComp::nameSideIndex(1,"beamOut");
 
   return;
 }

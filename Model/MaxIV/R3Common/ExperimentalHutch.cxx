@@ -583,8 +583,9 @@ ExperimentalHutch::createLinks()
 
   ExternalCut::createLink("frontWall",*this,"front",Origin,-Y);
 
-  setConnect("backWall",Origin+Y*(length+extraWall),Y);
-  setLinkSurf("backWall",SMap.realSurf(buildIndex+32));
+  setConnect("back",Origin+Y*(length+extraWall),Y);
+  setLinkSurf("back",SMap.realSurf(buildIndex+32));
+  nameSideIndex(1,"backWall");
 
   // outer lead wall
   setConnect("leftWall",Origin-X*(extraWall+outWidth)+Y*(length/2.0),-X);
