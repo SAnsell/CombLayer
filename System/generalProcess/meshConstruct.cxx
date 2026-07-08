@@ -89,7 +89,7 @@ calcXYZ(const objectGroups& OGrp,
     OGrp.getObjectThrow<attachSystem::FixedComp>(object,"FixedComp");
   const long int sideIndex=FC->getSideIndex(linkPos);
 
-  attachSystem::FixedUnit A("tmpComp",0);
+  attachSystem::FixedUnit A(attachSystem::FixedComp::unregistered,"tmpComp");
   A.createUnitVector(*FC,sideIndex);
 
   origin = A.getCentre();

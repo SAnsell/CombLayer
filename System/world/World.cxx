@@ -70,7 +70,8 @@ masterOrigin()
     \return Fixed Unit
   */
 {
-  static attachSystem::FixedUnit MO("World",0);
+  static attachSystem::FixedUnit MO(attachSystem::FixedComp::unregistered,
+				     "World");
   return MO;
 }
 
@@ -78,12 +79,13 @@ const attachSystem::FixedComp&
 masterZMinusOrigin()
   /*!
     Provides a master origin point for the model
-    - X/Y/Z are normal unit vectors 
+    - X/Y/Z are normal unit vectors
     \return Fixed Unit
   */
 {
-  static attachSystem::FixedUnit MO("World",0);
-  
+  static attachSystem::FixedUnit MO(attachSystem::FixedComp::unregistered,
+				     "World");
+
   return MO;
 }
 
