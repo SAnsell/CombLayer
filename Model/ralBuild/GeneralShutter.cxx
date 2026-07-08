@@ -323,26 +323,26 @@ GeneralShutter::applyRotations()
   
 
   // OUTPUT
-  mainFC.setConnect(0,frontPt,-XYAxis);
-  mainFC.setConnect(1,endPt,XYAxis);
+  mainFC.setConnect("front",frontPt,-XYAxis);
+  mainFC.setConnect("back",endPt,XYAxis);
 
 
-  // Now shift : frontPt:  
-  const double zShift=(closed % 2) ? 
+  // Now shift : frontPt:
+  const double zShift=(closed % 2) ?
     closedZShift+ZOffset : openZShift+ZOffset;
 
   // TWIN STATUS [UN Modified direction]:
   beamFC.createUnitVector(frontPt+Z*ZOffset,XYAxis*Z,XYAxis,Z);
-  beamFC.setConnect(0,frontPt+Z*ZOffset,-beamFC.getY());
-  beamFC.setConnect(1,frontPt+beamFC.getY()*
+  beamFC.setConnect("front",frontPt+Z*ZOffset,-beamFC.getY());
+  beamFC.setConnect("back",frontPt+beamFC.getY()*
 		    (outerRadius-innerRadius)+Z*ZOffset,beamFC.getY());
 
   frontPt=Origin+XYAxis*innerRadius+Z*zShift;
   endPt=frontPt+BeamAxis*(outerRadius-innerRadius);
 
   // These are the modified output numbers:
-  mainFC.setConnect(6,frontPt,-XYAxis);
-  mainFC.setConnect(7,endPt,XYAxis);
+  mainFC.setConnect("6",frontPt,-XYAxis);
+  mainFC.setConnect("7",endPt,XYAxis);
 
   setDefault("Main","Beam");
   
@@ -797,27 +797,26 @@ GeneralShutter::createLinks()
   HeadRule HR;
 
   HR=dA*RInnerComp;
-  mainFC.addLinkSurf(0,HR);
-  beamFC.addLinkSurf(0,HR);
-  
+  mainFC.addLinkSurf("front",HR);
+  beamFC.addLinkSurf("front",HR);
+
   HR=dB*ROuterHR;
-  mainFC.addLinkSurf(1,HR);
-  beamFC.addLinkSurf(1,HR);
+  mainFC.addLinkSurf("back",HR);
+  beamFC.addLinkSurf("back",HR);
 
-  mainFC.addLinkSurf(2,SMap.realSurf(buildIndex+113));
-  mainFC.addLinkSurf(3,SMap.realSurf(buildIndex+114));
-  mainFC.addLinkSurf(4,SMap.realSurf(buildIndex+225));
-  mainFC.addLinkSurf(5,SMap.realSurf(buildIndex+226));
+  mainFC.addLinkSurf("2",SMap.realSurf(buildIndex+113));
+  mainFC.addLinkSurf("3",SMap.realSurf(buildIndex+114));
+  mainFC.addLinkSurf("4",SMap.realSurf(buildIndex+225));
+  mainFC.addLinkSurf("5",SMap.realSurf(buildIndex+226));
 
 
-  mainFC.setConnect(4,frontPt+Z*
+  mainFC.setConnect("4",frontPt+Z*
 			(voidZOffset+voidHeightOuter/2.0-centZOffset),-zSlope);
-  mainFC.setConnect(5,frontPt-Z*
+  mainFC.setConnect("5",frontPt-Z*
 			(-voidZOffset+voidHeightOuter/2.0-centZOffset),zSlope);
   /// divide
-  mainFC.nameSideIndex(6,"Divider");
-  mainFC.setConnect(6,Origin,Y);
-  mainFC.addLinkSurf(6,SMap.realSurf(buildIndex+200));
+  mainFC.setConnect("Divider",Origin,Y);
+  mainFC.addLinkSurf("Divider",SMap.realSurf(buildIndex+200));
 
   // BEAM (set in apply rotations):
   
