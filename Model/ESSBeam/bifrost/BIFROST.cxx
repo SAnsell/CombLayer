@@ -92,7 +92,7 @@ namespace essSystem
 BIFROST::BIFROST(const std::string& keyName) :
   attachSystem::CopiedComp("bifrost",keyName),
   nGuideSection(8),nSndSection(7),nEllSection(4),stopPoint(0),
-  bifrostAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  bifrostAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),

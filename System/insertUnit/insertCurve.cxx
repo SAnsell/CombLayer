@@ -253,6 +253,18 @@ insertCurve::createLinks()
 {
   ELog::RegMethod RegA("insertCurve","createLinks");
 
+  // Pre-register names at their original numeric positions -- insertObject
+  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
+  // would otherwise land after that reserved block instead of here.
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
+  FixedComp::nameSideIndex(6,"frontBase");
+  FixedComp::nameSideIndex(7,"backBase");
+  FixedComp::nameSideIndex(8,"frontTop");
+  FixedComp::nameSideIndex(9,"backTop");
+
   Geometry::Vec3D APt,BPt;
   const double theta=length/(2*radius);  // angle in radians
   FrontBackCut::createLinks(*this,Origin,Y);

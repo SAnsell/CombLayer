@@ -162,6 +162,19 @@ VacuumPipe::createLinks()
 {
   ELog::RegMethod RegA("VacuumPipe","createLinks");
 
+  // Pre-register names at their original numeric positions -- GeneralPipe
+  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
+  // would otherwise land after that reserved block instead of here.
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
+  FixedComp::nameSideIndex(6,"midPoint");
+  FixedComp::nameSideIndex(7,"outerPipe");
+  FixedComp::nameSideIndex(8,"pipeOuterTop");
+  FixedComp::nameSideIndex(9,"9");
+  FixedComp::nameSideIndex(10,"10");
+
   //stuff for intersection
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 

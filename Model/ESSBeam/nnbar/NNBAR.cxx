@@ -87,7 +87,7 @@ namespace essSystem
 NNBAR::NNBAR(const std::string& keyName) :
   attachSystem::CopiedComp("nnbar",keyName),
   startPoint(0),stopPoint(0),
-  nnbarAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  nnbarAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::PlateUnit(newName+"FB")),

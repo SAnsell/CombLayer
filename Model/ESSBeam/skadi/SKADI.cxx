@@ -93,7 +93,7 @@ namespace essSystem
 SKADI::SKADI(const std::string& keyName):
   attachSystem::CopiedComp("skadi",keyName),
   stopPoint(0),
-  skadiAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  skadiAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   BendA(new beamlineSystem::BenderUnit(newName+"BA")),
 

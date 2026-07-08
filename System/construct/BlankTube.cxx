@@ -70,6 +70,17 @@ BlankTube::BlankTube(const std::string& Key) :
     \param Key :: KeyName
   */
 {
+  // Pre-register names at their original numeric positions -- the
+  // legacy NL constructor (VirtualTube) pre-sizes LU so a
+  // not-yet-registered name would otherwise land after that reserved
+  // block instead of here.
+  FixedComp::nameSideIndex(2,"Flange");
+  FixedComp::nameSideIndex(3,"3");
+  FixedComp::nameSideIndex(4,"InnerFront");
+  FixedComp::nameSideIndex(5,"InnerBack");
+  FixedComp::nameSideIndex(6,"InnerSide");
+  FixedComp::nameSideIndex(7,"OrgOrigin");
+
   ContainedGroup::addCC("Flange");
 }
 

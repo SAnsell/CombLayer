@@ -313,6 +313,19 @@ CornerPipe::createLinks()
   */
 {
   ELog::RegMethod RegA("CornerPipe","createLinks");
+
+  // Pre-register names at their original numeric positions -- GeneralPipe
+  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
+  // would otherwise land after that reserved block instead of here.
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"outerPipe");
+  FixedComp::nameSideIndex(5,"pipeOuterTop");
+  FixedComp::nameSideIndex(6,"cornerA");
+  FixedComp::nameSideIndex(7,"cornerB");
+  FixedComp::nameSideIndex(8,"cornerC");
+  FixedComp::nameSideIndex(9,"cornerD");
+
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
 
   FixedComp::setConnect("left",Origin-X*(width/2.0+wallThick),-X);
@@ -345,6 +358,10 @@ CornerPipe::createLinks()
   FixedComp::setConnect("cornerB",ptB,Y);
   FixedComp::setConnect("cornerC",ptC,Y);
   FixedComp::setConnect("cornerD",ptD,Y);
+
+  // "midPoint" is a second alias for the same link point as "cornerA"
+  FixedComp::nameSideIndex
+    (static_cast<size_t>(std::abs(getSideIndex("cornerA"))-1),"midPoint");
 
   return;
 }

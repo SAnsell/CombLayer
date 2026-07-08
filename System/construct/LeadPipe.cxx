@@ -209,7 +209,14 @@ LeadPipe::createLinks()
   */
 {
   ELog::RegMethod RegA("LeadPipe","createLinks");
-  
+
+  // Pre-register names at their original numeric positions -- GeneralPipe
+  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
+  // would otherwise land after that reserved block instead of here.
+  FixedComp::nameSideIndex(2,"inner");
+  FixedComp::nameSideIndex(3,"pipe");
+  FixedComp::nameSideIndex(4,"outer");
+
   ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);   // Front and back
   

@@ -90,7 +90,7 @@ namespace essSystem
 DREAM::DREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
   stopPoint(0),
-  dreamAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  dreamAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
  

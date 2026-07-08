@@ -210,6 +210,22 @@ insertGrid::createLinks()
 {
   ELog::RegMethod RegA("insertGrid","createLinks");
 
+  // Pre-register names at their original numeric positions -- insertObject
+  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
+  // would otherwise land after that reserved block instead of here.
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
+  FixedComp::nameSideIndex(6,"frontLeftBase");
+  FixedComp::nameSideIndex(7,"frontRightBase");
+  FixedComp::nameSideIndex(8,"frontLeftTop");
+  FixedComp::nameSideIndex(9,"frontRightTop");
+  FixedComp::nameSideIndex(10,"backLeftBase");
+  FixedComp::nameSideIndex(11,"backRightBase");
+  FixedComp::nameSideIndex(12,"backLeftTop");
+  FixedComp::nameSideIndex(13,"backRightTop");
+
   if (frontActive())
     {
       setLinkSurf("front",getFrontRule());

@@ -92,7 +92,7 @@ namespace essSystem
 MAGIC::MAGIC(const std::string& keyName) :
   attachSystem::CopiedComp("magic",keyName),
   startPoint(0),stopPoint(0),
-  magicAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  magicAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),

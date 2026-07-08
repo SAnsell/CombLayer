@@ -41,7 +41,10 @@ class FixedRotateUnit : public FixedRotate
   /// Simple constructor [no objectregister]
   FixedRotateUnit(FixedComp::unregistered_t,const std::string& K) :
     FixedRotate(FixedComp::unregistered,K) {}
-  /// Simple constructor
+  /// Simple constructor [with objectregister, no link-count pre-sizing]
+  FixedRotateUnit(const std::string& K) :
+    FixedRotate(K) {}
+  /// Simple constructor [with objectregister]
   FixedRotateUnit(const std::string& K,const size_t I) :
     FixedRotate(K,I) {}
   /// Simple constructor [extra range]
