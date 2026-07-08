@@ -3,7 +3,7 @@
  
  * File:   geometry/M3.cxx
  *
- * Copyright (c) 2004-2026 by Stuart Ansell
+ * Copyright (c) 2004-2024 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include <complex>
 #include <vector>
 #include <map>
-#include <format>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -109,23 +109,6 @@ M3<T>::M3(const std::vector<std::vector<T>>& V)
 }
 
 template<typename T>
-M3<T>::M3(const Matrix<T>& M) 
-  /*!
-    Constructor with matrix [MUST be >= (3,3)]
-    \param M  :: Matrix unit
-  */
-{
-  if (!M.hasSize(3,3))
-    throw ColErr::DimensionError(
-      std::vector<size_t>({M.size().first,M.size().second}),
-      {3,3},"M3(Matrix) too small");
-      
-  for(size_t i=0;i<3;i++)
-    for(size_t j=0;j<3;j++)
-      AA[i][j]=M[i][j];
-}
-
-template<typename T>
 M3<T>::M3(const T& a,const T& b,const T& c)
 
   /*!
@@ -143,6 +126,23 @@ M3<T>::M3(const T& a,const T& b,const T& c)
   AA[2][2]=c;
 }
   
+template<typename T>
+M3<T>::M3(const Matrix<T>& M) 
+  /*!
+    Constructor with matrix [MUST be >= (3,3)]
+    \param M  :: Matrix unit
+  */
+{
+  if (!M.hasSize(3,3))
+    throw ColErr::DimensionError(
+      std::vector<size_t>({M.size().first,M.size().second}),
+      {3,3},"M3(Matrix) too small");
+      
+  for(size_t i=0;i<3;i++)
+    for(size_t j=0;j<3;j++)
+      AA[i][j]=M[i][j];
+}
+
 template<typename T>
 M3<T>::M3(const T& a,const T& b,const T& c,
 	  const T& d,const T& e,const T& f,
@@ -808,8 +808,6 @@ M3<T>::eigenVector(const size_t degen,const T& eValue) const
     Assume that the matrix is of the form
     M | 000 (resolve with minimal form after
     row operation [+ normalize]
-    \param degen :: Flag if degenerate (number)
-    \param eValue :: eigen Value
   */
 {
   // construct M-lamba(I):
@@ -865,7 +863,7 @@ M3<T>::write(std::ostream& OX) const
    */
 {
   for(size_t i=0;i<3;i++)
-    OX<<std::format
+    OX<<fmt::format
       ("[ {:8.5f}  {:8.5f} {:8.5f} ] \n",AA[i][0],AA[i][1],AA[i][2]);
   OX<<std::endl;
   return;

@@ -3,7 +3,7 @@
 
  * File:   physics/LSwitchCard.cxx
  *
- * Copyright (c) 2004-2026 by Stuart Ansell
+ * Copyright (c) 2004-2025 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <map>
 #include <algorithm>
 #include <iterator>
-#include <format>
+#include <fmt/core.h>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -269,7 +269,7 @@ LSwitchCard::write(std::ostream& OX) const
 	  if (i!=3)
 	    cx<<lcaVal[i]<<" ";
 	  else
-	    cx<<std::format("{:04d} ",lcaVal[i]);
+	    cx<<fmt::format("{:04d} ",lcaVal[i]);
 	}
       StrFunc::writeMCNPX(cx.str(),OX);
     }

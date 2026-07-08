@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   modelSupport/ObjTrackItem.cxx
+ * File:   process/ObjTrackItem.cxx
  *
- * Copyright (c) 2004-2026 by Stuart Ansell
+ * Copyright (c) 2004-2021 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include <map> 
 #include <string>
 #include <algorithm>
-#include <format>
+#include <fmt/core.h>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -136,7 +136,7 @@ ObjTrackItem::write(std::ostream& OX) const
 
   std::map<int,double>::const_iterator mc;
   for(mc=MTrack.begin();mc!=MTrack.end();mc++)
-    OX<<std::format("{:d} {:5.2e}",mc->first,mc->second);
+    OX<<fmt::format("{:d} {:5.2e}",mc->first,mc->second);
 
   OX<<std::endl;
   return;
