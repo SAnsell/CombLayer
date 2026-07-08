@@ -73,7 +73,7 @@ namespace xraySystem
 {
 
 DipoleChamber::DipoleChamber(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Exit"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -321,11 +321,8 @@ DipoleChamber::createLinks()
     LI.getPoint(SMap.realPtr<Geometry::Cylinder>(buildIndex+317));
   
   // dipole exit
-  FixedComp::setConnect(3,(CPA+CPB)/2.0,BAxis);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+12));
-  
-  FixedComp::nameSideIndex(2,"exit");
-  FixedComp::nameSideIndex(3,"dipoleExit");
+  FixedComp::setConnect("dipoleExit",(CPA+CPB)/2.0,BAxis);
+  FixedComp::setLinkSurf("dipoleExit",SMap.realSurf(buildIndex+12));
 
 
   // Dipole Centre
@@ -335,8 +332,7 @@ DipoleChamber::createLinks()
 
   const Geometry::Vec3D MidAxis(X*sin(midAng)+Y*cos(midAng));
   const Geometry::Vec3D midPt(Origin+X*((ringWidth-elecXFull)/2.0+xMid)+Y*yMid);
-  FixedComp::setConnect(6,midPt,MidAxis);
-  FixedComp::nameSideIndex(6,"dipoleCentre");
+  FixedComp::setConnect("dipoleCentre",midPt,MidAxis);
   return;
 }
 

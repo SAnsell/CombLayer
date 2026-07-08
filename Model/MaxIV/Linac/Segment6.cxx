@@ -187,10 +187,10 @@ Segment6::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*pipeA,1);
-  setLinkCopy(1,*ceramicB,2);
+  setLinkCopy("front",*pipeA,1);
+  setLinkCopy("back",*ceramicB,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
   return;
 }
 

@@ -65,7 +65,7 @@ namespace tdcSystem
 {
 
 MainBeamDump::MainBeamDump(const std::string& Key) :
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","FlangeA"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

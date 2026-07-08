@@ -161,21 +161,16 @@ Segment44::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*triBend,1);
+  setLinkCopy("front",*triBend,"front");
 
-  setLinkCopy(1,*triBend,2);  // straight exit
-  setLinkCopy(2,*triBend,3);  // mid exit
-  setLinkCopy(3,*triBend,4);  // bend exit
-  setLinkCopy(4,*triBend,5);  // bend exit
+  setLinkCopy("straightExit",*triBend,"straightExit");  // straight exit
+  setLinkCopy("midExit",*triBend,"viewExit");  // mid exit
+  setLinkCopy("magnetExit",*triBend,"magnetExit");  // bend exit
+  setLinkCopy("splitPoint",*triBend,"5");  // bend exit
 
-  FixedComp::nameSideIndex(1,"straightExit");
-  FixedComp::nameSideIndex(2,"midExit");
-  FixedComp::nameSideIndex(3,"magnetExit");
-  FixedComp::nameSideIndex(4,"splitPoint");
-
-  joinItems.push_back(FixedComp::getFullRule(2));
-  joinItems.push_back(FixedComp::getFullRule(3));
-  joinItems.push_back(FixedComp::getFullRule(4));
+  joinItems.push_back(FixedComp::getFullRule("straightExit"));
+  joinItems.push_back(FixedComp::getFullRule("midExit"));
+  joinItems.push_back(FixedComp::getFullRule("magnetExit"));
 
   return;
 }

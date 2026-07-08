@@ -657,59 +657,49 @@ ExperimentalHutch::createLinks()
 
   ExternalCut::createLink("frontWall",*this,"front",Origin,-Y);
 
-  setConnect(1,Origin+Y*(length),Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+32));
-  nameSideIndex(1,"BackWallOuter");
+  setConnect("BackWallOuter",Origin+Y*(length),Y);
+  setLinkSurf("BackWallOuter",SMap.realSurf(buildIndex+32));
 
   // outer lead wall
   //  -backWallThick is not really needed, added for backward compatibility
-  setConnect(2,Origin-X*(outWidth)+Y*((length-backWallThick)/2.0),-X);
-  setLinkSurf(2,-SMap.realSurf(buildIndex+33));
-  nameSideIndex(2,"leftWall");
+  setConnect("leftWall",Origin-X*(outWidth)+Y*((length-backWallThick)/2.0),-X);
+  setLinkSurf("leftWall",-SMap.realSurf(buildIndex+33));
   // outer surf
   //  -backWallThick is not really needed, added for backward compatibility
-  setConnect(3,Origin+X*(ringWidth)+Y*((length-backWallThick)/2.0),X);
-  setLinkSurf(3,SMap.realSurf(buildIndex+34));
-  nameSideIndex(3,"InnerWallOuter");
+  setConnect("InnerWallOuter",Origin+X*(ringWidth)+Y*((length-backWallThick)/2.0),X);
+  setLinkSurf("InnerWallOuter",SMap.realSurf(buildIndex+34));
 
   if (pbFrontThick>Geometry::zeroTol)
-    setConnect(11,Origin+Y*(outerThick+pbFrontThick+innerThick),Y);
+    setConnect("FrontWallInner",Origin+Y*(outerThick+pbFrontThick+innerThick),Y);
   else
-    setConnect(11,Origin,Y);
-  setLinkSurf(11,SMap.realSurf(buildIndex+31));
-  nameSideIndex(11,"FrontWallInner");
+    setConnect("FrontWallInner",Origin,Y);
+  setLinkSurf("FrontWallInner",SMap.realSurf(buildIndex+31));
 
   if (pbBackThick>Geometry::zeroTol)
-    setConnect(12,Origin+Y*(length-backWallThick),-Y);
+    setConnect("BackWallInner",Origin+Y*(length-backWallThick),-Y);
   else
-    setConnect(12,Origin+Y*(length),-Y);
-  setLinkSurf(12,-SMap.realSurf(buildIndex+2));
-  nameSideIndex(12,"BackWallInner");
+    setConnect("BackWallInner",Origin+Y*(length),-Y);
+  setLinkSurf("BackWallInner",-SMap.realSurf(buildIndex+2));
 
   // inner surf
-  setConnect(13,Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X);
-  setLinkSurf(13,SMap.realSurf(buildIndex+3));
-  nameSideIndex(13,"OuterWallInner"); // former: innerLeftWall
+  setConnect("OuterWallInner",Origin-X*(outWidth-sideWallThick)+Y*((length-backWallThick)/2.0),X); // former: innerLeftWall
+  setLinkSurf("OuterWallInner",SMap.realSurf(buildIndex+3));
 
-  setConnect(14,Origin+X*(ringWidth-sideWallThick)+Y*((length-backWallThick)/2.0),-X);
-  setLinkSurf(14,-SMap.realSurf(buildIndex+4));
-  nameSideIndex(14,"InnerWallInner");
+  setConnect("InnerWallInner",Origin+X*(ringWidth-sideWallThick)+Y*((length-backWallThick)/2.0),-X);
+  setLinkSurf("InnerWallInner",-SMap.realSurf(buildIndex+4));
 
   if (frontPlateActive) {
     const double T = (pbFrontThick>Geometry::zeroTol) ?
       steelThick+pbFrontThick + frontPlateThick : frontPlateThick;
-    setConnect(15,Origin+Y*(T),Y);
-    setLinkSurf(15,SMap.realSurf(buildIndex+101));
-    nameSideIndex(15,"frontPlate");
+    setConnect("frontPlate",Origin+Y*(T),Y);
+    setLinkSurf("frontPlate",SMap.realSurf(buildIndex+101));
   }
 
-  setConnect(16,Origin+X*10.0+Y*10.0+Z*(height-steelThick-pbRoofThick),-Z);
-  setLinkSurf(16,-SMap.realSurf(buildIndex+6));
-  nameSideIndex(16,"RoofInner");
+  setConnect("RoofInner",Origin+X*10.0+Y*10.0+Z*(height-steelThick-pbRoofThick),-Z);
+  setLinkSurf("RoofInner",-SMap.realSurf(buildIndex+6));
 
-  setConnect(17,Origin+X*10.0+Y*1.0+Z*(height),Z);
-  setLinkSurf(17,SMap.realSurf(buildIndex+36));
-  nameSideIndex(17,"RoofOuter");
+  setConnect("RoofOuter",Origin+X*10.0+Y*1.0+Z*(height),Z);
+  setLinkSurf("RoofOuter",SMap.realSurf(buildIndex+36));
 
   // Tilted wall
   if (cornerLength > Geometry::zeroTol) {
@@ -728,64 +718,54 @@ ExperimentalHutch::createLinks()
 
     const Geometry::Vec3D pIn = (corner1 + corner2)/2.0;
 
-    setConnect(18,pIn,CX);
-    setLinkSurf(18,SMap.realSurf(buildIndex+303));
-    nameSideIndex(18,"TiltedWallInner");
+    setConnect("TiltedWallInner",pIn,CX);
+    setLinkSurf("TiltedWallInner",SMap.realSurf(buildIndex+303));
 
     const Geometry::Vec3D pOut = pIn - CX*(innerThick+pbTiltedThick+outerThick);
 
-    setConnect(19,pOut,-CX);
-    setLinkSurf(19,SMap.realSurf(buildIndex+333));
-    nameSideIndex(19,"TiltedWallOuter");
+    setConnect("TiltedWallOuter",pOut,-CX);
+    setLinkSurf("TiltedWallOuter",SMap.realSurf(buildIndex+333));
   }
 
   // Link points to score particles entering the outer wall
   // several lp are defined since the wall might be slpit by splitChicane
 
-  setConnect(20,Origin+Y*(length*2.0/3.0)-X*(outWidth-floorShineLength),-X);
-  setLinkSurf(20,-SMap.realSurf(buildIndex+43));
-  nameSideIndex(20,"OuterWallFloorShine1");
+  setConnect("OuterWallFloorShine1",Origin+Y*(length*2.0/3.0)-X*(outWidth-floorShineLength),-X);
+  setLinkSurf("OuterWallFloorShine1",-SMap.realSurf(buildIndex+43));
 
-  setConnect(21,Origin+Y*(length/3.0)-X*(outWidth-floorShineLength),-X);
-  setLinkSurf(21,-SMap.realSurf(buildIndex+43));
-  nameSideIndex(21,"OuterWallFloorShine2");
+  setConnect("OuterWallFloorShine2",Origin+Y*(length/3.0)-X*(outWidth-floorShineLength),-X);
+  setLinkSurf("OuterWallFloorShine2",-SMap.realSurf(buildIndex+43));
 
   // Link points to score particles exiting the outer wall
   // several lp are defined since the wall might be slpit by splitChicane
 
-  setConnect(22,Origin+Y*(length*2/3.0)-X*(outWidth+outerOutVoid),X);
-  setLinkSurf(22,SMap.realSurf(buildIndex+1033));
-  nameSideIndex(22,"OuterWallOutVoid1");
+  setConnect("OuterWallOutVoid1",Origin+Y*(length*2/3.0)-X*(outWidth+outerOutVoid),X);
+  setLinkSurf("OuterWallOutVoid1",SMap.realSurf(buildIndex+1033));
 
-  setConnect(23,Origin+Y*(length/3.0)-X*(outWidth+outerOutVoid),X);
-  setLinkSurf(23,SMap.realSurf(buildIndex+1033));
-  nameSideIndex(23,"OuterWallOutVoid2");
+  setConnect("OuterWallOutVoid2",Origin+Y*(length/3.0)-X*(outWidth+outerOutVoid),X);
+  setLinkSurf("OuterWallOutVoid2",SMap.realSurf(buildIndex+1033));
 
   // Link point to score particles entering the inner wall
-  setConnect(24,Origin+Y*(length*2.0/3.0)+X*(ringWidth-floorShineLength),X);
-  setLinkSurf(24,SMap.realSurf(buildIndex+44));
-  nameSideIndex(24,"InnerWallFloorShine");
+  setConnect("InnerWallFloorShine",Origin+Y*(length*2.0/3.0)+X*(ringWidth-floorShineLength),X);
+  setLinkSurf("InnerWallFloorShine",SMap.realSurf(buildIndex+44));
 
   // Link point to score particles exiting the inner wall
-  setConnect(25,Origin+Y*(length*2.0/3.0)+X*(ringWidth+outerOutVoid),-X);
-  setLinkSurf(25,-SMap.realSurf(buildIndex+1034));
-  nameSideIndex(25,"InnerWallOutVoid");
+  setConnect("InnerWallOutVoid",Origin+Y*(length*2.0/3.0)+X*(ringWidth+outerOutVoid),-X);
+  setLinkSurf("InnerWallOutVoid",-SMap.realSurf(buildIndex+1034));
 
   // Link points to score particles entering the back wall
   // two lp with different x-offset
   if (floorShineBackLength>Geometry::zeroTol)
-    setConnect(26,Origin+Y*(length-floorShineBackLength),Y);
+    setConnect("BackWallFloorShine1",Origin+Y*(length-floorShineBackLength),Y);
   else
-    setConnect(26,Origin+Y*Y*(length-steelThick-pbBackThick),Y);
-  setLinkSurf(26,SMap.realSurf(buildIndex+62));
-  nameSideIndex(26,"BackWallFloorShine1");
+    setConnect("BackWallFloorShine1",Origin+Y*Y*(length-steelThick-pbBackThick),Y);
+  setLinkSurf("BackWallFloorShine1",SMap.realSurf(buildIndex+62));
 
   if (floorShineBackLength>Geometry::zeroTol)
-    setConnect(27,Origin+Y*(length-floorShineBackLength)-X*50.0,Y);
+    setConnect("BackWallFloorShine2",Origin+Y*(length-floorShineBackLength)-X*50.0,Y);
   else
-    setConnect(27,Origin+Y*(length-steelThick-pbBackThick)-X*50.0,Y);
-  setLinkSurf(27,SMap.realSurf(buildIndex+62));
-  nameSideIndex(27,"BackWallFloorShine2");
+    setConnect("BackWallFloorShine2",Origin+Y*(length-steelThick-pbBackThick)-X*50.0,Y);
+  setLinkSurf("BackWallFloorShine2",SMap.realSurf(buildIndex+62));
 
   // // Link point to score particles exiting the front wall
   // // with a 50 cm x-offset from the frontWall link point

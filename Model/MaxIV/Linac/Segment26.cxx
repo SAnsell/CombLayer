@@ -184,8 +184,8 @@ Segment26::createSplitInnerZone()
 //  ELog::EM<<"BACK == "<<HBack<<ELog::endDiag;
 
   // create surfaces
-  attachSystem::FixedUnit FA("FA");
-  attachSystem::FixedUnit FB("FB");
+  attachSystem::FixedUnit FA(attachSystem::FixedComp::unregistered,"FA");
+  attachSystem::FixedUnit FB(attachSystem::FixedComp::unregistered,"FB");
   FA.createPairVector(*pipeAA,2,*pipeBA,2);
   FB.createPairVector(*pipeBA,2,*pipeCA,2);
 
@@ -343,21 +343,20 @@ Segment26::createLinks()
 {
   ELog::RegMethod RegA("Segment26","createLinks");
 
-  setLinkCopy(0,*pipeAA,1);
-  setLinkCopy(1,*pipeAB,2);
+  setLinkCopy("front",*pipeAA,"front");
+  // "frontFlat"/"backFlat" are second aliases for the same link points
+  // as "front"/"back"
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("front"))-1),
+		"frontFlat");
+  setLinkCopy("back",*pipeAB,"back");
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("back"))-1),
+		"backFlat");
 
-  setLinkCopy(2,*pipeBA,1);
-  setLinkCopy(3,*pipeBB,2);
+  setLinkCopy("frontMid",*pipeBA,"front");
+  setLinkCopy("backMid",*pipeBB,"back");
 
-  setLinkCopy(4,*pipeCA,1);
-  setLinkCopy(5,*pipeCB,2);
-
-  FixedComp::nameSideIndex(0,"frontFlat");
-  FixedComp::nameSideIndex(1,"backFlat");
-  FixedComp::nameSideIndex(2,"frontMid");
-  FixedComp::nameSideIndex(3,"backMid");
-  FixedComp::nameSideIndex(4,"frontLower");
-  FixedComp::nameSideIndex(5,"backLower");
+  setLinkCopy("frontLower",*pipeCA,"front");
+  setLinkCopy("backLower",*pipeCB,"back");
 
   // push back all the joing items:
   joinItems.push_back(FixedComp::getFullRule("backFlat"));

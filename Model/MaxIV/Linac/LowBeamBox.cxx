@@ -64,7 +64,7 @@ namespace tdcSystem
 
 LowBeamBox::LowBeamBox(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
@@ -242,17 +242,17 @@ LowBeamBox::createLinks()
 
   ExternalCut::createLink("front",*this,"front",Origin,Y);  // Front and back
 
-  FixedComp::setConnect(1,Origin+Y*(backThick+length),Y);
-  FixedComp::setConnect(2,Origin-X*(wallThick+width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(wallThick+width/2.0),X);
-  // FixedComp::setConnect(4,Origin-Z*(wallThick+height/2.0),-Z);
-  // FixedComp::setConnect(5,Origin+Z*(wallThick+height/2.0),Z);
+  FixedComp::setConnect("back",Origin+Y*(backThick+length),Y);
+  FixedComp::setConnect("left",Origin-X*(wallThick+width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(wallThick+width/2.0),X);
+  // FixedComp::setConnect("base",Origin-Z*(wallThick+height/2.0),-Z);
+  // FixedComp::setConnect("top",Origin+Z*(wallThick+height/2.0),Z);
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  // FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  // FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  // FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  // FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
 
   return;

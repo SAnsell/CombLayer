@@ -68,8 +68,8 @@ namespace tdcSystem
 
 // Note currently uncopied:
 
-TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
-  attachSystem::FixedRotate(Key,NL),
+TDCsegment::TDCsegment(const std::string& Key,const size_t) :
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -79,7 +79,8 @@ TDCsegment::TDCsegment(const std::string& Key,const size_t NL) :
   /*!
     Constructor
     \param Key :: Name of construction key
-    \param NL :: number of links
+    \param NL :: number of links [no longer used -- link points grow
+    on demand -- kept for source compatibility with existing callers]
   */
 {}
 
@@ -226,10 +227,7 @@ TDCsegment::createBeamLink(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TDCsegment","createBeamLink");
   
-  const size_t NLink=std::max<size_t>(8,this->NConnect());
-  FixedComp::setNConnect(NLink);
-  FixedComp::nameSideIndex(6,"Beam");
-  setLinkCopy(6,*this,-1);    // copy surface and correct direction
+  setLinkCopy("Beam",*this,-1);    // copy surface and correct direction
 
   attachSystem::FixedRotateUnit BPoint(attachSystem::FixedComp::unregistered,
 				       "BeamPoint");
@@ -247,7 +245,7 @@ TDCsegment::createBeamLink(const FuncDataBase& Control)
 	Control.EvalVar<Geometry::Vec3D>(keyName+"BeamAxis");
     }
   
-  //  FixedComp::setConnect(6,BeamOrg,BeamAxis);
+  //  FixedComp::setConnect("Beam",BeamOrg,BeamAxis);
 
 
   if (Control.hasVariable(keyName+"BeamDelta"))
@@ -269,7 +267,7 @@ TDCsegment::createBeamLink(const FuncDataBase& Control)
   
   BPoint.setRotation(beamX,beamY,beamZ);
   BPoint.createUnitVector(BeamOrg,BeamAxis,Z);
-  FixedComp::setConnect(6,BPoint.getLinkPt(0),
+  FixedComp::setConnect("Beam",BPoint.getLinkPt(0),
 			BPoint.getLinkAxis(0));
 
   return;

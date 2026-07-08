@@ -76,7 +76,7 @@ namespace xraySystem
 {
 
 MagnetBlock::MagnetBlock(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Magnet","Dipole","Photon"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -93,10 +93,6 @@ MagnetBlock::MagnetBlock(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  nameSideIndex(0,"Flange");
-  nameSideIndex(2,"Photon");
-  nameSideIndex(3,"Electron");
-
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
@@ -188,8 +184,8 @@ MagnetBlock::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
-  FixedComp::setConnect(1,POrg,midY);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect("back",POrg,midY);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
 
   
   return;
@@ -329,18 +325,22 @@ MagnetBlock::createLinks()
   ELog::RegMethod RegA("MagnetBlock","createLinks");
 
   // link 0 / 1 from PreDipole / EPCombine
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-      
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+
+  // "Flange" is a second alias for the same link point as "front"
+  FixedComp::nameSideIndex
+    (static_cast<size_t>(std::abs(getSideIndex("front"))-1),"Flange");
+
   if (stopPoint=="Quadrupole")
     {
-      FixedComp::setLinkCopy(1,*quadUnit,2);
-      FixedComp::setLinkCopy(2,*quadUnit,2);
+      FixedComp::setLinkCopy("back",*quadUnit,2);
+      FixedComp::setLinkCopy("Photon",*quadUnit,2);
     }
   else
     {
-      FixedComp::setLinkCopy(1,*dipoleChamber,2);
-      FixedComp::setLinkCopy(2,*dipoleChamber,3);
+      FixedComp::setLinkCopy("back",*dipoleChamber,2);
+      FixedComp::setLinkCopy("Photon",*dipoleChamber,3);
     }
   return;
 }

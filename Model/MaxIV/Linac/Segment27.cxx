@@ -175,8 +175,8 @@ Segment27::createSplitInnerZone()
   HeadRule HSurroundB=buildZone->getSurround();
   HeadRule HSurroundC=buildZone->getSurround();
 
-  attachSystem::FixedUnit FA("FA");
-  attachSystem::FixedUnit FB("FB");
+  attachSystem::FixedUnit FA(attachSystem::FixedComp::unregistered,"FA");
+  attachSystem::FixedUnit FB(attachSystem::FixedComp::unregistered,"FB");
   FA.createPairVector(*bellowAA,-1,*bellowBA,-1);
   FB.createPairVector(*bellowBA,-1,*bellowCA,-1);
 
@@ -374,21 +374,20 @@ Segment27::createLinks()
 {
   ELog::RegMethod RegA("Segment27","createLinks");
 
-  setLinkCopy(0,*bellowAA,1);
-  setLinkCopy(1,*bellowAC,2);
+  setLinkCopy("front",*bellowAA,"front");
+  // "frontFlat"/"backFlat" are second aliases for the same link points
+  // as "front"/"back"
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("front"))-1),
+		"frontFlat");
+  setLinkCopy("back",*bellowAC,"back");
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("back"))-1),
+		"backFlat");
 
-  setLinkCopy(2,*bellowBA,1);
-  setLinkCopy(3,*bellowBC,2);
+  setLinkCopy("frontMid",*bellowBA,"front");
+  setLinkCopy("backMid",*bellowBC,"back");
 
-  setLinkCopy(4,*bellowCA,1);
-  setLinkCopy(5,beamStopC->getKey("Main"),2);
-
-  FixedComp::nameSideIndex(0,"frontFlat");
-  FixedComp::nameSideIndex(1,"backFlat");
-  FixedComp::nameSideIndex(2,"frontMid");
-  FixedComp::nameSideIndex(3,"backMid");
-  FixedComp::nameSideIndex(4,"frontLower");
-  FixedComp::nameSideIndex(5,"backLower");
+  setLinkCopy("frontLower",*bellowCA,"front");
+  setLinkCopy("backLower",beamStopC->getKey("Main"),"back");
 
   // push back all the joing items:
   joinItems.push_back(FixedComp::getFullRule("backFlat"));

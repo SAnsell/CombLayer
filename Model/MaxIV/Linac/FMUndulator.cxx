@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 FMUndulator::FMUndulator(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -321,16 +321,14 @@ FMUndulator::createLinks()
 {
   ELog::RegMethod RegA("FMUndulator","createLinks");
   
-  setConnect(0,Origin-Y*(length/2.0),-Y);
-  setConnect(1,Origin+Y*(length/2.0),Y);
-  
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  setConnect("front",Origin-Y*(length/2.0),-Y);
+  setConnect("back",Origin+Y*(length/2.0),Y);
 
-  setLinkSurf(4,-SMap.realSurf(buildIndex+505));
-  setLinkSurf(5,SMap.realSurf(buildIndex+506));
-  FixedComp::nameSideIndex(4,"base");
-  FixedComp::nameSideIndex(5,"top");
+  setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  setLinkSurf("back",SMap.realSurf(buildIndex+2));
+
+  setLinkSurf("base",-SMap.realSurf(buildIndex+505));
+  setLinkSurf("top",SMap.realSurf(buildIndex+506));
   return;
 }
 

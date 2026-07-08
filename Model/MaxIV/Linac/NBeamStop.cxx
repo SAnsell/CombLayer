@@ -111,7 +111,7 @@ coreUnit::addMat(const int M)
 }
 
 NBeamStop::NBeamStop(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -308,11 +308,11 @@ NBeamStop::createLinks()
 {
   ELog::RegMethod RegA("NBeamStop","createLinks");
 
-  FixedComp::setConnect(0,Origin,Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin,Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*fullLength,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*fullLength,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   return;
 }

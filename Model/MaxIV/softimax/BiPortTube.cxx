@@ -87,11 +87,10 @@ BiPortTube::BiPortTube(const std::string& Key) :
   */
 {
     
+  // pre-declared so hasLinkSurf("FrontA"/"FrontB") can be checked safely
+  // in createSurfaces() before setLeftPort/setRightPort populate them
   nameSideIndex(2,"FrontA");
   nameSideIndex(3,"FrontB");
-  
-  nameSideIndex(4,"OutA");
-  nameSideIndex(5,"OutB");  
 }
   
 
@@ -111,7 +110,7 @@ BiPortTube::setLeftPort(const attachSystem::FixedComp& FC,
    */
 {
   // Side MUST be defined:
-  setLinkCopy(2,FC,sideIndex);
+  setLinkCopy("FrontA",FC,sideIndex);
   return;
 }
 
@@ -124,7 +123,7 @@ BiPortTube::setRightPort(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point set 
   */
 {
-  setLinkCopy(3,FC,sideIndex);
+  setLinkCopy("FrontB",FC,sideIndex);
   return;
 }
 
@@ -137,7 +136,7 @@ BiPortTube::setLeftPort(const attachSystem::FixedComp& FC,
     \param sideName :: Link point set 
    */
 {
-  setLinkCopy(2,FC,sideName);
+  setLinkCopy("FrontA",FC,sideName);
   return;
 }
 
@@ -150,7 +149,7 @@ BiPortTube::setRightPort(const attachSystem::FixedComp& FC,
     \param sideName :: Link point set 
    */
 {
-  setLinkCopy(3,FC,sideName);
+  setLinkCopy("FrontB",FC,sideName);
   return;
 }
 
@@ -418,8 +417,8 @@ BiPortTube::createLinks()
   const Geometry::Vec3D beamAAxis(getLinkAxis("FrontA"));  
   const Geometry::Vec3D beamBAxis(getLinkAxis("FrontB"));
 
-  FixedComp::setConnect(0,(beamAPt+beamBPt)/2.0,(beamAAxis+beamBAxis)/2.0);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("front",(beamAPt+beamBPt)/2.0,(beamAAxis+beamBAxis)/2.0);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+17));
   
   
   const Geometry::Vec3D beamCPt=
@@ -427,8 +426,8 @@ BiPortTube::createLinks()
   const Geometry::Vec3D beamDPt=
     SurInter::getLinePoint(beamBPt,beamBAxis,buildIndex+4002,Origin+Y*radius);
 
-  FixedComp::setConnect(1,(beamCPt+beamDPt)/2.0,-(beamAAxis+beamBAxis)/2.0);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));  
+  FixedComp::setConnect("back",(beamCPt+beamDPt)/2.0,-(beamAAxis+beamBAxis)/2.0);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+17));
 
   // set link points to front/back begin/exit ports
 

@@ -63,7 +63,7 @@ namespace xraySystem
 {
 
 Wiggler::Wiggler(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -236,11 +236,11 @@ Wiggler::createLinks()
 {
   ELog::RegMethod RegA("Wiggler","createLinks");
   
-  setConnect(0,Origin-Y*(length/2.0),-Y);
-  setConnect(1,Origin+Y*(length/2.0),Y);
-  
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  setConnect("front",Origin-Y*(length/2.0),-Y);
+  setConnect("back",Origin+Y*(length/2.0),Y);
+
+  setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   return;
 }

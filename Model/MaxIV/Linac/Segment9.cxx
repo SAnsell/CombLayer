@@ -176,10 +176,10 @@ Segment9::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*ceramicBellowA,1);
-  setLinkCopy(1,*bellowC,2);
+  setLinkCopy("front",*ceramicBellowA,1);
+  setLinkCopy("back",*bellowC,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
   return;
 }
 

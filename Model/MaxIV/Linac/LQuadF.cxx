@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 LQuadF::LQuadF(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -80,7 +80,7 @@ LQuadF::LQuadF(const std::string& Key) :
 
 LQuadF::LQuadF(std::string  Base,
 		   const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -355,11 +355,11 @@ LQuadF::createLinks()
   ELog::RegMethod RegA("LQuadF","createLinks");
 
   const Geometry::Vec3D ePt=Y*(length/2.0+coilEndExtra);
-  FixedComp::setConnect(0,Origin-(ePt*1.001),Y);
-  FixedComp::setConnect(1,Origin+(ePt*1.001),Y);
+  FixedComp::setConnect("front",Origin-(ePt*1.001),Y);
+  FixedComp::setConnect("back",Origin+(ePt*1.001),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
 
   return;
 }

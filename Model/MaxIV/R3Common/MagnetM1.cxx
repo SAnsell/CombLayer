@@ -76,7 +76,7 @@ namespace xraySystem
 {
 
 MagnetM1::MagnetM1(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,8),
+  attachSystem::FixedOffset(Key),
   attachSystem::ContainedGroup("Main","FPipe","BPipe"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -96,10 +96,6 @@ MagnetM1::MagnetM1(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  nameSideIndex(1,"Flange");
-  nameSideIndex(2,"Photon");
-  nameSideIndex(3,"Electron");
-
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -303,17 +299,17 @@ MagnetM1::createLinks()
   ELog::RegMethod RegA("MagnetM1","createLinks");
 
   // link 0 / 1 from PreDipole / EPCombine
-  setLinkCopy(0,*entryPipe,1);
+  setLinkCopy("front",*entryPipe,1);
 
-  setLinkCopy(1,*epCombine,epCombine->getSideIndex("Flange"));
-  setLinkCopy(2,*epCombine,epCombine->getSideIndex("Photon"));
-  setLinkCopy(3,*epCombine,epCombine->getSideIndex("Electron"));
-  
-  setConnect(4,Origin+Y*blockYStep,-Y);
-  setLinkSurf(4,-SMap.realSurf(buildIndex+1));
+  setLinkCopy("back",*epCombine,"Flange");
+  setLinkCopy("Photon",*epCombine,"Photon");
+  setLinkCopy("Electron",*epCombine,"Electron");
 
-  setConnect(5,Origin+Y*(length+blockYStep),Y);
-  setLinkSurf(6,SMap.realSurf(buildIndex+2));
+  setConnect("4",Origin+Y*blockYStep,-Y);
+  setLinkSurf("4",-SMap.realSurf(buildIndex+1));
+
+  setConnect("5",Origin+Y*(length+blockYStep),Y);
+  setLinkSurf("6",SMap.realSurf(buildIndex+2));
 
   return;
 }

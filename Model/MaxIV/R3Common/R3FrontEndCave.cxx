@@ -81,15 +81,11 @@ R3FrontEndCave::R3FrontEndCave(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  nameSideIndex(2,"outerWall");
-  nameSideIndex(3,"ringWall");
-  nameSideIndex(4,"floor");
-  nameSideIndex(5,"roof");
-
-  nameSideIndex(6,"connectPt");
-  nameSideIndex(7,"ringAngleWall");
+  // "innerRingAngleWall" (slot 8) is reserved here but never given a
+  // connect point/surface in createLinks() -- consumed only via its
+  // (default-valued) LinkUnit by createMaze(). The legacy NL=12
+  // pre-sizing above is required to keep that slot materialized.
   nameSideIndex(8,"innerRingAngleWall");
-  nameSideIndex(10,"innerRing");
 }
 
 
@@ -279,20 +275,20 @@ R3FrontEndCave::createLinks()
   
   ExternalCut::createLink("front",*this,"front",Origin,-Y);
 
-  setConnect(1,Origin+Y*(frontWallThick+length),Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  setConnect("back",Origin+Y*(frontWallThick+length),Y);
+  setLinkSurf("back",SMap.realSurf(buildIndex+12));
 
-  setConnect(2,Origin-X*(outerGap+outerWallThick)+Y*(length/2.0),-X);
-  setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  setConnect("outerWall",Origin-X*(outerGap+outerWallThick)+Y*(length/2.0),-X);
+  setLinkSurf("outerWall",-SMap.realSurf(buildIndex+13));
 
-  setConnect(3,Origin+X*(ringGap+ringWallThick)+Y*(segmentLength/2.0),X);
-  setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  setConnect("ringWall",Origin+X*(ringGap+ringWallThick)+Y*(segmentLength/2.0),X);
+  setLinkSurf("ringWall",SMap.realSurf(buildIndex+14));
 
-  setConnect(4,Origin-Z*(floorThick+floorDepth)+Y*(length/2.0),-Z);
-  setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  setConnect("floor",Origin-Z*(floorThick+floorDepth)+Y*(length/2.0),-Z);
+  setLinkSurf("floor",-SMap.realSurf(buildIndex+15));
 
-  setConnect(5,Origin+Z*(roofThick+roofHeight)+Y*(length/2.0),Z);
-  setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  setConnect("roof",Origin+Z*(roofThick+roofHeight)+Y*(length/2.0),Z);
+  setLinkSurf("roof",SMap.realSurf(buildIndex+16));
 
   const Geometry::Quaternion Qz=
     Geometry::Quaternion::calcQRotDeg(-segmentAngle,Z);
@@ -307,28 +303,28 @@ R3FrontEndCave::createLinks()
     Y*(length+frontWallThick)+
     X*(L1*sin(M_PI*segmentAngle/180.0));
 
-  setConnect(6,newBeamPt,YAxis);
-  setLinkSurf(6,SMap.realSurf(buildIndex+12));
+  setConnect("connectPt",newBeamPt,YAxis);
+  setLinkSurf("connectPt",SMap.realSurf(buildIndex+12));
 
 
   const double midDist=0.5*(length-segmentLength)*
     cos(M_PI*segmentAngle/180.0);
   
-  setConnect(7,Origin+X*(ringGap+ringWallThick)+
+  setConnect("ringAngleWall",Origin+X*(ringGap+ringWallThick)+
 	     Y*(segmentLength)+
 	     YAxis*midDist,
 	     XAxis);
-  setLinkSurf(7,SMap.realSurf(buildIndex+114));
+  setLinkSurf("ringAngleWall",SMap.realSurf(buildIndex+114));
 
   // Connect point is the place that the main ring conects to
   // calculated
-  
-  setConnect(10,Origin-Z*(floorThick+floorDepth),-Y);
-  setLinkSurf(10,SMap.realSurf(buildIndex+34));
-  addLinkComp(10,-SMap.realSurf(buildIndex+15));
-  setConnect(11,Origin+Z*(roofThick+roofHeight),-Y);
-  setLinkSurf(11,SMap.realSurf(buildIndex+34));
-  addLinkComp(11,SMap.realSurf(buildIndex+16));
+
+  setConnect("innerRing",Origin-Z*(floorThick+floorDepth),-Y);
+  setLinkSurf("innerRing",SMap.realSurf(buildIndex+34));
+  addLinkComp("innerRing",-SMap.realSurf(buildIndex+15));
+  setConnect("11",Origin+Z*(roofThick+roofHeight),-Y);
+  setLinkSurf("11",SMap.realSurf(buildIndex+34));
+  addLinkComp("11",SMap.realSurf(buildIndex+16));
 
   return;
 }
@@ -354,7 +350,7 @@ R3FrontEndCave::createMaze(Simulation& System)
 
       mazePtr->addInsertCell("Inner",getCell("RingWallB"));
       mazePtr->addInsertCell("Main",getCell("InnerVoid"));
-      mazePtr->createAll(System,*this,8);
+      mazePtr->createAll(System,*this,"innerRingAngleWall");
     }
   return;
 }
@@ -380,7 +376,7 @@ R3FrontEndCave::createDoor(Simulation& System)
 
       doorPtr->setAxisControl(-3,Z);
       doorPtr->addAllInsertCell(getCell("OuterWall"));
-      doorPtr->createAll(System,*this,3);
+      doorPtr->createAll(System,*this,"ringWall");
     }
   return;
 }

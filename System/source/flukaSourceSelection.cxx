@@ -77,7 +77,7 @@ flukaSourceSelection(Simulation& System,
   
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
 
-  attachSystem::FixedUnit beamAxis("beamAxis");
+  attachSystem::FixedUnit beamAxis(attachSystem::FixedComp::unregistered,"beamAxis");
   const bool axisFlag(IParam.flag("sdefVec"));
   if (axisFlag)
     {

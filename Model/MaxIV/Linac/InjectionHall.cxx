@@ -80,7 +80,7 @@ namespace tdcSystem
 {
 
 InjectionHall::InjectionHall(const std::string& Key) :
-  attachSystem::FixedOffset(Key,13),
+  attachSystem::FixedOffset(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -1510,36 +1510,29 @@ InjectionHall::createLinks()
 {
   ELog::RegMethod RegA("InjectionHall","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::nameSideIndex(0,"front");
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*mainLength,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::nameSideIndex(1,"back");
+  FixedComp::setConnect("back",Origin+Y*mainLength,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   const double dx = 200.0;
-  FixedComp::setConnect(2,Origin+Y*backWallYStep-X*dx,Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+21));
-  FixedComp::nameSideIndex(2,"BackWallFrontConcrete");
+  FixedComp::setConnect("BackWallFrontConcrete",Origin+Y*backWallYStep-X*dx,Y);
+  FixedComp::setLinkSurf("BackWallFrontConcrete",SMap.realSurf(buildIndex+21));
 
-  FixedComp::setConnect(3,Origin+Y*(backWallYStep+backWallThick)-X*dx,Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+22));
-  FixedComp::nameSideIndex(3,"BackWallBack");
+  FixedComp::setConnect("BackWallBack",Origin+Y*(backWallYStep+backWallThick)-X*dx,Y);
+  FixedComp::setLinkSurf("BackWallBack",SMap.realSurf(buildIndex+22));
 
-  FixedComp::setConnect(4,Origin+Y*(backWallYStep-backWallIronThick)-X*dx,Y);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+31));
-  FixedComp::nameSideIndex(4,"BackWallFront");
+  FixedComp::setConnect("BackWallFront",Origin+Y*(backWallYStep-backWallIronThick)-X*dx,Y);
+  FixedComp::setLinkSurf("BackWallFront",SMap.realSurf(buildIndex+31));
 
-  FixedComp::setConnect(5,Origin+Y*(backWallYStep-backWallIronThick-spfMazeWidthTDC/2.0)
+  FixedComp::setConnect("SPFMazeIn",Origin+Y*(backWallYStep-backWallIronThick-spfMazeWidthTDC/2.0)
 			-X*(linearWidth/2.0+spfAngleStep),-X);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+223));
-  FixedComp::nameSideIndex(5,"SPFMazeIn");
+  FixedComp::setLinkSurf("SPFMazeIn",-SMap.realSurf(buildIndex+223));
 
-  FixedComp::setConnect(6,Origin+Y*(backWallYStep+backWallThick+spfMazeWidthTDC/2.0)
+  FixedComp::setConnect("SPFMazeOut",Origin+Y*(backWallYStep+backWallThick+spfMazeWidthTDC/2.0)
 			-X*(linearWidth/2.0+spfAngleStep),X);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+223));
-  FixedComp::nameSideIndex(6,"SPFMazeOut");
+  FixedComp::setLinkSurf("SPFMazeOut",SMap.realSurf(buildIndex+223));
 
 
   // BTG
@@ -1548,9 +1541,8 @@ InjectionHall::createLinks()
   const Geometry::Plane* p7403 = SMap.realPtr<Geometry::Plane>(buildIndex+7403);
   const double btgdX = p7403->getDistance();
   const double btgdY = (p7401->getDistance() + p7402->getDistance())/2.0;
-  FixedComp::setConnect(7,Origin+X*btgdX+Y*btgdY,X);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7403));
-  FixedComp::nameSideIndex(7,"BTGSide");
+  FixedComp::setConnect("BTGSide",Origin+X*btgdX+Y*btgdY,X);
+  FixedComp::setLinkSurf("BTGSide",SMap.realSurf(buildIndex+7403));
 
   FixedComp::setConnect("BTGTopMiddleSide",getLinkPt("BTGSide")
 			-X*(btgThick)
@@ -1580,9 +1572,8 @@ InjectionHall::createLinks()
   FixedComp::setConnect("MidWall",MidPt11-Y*midTThick,Y);
   FixedComp::setLinkSurf("MidWall",SurfMap::getSignedSurf("MidWall"));
 
-  FixedComp::setConnect(12,Origin+Y*(backWallYStep-bdRoomBackSteelThick)-X*(-bdRoomXStep),-Y);
-  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+7522));
-  FixedComp::nameSideIndex(12,"BackWallMainBeamDump");
+  FixedComp::setConnect("BackWallMainBeamDump",Origin+Y*(backWallYStep-bdRoomBackSteelThick)-X*(-bdRoomXStep),-Y);
+  FixedComp::setLinkSurf("BackWallMainBeamDump",SMap.realSurf(buildIndex+7522));
 
 
 

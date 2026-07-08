@@ -76,7 +76,7 @@ namespace xraySystem
 {
 
 MagnetU1::MagnetU1(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -95,10 +95,6 @@ MagnetU1::MagnetU1(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  nameSideIndex(1,"Flange");
-  nameSideIndex(2,"Electron");
-  nameSideIndex(3,"Photon");
-
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -336,19 +332,20 @@ MagnetU1::createLinks()
 
   // Tempory needs an entrance pipe:
 
-  setConnect(0,Origin+Y*blockYStep,-Y);
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  setConnect("front",Origin+Y*blockYStep,-Y);
+  setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  setConnect(1,Origin+Y*(length+blockYStep),Y);
-  setLinkSurf(1,-SMap.realSurf(buildIndex+2));
+  setConnect("back",Origin+Y*(length+blockYStep),Y);
+  setLinkSurf("back",-SMap.realSurf(buildIndex+2));
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("back"))-1),"Flange");
 
-  setConnect(2,Origin+Y*(blockYStep-frontVoid),-Y);
-  setLinkSurf(2,-SMap.realSurf(buildIndex+11));
-  nameSideIndex(2,"voidFront");
+  setConnect("Electron",Origin+Y*(blockYStep-frontVoid),-Y);
+  setLinkSurf("Electron",-SMap.realSurf(buildIndex+11));
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("Electron"))-1),"voidFront");
 
-  setConnect(3,Origin+Y*(blockYStep+length+backVoid),Y);
-  setLinkSurf(3,SMap.realSurf(buildIndex+12));
-  nameSideIndex(3,"voidBack");
+  setConnect("Photon",Origin+Y*(blockYStep+length+backVoid),Y);
+  setLinkSurf("Photon",SMap.realSurf(buildIndex+12));
+  nameSideIndex(static_cast<size_t>(std::abs(getSideIndex("Photon"))-1),"voidBack");
 
   return;
 }

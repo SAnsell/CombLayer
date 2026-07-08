@@ -266,9 +266,9 @@ TwinPipe::createLinks()
   const Geometry::Vec3D AXAxis=Z*AYAxis;
   const Geometry::Vec3D BXAxis=Z*BYAxis;
   
-  FixedComp::setConnect("1",ACent+AYAxis*pipeALength,AYAxis);
+  FixedComp::setConnect("back",ACent+AYAxis*pipeALength,AYAxis);
   FixedComp::setConnect("2",BCent+BYAxis*pipeBLength,BYAxis);
-  FixedComp::setLinkSurf("1",SMap.realSurf(buildIndex+101));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+101));
   FixedComp::setLinkSurf("2",SMap.realSurf(buildIndex+201));
 
   const Geometry::Vec3D APipe(ACent+AYAxis*(pipeALength/2.0));

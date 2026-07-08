@@ -64,7 +64,7 @@ namespace tdcSystem
 {
 
 LocalShielding::LocalShielding(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -316,32 +316,23 @@ LocalShielding::createLinks()
   // ExternalCut::createLink("front",*this,"front",Origin,Y);
   // ExternalCut::createLink("back",*this,"back",Origin,Y);
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin-Z*(depth),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height),Z);
+  FixedComp::setConnect("bottom",Origin-Z*(depth),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height),Z);
 
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
-
-  FixedComp::nameSideIndex(0,"front");
-  FixedComp::nameSideIndex(1,"back");
-
-  FixedComp::nameSideIndex(2,"left");
-  FixedComp::nameSideIndex(3,"right");
-
-  FixedComp::nameSideIndex(4,"bottom");
-  FixedComp::nameSideIndex(5,"top");
+  FixedComp::setLinkSurf("bottom",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

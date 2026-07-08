@@ -218,10 +218,10 @@ Segment48::createLinks()
 {
   ELog::RegMethod RegA("Segment48","createLinks");
 
-  setLinkCopy(0,*beamStopA,1);
-  setLinkCopy(1,*bellowC,2);
+  setLinkCopy("front",*beamStopA,1);
+  setLinkCopy("back",*bellowC,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   return;
 }

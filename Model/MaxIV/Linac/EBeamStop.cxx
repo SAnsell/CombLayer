@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 EBeamStop::EBeamStop(const std::string& Key) :
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -666,14 +666,11 @@ EBeamStop::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,Y);  //front and back
   ExternalCut::createLink("back",*this,"back",Origin,Y);  //front and back
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+121));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+122));
+  FixedComp::setLinkSurf("BoxFront",-SMap.realSurf(buildIndex+121));
+  FixedComp::setLinkSurf("BoxBack",SMap.realSurf(buildIndex+122));
 
-  FixedComp::setConnect(2,Origin-Y*(baseFlangeExtra+wallThick+length/2.0),-Y);
-  FixedComp::setConnect(3,Origin+Y*(baseFlangeExtra+wallThick+length/2.0),Y);
-
-  nameSideIndex(2,"BoxFront");
-  nameSideIndex(3,"BoxBack");
+  FixedComp::setConnect("BoxFront",Origin-Y*(baseFlangeExtra+wallThick+length/2.0),-Y);
+  FixedComp::setConnect("BoxBack",Origin+Y*(baseFlangeExtra+wallThick+length/2.0),Y);
 
   return;
 }

@@ -169,10 +169,10 @@ Segment11::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*bellowA,1);
-  setLinkCopy(1,*pipeB,2);
+  setLinkCopy("front",*bellowA,1);
+  setLinkCopy("back",*pipeB,2);
 
-  joinItems.push_back(FixedComp::getFullRule(2));
+  joinItems.push_back(FixedComp::getFullRule("back"));
   return;
 }
 

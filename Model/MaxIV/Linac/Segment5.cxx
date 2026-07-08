@@ -151,8 +151,8 @@ Segment5::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*flatA,1);
-  setLinkCopy(1,*bellowA,2);
+  setLinkCopy("front",*flatA,1);
+  setLinkCopy("back",*bellowA,2);
 
   joinItems.push_back(FixedComp::getFullRule("back"));
   return;

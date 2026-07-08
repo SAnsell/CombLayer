@@ -334,33 +334,27 @@ M1BackPlate::createLinks()
 {
   ELog::RegMethod RegA("M1BackPlate","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   const HeadRule mirrorHR=getRule("Mirror");
-  FixedComp::setConnect(2,Origin,X);
-  FixedComp::setLinkSurf(2,mirrorHR);
+  FixedComp::setConnect("elecShieldIn",Origin,X);
+  FixedComp::setLinkSurf("elecShieldIn",mirrorHR);
 
-  FixedComp::setConnect(3,Origin,X);
-  FixedComp::setLinkSurf(3,mirrorHR);
+  FixedComp::setConnect("elecShieldOut",Origin,X);
+  FixedComp::setLinkSurf("elecShieldOut",mirrorHR);
 
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
-  FixedComp::setLineConnect(4,Origin,Z);
+  FixedComp::setLinkSurf("innerBase",SMap.realSurf(buildIndex+5));
+  FixedComp::setLineConnect("innerBase",Origin,Z);
 
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
-  FixedComp::setLineConnect(5,Origin,-Z);
+  FixedComp::setLinkSurf("innerTop",-SMap.realSurf(buildIndex+6));
+  FixedComp::setLineConnect("innerTop",Origin,-Z);
 
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+3));
-  FixedComp::setLineConnect(6,Origin,X);
-
-  nameSideIndex(2,"elecShieldIn");
-  nameSideIndex(3,"elecShieldOut");
-  nameSideIndex(4,"innerBase");
-  nameSideIndex(5,"innerTop");
-  nameSideIndex(6,"innerSide");
+  FixedComp::setLinkSurf("innerSide",SMap.realSurf(buildIndex+3));
+  FixedComp::setLineConnect("innerSide",Origin,X);
 
 
 
