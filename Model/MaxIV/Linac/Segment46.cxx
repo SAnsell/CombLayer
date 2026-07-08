@@ -304,7 +304,7 @@ Segment46::createLinks()
   FixedComp::setConnect("buildZoneCut",Origin,Y);
   FixedComp::setLinkSurf("buildZoneCut",SMap.realSurf(buildIndex+5005));
 
-  joinItems.push_back(FixedComp::getFullRule("buildZoneCut"));
+  joinItems.push_back(FixedComp::getFullRule("back"));
 
   buildZone->setBack(bellowD->getFullRule("back"));
 

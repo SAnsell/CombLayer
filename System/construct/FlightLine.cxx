@@ -229,6 +229,20 @@ FlightLine::createSurfaces()
     }
 
   // CREATE LINKS
+  // Pre-register names at their original numeric positions -- otherwise
+  // "2"/"8" (the first names touched by the loop below) would steal
+  // "front"/"back"'s slots (0/1), since those are only set afterwards.
+  FixedComp::nameSideIndex(2,"2");
+  FixedComp::nameSideIndex(3,"3");
+  FixedComp::nameSideIndex(4,"4");
+  FixedComp::nameSideIndex(5,"5");
+  FixedComp::nameSideIndex(6,"6");
+  FixedComp::nameSideIndex(7,"7");
+  FixedComp::nameSideIndex(8,"8");
+  FixedComp::nameSideIndex(9,"9");
+  FixedComp::nameSideIndex(10,"10");
+  FixedComp::nameSideIndex(11,"11");
+
   int signVal(-1);
   for(size_t i=3;i<7;i++)
     {

@@ -433,6 +433,13 @@ Curtain::createLinks()
       if (v==1) return "back";
       return std::to_string(v);
     };
+  // Claim indices 0-3 (front/back/"2"/"3") first: without this, "4"
+  // (set at i=0, before "back" is set at i=1) would steal "back"'s
+  // slot (1), since baseFC has no legacy NL pre-sizing. The values
+  // written here are always overwritten below.
+  for(size_t i=0;i<4;i++)
+    baseFC.setConnect(linkName(i),Origin,Y);
+
   for(size_t i=0;i<4;i++)
     {
       const Geometry::Vec3D Axis(Y*cos(angle)+X*sin(angle));
