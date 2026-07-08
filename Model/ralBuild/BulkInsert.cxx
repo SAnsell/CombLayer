@@ -313,35 +313,35 @@ BulkInsert::createLinks()
   const Geometry::Vec3D bExit=
     BeamLine.getPoint(HR,beamFC.getCentre());
   
-  beamFC.setLinkSurf(0,ExternalCut::getRule("RInner"));
-  mainFC.addLinkSurf(0,ExternalCut::getRule("Divider"));
+  beamFC.setLinkSurf("front",ExternalCut::getRule("RInner"));
+  mainFC.addLinkSurf("front",ExternalCut::getRule("Divider"));
 
-  mainFC.setLinkSurf(1,ExternalCut::getRule("ROuter").complement());
-  mainFC.addLinkSurf(1,ExternalCut::getRule("Divider"));
-  
-  mainFC.setConnect(0,Origin,-Y);
-  mainFC.setConnect(1,bExit,Y);
+  mainFC.setLinkSurf("back",ExternalCut::getRule("ROuter").complement());
+  mainFC.addLinkSurf("back",ExternalCut::getRule("Divider"));
 
-  mainFC.setLinkSurf(2,SMap.realSurf(buildIndex+3));
-  mainFC.setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  mainFC.setLinkSurf(4,SMap.realSurf(buildIndex+5));
-  mainFC.setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  mainFC.setConnect("front",Origin,-Y);
+  mainFC.setConnect("back",bExit,Y);
 
-  mainFC.setConnect(2,Origin-X*(outerWidth/2.0),-X);
-  mainFC.setConnect(3,Origin+X*(outerWidth/2.0),X);
-  mainFC.setConnect(4,Origin-Y*(outerHeight/2.0),-Z);
-  mainFC.setConnect(5,Origin+Y*(outerHeight/2.0),Z);
+  mainFC.setLinkSurf("2",SMap.realSurf(buildIndex+3));
+  mainFC.setLinkSurf("3",SMap.realSurf(buildIndex+4));
+  mainFC.setLinkSurf("4",SMap.realSurf(buildIndex+5));
+  mainFC.setLinkSurf("5",SMap.realSurf(buildIndex+6));
+
+  mainFC.setConnect("2",Origin-X*(outerWidth/2.0),-X);
+  mainFC.setConnect("3",Origin+X*(outerWidth/2.0),X);
+  mainFC.setConnect("4",Origin-Y*(outerHeight/2.0),-Z);
+  mainFC.setConnect("5",Origin+Y*(outerHeight/2.0),Z);
 
   // Exit processed by calculating centre line to exit curve
-  
-  beamFC.setConnect(0,beamFC.getCentre(),-beamFC.getY());
-  beamFC.setConnect(1,bExit,beamFC.getY());
 
-  beamFC.setLinkSurf(0,ExternalCut::getRule("RInner"));
-  beamFC.addLinkSurf(0,ExternalCut::getRule("Divider").complement());
-  
-  beamFC.setLinkSurf(1,ExternalCut::getRule("ROuter").complement());
-  beamFC.addLinkSurf(1,ExternalCut::getRule("Divider"));
+  beamFC.setConnect("front",beamFC.getCentre(),-beamFC.getY());
+  beamFC.setConnect("back",bExit,beamFC.getY());
+
+  beamFC.setLinkSurf("front",ExternalCut::getRule("RInner"));
+  beamFC.addLinkSurf("front",ExternalCut::getRule("Divider").complement());
+
+  beamFC.setLinkSurf("back",ExternalCut::getRule("ROuter").complement());
+  beamFC.addLinkSurf("back",ExternalCut::getRule("Divider"));
 
   
   return;

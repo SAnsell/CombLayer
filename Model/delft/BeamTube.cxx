@@ -474,28 +474,28 @@ BeamTube::createLinks()
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
   const Geometry::Vec3D bY(beamFC.getY());
-  beamFC.setConnect(0,Origin,bY);
-  beamFC.setConnect(1,Origin+bY*length,bY);
+  beamFC.setConnect("front",Origin,bY);
+  beamFC.setConnect("back",Origin+bY*length,bY);
 
 
-  mainFC.setConnect(0,Origin,-Y);      // Note always to the reactor
-  mainFC.setConnect(1,Origin+Y*frontWall,Y);
-  mainFC.setConnect(2,Origin+Y*frontWall+bY*frontGap,bY);
+  mainFC.setConnect("front",Origin,-Y);      // Note always to the reactor
+  mainFC.setConnect("back",Origin+Y*frontWall,Y);
+  mainFC.setConnect("2",Origin+Y*frontWall+bY*frontGap,bY);
 
   if (capRadius>Geometry::zeroTol)
     {
-      mainFC.setLinkSurf(0,SMap.realSurf(buildIndex+8));
-      mainFC.addBridgeSurf(0,-SMap.realSurf(buildIndex+1));
+      mainFC.setLinkSurf("front",SMap.realSurf(buildIndex+8));
+      mainFC.addBridgeSurf("front",-SMap.realSurf(buildIndex+1));
     }
   else
-    mainFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+    mainFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  mainFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  mainFC.setLinkSurf(2,SMap.realSurf(buildIndex+21));
+  mainFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  mainFC.setLinkSurf("2",SMap.realSurf(buildIndex+21));
 
-  beamFC.setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  beamFC.setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  beamFC.setLinkSurf(2,SMap.realSurf(buildIndex+21));
+  beamFC.setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  beamFC.setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  beamFC.setLinkSurf("2",SMap.realSurf(buildIndex+21));
 
   return;
 }
