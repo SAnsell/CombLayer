@@ -60,9 +60,8 @@ $parallel "./singleItem --singleItem {} $opts {}" ::: \
  TWCavity TargetShield TriGroup TriPipe TriggerTube UndVac UndulatorVacuum \
  UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac || exit
 
-# Test FLUKA USRBIN estimators in the MAX IV DanMAX model
-./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -T fineD mesh dose-eq object DanMAXFrontBeamPrePipe \#back 'Vec3D(-10.5,-10.0,-10.5)' 'Vec3D(10.5,5650.0,10.5)' 21 11320 1 -TMod doseType fineD all-part EWT74  danmax || exit
-./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -T fineD mesh dose-eq object DanMAXFrontBeamPrePipe \#back 'Vec3D(-10.5,-10.0,-10.5)' 'Vec3D(10.5,5650.0,10.5)' 21 11320 1 -TMod doseType fineD all-part EWT74 -T fineS mesh dose-eq object DanMAXOpticsLineValveS2 back 'Vec3D(-10.5,-50.0,-10.5)' 'Vec3D(10.5,2550.0,10.5)' 21 5200 1 -TMod doseType fineS all-part EWT74 danmax || exit
+exit
 
 ## Need to fix the cooling pads on the reflector
-#./fullBuild $opts $inp || exit
+./fullBuild $opts $inp || exit
+exit
