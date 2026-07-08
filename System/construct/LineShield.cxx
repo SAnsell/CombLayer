@@ -375,6 +375,15 @@ LineShield::createLinks()
 {
   ELog::RegMethod RegA("LineShield","createLinks");
 
+  // Pre-register names at their original numeric positions -- "front"/
+  // "back" are only established later by FrontBackCut::createLinks()
+  // below, so without this, "left"/"right" would steal indices 0/1
+  // and their later setLinkSurf calls would clobber front/back's surfaces.
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
+
   FixedComp::setConnect("left",Origin-X*left,-X);
   FixedComp::setConnect("right",Origin+X*right,X);
   FixedComp::setConnect("base",Origin-Z*depth,-Z);

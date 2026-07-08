@@ -91,7 +91,7 @@ namespace essSystem
 FREIA::FREIA(const std::string& keyName) :
   attachSystem::CopiedComp("freia",keyName),
   startPoint(0),stopPoint(0),
-  freiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  freiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   BendA(new beamlineSystem::BenderUnit(newName+"BA")),
 

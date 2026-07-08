@@ -101,7 +101,7 @@ namespace essSystem
 VESPA::VESPA(const std::string& keyName) :
   attachSystem::CopiedComp("vespa",keyName),
   cryoFlag(1),startPoint(0),stopPoint(0),
-  vespaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  vespaAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   
   // Guide into the monolith
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),

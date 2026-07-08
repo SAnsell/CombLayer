@@ -94,7 +94,7 @@ namespace essSystem
 MIRACLES::MIRACLES(const std::string& keyName) :
   attachSystem::CopiedComp("miracles",keyName),
   nGuideSection(8),nSndSection(7),nEllSection(4),stopPoint(0),
-  miraclesAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  miraclesAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),

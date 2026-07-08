@@ -77,7 +77,7 @@ namespace essSystem
 
 simpleITEM::simpleITEM(const std::string& keyN) :
   attachSystem::CopiedComp("simple",keyN),stopPoint(0),
-  simpleAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  simpleAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   Plate(new insertSystem::insertPlate(newName+"Plate"))
   /*!
     Constructor

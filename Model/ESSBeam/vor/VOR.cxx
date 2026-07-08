@@ -91,7 +91,7 @@ namespace essSystem
 
 VOR::VOR(const std::string& keyName) :
   attachSystem::CopiedComp("vor",keyName),
-  vorAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  vorAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
 

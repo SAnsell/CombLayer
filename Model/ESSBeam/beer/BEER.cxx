@@ -95,7 +95,7 @@ BEER::BEER(const std::string& keyName) :
   attachSystem::CopiedComp("beer",keyName),
   attachSystem::ExternalCut(),        // extra for target cut
   stopPoint(0),
-  beerAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  beerAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   BendA(new beamlineSystem::BenderUnit(newName+"BA")),
 

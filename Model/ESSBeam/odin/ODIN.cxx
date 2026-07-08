@@ -90,7 +90,7 @@ namespace essSystem
 ODIN::ODIN(const std::string& keyName) :
   attachSystem::CopiedComp("odin",keyName),
   stopPoint(0),
-  odinAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  odinAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   

@@ -292,6 +292,14 @@ CrossPipe::createLinks()
 {
   ELog::RegMethod RegA("CrossPipe","createLinks");
 
+  // Pre-register names at their original numeric positions -- the
+  // legacy NL constructor pre-sizes LU so a not-yet-registered name
+  // would otherwise land after that reserved block instead of here.
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"baseFlange");
+  FixedComp::nameSideIndex(5,"topFlange");
+
   //stufff for intersection
 
 

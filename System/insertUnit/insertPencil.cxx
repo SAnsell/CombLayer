@@ -164,6 +164,18 @@ insertPencil::createLinks()
 {
   ELog::RegMethod RegA("insertPencil","createLinks");
 
+  // Pre-register names at their original numeric positions -- insertObject
+  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
+  // would otherwise land after that reserved block instead of here.
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
+  FixedComp::nameSideIndex(6,"leftBase");
+  FixedComp::nameSideIndex(7,"rightBase");
+  FixedComp::nameSideIndex(8,"leftTop");
+  FixedComp::nameSideIndex(9,"rightTop");
+
   FrontBackCut::createLinks(*this,Origin,Y);
 
   FixedComp::setConnect("left",Origin-X*radius,-X);

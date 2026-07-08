@@ -86,7 +86,7 @@ namespace essSystem
 NMX::NMX(const std::string& keyName) :
   attachSystem::CopiedComp("nmx",keyName),
   stopPoint(0),
-  nmxAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  nmxAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   BendA(new beamlineSystem::BenderUnit(newName+"BA")),

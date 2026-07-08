@@ -87,7 +87,7 @@ namespace essSystem
 HEIMDAL::HEIMDAL(const std::string& keyName) :
   attachSystem::CopiedComp("heimdal",keyName),
   startPoint(0),stopPoint(0),
-  heimdalAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  heimdalAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   FocusTA(new beamlineSystem::PlateUnit(newName+"FTA")),
   FocusCA(new beamlineSystem::PlateUnit(newName+"FCA")),

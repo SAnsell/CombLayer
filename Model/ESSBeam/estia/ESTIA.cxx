@@ -86,7 +86,7 @@ namespace essSystem
 ESTIA::ESTIA(const std::string& keyName) :
   attachSystem::CopiedComp("estia",keyName),
   stopPoint(0),
-  estiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  estiaAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   FocusMono(new beamlineSystem::PlateUnit(newName+"FMono")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),

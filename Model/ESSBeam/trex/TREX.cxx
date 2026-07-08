@@ -92,7 +92,7 @@ namespace essSystem
 TREX::TREX(const std::string& keyName):
   attachSystem::CopiedComp("trex",keyName),
   stopPoint(0),
-  trexAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  trexAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   FocusMono(new beamlineSystem::PlateUnit(newName+"FMono")),
   VPipeBridge(new constructSystem::VacuumPipe(newName+"PipeBridge")),

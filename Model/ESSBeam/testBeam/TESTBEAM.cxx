@@ -86,7 +86,7 @@ namespace essSystem
 TESTBEAM::TESTBEAM(const std::string& keyName) :
   attachSystem::CopiedComp("testBeam",keyName),
   startPoint(0),stopPoint(0),
-  testAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  testAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
 
   FocusA(new beamlineSystem::PlateUnit(newName+"FA")),
   

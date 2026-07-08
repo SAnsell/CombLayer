@@ -98,7 +98,7 @@ namespace essSystem
 
 LOKI::LOKI(const std::string& keyN) :
   attachSystem::CopiedComp("loki",keyN),startPoint(0),stopPoint(0),
-  lokiAxis(new attachSystem::FixedRotateUnit(newName+"Axis",4)),
+  lokiAxis(new attachSystem::FixedRotateUnit(newName+"Axis")),
   BendA(new beamlineSystem::BenderUnit(newName+"BA")),
 
   ShutterA(new insertSystem::insertPlate(newName+"BlockShutter")),  
