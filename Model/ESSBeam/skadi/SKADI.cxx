@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/skadi/SKADI.cxx
  *
- * Copyright (c) 2004-2022 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2026 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
