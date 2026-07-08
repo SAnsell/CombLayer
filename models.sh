@@ -61,6 +61,12 @@ $parallel "./singleItem --singleItem {} $opts {}" ::: \
  UTubePipe VacuumPipe ViewTube YAG YagScreen YagUnit default uVac RFGun HeatAbsorberToyama \
  HeatAbsorberR3Toyama MLMono || exit
 
+# FLUKA estimators in the MAX IV DanMAX model
+## this one works fine
+./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -T fineD mesh dose-eq object DanMAXFrontBeamPrePipe \#back 'Vec3D(-10.5,-10.0,-10.5)' 'Vec3D(10.5,5650.0,10.5)' 21 11320 1 -TMod doseType fineD all-part EWT74  danmax || exit
+# this one currently crashes
+./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -T fineD mesh dose-eq object DanMAXFrontBeamPrePipe \#back 'Vec3D(-10.5,-10.0,-10.5)' 'Vec3D(10.5,5650.0,10.5)' 21 11320 1 -TMod doseType fineD all-part EWT74 -T fineS mesh dose-eq object DanMAXOpticsLineValveS2 back 'Vec3D(-10.5,-50.0,-10.5)' 'Vec3D(10.5,2550.0,10.5)' 21 5200 1 -TMod doseType fineS all-part EWT74 danmax || exit
+
 exit
 
 ## Need to fix the cooling pads on the reflector
