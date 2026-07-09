@@ -3,7 +3,7 @@
  
  * File:   t2Build/Hydrogen.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <complex>
 #include <list>
 #include <vector>
+#include <array>
 #include <set>
 #include <map>
 #include <string>
@@ -64,7 +65,7 @@ namespace moderatorSystem
 
 Hydrogen::Hydrogen(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedComp(Key),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!
@@ -187,12 +188,12 @@ Hydrogen::createSurfaces()
   ELog::RegMethod RegA("Hydrogen","createSurface");
 
   // set Links:
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,HCentre+Y*(alFront+radius),Y); 
-  FixedComp::setConnect(2,Origin-X*(alSide+width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(alSide+width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+alBase),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+alTop),Z);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",HCentre+Y*(alFront+radius),Y);
+  FixedComp::setConnect("left",Origin-X*(alSide+width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(alSide+width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0+alBase),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0+alTop),Z);
 
 
   // Hydrogen Layers
@@ -212,15 +213,17 @@ Hydrogen::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+2,HCentre,Z,radius);
   ModelSupport::buildCylinder(SMap,buildIndex+12,HCentre+Y*alFront,Z,radius);
   
+  static const std::array<std::string,6> nameArr=
+    {"front","back","left","right","base","top"};
   int signVal(-1);
   for(int i=0;i<6;i++)
     {
-      FixedComp::setLinkSurf(static_cast<size_t>(i),
+      FixedComp::setLinkSurf(nameArr[static_cast<size_t>(i)],
 			     signVal*SMap.realSurf(buildIndex+i+1));
       signVal*=-1;
     }
   // Set divide surface
-  FixedComp::addLinkSurf(1,-SMap.realSurf(buildIndex+1));
+  FixedComp::addLinkSurf("back",-SMap.realSurf(buildIndex+1));
   return;
 }
 

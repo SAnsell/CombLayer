@@ -3,7 +3,7 @@
  
  * File:   moderator/RefCutOut.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace moderatorSystem
 {
 
 RefCutOut::RefCutOut(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,1)
+  attachSystem::FixedRotate(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search

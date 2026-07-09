@@ -3,7 +3,7 @@
  
  * File:   t2Build/DPreMod.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ namespace moderatorSystem
 {
 
 DPreMod::DPreMod(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::SurfMap()
@@ -224,23 +224,23 @@ DPreMod::createLinks()
   ELog::RegMethod RegA("DPreMod","createLinks");
   const HeadRule baseHR=getComplementRule("base");  // surf 1060046
   
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
-  
-  FixedComp::setConnect(1,Origin+Y*depth,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-        
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(4,baseHR);
-  
-  FixedComp::setConnect(5,Origin-Z*(height/2.0),Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("back",Origin+Y*depth,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+
+  FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+3));
+
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+
+  FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf("base",baseHR);
+
+  FixedComp::setConnect("top",Origin-Z*(height/2.0),Z);
+  FixedComp::setLinkSurf("top",-SMap.realSurf(buildIndex+6));
 
   nameSideIndex(4,"minusZ");
   nameSideIndex(5,"plusZ");

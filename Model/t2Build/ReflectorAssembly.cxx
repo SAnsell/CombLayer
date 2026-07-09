@@ -3,7 +3,7 @@
  
  * File:   t2Build/makeReflector.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ namespace moderatorSystem
 {
 
 ReflectorAssembly::ReflectorAssembly(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
 
   decType("standard"),decFile(""),orthoHFlag(0),

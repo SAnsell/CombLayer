@@ -3,7 +3,7 @@
  
  * File:   t2Build/Torpedo.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ namespace shutterSystem
 {
 
 Torpedo::Torpedo(const size_t ID,const std::string& Key) : 
-  attachSystem::FixedRotate(Key+std::to_string(ID),6),
+  attachSystem::FixedRotate(Key+std::to_string(ID)),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::ExternalCut(),
   baseName(Key),shutterNumber(ID)
@@ -252,31 +252,31 @@ Torpedo::createLinks()
 {
   ELog::RegMethod RegA("Torpedo","createLinks");
 
+  // Pre-register names at their original numeric positions (2-5) --
+  // otherwise a not-yet-registered name would land at index 0
+  // (reserved for "front", which this class never populates) instead
+  // of here.
+  FixedComp::nameSideIndex(2,"left");
+  FixedComp::nameSideIndex(3,"right");
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
+
   ExternalCut::setCutSurf("back",SMap.realSurf(buildIndex+7));
 
-  /*
-  std::set<int>::const_iterator vc;
-  for(vc=innerSurf.begin();vc!=innerSurf.end();vc++)
-    {
-      FixedComp::setLinkSurf(0,-*vc);
-      if (vc==innerSurf.begin())
-	FixedComp::addLinkSurf(1,-*vc);
-    }
-  */
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("right",-SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",-SMap.realSurf(buildIndex+6));
 
   // set Links
   // First point is center line intersect
   const Geometry::Vec3D OP=Origin+Y*innerRadius;
   ExternalCut::createLink("back",*this,"back",OP,Y);
 
-	     FixedComp::setConnect(2,Origin-X*(Width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(Width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(Height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(Height/2.0),Z);
+  FixedComp::setConnect("left",Origin-X*(Width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(Width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(Height/2.0),-Z);
+  FixedComp::setConnect("top",Origin+Z*(Height/2.0),Z);
   return;
 }
 
