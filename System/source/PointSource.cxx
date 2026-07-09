@@ -3,7 +3,7 @@
  
  * File:   source/PointSource.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ namespace SDef
 {
 
 PointSource::PointSource(const std::string& keyName) : 
-  FixedOffsetUnit(keyName,0),SourceBase(),
+  FixedOffsetUnit(keyName),SourceBase(),
   angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

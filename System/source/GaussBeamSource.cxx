@@ -3,7 +3,7 @@
  
  * File:   source/GaussBeamSource.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ namespace SDef
 {
 
 GaussBeamSource::GaussBeamSource(const std::string& keyName) : 
-  FixedRotate(keyName,0),SourceBase(),
+  FixedRotate(keyName),SourceBase(),
   xWidth(1.0),zWidth(1.0),angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

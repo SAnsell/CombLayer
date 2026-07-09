@@ -3,7 +3,7 @@
  
  * File:   source/TDCSource.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ namespace SDef
   
   
 TDCSource::TDCSource(const std::string& keyName) : 
-  FixedRotateUnit(keyName,0),SourceBase(),
+  FixedRotateUnit(keyName),SourceBase(),
   energyMin(0.0),energyMax(1.0),radius(1.0),length(100.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

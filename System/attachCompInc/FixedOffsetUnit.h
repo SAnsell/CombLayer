@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedOffsetUnit.h
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,9 @@ class FixedOffsetUnit : public FixedOffset
 {  
  public:
 
+  /// Simple constructor [with objectregister, no link-count pre-sizing]
+  FixedOffsetUnit(const std::string& K) :
+    FixedOffset(K) {}
   /// Simple constructor
   FixedOffsetUnit(const std::string& K,const size_t I) :
     FixedOffset(K,I) {}
