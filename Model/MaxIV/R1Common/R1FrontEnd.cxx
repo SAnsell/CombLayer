@@ -3,7 +3,7 @@
  
  * File: R1Common/R1FrontEnd.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ namespace xraySystem
 R1FrontEnd::R1FrontEnd(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(newName,2),
+  attachSystem::FixedRotate(newName),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -147,6 +147,12 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {
+  // R1FrontEnd never writes its own link points -- that's left to
+  // subclasses (e.g. speciesFrontEnd/maxpeemFrontEnd/flexpesFrontEnd),
+  // which poke slots 0/1 by raw numeric index. Pre-size up front as the
+  // legacy (newName,2) constructor used to.
+  FixedComp::setNConnect(2);
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 

@@ -3,7 +3,7 @@
 
  * File: R3Common/R3FrontEnd.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ namespace xraySystem
 R3FrontEnd::R3FrontEnd(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(newName,2),
+  attachSystem::FixedRotate(newName),
   attachSystem::FrontBackCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -166,6 +166,12 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
     \param Index :: Index number
   */
 {
+  // R3FrontEnd never writes its own link points -- that's left to
+  // subclasses (e.g. danmaxFrontEnd), which poke slots 0/1 by raw
+  // numeric index via setLinkCopy(). Pre-size up front as the legacy
+  // (newName,2) constructor used to.
+  FixedComp::setNConnect(2);
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 

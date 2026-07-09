@@ -64,7 +64,7 @@ namespace xraySystem
 {
 
 DipoleExtract::DipoleExtract(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
