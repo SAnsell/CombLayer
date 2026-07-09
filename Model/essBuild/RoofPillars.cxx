@@ -3,7 +3,7 @@
  
  * File:   essBuild/RoofPillars.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ namespace essSystem
 {
 
 RoofPillars::RoofPillars(const std::string& Key)  :
-  attachSystem::FixedUnit(Key,0,30000),
+  attachSystem::FixedUnit(attachSystem::FixedComp::withResSize,Key,30000),
   attachSystem::CellMap(),
   attachSystem::FrontBackCut()
   /*!

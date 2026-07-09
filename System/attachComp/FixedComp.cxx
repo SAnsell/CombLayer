@@ -81,24 +81,23 @@ FixedComp::FixedComp(const std::string& KN) :
   LU.reserve(10);
 }
 
-FixedComp::FixedComp(const std::string& KN,const size_t NL,
+FixedComp::FixedComp(FixedComp::resSize_t,const std::string& KN,
 		     const size_t resSize) :
   keyName(KN),
   buildIndex(ModelSupport::objectRegister::Instance().cell(KN,resSize)),
   cellIndex(buildIndex+1),keyMap({{"front",0},{"back",1}}),
   X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
-  Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
+  Z(Geometry::Vec3D(0,0,1)),primeAxis(0)
  /*!
-    Legacy constructor retained for source compatibility with call
-    sites not yet migrated off the link-point-count argument: NL still
-    pre-sizes LU (as it always did) since not-yet-migrated createLinks()
-    bodies may still poke LU by raw numeric index and rely on the slots
-    already existing.
+    Constructor for objects that need a larger cell-index reservation
+    than the default 10000 (e.g. RoofPillars, which builds many
+    sub-objects each needing their own surface/cell number block).
     \param KN :: KeyName
-    \param NL :: legacy number-of-links (still used to pre-size LU here)
-    \param resSize :: Reserved size for indexes [normally 10000]
+    \param resSize :: Reserved size for indexes
   */
-{}
+{
+  LU.reserve(10);
+}
 
 FixedComp::FixedComp(const std::string& KN,
 		     Geometry::Vec3D  O) :

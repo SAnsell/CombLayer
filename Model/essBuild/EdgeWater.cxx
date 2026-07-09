@@ -3,7 +3,7 @@
  
  * File:   essBuild/EdgeWater.cxx 
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace essSystem
 {
 
 EdgeWater::EdgeWater(const std::string& key) :
-  attachSystem::FixedComp(key,6),
+  attachSystem::FixedComp(key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::CellMap(),
@@ -237,12 +237,18 @@ EdgeWater::createLinks()
 {
   ELog::RegMethod RegA("EdgeWater","createLinks");
 
+  // 6 raw-indexed slots (only 2/3 ever written) are read externally
+  // by raw signed index (e.g. ButterflyModerator's
+  // LeftWater->getFullRule(4)/(3)), so pre-size up front as the
+  // legacy (Key,6) constructor used to.
+  FixedComp::setNConnect(6);
+
   HeadRule HR;
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"11 203");
   FixedComp::setLinkSurf(2,HR.complement());
   FixedComp::setConnect(2,Origin-X*(wallThick+cutWidth/2.0),-X);
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"-12 -204");
   FixedComp::setLinkSurf(3,HR.complement());
   FixedComp::setConnect(3,Origin+X*(wallThick+cutWidth/2.0),X);

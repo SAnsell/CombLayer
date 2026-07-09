@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ namespace essSystem
 
 MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
-  attachSystem::FixedComp(baseKey+extraKey,14),
+  attachSystem::FixedComp(baseKey+extraKey),
   attachSystem::ContainedComp(),
   baseName(baseKey),AWingPtr(nullptr),BWingPtr(nullptr)
   /*!
@@ -178,18 +178,24 @@ MidWaterDivider::createLinks()
 {
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
+  // 14 raw-indexed slots (with an intentional gap at 4/9) are read
+  // externally by raw signed index (e.g. ButterflyModerator's
+  // setLinkCopy(6,*MidWater,13)), so pre-size up front as the legacy
+  // (Key,14) constructor used to.
+  FixedComp::setNConnect(14);
+
   // main angles
-  FixedComp::setLinkSurf(0, SMap.realSurf(buildIndex+103)); 
-  FixedComp::setLinkSurf(1, -SMap.realSurf(buildIndex+104));  
-  FixedComp::setLinkSurf(2, SMap.realSurf(buildIndex+123));  
-  FixedComp::setLinkSurf(3, -SMap.realSurf(buildIndex+124)); 
+  FixedComp::setLinkSurf(0, SMap.realSurf(buildIndex+103));
+  FixedComp::setLinkSurf(1, -SMap.realSurf(buildIndex+104));
+  FixedComp::setLinkSurf(2, SMap.realSurf(buildIndex+123));
+  FixedComp::setLinkSurf(3, -SMap.realSurf(buildIndex+124));
 
 
   // small cutting edged
   FixedComp::setLinkSurf(5, SMap.realSurf(buildIndex+111));
   FixedComp::setLinkSurf(6, SMap.realSurf(buildIndex+112));
-  FixedComp::setLinkSurf(7, SMap.realSurf(buildIndex+131));  
-  FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+132));  
+  FixedComp::setLinkSurf(7, SMap.realSurf(buildIndex+131));
+  FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+132));
 
   std::vector<int> surfN;
   surfN.push_back(AWingPtr->getLinkSurf(1));
@@ -237,7 +243,7 @@ MidWaterDivider::createLinks()
   // +ve Y
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex, "( (-103 (-117:118)) : (104  (-107:108)) ) -111 -112");
-  HR.makeComplement();  
+  HR.makeComplement();
   FixedComp::setLinkSurf(11,HR);
   FixedComp::setBridgeSurf(11,SMap.realSurf(buildIndex+100));
 

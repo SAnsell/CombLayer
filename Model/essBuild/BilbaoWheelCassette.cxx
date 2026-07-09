@@ -3,7 +3,7 @@
 
  * File:   essBuild/BilbaoWheelCassette.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace essSystem
 BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
 					 const std::string& extraKey,
 					 const size_t& Index)  :
-  attachSystem::FixedRotate(baseKey+extraKey+std::to_string(Index),40),
+  attachSystem::FixedRotate(baseKey+extraKey+std::to_string(Index)),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   baseName(baseKey),
@@ -584,6 +584,9 @@ BilbaoWheelCassette::createLinks()
     {
       int SJ(buildIndex);
       size_t i(4);
+      // raw-indexed slots 4..4+2*nWallSeg-1 are poked by number below
+      // (0/1 are "Inner"/"Outer", set externally before createAll runs)
+      FixedComp::setNConnect(4+2*nWallSeg);
       for (size_t j=0; j<nWallSeg; j++)
 	{
 	  Geometry::Vec3D Pt =

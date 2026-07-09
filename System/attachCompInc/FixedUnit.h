@@ -46,14 +46,11 @@ class FixedUnit : public FixedComp
   explicit FixedUnit(const std::string& K) :
     FixedComp(K) {}
 
-  /// Simple constructor [with objectregister, legacy link-count pre-sizing]
-  FixedUnit(const std::string& K,const size_t legacyNL) :
-    FixedComp(K,legacyNL) {}
-
-  /// Simple constructor [with objectregister, explicit reserved range]
-  FixedUnit(const std::string& K,const size_t legacyNL,
+  /// Constructor for objects needing a larger cell-index reservation
+  /// than the default 10000 (e.g. RoofPillars)
+  FixedUnit(FixedComp::resSize_t,const std::string& K,
 	    const size_t resSize) :
-    FixedComp(K,legacyNL,resSize) {}
+    FixedComp(FixedComp::withResSize,K,resSize) {}
 
   /// Simple constructor with full axis [no objectregister]
   FixedUnit(FixedComp::unregistered_t,const std::string& K,

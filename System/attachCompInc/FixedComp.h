@@ -134,16 +134,17 @@ class FixedComp
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
 
+  /// Tag type selecting the explicit-reserved-cell-range constructor
+  struct resSize_t {};
+  /// Tag value selecting the explicit-reserved-cell-range constructor
+  static constexpr resSize_t withResSize{};
+
   explicit FixedComp(unregistered_t,std::string ="Null");
   explicit FixedComp(const std::string&);
-  // Legacy constructor kept for source compatibility with call sites not
-  // yet migrated off the old link-point-count argument: the size_t
-  // parameter is accepted but ignored (LU grows on demand instead).
-  // Intentionally NOT collapsible with the single-string constructor
-  // above -- doing so would silently reinterpret existing 2-argument
-  // (KeyName,NL) call sites as (KeyName,resSize), corrupting the surface
-  // number reservation. Remove once all call sites are migrated.
-  FixedComp(const std::string&,const size_t,const size_t =10000);
+  // For the rare case (e.g. RoofPillars) that needs a larger cell-index
+  // reservation than the default 10000 -- everything else should use
+  // the plain single-string constructor above.
+  FixedComp(resSize_t,const std::string&,const size_t);
   FixedComp(const std::string&,Geometry::Vec3D );
   FixedComp(const std::string&,
 	    Geometry::Vec3D ,const Geometry::Vec3D&,
