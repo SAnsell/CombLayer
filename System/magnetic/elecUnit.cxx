@@ -3,7 +3,7 @@
  
  * File:   magnetic/elecUnit.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ namespace magnetSystem
 {
 
 elecUnit::elecUnit(const std::string& Key) :
-  attachSystem::FixedRotate(Key,0),
+  attachSystem::FixedRotate(Key),
   zeroField(1),index(0)
   /*!
     Constructor (without index)
@@ -68,7 +68,7 @@ elecUnit::elecUnit(const std::string& Key) :
 
 elecUnit::elecUnit(const std::string& Key,
 		       const size_t I) :
-  attachSystem::FixedRotate(Key+std::to_string(I),0),
+  attachSystem::FixedRotate(Key+std::to_string(I)),
   zeroField(1),index(I)
   /*!
     Constructor
