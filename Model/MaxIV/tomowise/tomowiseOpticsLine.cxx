@@ -3,7 +3,7 @@
 
  * File: tomowise/tomowiseOpticsLine.cxx
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov and Stuart Ansell
+ * Copyright (c) 2004-2026 by Konstantin Batkov and Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,7 +132,7 @@ namespace xraySystem
 tomowiseOpticsLine::tomowiseOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedOffset(newName),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
 
@@ -815,8 +815,8 @@ tomowiseOpticsLine::createLinks()
 {
   ELog::RegMethod RControl("tomowiseOpticsLine","createLinks");
 
-  setLinkCopy(0,*pipeInit,1);
-  setLinkCopy(1,*lastComp,2);
+  setLinkCopy("front",*pipeInit,1);
+  setLinkCopy("back",*lastComp,2);
   return;
 }
 

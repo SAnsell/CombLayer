@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/CurveMagnet.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace tdcSystem
 {
 
 CurveMagnet::CurveMagnet(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
