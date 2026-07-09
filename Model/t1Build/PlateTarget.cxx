@@ -3,7 +3,7 @@
  
  * File:   t1Build/PlateTarget.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace ts1System
 {
 
 PlateTarget::PlateTarget(const std::string& Key)  :
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedComp(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -268,7 +268,7 @@ PlateTarget::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlane(SMap,buildIndex+64,Origin+X*(IOffset+IWidth),X);
  
   // Back of target surface
-  FixedComp::setConnect(1,FPt,Y);  
+  FixedComp::setConnect("back",FPt,Y);
   return;
 }
 
@@ -383,20 +383,20 @@ PlateTarget::createLinks()
   ELog::RegMethod RegA("PlateTarget","createLinks");
 
 
-  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect("front",Origin,-Y);
 
-  FixedComp::setConnect(2,Origin-X*width,-X);
-  FixedComp::setConnect(3,Origin+X*width,X);
-  FixedComp::setConnect(4,Origin-Z*height,-Z);
-  FixedComp::setConnect(5,Origin+Z*height,Z);
+  FixedComp::setConnect("left",Origin-X*width,-X);
+  FixedComp::setConnect("right",Origin+X*width,X);
+  FixedComp::setConnect("base",Origin-Z*height,-Z);
+  FixedComp::setConnect("top",Origin+Z*height,Z);
 
   // Set Connect surfaces:
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1004));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+52));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+1004));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+52));
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("right",-SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }
@@ -422,7 +422,7 @@ PlateTarget::buildFeedThrough(Simulation& System)
       const Geometry::Vec3D PStart=
 	X*sX*feedXOffset+Z*sZ*(height-feedHeight);
       const Geometry::Vec3D PEnd=
-	PStart+getLinkPt(2)+Y*backPlateThick;
+	PStart+getLinkPt("back")+Y*backPlateThick;
 
       WaterChannel.addPoint(PStart+Origin);
       WaterChannel.addPoint(PEnd);

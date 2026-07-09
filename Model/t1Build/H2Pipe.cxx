@@ -3,7 +3,7 @@
  
  * File:   t1Build/H2Pipe.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ namespace ts1System
 {
 
 H2Pipe::H2Pipe(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),
+  attachSystem::FixedComp(Key),
   Central("H2Centre")
   /*!
     Constructor BUT ALL variable are left unpopulated.

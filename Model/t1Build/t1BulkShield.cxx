@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BulkShield.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ constexpr size_t hrpdShutter(17);  // South 8
 constexpr size_t pearlShutter(18);  // South 9
 
 t1BulkShield::t1BulkShield(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,3),
+  attachSystem::FixedComp(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
@@ -409,13 +409,13 @@ t1BulkShield::createLinks()
 {
   ELog::RegMethod RegA("t1BulkShield","createLinks");
 
-  FixedComp::setConnect(0,Origin,-X);
-  FixedComp::setConnect(1,Origin-Z*totalDepth,-Z);
-  FixedComp::setConnect(2,Origin+Z*totalHeight,Z);
+  FixedComp::setConnect("outer",Origin,-X);
+  FixedComp::setConnect("base",Origin-Z*totalDepth,-Z);
+  FixedComp::setConnect("top",Origin+Z*totalHeight,Z);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+37));
-  FixedComp::setLinkSurf(1,-SMap.realSurf(buildIndex+5));  // base
-  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("outer",SMap.realSurf(buildIndex+37));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));  // base
+  FixedComp::addLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

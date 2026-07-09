@@ -3,7 +3,7 @@
  
  * File:   t1Build/ReflectRods.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ namespace ts1System
 {
 
 ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
-  attachSystem::FixedRotate(Key+std::to_string(index),0),
+  attachSystem::FixedRotate(Key+std::to_string(index)),
   attachSystem::ContainedComp(),
   baseName(Key),
   topSurf(0),baseSurf(0),RefObj(0)  

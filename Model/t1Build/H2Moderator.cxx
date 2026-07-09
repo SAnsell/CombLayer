@@ -3,7 +3,7 @@
  
  * File:   t1Build/H2Moderator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace ts1System
 {
 
 H2Moderator::H2Moderator(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(6),
   attachSystem::CellMap(),
@@ -318,19 +318,19 @@ H2Moderator::createLinks()
   ELog::RegMethod RegA("H2Moderator","createLinks");
 
   // set Links:
-  FixedComp::setConnect(0,getSurfacePoint(5,1),-Y);
-  FixedComp::setConnect(1,getSurfacePoint(5,2),Y);
-  FixedComp::setConnect(2,getSurfacePoint(5,3),-X);
-  FixedComp::setConnect(3,getSurfacePoint(5,4),X);
-  FixedComp::setConnect(4,getSurfacePoint(5,5),-Z);
-  FixedComp::setConnect(5,getSurfacePoint(5,6),Z);
+  FixedComp::setConnect("front",getSurfacePoint(5,1),-Y);
+  FixedComp::setConnect("back",getSurfacePoint(5,2),Y);
+  FixedComp::setConnect("left",getSurfacePoint(5,3),-X);
+  FixedComp::setConnect("right",getSurfacePoint(5,4),X);
+  FixedComp::setConnect("base",getSurfacePoint(5,5),-Z);
+  FixedComp::setConnect("top",getSurfacePoint(5,6),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+61));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+62));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+63));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+64));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+65));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+66));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+61));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+62));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+63));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+64));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+65));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+66));
 
   // externl cut for LW wrapper
   const HeadRule HR=getHeadRule(SMap,buildIndex,"-61:64");
