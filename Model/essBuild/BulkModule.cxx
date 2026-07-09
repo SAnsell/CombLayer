@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -275,36 +276,33 @@ BulkModule::createLinks()
 {
   ELog::RegMethod RegA("BulkModule","createLinks");
 
-  // 8 of 9 raw-indexed slots are still poked by number below -- pre-size
-  // up front as the legacy (Key,9) constructor used to.
-  FixedComp::setNConnect(9);
-
   if (nLayer>1)
     {
-      size_t index(0);
+      const std::array<std::string,2> layer{"Outer","Inner"};
       for(size_t j=0;j<2;j++)
         {
 	  const size_t i(nLayer-(j+1));
-	  
-	  FixedComp::setConnect
-	    (index,Origin+COffset[i]-Z*depth[i],-Z);  // base
-	  FixedComp::setConnect
-	    (index+1,Origin+COffset[i]+Z*height[i],Z);  // top
-	  FixedComp::setConnect
-	    (index+2,Origin+COffset[i]+Y*radius[i],Y);   // outer point
-	  FixedComp::setConnect
-	    (index+3,Origin+COffset[i]-Y*radius[i],-Y);   // outer point
-	  
-	  const int RI(static_cast<int>(i)*10+buildIndex);
-	  FixedComp::setLinkSurf(index,-SMap.realSurf(RI+5));
-	  FixedComp::setLinkSurf(index+1,SMap.realSurf(RI+6));
-	  FixedComp::setLinkSurf(index+2,SMap.realSurf(RI+7));
-	  FixedComp::setLinkSurf(index+3,SMap.realSurf(RI+7));
-	  FixedComp::setBridgeSurf(index+3,-SMap.realSurf(buildIndex+1));
+	  const std::string base(layer[j]+"Base");
+	  const std::string top(layer[j]+"Top");
+	  const std::string cyl((j==0) ? "OuterCyl" : "InnerCyl");
+	  const std::string cylNeg(layer[j]+"CylNeg");
 
-	  index+=4;
+	  FixedComp::setConnect
+	    (base,Origin+COffset[i]-Z*depth[i],-Z);  // base
+	  FixedComp::setConnect
+	    (top,Origin+COffset[i]+Z*height[i],Z);  // top
+	  FixedComp::setConnect
+	    (cyl,Origin+COffset[i]+Y*radius[i],Y);   // outer point
+	  FixedComp::setConnect
+	    (cylNeg,Origin+COffset[i]-Y*radius[i],-Y);   // outer point
+
+	  const int RI(static_cast<int>(i)*10+buildIndex);
+	  FixedComp::setLinkSurf(base,-SMap.realSurf(RI+5));
+	  FixedComp::setLinkSurf(top,SMap.realSurf(RI+6));
+	  FixedComp::setLinkSurf(cyl,SMap.realSurf(RI+7));
+	  FixedComp::setLinkSurf(cylNeg,SMap.realSurf(RI+7));
+	  FixedComp::setBridgeSurf(cylNeg,-SMap.realSurf(buildIndex+1));
 	}
-      nameSideIndex(2,"OuterCyl");
     }
   return;
 }

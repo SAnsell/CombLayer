@@ -225,38 +225,33 @@ DHut::createLinks()
 {
   ELog::RegMethod RegA("DHut","createLinks");
 
-  // 18 raw-indexed slots (inner/mid/outer void x front/back/left/right/
-  // base/top) are still poked by number below -- pre-size up front as
-  // the legacy (Key,18) constructor used to.
-  FixedComp::setNConnect(18);
+  const std::array<std::string,3> layer{"inner","mid","outer"};
+  const std::array<std::string,6> suffix
+    {"Front","Back","Left","Right","Base","Top"};
 
-  size_t index(0);
+  size_t layerIndex(0);
   int BI(buildIndex);
   for(const double& T : {0.0,feThick,feThick+concThick})
     {
-  // INNER VOID
-      setConnect(index,Origin-Y*(T+voidLength/2.0),-Y);
-      setConnect(index+1,Origin+Y*(T+voidLength/2.0),Y);
-      setConnect(index+2,Origin-X*(T+voidWidth/2.0),-X);
-      setConnect(index+3,Origin+X*(T+voidWidth/2.0),X);
-      setConnect(index+4,Origin-Z*(T+voidDepth),-Z);
-      setConnect(index+5,Origin+Z*(T+voidHeight),Z);
+      const std::string& prefix(layer[layerIndex]);
 
-      setLinkSurf(index,-SMap.realSurf(BI+1));
-      setLinkSurf(index+1,SMap.realSurf(BI+2));
-      setLinkSurf(index+2,-SMap.realSurf(BI+3));
-      setLinkSurf(index+3,SMap.realSurf(BI+4));
-      setLinkSurf(index+4,-SMap.realSurf(BI+5));
-      setLinkSurf(index+5,SMap.realSurf(BI+6));
+  // INNER VOID
+      setConnect(prefix+suffix[0],Origin-Y*(T+voidLength/2.0),-Y);
+      setConnect(prefix+suffix[1],Origin+Y*(T+voidLength/2.0),Y);
+      setConnect(prefix+suffix[2],Origin-X*(T+voidWidth/2.0),-X);
+      setConnect(prefix+suffix[3],Origin+X*(T+voidWidth/2.0),X);
+      setConnect(prefix+suffix[4],Origin-Z*(T+voidDepth),-Z);
+      setConnect(prefix+suffix[5],Origin+Z*(T+voidHeight),Z);
+
+      setLinkSurf(prefix+suffix[0],-SMap.realSurf(BI+1));
+      setLinkSurf(prefix+suffix[1],SMap.realSurf(BI+2));
+      setLinkSurf(prefix+suffix[2],-SMap.realSurf(BI+3));
+      setLinkSurf(prefix+suffix[3],SMap.realSurf(BI+4));
+      setLinkSurf(prefix+suffix[4],-SMap.realSurf(BI+5));
+      setLinkSurf(prefix+suffix[5],SMap.realSurf(BI+6));
       BI+=100;
-      index+=6;
+      layerIndex++;
     }
-  FixedComp::nameSideIndex(0,"innerFront");
-  FixedComp::nameSideIndex(6,"midFront");
-  FixedComp::nameSideIndex(12,"outerFront");
-  FixedComp::nameSideIndex(1,"innerBack");
-  FixedComp::nameSideIndex(7,"midBack");
-  FixedComp::nameSideIndex(13,"outerBack");
 
   return;
 }

@@ -155,14 +155,10 @@ FocusPoints::createLinks()
 {
   ELog::RegMethod RegA("FocusPoints","createLinks");
 
-  // 4 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy (Key,4) constructor used to.
-  FixedComp::setNConnect(4);
-
-  FixedComp::setConnect(0,Origin-Y*backDist-X*leftWidth,-Y);
-  FixedComp::setConnect(1,Origin-Y*backDist+X*rightWidth,-Y);
-  FixedComp::setConnect(2,Origin+Y*forwardDist-X*leftWidth,Y);
-  FixedComp::setConnect(3,Origin+Y*forwardDist+X*rightWidth,Y);
+  FixedComp::setConnect("backLeft",Origin-Y*backDist-X*leftWidth,-Y);
+  FixedComp::setConnect("backRight",Origin-Y*backDist+X*rightWidth,-Y);
+  FixedComp::setConnect("forwardLeft",Origin+Y*forwardDist-X*leftWidth,Y);
+  FixedComp::setConnect("forwardRight",Origin+Y*forwardDist+X*rightWidth,Y);
 
   return;
 }

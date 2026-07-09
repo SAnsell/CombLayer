@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/beer/BEER.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -522,7 +522,7 @@ BEER::build(Simulation& System,
   FocusWall->setFront(*BInsert,-1);
   FocusWall->setBack(*BInsert,-2);
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid");
 
   OutPitA->addFrontWall(bunkerObj,2);
   buildOutGuide(System,*FocusWall,2,voidCell);

@@ -221,11 +221,6 @@ void TrexHut::createLinks()
 {
   ELog::RegMethod RegA("TrexHut","createLinks");
 
-  // 18 raw-indexed slots (inner/mid/outer void x front/back/left/right/
-  // base/top) are still poked by number below -- pre-size up front as
-  // the legacy (Key,18) constructor used to.
-  FixedComp::setNConnect(18);
-
   double D[6]=
     {voidLength/2.0,voidLength/2.0,
      voidWidth/2.0,voidWidth/2.0,
@@ -246,31 +241,34 @@ void TrexHut::createLinks()
 
   const double* LPtr=L1;
   int BI(buildIndex);
-  
-  for(size_t index=0;index<18;index+=6)
-    {
-      setConnect(index,Origin-Y*D[0],-Y);
-      setConnect(index+1,Origin+Y*D[1],Y);
-      setConnect(index+2,Origin-X*D[2],-X);
-      setConnect(index+3,Origin+X*D[3],X);
-      setConnect(index+4,Origin-Z*D[4],-Z);
-      setConnect(index+5,Origin+Z*D[5],Z);
 
-      setLinkSurf(index,-SMap.realSurf(BI+1));
-      setLinkSurf(index+1,SMap.realSurf(BI+2));
-      setLinkSurf(index+2,-SMap.realSurf(BI+3));
-      setLinkSurf(index+3,SMap.realSurf(BI+4));
-      setLinkSurf(index+4,-SMap.realSurf(BI+5));
-      setLinkSurf(index+5,SMap.realSurf(BI+6));
+  const std::array<std::string,3> layer{"inner","mid","outer"};
+  const std::array<std::string,6> suffix
+    {"Front","Back","Left","Right","Base","Top"};
+
+  for(size_t layerIndex=0;layerIndex<3;layerIndex++)
+    {
+      const std::string& prefix(layer[layerIndex]);
+
+      setConnect(prefix+suffix[0],Origin-Y*D[0],-Y);
+      setConnect(prefix+suffix[1],Origin+Y*D[1],Y);
+      setConnect(prefix+suffix[2],Origin-X*D[2],-X);
+      setConnect(prefix+suffix[3],Origin+X*D[3],X);
+      setConnect(prefix+suffix[4],Origin-Z*D[4],-Z);
+      setConnect(prefix+suffix[5],Origin+Z*D[5],Z);
+
+      setLinkSurf(prefix+suffix[0],-SMap.realSurf(BI+1));
+      setLinkSurf(prefix+suffix[1],SMap.realSurf(BI+2));
+      setLinkSurf(prefix+suffix[2],-SMap.realSurf(BI+3));
+      setLinkSurf(prefix+suffix[3],SMap.realSurf(BI+4));
+      setLinkSurf(prefix+suffix[4],-SMap.realSurf(BI+5));
+      setLinkSurf(prefix+suffix[5],SMap.realSurf(BI+6));
 
       for(size_t i=0;i<6;i++)
 	D[i]+=LPtr[i];
       LPtr=L3;
-      BI+=(index) ? 10 : 20;
+      BI+=(layerIndex) ? 10 : 20;
     }
-  FixedComp::nameSideIndex(0,"innerFront");
-  FixedComp::nameSideIndex(6,"midFront");
-  FixedComp::nameSideIndex(12,"outerFront");
 
   return;
 }

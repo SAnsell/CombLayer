@@ -231,16 +231,12 @@ EmptyCyl::createLinks(const attachSystem::FixedComp&FC,
 {
   ELog::RegMethod RegA("EmptyCyl","createLinks");
 
-  // 4 of 6 raw-indexed slots are still poked by number below -- pre-size
-  // up front as the legacy (Key,6) constructor used to.
-  FixedComp::setNConnect(6);
+  FixedComp::setLinkCopy("base",FC,floor); // ??? how to invert surf sign?
+  FixedComp::setLinkCopy("side",FC,side);
+  FixedComp::setLinkCopy("sideNext",FC,side+1);
 
-  FixedComp::setLinkCopy(0,FC,floor); // ??? how to invert surf sign?
-  FixedComp::setLinkCopy(1,FC,side);
-  FixedComp::setLinkCopy(2,FC,side+1);
-  
-  FixedComp::setConnect(3,Origin+Y*(height),Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Y*(height),Y);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   // for (int i=0; i<4; i++)
   //   ELog::EM << getLinkPt(i+1) << ":\t" << getLinkString(i+1) << ELog::endDiag;

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMX.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -229,7 +229,7 @@ NMX::build(Simulation& System,
 
     // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid");
 
   if (stopPoint==3) return;                  // STOP At bunker edge
   // Section to 24.5m

@@ -428,44 +428,36 @@ Wheel::createLinks()
 {
   ELog::RegMethod RegA("Wheel","createLinks");
 
-  // 16 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy WheelBase(Key,16) constructor used to.
-  FixedComp::setNConnect(16);
-
   // set Links :: Inner links:
 
-  FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+537));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("InnerRadiusNeg",Origin-Y*innerRadius,-Y);
+  FixedComp::setLinkSurf("InnerRadiusNeg",SMap.realSurf(buildIndex+537));
+  FixedComp::addLinkSurf("InnerRadiusNeg",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+537));
-  FixedComp::addLinkSurf(1,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("InnerRadiusPos",Origin+Y*innerRadius,Y);
+  FixedComp::setLinkSurf("InnerRadiusPos",SMap.realSurf(buildIndex+537));
+  FixedComp::addLinkSurf("InnerRadiusPos",SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+1037));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("VoidRadiusNeg",Origin-Y*voidRadius,-Y);
+  FixedComp::setLinkSurf("VoidRadiusNeg",SMap.realSurf(buildIndex+1037));
+  FixedComp::addLinkSurf("VoidRadiusNeg",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+1037));
-  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("VoidRadiusPos",Origin+Y*voidRadius,Y);
+  FixedComp::setLinkSurf("VoidRadiusPos",SMap.realSurf(buildIndex+1037));
+  FixedComp::addLinkSurf("VoidRadiusPos",SMap.realSurf(buildIndex+1));
 
   const double H=(targetHeight/2.0)+coolantThickIn+caseThick+voidThick;
-  FixedComp::setConnect(4,Origin-Z*H,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+35));
+  FixedComp::setConnect("VoidBase",Origin-Z*H,-Z);
+  FixedComp::setLinkSurf("VoidBase",-SMap.realSurf(buildIndex+35));
 
-  FixedComp::setConnect(5,Origin+Z*H,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+36));
+  FixedComp::setConnect("VoidTop",Origin+Z*H,Z);
+  FixedComp::setLinkSurf("VoidTop",SMap.realSurf(buildIndex+36));
 
-  FixedComp::setConnect(6, Origin-Y*voidRadius,Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+537));
+  FixedComp::setConnect("VoidRadius", Origin-Y*voidRadius,Y);
+  FixedComp::setLinkSurf("VoidRadius",SMap.realSurf(buildIndex+537));
 
   ELog::EM<<"ASDFASF"<<ELog::endDiag;
-  nameSideIndex(4,"VoidBase");
-  nameSideIndex(5,"VoidTop");
-  nameSideIndex(6,"VoidRadius");
 
-  
   return;
 }
 

@@ -257,10 +257,6 @@ WedgeItem::createLinks()
 {
   ELog::RegMethod RegA("WedgeItem","createLinks");
 
-  // 4 of 6 raw-indexed slots are still poked by number below -- pre-size
-  // up front as the legacy (Key,6) constructor used to.
-  FixedComp::setNConnect(6);
-
   const Geometry::Vec3D nearPt(Origin+Y*outerCyl->getRadius());
   const Geometry::Plane *pX = ModelSupport::buildPlane(SMap, buildIndex+1003,
 						       Origin, X);
@@ -278,17 +274,17 @@ WedgeItem::createLinks()
   const Geometry::Vec3D C = SurInter::getPoint(pZ, p4, pBC, nearPt);
   const Geometry::Vec3D D = SurInter::getPoint(pZ, p3, pBC, nearPt);
 
-  FixedComp::setConnect(0, pt0, Y);
-  FixedComp::setLinkSurf(0, outerCyl->getName());
+  FixedComp::setConnect("outer", pt0, Y);
+  FixedComp::setLinkSurf("outer", outerCyl->getName());
 
-  FixedComp::setConnect(1, (C+D)/2, -Y);
-  FixedComp::setLinkSurf(1, -pBC->getName());
+  FixedComp::setConnect("inner", (C+D)/2, -Y);
+  FixedComp::setLinkSurf("inner", -pBC->getName());
 
-  FixedComp::setConnect(2, (A+C)/2, -p4->getNormal());
-  FixedComp::setLinkSurf(2, p4->getName());
-  
-  FixedComp::setConnect(3, (B+D)/2, p3->getNormal());
-  FixedComp::setLinkSurf(3, -p3->getName());
+  FixedComp::setConnect("left", (A+C)/2, -p4->getNormal());
+  FixedComp::setLinkSurf("left", p4->getName());
+
+  FixedComp::setConnect("right", (B+D)/2, p3->getNormal());
+  FixedComp::setLinkSurf("right", -p3->getName());
 
   return;
 }

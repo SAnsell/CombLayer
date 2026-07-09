@@ -11,6 +11,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -205,25 +206,24 @@ void F5Collimator::createLinks()
 {
   ELog::RegMethod RegA("F5Collimator","createLinks");
 
-  // 6 raw-indexed slots (X is the depth axis here, not Y) are still
-  // poked by number below -- pre-size up front as the legacy (Key,6)
-  // constructor used to.
-  FixedComp::setNConnect(6);
+  // X is the depth axis here, not Y
+  const std::array<std::string,6> name
+    {"front","back","left","right","base","top"};
 
-  FixedComp::setConnect(0,   Origin-X*(1.0+wall), -X);
-  FixedComp::setLinkSurf(0, -SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect(name[0],   Origin-X*(1.0+wall), -X);
+  FixedComp::setLinkSurf(name[0], -SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,   Origin+X*length,  X);
-  
-  FixedComp::setConnect(2,   Origin-Y*(width/2+wall), -Y);
-  FixedComp::setConnect(3,   Origin+Y*(width/2+wall),  Y);
-  
-  FixedComp::setConnect(4,   Origin-Z*(height/2+wall), -Z); 
-  FixedComp::setConnect(5,   Origin+Z*(height/2+wall),  Z); 
-  
+  FixedComp::setConnect(name[1],   Origin+X*length,  X);
+
+  FixedComp::setConnect(name[2],   Origin-Y*(width/2+wall), -Y);
+  FixedComp::setConnect(name[3],   Origin+Y*(width/2+wall),  Y);
+
+  FixedComp::setConnect(name[4],   Origin-Z*(height/2+wall), -Z);
+  FixedComp::setConnect(name[5],   Origin+Z*(height/2+wall),  Z);
+
   for (size_t i=0; i<6; i++)
-    FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+static_cast<int>(i)));
-  
+    FixedComp::setLinkSurf(name[i],SMap.realSurf(buildIndex+static_cast<int>(i)));
+
   return;
 }
   

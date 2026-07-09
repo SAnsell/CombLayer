@@ -311,72 +311,70 @@ TwisterModule::createLinks()
 {
   ELog::RegMethod RegA("TwisterModule","createLinks");
 
-  // 15 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy (Key,15) constructor used to.
-  FixedComp::setNConnect(15);
-
   // SHAFT
-  FixedComp::setConnect(0,Origin+Y*shaftRadius,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("shaftFront",Origin+Y*shaftRadius,-Y);
+  FixedComp::setLinkSurf("shaftFront",SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf("shaftFront",-SMap.realSurf(buildIndex+101));
 
-  FixedComp::setConnect(1,Origin+Y*shaftRadius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(1,SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("shaftBack",Origin+Y*shaftRadius,Y);
+  FixedComp::setLinkSurf("shaftBack",SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf("shaftBack",SMap.realSurf(buildIndex+101));
 
-  FixedComp::setConnect(2,Origin+X*shaftRadius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+103));
-  
-  FixedComp::setConnect(3,Origin+X*shaftRadius,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+103));
-  
-  FixedComp::setConnect(4,Origin+Z*(plugFrameHeight+shaftHeight),Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("shaftLeft",Origin+X*shaftRadius,-X);
+  FixedComp::setLinkSurf("shaftLeft",SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf("shaftLeft",-SMap.realSurf(buildIndex+103));
+
+  FixedComp::setConnect("shaftRight",Origin+X*shaftRadius,X);
+  FixedComp::setLinkSurf("shaftRight",SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf("shaftRight",SMap.realSurf(buildIndex+103));
+
+  FixedComp::setConnect("shaftTop",Origin+Z*(plugFrameHeight+shaftHeight),Z);
+  FixedComp::setLinkSurf("shaftTop",SMap.realSurf(buildIndex+16));
 
   // SHAFT BEARING
-  FixedComp::setConnect(5,Origin+Y*shaftBearingRadius,-Y);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+57));
-  FixedComp::addLinkSurf(5,-SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("bearingFront",Origin+Y*shaftBearingRadius,-Y);
+  FixedComp::setLinkSurf("bearingFront",SMap.realSurf(buildIndex+57));
+  FixedComp::addLinkSurf("bearingFront",-SMap.realSurf(buildIndex+101));
 
-  FixedComp::setConnect(6,Origin+Y*shaftBearingRadius,Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+57));
-  FixedComp::addLinkSurf(6,SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("bearingBack",Origin+Y*shaftBearingRadius,Y);
+  FixedComp::setLinkSurf("bearingBack",SMap.realSurf(buildIndex+57));
+  FixedComp::addLinkSurf("bearingBack",SMap.realSurf(buildIndex+101));
 
-  FixedComp::setConnect(7,Origin+X*shaftBearingRadius,-X);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+57));
-  FixedComp::addLinkSurf(7,-SMap.realSurf(buildIndex+103));
-  
-  FixedComp::setConnect(8,Origin+X*shaftBearingRadius,X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+57));
-  FixedComp::addLinkSurf(8,SMap.realSurf(buildIndex+103));
-  
-  FixedComp::setConnect(9,Origin-Z*(plugFrameDepth+shaftBearingHeight),-Z);
-  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+35));
+  FixedComp::setConnect("bearingLeft",Origin+X*shaftBearingRadius,-X);
+  FixedComp::setLinkSurf("bearingLeft",SMap.realSurf(buildIndex+57));
+  FixedComp::addLinkSurf("bearingLeft",-SMap.realSurf(buildIndex+103));
+
+  FixedComp::setConnect("bearingRight",Origin+X*shaftBearingRadius,X);
+  FixedComp::setLinkSurf("bearingRight",SMap.realSurf(buildIndex+57));
+  FixedComp::addLinkSurf("bearingRight",SMap.realSurf(buildIndex+103));
+
+  FixedComp::setConnect("bearingBase",Origin-Z*(plugFrameDepth+shaftBearingHeight),-Z);
+  FixedComp::setLinkSurf("bearingBase",-SMap.realSurf(buildIndex+35));
 
   // PLUG FRAME
-  FixedComp::setConnect(10,Origin+Y*plugFrameRadius,-Y);
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+27));
-  FixedComp::addLinkSurf(10,-SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("frameFront",Origin+Y*plugFrameRadius,-Y);
+  FixedComp::setLinkSurf("frameFront",SMap.realSurf(buildIndex+27));
+  FixedComp::addLinkSurf("frameFront",-SMap.realSurf(buildIndex+101));
 
-  FixedComp::setConnect(11,Origin+Y*plugFrameRadius,Y);
-  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+27));
-  FixedComp::addLinkSurf(11,SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("frameBack",Origin+Y*plugFrameRadius,Y);
+  FixedComp::setLinkSurf("frameBack",SMap.realSurf(buildIndex+27));
+  FixedComp::addLinkSurf("frameBack",SMap.realSurf(buildIndex+101));
 
-  FixedComp::setConnect(12,Origin+X*plugFrameRadius,-X);
-  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+27));
-  FixedComp::addLinkSurf(12,-SMap.realSurf(buildIndex+103));
-  
-  FixedComp::setConnect(13,Origin+X*plugFrameRadius,X);
-  FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+27));
-  FixedComp::addLinkSurf(13,SMap.realSurf(buildIndex+103));
-  
-  FixedComp::setConnect(14,Origin-Z*plugFrameDepth,-Z);
-  FixedComp::setLinkSurf(14,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("frameLeft",Origin+X*plugFrameRadius,-X);
+  FixedComp::setLinkSurf("frameLeft",SMap.realSurf(buildIndex+27));
+  FixedComp::addLinkSurf("frameLeft",-SMap.realSurf(buildIndex+103));
 
-  FixedComp::setConnect(14,Origin+Z*plugFrameHeight,Z);
-  FixedComp::setLinkSurf(14,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("frameRight",Origin+X*plugFrameRadius,X);
+  FixedComp::setLinkSurf("frameRight",SMap.realSurf(buildIndex+27));
+  FixedComp::addLinkSurf("frameRight",SMap.realSurf(buildIndex+103));
+
+  // NOTE: pre-existing dead write -- this first assignment to "frameBase"
+  // is immediately overwritten below; preserved as-is.
+  FixedComp::setConnect("frameBase",Origin-Z*plugFrameDepth,-Z);
+  FixedComp::setLinkSurf("frameBase",-SMap.realSurf(buildIndex+5));
+
+  FixedComp::setConnect("frameBase",Origin+Z*plugFrameHeight,Z);
+  FixedComp::setLinkSurf("frameBase",SMap.realSurf(buildIndex+6));
 
   return;
 }

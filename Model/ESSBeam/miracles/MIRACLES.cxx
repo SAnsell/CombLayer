@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/miracles/MIRACLES.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -428,7 +428,7 @@ MIRACLES::build(Simulation& System,
 
   // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid");
 
   ShieldA->setFront(bunkerObj,2);
   buildOutGuide(System,*FocusWall,2,voidCell);
