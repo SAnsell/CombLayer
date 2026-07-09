@@ -3,7 +3,7 @@
 
  * File:   essBuild/BeamDump.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace essSystem
 
 BeamDump::BeamDump(const std::string& Base,
 		   const std::string& Key)  :
-  attachSystem::FixedRotate(Base+Key,6), 
+  attachSystem::FixedRotate(Base+Key),
   attachSystem::ContainedComp(),
   baseName(Base),active(1)
   /*!
@@ -562,24 +562,24 @@ BeamDump::createLinks()
 {
   ELog::RegMethod RegA("BeamDump","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(roofOverhangLength),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+51));
+  FixedComp::setConnect("front",Origin-Y*(roofOverhangLength),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+51));
 
-  FixedComp::setConnect(1,Origin+Y*(frontWallLength+floorLength+backWallLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
+  FixedComp::setConnect("back",Origin+Y*(frontWallLength+floorLength+backWallLength),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+42));
 
-  FixedComp::setConnect(2,Origin-X*(frontWallWidth/2.0+sideWallThick),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+73));
+  FixedComp::setConnect("left",Origin-X*(frontWallWidth/2.0+sideWallThick),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+73));
 
-  FixedComp::setConnect(3,Origin+X*(frontWallWidth/2.0+sideWallThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+74));
-  
-  FixedComp::setConnect(4,Origin-Z*(frontWallDepth+frontInnerWallHeight+innerRoofThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("right",Origin+X*(frontWallWidth/2.0+sideWallThick),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+74));
 
-  FixedComp::setConnect(5,Origin+
+  FixedComp::setConnect("base",Origin-Z*(frontWallDepth+frontInnerWallHeight+innerRoofThick),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+
+  FixedComp::setConnect("top",Origin+
 			Z*(frontWallHeight-frontInnerWallHeight-innerRoofThick+roofThick),-Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+56));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+56));
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   essConstruct/boxPort.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace essConstruct
 
 boxPort::boxPort(const std::string& BKey,
 		 const std::string& PKey) :
-  attachSystem::FixedRotate(BKey+PKey,6),
+  attachSystem::FixedRotate(BKey+PKey),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),

@@ -3,7 +3,7 @@
  
  * File:   t1Build/SideCoolTarget.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace ts1System
 {
 
 SideCoolTarget::SideCoolTarget(const std::string& Key) :
-  TMRSystem::TargetBase(Key,6)
+  TMRSystem::TargetBase(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -318,6 +318,10 @@ SideCoolTarget::createLinks()
   */
 {
   ELog::RegMethod RegA("SideCoolTarget","createLinks");
+
+  // 6 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy TargetBase(Key,6) constructor used to.
+  FixedComp::setNConnect(6);
 
   // all point out
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));

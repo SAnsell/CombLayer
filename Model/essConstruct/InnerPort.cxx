@@ -3,7 +3,7 @@
  
  * File:   essConstruct/InnerPort.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace essConstruct
 {
 
 InnerPort::InnerPort(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::ExternalCut()
   /*!
@@ -479,19 +479,19 @@ InnerPort::createLinks()
 {
   ELog::RegMethod RegA("InnerPort","createLinks");
 
-  setConnect(0,Origin-Y*(length/2.0),-Y);
-  setConnect(1,Origin+Y*(length/2.0),Y);
-  setConnect(2,Origin-X*(width/2.0),-X);
-  setConnect(3,Origin+X*(width/2.0),X);
-  setConnect(4,Origin-Z*(height/2.0),-Z);
-  setConnect(5,Origin+Z*(height/2.0),Z);
+  setConnect("front",Origin-Y*(length/2.0),-Y);
+  setConnect("back",Origin+Y*(length/2.0),Y);
+  setConnect("left",Origin-X*(width/2.0),-X);
+  setConnect("right",Origin+X*(width/2.0),X);
+  setConnect("base",Origin-Z*(height/2.0),-Z);
+  setConnect("top",Origin+Z*(height/2.0),Z);
 
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  setLinkSurf(3,SMap.realSurf(buildIndex+3));
-  setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  setLinkSurf("right",SMap.realSurf(buildIndex+3));
+  setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  setLinkSurf("top",SMap.realSurf(buildIndex+6));
   
   return;
 }

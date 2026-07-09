@@ -3,7 +3,7 @@
  
  * File:   snsBuild/RefPlug.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ namespace snsSystem
 {
 
 RefPlug::RefPlug(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0)
   /*!
@@ -226,27 +226,27 @@ RefPlug::createLinks()
     {
       const int SI(buildIndex+static_cast<int>(nLayers)*10);
 
-      FixedComp::setConnect(0,Origin-Y*radius[nLayers],-Y);
-      FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+2));
+      FixedComp::setConnect("front",Origin-Y*radius[nLayers],-Y);
+      FixedComp::setLinkSurf("front",SMap.realSurf(SI+7));
+      FixedComp::addLinkSurf("front",-SMap.realSurf(buildIndex+2));
 
-      FixedComp::setConnect(1,Origin+Y*radius[nLayers],Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(1,SMap.realSurf(buildIndex+2));
+      FixedComp::setConnect("back",Origin+Y*radius[nLayers],Y);
+      FixedComp::setLinkSurf("back",SMap.realSurf(SI+7));
+      FixedComp::addLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-      FixedComp::setConnect(2,Origin-X*radius[nLayers],-X);
-      FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+1));
+      FixedComp::setConnect("left",Origin-X*radius[nLayers],-X);
+      FixedComp::setLinkSurf("left",SMap.realSurf(SI+7));
+      FixedComp::addLinkSurf("left",-SMap.realSurf(buildIndex+1));
 
-      FixedComp::setConnect(3,Origin+X*radius[nLayers],X);
-      FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+1));
-      
-      FixedComp::setConnect(4,Origin-Z*depth,-Z);
-      FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+      FixedComp::setConnect("right",Origin+X*radius[nLayers],X);
+      FixedComp::setLinkSurf("right",SMap.realSurf(SI+7));
+      FixedComp::addLinkSurf("right",SMap.realSurf(buildIndex+1));
 
-      FixedComp::setConnect(5,Origin+Z*height,Z);
-      FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+      FixedComp::setConnect("base",Origin-Z*depth,-Z);
+      FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+
+      FixedComp::setConnect("top",Origin+Z*height,Z);
+      FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
     }
   else 
     ELog::EM<<"NO Layers in RefPlug"<<ELog::endErr;
