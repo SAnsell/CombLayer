@@ -76,10 +76,13 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {
-  // Other objects (e.g. makeESS's LowMod/TopMod) read this object's
-  // link points 4/5 before createAll()/createLinks() run on it, so the
-  // slots must exist immediately -- pre-size up front as the legacy
-  // (Key,9) constructor used to.
+  // Other objects (e.g. makeESS's LowMod/TopMod, via
+  // createAll(...,*LowPreMod,6,...)) read this object's link point 5
+  // by raw signed index before createAll()/createLinks() run on it --
+  // pre-register the name at its old numeric position and pre-size
+  // up front as the legacy (Key,9) constructor used to.
+  FixedComp::nameSideIndex(4,"base");
+  FixedComp::nameSideIndex(5,"top");
   FixedComp::setNConnect(9);
 }
 
@@ -289,16 +292,12 @@ DiskLayerMod::createLinks()
 {  
   ELog::RegMethod RegA("DiskLayerMod","createLinks");
 
-  // 2 of 9 raw-indexed slots (4/5) are still poked by number below --
-  // pre-size up front as the legacy (Key,9) constructor used to.
-  FixedComp::setNConnect(9);
-
   const int SI(buildIndex+static_cast<int>(thick.size())*200);
 
-  FixedComp::setConnect(4,Origin,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setConnect(5,Origin+Z*thick[nLayers-1],Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(SI+5));
+  FixedComp::setConnect("base",Origin,-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("top",Origin+Z*thick[nLayers-1],Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(SI+5));
 
   return;
 }
