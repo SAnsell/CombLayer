@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertShell.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,18 +157,21 @@ insertShell::createLinks()
 {
   ELog::RegMethod RegA("insertShell","createLinks");
 
-  FixedComp::setNConnect(12);
   const Geometry::Vec3D Dir[3]={Y,X,Z};
+  static const std::string Names[6]=
+    {"front","back","left","right","base","top"};
+  static const std::string InnerNames[6]=
+    {"innerFront","innerBack","innerLeft","innerRight","innerBase","innerTop"};
 
   for(size_t i=0;i<6;i++)
     {
       const double SN((i%2) ? 1.0 : -1.0);
-      FixedComp::setConnect(i,Origin+Dir[i/2]*outerRadius,Dir[i/2]*SN);
-      FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+7));
-      FixedComp::setConnect(i+6,Origin+Dir[i/2]*outerRadius,Dir[i/2]*SN);
-      FixedComp::setLinkSurf(i+6,SMap.realSurf(buildIndex+17));
+      FixedComp::setConnect(Names[i],Origin+Dir[i/2]*outerRadius,Dir[i/2]*SN);
+      FixedComp::setLinkSurf(Names[i],SMap.realSurf(buildIndex+7));
+      FixedComp::setConnect(InnerNames[i],Origin+Dir[i/2]*outerRadius,Dir[i/2]*SN);
+      FixedComp::setLinkSurf(InnerNames[i],SMap.realSurf(buildIndex+17));
     }
-  
+
   return;
 }
 

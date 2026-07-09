@@ -304,8 +304,6 @@ TubeDetBox::createLinks()
   */
 {
   ELog::RegMethod RegA("TubeDetBox","createLinks");
-  
-  FixedComp::setNConnect(nDet+6);
 
   if (nDet)
     {
@@ -314,13 +312,14 @@ TubeDetBox::createLinks()
       Geometry::Vec3D tubeCent(Origin-XGap*(static_cast<double>(nDet-1)/2.0));
       for(size_t i=0;i<nDet;i++)
 	{
-	  FixedComp::setConnect(i,tubeCent,-Y);
-	  FixedComp::setLinkSurf(i,SMap.realSurf(DI+7));
+	  const std::string tubeName("tube"+std::to_string(i));
+	  FixedComp::setConnect(tubeName,tubeCent,-Y);
+	  FixedComp::setLinkSurf(tubeName,SMap.realSurf(DI+7));
 	  tubeCent+=XGap;
 	  DI+=100;
 	}
     }
-  
+
   return;
 }
 

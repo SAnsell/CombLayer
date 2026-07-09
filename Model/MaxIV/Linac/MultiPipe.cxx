@@ -134,31 +134,36 @@ MultiPipe::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeRadius);
   
   int BI(buildIndex+100);
-  size_t index(1);
-  // createSurfaces() (this function) runs before createLinks() and
-  // pokes link points 1..pipes.size() by raw index, so pre-size here.
-  FixedComp::setNConnect(pipes.size()+1);
+  // createSurfaces() (this function) runs before createLinks(), which
+  // is what creates "front" -- reserve its slot here (nameSideIndex
+  // alone only touches the name->index map, not the LU array size, so
+  // the reservation must grow LU explicitly) so the pipe links created
+  // below don't land on (and get overwritten by) it.
+  FixedComp::setNConnect(1);
+  FixedComp::nameSideIndex(0,"front");
+  size_t index(0);
   for(const subPipeUnit& PU : pipes)
     {
       attachSystem::FixedRotateUnit pipeFC(PU.keyName,Origin,Y,Z);
       pipeFC.setOffset(PU.xStep,0,PU.zStep);
       pipeFC.setRotation(PU.zAngle,0.0,PU.xyAngle);
       pipeFC.applyOffset();
-      
+
       const Geometry::Vec3D pOrg=pipeFC.getCentre();
       const Geometry::Vec3D pY=pipeFC.getY();
       ModelSupport::buildPlane(SMap,BI+1,pOrg+pY*PU.length,pY);
       ModelSupport::buildPlane
 	(SMap,BI+11,pOrg+pY*(PU.length-PU.flangeLength),pY);
-      
+
       ModelSupport::buildCylinder(SMap,BI+7,pOrg,pY,PU.radius);
       ModelSupport::buildCylinder
-	(SMap,BI+17,pOrg+pY*PU.length,pY,PU.radius+PU.thick);    
+	(SMap,BI+17,pOrg+pY*PU.length,pY,PU.radius+PU.thick);
       ModelSupport::buildCylinder
 	(SMap,BI+27,pOrg+pY*PU.length,pY,PU.flangeRadius);
 
-      FixedComp::setConnect(index,pOrg+pY*PU.length,pY);
-      FixedComp::setLinkSurf(index,SMap.realSurf(BI+1));
+      const std::string pipeName("pipe"+std::to_string(index));
+      FixedComp::setConnect(pipeName,pOrg+pY*PU.length,pY);
+      FixedComp::setLinkSurf(pipeName,SMap.realSurf(BI+1));
 
       index++;
       BI+=100;

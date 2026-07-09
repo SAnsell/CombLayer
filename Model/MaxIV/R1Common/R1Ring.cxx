@@ -561,8 +561,6 @@ R1Ring::createLinks()
 {
   ELog::RegMethod RegA("R1Ring","createLinks");
 
-  FixedComp::setNConnect(2*concaveNPoints+2);
-
   const double beamStepOut(1510.55);  // from origin
   // Main beam start points DONT have a surface [yet]
 
@@ -580,9 +578,9 @@ R1Ring::createLinks()
       const Geometry::Vec3D Axis= -Beam*Z;
       const Geometry::Vec3D PtX=Origin+Axis*beamStepOut;
 
-      FixedComp::nameSideIndex(index+2,"OpticCentre"+std::to_string(index));
-      FixedComp::setLinkSurf(index+2,-BInner->getName());
-      FixedComp::setConnect(index+2,PtX,Beam);
+      const std::string linkName("OpticCentre"+std::to_string(index));
+      FixedComp::setLinkSurf(linkName,-BInner->getName());
+      FixedComp::setConnect(linkName,PtX,Beam);
       index++;
     }
 
@@ -600,9 +598,9 @@ R1Ring::createLinks()
       const Geometry::Vec3D& BPt(PointMap::getPoint("OutSideWall",i));
       const Geometry::Vec3D Beam= -SOuter->getNormal();
 
-      FixedComp::nameSideIndex(index+2,"SideWall"+std::to_string(i));
-      FixedComp::setLinkSurf(index+2,-SOuter->getName());
-      FixedComp::setConnect(index+2,(APt+BPt)/2.0,Beam);
+      const std::string linkName("SideWall"+std::to_string(i));
+      FixedComp::setLinkSurf(linkName,-SOuter->getName());
+      FixedComp::setConnect(linkName,(APt+BPt)/2.0,Beam);
       index++;
     }
   return;
