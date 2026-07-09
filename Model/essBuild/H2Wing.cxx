@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2Wing.cxx 
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ namespace essSystem
 H2Wing::H2Wing(const std::string& baseKey,
 	       const std::string& extraKey,
 	       const double XYAngle) :
-  attachSystem::FixedComp(baseKey+extraKey,16),
+  attachSystem::FixedComp(baseKey+extraKey),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::CellMap(),
@@ -246,6 +246,10 @@ H2Wing::createLinks()
   */
 {
   ELog::RegMethod RegA("H2Wing","createLinks");
+
+  // 14 of 16 raw-indexed slots are still poked by number below -- pre-size
+  // up front as the legacy (Key,16) constructor used to.
+  FixedComp::setNConnect(16);
 
   // Loop over corners that are bound by convex
   std::array<Geometry::Vec3D,3> CPts;
