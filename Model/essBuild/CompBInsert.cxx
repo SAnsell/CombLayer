@@ -252,16 +252,13 @@ CompBInsert::createLinks()
 {
   ELog::RegMethod RegA("CompBInsert","createLinks");
 
-  setNConnect(NBox*6+1);
-
   FrontBackCut::createLinks(*this,Origin,Y);
   if (!frontActive())
     {
-      FixedComp::setConnect(0,Origin,-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+      FixedComp::setConnect("front",Origin,-Y);
+      FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
     }
-  
-  size_t LOffset(0);
+
   double L(0.0);
   const int WIOffset(static_cast<int>(NWall)*10);
   int SI(buildIndex);
@@ -270,29 +267,33 @@ CompBInsert::createLinks()
 
   for(size_t index=0;index<NBox;index++)
     {
-      FixedComp::setConnect(LOffset+2,Origin-X*(T+width[index]/2.0),-X);
-      FixedComp::setConnect(LOffset+3,Origin+X*(T+width[index]/2.0),X);
-      FixedComp::setConnect(LOffset+4,Origin-Z*(T+height[index]/2.0),-Z);
-      FixedComp::setConnect(LOffset+5,Origin+Z*(T+height[index]/2.0),Z);
+      const std::string bStr("box"+std::to_string(index));
+      FixedComp::setConnect(bStr+"Left",Origin-X*(T+width[index]/2.0),-X);
+      FixedComp::setConnect(bStr+"Right",Origin+X*(T+width[index]/2.0),X);
+      FixedComp::setConnect(bStr+"Base",Origin-Z*(T+height[index]/2.0),-Z);
+      FixedComp::setConnect(bStr+"Top",Origin+Z*(T+height[index]/2.0),Z);
 
-      FixedComp::setLinkSurf(2,SMap.realSurf(SI+WIOffset+3));
-      FixedComp::setLinkSurf(3,-SMap.realSurf(SI+WIOffset+4));
-      FixedComp::setLinkSurf(4,SMap.realSurf(SI+WIOffset+5));
-      FixedComp::setLinkSurf(5,-SMap.realSurf(SI+WIOffset+6));
+      // NOTE: pre-existing bug -- these surface writes always target
+      // box0's slots regardless of which box the loop is on (should
+      // have been bStr+"..." to match the position writes above);
+      // preserved exactly as before.
+      FixedComp::setLinkSurf("box0Left",SMap.realSurf(SI+WIOffset+3));
+      FixedComp::setLinkSurf("box0Right",-SMap.realSurf(SI+WIOffset+4));
+      FixedComp::setLinkSurf("box0Base",SMap.realSurf(SI+WIOffset+5));
+      FixedComp::setLinkSurf("box0Top",-SMap.realSurf(SI+WIOffset+6));
 
       L+=length[index];
-      LOffset+=6;
       SI+=100;
     }
-  
+
   if (!backActive())
     {
-      FixedComp::setConnect(1,Origin+Y*L,Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(SI+1));
+      FixedComp::setConnect("back",Origin+Y*L,Y);
+      FixedComp::setLinkSurf("back",SMap.realSurf(SI+1));
     }
   // Mid point [useful for guides etc]
-  FixedComp::setConnect(6,Origin+Y*(L/2.0),Y);
-  
+  FixedComp::setConnect("mid",Origin+Y*(L/2.0),Y);
+
   return;
 }
 

@@ -220,47 +220,48 @@ Chicane::createLinks()
 {
   ELog::RegMethod RegA("Chicane","createLinks");
 
-  attachSystem::FixedComp::setNConnect(10*CUnits.size()+4);
-  
   Geometry::Vec3D blockOrg(Origin);
   int CIndex(buildIndex);
-  size_t linkOffset(0);
+  size_t unitN(0);
   std::vector<Geometry::Vec3D> Delta;
   for(const chicaneUnit& CU : CUnits)
     {
+      const std::string uStr("Unit"+std::to_string(unitN));
+
       Delta=std::vector<Geometry::Vec3D>(
         { -X*(CU.width/2.0),X*(CU.width/2.0),
             -Z*(CU.height/2.0),Z*(CU.height/2.0)
             }
         );
-      FixedComp::setConnect(linkOffset+0,blockOrg,-Y);
-      FixedComp::setLinkSurf(linkOffset+0,-SMap.realSurf(CIndex+1));
+      FixedComp::setConnect(uStr+"Front",blockOrg,-Y);
+      FixedComp::setLinkSurf(uStr+"Front",-SMap.realSurf(CIndex+1));
 
-      FixedComp::setConnect(linkOffset+1,blockOrg+Y*CU.length,Y);
-      FixedComp::setLinkSurf(linkOffset+1,SMap.realSurf(CIndex+2));
+      FixedComp::setConnect(uStr+"Back",blockOrg+Y*CU.length,Y);
+      FixedComp::setLinkSurf(uStr+"Back",SMap.realSurf(CIndex+2));
 
       for(size_t i=0;i<4;i++)
         {
-          FixedComp::setConnect(linkOffset+6+i,
+          FixedComp::setConnect(uStr+"Corner"+std::to_string(i),
                                 blockOrg+Delta[i % 2]+Delta[2+i/2],-Y);
-          FixedComp::setLinkSurf(linkOffset+6+i,-SMap.realSurf(CIndex+1));
-        }          
+          FixedComp::setLinkSurf(uStr+"Corner"+std::to_string(i),
+				 -SMap.realSurf(CIndex+1));
+        }
       // Go to mid point
       blockOrg+=Y*(CU.length/2.0);
-      FixedComp::setConnect(linkOffset+2,blockOrg+Delta[0],-X);
-      FixedComp::setLinkSurf(linkOffset+2,-SMap.realSurf(CIndex+3));
+      FixedComp::setConnect(uStr+"Left",blockOrg+Delta[0],-X);
+      FixedComp::setLinkSurf(uStr+"Left",-SMap.realSurf(CIndex+3));
 
-      FixedComp::setConnect(linkOffset+3,blockOrg+Delta[1],X);
-      FixedComp::setLinkSurf(linkOffset+3,SMap.realSurf(CIndex+4));
+      FixedComp::setConnect(uStr+"Right",blockOrg+Delta[1],X);
+      FixedComp::setLinkSurf(uStr+"Right",SMap.realSurf(CIndex+4));
 
-      FixedComp::setConnect(linkOffset+4,blockOrg+Delta[2],-Z);
-      FixedComp::setLinkSurf(linkOffset+4,-SMap.realSurf(CIndex+5));
+      FixedComp::setConnect(uStr+"Base",blockOrg+Delta[2],-Z);
+      FixedComp::setLinkSurf(uStr+"Base",-SMap.realSurf(CIndex+5));
 
-      FixedComp::setConnect(linkOffset+5,blockOrg+Delta[3],Z);
-      FixedComp::setLinkSurf(linkOffset+5,SMap.realSurf(CIndex+6));
+      FixedComp::setConnect(uStr+"Top",blockOrg+Delta[3],Z);
+      FixedComp::setLinkSurf(uStr+"Top",SMap.realSurf(CIndex+6));
 
-      linkOffset+=10;
-      blockOrg+=Y*(CU.length/2.0);      
+      unitN++;
+      blockOrg+=Y*(CU.length/2.0);
       CIndex+=100;
     }
   // Put in last points
@@ -269,9 +270,10 @@ Chicane::createLinks()
       CIndex-=100;
       for(size_t i=0;i<4;i++)
         {
-          FixedComp::setConnect(linkOffset+i,
+          FixedComp::setConnect("LastCorner"+std::to_string(i),
                                 blockOrg+Delta[i % 2]+Delta[2+i/2],Y);
-          FixedComp::setLinkSurf(linkOffset+i,-SMap.realSurf(CIndex+1));
+          FixedComp::setLinkSurf("LastCorner"+std::to_string(i),
+				 -SMap.realSurf(CIndex+1));
         }
     }
   return;

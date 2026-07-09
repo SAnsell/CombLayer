@@ -270,8 +270,8 @@ ButterflyModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Origin from center
 
-  FixedComp::setLinkCopy("base",*LeftUnit,5);
-  FixedComp::setLinkCopy("top",*LeftUnit,6);
+  FixedComp::setLinkCopy("base",*LeftUnit,"base");
+  FixedComp::setLinkCopy("top",*LeftUnit,"top");
   const double LowV= FixedComp::getLinkPt("base").Z();
   const double HighV= FixedComp::getLinkPt("top").Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
@@ -372,8 +372,8 @@ ButterflyModerator::getLeftExclude() const
   ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
   HeadRule HR;
 
-  HR*=LeftUnit->getFullRule(8);
-  HR*=RightUnit->getFullRule(9);
+  HR*=LeftUnit->getFullRule("outerCorner1");
+  HR*=RightUnit->getFullRule("outerCorner2");
   HR*=MidWater->getFullRule("fullCutFront");
   HR*= getLeftFarExclude();
   
@@ -391,8 +391,8 @@ ButterflyModerator::getRightExclude() const
   ELog::RegMethod RegA("ButterflyModerator","getRightExclude");
   HeadRule HR;
 
-  HR=LeftUnit->getFullRule(9);
-  HR*=RightUnit->getFullRule(8);
+  HR=LeftUnit->getFullRule("outerCorner2");
+  HR*=RightUnit->getFullRule("outerCorner1");
   HR*=MidWater->getFullRule("fullCutBack");
 
   HR*=getRightFarExclude();

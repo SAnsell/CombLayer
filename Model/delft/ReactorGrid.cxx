@@ -564,40 +564,45 @@ ReactorGrid::createLinks()
 {
   ELog::RegMethod RegA("ReactorGrid","createLinks");
 
-  // Pre-size the fixed 0-6 slots up front (as the legacy (Key,7)
-  // constructor used to) -- setNConnect(NGrid+8) below grows past this.
-  FixedComp::setNConnect(7);
+  // Note: "left" and "right" are created first so they land on link
+  // indices 0/1 -- some external callers (makeDelft::makeBlocks) build
+  // against this grid before createLinks() has run and so must use the
+  // raw signed indices 1/2 rather than a name lookup; keep this order,
+  // and avoid the reserved "front"/"back" names here (they are
+  // pre-pinned by the base FixedComp constructor to whichever indices
+  // are created first, so re-using them for the Y-depth faces below
+  // would silently alias onto -- and overwrite -- "left"/"right").
+  FixedComp::setConnect("left",Origin-X*Width/2.0,-X);
+  FixedComp::setConnect("right",Origin+X*Width/2.0,X);
+  FixedComp::setConnect("frontFace",Origin-Y*Depth/2.0,-Y);
+  FixedComp::setConnect("backFace",Origin+Y*Depth/2.0,Y);
+  FixedComp::setConnect("base",Origin-Z*Base,-Z);
+  FixedComp::setConnect("top",Origin+Z*Top,Z);
+  FixedComp::setConnect("backEdge",Origin+Y*Depth/2.0,Y);
 
-  FixedComp::setConnect(0,Origin-X*Width/2.0,-X);
-  FixedComp::setConnect(1,Origin+X*Width/2.0,X);     
-  FixedComp::setConnect(2,Origin-Y*Depth/2.0,-Y);       
-  FixedComp::setConnect(3,Origin+Y*Depth/2.0,Y);     
-  FixedComp::setConnect(4,Origin-Z*Base,-Z);     
-  FixedComp::setConnect(5,Origin+Z*Top,Z);     
-  FixedComp::setConnect(6,Origin+Y*Depth/2.0,Y);     
-  
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("frontFace",SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("backFace",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("backEdge",SMap.realSurf(buildIndex+7));
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+7));
+  // The first grid cell historically shared its link index (and thus
+  // its inherited linkSurf) with "backEdge" -- preserve that alias
+  // exactly so downstream code relying on this link's surface is
+  // unaffected.
+  const size_t backEdgeIndex=
+    static_cast<size_t>(FixedComp::getSideIndex("backEdge")-1);
+  FixedComp::nameSideIndex(backEdgeIndex,getElementName("Grid",0,0));
 
-
-  const size_t NGrid(NX*NY);
-
-  FixedComp::setNConnect(NGrid+8);
-  size_t FCIndex(6);
   for(size_t i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       {
-	FixedComp::nameSideIndex(FCIndex,getElementName("Grid",i,j));
-	FixedComp::setConnect(FCIndex,getCellOrigin(i,j),Y);
-	FCIndex++;
+	const std::string gridName(getElementName("Grid",i,j));
+	FixedComp::setConnect(gridName,getCellOrigin(i,j),Y);
       }
-  
+
   return;
 }
 

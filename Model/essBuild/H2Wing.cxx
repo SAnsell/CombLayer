@@ -247,10 +247,6 @@ H2Wing::createLinks()
 {
   ELog::RegMethod RegA("H2Wing","createLinks");
 
-  // 14 of 16 raw-indexed slots are still poked by number below -- pre-size
-  // up front as the legacy (Key,16) constructor used to.
-  FixedComp::setNConnect(16);
-
   // Loop over corners that are bound by convex
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
@@ -271,36 +267,38 @@ H2Wing::createLinks()
   for(size_t i=0;i<3;i++)
     {
       ii++;
-      FixedComp::setConnect(i,(CPts[i]+CPts[(i+1)%3])/2.0,NPts[i]);
-      FixedComp::setLinkSurf(i,SMap.realSurf(ii));
+      const std::string cStr("corner"+std::to_string(i));
+      FixedComp::setConnect(cStr,(CPts[i]+CPts[(i+1)%3])/2.0,NPts[i]);
+      FixedComp::setLinkSurf(cStr,SMap.realSurf(ii));
     }
   // Top/bottom
 
-  FixedComp::setConnect(4,Origin-Z*VD,-Z);
-  FixedComp::setConnect(5,Origin+Z*VH,Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(triOffset+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
+  FixedComp::setConnect("base",Origin-Z*VD,-Z);
+  FixedComp::setConnect("top",Origin+Z*VH,Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(triOffset+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(triOffset+6));
 
   // OuterCorners and linkage
-  FixedComp::setLinkSurf(6,getLayerHR(nLayers-1,-7));
-  FixedComp::setLinkSurf(7,getLayerHR(nLayers-1,-8));
-  FixedComp::setLinkSurf(8,getLayerHR(nLayers-1,-9));
-  
+  FixedComp::setLinkSurf("outerCorner0",getLayerHR(nLayers-1,-7));
+  FixedComp::setLinkSurf("outerCorner1",getLayerHR(nLayers-1,-8));
+  FixedComp::setLinkSurf("outerCorner2",getLayerHR(nLayers-1,-9));
+
   // INNER LINKS
-  
+
   cornerSet(0.0,CPts,NPts);
   // mid plane points
   ii=buildIndex+100;
   for(size_t i=0;i<3;i++)
     {
       ii++;
-      FixedComp::setConnect(i+9,(CPts[i]+CPts[(i+1)%3])/2.0,-NPts[i]);
-      FixedComp::setLinkSurf(i+9,-SMap.realSurf(ii));
+      const std::string cStr("innerCorner"+std::to_string(i));
+      FixedComp::setConnect(cStr,(CPts[i]+CPts[(i+1)%3])/2.0,-NPts[i]);
+      FixedComp::setLinkSurf(cStr,-SMap.realSurf(ii));
     }
-  FixedComp::setConnect(12,Origin-Z*(height/2.0),Z);
-  FixedComp::setConnect(13,Origin+Z*(height/2.0),-Z);
-  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+105));
-  FixedComp::setLinkSurf(13,-SMap.realSurf(buildIndex+106));
+  FixedComp::setConnect("innerBase",Origin-Z*(height/2.0),Z);
+  FixedComp::setConnect("innerTop",Origin+Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf("innerBase",SMap.realSurf(buildIndex+105));
+  FixedComp::setLinkSurf("innerTop",-SMap.realSurf(buildIndex+106));
 
 
   

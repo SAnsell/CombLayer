@@ -416,7 +416,7 @@ DiskLayerMod::getHeight() const
 {
   return (FixedComp::getSignedRefLU(5).hasConnectPt() &&
 	  FixedComp::getSignedRefLU(6).hasConnectPt() ) ?
-    FixedComp::getLinkDistance(5,6) : 0.0;
+    FixedComp::getLinkDistance("base","top") : 0.0;
 }
 
 void

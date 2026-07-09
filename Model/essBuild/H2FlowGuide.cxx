@@ -227,7 +227,7 @@ H2FlowGuide::createObjects(Simulation& System,
   HeadRule HR;
 
   const HeadRule topBottomHR=
-    HW.getFullRule(13)+HW.getFullRule(14);
+    HW.getFullRule("innerBase")+HW.getFullRule("innerTop");
   
   HeadRule wallExclude;
   // base

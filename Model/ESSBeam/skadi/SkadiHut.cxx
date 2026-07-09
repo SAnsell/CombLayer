@@ -216,51 +216,49 @@ SkadiHut::createLinks()
 {
   ELog::RegMethod RegA("SkadiHut","createLinks");
 
-  FixedComp::setNConnect(6*(layerV.size()+1));
   double D[6]=
     {voidLength/2.0,voidLength/2.0,
      voidWidth/2.0,voidWidth/2.0,
      voidDepth,voidHeight};
 
-  FixedComp::setConnect(0,Origin-Y*D[0],-Y);
-  FixedComp::setConnect(1,Origin+Y*D[1],Y);
-  FixedComp::setConnect(2,Origin-X*D[2],-X);
-  FixedComp::setConnect(3,Origin+X*D[3],X);
-  FixedComp::setConnect(4,Origin-Y*D[4],-Z);
-  FixedComp::setConnect(5,Origin-Y*D[5],Z);
+  FixedComp::setConnect("innerFront",Origin-Y*D[0],-Y);
+  FixedComp::setConnect("innerBack",Origin+Y*D[1],Y);
+  FixedComp::setConnect("innerLeft",Origin-X*D[2],-X);
+  FixedComp::setConnect("innerRight",Origin+X*D[3],X);
+  FixedComp::setConnect("innerRoof",Origin-Y*D[4],-Z);
+  FixedComp::setConnect("innerFloor",Origin-Y*D[5],Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("innerFront",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("innerBack",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("innerLeft",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("innerRight",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("innerRoof",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("innerFloor",SMap.realSurf(buildIndex+6));
 
-  FixedComp::nameSideIndex(0,"innerFront");
-  FixedComp::nameSideIndex(1,"innerBack");
   int BI(buildIndex+10);
-  size_t index=6;
+  // NOTE: layer names are 1-indexed ("Layer1","Layer2",...) to match the
+  // legacy numeric scheme (index/6, where index started at 6), which
+  // external callers (e.g. SKADI::build's "#Layer3Front") depend on.
+  size_t layerN(1);
   for(const layerOffset& LO : layerV)
     {
-      setConnect(index,Origin-Y*(D[0]+LO.front),-Y);
-      setConnect(index+1,Origin+Y*(D[1]+LO.back),Y);
-      setConnect(index+2,Origin-X*(D[2]+LO.leftWall),-X);
-      setConnect(index+3,Origin+X*(D[3]+LO.rightWall),X);
-      setConnect(index+4,Origin-Z*(D[4]+LO.roof),-Z);
-      setConnect(index+5,Origin+Z*(D[5]+LO.floor),Z);
+      const std::string lStr="Layer"+std::to_string(layerN);
 
-      setLinkSurf(index+0,-SMap.realSurf(BI+1));
-      setLinkSurf(index+1,SMap.realSurf(BI+2));
-      setLinkSurf(index+2,-SMap.realSurf(BI+3));
-      setLinkSurf(index+3,SMap.realSurf(BI+4));
-      setLinkSurf(index+4,-SMap.realSurf(BI+5));
-      setLinkSurf(index+5,SMap.realSurf(BI+6));
+      setConnect(lStr+"Front",Origin-Y*(D[0]+LO.front),-Y);
+      setConnect(lStr+"Back",Origin+Y*(D[1]+LO.back),Y);
+      setConnect(lStr+"Left",Origin-X*(D[2]+LO.leftWall),-X);
+      setConnect(lStr+"Right",Origin+X*(D[3]+LO.rightWall),X);
+      setConnect(lStr+"Roof",Origin-Z*(D[4]+LO.roof),-Z);
+      setConnect(lStr+"Floor",Origin+Z*(D[5]+LO.floor),Z);
 
-      const std::string lStr="Layer"+std::to_string(index/6);
-      FixedComp::nameSideIndex(index,lStr+"Front");
-      FixedComp::nameSideIndex(index+1,lStr+"Back");
+      setLinkSurf(lStr+"Front",-SMap.realSurf(BI+1));
+      setLinkSurf(lStr+"Back",SMap.realSurf(BI+2));
+      setLinkSurf(lStr+"Left",-SMap.realSurf(BI+3));
+      setLinkSurf(lStr+"Right",SMap.realSurf(BI+4));
+      setLinkSurf(lStr+"Roof",-SMap.realSurf(BI+5));
+      setLinkSurf(lStr+"Floor",SMap.realSurf(BI+6));
 
-      index+=6;
+      layerN++;
       BI+=10;
     }
 

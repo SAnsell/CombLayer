@@ -196,10 +196,10 @@ MidWaterDivider::createLinks()
   FixedComp::setLinkSurf("cutRightBack", SMap.realSurf(buildIndex+132));
 
   std::vector<int> surfN;
-  surfN.push_back(AWingPtr->getLinkSurf(1));
-  surfN.push_back(AWingPtr->getLinkSurf(3));
-  surfN.push_back(BWingPtr->getLinkSurf(1));
-  surfN.push_back(BWingPtr->getLinkSurf(3));
+  surfN.push_back(AWingPtr->getLinkSurf("corner0"));
+  surfN.push_back(AWingPtr->getLinkSurf("corner2"));
+  surfN.push_back(BWingPtr->getLinkSurf("corner0"));
+  surfN.push_back(BWingPtr->getLinkSurf("corner2"));
 
   // Now deterermine point which are divider points
   const Geometry::Surface* midPlane=
@@ -383,8 +383,8 @@ MidWaterDivider::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const HeadRule BaseHR=AWingPtr->getFullRule(-5);
-  const HeadRule TopHR=AWingPtr->getFullRule(-6);
+  const HeadRule BaseHR=AWingPtr->getFullRule("-base");
+  const HeadRule TopHR=AWingPtr->getFullRule("-top");
   
   const HeadRule LCut(AWingPtr->getLayerHR(cutLayer,-7));
   const HeadRule RCut(BWingPtr->getLayerHR(cutLayer,-7));
@@ -492,9 +492,9 @@ MidWaterDivider::cutOuterWing(Simulation& System) const
   const size_t rWing=BWingPtr->getNLayers();
 
   const HeadRule LBase=
-    AWingPtr->getFullRule(-5)*AWingPtr->getFullRule(-6);
+    AWingPtr->getFullRule("-base")*AWingPtr->getFullRule("-top");
   const HeadRule RBase=
-    BWingPtr->getFullRule(-5)*BWingPtr->getFullRule(-6);
+    BWingPtr->getFullRule("-base")*BWingPtr->getFullRule("-top");
 
   HeadRule cutRuleHR;
 
@@ -539,7 +539,7 @@ MidWaterDivider::createAll(Simulation& System,
     throw ColErr::EmptyContainer("A/BWingPtr error");
   
   populate(System.getDataBase());
-  height=AWingPtr->getLinkDistance(5,6)-topThick;
+  height=AWingPtr->getLinkDistance("base","top")-topThick;
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
