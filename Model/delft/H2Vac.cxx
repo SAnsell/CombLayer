@@ -3,7 +3,7 @@
  
  * File:   delft/H2Vac.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace delftSystem
 
 H2Vac::H2Vac(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key),
   attachSystem::ExternalCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.

@@ -3,7 +3,7 @@
  
  * File:   delft/BeamTubeJoiner.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ namespace delftSystem
 {
 
 BeamTubeJoiner::BeamTubeJoiner(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,3),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -260,9 +260,9 @@ BeamTubeJoiner::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BeamTubeJoiner","createLinks");
 
-  FixedComp::setLinkCopy(0,FC,sideIndex);
-  setConnect(1,Origin+Y*length,Y);
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkCopy("front",FC,sideIndex);
+  setConnect("back",Origin+Y*length,Y);
+  setLinkSurf("back",SMap.realSurf(buildIndex+2));
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   delft/Rabbit.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace delftSystem
 {
 
 Rabbit::Rabbit(const std::string& Key,const int index)  :
-  attachSystem::FixedRotate(Key+std::to_string(index),3),
+  attachSystem::FixedRotate(Key+std::to_string(index)),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   baseName(Key)
@@ -308,13 +308,13 @@ Rabbit::createLinks()
 {
   ELog::RegMethod RegA("Rabbit","createLinks");
 
-  FixedComp::setConnect(0,Origin-Z*capThick,-Z); 
-  FixedComp::setConnect(1,Origin+Z*length,Z);
-  FixedComp::setConnect(2,Origin+Y*Radii.back(),Y);
+  FixedComp::setConnect("front",Origin-Z*capThick,-Z);
+  FixedComp::setConnect("back",Origin+Z*length,Z);
+  FixedComp::setConnect("radial",Origin+Y*Radii.back(),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7+
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("radial",SMap.realSurf(buildIndex+7+
 					 10*static_cast<int>(nLayer-1)));
 
   return;

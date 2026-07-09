@@ -3,7 +3,7 @@
  
  * File:   delft/PressureVessel.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace delftSystem
 {
 
 PressureVessel::PressureVessel(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,3),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -215,17 +215,17 @@ PressureVessel::createLinks()
 {
   ELog::RegMethod RegA("PressureVessel","createLinks");
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+18));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+18));
+  FixedComp::setBridgeSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+118));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+118));
+  FixedComp::setBridgeSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("radial",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setLineConnect(0,Origin,-Y);
-  FixedComp::setLineConnect(1,Origin,Y);
-  FixedComp::setConnect(2,Origin+Z*(sideRadius+sideWall),Z);
+  FixedComp::setLineConnect("front",Origin,-Y);
+  FixedComp::setLineConnect("back",Origin,Y);
+  FixedComp::setConnect("radial",Origin+Z*(sideRadius+sideWall),Z);
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   delft/H2Groove.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ namespace delftSystem
 
 H2Groove::H2Groove(const std::string& Key,const int NG)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,0),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   gID(NG)
   /*!

@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -238,7 +238,7 @@ ReactorGrid::getElementNumber(const std::string& Name)
 
 
 ReactorGrid::ReactorGrid(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,7),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key),attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulateed.
@@ -564,7 +564,11 @@ ReactorGrid::createLinks()
 {
   ELog::RegMethod RegA("ReactorGrid","createLinks");
 
-  FixedComp::setConnect(0,Origin-X*Width/2.0,-X);     
+  // Pre-size the fixed 0-6 slots up front (as the legacy (Key,7)
+  // constructor used to) -- setNConnect(NGrid+8) below grows past this.
+  FixedComp::setNConnect(7);
+
+  FixedComp::setConnect(0,Origin-X*Width/2.0,-X);
   FixedComp::setConnect(1,Origin+X*Width/2.0,X);     
   FixedComp::setConnect(2,Origin-Y*Depth/2.0,-Y);       
   FixedComp::setConnect(3,Origin+Y*Depth/2.0,Y);     

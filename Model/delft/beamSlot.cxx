@@ -3,7 +3,7 @@
  
  * File:   delft/beamSlot.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ namespace delftSystem
 {
 
 beamSlot::beamSlot(const std::string& Key,const int SN)  :
-  attachSystem::FixedRotate(Key+std::to_string(SN),6),
+  attachSystem::FixedRotate(Key+std::to_string(SN)),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   baseName(Key)
@@ -232,19 +232,20 @@ beamSlot::createLinks()
 {
   ELog::RegMethod RegA("beamSlot","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y); 
-  FixedComp::setConnect(1,Origin,Y);  
-  FixedComp::setConnect(2,Origin-X*xSize,X); 
-  FixedComp::setConnect(3,Origin+X*xSize,X); 
-  FixedComp::setConnect(4,Origin-Z*zSize/2.0,-Z); 
-  FixedComp::setConnect(5,Origin+Z*zSize/2.0,Z); 
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin,Y);
+  FixedComp::setConnect("left",Origin-X*xSize,X);
+  FixedComp::setConnect("right",Origin+X*xSize,X);
+  FixedComp::setConnect("base",Origin-Z*zSize/2.0,-Z);
+  FixedComp::setConnect("top",Origin+Z*zSize/2.0,Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  static const std::string sideNames[4]={"left","right","base","top"};
   for(size_t i=2;i<6;i++)
     {
       const int sN(buildIndex+static_cast<int>(i+1));
-      FixedComp::setLinkSurf(i,SMap.realSurf(sN));
+      FixedComp::setLinkSurf(sideNames[i-2],SMap.realSurf(sN));
     }
 
   return;
