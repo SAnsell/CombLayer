@@ -55,7 +55,7 @@
 namespace essSystem
 {
 
-EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
+EssModBase::EssModBase(const std::string& Key)  :
   attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
@@ -64,15 +64,8 @@ EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
-    \param nLinks :: Number of links
   */
-{
-  // Subclasses' createLinks() still poke link points by raw numeric
-  // index (some read externally, e.g. makeESS.cxx's
-  // LowMod->getLinkDistance(5,6)), so pre-size up front as the legacy
-  // FixedRotate(Key,nLinks) constructor used to.
-  FixedComp::setNConnect(nLinks);
-}
+{}
 
 EssModBase::EssModBase(const EssModBase& A) :
   attachSystem::FixedRotate(A),

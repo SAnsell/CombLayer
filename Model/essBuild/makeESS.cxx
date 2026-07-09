@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1043,8 +1043,8 @@ makeESS::build(Simulation& System,
     throw ColErr::InContainerError<std::string>(topModType,"Top Mod Type");
 
   const double LMHeight=(lowModType == "None")
-    ? 0.0 : LowMod->getLinkDistance(5,6);
-  const double TMHeight=TopMod->getLinkDistance(5,6);
+    ? 0.0 : LowMod->getLinkDistance("base","top");
+  const double TMHeight=TopMod->getLinkDistance("base","top");
 
   
   // Cap moderator DOES not span whole unit
