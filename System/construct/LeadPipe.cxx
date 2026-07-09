@@ -3,7 +3,7 @@
  
  * File:   construct/LeadPipe.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace constructSystem
 {
 
 LeadPipe::LeadPipe(const std::string& Key) :
-  constructSystem::GeneralPipe(Key,6)
+  constructSystem::GeneralPipe(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -210,9 +210,8 @@ LeadPipe::createLinks()
 {
   ELog::RegMethod RegA("LeadPipe","createLinks");
 
-  // Pre-register names at their original numeric positions -- GeneralPipe
-  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
-  // would otherwise land after that reserved block instead of here.
+  // Pre-register names at their original numeric positions -- otherwise
+  // a not-yet-registered name would land after front/back instead of here.
   FixedComp::nameSideIndex(2,"inner");
   FixedComp::nameSideIndex(3,"pipe");
   FixedComp::nameSideIndex(4,"outer");

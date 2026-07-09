@@ -3,7 +3,7 @@
 
  * File:   constructInc/GeneralPipe.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,6 @@ class GeneralPipe :
  public:
 
   GeneralPipe(const std::string&);
-  GeneralPipe(const std::string&,const size_t);
   GeneralPipe(const GeneralPipe& A);
   GeneralPipe& operator=(const GeneralPipe& A);
   virtual ~GeneralPipe() override {}

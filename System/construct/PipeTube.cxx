@@ -3,7 +3,7 @@
  
  * File:   construct/PipeTube.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,10 +75,8 @@ PipeTube::PipeTube(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  // Pre-register names at their original numeric positions -- the
-  // legacy NL constructor (VirtualTube) pre-sizes LU so a
-  // not-yet-registered name would otherwise land after that reserved
-  // block instead of here.
+  // Pre-register names at their original numeric positions -- otherwise
+  // a not-yet-registered name would land after front/back instead of here.
   FixedComp::nameSideIndex(2,"FlangeA");
   FixedComp::nameSideIndex(3,"FlangeB");
   FixedComp::nameSideIndex(4,"InnerFront");

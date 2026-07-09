@@ -3,7 +3,7 @@
  
  * File:   construct/JawValveBase
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace constructSystem
 {
 
 JawValveBase::JawValveBase(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   JItem(Key+"Jaw")

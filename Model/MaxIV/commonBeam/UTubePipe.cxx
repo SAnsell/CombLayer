@@ -3,7 +3,7 @@
 
  * File:   commonBeam/UTubePipe.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace xraySystem
 {
 
 UTubePipe::UTubePipe(const std::string& Key) :
-  constructSystem::GeneralPipe(Key,6)
+  constructSystem::GeneralPipe(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
