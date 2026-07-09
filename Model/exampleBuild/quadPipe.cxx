@@ -3,7 +3,7 @@
  
  * File:   commonBeam/quadPipe.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace exampleSystem
 {
 
 quadPipe::quadPipe(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -82,7 +82,7 @@ quadPipe::quadPipe(const std::string& Key) :
 
 quadPipe::quadPipe(std::string  Base,
 	       const std::string& Key) : 
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -186,11 +186,11 @@ quadPipe::createLinks()
 {
   ELog::RegMethod RegA("quadPipe","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect("back",Origin-Y*(length/2.0),-Y);
   
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   xrayHutch/xrayHutch.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace xrayHutSystem
 
 xrayHutch::xrayHutch(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::SurfMap()
   /*!
     Constructor
@@ -166,23 +166,23 @@ xrayHutch::createLinks()
 {  
   ELog::RegMethod RegA("xrayHutch","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0+wallThick),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setConnect("front",Origin-Y*(length/2.0+wallThick),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0+wallThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  
-  FixedComp::setConnect(2,Origin-X*(length/2.0+wallThick),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  
-  FixedComp::setConnect(3,Origin+X*(width/2.0+wallThick),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+14));
-  
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0+wallThick),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
+
+  FixedComp::setConnect("left",Origin-X*(length/2.0+wallThick),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+
+  FixedComp::setConnect("right",Origin+X*(width/2.0+wallThick),X);
+  FixedComp::setLinkSurf("right",-SMap.realSurf(buildIndex+14));
+
+  FixedComp::setConnect("base",Origin-Z*(height/2.0+wallThick),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+
+  FixedComp::setConnect("top",Origin+Z*(height/2.0+wallThick),Z);
+  FixedComp::setLinkSurf("top",-SMap.realSurf(buildIndex+16));
 
   return;
 }

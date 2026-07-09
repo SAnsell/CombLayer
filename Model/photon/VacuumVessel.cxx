@@ -3,7 +3,7 @@
  
  * File:   photon/VacuumVessel.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ namespace photonSystem
 {
       
 VacuumVessel::VacuumVessel(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   CentPort(new constructSystem::RingFlange(keyName+"CentPort"))
@@ -272,23 +272,23 @@ VacuumVessel::createLinks()
 {  
   ELog::RegMethod RegA("VacuumVessel","createLinks");
   
-  FixedComp::setConnect(0,Origin-Y*(backLength+wallThick),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setConnect("front",Origin-Y*(backLength+wallThick),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
 
-  FixedComp::setConnect(1,Origin+Y*(frontLength+wallThick+doorThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
+  FixedComp::setConnect("back",Origin+Y*(frontLength+wallThick+doorThick),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+22));
 
-  FixedComp::setConnect(2,Origin-X*(radius+wallThick),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("left",Origin-X*(radius+wallThick),-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(3,Origin+X*(radius+wallThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
-  
-  FixedComp::setConnect(4,Origin-Z*(radius+wallThick),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
-  
-  FixedComp::setConnect(5,Origin+Z*(radius+wallThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("right",Origin+X*(radius+wallThick),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+17));
+
+  FixedComp::setConnect("base",Origin-Z*(radius+wallThick),-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+17));
+
+  FixedComp::setConnect("top",Origin+Z*(radius+wallThick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+17));
   
 
   return;

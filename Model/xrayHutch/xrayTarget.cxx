@@ -3,7 +3,7 @@
  
  * File:   xrayTarget/xrayTarget.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ namespace xrayHutSystem
 
 xrayTarget::xrayTarget(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6)
+  attachSystem::FixedRotate(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -147,11 +147,11 @@ xrayTarget::createLinks()
 {  
   ELog::RegMethod RegA("xrayTarget","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  
-  FixedComp::setConnect(0,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+
+  FixedComp::setConnect("front",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+2));
 
 
   return;

@@ -3,7 +3,7 @@
  
  * File:   photon/B4CCollimator.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ namespace photonSystem
 {
       
 B4CCollimator::B4CCollimator(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -209,23 +209,23 @@ B4CCollimator::createLinks()
 {  
   ELog::RegMethod RegA("B4CCollimator","createLinks");
   
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*length,Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex-7));
+  FixedComp::setConnect("left",Origin-X*radius,-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex-7));
 
-  FixedComp::setConnect(3,Origin+X*radius,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex-7));
+  FixedComp::setConnect("right",Origin+X*radius,X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex-7));
 
-  FixedComp::setConnect(4,Origin-Z*radius,-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex-7));
+  FixedComp::setConnect("base",Origin-Z*radius,-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex-7));
 
-  FixedComp::setConnect(5,Origin+Z*radius,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex-7));
+  FixedComp::setConnect("top",Origin+Z*radius,Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex-7));
 
   return;
 }

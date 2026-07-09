@@ -3,7 +3,7 @@
  
  * File:   photon/CylContainer.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ namespace photonSystem
 {
 
 CylContainer::CylContainer(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0)
   /*!
@@ -216,27 +216,27 @@ CylContainer::createLinks()
   const size_t NL(nLayers-1);
   const int SI(buildIndex+static_cast<int>(NL)*10);
 
-  FixedComp::setConnect(0,Origin-Y*(height[NL]/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
-  
-  FixedComp::setConnect(1,Origin+Y*(height[NL]/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
+  FixedComp::setConnect("front",Origin-Y*(height[NL]/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(SI+1));
 
-  FixedComp::setConnect(2,Origin-X*radius[NL],-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+103));
-  
-  FixedComp::setConnect(3,Origin+X*radius[NL],X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+103));
+  FixedComp::setConnect("back",Origin+Y*(height[NL]/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(SI+2));
 
-  FixedComp::setConnect(4,Origin-Z*radius[NL],-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(4,-SMap.realSurf(buildIndex+105));
-  
-  FixedComp::setConnect(5,Origin+Z*radius[NL],Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(5,SMap.realSurf(buildIndex+105));
+  FixedComp::setConnect("left",Origin-X*radius[NL],-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(SI+7));
+  FixedComp::setBridgeSurf("left",-SMap.realSurf(buildIndex+103));
+
+  FixedComp::setConnect("right",Origin+X*radius[NL],X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(SI+7));
+  FixedComp::setBridgeSurf("right",SMap.realSurf(buildIndex+103));
+
+  FixedComp::setConnect("base",Origin-Z*radius[NL],-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(SI+7));
+  FixedComp::setBridgeSurf("base",-SMap.realSurf(buildIndex+105));
+
+  FixedComp::setConnect("top",Origin+Z*radius[NL],Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(SI+7));
+  FixedComp::setBridgeSurf("top",SMap.realSurf(buildIndex+105));
       
 
   return;
