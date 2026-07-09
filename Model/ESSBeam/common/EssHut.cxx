@@ -3,7 +3,7 @@
  
  * File:   common/EssHut.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ namespace essSystem
 {
 
 EssHut::EssHut(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,18),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -272,7 +272,12 @@ EssHut::createLinks()
   */
 {
   ELog::RegMethod RegA("EssHut","createLinks");
-    
+
+  // 18 raw-indexed slots (inner/mid/outer void x front/back/left/right/
+  // base/top) are still poked by number below -- pre-size up front as
+  // the legacy (Key,18) constructor used to.
+  FixedComp::setNConnect(18);
+
   // INNER VOID
   setConnect(0,Origin-Y*(voidLength/2.0),-Y);
   setConnect(1,Origin+Y*(voidLength/2.0),Y);

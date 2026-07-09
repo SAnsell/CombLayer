@@ -3,7 +3,7 @@
  
  * File:   trex/TrexHut.cxx
  *
- * Copyright (c) 2004-2022 by Tsitohaina Randiamalala & Stuart Ansell
+ * Copyright (c) 2004-2026 by Tsitohaina Randiamalala & Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@
 namespace essSystem
 {
 TrexHut::TrexHut(const std::string& Key) :
-  attachSystem::FixedRotate(Key,18),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
 {}
@@ -220,6 +220,11 @@ void TrexHut::createObjects(Simulation& System)
 void TrexHut::createLinks()
 {
   ELog::RegMethod RegA("TrexHut","createLinks");
+
+  // 18 raw-indexed slots (inner/mid/outer void x front/back/left/right/
+  // base/top) are still poked by number below -- pre-size up front as
+  // the legacy (Key,18) constructor used to.
+  FixedComp::setNConnect(18);
 
   double D[6]=
     {voidLength/2.0,voidLength/2.0,

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/VacTank.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace essSystem
 {
 
 VacTank::VacTank(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -237,10 +237,10 @@ VacTank::createLinks()
 {
   ELog::RegMethod RegA("VacTank","createLinks");
   
-  FixedComp::setConnect(0,Origin-Y*windowThick,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+101));
-  FixedComp::setConnect(1,Origin+Y*(length+windowInsetLen),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("front",Origin-Y*windowThick,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("back",Origin+Y*(length+windowInsetLen),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   return;
 }

@@ -3,7 +3,7 @@
 
  * File:   vor/DHut.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ namespace essSystem
 {
 
 DHut::DHut(const std::string& Key) :
-  attachSystem::FixedRotate(Key,18),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -224,6 +224,11 @@ DHut::createLinks()
   */
 {
   ELog::RegMethod RegA("DHut","createLinks");
+
+  // 18 raw-indexed slots (inner/mid/outer void x front/back/left/right/
+  // base/top) are still poked by number below -- pre-size up front as
+  // the legacy (Key,18) constructor used to.
+  FixedComp::setNConnect(18);
 
   size_t index(0);
   int BI(buildIndex);
