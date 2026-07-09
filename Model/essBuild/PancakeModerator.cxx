@@ -319,8 +319,8 @@ PancakeModerator::getLeftFarExclude() const
   ELog::RegMethod RegA("PancakeModerator","getLeftFarExclude");
 
   HeadRule HR;
-  HR=LeftWater->getFullRule(4);
-  HR*=RightWater->getFullRule(3);
+  HR=LeftWater->getFullRule("right");
+  HR*=RightWater->getFullRule("left");
 
   return HR;
 }
@@ -336,8 +336,8 @@ PancakeModerator::getRightFarExclude() const
   ELog::RegMethod RegA("PancakeModerator","getRightFarExclude");
 
   HeadRule HR;
-  HR=LeftWater->getFullRule(3);
-  HR*=RightWater->getFullRule(4);
+  HR=LeftWater->getFullRule("left");
+  HR*=RightWater->getFullRule("right");
 
   return HR;
 }

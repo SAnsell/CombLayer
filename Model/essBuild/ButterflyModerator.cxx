@@ -279,7 +279,7 @@ ButterflyModerator::createLinks()
   FixedComp::setConnect("base",LowPt,-Z);
   FixedComp::setConnect("top",HighPt,Z);
 
-  FixedComp::setLinkCopy("midWaterCentre",*MidWater,13);
+  FixedComp::setLinkCopy("midWaterCentre",*MidWater,"centre");
 
   return;
 }
@@ -339,8 +339,8 @@ ButterflyModerator::getLeftFarExclude() const
   ELog::RegMethod RegA("ButterflyModerator","getLeftFarExclude");
 
   HeadRule HR;
-  HR=LeftWater->getFullRule(4);   
-  HR*=RightWater->getFullRule(3);
+  HR=LeftWater->getFullRule("right");
+  HR*=RightWater->getFullRule("left");
   return HR;
 }
 
@@ -355,8 +355,8 @@ ButterflyModerator::getRightFarExclude() const
   ELog::RegMethod RegA("ButterflyModerator","getRightFarExclude");
 
   HeadRule HR;
-  HR=LeftWater->getFullRule(3);   
-  HR*=RightWater->getFullRule(4);
+  HR=LeftWater->getFullRule("left");
+  HR*=RightWater->getFullRule("right");
 
   return HR;
 }
@@ -374,7 +374,7 @@ ButterflyModerator::getLeftExclude() const
 
   HR*=LeftUnit->getFullRule(8);
   HR*=RightUnit->getFullRule(9);
-  HR*=MidWater->getFullRule(11);
+  HR*=MidWater->getFullRule("fullCutFront");
   HR*= getLeftFarExclude();
   
   return HR;
@@ -393,7 +393,7 @@ ButterflyModerator::getRightExclude() const
 
   HR=LeftUnit->getFullRule(9);
   HR*=RightUnit->getFullRule(8);
-  HR*=MidWater->getFullRule(12);
+  HR*=MidWater->getFullRule("fullCutBack");
 
   HR*=getRightFarExclude();
   

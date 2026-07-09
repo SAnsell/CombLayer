@@ -178,24 +178,22 @@ MidWaterDivider::createLinks()
 {
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
-  // 14 raw-indexed slots (with an intentional gap at 4/9) are read
-  // externally by raw signed index (e.g. ButterflyModerator's
-  // setLinkCopy(6,*MidWater,13)), so pre-size up front as the legacy
-  // (Key,14) constructor used to.
-  FixedComp::setNConnect(14);
+  const std::array<std::string,8> name
+    {"leftFront","leftBack","rightFront","rightBack",
+     "extra","cutLeftFront","cutLeftBack","cutRightFront"};
 
   // main angles
-  FixedComp::setLinkSurf(0, SMap.realSurf(buildIndex+103));
-  FixedComp::setLinkSurf(1, -SMap.realSurf(buildIndex+104));
-  FixedComp::setLinkSurf(2, SMap.realSurf(buildIndex+123));
-  FixedComp::setLinkSurf(3, -SMap.realSurf(buildIndex+124));
+  FixedComp::setLinkSurf(name[0], SMap.realSurf(buildIndex+103));
+  FixedComp::setLinkSurf(name[1], -SMap.realSurf(buildIndex+104));
+  FixedComp::setLinkSurf(name[2], SMap.realSurf(buildIndex+123));
+  FixedComp::setLinkSurf(name[3], -SMap.realSurf(buildIndex+124));
 
 
   // small cutting edged
-  FixedComp::setLinkSurf(5, SMap.realSurf(buildIndex+111));
-  FixedComp::setLinkSurf(6, SMap.realSurf(buildIndex+112));
-  FixedComp::setLinkSurf(7, SMap.realSurf(buildIndex+131));
-  FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+132));
+  FixedComp::setLinkSurf(name[5], SMap.realSurf(buildIndex+111));
+  FixedComp::setLinkSurf(name[6], SMap.realSurf(buildIndex+112));
+  FixedComp::setLinkSurf(name[7], SMap.realSurf(buildIndex+131));
+  FixedComp::setLinkSurf("cutRightBack", SMap.realSurf(buildIndex+132));
 
   std::vector<int> surfN;
   surfN.push_back(AWingPtr->getLinkSurf(1));
@@ -227,7 +225,7 @@ MidWaterDivider::createLinks()
       const Geometry::Surface* PA=SMap.realSurfPtr(SA);
       const Geometry::Surface* PB=SMap.realSurfPtr(SB);
       FixedComp::setConnect
-      	(index,SurInter::getPoint(PA,PB,midPlane),Axis[index]);
+      	(name[index],SurInter::getPoint(PA,PB,midPlane),Axis[index]);
     }
 
   // full cut out
@@ -237,19 +235,19 @@ MidWaterDivider::createLinks()
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
       "((-123 (-137:138)) : (124 (-127:128))) -131 -132");
   HR.makeComplement();
-  FixedComp::setLinkSurf(10,HR);
-  FixedComp::setBridgeSurf(10,-SMap.realSurf(buildIndex+100));
+  FixedComp::setLinkSurf("fullCutFront",HR);
+  FixedComp::setBridgeSurf("fullCutFront",-SMap.realSurf(buildIndex+100));
 
   // +ve Y
   HR=ModelSupport::getHeadRule
     (SMap,buildIndex, "( (-103 (-117:118)) : (104  (-107:108)) ) -111 -112");
   HR.makeComplement();
-  FixedComp::setLinkSurf(11,HR);
-  FixedComp::setBridgeSurf(11,SMap.realSurf(buildIndex+100));
+  FixedComp::setLinkSurf("fullCutBack",HR);
+  FixedComp::setBridgeSurf("fullCutBack",SMap.realSurf(buildIndex+100));
 
 
-  FixedComp::setLinkSurf(12,SMap.realSurf(buildIndex+100));
-  FixedComp::setConnect(12,Origin,Y);
+  FixedComp::setLinkSurf("centre",SMap.realSurf(buildIndex+100));
+  FixedComp::setConnect("centre",Origin,Y);
   
   return;
 }
