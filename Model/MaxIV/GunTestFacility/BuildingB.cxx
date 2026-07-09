@@ -78,7 +78,7 @@ namespace MAXIV::GunTestFacility
 
   BuildingB::BuildingB(const std::string& Key)  :
     attachSystem::ContainedComp(),
-    attachSystem::FixedRotate(Key,13),
+    attachSystem::FixedRotate(Key),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
     ductWave(std::make_shared<xraySystem::Duct>(keyName+"DuctWave")),

@@ -3,7 +3,7 @@
  
  * File: formax/formaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,7 +127,7 @@ namespace xraySystem
 formaxOpticsLine::formaxOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedOffset(newName),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
 
@@ -663,9 +663,9 @@ formaxOpticsLine::createLinks()
    */
 {
   ELog::RegMethod RControl("formaxOpticsLine","createLinks");
-  
-  setLinkCopy(0,*pipeInit,1);
-  setLinkCopy(1,*lastComp,2);
+
+  setLinkCopy("front",*pipeInit,1);
+  setLinkCopy("back",*lastComp,2);
   return;
 }
   

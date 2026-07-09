@@ -3,7 +3,7 @@
 
  * File:   formax/formaxDetectorTube.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ namespace xraySystem
 {
 
 formaxDetectorTube::formaxDetectorTube(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -243,9 +243,10 @@ formaxDetectorTube::createLinks()
   ELog::RegMethod RegA("formaxDetectorTube","createLinks");
 
   const constructSystem::portItem& API=frontDome->getPort(0);
-  setLinkCopy(0,API,"OuterPlate");
-  setLinkCopy(1,*backDome,2);  
- 
+  setLinkCopy("front",API,"OuterPlate");
+  setLinkCopy("back",*backDome,2);
+
+
   return;
 }
 
