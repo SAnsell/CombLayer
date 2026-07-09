@@ -3,7 +3,7 @@
  
  * File:   t2Build/CoolPad.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace moderatorSystem
 {
 
 CoolPad::CoolPad(const std::string& key,const size_t Index) :
-  attachSystem::FixedRotate(key+std::to_string(Index),1),
+  attachSystem::FixedRotate(key+std::to_string(Index)),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   ID(Index),baseName(key)

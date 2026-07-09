@@ -3,7 +3,7 @@
  
  * File:   t2Build/VacVessel.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace moderatorSystem
 {
 
 VacVessel::VacVessel(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut()
   /*!
@@ -428,28 +428,31 @@ VacVessel::createLinks()
 
   // For Cylindrical surface must also have a divider:
   // -- Groove:
-  FixedComp::setConnect(0,BVec[0]+Y*(vacPosGap+alPos+terPos+
+  FixedComp::setConnect("VacFront",BVec[0]+Y*(vacPosGap+alPos+terPos+
                                     outPos+clearNeg),Y);
-  FixedComp::setConnect(1,BVec[1]-Y*(vacNegGap+alPos+terNeg+
+  FixedComp::setConnect("VacBack",BVec[1]-Y*(vacNegGap+alPos+terNeg+
                                     outNeg+clearNeg),-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+41));
-  FixedComp::setBridgeSurf(0,SMap.realSurf(divideSurf));
+  FixedComp::setLinkSurf("VacFront",SMap.realSurf(buildIndex+41));
+  FixedComp::setBridgeSurf("VacFront",SMap.realSurf(divideSurf));
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
-  FixedComp::setBridgeSurf(1,-SMap.realSurf(divideSurf));
+  FixedComp::setLinkSurf("VacBack",SMap.realSurf(buildIndex+42));
+  FixedComp::setBridgeSurf("VacBack",-SMap.realSurf(divideSurf));
 
   // set Links:
+  static const std::array<std::string,4> nameArr=
+    {"VacNeg","VacPlus","VacDown","VacUp"};
   for(size_t i=2;i<6;i++)
-    FixedComp::setConnect(i,getSurfacePoint(4,static_cast<long int>(i+1)),
+    FixedComp::setConnect(nameArr[i-2],
+			  getSurfacePoint(4,static_cast<long int>(i+1)),
 			  getDirection(i));
 
   // Set Connect surfaces:
-  for(int i=2;i<6;i++)
-    FixedComp::setLinkSurf(static_cast<size_t>(i),
-			   SMap.realSurf(buildIndex+41+i));
+  for(size_t i=2;i<6;i++)
+    FixedComp::setLinkSurf(nameArr[i-2],
+			   SMap.realSurf(buildIndex+41+static_cast<int>(i)));
 
-  FixedComp::setConnect(6,Origin,Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(divideSurf));
+  FixedComp::setConnect("VacDivider",Origin,Y);
+  FixedComp::setLinkSurf("VacDivider",SMap.realSurf(divideSurf));
 
 
 

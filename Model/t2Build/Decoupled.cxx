@@ -3,7 +3,7 @@
  
  * File:   t2Build/Decoupled.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace moderatorSystem
 {
 
 Decoupled::Decoupled(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   VP(new VanePoison("decPoison"))
@@ -208,46 +208,46 @@ Decoupled::createLinks()
 {
   ELog::RegMethod RegA("Decoupled","createLinks");
 
-  FixedComp::setConnect(0,westCentre+Y*(westRadius+alCurve),Y);
-  FixedComp::setConnect(1,eastCentre-Y*(eastRadius+alCurve),-Y);
-  FixedComp::setConnect(2,Origin-X*(alSides+width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(alSides+width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+alUpDown),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+alUpDown),Z);
+  FixedComp::setConnect("front",westCentre+Y*(westRadius+alCurve),Y);
+  FixedComp::setConnect("back",eastCentre-Y*(eastRadius+alCurve),-Y);
+  FixedComp::setConnect("left",Origin-X*(alSides+width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(alSides+width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0+alUpDown),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0+alUpDown),Z);
 
   // Set Connect surfaces:
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   // For Cylindrical surface must also have a divider:
   // -- Wish
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
-  FixedComp::addLinkSurf(0,SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+17));
+  FixedComp::addLinkSurf("front",SMap.realSurf(buildIndex+1));
 
   // -- Narrow
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+18));
-  FixedComp::addLinkSurf(1,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+18));
+  FixedComp::addLinkSurf("back",-SMap.realSurf(buildIndex+1));
 
 
   // Internal links:
-  FixedComp::setConnect(6,westCentre+Y*westRadius,-Y);
-  FixedComp::setConnect(7,eastCentre-Y*eastRadius,Y);
-  FixedComp::setConnect(8,Origin-X*width/2.0,X);
-  FixedComp::setConnect(9,Origin+X*width/2.0,-X);
-  FixedComp::setConnect(10,Origin-Z*height/2.0,Z);
-  FixedComp::setConnect(11,Origin+Z*height/2.0,-Z);
+  FixedComp::setConnect("innerFront",westCentre+Y*westRadius,-Y);
+  FixedComp::setConnect("innerBack",eastCentre-Y*eastRadius,Y);
+  FixedComp::setConnect("innerLeft",Origin-X*width/2.0,X);
+  FixedComp::setConnect("innerRight",Origin+X*width/2.0,-X);
+  FixedComp::setConnect("innerBase",Origin-Z*height/2.0,Z);
+  FixedComp::setConnect("innerTop",Origin+Z*height/2.0,-Z);
 
   // For Cylindrical surface [NO Divider added]
   // -- Wish
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("innerFront",-SMap.realSurf(buildIndex+7));
   // -- Narrow
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+8));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("innerBack",-SMap.realSurf(buildIndex+8));
+  FixedComp::setLinkSurf("innerLeft",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("innerRight",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("innerBase",SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("innerTop",-SMap.realSurf(buildIndex+6));
 
 
   return;
@@ -422,9 +422,9 @@ Decoupled::createAll(Simulation& System,
   insertObjects(System);       
 
   VP->addInsertCell(getCell("Methane"));
-  VP->setCutSurf("Base",*this,11);
-  VP->setCutSurf("Top",*this,12);
-  VP->createAll(System,*this,8);
+  VP->setCutSurf("Base",*this,"innerBase");
+  VP->setCutSurf("Top",*this,"innerTop");
+  VP->createAll(System,*this,FixedComp::getSideIndex("innerBack"));
 
   return;
 }

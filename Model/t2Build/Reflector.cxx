@@ -3,7 +3,7 @@
  
  * File:   moderator/Reflector.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace moderatorSystem
 
 Reflector::Reflector(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,24),
+  attachSystem::FixedRotate(Key),
   attachSystem::SurfMap(),
   attachSystem::CellMap()
   /*!
@@ -174,7 +174,6 @@ Reflector::createFlightLineSurfaces()
   // a small adjustment to the angle that is shown in the flight line
 
   int FIndex(buildIndex+1000);
-  size_t linkIndex(14);
   // link point names
   const std::vector<std::string> fName({
       "FLgroove","FLhydro","FLnarrow","FLwish"});
@@ -207,27 +206,20 @@ Reflector::createFlightLineSurfaces()
 
       // create links:
       const HeadRule FLHR=ModelSupport::getHeadRule(SMap,FIndex,"3 -4 5 -6");
-      FixedComp::setLinkSurf(linkIndex,FLHR);
-      FixedComp::setConnect(linkIndex,Org,Axis);
-      FixedComp::nameSideIndex(linkIndex,*vc);
-      linkIndex++;
+      FixedComp::setLinkSurf(*vc,FLHR);
+      FixedComp::setConnect(*vc,Org,Axis);
 
       // individual links for the HWrapper:
       if (*vc=="FLhydro")
 	{
-	  FixedComp::setLinkSurf(10,-SMap.realSurf(FIndex+3));
-	  FixedComp::setLinkSurf(11,SMap.realSurf(FIndex+4));
-	  FixedComp::setLinkSurf(12,-SMap.realSurf(FIndex+5));
-	  FixedComp::setLinkSurf(13,SMap.realSurf(FIndex+6));
-	  FixedComp::setConnect(10,Org-AxisX*(FL.width/2.0),-normNeg);
-	  FixedComp::setConnect(11,Org+AxisX*(FL.width/2.0),normPlus);
-	  FixedComp::setConnect(12,Org-Z*(FL.height/2.0),-normDown);
-	  FixedComp::setConnect(13,Org+Z*(FL.height/2.0),normUp);
-
-	  FixedComp::nameSideIndex(10,"FLhydroNeg");
-	  FixedComp::nameSideIndex(11,"FLhydroPlus");
-	  FixedComp::nameSideIndex(12,"FLhydroDown");
-	  FixedComp::nameSideIndex(13,"FLhydroUp");
+	  FixedComp::setLinkSurf("FLhydroNeg",-SMap.realSurf(FIndex+3));
+	  FixedComp::setLinkSurf("FLhydroPlus",SMap.realSurf(FIndex+4));
+	  FixedComp::setLinkSurf("FLhydroDown",-SMap.realSurf(FIndex+5));
+	  FixedComp::setLinkSurf("FLhydroUp",SMap.realSurf(FIndex+6));
+	  FixedComp::setConnect("FLhydroNeg",Org-AxisX*(FL.width/2.0),-normNeg);
+	  FixedComp::setConnect("FLhydroPlus",Org+AxisX*(FL.width/2.0),normPlus);
+	  FixedComp::setConnect("FLhydroDown",Org-Z*(FL.height/2.0),-normDown);
+	  FixedComp::setConnect("FLhydroUp",Org+Z*(FL.height/2.0),normUp);
 	}
       vc++;
       FIndex+=100;
@@ -299,30 +291,30 @@ Reflector::createLinks(const Geometry::Vec3D& XX,
 {
   ELog::RegMethod RegA("Reflector","createLinks");
 
-  FixedComp::setConnect(0,Origin-YY*xySize,-YY);  // chipIR OPPOSITE
-  FixedComp::setConnect(1,Origin+YY*xySize,YY);   // chipIR
-  FixedComp::setConnect(2,Origin-XX*xySize,-XX);
-  FixedComp::setConnect(3,Origin+XX*xySize,XX);
-  FixedComp::setConnect(4,Origin-Z*zSize,-Z);
-  FixedComp::setConnect(5,Origin+Z*zSize,Z);
+  FixedComp::setConnect("front",Origin-YY*xySize,-YY);  // chipIR OPPOSITE
+  FixedComp::setConnect("back",Origin+YY*xySize,YY);   // chipIR
+  FixedComp::setConnect("left",Origin-XX*xySize,-XX);
+  FixedComp::setConnect("right",Origin+XX*xySize,XX);
+  FixedComp::setConnect("base",Origin-Z*zSize,-Z);
+  FixedComp::setConnect("top",Origin+Z*zSize,Z);
 
-  FixedComp::setConnect(6,Origin-Y*cutSize,-Y);
-  FixedComp::setConnect(7,Origin+Y*cutSize,Y);
-  FixedComp::setConnect(8,Origin-X*cutSize,-X);
-  FixedComp::setConnect(9,Origin+X*cutSize,-X);
-  FixedComp::setConnect(10,Origin,Y);   // corner centre
+  FixedComp::setConnect("cutFront",Origin-Y*cutSize,-Y);
+  FixedComp::setConnect("cutBack",Origin+Y*cutSize,Y);
+  FixedComp::setConnect("cutLeft",Origin-X*cutSize,-X);
+  FixedComp::setConnect("cutRight",Origin+X*cutSize,-X);
+  FixedComp::setConnect("cornerCentre",Origin,Y);   // corner centre
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+12));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+14));
-     
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("cutFront",-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf("cutBack",SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf("cutLeft",-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("cutRight",SMap.realSurf(buildIndex+14));
+
   return;
 }
 

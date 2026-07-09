@@ -3,7 +3,7 @@
  
  * File:   t2Build/Groove.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <complex>
 #include <list>
 #include <vector>
+#include <array>
 #include <set>
 #include <map>
 #include <string>
@@ -67,7 +68,7 @@ namespace moderatorSystem
 {
 
 Groove::Groove(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,7),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()
@@ -158,7 +159,7 @@ Groove::createSurfaces()
   // INNER DIVIDE PLANE
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
   SurfMap::addSurf("DividePlane",SMap.realSurf(buildIndex+1));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::addLinkSurf("front",-SMap.realSurf(buildIndex+1));
   // Simple box planes
 
   // Inner Methane levels:
@@ -260,25 +261,27 @@ Groove::createLinks()
   ELog::RegMethod RegA("Groove","createLinks");
 
   // set Links:
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+Y*depth,Y);
-  FixedComp::setConnect(2,Origin-X*(alSide+width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(alSide+width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+alBase),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+alTop),Z);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin+Y*depth,Y);
+  FixedComp::setConnect("left",Origin-X*(alSide+width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(alSide+width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0+alBase),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0+alTop),Z);
 
   // Centre of groove
-  FixedComp::setConnect(6,GCentre+Y*(alInnerCurve+innerRadius),Y);
+  FixedComp::setConnect("centre",GCentre+Y*(alInnerCurve+innerRadius),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  static const std::array<std::string,5> nameArr=
+    {"back","left","right","base","top"};
   int signVal(1);
   for(int i=1;i<6;i++)
     {
-      FixedComp::setLinkSurf(static_cast<size_t>(i),
+      FixedComp::setLinkSurf(nameArr[static_cast<size_t>(i-1)],
 			     signVal*SMap.realSurf(buildIndex+i+21));
       signVal*=-1;
     }
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+31));
+  FixedComp::setLinkSurf("centre",SMap.realSurf(buildIndex+31));
   return;
 }
 

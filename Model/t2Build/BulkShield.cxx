@@ -3,7 +3,7 @@
  
  * File:   build/BulkShield.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ const size_t BulkShield::zoomShutter(9);
 const size_t BulkShield::letShutter(6);
 
 BulkShield::BulkShield(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,0),
+  attachSystem::FixedComp(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::ExternalCut(),
