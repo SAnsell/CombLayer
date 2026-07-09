@@ -1299,78 +1299,68 @@ BilbaoWheel::createLinks()
 {
   ELog::RegMethod RegA("BilbaoWheel","createLinks");
 
-  // 16 raw-indexed slots (several conditional/non-contiguous) are still
-  // poked by number below -- pre-size up front as the legacy
-  // WheelBase(Key,16) constructor used to.
-  FixedComp::setNConnect(16);
-
   // set Links :: Inner links:
 
-  FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+537));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("InnerRadiusSectorNeg",Origin-Y*innerRadius,-Y);
+  FixedComp::setLinkSurf("InnerRadiusSectorNeg",SMap.realSurf(buildIndex+537));
+  FixedComp::setBridgeSurf("InnerRadiusSectorNeg",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+537));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("InnerRadiusSectorPos",Origin+Y*innerRadius,Y);
+  FixedComp::setLinkSurf("InnerRadiusSectorPos",SMap.realSurf(buildIndex+537));
+  FixedComp::setBridgeSurf("InnerRadiusSectorPos",SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+537));
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("VoidRadiusSectorNeg",Origin-Y*voidRadius,-Y);
+  FixedComp::setLinkSurf("VoidRadiusSectorNeg",SMap.realSurf(buildIndex+537));
+  FixedComp::setBridgeSurf("VoidRadiusSectorNeg",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+537));
-  FixedComp::setBridgeSurf(3,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("VoidRadiusSectorPos",Origin+Y*voidRadius,Y);
+  FixedComp::setLinkSurf("VoidRadiusSectorPos",SMap.realSurf(buildIndex+537));
+  FixedComp::setBridgeSurf("VoidRadiusSectorPos",SMap.realSurf(buildIndex+1));
 
   const double H=wheelHeight()/2.0;
-  FixedComp::setConnect(4,Origin-Z*H,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+45));
+  FixedComp::setConnect("VoidBase",Origin-Z*H,-Z);
+  FixedComp::setLinkSurf("VoidBase",-SMap.realSurf(buildIndex+45));
 
-  FixedComp::setConnect(5,Origin+Z*H,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+46));
+  FixedComp::setConnect("VoidTop",Origin+Z*H,Z);
+  FixedComp::setLinkSurf("VoidTop",SMap.realSurf(buildIndex+46));
 
-
-  nameSideIndex(4,"VoidBase");
-  nameSideIndex(5,"VoidTop");
-  
   // inner links (normally) point towards
   // top/bottom of the spallation material (innet cell)
   const double TH=targetHeight/2.0;
-  FixedComp::setConnect(6,Origin-Z*TH,Z);
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("TargetBase",Origin-Z*TH,Z);
+  FixedComp::setLinkSurf("TargetBase",SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(7,Origin+Z*TH,-Z);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("TargetTop",Origin+Z*TH,-Z);
+  FixedComp::setLinkSurf("TargetTop",-SMap.realSurf(buildIndex+6));
 
-  FixedComp::setConnect(12, Origin-Y*(radius[0]+voidThick),-Y);
-  FixedComp::setLinkSurf(12, SMap.realSurf(buildIndex+2118));
-  FixedComp::setBridgeSurf(12,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("ShieldVoidFront", Origin-Y*(radius[0]+voidThick),-Y);
+  FixedComp::setLinkSurf("ShieldVoidFront", SMap.realSurf(buildIndex+2118));
+  FixedComp::setBridgeSurf("ShieldVoidFront",-SMap.realSurf(buildIndex+1));
 
   int SI(buildIndex);
   size_t i;
   for (i=0; i<nLayers && matTYPE[i]!=3; SI+=10,i++) ;
   if (matTYPE[i]==3) // Tungsten layer
     {
-      // 8 and 9 - the layer before Tungsten (He)
-      FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
+      // the layer before Tungsten (He)
+      FixedComp::setConnect("PreTungstenInner", Origin-Y*(targetInnerHeightRadius +
 					 steelTungstenInnerThick), -Y);
-      FixedComp::setLinkSurf(8, SMap.realSurf(buildIndex+117));
-      
-      FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
-      FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
-      
-      // 10 and 11 - Tungsten layer
-      FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
-      FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
-      
-      FixedComp::setConnect(11, Origin-Y*radius[i], Y);
-      FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
+      FixedComp::setLinkSurf("PreTungstenInner", SMap.realSurf(buildIndex+117));
+
+      FixedComp::setConnect("PreTungstenOuter", Origin-Y*radius[i-2], Y);
+      FixedComp::setLinkSurf("PreTungstenOuter", -SMap.realSurf(SI-10+7));
+
+      // Tungsten layer
+      FixedComp::setConnect("TungstenInner", Origin-Y*radius[i-1], -Y);
+      FixedComp::setLinkSurf("TungstenInner", SMap.realSurf(SI+7));
+
+      FixedComp::setConnect("TungstenOuter", Origin-Y*radius[i], Y);
+      FixedComp::setLinkSurf("TungstenOuter", -SMap.realSurf(SI+17));
     }
 
-  FixedComp::setConnect(13, Origin-Y*voidRadius,Y);
-  FixedComp::setLinkSurf(13,SMap.realSurf(buildIndex+537));
-  nameSideIndex(13,"VoidRadius");
-  
+  FixedComp::setConnect("VoidRadius", Origin-Y*voidRadius,Y);
+  FixedComp::setLinkSurf("VoidRadius",SMap.realSurf(buildIndex+537));
+
   return;
 }
 
@@ -1385,9 +1375,9 @@ BilbaoWheel::buildSectors(Simulation& System) const
 
   ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
 
-  const HeadRule innerHR=getFullRule(9);
+  const HeadRule innerHR=getFullRule("PreTungstenInner");
   const HeadRule vHR=ModelSupport::getHeadRule(SMap,buildIndex,"5 -6");
-  const HeadRule fHR=getFullRule(12);
+  const HeadRule fHR=getFullRule("TungstenOuter");
 
   for (size_t i=0; i<nSectors; i++)
     {
@@ -1396,8 +1386,8 @@ BilbaoWheel::buildSectors(Simulation& System) const
       OR.addObject(cassetteUnit);
       cassetteUnit->setRotAngle(static_cast<double>(i)*360.0/
 			     static_cast<double>(nSectors));
-      cassetteUnit->setLinkCopy("Inner",*this,9);
-      cassetteUnit->setLinkCopy("Outer",*this,12);
+      cassetteUnit->setLinkCopy("Inner",*this,"PreTungstenInner");
+      cassetteUnit->setLinkCopy("Outer",*this,"TungstenOuter");
       cassetteUnit->setCutSurf("InnerCyl",innerHR);
       cassetteUnit->setCutSurf("VerticalCut",vHR);
       cassetteUnit->setCutSurf("OuterCyl",fHR);

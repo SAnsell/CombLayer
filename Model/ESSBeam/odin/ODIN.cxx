@@ -506,7 +506,7 @@ ODIN::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
       // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid");
   
   if (stopPoint==3) return;
 

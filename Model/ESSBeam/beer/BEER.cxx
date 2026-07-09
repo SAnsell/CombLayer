@@ -522,7 +522,7 @@ BEER::build(Simulation& System,
   FocusWall->setFront(*BInsert,-1);
   FocusWall->setBack(*BInsert,-2);
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid");
 
   OutPitA->addFrontWall(bunkerObj,2);
   buildOutGuide(System,*FocusWall,2,voidCell);

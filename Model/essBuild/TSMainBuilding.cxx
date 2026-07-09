@@ -199,27 +199,25 @@ TSMainBuilding::createLinks()
 {
   ELog::RegMethod RegA("TSMainBuilding","createLinks");
 
-  // 7 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy (Key,7) constructor used to.
-  FixedComp::setNConnect(7);
+  FixedComp::setConnect("front",Origin-Y*(length/2),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(0,Origin-Y*(length/2),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  
-  FixedComp::setConnect(1,Origin+Y*(length/2),Y);
-  FixedComp::setLinkSurf(1, SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*(length/2),Y);
+  FixedComp::setLinkSurf("back", SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(width/2),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  
-  FixedComp::setConnect(3,Origin+X*(width/2),X);
-  FixedComp::setLinkSurf(3, SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("left",Origin-X*(width/2),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(4,Origin-Z*(depth),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  
-  FixedComp::setConnect(5,Origin+X*(height),Z);
-  FixedComp::setLinkSurf(6, SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("right",Origin+X*(width/2),X);
+  FixedComp::setLinkSurf("right", SMap.realSurf(buildIndex+4));
+
+  FixedComp::setConnect("base",Origin-Z*(depth),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+
+  // NOTE: pre-existing off-by-one -- "top"'s connect point and its
+  // surface were never joined; preserved here as two independent slots.
+  FixedComp::setConnect("top",Origin+X*(height),Z);
+  FixedComp::setLinkSurf("topSurf", SMap.realSurf(buildIndex+6));
 
   return;
 }

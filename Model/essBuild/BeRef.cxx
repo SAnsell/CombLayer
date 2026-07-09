@@ -354,55 +354,48 @@ BeRef::createLinks()
 {
   ELog::RegMethod RegA("BeRef","createLinks");
 
-  // 12 raw-indexed slots (several referenced externally by raw signed
-  // index, e.g. InnerCompTop/InnerCompLow's setCutSurf calls below) are
-  // still poked by number -- pre-size up front as the legacy (Key,12)
-  // constructor used to.
-  FixedComp::setNConnect(12);
+  FixedComp::setConnect("outerNeg",Origin-Y*radius,-Y);
+  FixedComp::setLinkSurf("outerNeg",SMap.realSurf(buildIndex+17));
+  FixedComp::addBridgeSurf("outerNeg",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(0,Origin-Y*radius,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
-  FixedComp::addBridgeSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("outerPos",Origin+Y*radius,Y);
+  FixedComp::setLinkSurf("outerPos",SMap.realSurf(buildIndex+17));
+  FixedComp::addBridgeSurf("outerPos",SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*radius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));
-  FixedComp::addBridgeSurf(1,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("outerLeft",Origin-X*radius,-X);
+  FixedComp::setLinkSurf("outerLeft",SMap.realSurf(buildIndex+17));
+  FixedComp::addBridgeSurf("outerLeft",-SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
-  FixedComp::addBridgeSurf(2,-SMap.realSurf(buildIndex+2));
-  
-  FixedComp::setConnect(3,Origin+X*radius,-X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
-  FixedComp::addBridgeSurf(3,SMap.realSurf(buildIndex+2));
-  
-  FixedComp::setConnect(4,Origin-Z*(depth+wallThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect("outerRight",Origin+X*radius,-X);
+  FixedComp::setLinkSurf("outerRight",SMap.realSurf(buildIndex+17));
+  FixedComp::addBridgeSurf("outerRight",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(5,Origin+Z*(height+wallThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("wallBase",Origin-Z*(depth+wallThick),-Z);
+  FixedComp::setLinkSurf("wallBase",-SMap.realSurf(buildIndex+15));
 
-  FixedComp::setConnect(6,Origin-Z*depth,-Z);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("wallTop",Origin+Z*(height+wallThick),Z);
+  FixedComp::setLinkSurf("wallTop",SMap.realSurf(buildIndex+16));
 
-  FixedComp::setConnect(7,Origin+Z*height,Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("beBase",Origin-Z*depth,-Z);
+  FixedComp::setLinkSurf("beBase",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(8,Origin+Y*radius,-Y);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("beTop",Origin+Z*height,Z);
+  FixedComp::setLinkSurf("beTop",SMap.realSurf(buildIndex+6));
 
-  FixedComp::setConnect(9,Origin-Z*(lowVoidThick+targSepThick/2.0+
+  FixedComp::setConnect("bareRadius",Origin+Y*radius,-Y);
+  FixedComp::setLinkSurf("bareRadius",-SMap.realSurf(buildIndex+7));
+
+  FixedComp::setConnect("loFeBase",Origin-Z*(lowVoidThick+targSepThick/2.0+
 				    wallThickLow),-Z);
-  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+105));
+  FixedComp::setLinkSurf("loFeBase",-SMap.realSurf(buildIndex+105));
 
-  FixedComp::setConnect(10,Origin+Z*(lowVoidThick+targSepThick/2.0+
+  FixedComp::setConnect("topFeBase",Origin+Z*(lowVoidThick+targSepThick/2.0+
 				     wallThickLow),Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
+  FixedComp::setLinkSurf("topFeBase",SMap.realSurf(buildIndex+106));
 
-  FixedComp::setConnect(11,Origin-Y*radius,-Y);
-  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+17));
-  nameSideIndex(11,"OuterRadius");
-  
+  FixedComp::setConnect("OuterRadius",Origin-Y*radius,-Y);
+  FixedComp::setLinkSurf("OuterRadius",SMap.realSurf(buildIndex+17));
+
   return;
 }
 
@@ -427,11 +420,11 @@ BeRef::createAll(Simulation& System,
   insertObjects(System);       
   if (engActive)
     {
-      InnerCompTop->setCutSurf("RefBase",*this,11);
-      InnerCompTop->setCutSurf("RefTop",*this,8);
-      
-      InnerCompLow->setCutSurf("RefBase",*this,10);
-      InnerCompLow->setCutSurf("RefTop",*this,7);
+      InnerCompTop->setCutSurf("RefBase",*this,"topFeBase");
+      InnerCompTop->setCutSurf("RefTop",*this,"beTop");
+
+      InnerCompLow->setCutSurf("RefBase",*this,"loFeBase");
+      InnerCompLow->setCutSurf("RefTop",*this,"beBase");
 
       InnerCompTop->setCell("ReflectorUnit",this->getCell("topBe"));
       InnerCompLow->setCell("ReflectorUnit",this->getCell("lowBe")); 

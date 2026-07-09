@@ -522,34 +522,29 @@ PBW::createLinks()
 {
   ELog::RegMethod RegA("PBW","createLinks");
 
-  // 8 raw-indexed slots (index 7 also referenced externally via a raw
-  // signed side index) are still poked by number below -- pre-size up
-  // front as the legacy (Key,8) constructor used to.
-  FixedComp::setNConnect(8);
+  FixedComp::setConnect("front",Origin-Y*(plugLength2),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(0,Origin-Y*(plugLength2),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("back",Origin+Y*(plugLength1),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(1,Origin+Y*(plugLength1),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("leftBack",Origin-X*(plugWidth1/2.0)+Y*(plugLength1),-X);
+  FixedComp::setLinkSurf("leftBack",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(2,Origin-X*(plugWidth1/2.0)+Y*(plugLength1),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("leftFront",Origin-X*(plugWidth2/2.0)-Y*(plugLength2),-X);
+  FixedComp::setLinkSurf("leftFront",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(3,Origin-X*(plugWidth2/2.0)-Y*(plugLength2),-X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("rightBack",Origin+X*(plugWidth1/2.0)+Y*(plugLength1),X);
+  FixedComp::setLinkSurf("rightBack",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(4,Origin+X*(plugWidth1/2.0)+Y*(plugLength1),X);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("rightFront",Origin+X*(plugWidth2/2.0)-Y*(plugLength2),X);
+  FixedComp::setLinkSurf("rightFront",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(5,Origin+X*(plugWidth2/2.0)-Y*(plugLength2),X);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("base",Origin-Z*(plugDepth),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(6,Origin-Z*(plugDepth),-Z);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+5));
-
-  FixedComp::setConnect(7,Origin+Z*(plugHeight),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Z*(plugHeight),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

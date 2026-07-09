@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -216,10 +217,6 @@ BunkerInsert::createLinks()
 {
   ELog::RegMethod RegA("BunkerInsert","createLinks");
 
-  // 15 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy (Key,15) constructor used to.
-  FixedComp::setNConnect(15);
-
   ExternalCut::createLink("front",*this,"front",Origin,-Y);
   ExternalCut::createLink("back",*this,"back",Origin,Y);
   // Calc bunker edge intersectoin
@@ -234,36 +231,39 @@ BunkerInsert::createLinks()
   // object.
   const Geometry::Vec3D midPt((endMidPt[0]+endMidPt[1])/2.0);
   // Mid point [useful for guides etc]
-  FixedComp::setConnect(6,midPt,Y);
+  FixedComp::setConnect("mid",midPt,Y);
 
-  FixedComp::setConnect(2,midPt-X*(width/2.0),X);
-  FixedComp::setConnect(3,midPt+X*(width/2.0),X);
-  FixedComp::setConnect(4,midPt-Z*(height/2.0),Z);
-  FixedComp::setConnect(5,midPt+Z*(height/2.0),Z);
-  
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+6));
-  
+  FixedComp::setConnect("midLeft",midPt-X*(width/2.0),X);
+  FixedComp::setConnect("midRight",midPt+X*(width/2.0),X);
+  FixedComp::setConnect("midBase",midPt-Z*(height/2.0),Z);
+  FixedComp::setConnect("midTop",midPt+Z*(height/2.0),Z);
+
+  FixedComp::setLinkSurf("midLeft",SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("midRight",-SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("midBase",SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("midTop",-SMap.realSurf(buildIndex+6));
+
   // add endpoint [not mid line]
 
-  size_t index(5);
+  const std::array<std::string,2> endName{"front","back"};
+  size_t eIndex(0);
   for(const Geometry::Vec3D& EP : endMidPt)
     {
-      FixedComp::setConnect(index+2,EP-X*(width/2.0),X);
-      FixedComp::setConnect(index+3,EP+X*(width/2.0),X);
-      FixedComp::setConnect(index+4,EP-Z*(height/2.0),Z);
-      FixedComp::setConnect(index+5,EP+Z*(height/2.0),Z);
-      
-      FixedComp::setLinkSurf(index+2,SMap.realSurf(buildIndex+3));
-      FixedComp::setLinkSurf(index+3,-SMap.realSurf(buildIndex+4));
-      FixedComp::setLinkSurf(index+4,SMap.realSurf(buildIndex+5));
-      FixedComp::setLinkSurf(index+5,-SMap.realSurf(buildIndex+6));
-      index+=4;
+      const std::string& prefix(endName[eIndex]);
+
+      FixedComp::setConnect(prefix+"Left",EP-X*(width/2.0),X);
+      FixedComp::setConnect(prefix+"Right",EP+X*(width/2.0),X);
+      FixedComp::setConnect(prefix+"Base",EP-Z*(height/2.0),Z);
+      FixedComp::setConnect(prefix+"Top",EP+Z*(height/2.0),Z);
+
+      FixedComp::setLinkSurf(prefix+"Left",SMap.realSurf(buildIndex+3));
+      FixedComp::setLinkSurf(prefix+"Right",-SMap.realSurf(buildIndex+4));
+      FixedComp::setLinkSurf(prefix+"Base",SMap.realSurf(buildIndex+5));
+      FixedComp::setLinkSurf(prefix+"Top",-SMap.realSurf(buildIndex+6));
+      eIndex++;
     }
 
-  
+
   return;
 }
 

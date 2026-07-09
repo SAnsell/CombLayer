@@ -247,11 +247,6 @@ Box::createLinks()
 {
   ELog::RegMethod RegA("Box","createLinks");
 
-  // 8 of 9 raw-indexed slots (0-5,7,8 -- index 6 unused) are still
-  // poked by number below -- pre-size up front as the legacy (Key,9)
-  // constructor used to.
-  FixedComp::setNConnect(9);
-
   if (nLayers)
     {
       const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
@@ -259,28 +254,28 @@ Box::createLinks()
 
       const double l = length[nLayers-1]/2.0;
       const double w = width[nLayers-1]/2.0;
-      
-      FixedComp::setConnect(0,Origin-Y*l,-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
-      FixedComp::setConnect(1,Origin+Y*l,Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
-      
-      FixedComp::setConnect(2,Origin-X*w,-X);
-      FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
-      FixedComp::setConnect(3,Origin+X*w,X); 
-      FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
-      
-      FixedComp::setConnect(4,Origin-Z*(depth[nLayers-1]),-Z);
-      FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
-      FixedComp::setConnect(5,Origin+Z*(height[nLayers-1]),Z);
-      FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
-      
+
+      FixedComp::setConnect("front",Origin-Y*l,-Y);
+      FixedComp::setLinkSurf("front",-SMap.realSurf(SI+1));
+      FixedComp::setConnect("back",Origin+Y*l,Y);
+      FixedComp::setLinkSurf("back",SMap.realSurf(SI+2));
+
+      FixedComp::setConnect("left",Origin-X*w,-X);
+      FixedComp::setLinkSurf("left",-SMap.realSurf(SI+3));
+      FixedComp::setConnect("right",Origin+X*w,X);
+      FixedComp::setLinkSurf("right",SMap.realSurf(SI+4));
+
+      FixedComp::setConnect("base",Origin-Z*(depth[nLayers-1]),-Z);
+      FixedComp::setLinkSurf("base",-SMap.realSurf(SI+5));
+      FixedComp::setConnect("top",Origin+Z*(height[nLayers-1]),Z);
+      FixedComp::setLinkSurf("top",SMap.realSurf(SI+6));
+
       // inner link points for F5 collimators
-      FixedComp::setConnect(7,Origin-Z*depth[0],Z);
-      FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
-      
-      FixedComp::setConnect(8,Origin+Z*height[0],-Z);
-      FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
+      FixedComp::setConnect("innerBase",Origin-Z*depth[0],Z);
+      FixedComp::setLinkSurf("innerBase",SMap.realSurf(buildIndex+5));
+
+      FixedComp::setConnect("innerTop",Origin+Z*height[0],-Z);
+      FixedComp::setLinkSurf("innerTop",-SMap.realSurf(buildIndex+6));
     }
   return;
 }

@@ -748,7 +748,7 @@ VESPA::build(Simulation& System,
 
   // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid");
   OutPitT0->addFrontWall(bunkerObj,2);
 
   if (stopPoint==3) return;                      // STOP At bunker exit

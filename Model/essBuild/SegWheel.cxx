@@ -652,24 +652,20 @@ SegWheel::createLinks()
 {
   ELog::RegMethod RegA("PressVessel","createLinks");
 
-  // 16 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy WheelBase(Key,16) constructor used to.
-  FixedComp::setNConnect(16);
-
   // set Links :: Inner links:
 
-  FixedComp::setConnect(0,Origin+Y*innerRadius,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("InnerRadius",Origin+Y*innerRadius,-Y);
+  FixedComp::setLinkSurf("InnerRadius",-SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(1,Origin+Y*voidRadius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+48));
+  FixedComp::setConnect("VoidRadius",Origin+Y*voidRadius,Y);
+  FixedComp::setLinkSurf("VoidRadius",SMap.realSurf(buildIndex+48));
 
   const double H1=(targetHeight/2.0)+voidThick;
-  FixedComp::setConnect(2,Origin-Z*H1,-Z);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+55));
+  FixedComp::setConnect("VoidBase",Origin-Z*H1,-Z);
+  FixedComp::setLinkSurf("VoidBase",-SMap.realSurf(buildIndex+55));
 
-  FixedComp::setConnect(3,Origin+Z*H1,Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+56));
+  FixedComp::setConnect("VoidTop",Origin+Z*H1,Z);
+  FixedComp::setLinkSurf("VoidTop",SMap.realSurf(buildIndex+56));
 
   return;
 }

@@ -218,62 +218,53 @@ DetectorChamber::createLinks()
 {
   ELog::RegMethod RegA("DetectorChamber","createLinks");
 
-  // 18 raw-indexed slots (inner/mid/outer void x front/back/left/right/
-  // base/top) are still poked by number below -- pre-size up front as
-  // the legacy (Key,18) constructor used to.
-  FixedComp::setNConnect(18);
-
   // INNER VOID
-  setConnect(0,Origin-Y*(voidLength/2.0),-Y);
-  setConnect(1,Origin+Y*(voidLength/2.0),Y);
-  setConnect(2,Origin-X*(voidWidth/2.0),-X);
-  setConnect(3,Origin+X*(voidWidth/2.0),X);
-  setConnect(4,Origin-Z*voidDepth,-Z);
-  setConnect(5,Origin+Z*voidHeight,Z);  
+  setConnect("InnerFront",Origin-Y*(voidLength/2.0),-Y);
+  setConnect("InnerBack",Origin+Y*(voidLength/2.0),Y);
+  setConnect("InnerLeft",Origin-X*(voidWidth/2.0),-X);
+  setConnect("InnerRight",Origin+X*(voidWidth/2.0),X);
+  setConnect("InnerBase",Origin-Z*voidDepth,-Z);
+  setConnect("InnerTop",Origin+Z*voidHeight,Z);
 
-  setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  setLinkSurf("InnerFront",-SMap.realSurf(buildIndex+1));
+  setLinkSurf("InnerBack",SMap.realSurf(buildIndex+2));
+  setLinkSurf("InnerLeft",-SMap.realSurf(buildIndex+3));
+  setLinkSurf("InnerRight",SMap.realSurf(buildIndex+4));
+  setLinkSurf("InnerBase",-SMap.realSurf(buildIndex+5));
+  setLinkSurf("InnerTop",SMap.realSurf(buildIndex+6));
 
-  
+
   // Mide layer
-  setConnect(6,Origin-Y*(feFront+voidLength/2.0),-Y);
-  setConnect(7,Origin+Y*(feBack+voidLength/2.0),Y);
-  setConnect(8,Origin-X*(feLeftWall+voidWidth/2.0),-X);
-  setConnect(9,Origin+X*(feRightWall+voidWidth/2.0),X);
-  setConnect(10,Origin-Z*(feFloor+voidDepth),-Z);
-  setConnect(11,Origin+Z*(feRoof+voidHeight),Z);  
+  setConnect("MidFront",Origin-Y*(feFront+voidLength/2.0),-Y);
+  setConnect("MidBack",Origin+Y*(feBack+voidLength/2.0),Y);
+  setConnect("MidLeft",Origin-X*(feLeftWall+voidWidth/2.0),-X);
+  setConnect("MidRight",Origin+X*(feRightWall+voidWidth/2.0),X);
+  setConnect("MidBase",Origin-Z*(feFloor+voidDepth),-Z);
+  setConnect("MidTop",Origin+Z*(feRoof+voidHeight),Z);
 
-  setLinkSurf(6,-SMap.realSurf(buildIndex+11));
-  setLinkSurf(7,SMap.realSurf(buildIndex+12));
-  setLinkSurf(8,-SMap.realSurf(buildIndex+13));
-  setLinkSurf(9,SMap.realSurf(buildIndex+14));
-  setLinkSurf(10,-SMap.realSurf(buildIndex+15));
-  setLinkSurf(11,SMap.realSurf(buildIndex+16));
+  setLinkSurf("MidFront",-SMap.realSurf(buildIndex+11));
+  setLinkSurf("MidBack",SMap.realSurf(buildIndex+12));
+  setLinkSurf("MidLeft",-SMap.realSurf(buildIndex+13));
+  setLinkSurf("MidRight",SMap.realSurf(buildIndex+14));
+  setLinkSurf("MidBase",-SMap.realSurf(buildIndex+15));
+  setLinkSurf("MidTop",SMap.realSurf(buildIndex+16));
 
-  
+
     // OUTER VOID
-  setConnect(12,Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
-  setConnect(13,Origin+Y*(concBack+feBack+voidLength/2.0),Y);
-  setConnect(14,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
-  setConnect(15,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
-  setConnect(16,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
-  setConnect(17,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
+  setConnect("OuterFront",Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
+  setConnect("OuterBack",Origin+Y*(concBack+feBack+voidLength/2.0),Y);
+  setConnect("OuterLeft",Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
+  setConnect("OuterRight",Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
+  setConnect("OuterBase",Origin-Z*(concFloor+feFloor+voidDepth),-Z);
+  setConnect("OuterTop",Origin+Z*(concRoof+feRoof+voidHeight),Z);
 
-  setLinkSurf(12,-SMap.realSurf(buildIndex+21));
-  setLinkSurf(13,SMap.realSurf(buildIndex+22));
-  setLinkSurf(14,-SMap.realSurf(buildIndex+23));
-  setLinkSurf(15,SMap.realSurf(buildIndex+24));
-  setLinkSurf(16,-SMap.realSurf(buildIndex+25));
-  setLinkSurf(17,SMap.realSurf(buildIndex+26));
+  setLinkSurf("OuterFront",-SMap.realSurf(buildIndex+21));
+  setLinkSurf("OuterBack",SMap.realSurf(buildIndex+22));
+  setLinkSurf("OuterLeft",-SMap.realSurf(buildIndex+23));
+  setLinkSurf("OuterRight",SMap.realSurf(buildIndex+24));
+  setLinkSurf("OuterBase",-SMap.realSurf(buildIndex+25));
+  setLinkSurf("OuterTop",SMap.realSurf(buildIndex+26));
 
-  nameSideIndex(0,"InnerFront");
-  nameSideIndex(6,"MidFront");
-  nameSideIndex(12,"OuterFront");
-  
   return;
 }
 

@@ -531,7 +531,7 @@ MAGIC::build(Simulation& System,
 
   // using 7 : mid point 
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid");
 
   if (stopPoint==3) return;
 
