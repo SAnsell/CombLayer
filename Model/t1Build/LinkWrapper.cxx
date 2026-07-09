@@ -70,9 +70,10 @@ LinkWrapper::LinkWrapper(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {
-  // LWInner/LWOuter poke link points by raw numeric index (including
-  // a jump to index 20 for layer surfaces) rather than by name, so the
-  // slots must all exist up-front, as they always did.
+  // LWInner/LWOuter name their link points at fixed positions
+  // (including a jump to index 20 for layer surfaces) that
+  // t1Reflector.cxx and each other still read by raw numeric index,
+  // so pre-size the slots up front as always.
   FixedComp::setNConnect(40);
 }
 

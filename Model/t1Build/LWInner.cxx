@@ -3,7 +3,7 @@
  
  * File:   construct/LWInner.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,22 +157,36 @@ LWInner::createSurfaces()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
   // Create outer surfaces [if needed]
-
+  // NOTE: these raw indices are load-bearing -- t1Reflector.cxx reads
+  // other Boxes' link surfaces by exactly these positions (e.g.
+  // Boxes[3]->getLinkSurf(-27), Boxes[N]->addSurface(*Boxes[0],7)), so
+  // each write below is named via nameSideIndex(rawIndex,name)
+  // immediately followed by a write on that same name -- this grows
+  // the link array to the aliased index exactly as the raw form did,
+  // while going through the name-based write API.
   size_t linkIndex(0);
-      std::vector<int>::const_iterator vc;
+  std::vector<int>::const_iterator vc;
   for(vc=surfNum.begin();vc!=surfNum.end();vc++)
-    FixedComp::setLinkSurf(linkIndex++,SMap.realSurf(*vc));
+    {
+      const std::string lName("bound"+std::to_string(linkIndex));
+      FixedComp::nameSideIndex(linkIndex,lName);
+      FixedComp::setLinkSurf(lName,SMap.realSurf(*vc));
+      linkIndex++;
+    }
 
-  int nSurf(buildIndex+1);      
+  int nSurf(buildIndex+1);
   for(size_t i=0;i<surfCent.size();i++)
     {
       const Geometry::Vec3D CP=Origin+surfCent[i];
       const Geometry::Vec3D Axis=X*surfAxis[i].X()+
 	Y*surfAxis[i].Y()+Z*surfAxis[i].Z();
-  
+
       ModelSupport::buildPlane(SMap,nSurf,CP,Axis);
       surfNum.push_back(SMap.realSurf(nSurf));
-      FixedComp::setLinkSurf(linkIndex++,-surfNum.back());
+      const std::string lName("bound"+std::to_string(linkIndex));
+      FixedComp::nameSideIndex(linkIndex,lName);
+      FixedComp::setLinkSurf(lName,-surfNum.back());
+      linkIndex++;
       nSurf++;
     }
 
@@ -182,13 +196,13 @@ LWInner::createSurfaces()
       std::vector<int>::const_iterator vc;
       for(vc=surfNum.begin();vc!=surfNum.end();vc++)
 	SList.push_back(SurI.getSurf(abs(*vc)));
-    }      
-  
+    }
+
   // Layer surfaces:
   linkIndex=20;
   double lThick(0.0);
   for(size_t i=0;i<nLayers;i++)
-    { 
+    {
       lThick+=layerThick[i];
       int lSurf(buildIndex+101+100*static_cast<int>(i));
       for(size_t j=0;j<SList.size();j++)
@@ -200,12 +214,16 @@ LWInner::createSurfaces()
 	  SMap.registerSurf(lSurf,SurOut);
 
 	  if (i==nLayers-1)
-	    FixedComp::setLinkSurf(linkIndex++,
-				     SMap.realSurf(signV*lSurf));
+	    {
+	      const std::string lName("layer"+std::to_string(linkIndex));
+	      FixedComp::nameSideIndex(linkIndex,lName);
+	      FixedComp::setLinkSurf(lName,SMap.realSurf(signV*lSurf));
+	      linkIndex++;
+	    }
 	  lSurf++;
 	}
     }
-  
+
   return;
 }
   
