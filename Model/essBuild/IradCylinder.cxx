@@ -3,7 +3,7 @@
  
  * File:   essBuild/IradCylinder.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace essSystem
 {
 
 IradCylinder::IradCylinder(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -361,25 +361,25 @@ IradCylinder::createLinks()
     std::accumulate(wallThick.begin(),wallThick.end(),0.0);
   const int IR(buildIndex+static_cast<int>(wallThick.size())*10);
     
-  FixedComp::setConnect(0,Origin-Y*(length+radius+TThick),-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(IR+8));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin-Y*(length+radius+TThick),-Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(IR+8));
+  FixedComp::setBridgeSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length+radius+TThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(IR+9));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*(length+radius+TThick),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(IR+9));
+  FixedComp::setBridgeSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(radius+TThick),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(IR+7));
+  FixedComp::setConnect("left",Origin-X*(radius+TThick),-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(IR+7));
 
-  FixedComp::setConnect(3,Origin+X*(radius+TThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(IR+7));
+  FixedComp::setConnect("right",Origin+X*(radius+TThick),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(IR+7));
 
-  FixedComp::setConnect(4,Origin-Z*(radius+TThick),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(IR+7));
+  FixedComp::setConnect("base",Origin-Z*(radius+TThick),-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(IR+7));
 
-  FixedComp::setConnect(5,Origin+Z*(radius+TThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(IR+7));
+  FixedComp::setConnect("top",Origin+Z*(radius+TThick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(IR+7));
 
 
   return;

@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylFlowGuide.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ namespace essSystem
 {
 
 CylFlowGuide::CylFlowGuide(const std::string& Key) :
-  attachSystem::FixedRotate(Key,0),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

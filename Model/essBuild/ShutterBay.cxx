@@ -3,7 +3,7 @@
  
  * File:   essBuild/ShutterBay.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ namespace essSystem
 {
 
 ShutterBay::ShutterBay(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::ExternalCut()
@@ -256,32 +256,30 @@ ShutterBay::createLinks()
 {
   ELog::RegMethod RegA("ShutterBay","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(radius+skin),-Y);   // outer point
-  FixedComp::setConnect(1,Origin+Y*(radius+skin),Y);   // outer point
-  FixedComp::setConnect(2,Origin-X*(radius+skin),-X);   // outer point
-  FixedComp::setConnect(3,Origin+X*(radius+skin),X);   // outer point
-  FixedComp::setConnect(4,Origin-Z*depth,-Z);  // base
-  FixedComp::setConnect(5,Origin+Z*(height+topSkin),Z);  // 
+  FixedComp::setConnect("front",Origin-Y*(radius+skin),-Y);   // outer point
+  FixedComp::setConnect("back",Origin+Y*(radius+skin),Y);   // outer point
+  FixedComp::setConnect("left",Origin-X*(radius+skin),-X);   // outer point
+  FixedComp::setConnect("right",Origin+X*(radius+skin),X);   // outer point
+  FixedComp::setConnect("base",Origin-Z*depth,-Z);  // base
+  FixedComp::setConnect("top",Origin+Z*(height+topSkin),Z);  //
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+17));
 
-  FixedComp::addBridgeSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::addBridgeSurf(1,SMap.realSurf(buildIndex+1));
-  FixedComp::addBridgeSurf(2,-SMap.realSurf(buildIndex+2));
-  FixedComp::addBridgeSurf(3,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::addBridgeSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::addBridgeSurf("back",SMap.realSurf(buildIndex+1));
+  FixedComp::addBridgeSurf("left",-SMap.realSurf(buildIndex+2));
+  FixedComp::addBridgeSurf("right",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("InnerCyl",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("innerBack",SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(6,Origin-Y*radius,-Y);   // materila point
-  FixedComp::setConnect(7,Origin+Y*radius,Y);    // material point
-
-  nameSideIndex(6,"InnerCyl");
+  FixedComp::setConnect("InnerCyl",Origin-Y*radius,-Y);   // materila point
+  FixedComp::setConnect("innerBack",Origin+Y*radius,Y);    // material point
 
 
   return;

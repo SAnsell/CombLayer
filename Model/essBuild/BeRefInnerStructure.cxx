@@ -3,7 +3,7 @@
 
  * File:   essBuild/BeRefInnerStructure.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ namespace essSystem
 {
 
 BeRefInnerStructure::BeRefInnerStructure(const std::string& Key) :
-  attachSystem::FixedComp(Key,0),
+  attachSystem::FixedComp(Key),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
   /*!

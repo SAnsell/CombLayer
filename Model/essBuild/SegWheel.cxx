@@ -3,7 +3,7 @@
  
  * File:   essBuild/SegWheel.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -651,6 +651,11 @@ SegWheel::createLinks()
   */
 {
   ELog::RegMethod RegA("PressVessel","createLinks");
+
+  // 16 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy WheelBase(Key,16) constructor used to.
+  FixedComp::setNConnect(16);
+
   // set Links :: Inner links:
 
   FixedComp::setConnect(0,Origin+Y*innerRadius,-Y);
