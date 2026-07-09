@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/EssModBase.h
  *
- * Copyright (c) 2004-2023 by Stuart Ansell/K. Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell/K. Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ class EssModBase :
   
  public:
 
-  EssModBase(const std::string&,const size_t);
+  explicit EssModBase(const std::string&);
   EssModBase(const EssModBase&);
   EssModBase& operator=(const EssModBase&);
   virtual EssModBase* clone() const =0;

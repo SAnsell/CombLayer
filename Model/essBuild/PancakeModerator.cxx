@@ -3,7 +3,7 @@
 
  * File:   essBuild/PancakeModerator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ namespace essSystem
 {
 
 PancakeModerator::PancakeModerator(const std::string& Key) :
-  EssModBase(Key,12),
+  EssModBase(Key),
   MidH2(new DiskPreMod(Key+"MidH2")),
   LeftWater(new EdgeWater(Key+"LeftWater")),
   RightWater(new EdgeWater(Key+"RightWater"))
@@ -247,25 +247,25 @@ PancakeModerator::createLinks()
 {
   ELog::RegMethod RegA("PancakeModerator","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*outerRadius,-Y);
-  FixedComp::setConnect(1,Origin+Y*outerRadius,Y);
-  FixedComp::setConnect(2,Origin-X*outerRadius,-X);
-  FixedComp::setConnect(3,Origin+X*outerRadius,X);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("front",Origin-Y*outerRadius,-Y);
+  FixedComp::setConnect("back",Origin+Y*outerRadius,Y);
+  FixedComp::setConnect("left",Origin-X*outerRadius,-X);
+  FixedComp::setConnect("right",Origin+X*outerRadius,X);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+7));
 
   // copy surface top/bottom from H2Wing and Origin from center
 
-  FixedComp::setLinkCopy(4,*MidH2,5);
-  FixedComp::setLinkCopy(5,*MidH2,6);
-  const double LowV= LU[4].getConnectPt().Z();
-  const double HighV= LU[5].getConnectPt().Z();
+  FixedComp::setLinkCopy("base",*MidH2,5);
+  FixedComp::setLinkCopy("top",*MidH2,6);
+  const double LowV= FixedComp::getLinkPt("base").Z();
+  const double HighV= FixedComp::getLinkPt("top").Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
-  FixedComp::setConnect(4,LowPt,-Z);
-  FixedComp::setConnect(5,HighPt,Z);
+  FixedComp::setConnect("base",LowPt,-Z);
+  FixedComp::setConnect("top",HighPt,Z);
 
   //  FixedComp::setLinkCopy(6,*MidH2,13); ELog::EM << "is it correct?" << ELog::endDiag;
 

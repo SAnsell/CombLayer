@@ -3,7 +3,7 @@
  
  * File:   essBuild/ButterflyModerator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ namespace essSystem
 {
 
 ButterflyModerator::ButterflyModerator(const std::string& Key) :
-  essSystem::EssModBase(Key,12),
+  essSystem::EssModBase(Key),
   bfType("BF1"),
   LeftUnit(new H2Wing(Key,"LeftLobe",90.0)),
   RightUnit(new H2Wing(Key,"RightLobe",270.0)),
@@ -259,28 +259,28 @@ ButterflyModerator::createLinks()
 {
   ELog::RegMethod RegA("ButterflyModerator","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*outerRadius,-Y);
-  FixedComp::setConnect(1,Origin+Y*outerRadius,Y);
-  FixedComp::setConnect(2,Origin-X*outerRadius,-X);
-  FixedComp::setConnect(3,Origin+X*outerRadius,X);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("front",Origin-Y*outerRadius,-Y);
+  FixedComp::setConnect("back",Origin+Y*outerRadius,Y);
+  FixedComp::setConnect("left",Origin-X*outerRadius,-X);
+  FixedComp::setConnect("right",Origin+X*outerRadius,X);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+7));
 
   // copy surface top/bottom from H2Wing and Origin from center
-  
-  FixedComp::setLinkCopy(4,*LeftUnit,5);
-  FixedComp::setLinkCopy(5,*LeftUnit,6);
-  const double LowV= LU[4].getConnectPt().Z();
-  const double HighV= LU[5].getConnectPt().Z();
+
+  FixedComp::setLinkCopy("base",*LeftUnit,5);
+  FixedComp::setLinkCopy("top",*LeftUnit,6);
+  const double LowV= FixedComp::getLinkPt("base").Z();
+  const double HighV= FixedComp::getLinkPt("top").Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
-  FixedComp::setConnect(4,LowPt,-Z);
-  FixedComp::setConnect(5,HighPt,Z);
+  FixedComp::setConnect("base",LowPt,-Z);
+  FixedComp::setConnect("top",HighPt,Z);
 
-  FixedComp::setLinkCopy(6,*MidWater,13);  
-  
+  FixedComp::setLinkCopy("midWaterCentre",*MidWater,13);
+
   return;
 }
 
