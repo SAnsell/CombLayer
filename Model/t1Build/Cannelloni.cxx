@@ -292,19 +292,15 @@ Cannelloni::createLinks()
 {
   ELog::RegMethod RegA("Cannelloni","createLinks");
 
-  // 3 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy TargetBase(Key,3) constructor used to.
-  FixedComp::setNConnect(3);
-
   // all point out
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+31));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+32));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+37));
-		      
-  FixedComp::setConnect(0,Origin-Y*(frontThick+wallClad+voidThick),-Y);
-  FixedComp::setConnect(1,Origin+Y*
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+31));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+32));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+37));
+
+  FixedComp::setConnect("front",Origin-Y*(frontThick+wallClad+voidThick),-Y);
+  FixedComp::setConnect("back",Origin+Y*
 			(mainLength+wallClad+wallThick+voidThick),Y);
-  FixedComp::setConnect(2,Origin+Z*(coreRadius+wallThick+wallClad+voidThick),Z);
+  FixedComp::setConnect("top",Origin+Z*(coreRadius+wallThick+wallClad+voidThick),Z);
 
   return;
 }

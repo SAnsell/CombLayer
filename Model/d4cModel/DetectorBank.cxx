@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -244,18 +245,16 @@ DetectorBank::createLinks()
 {
   ELog::RegMethod RegA("DetectorBank","createLinks");
 
-  // 6 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy (Key,6) constructor used to.
-  FixedComp::setNConnect(6);
-
   int sign(-1);
   int surfN(11);
   const double T[]={detDepth/2.0,detLength/2.0,detHeight/2.0};
   const Geometry::Vec3D XYZ[]={-Y,Y,-X,X,-Z,Z};
+  const std::array<std::string,6> name
+    {"front","back","left","right","base","top"};
   for(size_t i=0;i<6;i++)
     {
-      FixedComp::setLinkSurf(i,sign*SMap.realSurf(buildIndex+surfN));
-      FixedComp::setConnect(i,Origin+XYZ[i]*(T[i/2]+wallThick),XYZ[i]); 
+      FixedComp::setLinkSurf(name[i],sign*SMap.realSurf(buildIndex+surfN));
+      FixedComp::setConnect(name[i],Origin+XYZ[i]*(T[i/2]+wallThick),XYZ[i]);
       sign*=-1;
       surfN++;
     }

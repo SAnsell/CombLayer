@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -319,25 +320,24 @@ SideCoolTarget::createLinks()
 {
   ELog::RegMethod RegA("SideCoolTarget","createLinks");
 
-  // 6 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy TargetBase(Key,6) constructor used to.
-  FixedComp::setNConnect(6);
+  const std::array<std::string,6> name
+    {"front","back","base","top","left","right"};
 
   // all point out
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
+  FixedComp::setLinkSurf(name[0],-SMap.realSurf(buildIndex+41));
+  FixedComp::setLinkSurf(name[1],SMap.realSurf(buildIndex+42));
   for(size_t i=2;i<6;i++)
-    FixedComp::setLinkSurf(i,SMap.realSurf(buildIndex+47));
+    FixedComp::setLinkSurf(name[i],SMap.realSurf(buildIndex+47));
 
   const double TThick(cladThick+waterThick+pressThick+
 		      voidThick);
-		      
-  FixedComp::setConnect(0,Origin-Y*TThick,-Y);
-  FixedComp::setConnect(1,Origin+Y*(mainLength+TThick),Y);
-  FixedComp::setConnect(2,Origin-Z*(zRadius+TThick),-Z);
-  FixedComp::setConnect(3,Origin+Z*(zRadius+TThick),Z);
-  FixedComp::setConnect(4,Origin-X*(xRadius+TThick),-X);
-  FixedComp::setConnect(5,Origin+X*(xRadius+TThick),X);
+
+  FixedComp::setConnect(name[0],Origin-Y*TThick,-Y);
+  FixedComp::setConnect(name[1],Origin+Y*(mainLength+TThick),Y);
+  FixedComp::setConnect(name[2],Origin-Z*(zRadius+TThick),-Z);
+  FixedComp::setConnect(name[3],Origin+Z*(zRadius+TThick),Z);
+  FixedComp::setConnect(name[4],Origin-X*(xRadius+TThick),-X);
+  FixedComp::setConnect(name[5],Origin+X*(xRadius+TThick),X);
 
   return;
 }

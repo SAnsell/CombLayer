@@ -230,31 +230,26 @@ ModContainer::createLinks()
 {  
   ELog::RegMethod RegA("ModContainer","createLinks");
 
-  // 12 raw-indexed slots (0-5 sequential, plus a non-contiguous 8) are
-  // still poked by number below -- pre-size up front as the legacy
-  // (Key,12) constructor used to.
-  FixedComp::setNConnect(12);
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("left",Origin-X*(radius+thick),-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(2,Origin-X*(radius+thick),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
-  
-  FixedComp::setConnect(3,Origin+X*(radius+thick),-X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("right",Origin+X*(radius+thick),-X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(4,Origin-Z*(radius+thick),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("base",Origin-Z*(radius+thick),-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(5,Origin+Z*(radius+thick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("top",Origin+Z*(radius+thick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+17));
 
-  FixedComp::setConnect(8,Origin-X*radius,X);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("innerRadius",Origin-X*radius,X);
+  FixedComp::setLinkSurf("innerRadius",-SMap.realSurf(buildIndex+7));
 
   return;
 }

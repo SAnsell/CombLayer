@@ -73,12 +73,7 @@ OpenBlockTarget::OpenBlockTarget(const std::string& Key)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-  // createSurfaces() pokes link point 1 by raw index ahead of
-  // createLinks() ever running, so pre-size up front as the legacy
-  // TargetBase(Key,6) constructor used to.
-  FixedComp::setNConnect(6);
-}
+{}
 
 OpenBlockTarget::OpenBlockTarget(const OpenBlockTarget& A) : 
   TMRSystem::TargetBase(A),
@@ -273,8 +268,8 @@ OpenBlockTarget::createSurfaces()
   ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*tStep,Y);
   ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(tStep+pressThick),Y);
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  FixedComp::setConnect(1,Origin+Y*(tStep+pressThick),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect("back",Origin+Y*(tStep+pressThick),Y);
 
   return;
 }
@@ -389,20 +384,20 @@ OpenBlockTarget::createLinks()
   ELog::RegMethod RegA("OpenBlockTarget","createLinks");
 
 
-  FixedComp::setConnect(0,Origin-Y*pressThick,-Y);
-  // 1 set in surfaces
-  FixedComp::setConnect(2,Origin-X*(width/2.0+pressThick),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0+pressThick),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+pressThick),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+pressThick),Z);
+  FixedComp::setConnect("front",Origin-Y*pressThick,-Y);
+  // back set in surfaces
+  FixedComp::setConnect("left",Origin-X*(width/2.0+pressThick),-X);
+  FixedComp::setConnect("right",Origin+X*(width/2.0+pressThick),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0+pressThick),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0+pressThick),Z);
 
   // Set Connect surfaces:
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   return;
 }

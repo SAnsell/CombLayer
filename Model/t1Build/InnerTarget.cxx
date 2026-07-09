@@ -444,22 +444,18 @@ InnerTarget::createLinks()
 {
   ELog::RegMethod RegA("InnerTarget","createLinks");
 
-  // 6 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy TargetBase(Key,6) constructor used to.
-  FixedComp::setNConnect(6);
-
   // all point out
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+48));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+47));
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+48));
+  FixedComp::addLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+42));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+47));
 
   const double TThick(cladThick+waterThick+pressThick+
 		      voidThick);
-		      
-  FixedComp::setConnect(0,Origin-Y*(sphRadius-sphYStep+TThick),-Y);
-  FixedComp::setConnect(1,Origin+Y*(mainLength+TThick),Y);
-  FixedComp::setConnect(2,Origin+Z*(coreRadius+TThick),Z);
+
+  FixedComp::setConnect("front",Origin-Y*(sphRadius-sphYStep+TThick),-Y);
+  FixedComp::setConnect("back",Origin+Y*(mainLength+TThick),Y);
+  FixedComp::setConnect("top",Origin+Z*(coreRadius+TThick),Z);
 
   return;
 }
