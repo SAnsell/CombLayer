@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1CylVessel.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,15 +67,25 @@
 namespace shutterSystem
 {
 
-t1CylVessel::t1CylVessel(const std::string& Key)  : 
-  attachSystem::FixedRotate(Key,3),
+t1CylVessel::t1CylVessel(const std::string& Key)  :
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
   */
-{}
+{
+  // createSurfaces() (called before createLinks()) pokes link points
+  // "base"/"top" by raw index ahead of createLinks() registering them,
+  // so pre-register all three names at their original numeric slots here
+  // -- otherwise "base"/"top" would land past the default front/back
+  // slots instead of at indices 1/2.
+  FixedComp::setNConnect(3);
+  FixedComp::nameSideIndex(0,"outer");
+  FixedComp::nameSideIndex(1,"base");
+  FixedComp::nameSideIndex(2,"top");
+}
 
 t1CylVessel::t1CylVessel(const t1CylVessel& A) : 
   attachSystem::FixedRotate(A),
@@ -157,8 +167,8 @@ t1CylVessel::createSurfaces()
   const double baseH=height/2.0-sqrt(baseRadius*baseRadius-radius*radius);
   const double topH=height/2.0-sqrt(topRadius*topRadius-radius*radius);
 
-  FixedComp::setConnect(1,Origin-Z*(baseH+baseRadius+wallThick),-Z);
-  FixedComp::setConnect(2,Origin+Z*(topH+topRadius+wallThick),Z);
+  FixedComp::setConnect("base",Origin-Z*(baseH+baseRadius+wallThick),-Z);
+  FixedComp::setConnect("top",Origin+Z*(topH+topRadius+wallThick),Z);
   
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Z,radius);  
   // Top/base cut plane:
@@ -282,13 +292,13 @@ t1CylVessel::createLinks()
 {
   ELog::RegMethod RegA("t1CylVessel","createLinks");
 
-  FixedComp::setConnect(0,Origin,-X);
+  FixedComp::setConnect("outer",Origin,-X);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+27));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+18));  // base
-  FixedComp::addLinkSurf(1,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+19));  // top
-  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("outer",SMap.realSurf(buildIndex+27));
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+18));  // base
+  FixedComp::addLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+19));  // top
+  FixedComp::addLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

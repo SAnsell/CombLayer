@@ -3,7 +3,7 @@
  
  * File:   t1Build/PressVessel.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ namespace ts1System
 
 PressVessel::PressVessel(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   targetLen(0.0)
   /*!
@@ -529,43 +529,42 @@ PressVessel::createLinks()
   */
 {
   // set Links :: Inner links:
-  FixedComp::setConnect(0,Origin,Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+22));
+  FixedComp::setConnect("front",Origin,Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+22));
 
-  FixedComp::setConnect(1,Origin+Y*(length-sideWallThick),-Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect("innerBack",Origin+Y*(length-sideWallThick),-Y);
+  FixedComp::setLinkSurf("innerBack",SMap.realSurf(buildIndex+12));
 
-  FixedComp::setConnect(2,Origin-X*(width-sideWallThick),X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect("innerLeft",Origin-X*(width-sideWallThick),X);
+  FixedComp::setLinkSurf("innerLeft",SMap.realSurf(buildIndex+13));
 
-  FixedComp::setConnect(3,Origin+X*(width-sideWallThick),-X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setConnect("innerRight",Origin+X*(width-sideWallThick),-X);
+  FixedComp::setLinkSurf("innerRight",SMap.realSurf(buildIndex+14));
 
-  FixedComp::setConnect(4,Origin-Z*(height-topWallThick),Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect("innerBase",Origin-Z*(height-topWallThick),Z);
+  FixedComp::setLinkSurf("innerBase",SMap.realSurf(buildIndex+15));
 
-  FixedComp::setConnect(5,Origin+Z*(height-topWallThick),-Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("innerTop",Origin+Z*(height-topWallThick),-Z);
+  FixedComp::setLinkSurf("innerTop",SMap.realSurf(buildIndex+16));
   // Exit window
-  FixedComp::setConnect(6,Origin-Y*viewThickness,-Y);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+21));
-  nameSideIndex(6,"BeamWindow");
-  
+  FixedComp::setConnect("BeamWindow",Origin-Y*viewThickness,-Y);
+  FixedComp::setLinkSurf("BeamWindow",-SMap.realSurf(buildIndex+21));
+
   // Outer Layers:
-  FixedComp::setConnect(7,Origin-X*width,X);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("left",Origin-X*width,X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(8,Origin+X*width,-X);
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("right",Origin+X*width,-X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(9,Origin-Z*height,Z);
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("base",Origin-Z*height,Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(10,Origin+Z*height,-Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Z*height,-Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
-  FixedComp::setConnect(11,Origin+Y*length,-Y);
-  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("outerBack",Origin+Y*length,-Y);
+  FixedComp::setLinkSurf("outerBack",SMap.realSurf(buildIndex+2));
 
   return;
 }
@@ -611,9 +610,9 @@ PressVessel::buildFeedThrough(Simulation& System)
       const double sX((i % 2) ? -1 : 1);
       const double sZ((i / 2) ? -1 : 1);
 //       ELog::EM<<"Start of feedThrough"<<ELog::endDebug;
-      const Geometry::Vec3D PStart=getLinkPt(1)+Y*cutY+
+      const Geometry::Vec3D PStart=getLinkPt("front")+Y*cutY+
 	        X*sX*sideXOffset+Z*sZ*(sideZCenter-sideHeight);
-      const Geometry::Vec3D PEnd=getLinkPt(2)+
+      const Geometry::Vec3D PEnd=getLinkPt("innerBack")+
 	        X*sX*sideXOffset+Z*sZ*(sideZCenter-sideHeight);
 
       SideWaterChannel.addPoint(PStart);
@@ -631,8 +630,8 @@ PressVessel::buildFeedThrough(Simulation& System)
 //      const double sX((i % 2) ? -1 : 1);
 //      const double sZ((i / 2) ? -1 : 1);
 //       ELog::EM<<"Start of feedThrough"<<ELog::endDebug;
-      const Geometry::Vec3D PStart=getLinkPt(2)+X*begXstep[i];
-      const Geometry::Vec3D PEnd=getLinkPt(12)+X*begXstep[i];
+      const Geometry::Vec3D PStart=getLinkPt("innerBack")+X*begXstep[i];
+      const Geometry::Vec3D PEnd=getLinkPt("outerBack")+X*begXstep[i];
 
       EndWaterChannel.addPoint(PStart);
       EndWaterChannel.addPoint(PEnd);

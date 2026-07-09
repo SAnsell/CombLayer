@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1Reflector.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace ts1System
 {
 
 t1Reflector::t1Reflector(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,11),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -207,33 +207,33 @@ t1Reflector::createLinks()
 {
   ELog::RegMethod RegA("t1Reflector","createLinks");
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+11));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+12));
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+14));
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+13));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+6));
-  
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+22));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("leftFront",SMap.realSurf(buildIndex+11));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("leftRear",SMap.realSurf(buildIndex+12));
+  FixedComp::setLinkSurf("rear",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("rightRear",SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("rightFront",SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
-  FixedComp::setConnect(0,Origin-Y*ySize/2.0,-Y);
-  FixedComp::setConnect(2,Origin-X*xSize/2.0,-X);
-  FixedComp::setConnect(4,Origin+Y*ySize/2.0,Y);
-  FixedComp::setConnect(6,Origin+X*xSize/2.0,X);
+  FixedComp::setLinkSurf("coldCut",SMap.realSurf(buildIndex+22));
 
-  FixedComp::setConnect(1,Origin-X*xSize/2.0-Y*(ySize/2.0-cutLen),-X-Y);
-  FixedComp::setConnect(3,Origin-X*xSize/2.0+Y*(ySize/2.0-cutLen),-X+Y);
-  FixedComp::setConnect(5,Origin+X*xSize/2.0+Y*(ySize/2.0-cutLen),X+Y);
-  FixedComp::setConnect(7,Origin+X*xSize/2.0-Y*(ySize/2.0-cutLen),X-Y);
+  FixedComp::setConnect("front",Origin-Y*ySize/2.0,-Y);
+  FixedComp::setConnect("left",Origin-X*xSize/2.0,-X);
+  FixedComp::setConnect("rear",Origin+Y*ySize/2.0,Y);
+  FixedComp::setConnect("right",Origin+X*xSize/2.0,X);
 
-  FixedComp::setConnect(8,Origin-Z*zSize/2.0,-Z);
-  FixedComp::setConnect(9,Origin+Z*zSize/2.0,Z);
+  FixedComp::setConnect("leftFront",Origin-X*xSize/2.0-Y*(ySize/2.0-cutLen),-X-Y);
+  FixedComp::setConnect("leftRear",Origin-X*xSize/2.0+Y*(ySize/2.0-cutLen),-X+Y);
+  FixedComp::setConnect("rightRear",Origin+X*xSize/2.0+Y*(ySize/2.0-cutLen),X+Y);
+  FixedComp::setConnect("rightFront",Origin+X*xSize/2.0-Y*(ySize/2.0-cutLen),X-Y);
 
-  FixedComp::setConnect(10,Origin+Y*(ySize/2.0-ySizeColdCut),Y);
+  FixedComp::setConnect("base",Origin-Z*zSize/2.0,-Z);
+  FixedComp::setConnect("top",Origin+Z*zSize/2.0,Z);
+
+  FixedComp::setConnect("coldCut",Origin+Y*(ySize/2.0-ySizeColdCut),Y);
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   t1Build/channel.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace ts1System
 
 channel::channel(const std::string& Key,const int ID,
 		 const int baseSurfN) : 		
-  attachSystem::FixedComp(Key+std::to_string(ID),0),
+  attachSystem::FixedComp(Key+std::to_string(ID)),
   attachSystem::ContainedComp(),
   blockIndex(ID),cIndex(baseSurfN)
   /*!

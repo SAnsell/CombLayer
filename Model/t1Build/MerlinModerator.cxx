@@ -3,7 +3,7 @@
  
  * File:   t1Build/MerlinModerator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace ts1System
 {
 
 MerlinModerator::MerlinModerator(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -297,34 +297,34 @@ MerlinModerator::createLinks()
   ELog::RegMethod RegA("MerlinModerator","createLinks");
 
   // set Links:
-  FixedComp::setConnect(0,getSurfacePoint(2,1),-Y);
-  FixedComp::setConnect(1,getSurfacePoint(2,2),Y);
-  FixedComp::setConnect(2,getSurfacePoint(2,3),-X);
-  FixedComp::setConnect(3,getSurfacePoint(2,4),X);
-  FixedComp::setConnect(4,getSurfacePoint(2,5),-Z);
-  FixedComp::setConnect(5,getSurfacePoint(2,6),Z);
+  FixedComp::setConnect("front",getSurfacePoint(2,1),-Y);
+  FixedComp::setConnect("back",getSurfacePoint(2,2),Y);
+  FixedComp::setConnect("left",getSurfacePoint(2,3),-X);
+  FixedComp::setConnect("right",getSurfacePoint(2,4),X);
+  FixedComp::setConnect("base",getSurfacePoint(2,5),-Z);
+  FixedComp::setConnect("top",getSurfacePoint(2,6),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+21));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+22));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+23));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+24));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+25));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+26));
-  // -- Inner surface for vanes 
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+21));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+22));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+23));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+24));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+25));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+26));
+  // -- Inner surface for vanes
   // As inner surface needs to be reversed
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
+  FixedComp::setLinkSurf("innerFront",SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("innerBack",-SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("innerLeft",SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("innerRight",-SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("innerBase",SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("innerTop",-SMap.realSurf(buildIndex+6));
 
-  FixedComp::setConnect(6,getSurfacePoint(0,1),Y);
-  FixedComp::setConnect(7,getSurfacePoint(0,2),-Y);
-  FixedComp::setConnect(8,getSurfacePoint(0,3),X);
-  FixedComp::setConnect(9,getSurfacePoint(0,4),-X);
-  FixedComp::setConnect(10,getSurfacePoint(0,5),-Z);
-  FixedComp::setConnect(11,getSurfacePoint(0,6),Z);
+  FixedComp::setConnect("innerFront",getSurfacePoint(0,1),Y);
+  FixedComp::setConnect("innerBack",getSurfacePoint(0,2),-Y);
+  FixedComp::setConnect("innerLeft",getSurfacePoint(0,3),X);
+  FixedComp::setConnect("innerRight",getSurfacePoint(0,4),-X);
+  FixedComp::setConnect("innerBase",getSurfacePoint(0,5),-Z);
+  FixedComp::setConnect("innerTop",getSurfacePoint(0,6),Z);
 
 
   return;

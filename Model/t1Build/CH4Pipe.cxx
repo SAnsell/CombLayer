@@ -3,7 +3,7 @@
  
  * File:   t1Build/CH4Pipe.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace ts1System
 {
 
 CH4Pipe::CH4Pipe(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),
+  attachSystem::FixedComp(Key),
   Central("CH4Centre")
   /*!
     Constructor BUT ALL variable are left unpopulated.

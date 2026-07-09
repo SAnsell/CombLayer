@@ -3,7 +3,7 @@
  
  * File:   t1Build/makeT1Real.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -288,8 +288,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
-      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf("-front"));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf("-rear"));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1CylTarget";
     }    
@@ -299,7 +299,7 @@ makeT1Real::buildTarget(Simulation& System,
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
       TarObj->setCutSurf("FrontPlate",RefObj->getFullRule(-1));      
-      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf("-rear"));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Inner";
     }    
@@ -308,8 +308,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
-      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf("-front"));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf("-rear"));
       TarObj->createAll(System,World::masterOrigin(),0);
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
@@ -325,8 +325,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::SideCoolTarget("t1EllCylTarget"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
-      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf("-front"));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf("-rear"));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1EllCylTarget";
     }    
@@ -335,8 +335,8 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf(-1));
-      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("FrontPlate",RefObj->getLinkSurf("-front"));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf("-rear"));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1Cannelloni";
     }    
@@ -345,7 +345,7 @@ makeT1Real::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<TMRSystem::TargetBase>
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
-      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf(-5));
+      TarObj->setCutSurf("BackPlate",RefObj->getLinkSurf("-rear"));
       TarObj->createAll(System,World::masterOrigin(),0);
       return "t1BlockTarget";
     }    
@@ -393,16 +393,16 @@ makeT1Real::build(Simulation& System,
       VoidObj->createAll(System,World::masterOrigin(),0);
 
       BulkObj->addInsertCell(voidCell);
-      BulkObj->setCutSurf("Inner",VoidObj->getFullRule(1));
+      BulkObj->setCutSurf("Inner",VoidObj->getFullRule("outer"));
       BulkObj->setCutSurf("FullInner",VoidObj->getCompExclude());
       BulkObj->createAll(System,*VoidObj,0);
 
-      MonoTopObj->setCutSurf("voidSurf",VoidObj->getFullRule(3));
-      MonoTopObj->setCutSurf("outSurf",VoidObj->getFullRule(-1));
-      MonoTopObj->setCutSurf("bulkSurf",BulkObj->getFullRule(-3));
-      MonoBaseObj->setCutSurf("voidSurf",VoidObj->getFullRule(2));
-      MonoBaseObj->setCutSurf("outSurf",VoidObj->getFullRule(-1));
-      MonoBaseObj->setCutSurf("bulkSurf",BulkObj->getFullRule(-2));
+      MonoTopObj->setCutSurf("voidSurf",VoidObj->getFullRule("top"));
+      MonoTopObj->setCutSurf("outSurf",VoidObj->getFullRule("-outer"));
+      MonoTopObj->setCutSurf("bulkSurf",BulkObj->getFullRule("-top"));
+      MonoBaseObj->setCutSurf("voidSurf",VoidObj->getFullRule("base"));
+      MonoBaseObj->setCutSurf("outSurf",VoidObj->getFullRule("-outer"));
+      MonoBaseObj->setCutSurf("bulkSurf",BulkObj->getFullRule("-base"));
       
       MonoTopObj->createAll(System,*VoidObj,3);
       MonoBaseObj->createAll(System,*VoidObj,2);

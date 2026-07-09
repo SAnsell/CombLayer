@@ -3,7 +3,7 @@
  
  * File:   construct/LinkWrapper.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,14 +62,19 @@ namespace constructSystem
 
 LinkWrapper::LinkWrapper(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,40),
+  attachSystem::FixedComp(Key),
   InOutLinkB(20),
   nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+  // LWInner/LWOuter poke link points by raw numeric index (including
+  // a jump to index 20 for layer surfaces) rather than by name, so the
+  // slots must all exist up-front, as they always did.
+  FixedComp::setNConnect(40);
+}
 
 LinkWrapper::LinkWrapper(const LinkWrapper& A) : 
   attachSystem::ContainedComp(A),

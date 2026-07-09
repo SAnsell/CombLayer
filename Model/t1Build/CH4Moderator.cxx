@@ -3,7 +3,7 @@
  
  * File:   t1Build/CH4Moderator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace ts1System
 {
 
 CH4Moderator::CH4Moderator(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(4),
   attachSystem::CellMap()
@@ -344,19 +344,19 @@ CH4Moderator::createLinks()
   // set Links:
   const double T(innerThick+vacThick+outerThick+clearThick);
 //            ELog::EM<<"T = "<<T<<ELog::endDebug;		 
-  FixedComp::setConnect(0,Origin-Y*(depth/2.0+T),-Y);
-  FixedComp::setConnect(1,Origin+Y*(depth/2.0+T),Y);  
-  FixedComp::setConnect(2,Origin-X*(width/2.0+T),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0+T),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+T),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+T),Z);
+  FixedComp::setConnect("front",Origin-Y*(depth/2.0+T),-Y);
+  FixedComp::setConnect("back",Origin+Y*(depth/2.0+T),Y);
+  FixedComp::setConnect("left",Origin-X*(width/2.0+T),-X);
+  FixedComp::setConnect("right",Origin+X*(width/2.0+T),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0+T),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0+T),Z);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+41));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+42));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+43));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+44));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+45));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+46));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+41));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+42));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+43));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+44));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+45));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+46));
 
   return;
 }
