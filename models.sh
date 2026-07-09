@@ -65,5 +65,12 @@ $parallel "./singleItem --singleItem {} $opts {}" ::: \
 ./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -T fineD mesh dose-eq object DanMAXFrontBeamPrePipe \#back 'Vec3D(-10.5,-10.0,-10.5)' 'Vec3D(10.5,5650.0,10.5)' 21 11320 1 -TMod doseType fineD all-part EWT74  danmax || exit
 ./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -T fineD mesh dose-eq object DanMAXFrontBeamPrePipe \#back 'Vec3D(-10.5,-10.0,-10.5)' 'Vec3D(10.5,5650.0,10.5)' 21 11320 1 -TMod doseType fineD all-part EWT74 -T fineS mesh dose-eq object DanMAXOpticsLineValveS2 back 'Vec3D(-10.5,-50.0,-10.5)' 'Vec3D(10.5,2550.0,10.5)' 21 5200 1 -TMod doseType fineS all-part EWT74 danmax || exit
 
+# Object addition
+./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -OAdd sphere object DanMAXFrontBeamUndulator 0 'Vec3D(1,4350,0)' 5 Copper   -v DanMAXExptHut1VoidMat Air oadd_sphere || exit
+
+./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -OAdd cylinder object DanMAXFrontBeamUndulator 0 'Vec3D(1,4350,0)' 0.5 0.5 Copper oadd_cylinder || exit
+
+./maxiv --defaultConfig Single DANMAX -angle objAxis DanMAXFrontBeam 0  -offset object DanMAXFrontBeamUndulator 0 -fluka -OAdd plate object DanMAXOpticsHut front 'Vec3D(-260,50,80)' 5 10 60 Void oadd_plate || exit
+
 ## Need to fix the cooling pads on the reflector
 #./fullBuild $opts $inp || exit
