@@ -906,10 +906,10 @@ RoofPillars::build(Simulation& System,
   ELog::RegMethod RegA("RoofPillars","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(bunkerObj,7);
+  createUnitVector(bunkerObj,bunkerObj.getSideIndex("rotCentre"));
 
-  setFront(bunkerObj,11);    // floor
-  setBack(bunkerObj,12);     // roof [inner]
+  setFront(bunkerObj,"floorInner");
+  setBack(bunkerObj,"roofInner");
 
   createSurfaces();
   createObjects(System);
