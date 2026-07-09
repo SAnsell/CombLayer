@@ -578,7 +578,15 @@ R1Ring::createLinks()
       const Geometry::Vec3D Axis= -Beam*Z;
       const Geometry::Vec3D PtX=Origin+Axis*beamStepOut;
 
+      // NOTE: the raw index+2 offset (skipping the reserved front/back
+      // slots) is load-bearing -- makeMaxIV.cxx resolves this link by
+      // name but external readers (MAXPEEM::build, SPECIES::build)
+      // derive their own indices via arithmetic on the resulting
+      // signed sideIndex (e.g. "sideIndex-2"), assuming this exact
+      // offset. Preserve it via nameSideIndex, exactly as R3Ring's
+      // overlapping indices are preserved elsewhere in this file.
       const std::string linkName("OpticCentre"+std::to_string(index));
+      FixedComp::nameSideIndex(index+2,linkName);
       FixedComp::setLinkSurf(linkName,-BInner->getName());
       FixedComp::setConnect(linkName,PtX,Beam);
       index++;
@@ -599,6 +607,7 @@ R1Ring::createLinks()
       const Geometry::Vec3D Beam= -SOuter->getNormal();
 
       const std::string linkName("SideWall"+std::to_string(i));
+      FixedComp::nameSideIndex(index+2,linkName);
       FixedComp::setLinkSurf(linkName,-SOuter->getName());
       FixedComp::setConnect(linkName,(APt+BPt)/2.0,Beam);
       index++;
