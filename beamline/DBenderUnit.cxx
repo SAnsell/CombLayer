@@ -3,7 +3,7 @@
  
  * File:   beamline/DBenderUnit.cxx 
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -428,16 +428,16 @@ DBenderUnit::createLinks()
 {
   ELog::RegMethod RegA("BenderUnit","addSideLinks");
 
-  setLinkSurf(2,SMap.realSurf(buildIndex+5));
-  setLinkSurf(3,SMap.realSurf(buildIndex+6));
-  setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  setLinkSurf(5,SMap.realSurf(buildIndex+8));
+  setLinkSurf("left",SMap.realSurf(buildIndex+5));
+  setLinkSurf("right",SMap.realSurf(buildIndex+6));
+  setLinkSurf("base",SMap.realSurf(buildIndex+7));
+  setLinkSurf("top",SMap.realSurf(buildIndex+8));
 
   const Geometry::Vec3D MCentre= calcWidthCent(0);
-  setConnect(2,MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),-RAxisA);
-  setConnect(3,MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),RAxisA);
-  setConnect(4,MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),-RAxisB);
-  setConnect(5,MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),RAxisB);
+  setConnect("left",MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),-RAxisA);
+  setConnect("right",MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),RAxisA);
+  setConnect("base",MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),-RAxisB);
+  setConnect("top",MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),RAxisB);
 
   return;
 }

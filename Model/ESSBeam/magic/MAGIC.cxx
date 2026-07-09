@@ -401,18 +401,18 @@ MAGIC::buildPolarizer(Simulation& System,
   MCGuideB->createAll(System,*PolarizerPit,0);
   
   MCInsertA->addInsertCell(MCGuideA->getCells("GuideVoid"));
-  MCInsertA->setCutSurf("Base",*MCGuideA,4);
-  MCInsertA->setCutSurf("Top",*MCGuideA,6);
-  MCInsertA->setCutSurf("Left",*MCGuideA,3);
-  MCInsertA->setCutSurf("Right",*MCGuideA,5);
+  MCInsertA->setCutSurf("Base",*MCGuideA,"side1");
+  MCInsertA->setCutSurf("Top",*MCGuideA,"side3");
+  MCInsertA->setCutSurf("Left",*MCGuideA,"side0");
+  MCInsertA->setCutSurf("Right",*MCGuideA,"side2");
   MCInsertA->createAll(System,*MCGuideA,0);
 
 
   MCInsertB->addInsertCell(MCGuideB->getCells("GuideVoid"));
-  MCInsertB->setCutSurf("Base",*MCGuideB,4);
-  MCInsertB->setCutSurf("Top",*MCGuideB,6);
-  MCInsertB->setCutSurf("Left",*MCGuideB,3);
-  MCInsertB->setCutSurf("Right",*MCGuideB,5);
+  MCInsertB->setCutSurf("Base",*MCGuideB,"side1");
+  MCInsertB->setCutSurf("Top",*MCGuideB,"side3");
+  MCInsertB->setCutSurf("Left",*MCGuideB,"side0");
+  MCInsertB->setCutSurf("Right",*MCGuideB,"side2");
   
   MCInsertB->createAll(System,*MCGuideB,0);
   

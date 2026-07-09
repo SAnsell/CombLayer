@@ -318,10 +318,10 @@ BenderUnit::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,-Y);
   ExternalCut::createLink("back",*this,"back",endPt,bY);
 
-  setLinkSurf(2,SMap.realSurf(buildIndex+5));
-  setLinkSurf(3,SMap.realSurf(buildIndex+6));
-  setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  setLinkSurf(5,SMap.realSurf(buildIndex+8));
+  setLinkSurf("left",SMap.realSurf(buildIndex+5));
+  setLinkSurf("right",SMap.realSurf(buildIndex+6));
+  setLinkSurf("base",SMap.realSurf(buildIndex+7));
+  setLinkSurf("top",SMap.realSurf(buildIndex+8));
 
   return;
 }
