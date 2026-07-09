@@ -62,20 +62,6 @@ FixedRotate::FixedRotate(const std::string& KN) :
   */
 {}
 
-FixedRotate::FixedRotate(const std::string& KN,const size_t NL,
-			 const size_t resSize) :
-  FixedComp(KN,NL,resSize),
-  preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),
-  xStep(0.0),yStep(0.0),zStep(0.0),
-  xAngle(0.0),yAngle(0.0),zAngle(0.0),flipX(0)
- /*!
-    Legacy constructor retained for source compatibility -- see
-    FixedComp.h.
-    \param KN :: KeyName
-    \param resSize :: Reserved Space
-  */
-{}
-
 FixedRotate::FixedRotate(FixedComp::unregistered_t,const std::string& KN) :
   FixedComp(FixedComp::unregistered,KN),
   preXAngle(0.0),preYAngle(0.0),preZAngle(0.0),

@@ -3,7 +3,7 @@
  
  * File:   essBuild/HighBay.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace essSystem
 {
 
 HighBay::HighBay(const std::string& key) :
-  attachSystem::FixedComp(key,6),
+  attachSystem::FixedComp(key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

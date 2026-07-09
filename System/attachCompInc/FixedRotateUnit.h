@@ -44,23 +44,17 @@ class FixedRotateUnit : public FixedRotate
   /// Simple constructor [with objectregister, no link-count pre-sizing]
   FixedRotateUnit(const std::string& K) :
     FixedRotate(K) {}
-  /// Simple constructor [with objectregister]
-  FixedRotateUnit(const std::string& K,const size_t I) :
-    FixedRotate(K,I) {}
-  /// Simple constructor [extra range]
-  FixedRotateUnit(const std::string& K,const size_t I,const size_t S) :
-    FixedRotate(K,I,S) {}
 
   /// System to get axis from existing FC
   FixedRotateUnit(const std::string& K,const FixedComp& FC,
 		  const long int index) :
-    FixedRotate(K,0)
+    FixedRotate(K)
   { createUnitVector(FC,index); }
 
   /// System to get axis from existing FC and variables
   FixedRotateUnit(const std::string& K,const FuncDataBase& Control,
 		  const FixedComp& FC,const long int index) :
-    FixedRotate(K,0)
+    FixedRotate(K)
   { FixedRotate::populate(Control); createUnitVector(FC,index); }
 
   /// System to get axis from existing FC and variables (and no name)
@@ -72,7 +66,7 @@ class FixedRotateUnit : public FixedRotate
   /// System to get axis from existing FC and variables
   FixedRotateUnit(const std::string& K,const FuncDataBase& Control,
 		  const FixedComp& FC,const std::string& linkName) :
-    FixedRotate(K,0)
+    FixedRotate(K)
   { FixedRotate::populate(Control);
     createUnitVector(FC,FC.getSideIndex(linkName)); }
 

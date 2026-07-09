@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerWall.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@ namespace essSystem
 
 BunkerWall::BunkerWall(const std::string& bunkerName) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(bunkerName+"Wall",6,20000),
+  attachSystem::FixedComp(attachSystem::FixedComp::withResSize,
+			   bunkerName+"Wall",20000),
   attachSystem::CellMap(),attachSystem::SurfMap(),baseName(bunkerName),
   activeWall(0),frontSurf(0),backSurf(0),
   topSurf(0),baseSurf(0)

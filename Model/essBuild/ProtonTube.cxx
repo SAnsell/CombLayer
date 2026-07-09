@@ -3,7 +3,7 @@
 
  * File:   essBuild/ProtonTube.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace essSystem
 
 ProtonTube::ProtonTube(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
-  attachSystem::FixedRotate(newName,2),
+  attachSystem::FixedRotate(newName),
   attachSystem::ContainedGroup(),
   attachSystem::FrontBackCut(),
   tube(new TelescopicPipe(newName+"Pipe")),

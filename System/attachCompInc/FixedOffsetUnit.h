@@ -41,23 +41,17 @@ class FixedOffsetUnit : public FixedOffset
   /// Simple constructor [with objectregister, no link-count pre-sizing]
   FixedOffsetUnit(const std::string& K) :
     FixedOffset(K) {}
-  /// Simple constructor
-  FixedOffsetUnit(const std::string& K,const size_t I) :
-    FixedOffset(K,I) {}
-  /// Simple constructor [extra range]
-  FixedOffsetUnit(const std::string& K,const size_t I,const size_t S) :
-    FixedOffset(K,I,S) {}
 
   /// System to get axis from existing FC
   FixedOffsetUnit(const std::string& K,const FixedComp& FC,
 		  const long int index) :
-    FixedOffset(K,0)
+    FixedOffset(K)
   { createUnitVector(FC,index); }
 
   /// System to get axis from existing FC and variables
   FixedOffsetUnit(const std::string& K,const FuncDataBase& Control,
 		  const FixedComp& FC,const long int index) :
-    FixedOffset(K,0)
+    FixedOffset(K)
   { FixedOffset::populate(Control); createUnitVector(FC,index); }
 
   /// System to get axis from existing FC and variables (and no name)
@@ -69,7 +63,7 @@ class FixedOffsetUnit : public FixedOffset
   /// System to get axis from existing FC and variables
   FixedOffsetUnit(const std::string& K,const FuncDataBase& Control,
 		  const FixedComp& FC,const std::string& linkName) :
-    FixedOffset(K,0)
+    FixedOffset(K)
   { FixedOffset::populate(Control);
     createUnitVector(FC,FC.getSideIndex(linkName)); }
 

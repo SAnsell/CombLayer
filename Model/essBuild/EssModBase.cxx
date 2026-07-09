@@ -3,7 +3,7 @@
  
  * File:   essBuild/EssModBase.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ namespace essSystem
 {
 
 EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
-  attachSystem::FixedRotate(Key,nLinks),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::ExternalCut(),
@@ -66,7 +66,13 @@ EssModBase::EssModBase(const std::string& Key,const size_t nLinks)  :
     \param Key :: Name for item in search
     \param nLinks :: Number of links
   */
-{}
+{
+  // Subclasses' createLinks() still poke link points by raw numeric
+  // index (some read externally, e.g. makeESS.cxx's
+  // LowMod->getLinkDistance(5,6)), so pre-size up front as the legacy
+  // FixedRotate(Key,nLinks) constructor used to.
+  FixedComp::setNConnect(nLinks);
+}
 
 EssModBase::EssModBase(const EssModBase& A) :
   attachSystem::FixedRotate(A),

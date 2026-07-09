@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2FlowGuide.cxx 
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace essSystem
 H2FlowGuide::H2FlowGuide(const std::string& baseKey,
 			 const std::string& extraKey,
 			 const std::string& finalKey ) :
-  attachSystem::FixedComp(baseKey+extraKey+finalKey,6),
+  attachSystem::FixedComp(baseKey+extraKey+finalKey),
   baseName(baseKey),midName(extraKey),endName(finalKey)
   /*!
     Constructor BUT ALL variable are left unpopulated.
