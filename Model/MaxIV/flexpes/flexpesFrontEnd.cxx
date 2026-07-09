@@ -3,7 +3,7 @@
  
  * File: flexpes/flexpesFrontEnd.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,8 +135,8 @@ flexpesFrontEnd::createLinks()
 {
   ELog::RegMethod RegA("flexpesFrontEnd","createLinks");
 
-  setLinkCopy(0,*undulatorPipe,1); 
-  setLinkCopy(1,*lastComp,2);
+  setLinkCopy("front",*undulatorPipe,1);
+  setLinkCopy("back",*lastComp,2);
   return;
 }
 

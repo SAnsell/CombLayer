@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxFrontEnd.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,8 +98,8 @@ softimaxFrontEnd::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*undulator,1);
-  setLinkCopy(1,*lastComp,2);
+  setLinkCopy("front",*undulator,1);
+  setLinkCopy("back",*lastComp,2);
   return;
 }
 
