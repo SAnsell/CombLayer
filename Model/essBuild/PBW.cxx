@@ -3,7 +3,7 @@
 
  * File:   essBuild/PBW.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace essSystem
 {
 
 PBW::PBW(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   shield(new TelescopicPipe(Key+"Shield"))
@@ -521,6 +521,11 @@ PBW::createLinks()
   */
 {
   ELog::RegMethod RegA("PBW","createLinks");
+
+  // 8 raw-indexed slots (index 7 also referenced externally via a raw
+  // signed side index) are still poked by number below -- pre-size up
+  // front as the legacy (Key,8) constructor used to.
+  FixedComp::setNConnect(8);
 
   FixedComp::setConnect(0,Origin-Y*(plugLength2),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));

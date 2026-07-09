@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskPreMod.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ namespace essSystem
 {
 
 DiskPreMod::DiskPreMod(const std::string& Key) :
-  attachSystem::FixedRotate(Key,9),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::CellMap(),
@@ -339,37 +339,37 @@ DiskPreMod::createLinks()
   ELog::RegMethod RegA("DiskPreMod","createLinks");
 
   const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
-  FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("front",Origin-Y*radius[nLayers-1],-Y);
+  FixedComp::setLinkSurf("front",SMap.realSurf(SI+7));
+  FixedComp::setBridgeSurf("front",-SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+2));
-  
-  FixedComp::setConnect(2,Origin-X*radius[nLayers-1],-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+1));
-  
-  FixedComp::setConnect(3,Origin+X*radius[nLayers-1],X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+1));
-  
-  FixedComp::setConnect(4,Origin-Z*depth[nLayers-1],-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
+  FixedComp::setConnect("back",Origin+Y*radius[nLayers-1],Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(SI+7));
+  FixedComp::setBridgeSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(5,Origin+Z*height[nLayers-1],Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
-  
+  FixedComp::setConnect("left",Origin-X*radius[nLayers-1],-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(SI+7));
+  FixedComp::addLinkSurf("left",-SMap.realSurf(buildIndex+1));
+
+  FixedComp::setConnect("right",Origin+X*radius[nLayers-1],X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(SI+7));
+  FixedComp::addLinkSurf("right",SMap.realSurf(buildIndex+1));
+
+  FixedComp::setConnect("base",Origin-Z*depth[nLayers-1],-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(SI+5));
+
+  FixedComp::setConnect("top",Origin+Z*height[nLayers-1],Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(SI+6));
+
   // inner links point inwards
-  FixedComp::setConnect(6,Origin+Y*radius[0],-Y);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("innerRadial",Origin+Y*radius[0],-Y);
+  FixedComp::setLinkSurf("innerRadial",-SMap.realSurf(buildIndex+7));
 
-  FixedComp::setConnect(7,Origin-Z*depth[0],Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("innerBase",Origin-Z*depth[0],Z);
+  FixedComp::setLinkSurf("innerBase",SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(8,Origin+Z*height[0],-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("innerTop",Origin+Z*height[0],-Z);
+  FixedComp::setLinkSurf("innerTop",-SMap.realSurf(buildIndex+6));
 
   return;
 }

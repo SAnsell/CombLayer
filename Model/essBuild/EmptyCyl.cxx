@@ -3,7 +3,7 @@
  
  * File:   essBuild/EmptyCyl.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace essSystem
 {
 
 EmptyCyl::EmptyCyl(const std::string& Key)  :
-  attachSystem::FixedRotateUnit(Key,6),
+  attachSystem::FixedRotateUnit(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()
@@ -230,6 +230,10 @@ EmptyCyl::createLinks(const attachSystem::FixedComp&FC,
   */
 {
   ELog::RegMethod RegA("EmptyCyl","createLinks");
+
+  // 4 of 6 raw-indexed slots are still poked by number below -- pre-size
+  // up front as the legacy (Key,6) constructor used to.
+  FixedComp::setNConnect(6);
 
   FixedComp::setLinkCopy(0,FC,floor); // ??? how to invert surf sign?
   FixedComp::setLinkCopy(1,FC,side);

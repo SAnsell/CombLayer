@@ -3,7 +3,7 @@
  
  * File:   essBuild/WedgeItem.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ namespace essSystem
 {
 
 WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
-  attachSystem::FixedRotateUnit(Key+std::to_string(Index),6),
+  attachSystem::FixedRotateUnit(Key+std::to_string(Index)),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut()
   /*!
@@ -256,6 +256,10 @@ WedgeItem::createLinks()
   */
 {
   ELog::RegMethod RegA("WedgeItem","createLinks");
+
+  // 4 of 6 raw-indexed slots are still poked by number below -- pre-size
+  // up front as the legacy (Key,6) constructor used to.
+  FixedComp::setNConnect(6);
 
   const Geometry::Vec3D nearPt(Origin+Y*outerCyl->getRadius());
   const Geometry::Plane *pX = ModelSupport::buildPlane(SMap, buildIndex+1003,

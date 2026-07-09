@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace essSystem
 {
 
 CylPreMod::CylPreMod(const std::string& Key) :
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedComp(Key),
   attachSystem::ContainedGroup("Main","BlockA","BlockB"),
   attachSystem::LayerComp(0),
   ExtAObj(new BlockAddition(Key+"ABlock")),
@@ -444,27 +444,27 @@ CylPreMod::createLinks()
   if (nLayers)
     {
       const int SI(buildIndex+static_cast<int>(nLayers-1)*10);
-      FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
-      FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::addBridgeSurf(0,-SMap.realSurf(buildIndex+2));
+      FixedComp::setConnect("front",Origin-Y*radius[nLayers-1],-Y);
+      FixedComp::setLinkSurf("front",SMap.realSurf(SI+7));
+      FixedComp::addBridgeSurf("front",-SMap.realSurf(buildIndex+2));
 
-      FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::addBridgeSurf(1,SMap.realSurf(buildIndex+2));
-      
-      FixedComp::setConnect(2,Origin-Z*(height[nLayers-1]/2.0),-Z);
-      FixedComp::setBridgeSurf(2,-SMap.realSurf(SI+5));
+      FixedComp::setConnect("back",Origin+Y*radius[nLayers-1],Y);
+      FixedComp::setLinkSurf("back",SMap.realSurf(SI+7));
+      FixedComp::addBridgeSurf("back",SMap.realSurf(buildIndex+2));
 
-      FixedComp::setConnect(3,Origin+Z*(height[nLayers-1]/2.0),Z);
-      FixedComp::setLinkSurf(3,SMap.realSurf(SI+6));
+      FixedComp::setConnect("base",Origin-Z*(height[nLayers-1]/2.0),-Z);
+      FixedComp::setBridgeSurf("base",-SMap.realSurf(SI+5));
 
-      FixedComp::setConnect(4,Origin-X*radius[nLayers-1],-X);
-      FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
-      FixedComp::addBridgeSurf(4,-SMap.realSurf(buildIndex+1));
+      FixedComp::setConnect("top",Origin+Z*(height[nLayers-1]/2.0),Z);
+      FixedComp::setLinkSurf("top",SMap.realSurf(SI+6));
 
-      FixedComp::setConnect(5,Origin+X*radius[nLayers-1],X);
-      FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
-      FixedComp::addBridgeSurf(5,SMap.realSurf(buildIndex+1));
+      FixedComp::setConnect("left",Origin-X*radius[nLayers-1],-X);
+      FixedComp::setLinkSurf("left",SMap.realSurf(SI+7));
+      FixedComp::addBridgeSurf("left",-SMap.realSurf(buildIndex+1));
+
+      FixedComp::setConnect("right",Origin+X*radius[nLayers-1],X);
+      FixedComp::setLinkSurf("right",SMap.realSurf(SI+7));
+      FixedComp::addBridgeSurf("right",SMap.realSurf(buildIndex+1));
 
     }
   else 

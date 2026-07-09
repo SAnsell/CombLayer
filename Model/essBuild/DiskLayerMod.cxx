@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskLayerMod.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace essSystem
 {
 
 DiskLayerMod::DiskLayerMod(const std::string& Key) :
-  attachSystem::FixedRotate(Key,9),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::CellMap(),
@@ -75,7 +75,13 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
     Constructor
     \param Key :: Name of construction key
   */
-{}
+{
+  // Other objects (e.g. makeESS's LowMod/TopMod) read this object's
+  // link points 4/5 before createAll()/createLinks() run on it, so the
+  // slots must exist immediately -- pre-size up front as the legacy
+  // (Key,9) constructor used to.
+  FixedComp::setNConnect(9);
+}
 
 DiskLayerMod::DiskLayerMod(const DiskLayerMod& A) : 
   attachSystem::FixedRotate(A),
@@ -282,6 +288,10 @@ DiskLayerMod::createLinks()
   */
 {  
   ELog::RegMethod RegA("DiskLayerMod","createLinks");
+
+  // 2 of 9 raw-indexed slots (4/5) are still poked by number below --
+  // pre-size up front as the legacy (Key,9) constructor used to.
+  FixedComp::setNConnect(9);
 
   const int SI(buildIndex+static_cast<int>(thick.size())*200);
 

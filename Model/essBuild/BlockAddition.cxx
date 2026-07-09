@@ -3,7 +3,7 @@
  
  * File:   essBuild/BlockAddition.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ namespace essSystem
 {
 
 BlockAddition::BlockAddition(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::ExternalCut(),
@@ -355,27 +355,27 @@ BlockAddition::createLinks()
 {  
   ELog::RegMethod RegA("BlockAddition","createLinks");
   
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
   if (nLayers)
     {
       const int BI(buildIndex+10*static_cast<int>(nLayers-1));
-      
-      FixedComp::setConnect(1,Origin+Y*(length+wallThick.back()),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(BI+2));
-      
-      FixedComp::setConnect(2,Origin-X*wallThick.back(),-X);
-      FixedComp::setLinkSurf(2,SMap.realSurf(BI+3));
-      
-      FixedComp::setConnect(3,Origin+X*(width+wallThick.back()),X);
-      FixedComp::setLinkSurf(3,SMap.realSurf(BI+4));
 
-      FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick.back()),-Z);
-      FixedComp::setLinkSurf(4,SMap.realSurf(BI+5));
-      
-      FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick.back()),Z);
-      FixedComp::setLinkSurf(5,SMap.realSurf(BI+6));
+      FixedComp::setConnect("back",Origin+Y*(length+wallThick.back()),Y);
+      FixedComp::setLinkSurf("back",SMap.realSurf(BI+2));
+
+      FixedComp::setConnect("left",Origin-X*wallThick.back(),-X);
+      FixedComp::setLinkSurf("left",SMap.realSurf(BI+3));
+
+      FixedComp::setConnect("right",Origin+X*(width+wallThick.back()),X);
+      FixedComp::setLinkSurf("right",SMap.realSurf(BI+4));
+
+      FixedComp::setConnect("base",Origin-Z*(height/2.0+wallThick.back()),-Z);
+      FixedComp::setLinkSurf("base",SMap.realSurf(BI+5));
+
+      FixedComp::setConnect("top",Origin+Z*(height/2.0+wallThick.back()),Z);
+      FixedComp::setLinkSurf("top",SMap.realSurf(BI+6));
     }
   else 
     ELog::EM<<"NO Layers in BlockAddition"<<ELog::endErr;
