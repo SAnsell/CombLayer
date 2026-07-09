@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/heimdal/HEIMDAL.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -393,9 +393,8 @@ HEIMDAL::build(Simulation& System,
 
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
-  // // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid",*BInsert,"mid");
   
   if (stopPoint==3) return;                      // STOP At bunker exit
   //  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);

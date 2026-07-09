@@ -244,14 +244,14 @@ TelescopicPipe::createLinks()
   ELog::RegMethod RegA("TelescopicPipe","createLinks");
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-  FixedComp::setNConnect(nSec+2);
   int PT(buildIndex);
   for(size_t i=0;i<nSec;i++)
     {
-      FixedComp::setConnect(i+2,Origin+Y*length[i]/2.0,-X);
-      FixedComp::setLinkSurf(i+2,-SMap.realSurf(PT+7));
+      const std::string sStr("section"+std::to_string(i));
+      FixedComp::setConnect(sStr,Origin+Y*length[i]/2.0,-X);
+      FixedComp::setLinkSurf(sStr,-SMap.realSurf(PT+7));
       PT+=100;
-    } 
+    }
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   ESSBuild/bifrost/BIFROST.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -365,11 +365,10 @@ BIFROST::build(Simulation& System,
   //  VPipeWall->addAllInsertCell(BInsert->getCell("Void"));
   //  VPipeWall->createAll(System,*BInsert,-1);
 
-  // using 7 : mid point
   FocusWall->setFront(*BInsert,-1);
   FocusWall->setBack(*BInsert,-2);
   FocusWall->addInsertCell(BInsert->getCells("Item"));
-  FocusWall->createAll(System,*BInsert,7);
+  FocusWall->createAll(System,*BInsert,"mid");
 
   if (stopPoint==3) return;                      // STOP Out of bunker
   

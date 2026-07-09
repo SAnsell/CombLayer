@@ -3,7 +3,7 @@
  
  * File:   delft/makeDelft.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,6 +183,10 @@ makeDelft::makeBlocks(Simulation& System)
   
   SPType GB(new SpaceBlock("Box",1));
   GB->addInsertCell(Pool->getCells("Water"));
+  // NOTE: GridPlate::createLinks() has not run yet at this point in the
+  // build sequence (makeBlocks() is called before buildCore()), so a
+  // name lookup here would throw -- use the raw signed index (1 ==
+  // "left", matching GridPlate's link-index creation order) instead.
   GB->createAll(System,*GridPlate,1);
   
   if (GB->getActiveFlag()<0) return;
@@ -194,7 +198,7 @@ makeDelft::makeBlocks(Simulation& System)
 
   GB=SPType(new SpaceBlock("Box",2));
   GB->addInsertCell(Pool->getCells("Water"));
-  GB->createAll(System,*GridPlate,2);  
+  GB->createAll(System,*GridPlate,2);
   if (GB->getActiveFlag()>0)
     {
       OR.addObject(GB);
@@ -395,8 +399,8 @@ makeDelft::build(Simulation& System,
       makeBlocks(System);
       buildCore(System,IParam);
       makeRabbit(System);
-      FCPtr=GridPlate.get();  
-      sideIndex=2;
+      FCPtr=GridPlate.get();
+      sideIndex=GridPlate->getSideIndex("right");
     }
   
   buildFlight(System,buildType);

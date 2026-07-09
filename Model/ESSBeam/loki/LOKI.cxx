@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKI.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -480,7 +480,7 @@ LOKI::build(Simulation& System,
   FocusWall->addInsertCell(BInsert->getCells("Item"));
   FocusWall->setFront(*BInsert,-1);
   FocusWall->setBack(*BInsert,-2);
-  FocusWall->createAll(System,*BInsert,7); 
+  FocusWall->createAll(System,*BInsert,"mid");
 
   ELog::EM<<"Bend Direction == "<<BendB->getLinkPt(1)
 	  <<" :: "<<BendB->getLinkAxis(-1)
