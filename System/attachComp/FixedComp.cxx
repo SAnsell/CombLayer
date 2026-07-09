@@ -3,7 +3,7 @@
 
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,9 @@ FixedComp::FixedComp(const std::string& KN) :
     Constructor
     \param KN :: KeyName
   */
-{}
+{
+  LU.reserve(10);
+}
 
 FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const size_t resSize) :
@@ -185,7 +187,17 @@ FixedComp::getOrCreateLinkIndex(const std::string& name)
     {
       const size_t index=mc->second;
       if (index>=LU.size())
-	LU.resize(index+1);
+	{
+	  // Reserve with headroom (not just index+1) so that a run of
+	  // pre-registered names (nameSideIndex) grown one at a time
+	  // doesn't reallocate LU's buffer on every single slot -- this
+	  // otherwise perturbs the memory addresses of later-created
+	  // Rule/HeadRule tree nodes and can change (though not the
+	  // physical geometry of) redundant-surface simplification output.
+	  if (index>=LU.capacity())
+	    LU.reserve(std::max(index+1,2*LU.capacity()));
+	  LU.resize(index+1);
+	}
       return index;
     }
   const size_t index=LU.size();

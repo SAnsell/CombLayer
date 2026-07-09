@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertPlate.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,9 +190,8 @@ insertPlate::createLinks()
 {
   ELog::RegMethod RegA("insertPlate","createLinks");
 
-  // Pre-register names at their original numeric positions -- insertObject
-  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
-  // would otherwise land after that reserved block instead of here.
+  // Pre-register names at their original numeric positions -- otherwise
+  // a not-yet-registered name would land after front/back instead of here.
   FixedComp::nameSideIndex(2,"left");
   FixedComp::nameSideIndex(3,"right");
   FixedComp::nameSideIndex(4,"base");
