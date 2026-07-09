@@ -3,7 +3,7 @@
  
  * File: snsBuild/targetOuter.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace snsSystem
 {
 
 targetOuter::targetOuter(const std::string& Key) :
-  TMRSystem::TargetBase(Key,3)
+  TMRSystem::TargetBase(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -470,9 +470,13 @@ void
 targetOuter::createLinks()
   /*!
     Create all the links
-    \todo swap link 0 to be link 2 
+    \todo swap link 0 to be link 2
   */
 {
+  // 3 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy TargetBase(Key,3) constructor used to.
+  FixedComp::setNConnect(3);
+
   // all point out
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+7));
   FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));

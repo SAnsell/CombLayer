@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1PlateTarget.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace ts1System
 {
 
 t1PlateTarget::t1PlateTarget(const std::string& Key)  :
-  TargetBase(Key,12),
+  TargetBase(Key),
   PressVObj(new PressVessel("PVessel")),
   PlateTarObj(new PlateTarget("TPlate")),
   DivObj(new WaterDividers("WDivide"))

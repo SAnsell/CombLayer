@@ -3,7 +3,7 @@
 
  * File:   essBuild/Linac.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ namespace essSystem
 {
 
 Linac::Linac(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   beamDump(new BeamDump(Key,"BeamDump")),
@@ -371,6 +371,10 @@ Linac::createLinks()
   */
 {
   ELog::RegMethod RegA("Linac","createLinks");
+
+  // 12 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy (Key,12) constructor used to.
+  FixedComp::setNConnect(12);
 
   // outer links
   FixedComp::setConnect(0,Origin-Y*(length/2.0+wallThick),-Y);

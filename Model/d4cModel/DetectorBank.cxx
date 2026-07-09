@@ -3,7 +3,7 @@
  
  * File:   d4cModel/DetectorBank.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace d4cSystem
 {
 
 DetectorBank::DetectorBank(const size_t BN,const std::string& Key) :
-  attachSystem::FixedRotate(Key+std::to_string(BN),6),
+  attachSystem::FixedRotate(Key+std::to_string(BN)),
   attachSystem::ContainedComp(),
   bankNumber(BN),baseName(Key)
   /*!
@@ -243,6 +243,11 @@ DetectorBank::createLinks()
   */
 {
   ELog::RegMethod RegA("DetectorBank","createLinks");
+
+  // 6 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy (Key,6) constructor used to.
+  FixedComp::setNConnect(6);
+
   int sign(-1);
   int surfN(11);
   const double T[]={detDepth/2.0,detLength/2.0,detHeight/2.0};

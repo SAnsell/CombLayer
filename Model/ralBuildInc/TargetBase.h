@@ -3,7 +3,7 @@
  
  * File:   ralBuildInc/TargetBase.h
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class TargetBase :
   
  public:
 
-  TargetBase(const std::string&,const size_t);
+  explicit TargetBase(const std::string&);
   TargetBase(const TargetBase&);
   TargetBase& operator=(const TargetBase&);
   ~TargetBase() override {}   ///< Destructor

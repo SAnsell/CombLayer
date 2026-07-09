@@ -3,7 +3,7 @@
  
  * File:   t1Build/OpenBlockTarget.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,12 +68,17 @@ namespace ts1System
 {
 
 OpenBlockTarget::OpenBlockTarget(const std::string& Key)  :
-  TargetBase(Key,6)
+  TargetBase(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+  // createSurfaces() pokes link point 1 by raw index ahead of
+  // createLinks() ever running, so pre-size up front as the legacy
+  // TargetBase(Key,6) constructor used to.
+  FixedComp::setNConnect(6);
+}
 
 OpenBlockTarget::OpenBlockTarget(const OpenBlockTarget& A) : 
   TMRSystem::TargetBase(A),

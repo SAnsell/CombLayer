@@ -3,7 +3,7 @@
  
  * File:   t1Build/InnerTarget.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace ts1System
 {
 
 InnerTarget::InnerTarget(const std::string& Key) :
-  TMRSystem::TargetBase(Key,6),
+  TMRSystem::TargetBase(Key),
   frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -443,6 +443,10 @@ InnerTarget::createLinks()
   */
 {
   ELog::RegMethod RegA("InnerTarget","createLinks");
+
+  // 6 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy TargetBase(Key,6) constructor used to.
+  FixedComp::setNConnect(6);
 
   // all point out
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+48));

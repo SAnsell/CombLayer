@@ -3,7 +3,7 @@
  
  * File:  ralBuild/TS2target.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace TMRSystem
 {
 
 TS2target::TS2target(const std::string& Key) :
-  TMRSystem::TargetBase(Key,5)
+  TMRSystem::TargetBase(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -541,9 +541,13 @@ void
 TS2target::createLinks()
   /*!
     Create all the links
-    \todo swap link 0 to be link 2 
+    \todo swap link 0 to be link 2
   */
 {
+  // 5 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy TargetBase(Key,5) constructor used to.
+  FixedComp::setNConnect(5);
+
   // all point out
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+101));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));

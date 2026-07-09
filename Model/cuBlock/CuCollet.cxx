@@ -3,7 +3,7 @@
  
  * File:   cuBlock/CuCollet.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ namespace cuSystem
 {
 
 CuCollet::CuCollet(const std::string& Key)  : 
-  attachSystem::FixedRotate(Key,3),attachSystem::ContainedComp()
+  attachSystem::FixedRotate(Key),attachSystem::ContainedComp()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -215,12 +215,12 @@ CuCollet::createLinks()
 {
   ELog::RegMethod RegA("CuCollet","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin+
 			Y*(cuGap+cuThick+cerThick+steelThick),Y);
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));  
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   t2Build/TS2FlatTarget.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace TMRSystem
 {
 
 TS2FlatTarget::TS2FlatTarget(const std::string& Key) :
-  TMRSystem::TargetBase(Key,3),
+  TMRSystem::TargetBase(Key),
   frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -362,9 +362,13 @@ void
 TS2FlatTarget::createLinks()
   /*!
     Create all the links
-    \todo swap link 0 to be link 2 
+    \todo swap link 0 to be link 2
   */
 {
+  // 3 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy TargetBase(Key,3) constructor used to.
+  FixedComp::setNConnect(3);
+
   // all point out
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+101));
   FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));

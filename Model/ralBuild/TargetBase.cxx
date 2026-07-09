@@ -3,7 +3,7 @@
  
  * File:   ralBuild/TargetBase.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,16 +57,15 @@
 namespace TMRSystem
 {
   
-TargetBase::TargetBase(const std::string& Key,const size_t NLink)  : 
-  attachSystem::FixedRotate(Key,NLink),
+TargetBase::TargetBase(const std::string& Key)  :
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   PLine(new ts1System::ProtonVoid("ProtonVoid"))
   /*!
     Constructor
-    \param Key :: Keyname 
-    \param NLink :: Link number
+    \param Key :: Keyname
   */
 {
    ModelSupport::objectRegister& OR=

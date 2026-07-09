@@ -3,7 +3,7 @@
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ namespace ts1System
 {
 
 Cannelloni::Cannelloni(const std::string& Key) :
-  TMRSystem::TargetBase(Key,3),
+  TMRSystem::TargetBase(Key),
   frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -291,6 +291,10 @@ Cannelloni::createLinks()
   */
 {
   ELog::RegMethod RegA("Cannelloni","createLinks");
+
+  // 3 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy TargetBase(Key,3) constructor used to.
+  FixedComp::setNConnect(3);
 
   // all point out
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+31));
