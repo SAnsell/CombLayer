@@ -3,7 +3,7 @@
  
  * File:   beamline/BenderUnit.cxx 
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -318,10 +318,10 @@ BenderUnit::createLinks()
   ExternalCut::createLink("front",*this,"front",Origin,-Y);
   ExternalCut::createLink("back",*this,"back",endPt,bY);
 
-  setLinkSurf(2,SMap.realSurf(buildIndex+5));
-  setLinkSurf(3,SMap.realSurf(buildIndex+6));
-  setLinkSurf(4,SMap.realSurf(buildIndex+7));
-  setLinkSurf(5,SMap.realSurf(buildIndex+8));
+  setLinkSurf("left",SMap.realSurf(buildIndex+5));
+  setLinkSurf("right",SMap.realSurf(buildIndex+6));
+  setLinkSurf("base",SMap.realSurf(buildIndex+7));
+  setLinkSurf("top",SMap.realSurf(buildIndex+8));
 
   return;
 }

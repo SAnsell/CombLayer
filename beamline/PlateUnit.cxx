@@ -3,7 +3,7 @@
  
  * File:   beamline/PlateUnit.cxx 
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -311,6 +311,13 @@ PlateUnit::createSurfaces()
       ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*length,Y);
       setCutSurf("back",-SMap.realSurf(buildIndex+2));
     }
+
+  // Reserve link-point indices 0/1 for front/back now (GuideUnit::
+  // createLinks(), called after this function, sets the same values
+  // again -- harmless -- but must claim slots 0/1 before the "side"+N
+  // link points created below, or they would steal slot 0/1 instead.
+  FrontBackCut::createFrontLinks(*this,Origin,-Y);
+  FrontBackCut::createBackLinks(*this,Origin,Y);
   
   double T(0.0);
 
@@ -337,9 +344,10 @@ PlateUnit::createSurfaces()
 	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
 	  if (i==0)
 	    {
-	      FixedComp::setLinkSurf(2+j,SMap.realSurf(SN));
+	      const std::string sideName="side"+std::to_string(j);
+	      FixedComp::setLinkSurf(sideName,SMap.realSurf(SN));
 	      const Geometry::Vec3D BB=calcBackPoint(backPts[jPlus]);
-	      FixedComp::setConnect(2+j,(PA+PB+BA+BB)/4.0,PPtr->getNormal());
+	      FixedComp::setConnect(sideName,(PA+PB+BA+BB)/4.0,PPtr->getNormal());
 	    }
 	  SN++;
 	}

@@ -3,7 +3,7 @@
  
  * File:   test/simpleObj.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <complex>
 #include <list>
 #include <vector>
+#include <array>
 #include <set>
 #include <map>
 #include <string>
@@ -63,7 +64,7 @@ namespace testSystem
 
 simpleObj::simpleObj(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedComp(Key),
   refFlag(0),xyAngle(0.0),zAngle(0.0),
   xSize(15.0),ySize(3.0),zSize(15.0),defMat(3)
   /*!
@@ -214,17 +215,19 @@ simpleObj::createLinks()
 {
   ELog::RegMethod RegA("simpleObj","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*ySize/2.0,-Y);
-  FixedComp::setConnect(1,Origin+Y*ySize/2.0,Y);
-  FixedComp::setConnect(2,Origin-X*xSize/2.0,-X);
-  FixedComp::setConnect(3,Origin+X*xSize/2.0,X);
-  FixedComp::setConnect(4,Origin-Z*zSize/2.0,-Z);
-  FixedComp::setConnect(5,Origin+Z*zSize/2.0,Z);
+  FixedComp::setConnect("front",Origin-Y*ySize/2.0,-Y);
+  FixedComp::setConnect("back",Origin+Y*ySize/2.0,Y);
+  FixedComp::setConnect("left",Origin-X*xSize/2.0,-X);
+  FixedComp::setConnect("right",Origin+X*xSize/2.0,X);
+  FixedComp::setConnect("base",Origin-Z*zSize/2.0,-Z);
+  FixedComp::setConnect("top",Origin+Z*zSize/2.0,Z);
 
+  static const std::array<std::string,6> nameArr=
+    {"front","back","left","right","base","top"};
   int surfSign(-1);
   for(int i=0;i<6;i++)
     {
-      FixedComp::setLinkSurf(static_cast<size_t>(i),
+      FixedComp::setLinkSurf(nameArr[static_cast<size_t>(i)],
 			     surfSign*SMap.realSurf(buildIndex+1+i));
       surfSign*=-1;
     }

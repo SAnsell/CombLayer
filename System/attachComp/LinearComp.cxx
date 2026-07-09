@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinearComp.cxx
 *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ namespace attachSystem
 {
 
 LinearComp::LinearComp(const std::string& KN)  :
-  FixedComp(KN,2)
+  FixedComp(KN)
   /*!
     Constructor 
     \param KN :: KeyName
