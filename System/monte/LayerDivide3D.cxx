@@ -3,7 +3,7 @@
  
  * File:   monte/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ namespace ModelSupport
 {
 
 LayerDivide3D::LayerDivide3D(const std::string& Key)  :
-  FixedComp(Key,0),CellMap(),SurfMap(),
+  FixedComp(Key),CellMap(),SurfMap(),
   WallID({"Sector","Vert","Radial"}),DGPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
