@@ -343,11 +343,6 @@ Bunker::createSideLinks(const Geometry::Vec3D& AWall,
 {
   ELog::RegMethod RegA("Bunker","createSideLinks");
 
-  // Unused today, but exported/public -- guard against being called
-  // before createLinks() has pre-sized the (now lazy) link vector.
-  if (FixedComp::NConnect()<12)
-    FixedComp::setNConnect(12);
-
   // Construct links on side walls:
   Geometry::Vec3D AWallY(AWallDir*Z);
   Geometry::Vec3D BWallY(BWallDir*Z);
@@ -357,9 +352,9 @@ Bunker::createSideLinks(const Geometry::Vec3D& AWall,
   if (BWallY.dotProd(Y)<0.0)
     BWallY*=-1;
 
-  // Outer 
-  FixedComp::setConnect(2,AWall+AWallY*wallRadius/2.0,AWallDir);
-  FixedComp::setConnect(3,BWall+BWallY*wallRadius/2.0,BWallDir);
+  // Outer
+  FixedComp::setConnect("sideLink",AWall+AWallY*wallRadius/2.0,AWallDir);
+  FixedComp::setConnect("sideLinkB",BWall+BWallY*wallRadius/2.0,BWallDir);
 
   return;
 }
@@ -558,40 +553,35 @@ Bunker::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("Bunker","createLinks");
 
-  // 12 raw-indexed slots (several non-contiguous, referenced by raw
-  // index from RoofPillars.cxx) are still poked by number below --
-  // pre-size up front as the legacy (Key,12) constructor used to.
-  FixedComp::setNConnect(12);
+  FixedComp::setConnect("wallInner",rotCentre+Y*(wallRadius),Y);
+  FixedComp::setLinkSurf("wallInner",-SMap.realSurf(buildIndex+7));
+  FixedComp::setBridgeSurf("wallInner",SMap.realSurf(buildIndex+1));
 
-  FixedComp::setLinkCopy(2,FC,sideIndex);
-  
-  FixedComp::setConnect(0,rotCentre+Y*(wallRadius),Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+7));
-  FixedComp::setBridgeSurf(0,SMap.realSurf(buildIndex+1));
-  
   // Outer
-  FixedComp::setConnect(1,rotCentre+Y*(wallRadius+wallThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+17));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(buildIndex+1));
-  
-  FixedComp::setConnect(4,Origin-Z*(floorDepth+floorThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
-  FixedComp::setConnect(5,Origin+Z*(roofHeight+roofThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("wallOuter",rotCentre+Y*(wallRadius+wallThick),Y);
+  FixedComp::setLinkSurf("wallOuter",SMap.realSurf(buildIndex+17));
+  FixedComp::setBridgeSurf("wallOuter",SMap.realSurf(buildIndex+1));
+
+  FixedComp::setLinkCopy("sideLink",FC,sideIndex);
+
+  FixedComp::setConnect("floor",Origin-Z*(floorDepth+floorThick),-Z);
+  FixedComp::setLinkSurf("floor",-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect("roof",Origin+Z*(roofHeight+roofThick),Z);
+  FixedComp::setLinkSurf("roof",SMap.realSurf(buildIndex+16));
 
   // Rotation centre:
-  FixedComp::setConnect(6,rotCentre,Y);
-  FixedComp::setLinkSurf(6,0);
+  FixedComp::setConnect("rotCentre",rotCentre,Y);
+  FixedComp::setLinkSurf("rotCentre",0);
 
   // Inner wall
-  FixedComp::setConnect(7,rotCentre+Y*wallRadius,-Y);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+7));
+  FixedComp::setConnect("innerWall",rotCentre+Y*wallRadius,-Y);
+  FixedComp::setLinkSurf("innerWall",-SMap.realSurf(buildIndex+7));
 
-  
-  FixedComp::setConnect(10,Origin-Z*floorDepth,Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+5));
-  FixedComp::setConnect(11,Origin+Z*roofHeight,-Z);
-  FixedComp::setLinkSurf(11,-SMap.realSurf(buildIndex+6));
+
+  FixedComp::setConnect("floorInner",Origin-Z*floorDepth,Z);
+  FixedComp::setLinkSurf("floorInner",SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("roofInner",Origin+Z*roofHeight,-Z);
+  FixedComp::setLinkSurf("roofInner",-SMap.realSurf(buildIndex+6));
 
   return;
 }

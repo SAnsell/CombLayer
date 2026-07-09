@@ -840,7 +840,7 @@ makeESS::makeBunker(Simulation& System,
       // minimize cells as curtain will be in MANY unnecessary roof objects:
       // and we will need to use them later:
 
-      ABHighBay->setCutSurf("frontCut",*ABunker,3);
+      ABHighBay->setCutSurf("frontCut",*ABunker,"sideLink");
       ABHighBay->setCutSurf("curtainCut",
 			    TopCurtain->combine("-OuterRadius -OuterZStep"));
 
@@ -858,7 +858,7 @@ makeESS::makeBunker(Simulation& System,
       ABHighBay->addInsertCell(voidCell);
       ABHighBay->createAll(System,*ABunker,0);
 
-      CDHighBay->setCutSurf("frontCut",*CBunker,3);
+      CDHighBay->setCutSurf("frontCut",*CBunker,"sideLink");
       //      CDHighBay->setCurtainCut
       //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
       CDHighBay->setCutSurf
