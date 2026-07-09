@@ -69,7 +69,7 @@ namespace xraySystem
 {
 
 UTubePipe::UTubePipe(const std::string& Key) :
-  constructSystem::GeneralPipe(Key,6)
+  constructSystem::GeneralPipe(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName

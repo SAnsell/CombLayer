@@ -66,7 +66,7 @@ namespace constructSystem
 {
 
 WallCut::WallCut(const std::string& Key,const size_t ID)  :
-  attachSystem::FixedOffset(Key+std::to_string(ID),6),
+  attachSystem::FixedOffset(Key+std::to_string(ID)),
   attachSystem::ContainedComp(),attachSystem::ExternalCut(),
   baseName(Key)
   /*!

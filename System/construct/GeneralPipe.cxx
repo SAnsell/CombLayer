@@ -71,21 +71,7 @@ namespace constructSystem
 {
 
 GeneralPipe::GeneralPipe(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
-  attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
-  attachSystem::CellMap(),
-  attachSystem::SurfMap(),
-  attachSystem::FrontBackCut(),
-  activeFlag(0)
-  /*!
-    Constructor BUT ALL variable are left unpopulated.
-    \param Key :: KeyName
-  */
-{}
-
-GeneralPipe::GeneralPipe(const std::string& Key,
-			   const size_t nLink) :
-  attachSystem::FixedRotate(Key,nLink),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","FlangeA","FlangeB"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),

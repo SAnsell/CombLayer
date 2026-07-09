@@ -69,7 +69,7 @@ namespace constructSystem
 {
 
 OffsetFlangePipe::OffsetFlangePipe(const std::string& Key) :
-  GeneralPipe(Key,11)
+  GeneralPipe(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -276,9 +276,8 @@ OffsetFlangePipe::createLinks()
 {
   ELog::RegMethod RegA("OffsetFlangePipe","createLinks");
 
-  // Pre-register names at their original numeric positions -- GeneralPipe
-  // pre-sizes LU (legacy NL constructor) so a not-yet-registered name
-  // would otherwise land after that reserved block instead of here.
+  // Pre-register names at their original numeric positions -- otherwise
+  // a not-yet-registered name would land after front/back instead of here.
   FixedComp::nameSideIndex(2,"left");
   FixedComp::nameSideIndex(3,"right");
   FixedComp::nameSideIndex(4,"base");

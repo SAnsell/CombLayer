@@ -75,10 +75,8 @@ PipeTube::PipeTube(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  // Pre-register names at their original numeric positions -- the
-  // legacy NL constructor (VirtualTube) pre-sizes LU so a
-  // not-yet-registered name would otherwise land after that reserved
-  // block instead of here.
+  // Pre-register names at their original numeric positions -- otherwise
+  // a not-yet-registered name would land after front/back instead of here.
   FixedComp::nameSideIndex(2,"FlangeA");
   FixedComp::nameSideIndex(3,"FlangeB");
   FixedComp::nameSideIndex(4,"InnerFront");
