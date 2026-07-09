@@ -3,7 +3,7 @@
  
  * File:   delft/BeSurround.cxx
 *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ namespace delftSystem
 {
 
 BeSurround::BeSurround(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,3),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   active(1)
@@ -198,13 +198,13 @@ BeSurround::createLinks()
     - 2 : Inner face
   */
 {
-  FixedComp::setConnect(0,Origin,-Y);      
-  FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setConnect(2,Origin+X*outerRadius+Y*length/2.0,X);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin+Y*length,Y);
+  FixedComp::setConnect("radial",Origin+X*outerRadius+Y*length/2.0,X);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+17));
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("radial",SMap.realSurf(buildIndex+17));
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   delft/SpaceBlock.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ namespace delftSystem
 {
 
 SpaceBlock::SpaceBlock(const std::string& Key,const size_t Index)  :
-  attachSystem::FixedRotate(Key+std::to_string(Index),6),
+  attachSystem::FixedRotate(Key+std::to_string(Index)),
   attachSystem::ContainedComp(),baseName(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -174,20 +174,20 @@ SpaceBlock::createLinks()
 {
   ELog::RegMethod RegA("SpaceBlock","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);      
-  FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",Origin+Y*length,Y);
+  FixedComp::setConnect("left",Origin-X*(width/2.0),-X);
+  FixedComp::setConnect("right",Origin+X*(width/2.0),X);
+  FixedComp::setConnect("base",Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect("top",Origin+Z*(height/2.0),Z);
 
-  
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

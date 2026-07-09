@@ -3,7 +3,7 @@
  
  * File:   delft/SphereModerator.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,21 +204,21 @@ SphereModerator::createLinks()
 {
   ELog::RegMethod RegA("SphereModerator","createLinks");
 
-  FixedComp::addLinkSurf(0,SMap.realSurf(buildIndex+37));
-  FixedComp::addLinkSurf(1,-SMap.realSurf(buildIndex+111));
-  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+37));
-  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+37));
-  FixedComp::addLinkSurf(4,SMap.realSurf(buildIndex+37));
-  FixedComp::addLinkSurf(5,SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf("front",SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf("back",-SMap.realSurf(buildIndex+111));
+  FixedComp::addLinkSurf("left",SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf("right",SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf("base",SMap.realSurf(buildIndex+37));
+  FixedComp::addLinkSurf("top",SMap.realSurf(buildIndex+37));
 
   // // set Links:
-  FixedComp::setConnect(0,Origin+Y*(outYShift-outerRadius-innerAl),-Y);
-  FixedComp::setConnect(1,Origin+Y*(fYShift+capThick),Y);
+  FixedComp::setConnect("front",Origin+Y*(outYShift-outerRadius-innerAl),-Y);
+  FixedComp::setConnect("back",Origin+Y*(fYShift+capThick),Y);
 
-  FixedComp::setConnect(2,Origin-X*(outerRadius+innerAl),-X);
-  FixedComp::setConnect(3,Origin+X*(outerRadius+innerAl),X);
-  FixedComp::setConnect(4,Origin-Z*(outerRadius+innerAl),-Z);
-  FixedComp::setConnect(5,Origin+Z*(outerRadius+innerAl),Z);
+  FixedComp::setConnect("left",Origin-X*(outerRadius+innerAl),-X);
+  FixedComp::setConnect("right",Origin+X*(outerRadius+innerAl),X);
+  FixedComp::setConnect("base",Origin-Z*(outerRadius+innerAl),-Z);
+  FixedComp::setConnect("top",Origin+Z*(outerRadius+innerAl),Z);
 
   return;
 }

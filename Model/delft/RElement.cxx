@@ -3,7 +3,7 @@
  
  * File:   delft/RElement.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ namespace delftSystem
 
 RElement::RElement(const size_t XI,const size_t YI,
 		   const std::string& Key) : 
-  attachSystem::FixedOffset(ReactorGrid::getElementName(Key,XI,YI),6),
+  attachSystem::FixedOffset(ReactorGrid::getElementName(Key,XI,YI)),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

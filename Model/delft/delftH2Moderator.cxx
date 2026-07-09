@@ -3,7 +3,7 @@
  
  * File:   delft/delftH2Moderator.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -285,29 +285,29 @@ delftH2Moderator::createLinks()
 
   const int surfDirB=(backDir) ? backDir : 1;
   const int surfDirF=(frontDir) ? frontDir : 1;
-  FixedComp::addLinkSurf(0,surfDirB*SMap.realSurf(buildIndex+21));
-  FixedComp::addLinkSurf(1,surfDirF*SMap.realSurf(buildIndex+22));
-  FixedComp::addLinkSurf(2,SMap.realSurf(buildIndex+13));
-  FixedComp::addLinkSurf(3,SMap.realSurf(buildIndex+13));
-  FixedComp::addLinkSurf(4,SMap.realSurf(buildIndex+13));
-  FixedComp::addLinkSurf(5,SMap.realSurf(buildIndex+13));
+  FixedComp::addLinkSurf("front",surfDirB*SMap.realSurf(buildIndex+21));
+  FixedComp::addLinkSurf("back",surfDirF*SMap.realSurf(buildIndex+22));
+  FixedComp::addLinkSurf("left",SMap.realSurf(buildIndex+13));
+  FixedComp::addLinkSurf("right",SMap.realSurf(buildIndex+13));
+  FixedComp::addLinkSurf("base",SMap.realSurf(buildIndex+13));
+  FixedComp::addLinkSurf("top",SMap.realSurf(buildIndex+13));
 
   // set Links: BACK POINT
   if (backDir>0)   // outgoing:
-    FixedComp::setConnect(0,BCentre-Y*(alBack+backRadius),-Y);
+    FixedComp::setConnect("front",BCentre-Y*(alBack+backRadius),-Y);
   else             // In going / Plane
-    FixedComp::setConnect(0,Origin-Y*(alBack+depth/2.0),-Y);       
+    FixedComp::setConnect("front",Origin-Y*(alBack+depth/2.0),-Y);
 
   // set Links: Front
   if (frontDir>0)   // outgoing:
-    FixedComp::setConnect(1,FCentre+Y*(alFront+frontRadius),Y);       
+    FixedComp::setConnect("back",FCentre+Y*(alFront+frontRadius),Y);
   else             // In going / Plane
-    FixedComp::setConnect(1,Origin+Y*(alFront+depth/2.0),Y);       
+    FixedComp::setConnect("back",Origin+Y*(alFront+depth/2.0),Y);
 
-  FixedComp::setConnect(2,Origin-X*(alSide+sideRadius),-X);
-  FixedComp::setConnect(3,Origin+X*(alSide+sideRadius),X);
-  FixedComp::setConnect(4,Origin-Z*(alSide+sideRadius),-Z);
-  FixedComp::setConnect(5,Origin+Z*(alSide+sideRadius),Z);
+  FixedComp::setConnect("left",Origin-X*(alSide+sideRadius),-X);
+  FixedComp::setConnect("right",Origin+X*(alSide+sideRadius),X);
+  FixedComp::setConnect("base",Origin-Z*(alSide+sideRadius),-Z);
+  FixedComp::setConnect("top",Origin+Z*(alSide+sideRadius),Z);
 
   return;
 }
