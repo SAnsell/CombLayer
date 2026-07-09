@@ -3,7 +3,7 @@
  
  * File:   insertUnit/insertObject.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace insertSystem
 {
 
 insertObject::insertObject(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -78,7 +78,7 @@ insertObject::insertObject(const std::string& Key)  :
 
 insertObject::insertObject(std::string  baseKey,
 			   const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
