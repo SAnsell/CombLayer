@@ -393,10 +393,15 @@ R3Ring::createLinks()
 {
   ELog::RegMethod RegA("R3Ring","createLinks");
 
-  FixedComp::setNConnect(2*(NInnerSurf+1));
+  std::vector<Geometry::Vec3D> innerPts;
+  std::vector<Geometry::Vec3D> outerPts;
+  std::vector<Geometry::Vec3D> outerX;
+
+  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(60000);
 
   double theta(-2.0*M_PI/static_cast<double>(NInnerSurf));
-  for(size_t i=0;i<NInnerSurf;i++)
+  int i;
+  for(i=0;i<NInnerSurf;i++)
     {
       const Geometry::Vec3D Axis(sin(theta),cos(theta),0.0);
       const Geometry::Vec3D PtX(Origin+Axis*beamRadius);
@@ -406,7 +411,7 @@ R3Ring::createLinks()
 	(SurfMap::getSurfPtr("BeamInner",i));
       const Geometry::Plane* BExit=dynamic_cast<const Geometry::Plane*>
 	(SurfMap::getSurfPtr("BeamOuter",i));
-      
+
       const Geometry::Vec3D Beam= BWall->getNormal();
       if (BInner && BExit)
 	{
@@ -414,19 +419,44 @@ R3Ring::createLinks()
 	    SurInter::getLinePoint(PtX,Beam,*BInner);
 	  const Geometry::Vec3D exitCentre=
 	    SurInter::getLinePoint(PtX,Beam,*BExit);
-	  
-	  FixedComp::nameSideIndex(i,"OpticCentre"+std::to_string(i));
-	  FixedComp::setLinkSurf(i,-BInner->getName());
-	  FixedComp::setConnect(i,beamOrigin,Beam);
-	  
-	  FixedComp::nameSideIndex(i+NInnerSurf,"ExitCentre"+std::to_string(i));
-	  FixedComp::setLinkSurf(NInnerSurf+i,-BExit->getName());
-	  FixedComp::setConnect(NInnerSurf+i,exitCentre,Beam);
+
+	  const std::string opticName("OpticCentre"+std::to_string(i));
+	  FixedComp::nameSideIndex(i,opticName);
+	  FixedComp::setLinkSurf(opticName,-BInner->getName());
+	  FixedComp::setConnect(opticName,beamOrigin,Beam);
+
+	  const std::string exitName("ExitCentre"+std::to_string(i));
+	  FixedComp::nameSideIndex(i+NInnerSurf,exitName);
+	  FixedComp::setLinkSurf(exitName,-BExit->getName());
+	  FixedComp::setConnect(exitName,exitCentre,Beam);
 	}
-      
+
+      const Geometry::Plane* FlatInner=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("FlatInner",(i+NInnerSurf-1) % NInnerSurf));
+      const Geometry::Plane* FlatOuter=dynamic_cast<const Geometry::Plane*>
+	(SurfMap::getSurfPtr("FlatOuter",(i+NInnerSurf-1) % NInnerSurf));
+
+      if (FlatInner && FlatOuter) {
+	const Geometry::Vec3D OuterWallInner= FlatInner->getNormal();
+	const std::string outerInnerName("OuterWallInner"+std::to_string(i));
+	FixedComp::nameSideIndex(2*NInnerSurf+i+1,outerInnerName);
+	FixedComp::setLinkSurf(outerInnerName,-FlatInner->getName());
+	Geometry::Vec3D point = (SurInter::getPoint(FlatInner, BWall, pz) + SurInter::getPoint(FlatInner, BInner, pz))/2.0;
+	FixedComp::setConnect(outerInnerName,point,-OuterWallInner);
+
+	const Geometry::Vec3D OuterWallOuter= FlatOuter->getNormal();
+	const std::string outerOuterName("OuterWallOuter"+std::to_string(i));
+	FixedComp::nameSideIndex(3*NInnerSurf+i,outerOuterName);
+	FixedComp::setLinkSurf(outerOuterName,FlatOuter->getName());
+	point = (SurInter::getPoint(FlatOuter, BWall, pz) + SurInter::getPoint(FlatOuter, BInner, pz))/2.0;
+	FixedComp::setConnect(outerOuterName,point,OuterWallOuter);
+      }
       theta+=2.0*M_PI/static_cast<double>(NInnerSurf);
     }
-  return;
+
+  FixedComp::nameSideIndex(i,"RoofInner");
+  FixedComp::setConnect("RoofInner",Origin+Z*height,-Z);
+  FixedComp::setLinkSurf("RoofInner",-SMap.realSurf(buildIndex+6));
 }
 
 void

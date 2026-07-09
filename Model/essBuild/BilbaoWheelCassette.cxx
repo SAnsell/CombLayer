@@ -583,34 +583,32 @@ BilbaoWheelCassette::createLinks()
   if (bricksActive)
     {
       int SJ(buildIndex);
-      size_t i(4);
-      // raw-indexed slots 4..4+2*nWallSeg-1 are poked by number below
-      // (0/1 are "Inner"/"Outer", set externally before createAll runs)
-      FixedComp::setNConnect(4+2*nWallSeg);
+      // "Inner"/"Outer" (set externally before createAll runs) are the
+      // only other names on this object -- no clash with the wallSeg
+      // names created below.
       for (size_t j=0; j<nWallSeg; j++)
 	{
 	  Geometry::Vec3D Pt =
 	    SurInter::getPoint(SMap.realSurfPtr(SJ+111),
 			       SMap.realSurfPtr(SJ+113),
 			       SMap.realSurfPtr(buildIndex+5));
-	  
-	  Pt += Y*(wallSegLength[j]/2.0);
-	  FixedComp::setConnect(i,Pt,X);
-	  FixedComp::setLinkSurf(i,SMap.realSurf(SJ+113));
 
-	  i++;
+	  Pt += Y*(wallSegLength[j]/2.0);
+	  const std::string leftName("wallSeg"+std::to_string(j)+"Left");
+	  FixedComp::setConnect(leftName,Pt,X);
+	  FixedComp::setLinkSurf(leftName,SMap.realSurf(SJ+113));
 
 	  Pt =
 	    SurInter::getPoint(SMap.realSurfPtr(SJ+111),
 			       SMap.realSurfPtr(SJ+114),
 			       SMap.realSurfPtr(buildIndex+5));
-	  
+
 	  Pt += Y*(wallSegLength[j]/2.0);
-	  FixedComp::setConnect(i,Pt,-X);
-	  FixedComp::setLinkSurf(i,-SMap.realSurf(SJ+114));
+	  const std::string rightName("wallSeg"+std::to_string(j)+"Right");
+	  FixedComp::setConnect(rightName,Pt,-X);
+	  FixedComp::setLinkSurf(rightName,-SMap.realSurf(SJ+114));
 
 	  SJ += 1000;
-	  i++;
 	}
     }
 

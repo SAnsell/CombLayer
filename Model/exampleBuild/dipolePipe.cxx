@@ -171,8 +171,8 @@ dipolePipe::createSurfaces()
   ModelSupport::buildCylinder
     (SMap,buildIndex+127,cylCentre,Z,radius+(outerWidth/2.0));
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,cylEnd,endAxis);
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setConnect("back",cylEnd,endAxis);
 
   return;
 }

@@ -196,17 +196,17 @@ voidCylVolume::createLinks()
   */
 {  
   ELog::RegMethod RegA("voidCylVolume","createLinks");
-  setNConnect(nSegment+2);
 
-  const double angleStep(2.0*M_PI/buildIndex);  
+  const double angleStep(2.0*M_PI/buildIndex);
   int PI(buildIndex+111);
   double plateAngle(angleStep/2.0);
 
   for(size_t i=0;i<nSegment;i++)
     {
       const Geometry::Vec3D PVec(X*sin(plateAngle)+Y*cos(plateAngle));
-      FixedComp::setConnect(i,Origin+PVec*radius,-PVec);
-      FixedComp::setLinkSurf(i,-SMap.realSurf(PI));
+      const std::string segName("segment"+std::to_string(i));
+      FixedComp::setConnect(segName,Origin+PVec*radius,-PVec);
+      FixedComp::setLinkSurf(segName,-SMap.realSurf(PI));
       plateAngle+=angleStep;
       PI++;
     }

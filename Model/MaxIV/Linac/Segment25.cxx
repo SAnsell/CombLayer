@@ -154,12 +154,12 @@ Segment25::buildObjects(Simulation& System)
     (System,*buildZone,*sixPortA,"back",*multiPipe);
 
   // BELLOWS:
-  bellowAA->createAll(System,*multiPipe,2);
+  bellowAA->createAll(System,*multiPipe,"pipe0");
   bellowBA->addAllInsertCell(outerCellMulti);
-  bellowBA->createAll(System,*multiPipe,3);
+  bellowBA->createAll(System,*multiPipe,"pipe1");
 
   bellowCA->addAllInsertCell(outerCellMulti);
-  bellowCA->createAll(System,*multiPipe,4);
+  bellowCA->createAll(System,*multiPipe,"pipe2");
 
   const int outerCellBellow=
     buildZone->createUnit(System,*bellowAA,2);

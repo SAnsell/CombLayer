@@ -236,11 +236,11 @@ RingFlange::addWindow(Simulation& System)
       // exclude:
       addOuterUnionSurf(HR*radSurf);
 
-      // Add links:	  
-      setConnect("6",Origin+Y*(windowStep-windowThick/2.0),-Y);
-      setConnect("7",Origin+Y*(windowStep+windowThick/2.0),Y);
-      setLinkSurf("6",-SMap.realSurf(windowIndex+1));
-      setLinkSurf("7",SMap.realSurf(windowIndex+2));
+      // Add links:
+      setConnect("windowFront",Origin+Y*(windowStep-windowThick/2.0),-Y);
+      setConnect("windowBack",Origin+Y*(windowStep+windowThick/2.0),Y);
+      setLinkSurf("windowFront",-SMap.realSurf(windowIndex+1));
+      setLinkSurf("windowBack",SMap.realSurf(windowIndex+2));
     }
   
   return;
