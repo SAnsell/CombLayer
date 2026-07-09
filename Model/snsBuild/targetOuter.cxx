@@ -473,18 +473,14 @@ targetOuter::createLinks()
     \todo swap link 0 to be link 2
   */
 {
-  // 3 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy TargetBase(Key,3) constructor used to.
-  FixedComp::setNConnect(3);
-
   // all point out
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+7));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+7));
+  FixedComp::addLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
-  FixedComp::setConnect(0,Origin-Y*mainHeight/2.0,-Y);
-  FixedComp::setConnect(1,Origin+Y*mainLength,Y);
+  FixedComp::setConnect("front",Origin-Y*mainHeight/2.0,-Y);
+  FixedComp::setConnect("back",Origin+Y*mainLength,Y);
 
   return;
 }

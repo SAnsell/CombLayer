@@ -544,29 +544,23 @@ TS2target::createLinks()
     \todo swap link 0 to be link 2
   */
 {
-  // 5 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy TargetBase(Key,5) constructor used to.
-  FixedComp::setNConnect(5);
-
   // all point out
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+101));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  // If not nose cone then change 2
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+91));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(buildIndex+59));
+  FixedComp::setLinkSurf("voidRadius",SMap.realSurf(buildIndex+101));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  // If not nose cone then change TargetFront
+  FixedComp::setLinkSurf("TargetFront",SMap.realSurf(buildIndex+91));
+  FixedComp::addLinkSurf("TargetFront",-SMap.realSurf(buildIndex+59));
 
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("start",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(0,Origin+Z*voidRadius,Z);
-  FixedComp::setConnect(1,Origin+Y*mainLength,Y);
-  FixedComp::setConnect(2,Origin-Y*(tCapDisplace+tCapOuterRadius),-Y);
-  FixedComp::setConnect(3,Origin,-Y);
+  FixedComp::setConnect("voidRadius",Origin+Z*voidRadius,Z);
+  FixedComp::setConnect("back",Origin+Y*mainLength,Y);
+  FixedComp::setConnect("TargetFront",Origin-Y*(tCapDisplace+tCapOuterRadius),-Y);
+  FixedComp::setConnect("start",Origin,-Y);
 
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+27));
-  FixedComp::setConnect(4,Origin+Z*(coreRadius+cladThick),Z);
+  FixedComp::setLinkSurf("CoreRadius",SMap.realSurf(buildIndex+27));
+  FixedComp::setConnect("CoreRadius",Origin+Z*(coreRadius+cladThick),Z);
 
-  FixedComp::nameSideIndex(4,"CoreRadius");
-  FixedComp::nameSideIndex(2,"TargetFront");
   return;
 }
 

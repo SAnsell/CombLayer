@@ -365,19 +365,15 @@ TS2FlatTarget::createLinks()
     \todo swap link 0 to be link 2
   */
 {
-  // 3 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy TargetBase(Key,3) constructor used to.
-  FixedComp::setNConnect(3);
-
   // all point out
-  FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+101));
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
-  // If not nose cone then change 2
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(buildIndex+331));
+  FixedComp::setLinkSurf("voidRadius",SMap.realSurf(buildIndex+101));
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
+  // If not nose cone then change "start"
+  FixedComp::setBridgeSurf("start",-SMap.realSurf(buildIndex+331));
 
-  FixedComp::setConnect(0,Origin+Z*voidRadius,Z);
-  FixedComp::setConnect(1,Origin+Y*mainLength,Y);
-  FixedComp::setConnect(2,Origin,-Y);
+  FixedComp::setConnect("voidRadius",Origin+Z*voidRadius,Z);
+  FixedComp::setConnect("back",Origin+Y*mainLength,Y);
+  FixedComp::setConnect("start",Origin,-Y);
 
   return;
 }

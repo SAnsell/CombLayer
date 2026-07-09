@@ -235,16 +235,11 @@ He3Tubes::createLinks()
 {  
   ELog::RegMethod RegA("He3Tubes","createLinks");
 
-  // Only indices 4/5 are ever written, but keep the original slot
-  // numbering intact -- pre-size up front as the legacy (Key,6)
-  // constructor used to.
-  FixedComp::setNConnect(6);
+  FixedComp::setConnect("base",Origin-Z*(length/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect(4,Origin-Z*(length/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-
-  FixedComp::setConnect(5,Origin+Z*(length/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Z*(length/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

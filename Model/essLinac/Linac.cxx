@@ -372,49 +372,45 @@ Linac::createLinks()
 {
   ELog::RegMethod RegA("Linac","createLinks");
 
-  // 12 raw-indexed slots are still poked by number below -- pre-size up
-  // front as the legacy (Key,12) constructor used to.
-  FixedComp::setNConnect(12);
-
   // outer links
-  FixedComp::setConnect(0,Origin-Y*(length/2.0+wallThick),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+11));
+  FixedComp::setConnect("front",Origin-Y*(length/2.0+wallThick),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0+wallThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+12));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0+wallThick),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
 
-  FixedComp::setConnect(2,Origin-X*(widthRight+wallThick),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setConnect("left",Origin-X*(widthRight+wallThick),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
 
-  FixedComp::setConnect(3,Origin+X*(widthLeft+wallThick),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setConnect("right",Origin+X*(widthLeft+wallThick),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
 
-  FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setConnect("base",Origin-Z*(depth+floorThick),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
 
-  FixedComp::setConnect(5,Origin+Z*(height+roofThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
+  FixedComp::setConnect("top",Origin+Z*(height+roofThick),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   // TSW
   double tswY(tswOffsetY);
-  FixedComp::setConnect(6,Origin+Y*(tswY),Y); //should be negative, but layerProcess needs positive
-  FixedComp::setLinkSurf(6,SMap.realSurf(buildIndex+101));
+  FixedComp::setConnect("tsw1",Origin+Y*(tswY),Y); //should be negative, but layerProcess needs positive
+  FixedComp::setLinkSurf("tsw1",SMap.realSurf(buildIndex+101));
   tswY += tswWidth;
-  FixedComp::setConnect(7,Origin+Y*(tswY),Y);
-  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+102));
+  FixedComp::setConnect("tsw2",Origin+Y*(tswY),Y);
+  FixedComp::setLinkSurf("tsw2",SMap.realSurf(buildIndex+102));
   tswY += tswGap;
-  FixedComp::setConnect(8,Origin+Y*(tswY),Y); //should be negative, but layerProcess needs positive
-  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+111));
+  FixedComp::setConnect("tsw3",Origin+Y*(tswY),Y); //should be negative, but layerProcess needs positive
+  FixedComp::setLinkSurf("tsw3",SMap.realSurf(buildIndex+111));
   tswY += tswWidth;
-  FixedComp::setConnect(9,Origin+Y*(tswY),Y);
-  FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+112));
+  FixedComp::setConnect("tsw4",Origin+Y*(tswY),Y);
+  FixedComp::setLinkSurf("tsw4",SMap.realSurf(buildIndex+112));
 
   // walls
-  FixedComp::setConnect(10,Origin-Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("wallFront",Origin-Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("wallFront",SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(11,Origin+Y*(length/2.0),Y); // should be negative, but layerProcess needs positive
-  FixedComp::setLinkSurf(11,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("wallBack",Origin+Y*(length/2.0),Y); // should be negative, but layerProcess needs positive
+  FixedComp::setLinkSurf("wallBack",SMap.realSurf(buildIndex+2));
 
   return;
 }
