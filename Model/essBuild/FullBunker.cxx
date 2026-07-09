@@ -3,7 +3,7 @@
  
  * File:   essBuild/FullBunker.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ namespace essSystem
 {
 
 FullBunker::FullBunker(const std::string& Key)  :
-  attachSystem::FixedComp(Key,12),
+  attachSystem::FixedComp(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -343,7 +343,12 @@ FullBunker::createSideLinks(const Geometry::Vec3D& AWall,
    */
 {
   ELog::RegMethod RegA("FullBunker","createSideLinks");
-		      
+
+  // Unused today, but exported/public -- guard against being called
+  // before createLinks() has pre-sized the (now lazy) link vector.
+  if (FixedComp::NConnect()<12)
+    FixedComp::setNConnect(12);
+
   // Construct links on side walls:
   Geometry::Vec3D AWallY(AWallDir*Z);
   Geometry::Vec3D BWallY(BWallDir*Z);
@@ -553,6 +558,11 @@ FullBunker::createLinks(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FullBunker","createLinks");
+
+  // 12 raw-indexed slots (several non-contiguous) are still poked by
+  // number below -- pre-size up front as the legacy (Key,12)
+  // constructor used to.
+  FixedComp::setNConnect(12);
 
   FixedComp::setLinkCopy(2,FC,sideIndex);
   
