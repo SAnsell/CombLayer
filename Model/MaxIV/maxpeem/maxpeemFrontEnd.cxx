@@ -3,7 +3,7 @@
  
  * File: maxpeem/maxpeemFrontEnd.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,8 +134,8 @@ maxpeemFrontEnd::createLinks()
     Create a front/back link
   */
 {
-  setLinkCopy(0,*undulatorPipe,1);
-  if (lastComp) setLinkCopy(1,*lastComp,2);
+  setLinkCopy("front",*undulatorPipe,1);
+  if (lastComp) setLinkCopy("back",*lastComp,2);
   return;
 }
 

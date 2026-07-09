@@ -3,7 +3,7 @@
 
  * File:   GunTestFacility/GTFGateValve.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov and Stuart Ansell
+ * Copyright (c) 2004-2026 by Konstantin Batkov and Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace constructSystem
 {
 
 GTFGateValve::GTFGateValve(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main", "Flange", "Shaft"),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   closed(0)

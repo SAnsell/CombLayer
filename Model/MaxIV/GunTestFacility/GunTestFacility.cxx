@@ -3,7 +3,7 @@
 
  * File: Linac/GunTestFacility.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ namespace MAXIV::GunTestFacility
 {
 
   GunTestFacility::GunTestFacility(const std::string& KN) :
-    attachSystem::FixedOffset(KN,6),
+    attachSystem::FixedOffset(KN),
     attachSystem::CellMap(),
     buildingB(new BuildingB("BldB")),
     beamLine(new GTFLine("GTFLine"))

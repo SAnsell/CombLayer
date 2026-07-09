@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/GunTestFacility/Hall.cxx
  *
- * Copyright (c) 2004-2024 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ namespace MAXIV::GunTestFacility
 
   BuildingB::BuildingB(const std::string& Key)  :
     attachSystem::ContainedComp(),
-    attachSystem::FixedRotate(Key,13),
+    attachSystem::FixedRotate(Key),
     attachSystem::CellMap(),
     attachSystem::SurfMap(),
     ductWave(std::make_shared<xraySystem::Duct>(keyName+"DuctWave")),
