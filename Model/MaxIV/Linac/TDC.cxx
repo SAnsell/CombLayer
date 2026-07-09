@@ -3,7 +3,7 @@
 
  * File: Linac/TDC.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ namespace tdcSystem
 {
 
 TDC::TDC(const std::string& KN) :
-  attachSystem::FixedOffset(KN,6),
+  attachSystem::FixedOffset(KN),
   attachSystem::CellMap(),
   noCheck(0),pointCheck(0),
   injectionHall(new InjectionHall("InjectionHall")),

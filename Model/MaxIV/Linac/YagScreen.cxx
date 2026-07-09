@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/Linac/YagScreen.cxx
  *
- * Copyright (c) 2004-2024 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace tdcSystem
 {
 
 YagScreen::YagScreen(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Payload","Connect","Outer"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

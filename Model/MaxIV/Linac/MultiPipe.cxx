@@ -68,7 +68,7 @@ namespace tdcSystem
 {
 
 MultiPipe::MultiPipe(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Flange","Pipes"),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -135,6 +135,9 @@ MultiPipe::createSurfaces()
   
   int BI(buildIndex+100);
   size_t index(1);
+  // createSurfaces() (this function) runs before createLinks() and
+  // pokes link points 1..pipes.size() by raw index, so pre-size here.
+  FixedComp::setNConnect(pipes.size()+1);
   for(const subPipeUnit& PU : pipes)
     {
       attachSystem::FixedRotateUnit pipeFC(PU.keyName,Origin,Y,Z);

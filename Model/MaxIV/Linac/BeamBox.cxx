@@ -72,7 +72,7 @@ namespace tdcSystem
 
 BeamBox::BeamBox(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
   attachSystem::ExternalCut()
