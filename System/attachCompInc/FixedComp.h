@@ -56,39 +56,12 @@ class FixedComp
 
   size_t getOrCreateLinkIndex(const std::string&);
 
- protected:
-
-  const std::string keyName;       ///< Key Name
-  ModelSupport::surfRegister SMap; ///< Surface register
-  const int buildIndex;            ///< Index of surface offset
-  int cellIndex;                   ///< Cell index
-
-  std::map<std::string,size_t> keyMap; ///< Keynames to linkPt index
-
-  Geometry::Vec3D X;            ///< X-coordinate
-  Geometry::Vec3D Y;            ///< Y-coordinate
-  Geometry::Vec3D Z;            ///< Z-coordinate
-  Geometry::Vec3D Origin;       ///< Origin
-
-  Geometry::Vec3D orientateAxis; ///< Axis for reorientation
-  long int primeAxis;            ///< X/Y/Z Axis for reorientation
-
-  std::vector<LinkUnit> LU;     ///< Linked unit items
-
-  void makeOrthogonal();
-
-  const HeadRule& getUSMainRule(const size_t) const;
-  const HeadRule& getUSCommonRule(const size_t) const;
-
-  void setUSLinkComplement(const size_t,const FixedComp&,const size_t);
-  void setUSLinkCopy(const size_t,const FixedComp&,const size_t);
-
-  //  virtual std::string getLinkString(const long int) const;
-
-  // Legacy numeric-index link-point API. Retained only so that
-  // name-keyed wrappers (and code not yet migrated) can still reach
-  // the underlying LU slot by position; new/migrated code must use
-  // the name-keyed overloads below instead.
+  // Legacy numeric-index link-point WRITE API. Private: derived
+  // classes must create/populate link points through the name-keyed
+  // overloads below (which funnel through getOrCreateLinkIndex), never
+  // by poking a raw LU slot directly. Only this class's own members
+  // (e.g. setExit(), and the name-keyed overloads themselves) call
+  // these now.
   void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setLineConnect(const size_t,const Geometry::Vec3D&,
 		      const Geometry::Vec3D&);
@@ -119,6 +92,41 @@ class FixedComp
   void setLinkCopy(const size_t,const FixedComp&,const std::string&);
   void setLinkCopy(const size_t,const FixedComp&,const long int);
 
+ protected:
+
+  const std::string keyName;       ///< Key Name
+  ModelSupport::surfRegister SMap; ///< Surface register
+  const int buildIndex;            ///< Index of surface offset
+  int cellIndex;                   ///< Cell index
+
+  std::map<std::string,size_t> keyMap; ///< Keynames to linkPt index
+
+  Geometry::Vec3D X;            ///< X-coordinate
+  Geometry::Vec3D Y;            ///< Y-coordinate
+  Geometry::Vec3D Z;            ///< Z-coordinate
+  Geometry::Vec3D Origin;       ///< Origin
+
+  Geometry::Vec3D orientateAxis; ///< Axis for reorientation
+  long int primeAxis;            ///< X/Y/Z Axis for reorientation
+
+  std::vector<LinkUnit> LU;     ///< Linked unit items
+
+  void makeOrthogonal();
+
+  const HeadRule& getUSMainRule(const size_t) const;
+  const HeadRule& getUSCommonRule(const size_t) const;
+
+  void setUSLinkComplement(const size_t,const FixedComp&,const size_t);
+  void setUSLinkCopy(const size_t,const FixedComp&,const size_t);
+
+  //  virtual std::string getLinkString(const long int) const;
+
+  // Structural link-point helpers that still take a raw index: unlike
+  // the write API above, these don't independently create/populate a
+  // link point with data -- nameSideIndex only aliases a name onto an
+  // existing (or about-to-be-written) slot, and setNConnect only
+  // resizes the LU array -- so they remain available to derived
+  // classes that need to pin a name to a specific position.
   void nameSideIndex(const size_t,const std::string&);
   void nameSideIndex(const std::map<std::string,size_t>&);
   void setNConnect(const size_t);
