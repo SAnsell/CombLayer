@@ -72,7 +72,7 @@ namespace xraySystem
 {
 
 ExperimentalHutch::ExperimentalHutch(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,18),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

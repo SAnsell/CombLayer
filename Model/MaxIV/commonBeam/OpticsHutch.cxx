@@ -71,7 +71,7 @@ namespace xraySystem
 {
 
 OpticsHutch::OpticsHutch(const std::string& Key) :
-  attachSystem::FixedRotate(Key,18),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
