@@ -3,7 +3,7 @@
  
  * File:   R3Common/R3FrontEndCave.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ namespace xraySystem
 {
 
 R3FrontEndCave::R3FrontEndCave(const std::string& Key) : 
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -83,8 +83,11 @@ R3FrontEndCave::R3FrontEndCave(const std::string& Key) :
 {
   // "innerRingAngleWall" (slot 8) is reserved here but never given a
   // connect point/surface in createLinks() -- consumed only via its
-  // (default-valued) LinkUnit by createMaze(). The legacy NL=12
-  // pre-sizing above is required to keep that slot materialized.
+  // (default-valued) LinkUnit by createMaze(). Pre-size up front (as
+  // the legacy (Key,12) constructor used to) so that slot 8 exists
+  // before nameSideIndex reserves it, rather than being reassigned to
+  // whatever new name createLinks() next auto-grows into that slot.
+  FixedComp::setNConnect(12);
   nameSideIndex(8,"innerRingAngleWall");
 }
 
