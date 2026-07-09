@@ -3,7 +3,7 @@
  
  * File:   source/SurfNormSource.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ namespace SDef
 {
 
 SurfNormSource::SurfNormSource(const std::string& K) :
-  attachSystem::FixedRotate(K,0),SourceBase(),
+  attachSystem::FixedRotate(K),SourceBase(),
   angleSpread(0.0),surfNum(0),
   width(0.0),height(0.0)
   /*!

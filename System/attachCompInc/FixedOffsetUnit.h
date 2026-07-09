@@ -38,6 +38,9 @@ class FixedOffsetUnit : public FixedOffset
 {  
  public:
 
+  /// Simple constructor [with objectregister, no link-count pre-sizing]
+  FixedOffsetUnit(const std::string& K) :
+    FixedOffset(K) {}
   /// Simple constructor
   FixedOffsetUnit(const std::string& K,const size_t I) :
     FixedOffset(K,I) {}

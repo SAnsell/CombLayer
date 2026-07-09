@@ -3,7 +3,7 @@
  
  * File:   source/LensSource.cxx
  *
- * Copyright (c) 2004-2019 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ namespace SDef
 {
 
 LensSource::LensSource(const std::string& Key) : 
-  attachSystem::FixedOffsetUnit(Key,0),SourceBase(),
+  attachSystem::FixedOffsetUnit(Key),SourceBase(),
   radialArea(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

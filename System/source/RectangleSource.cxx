@@ -3,7 +3,7 @@
  
  * File:   source/RectangleSource.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ namespace SDef
 {
 
 RectangleSource::RectangleSource(const std::string& keyName) : 
-  attachSystem::FixedRotate(keyName,0),
+  attachSystem::FixedRotate(keyName),
   SourceBase(),
   width(1.0),height(1.0),angleSpread(0.0)
   /*!

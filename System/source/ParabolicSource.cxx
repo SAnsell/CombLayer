@@ -3,7 +3,7 @@
  
  * File:   source/ParabolicSource.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ namespace SDef
 {
 
 ParabolicSource::ParabolicSource(const std::string& keyName) : 
-  attachSystem::FixedOffsetUnit(keyName,0),
+  attachSystem::FixedOffsetUnit(keyName),
   SourceBase(),decayPower(2.0),
   nWidth(5),nHeight(5),
   width(1.0),height(1.0),angleSpread(0.0)
