@@ -46,7 +46,7 @@ namespace essSystem
 {
 
 OnionCooling::OnionCooling(const std::string& Key) :
-  attachSystem::FixedRotate(Key,3),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap()

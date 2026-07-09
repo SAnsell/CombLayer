@@ -3,7 +3,7 @@
 
  * File:   essBuild/BilbaoWheel.cxx
  *
- * Copyright (c) 2004-2023 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1298,6 +1298,12 @@ BilbaoWheel::createLinks()
   */
 {
   ELog::RegMethod RegA("BilbaoWheel","createLinks");
+
+  // 16 raw-indexed slots (several conditional/non-contiguous) are still
+  // poked by number below -- pre-size up front as the legacy
+  // WheelBase(Key,16) constructor used to.
+  FixedComp::setNConnect(16);
+
   // set Links :: Inner links:
 
   FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);

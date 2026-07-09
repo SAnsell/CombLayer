@@ -42,7 +42,7 @@ namespace essSystem
 {
 
 F5Collimator::F5Collimator(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp()
   /*!
      Constructor
@@ -204,7 +204,12 @@ void F5Collimator::createLinks()
 */
 {
   ELog::RegMethod RegA("F5Collimator","createLinks");
-  
+
+  // 6 raw-indexed slots (X is the depth axis here, not Y) are still
+  // poked by number below -- pre-size up front as the legacy (Key,6)
+  // constructor used to.
+  FixedComp::setNConnect(6);
+
   FixedComp::setConnect(0,   Origin-X*(1.0+wall), -X);
   FixedComp::setLinkSurf(0, -SMap.realSurf(buildIndex+1));
 

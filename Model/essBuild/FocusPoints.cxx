@@ -3,7 +3,7 @@
  
  * File:   essBuild/FocusPoints.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ namespace essSystem
 {
 
 FocusPoints::FocusPoints(const std::string& Key) :
-  attachSystem::FixedOffset(Key,4)
+  attachSystem::FixedOffset(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -154,6 +154,10 @@ FocusPoints::createLinks()
   */
 {
   ELog::RegMethod RegA("FocusPoints","createLinks");
+
+  // 4 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy (Key,4) constructor used to.
+  FixedComp::setNConnect(4);
 
   FixedComp::setConnect(0,Origin-Y*backDist-X*leftWidth,-Y);
   FixedComp::setConnect(1,Origin-Y*backDist+X*rightWidth,-Y);

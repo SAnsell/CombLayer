@@ -3,7 +3,7 @@
  
  * File:   essBuild/TSMainBuilding.cxx
  *
- * Copyright (c) 2004-2018 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace essSystem
 
 TSMainBuilding::TSMainBuilding(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,7),
+  attachSystem::FixedOffset(Key),
   attachSystem::CellMap()
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -198,6 +198,10 @@ TSMainBuilding::createLinks()
   */
 {
   ELog::RegMethod RegA("TSMainBuilding","createLinks");
+
+  // 7 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy (Key,7) constructor used to.
+  FixedComp::setNConnect(7);
 
   FixedComp::setConnect(0,Origin-Y*(length/2),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
