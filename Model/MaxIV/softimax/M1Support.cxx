@@ -3,7 +3,7 @@
 
  * File:   softimax/M1Support.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 M1Support::M1Support(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Top"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

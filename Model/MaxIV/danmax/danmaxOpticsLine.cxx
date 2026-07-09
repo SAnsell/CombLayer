@@ -118,7 +118,7 @@ namespace xraySystem
 danmaxOpticsLine::danmaxOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(newName,2),
+  attachSystem::FixedRotate(newName),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -1243,8 +1243,8 @@ danmaxOpticsLine::createLinks()
 {
   ELog::RegMethod RControl("danmaxOpticsLine","createLinks");
 
-  setLinkCopy(0,*pipeInit,1);
-  setLinkCopy(1,*lastComp,2);
+  setLinkCopy("front",*pipeInit,1);
+  setLinkCopy("back",*lastComp,2);
   return;
 }
 

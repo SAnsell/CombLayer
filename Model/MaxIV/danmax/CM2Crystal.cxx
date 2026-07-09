@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 CM2Crystal::CM2Crystal(const std::string& Key) :
-  attachSystem::FixedRotate(Key,2),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::FrontBackCut(),
   attachSystem::SurfMap(),

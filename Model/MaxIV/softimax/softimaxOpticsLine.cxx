@@ -3,7 +3,7 @@
 
  * File: softimax/softimaxOpticsLine.cxx
  *
- * Copyright (c) 2004-2024 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ namespace xraySystem
 
 softimaxOpticsLine::softimaxOpticsLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
-  attachSystem::FixedRotate(newName,2),
+  attachSystem::FixedRotate(newName),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -893,8 +893,8 @@ softimaxOpticsLine::createLinks()
 {
   ELog::RegMethod RControl("softimaxOpticsLine","createLinks");
 
-  setLinkCopy(0,*pipeInit,1);
-  setLinkCopy(1,*lastComp,2);
+  setLinkCopy("front",*pipeInit,1);
+  setLinkCopy("back",*lastComp,2);
   return;
 }
 

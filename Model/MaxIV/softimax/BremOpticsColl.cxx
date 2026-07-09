@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/softimax/BremOpticsColl.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ namespace xraySystem
 {
 
 BremOpticsColl::BremOpticsColl(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -384,17 +384,17 @@ BremOpticsColl::createLinks()
 
   FrontBackCut::createLinks(*this,Origin,Y);
 
-  FixedComp::setConnect("2",Origin-X*(extWidth/2.0),-X);
-  FixedComp::setLinkSurf("2",-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("left",Origin-X*(extWidth/2.0),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect("3",Origin+X*(extWidth/2.0),X);
-  FixedComp::setLinkSurf("3",SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("right",Origin+X*(extWidth/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect("4",Origin-Z*(extHeight/2.0),-Z);
-  FixedComp::setLinkSurf("4",-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("base",Origin-Z*(extHeight/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
 
-  FixedComp::setConnect("5",Origin+Z*(extHeight/2.0),Z);
-  FixedComp::setLinkSurf("5",SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("top",Origin+Z*(extHeight/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

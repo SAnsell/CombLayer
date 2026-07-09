@@ -3,7 +3,7 @@
 
  * File:   softimax/BiPortTube.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ namespace xraySystem
 {
 
 BiPortTube::BiPortTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Left","Right"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

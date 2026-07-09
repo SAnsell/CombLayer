@@ -3,7 +3,7 @@
 
  * File:   softimax/M1ElectronShield.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ namespace xraySystem
 {
 
 M1ElectronShield::M1ElectronShield(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Main","Extra"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
