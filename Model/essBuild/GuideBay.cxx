@@ -88,12 +88,7 @@ GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-  // createSurfaces() pokes all 6 link points by raw index, and other
-  // objects can read them before this object's own createAll() has run
-  // -- pre-size up front as the legacy (Key,6) constructor used to.
-  FixedComp::setNConnect(6);
-}
+{}
 
 GuideBay::GuideBay(const GuideBay& A) : 
   attachSystem::FixedRotate(A),
@@ -239,18 +234,18 @@ GuideBay::createSurfaces()
 
   const double midRad=(RInner+ROuter)/2.0;
   // Inner point 
-  FixedComp::setConnect(0,Origin+Y*RInner,-Y);
-  FixedComp::setLinkSurf(0,getRule("#innerCyl"));
-  FixedComp::setConnect(1,Origin+Y*ROuter,Y);
-  FixedComp::setLinkSurf(1,getRule("outerCyl"));
-  FixedComp::setConnect(2,LPoint+LEdge*midRad,-LVec);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
-  FixedComp::setConnect(3,RPoint+REdge*midRad,RVec);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
-  FixedComp::setConnect(4,Origin+Y*midRad-Z*depth,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
-  FixedComp::setConnect(5,Origin+Y*midRad+Z*height,-Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("innerCyl",Origin+Y*RInner,-Y);
+  FixedComp::setLinkSurf("innerCyl",getRule("#innerCyl"));
+  FixedComp::setConnect("outerCyl",Origin+Y*ROuter,Y);
+  FixedComp::setLinkSurf("outerCyl",getRule("outerCyl"));
+  FixedComp::setConnect("left",LPoint+LEdge*midRad,-LVec);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+3));
+  FixedComp::setConnect("right",RPoint+REdge*midRad,RVec);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("base",Origin+Y*midRad-Z*depth,-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("top",Origin+Y*midRad+Z*height,-Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
   
   return;
 }
