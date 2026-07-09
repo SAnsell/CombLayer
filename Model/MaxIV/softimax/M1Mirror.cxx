@@ -68,7 +68,7 @@ namespace xraySystem
 {
 
 M1Mirror::M1Mirror(const std::string& Key) :
-  attachSystem::FixedRotate(Key,18),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap()

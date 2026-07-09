@@ -3,7 +3,7 @@
 
  * File:   softimax/M1Connectors.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ namespace xraySystem
 {
 
 M1Connectors::M1Connectors(const std::string& Key) :
-  attachSystem::FixedRotate(Key,18),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

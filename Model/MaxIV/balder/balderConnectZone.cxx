@@ -3,7 +3,7 @@
  
  * File: balder/balderConnectZone.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ namespace xraySystem
   
 balderConnectZone::balderConnectZone(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedOffset(newName),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
@@ -290,8 +290,8 @@ balderConnectZone::createLinks()
     Create a front/back link
   */
 {
-  setLinkCopy(0,*bellowA,1);
-  setLinkCopy(1,*bellowC,2);
+  setLinkCopy("front",*bellowA,1);
+  setLinkCopy("back",*bellowC,2);
   return;
 }
   

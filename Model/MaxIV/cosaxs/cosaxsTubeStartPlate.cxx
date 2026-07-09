@@ -3,7 +3,7 @@
 
  * File:   Model/MaxIV/cosaxs/cosaxsTubeStartPlate.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ namespace xraySystem
 {
 
 cosaxsTubeStartPlate::cosaxsTubeStartPlate(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),

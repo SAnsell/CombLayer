@@ -76,7 +76,7 @@ namespace xraySystem
 {
 
 BiPortTube::BiPortTube(const std::string& Key) :
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedGroup("Left","Right"),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),

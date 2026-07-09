@@ -3,7 +3,7 @@
 
  * File: balder/balderExptLine.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ namespace xraySystem
 balderExptLine::balderExptLine(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(newName,2),
+  attachSystem::FixedOffset(newName),
   attachSystem::CellMap()
   /*!
     Constructor

@@ -66,7 +66,7 @@ namespace xraySystem
 {
 
 M1BackPlate::M1BackPlate(const std::string& Key) :
-  attachSystem::FixedRotate(Key,8),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::CellMap(),
