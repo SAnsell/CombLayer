@@ -3,7 +3,7 @@
 
  * File: tomowise/tomowiseFrontEnd.cxx
  *
- * Copyright (c) 2004-2025 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,8 +99,8 @@ danmaxFrontEnd::createLinks()
     Create a front/back link
    */
 {
-  setLinkCopy(0,*undulator,1);
-  setLinkCopy(1,*lastComp,2);
+  setLinkCopy("front",*undulator,1);
+  setLinkCopy("back",*lastComp,2);
   return;
 }
 
