@@ -3,7 +3,7 @@
  
   * File:   essBuild/BilbaoWheelInnerStructure.cxx
   *
-  * Copyright (c) 2004-2024 by Stuart Ansell/Konstain Batkov
+  * Copyright (c) 2004-2026 by Stuart Ansell/Konstain Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ namespace essSystem
 
 BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6)
+  attachSystem::FixedOffset(Key)
   /*!
     Constructor
     \param Key :: Name of construction key

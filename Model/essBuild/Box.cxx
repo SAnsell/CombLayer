@@ -3,7 +3,7 @@
 
  * File:   essBuild/Box.cxx
  *
- * Copyright (c) 2004-2022 by Konstantin Batkov
+ * Copyright (c) 2004-2026 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ namespace essSystem
 {
 
 Box::Box(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,9),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut(),
   attachSystem::LayerComp(0),
@@ -246,6 +246,11 @@ Box::createLinks()
   */
 {
   ELog::RegMethod RegA("Box","createLinks");
+
+  // 8 of 9 raw-indexed slots (0-5,7,8 -- index 6 unused) are still
+  // poked by number below -- pre-size up front as the legacy (Key,9)
+  // constructor used to.
+  FixedComp::setNConnect(9);
 
   if (nLayers)
     {

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BulkModule.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace essSystem
 {
 
 BulkModule::BulkModule(const std::string& Key)  :
-  attachSystem::FixedRotate(Key,9),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -274,6 +274,10 @@ BulkModule::createLinks()
   */
 {
   ELog::RegMethod RegA("BulkModule","createLinks");
+
+  // 8 of 9 raw-indexed slots are still poked by number below -- pre-size
+  // up front as the legacy (Key,9) constructor used to.
+  FixedComp::setNConnect(9);
 
   if (nLayer>1)
     {

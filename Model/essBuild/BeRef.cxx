@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeRef.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace essSystem
 
 BeRef::BeRef(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   engActive(0),
   InnerCompTop(new BeRefInnerStructure(Key+"TopInnerStructure")),
@@ -353,7 +353,13 @@ BeRef::createLinks()
   */
 {
   ELog::RegMethod RegA("BeRef","createLinks");
-  
+
+  // 12 raw-indexed slots (several referenced externally by raw signed
+  // index, e.g. InnerCompTop/InnerCompLow's setCutSurf calls below) are
+  // still poked by number -- pre-size up front as the legacy (Key,12)
+  // constructor used to.
+  FixedComp::setNConnect(12);
+
   FixedComp::setConnect(0,Origin-Y*radius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(buildIndex+17));
   FixedComp::addBridgeSurf(0,-SMap.realSurf(buildIndex+1));

@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideBay.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ namespace essSystem
 {
 
 GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
-  attachSystem::FixedRotate(Key+std::to_string(BN),6),
+  attachSystem::FixedRotate(Key+std::to_string(BN)),
   attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::CellMap(),
   baseKey(Key),bayNumber(BN),
@@ -88,7 +88,12 @@ GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+  // createSurfaces() pokes all 6 link points by raw index, and other
+  // objects can read them before this object's own createAll() has run
+  // -- pre-size up front as the legacy (Key,6) constructor used to.
+  FixedComp::setNConnect(6);
+}
 
 GuideBay::GuideBay(const GuideBay& A) : 
   attachSystem::FixedRotate(A),

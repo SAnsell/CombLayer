@@ -3,7 +3,7 @@
  
  * File:   essBuild/TwisterModule.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2026 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace essSystem
 {
 
 TwisterModule::TwisterModule(const std::string& Key) :
-  attachSystem::FixedOffset(Key,15),
+  attachSystem::FixedOffset(Key),
   attachSystem::ContainedGroup("PlugFrame","Shaft","ShaftBearing"),
   attachSystem::CellMap()
   /*!
@@ -310,6 +310,10 @@ TwisterModule::createLinks()
   */
 {
   ELog::RegMethod RegA("TwisterModule","createLinks");
+
+  // 15 raw-indexed slots are still poked by number below -- pre-size up
+  // front as the legacy (Key,15) constructor used to.
+  FixedComp::setNConnect(15);
 
   // SHAFT
   FixedComp::setConnect(0,Origin+Y*shaftRadius,-Y);
