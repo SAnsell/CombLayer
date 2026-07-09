@@ -3,7 +3,7 @@
  
  * File:   photon/EQDetector.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ namespace photonSystem
 {
       
 EQDetector::EQDetector(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -277,23 +277,23 @@ EQDetector::createLinks()
 {  
   ELog::RegMethod RegA("EQDetector","createLinks");
   
-  FixedComp::setConnect(0,Origin-Y*boxLead,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+201));
+  FixedComp::setConnect("front",Origin-Y*boxLead,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+201));
 
-  FixedComp::setConnect(1,Origin-Y*(boxLength+boxPlastic+boxLead),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+302));
+  FixedComp::setConnect("back",Origin-Y*(boxLength+boxPlastic+boxLead),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+302));
 
-  FixedComp::setConnect(2,Origin-X*(boxPlastic+boxLead+boxWidth/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+303));
+  FixedComp::setConnect("left",Origin-X*(boxPlastic+boxLead+boxWidth/2.0),-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+303));
 
-  FixedComp::setConnect(3,Origin+X*(boxPlastic+boxLead+boxWidth/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+304));
+  FixedComp::setConnect("right",Origin+X*(boxPlastic+boxLead+boxWidth/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+304));
 
-  FixedComp::setConnect(4,Origin-Z*(boxPlastic+boxLead+boxHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+305));
+  FixedComp::setConnect("base",Origin-Z*(boxPlastic+boxLead+boxHeight/2.0),-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+305));
 
-  FixedComp::setConnect(5,Origin-Z*(boxPlastic+boxLead+boxHeight/2.0),-Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+306));
+  FixedComp::setConnect("top",Origin-Z*(boxPlastic+boxLead+boxHeight/2.0),-Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+306));
 
   return;
 }

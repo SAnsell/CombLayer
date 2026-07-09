@@ -3,7 +3,7 @@
  
  * File:   photon/He3Tubes.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace photonSystem
 {
       
 He3Tubes::He3Tubes(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -234,7 +234,12 @@ He3Tubes::createLinks()
   */
 {  
   ELog::RegMethod RegA("He3Tubes","createLinks");
-  
+
+  // Only indices 4/5 are ever written, but keep the original slot
+  // numbering intact -- pre-size up front as the legacy (Key,6)
+  // constructor used to.
+  FixedComp::setNConnect(6);
+
   FixedComp::setConnect(4,Origin-Z*(length/2.0),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
 

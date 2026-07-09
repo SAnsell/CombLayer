@@ -3,7 +3,7 @@
  
  * File:   photon/ModContainer.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ namespace photonSystem
       
 ModContainer::ModContainer(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedRotate(Key,12),
+  attachSystem::FixedRotate(Key),
   attachSystem::CellMap(),
   FrontFlange(new constructSystem::RingFlange(keyName+"FFlange")),
   BackFlange(new constructSystem::RingFlange(keyName+"BFlange"))
@@ -229,7 +229,12 @@ ModContainer::createLinks()
   */
 {  
   ELog::RegMethod RegA("ModContainer","createLinks");
-  
+
+  // 12 raw-indexed slots (0-5 sequential, plus a non-contiguous 8) are
+  // still poked by number below -- pre-size up front as the legacy
+  // (Key,12) constructor used to.
+  FixedComp::setNConnect(12);
+
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
 

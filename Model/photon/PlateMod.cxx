@@ -3,7 +3,7 @@
  
  * File:   photon/PlateMod.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace photonSystem
 {
       
 PlateMod::PlateMod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key),
   attachSystem::CellMap(),attachSystem::SurfMap()
   /*!
     Constructor
@@ -284,23 +284,23 @@ PlateMod::createLinks()
   const int NL(buildIndex+static_cast<int>(Layer.size()-1)*100);
 
   
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*tThick,Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(NL+101));
+  FixedComp::setConnect("back",Origin+Y*tThick,Y);
+  FixedComp::setLinkSurf("back",-SMap.realSurf(NL+101));
 
-  FixedComp::setConnect(2,Origin+Y*(tThick/2.0)-X*(outerWidth/2.0),-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+3));
-  
-  FixedComp::setConnect(3,Origin+Y*(tThick/2.0)+X*(outerWidth/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+  FixedComp::setConnect("left",Origin+Y*(tThick/2.0)-X*(outerWidth/2.0),-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+3));
 
-  FixedComp::setConnect(4,Origin+Y*(tThick/2.0)-Z*(outerHeight/2.0),-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  FixedComp::setConnect("right",Origin+Y*(tThick/2.0)+X*(outerWidth/2.0),X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+4));
 
-  FixedComp::setConnect(5,Origin+Y*(tThick/2.0)+Z*(outerHeight/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
+  FixedComp::setConnect("base",Origin+Y*(tThick/2.0)-Z*(outerHeight/2.0),-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+5));
+
+  FixedComp::setConnect("top",Origin+Y*(tThick/2.0)+Z*(outerHeight/2.0),Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+6));
 
   return;
 }

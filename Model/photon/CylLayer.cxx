@@ -3,7 +3,7 @@
  
  * File:   photon/CylLayer.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ LInfo::resize(const size_t N)
 }
       
 CylLayer::CylLayer(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::ExternalCut()
   /*!
@@ -285,23 +285,23 @@ CylLayer::createLinks()
   const int NL(buildIndex+static_cast<int>(nLayers-1)*100);
 
   
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin,-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*tThick,Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(NL+101));
+  FixedComp::setConnect("back",Origin+Y*tThick,Y);
+  FixedComp::setLinkSurf("back",-SMap.realSurf(NL+101));
 
-  FixedComp::setConnect(2,Origin+Y*(tThick/2.0)-X*outerRadius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+8));
-  
-  FixedComp::setConnect(3,Origin+Y*(tThick/2.0)+X*outerRadius,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+8));
-  
-  FixedComp::setConnect(4,Origin+Y*(tThick/2.0)-Z*outerRadius,-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+8));
+  FixedComp::setConnect("left",Origin+Y*(tThick/2.0)-X*outerRadius,-X);
+  FixedComp::setLinkSurf("left",SMap.realSurf(buildIndex+8));
 
-  FixedComp::setConnect(5,Origin+Y*(tThick/2.0)+Z*outerRadius,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+8));
+  FixedComp::setConnect("right",Origin+Y*(tThick/2.0)+X*outerRadius,X);
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+8));
+
+  FixedComp::setConnect("base",Origin+Y*(tThick/2.0)-Z*outerRadius,-Z);
+  FixedComp::setLinkSurf("base",SMap.realSurf(buildIndex+8));
+
+  FixedComp::setConnect("top",Origin+Y*(tThick/2.0)+Z*outerRadius,Z);
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+8));
 
   return;
 }
