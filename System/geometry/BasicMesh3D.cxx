@@ -3,7 +3,7 @@
  
  * File:   geometry/BasicMesh3D.cxx
  *
- * Copyright (c) 2004-2021 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -469,17 +469,17 @@ BasicMesh3D::writeVTK(std::ostream& OX) const
   OX<<"DIMENSIONS "<<NX<<" "<<NY<<" "<<NZ<<std::endl;
   OX<<"X_COORDINATES "<<NX<<" float"<<std::endl;
   for(size_t i=0;i<static_cast<size_t>(NX);i++)
-    OX<<fmt::format("{:11.6g}  ",getXCoordinate(i));
+    OX<<std::format("{:11.6g}  ",getXCoordinate(i));
   OX<<std::endl;
   
   OX<<"Y_COORDINATES "<<NY<<" float"<<std::endl;
   for(size_t i=0;i<static_cast<size_t>(NY);i++)
-    OX<<fmt::format("{:11.6g}  ",getYCoordinate(i));
+    OX<<std::format("{:11.6g}  ",getYCoordinate(i));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<NZ<<" float"<<std::endl;
   for(size_t i=0;i<static_cast<size_t>(NZ);i++)
-    OX<<fmt::format("{:11.6g}  ",getZCoordinate(i));
+    OX<<std::format("{:11.6g}  ",getZCoordinate(i));
   OX<<std::endl;
   
 

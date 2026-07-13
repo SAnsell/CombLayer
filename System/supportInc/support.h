@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,14 @@ std::string stripMultSpc(const std::string&);
 /// find quoted blocks (section for strings)
 int quoteBlock(std::string&,std::string&);
 
+void
+replaceStrings(std::string&,const std::string&,
+	       const std::string&);
+
+std::string getDelimUnit(const std::string&,const std::string&,
+			  std::string&);
+
+
 std::string getDelimUnit(const std::string&,const std::string&,
 			  std::string&);
 bool splitUnit(const std::string&,std::string&,std::string&,const std::string&);
@@ -103,6 +111,8 @@ std::string toUpperString(const std::string&);
 std::string toLowerString(const std::string&);
 
 bool hasStringEnd(const std::string&,const std::string&);
+std::string stripEndString(const std::string&,const std::string&);
+  
 int isEmpty(const std::string&);
 /// Get a line 
 std::string getAllLine(std::istream&,const int= 256);
@@ -122,7 +132,11 @@ template<typename T>
 int setValues(const std::string&,const std::vector<int>&,
 	      std::vector<T>&);
 
+std::string getBracketPart(std::string&);
+  
 int sectionBracket(std::string&,std::string&);
+int sectionSqrBracket(std::string&,std::string&);
+  
 template<typename T> int sectPartNum(std::string&,T&);
 template<typename T> int section(std::string&,T&);
 /// Convert and cut a string for MCNPX
@@ -153,6 +167,8 @@ std::string
 splitBack(const std::string&,const char delim);
 std::string
 cutFront(std::string&,const char delim);
+std::string
+cutBack(std::string&,const char delim);
 std::pair<std::string,std::string>
 splitPair(const std::string&,const char delim);
 std::vector<std::string>

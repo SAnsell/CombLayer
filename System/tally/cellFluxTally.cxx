@@ -3,7 +3,7 @@
  
  * File:   tally/cellFluxTally.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <set>
 #include <map>
 #include <iterator>
-#include <fmt/core.h>
+#include <format>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -305,15 +305,15 @@ cellFluxTally::writeHTape(const std::string& Name,
   T14<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
   T15<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
 
-  T08<<"108,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
-  T14<<"114,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
-  T15<<"115,,,,,"<<fmt::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
+  T08<<"108,,,,,"<<std::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
+  T14<<"114,,,,,"<<std::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
+  T15<<"115,,,,,"<<std::format("{:4d}",cells.size())<<",,,,1/"<<std::endl;
 
   for(const int CN : cells)
     {
-      T08<<fmt::format("{:6d}",CN);
-      T14<<fmt::format("{:6d}",CN);
-      T15<<fmt::format("{:6d}",CN);
+      T08<<std::format("{:6d}",CN);
+      T14<<std::format("{:6d}",CN);
+      T15<<std::format("{:6d}",CN);
     }
   T08<<"/"<<std::endl;
   T14<<"/"<<std::endl;

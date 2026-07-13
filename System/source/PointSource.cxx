@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <fmt/core.h>
+#include <format>
 
 
 #include "FileReport.h"
@@ -220,11 +220,11 @@ PointSource::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("PointSource","writePHITS");
   
   OX<<"  s-type =  9        # spherical source \n";
-  OX<<"  x0  =   "<<fmt::format("{:<11.6g}",Origin[0])
+  OX<<"  x0  =   "<<std::format("{:<11.6g}",Origin[0])
     <<"     #  center position of x-axis [cm]\n";
-  OX<<"  x0  =   "<<fmt::format("{:<11.6g}",Origin[1])
+  OX<<"  x0  =   "<<std::format("{:<11.6g}",Origin[1])
     <<"     #  center position of y-axis [cm]\n";
-  OX<<"  x0  =   "<<fmt::format("{:<11.6g}",Origin[2])
+  OX<<"  x0  =   "<<std::format("{:<11.6g}",Origin[2])
     <<"     #  mininium of z-axis [cm]\n";
   OX<<"  r0  =   0.0 \n";
   OX<<"  r1  =   0.0 \n";

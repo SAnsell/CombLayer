@@ -3,7 +3,7 @@
  
  * File:   visit/Visit.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <vector>
 #include <memory>
 #include <array>
-#include <fmt/core.h>
+#include <format>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -237,7 +237,7 @@ Visit::populateLine(const Simulation& System,
 	    if (lu.objPtr)
 	      {
 		const size_t mid=Visit::procPoint(T,stepXYZ[IMax]);
-		const int mValue=getResult(lu.objPtr);
+		const double mValue=getResult(lu.objPtr);
 		for(size_t cnt=0;cnt<mid;cnt++)
 		  getMeshUnit(IMax,index++,i,j)=mValue;
 	      }
@@ -413,19 +413,19 @@ Visit::writeVTK(const std::string& FName) const
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[0];i++)
-    OX<<fmt::format("{:<11.6g}   ",
+    OX<<std::format("{:<11.6g}   ",
 		    (Origin[0]+stepXYZ[0]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[1];i++)
-    OX<<fmt::format("{:<11.6g}   ",
+    OX<<std::format("{:<11.6g}   ",
 		    (Origin[1]+stepXYZ[1]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[2];i++)
-    OX<<fmt::format("{:<11.6g}   ",
+    OX<<std::format("{:<11.6g}   ",
 		    (Origin[2]+stepXYZ[2]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
@@ -437,7 +437,7 @@ Visit::writeVTK(const std::string& FName) const
     for(size_t j=0;j<nPts[1];j++)
       {
 	for(size_t i=0;i<nPts[0];i++)
-	  OX<<fmt::format("{:<11.6g}   ",
+	  OX<<std::format("{:<11.6g}   ",
 			  static_cast<double>(mesh.get()[i][j][k]));
 	OX<<std::endl;
       }
@@ -467,19 +467,19 @@ Visit::writeIntegerVTK(const std::string& FName) const
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[0];i++)
-    OX<<fmt::format("{:<11.6g}   ",
+    OX<<std::format("{:<11.6g}   ",
 		    (Origin[0]+stepXYZ[0]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[1];i++)
-    OX<<fmt::format("{:<11.6g}   ",
+    OX<<std::format("{:<11.6g}   ",
 		    (Origin[1]+stepXYZ[1]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
   for(size_t i=0;i<nPts[2];i++)
-    OX<<fmt::format("{:<11.6g}   ",
+    OX<<std::format("{:<11.6g}   ",
 		    (Origin[2]+stepXYZ[2]*(static_cast<double>(i)+0.5)));
   OX<<std::endl;
 
@@ -492,7 +492,7 @@ Visit::writeIntegerVTK(const std::string& FName) const
     for(size_t j=0;j<nPts[1];j++)
       {
 	for(size_t i=0;i<nPts[0];i++)
-	  OX<<fmt::format("{:<12d}  ",
+	  OX<<std::format("{:<12d}  ",
 			  static_cast<int>(std::round(mesh.get()[i][j][k])));
 	OX<<std::endl;
       }

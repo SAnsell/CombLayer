@@ -26,7 +26,7 @@
 #include <sstream>
 #include <map>
 #include <vector>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -240,6 +240,7 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
     {
       const std::string Tag=colour+eType(T)+locString()+
 	colourReset;
+
       const std::string preTag=(highlightFlag) ? colour : "";
       do
         {
@@ -248,19 +249,19 @@ OutputLog<RepClass>::report(const std::string& M,const int T)
 	  const size_t TL=cxItem.length()+getIndentLength();
 	  if (!length && (pos<80 || (pos==std::string::npos && TL<80)))
 	    {
-	      Item+=fmt::format("{:<80}",
+	      Item+=std::format("{:<80}",
 		(indent()+cxItem.substr(0,pos)))+Tag;
 	    }
 	  else if (length<2 && (pos<120 || (pos==std::string::npos && TL<120)))
 	    {
-	      Item+=fmt::format("{:<120}",
+	      Item+=std::format("{:<120}",
 		(indent()+cxItem.substr(0,pos)))+Tag;
 	      length=1;
 	    }
 	  // This is always the default test:
 	  else if (pos<160 || (pos==std::string::npos && TL<160))    
 	    {
-	      Item+=fmt::format("{:<160}",
+	      Item+=std::format("{:<160}",
 		(indent()+cxItem.substr(0,pos)))+Tag;
 	      length=2;
 	    }
@@ -593,6 +594,7 @@ endTrace(OutputLog<RepClass>& OLX)
   OLX.trace();
   return OLX;
 }
+
 template<typename RepClass>
 OutputLog<RepClass>& 
 endBASIC(OutputLog<RepClass>& OLX)

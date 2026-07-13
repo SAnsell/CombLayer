@@ -1,5 +1,5 @@
 set (pipeBuildSources
-    DefUnitsPipe.cxx makePipe.cxx pipeTube.cxx 
+    CylTarget.cxx DefUnitsPipe.cxx makePipe.cxx pipeTube.cxx 
     pipeVariables.cxx 
 )
 
@@ -21,10 +21,12 @@ file(RELATIVE_PATH tarINC
     "${CMAKE_CURRENT_SOURCE_DIR}/../pipeBuildInc")
 
 set (SRC_LIST ${SRC_LIST}
+  ${tarDIR}/CylTarget.cxx
   ${tarDIR}/DefUnitsPipe.cxx
   ${tarDIR}/makePipe.cxx
   ${tarDIR}/pipeTube.cxx
   ${tarDIR}/pipeVariables.cxx
+  ${tarINC}/CylTarget.h
   ${tarINC}/DefUnitsPipe.h
   ${tarINC}/makePipe.h
   ${tarINC}/pipeTube.h

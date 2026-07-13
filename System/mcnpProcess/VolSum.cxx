@@ -3,7 +3,7 @@
  
  * File:   mcnpProcess/VolSum.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <fmt/core.h>
+#include <format>
 
 #include "FileReport.h"
 #include "NameStack.h"
@@ -436,7 +436,7 @@ VolSum::write(const std::string& OFile) const
   const double nT((nTracks) ? static_cast<double>(nTracks) : 1.0);
   for(mc=tallyVols.begin();mc!=tallyVols.end();mc++)
     {
-      OX<<"tally"<<fmt::format("{:3d}  {:11.5e} {:c}  mat{:3d} {}",
+      OX<<"tally"<<std::format("{:3d}  {:11.5e} {:c}  mat{:3d} {}",
 			       mc->first,
 			       (fullVol*mc->second.calcVol(1.0/nT)),
 			       sf,mc->second.getMat(),

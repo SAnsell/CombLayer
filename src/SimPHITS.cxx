@@ -35,7 +35,7 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -309,7 +309,7 @@ SimPHITS::writeCells(std::ostream& OX) const
       const double T=mp->second->getTemp();
       if (std::abs(T-300.0)>1.0 && std::abs<double>(T)>1e-6)
 	{
-	  OX<<fmt::format("  {:<20d} {}\n",
+	  OX<<std::format("  {:<20d} {}\n",
 			  mp->second->getName(),T*8.6173422e-5);
 	}
     }

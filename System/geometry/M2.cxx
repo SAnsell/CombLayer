@@ -3,7 +3,7 @@
  
  * File:   geometry/M2.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include <complex>
 #include <vector>
 #include <map>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,7 +42,7 @@
 
 namespace Geometry
 {
-  
+
 template<typename T>
 std::ostream& 
 operator<<(std::ostream& OX,const M2<T>& A)
@@ -639,18 +639,18 @@ M2<T>::write(std::ostream& OX) const
     Display M2
    */
 {
-  OX<<fmt::format
+  OX<<std::format
     ("[ {:8.5f}  {:8.5f} ] ",AData[0][0],AData[0][1])<<std::endl;
-  OX<<fmt::format
+  OX<<std::format
     ("[ {:8.5f}  {:8.5f} ] ",AData[1][0],AData[1][1])<<"\n"
   <<std::endl;
   /*
-  OX<<fmt::format
+  OX<<std::format
     ("[ {:8.5f}  {:8.5f} ] [{:8.5f}  {:8.5f} ] [{:8.5f}  {:8.5f} ] ",
      U[0][0],U[0][1],Sigma[0],0.0,V[0][0],V[0][1])
     <<std::endl;
 
-  OX<<fmt::format
+  OX<<std::format
     ("[ {:8.5f}  {:8.5f} ] [{:8.5f}  {:8.5f} ] [{:8.5f}  {:8.5f} ] ",
      U[1][0],U[1][1],0.0,Sigma[1],V[1][0],V[1][1])
     <<std::endl;

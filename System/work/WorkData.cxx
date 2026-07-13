@@ -3,7 +3,7 @@
  
  * File:   work/WorkData.cxx
  *
- * Copyright (c) 2004-2025 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -1168,7 +1168,7 @@ WorkData::stream(std::ostream& OX) const
 {
   OX<<"# Pts "<<XCoord.size()<<std::endl;
   for(size_t i=0;i<Yvec.size();i++)
-    OX<<fmt::format("{:<12.6g}    {:<12.6g}    {:<12.6g}",
+    OX<<std::format("{:<12.6g}    {:<12.6g}    {:<12.6g}",
 		    XCoord[i+1],Yvec[i].getVal(),Yvec[i].getErr())<<std::endl;
     
 

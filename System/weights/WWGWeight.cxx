@@ -3,7 +3,7 @@
  
  * File:   weight/WWGWeight.cxx
  *
- * Copyright (c) 2004-2024 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <memory>
 #include <array>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -766,10 +766,10 @@ WWGWeight::writeVTK(std::ostream& OX,
 	for(size_t I=0;I<WX;I++)
 	  {
 	    if (!logFlag)
-	      OX<<fmt::format(":<11.6g    ",
+	      OX<<std::format(":<11.6g    ",
 			      std::exp(WGrid.get()[EIndex][I][J][K]));	
 	    else
-	      OX<<fmt::format(":<11.6g    ",
+	      OX<<std::format(":<11.6g    ",
 			      -WGrid.get()[EIndex][I][J][K]);	
 
 	    if (WGrid.get()[EIndex][I][J][K]<wMin)
@@ -950,12 +950,12 @@ WWGWeight::writeWWINP(std::ostream& OX) const
   const size_t nParticle(particles.size());
   
   // IF[1] : timeIndependent : No. particleType : 10(rectangular) : date
-  OX<<fmt::format("{:10d}{:10d}{:10d}{:10d}{:28}\n",1,1,nParticle,10,date);
+  OX<<std::format("{:10d}{:10d}{:10d}{:10d}{:28}\n",1,1,nParticle,10,date);
 
   // particles:
   for(size_t i=0;i<nParticle;i++)
     {
-      OX<<fmt::format("{:10d}",EBin.size());
+      OX<<std::format("{:10d}",EBin.size());
       if ( ((i+1) % 7) == 0) OX<<std::endl;
     }
   if (nParticle % 7) OX<<std::endl;

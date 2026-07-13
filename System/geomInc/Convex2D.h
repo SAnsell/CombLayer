@@ -53,7 +53,7 @@ class Convex2D
   void createVertex();
 
  public:
-  
+
   Convex2D();
   Convex2D(const std::vector<Vec3D>&);
   Convex2D(const Convex2D&);

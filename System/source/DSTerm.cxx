@@ -3,7 +3,7 @@
  
  * File:   source/DSTerm.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <fmt/core.h>
+#include <format>
 
 #include "FileReport.h"
 #include "OutputLog.h"
@@ -203,7 +203,7 @@ DSTerm<double>::write(const size_t Index,std::ostream& OX) const
   if (!Values.empty())
     {
       for(const double& V : Values)
-	cx<<fmt::format("{:11.5g} ",V);
+	cx<<std::format("{:11.5g} ",V);
     }
   StrFunc::writeMCNPX(cx.str(),OX);
   return;

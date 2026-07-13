@@ -3,7 +3,7 @@
  
  * File:   input/inputParam.cxx
  *
- * Copyright (c) 2004-2023 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <fmt/core.h>
+#include <format>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -1234,7 +1234,7 @@ inputParam::writeDescription(std::ostream& OX) const
   for(mc=Keys.begin();mc!=Keys.end();mc++)
     {
       const IItem* IPtr=mc->second;
-      OX<<fmt::format(" -{:<20}{:<30}{}",
+      OX<<std::format(" -{:<20}{:<30}{}",
 		      IPtr->getKey(),IPtr->getLong(),
 		      IPtr->getDesc() )
 	<<std::endl;
@@ -1253,7 +1253,7 @@ inputParam::write(std::ostream& OX) const
   for(mc=Keys.begin();mc!=Keys.end();mc++)
     {
       const IItem* IPtr=mc->second;
-      OX<<fmt::format(" -{:<10}{:<10}{}",
+      OX<<std::format(" -{:<10}{:<10}{}",
 		      IPtr->getKey(),IPtr->getLong(),
 		      (IPtr->flag() ? " set " : " not-set "));
       OX<<":: "<<*IPtr<<"\n";

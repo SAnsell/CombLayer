@@ -3,7 +3,7 @@
  
  * File:   pipeBuild/pipeVariables.cxx
  *
- * Copyright (c) 2004-2022 by Stuart Ansell
+ * Copyright (c) 2004-2026 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 namespace setVariable
 {
 
-  
 void
 PipeVariables(FuncDataBase& Control)
   /*!
@@ -56,6 +55,16 @@ PipeVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("pipeVariables[F]","PipeVariables");
   
+  Control.addVariable("TargetLength",30.0);
+  Control.addVariable("TargetRadius",25.0);
+  Control.addVariable("TargetWallThick",8.0);
+  Control.addVariable("TargetMainMat","Tungsten");
+  Control.addVariable("TargetWallMat","H2O");
+  Control.addVariable("TargetNWallLayers",3);
+
+
+
+  Control.addVariable("ATubeWallMat","Stainless304");
   Control.addVariable("ATubeLength",350.0);
   Control.addVariable("ATubeWidth",500.0);
   Control.addVariable("ATubeHeight",500.0);

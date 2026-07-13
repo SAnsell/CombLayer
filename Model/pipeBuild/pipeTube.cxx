@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   pipeBuild/pipeTube.cxx
  *
  * Copyright (c) 2004-2026 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -75,7 +75,7 @@ pipeTube::pipeTube(const std::string& Key) :
   */
 {}
 
-pipeTube::pipeTube(const pipeTube& A) : 
+pipeTube::pipeTube(const pipeTube& A) :
   attachSystem::FixedRotate(A),
   attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
@@ -120,7 +120,7 @@ pipeTube::~pipeTube()
     Destructor
   */
 {}
-  
+
 
 void
 pipeTube::populate(const FuncDataBase& Control)
@@ -162,18 +162,18 @@ pipeTube::createSurfaces()
   ELog::RegMethod RegA("pipeTube","createSurfaces");
 
   ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);  
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*(height/2.0),Z);
 
   ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(innerWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(innerWidth/2.0),X);  
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(innerWidth/2.0),X);
   ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(innerHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(innerHeight/2.0),Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(innerHeight/2.0),Z);
 
-  return; 
+  return;
 }
 
 void
@@ -187,17 +187,17 @@ pipeTube::createObjects(Simulation& System)
 
   HeadRule HR;
 
-  // Inner 
+  // Inner
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 13 -14 15 -16");
   makeCell("Inner",System,cellIndex++,0,0.0,HR);
 
   HR=ModelSupport::getHeadRule(SMap,buildIndex,
 				 "1 -2 3 -4 5 -6 (-13:14:-15:16)");
   makeCell("Outer",System,cellIndex++,wallMat,0.0,HR);
-  
+
   HR=ModelSupport::getHeadRule(SMap,buildIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(HR);
-  return; 
+  return;
 }
 
 void
@@ -208,7 +208,7 @@ pipeTube::createLinks()
     Last two are in the -/+X direction and have a divider
     The mid two are -/+Z direction
   */
-{  
+{
   ELog::RegMethod RegA("pipeTube","createLinks");
 
   FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
@@ -232,7 +232,7 @@ pipeTube::createLinks()
   return;
 }
 
-void 
+void
 pipeTube::layerProcess(Simulation& System)
   /*!
     Processes the splitting of the surfaces into a multilayer system
@@ -247,7 +247,7 @@ pipeTube::layerProcess(Simulation& System)
     {
       HeadRule HRa,HRb;
       ModelSupport::surfDivide DA;
-            
+
       for(size_t i=1;i<nWallLayers;i++)
 	{
 	  DA.addFrac(wallFracList[i-1]);
@@ -283,7 +283,7 @@ pipeTube::layerProcess(Simulation& System)
 }
 
 
-  
+
 void
 pipeTube::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,

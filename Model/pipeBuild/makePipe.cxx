@@ -51,6 +51,7 @@
 #include "CellMap.h"
 #include "World.h"
 #include "pipeTube.h"
+#include "CylTarget.h"
 
 #include "makePipe.h"
 
@@ -58,6 +59,7 @@ namespace pipeSystem
 {
 
 makePipe::makePipe() :
+  Target(new CylTarget("Target")),
   ATube(new pipeSystem::pipeTube("ATube")),
   BTube(new pipeSystem::pipeTube("BTube")),
   CTube(new pipeSystem::pipeTube("CTube"))
@@ -121,14 +123,17 @@ makePipe::build(Simulation* SimPtr,
 
   int voidCell(74123);
 
-  ATube->addInsertCell(voidCell);
-  ATube->createAll(*SimPtr,World::masterOrigin(),0);
+  Target->addInsertCell(voidCell);
+  Target->createAll(*SimPtr,World::masterOrigin(),0);
 
-  BTube->addInsertCell(voidCell);
-  BTube->createAll(*SimPtr,*ATube,2);
+  //  ATube->addInsertCell(voidCell);
+  //  ATube->createAll(*SimPtr,World::masterOrigin(),0);
 
-  CTube->addInsertCell(voidCell);
-  CTube->createAll(*SimPtr,*BTube,2);
+  //  BTube->addInsertCell(voidCell);
+  //  BTube->createAll(*SimPtr,*ATube,2);
+
+  //  CTube->addInsertCell(voidCell);
+  //  CTube->createAll(*SimPtr,*BTube,2);
   return;
 }
 
