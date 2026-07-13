@@ -121,15 +121,13 @@ class FixedComp
 
   //  virtual std::string getLinkString(const long int) const;
 
-  // Structural link-point helpers that still take a raw index: unlike
-  // the write API above, these don't independently create/populate a
-  // link point with data -- nameSideIndex only aliases a name onto an
-  // existing (or about-to-be-written) slot, and setNConnect only
-  // resizes the LU array -- so they remain available to derived
-  // classes that need to pin a name to a specific position.
+  // Structural link-point helper that still takes a raw index: unlike
+  // the write API above, this doesn't independently create/populate a
+  // link point with data -- it only aliases a name onto an existing
+  // (or about-to-be-written) slot -- so it remains available to
+  // derived classes that need to pin a name to a specific position.
   void nameSideIndex(const size_t,const std::string&);
   void nameSideIndex(const std::map<std::string,size_t>&);
-  void setNConnect(const size_t);
 
  public:
 

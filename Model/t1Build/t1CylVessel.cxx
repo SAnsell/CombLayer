@@ -76,12 +76,14 @@ t1CylVessel::t1CylVessel(const std::string& Key)  :
     \param Key :: Key to use
   */
 {
-  // createSurfaces() (called before createLinks()) pokes link points
-  // "base"/"top" by raw index ahead of createLinks() registering them,
-  // so pre-register all three names at their original numeric slots here
-  // -- otherwise "base"/"top" would land past the default front/back
-  // slots instead of at indices 1/2.
-  FixedComp::setNConnect(3);
+  // createSurfaces() (called before createLinks()) writes "base"/"top"
+  // ahead of createLinks() writing "outer" -- pre-map all three names
+  // to their original numeric slots (0/1/2, aliasing onto the
+  // never-otherwise-used front/back pins) here so they always resolve
+  // to the same slots regardless of write order. No pre-sizing is
+  // needed: since these names are already mapped, the first write to
+  // each auto-grows LU via getOrCreateLinkIndex's already-mapped
+  // branch.
   FixedComp::nameSideIndex(0,"outer");
   FixedComp::nameSideIndex(1,"base");
   FixedComp::nameSideIndex(2,"top");

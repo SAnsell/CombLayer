@@ -209,10 +209,6 @@ RingFlange::addWindow(Simulation& System)
 
   if (windowFlag)
     {
-      // Add links: EXTRA:
-      const size_t NLink=NConnect();
-      if (NLink<12) setNConnect(12);
-
       HeadRule HR;
       int windowIndex(buildIndex+2000);
       ModelSupport::buildPlane(SMap,windowIndex+1,

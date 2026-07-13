@@ -149,9 +149,10 @@ R1FrontEnd::R1FrontEnd(const std::string& Key) :
 {
   // R1FrontEnd never writes its own link points -- that's left to
   // subclasses (e.g. speciesFrontEnd/maxpeemFrontEnd/flexpesFrontEnd),
-  // which poke slots 0/1 by raw numeric index. Pre-size up front as the
-  // legacy (newName,2) constructor used to.
-  FixedComp::setNConnect(2);
+  // via setLinkCopy("front"/"back",...) as the first two (and only)
+  // named link-point writes each subclass's createLinks() makes, so
+  // "front"/"back" naturally claim slots 0/1 without needing to
+  // pre-size anything here.
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
