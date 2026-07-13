@@ -829,17 +829,6 @@ FixedComp::reverseZ()
 }
 
 void
-FixedComp::setNConnect(const size_t N)
-  /*!
-    Create/Remove new links point
-    \param N :: New size of link points
-  */
-{
-  LU.resize(N);
-  return;
-}
-
-void
 FixedComp::copyLinkObjects(const FixedComp& A)
   /*!
     Copy all the link object from A to this FixedComp.

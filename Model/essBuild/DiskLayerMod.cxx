@@ -76,14 +76,16 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {
-  // Other objects (e.g. makeESS's LowMod/TopMod, via
-  // createAll(...,*LowPreMod,6,...)) read this object's link point 5
-  // by raw signed index before createAll()/createLinks() run on it --
-  // pre-register the name at its old numeric position and pre-size
-  // up front as the legacy (Key,9) constructor used to.
+  // Other objects (e.g. makeESS's LowMod/TopMod/buildPreWings, via
+  // createAll(...,*LowPreMod,6,...) / setCutSurf(...,*TopPreMod,6))
+  // read this object's link point 5 by raw signed index, always after
+  // this object's own createAll()/createLinks() has already run --
+  // pre-map the names at their old numeric positions so "base"/"top"
+  // resolve to the same slots those raw reads expect; no pre-sizing is
+  // needed since the first write to each auto-grows LU via
+  // getOrCreateLinkIndex's already-mapped branch.
   FixedComp::nameSideIndex(4,"base");
   FixedComp::nameSideIndex(5,"top");
-  FixedComp::setNConnect(9);
 }
 
 DiskLayerMod::DiskLayerMod(const DiskLayerMod& A) : 
@@ -411,11 +413,15 @@ DiskLayerMod::getHeight() const
   /*!
     Special calculation for the distance between two
     link point for the effective vertical height
-    \return Full-Height [linkPoint 5-6]
+    \return Full-Height [linkPoint base/top]
   */
 {
-  return (FixedComp::getSignedRefLU(5).hasConnectPt() &&
-	  FixedComp::getSignedRefLU(6).hasConnectPt() ) ?
+  // Named hasLinkPt (unlike the raw-index getSignedRefLU) safely
+  // returns false rather than throwing IndexError when this object's
+  // createAll()/createLinks() was never called (e.g. makeESS calls
+  // this unconditionally even when lowModType=="None" skips
+  // LowPreMod->createAll() entirely), since LU may still be empty.
+  return (FixedComp::hasLinkPt("base") && FixedComp::hasLinkPt("top")) ?
     FixedComp::getLinkDistance("base","top") : 0.0;
 }
 

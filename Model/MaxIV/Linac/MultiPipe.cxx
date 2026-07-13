@@ -134,13 +134,12 @@ MultiPipe::createSurfaces()
   ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,flangeRadius);
   
   int BI(buildIndex+100);
-  // createSurfaces() (this function) runs before createLinks(), which
-  // is what creates "front" -- reserve its slot here (nameSideIndex
-  // alone only touches the name->index map, not the LU array size, so
-  // the reservation must grow LU explicitly) so the pipe links created
-  // below don't land on (and get overwritten by) it.
-  FixedComp::setNConnect(1);
-  FixedComp::nameSideIndex(0,"front");
+  // Write the "front" link point here, ahead of the pipe loop below,
+  // so it claims link index 0 before any "pipeN" name does -- since
+  // "front" is created here rather than in createLinks() (which now
+  // has nothing left to do and has been removed), this replaces the
+  // former createLinks()'s only statement.
+  ExternalCut::createLink("front",*this,"front",Origin,-Y);
   size_t index(0);
   for(const subPipeUnit& PU : pipes)
     {
@@ -238,21 +237,6 @@ MultiPipe::createObjects(Simulation& System)
 }
 
 void
-MultiPipe::createLinks()
-  /*!
-    Determines the link point on the outgoing plane.
-    It must follow the beamline, but exit at the plane
-  */
-{
-  ELog::RegMethod RegA("MultiPipe","createLinks");
-
-  ExternalCut::createLink("front",*this,"front",Origin,-Y);
-  // Note outer links done in 
-
-  return;
-}
-    
-void
 MultiPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int FIndex)
@@ -267,12 +251,11 @@ MultiPipe::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-  createSurfaces();    
+  createSurfaces();
   createObjects(System);
-  createLinks();
-  insertObjects(System);   
-  
+  insertObjects(System);
+
   return;
 }
-  
+
 }  // NAMESPACE xraySystem

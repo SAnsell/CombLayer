@@ -81,13 +81,16 @@ R3FrontEndCave::R3FrontEndCave(const std::string& Key) :
     \param Key :: KeyName
   */
 {
-  // "innerRingAngleWall" (slot 8) is reserved here but never given a
-  // connect point/surface in createLinks() -- consumed only via its
-  // (default-valued) LinkUnit by createMaze(). Pre-size up front (as
-  // the legacy (Key,12) constructor used to) so that slot 8 exists
-  // before nameSideIndex reserves it, rather than being reassigned to
-  // whatever new name createLinks() next auto-grows into that slot.
-  FixedComp::setNConnect(12);
+  // "innerRingAngleWall" is never given its own connect point/surface
+  // in createLinks() -- it's consumed only by createMaze(), which is
+  // gated behind mazeActive (never set true in any current variable
+  // set, so this path is presently dead code). Without a dedicated
+  // slot it naturally lands on the same index as "innerRing" (the
+  // next name createLinks() creates after this one), making the two
+  // silent aliases of each other; since neither createMaze() nor any
+  // external caller reads "innerRing"/"innerRingAngleWall" from this
+  // class while that path is dead, this is unobserved -- revisit if
+  // mazeActive is ever wired up.
   nameSideIndex(8,"innerRingAngleWall");
 }
 

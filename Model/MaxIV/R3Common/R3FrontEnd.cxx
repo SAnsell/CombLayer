@@ -167,10 +167,10 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   */
 {
   // R3FrontEnd never writes its own link points -- that's left to
-  // subclasses (e.g. danmaxFrontEnd), which poke slots 0/1 by raw
-  // numeric index via setLinkCopy(). Pre-size up front as the legacy
-  // (newName,2) constructor used to.
-  FixedComp::setNConnect(2);
+  // subclasses (e.g. danmaxFrontEnd), via setLinkCopy("front"/"back",...)
+  // as the first two (and only) named link-point writes each subclass's
+  // createLinks() makes, so "front"/"back" naturally claim slots 0/1
+  // without needing to pre-size anything here.
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

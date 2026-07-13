@@ -72,9 +72,12 @@ LinkWrapper::LinkWrapper(const std::string& Key)  :
 {
   // LWInner/LWOuter name their link points at fixed positions
   // (including a jump to index 20 for layer surfaces) that
-  // t1Reflector.cxx and each other still read by raw numeric index,
-  // so pre-size the slots up front as always.
-  FixedComp::setNConnect(40);
+  // t1Reflector.cxx and each other still read by raw numeric index.
+  // No pre-sizing is needed here: every write in LWInner/LWOuter pairs
+  // nameSideIndex(rawIndex,name) immediately with a write on that same
+  // name, and getOrCreateLinkIndex auto-grows LU to match an
+  // already-mapped index, so the jump to 20 grows the array correctly
+  // on its own.
 }
 
 LinkWrapper::LinkWrapper(const LinkWrapper& A) : 
