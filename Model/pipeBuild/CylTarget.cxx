@@ -66,7 +66,7 @@ namespace pipeSystem
 {
 
 CylTarget::CylTarget(const std::string& Key) :
-  attachSystem::FixedRotate(Key,6),
+  attachSystem::FixedRotate(Key),
   attachSystem::ContainedComp(),
   attachSystem::CellMap()
   /*!
@@ -206,23 +206,23 @@ CylTarget::createLinks()
 {  
   ELog::RegMethod RegA("CylTarget","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
+  FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
   
-  FixedComp::setConnect(2,Origin-X*(wallThick+radius/2.0),-X);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("left",Origin-X*(wallThick+radius/2.0),-X);
+  FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+17));
   
-  FixedComp::setConnect(3,Origin+X*(wallThick+radius/2.0),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("right",Origin+X*(wallThick+radius/2.0),X);
+  FixedComp::setLinkSurf("right",-SMap.realSurf(buildIndex+17));
   
-  FixedComp::setConnect(4,Origin-Z*(wallThick+radius/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("base",Origin-Z*(wallThick+radius/2.0),-Z);
+  FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+17));
   
-  FixedComp::setConnect(5,Origin+Z*(wallThick+wallThick+radius/2.0),Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(buildIndex+17));
+  FixedComp::setConnect("top",Origin+Z*(wallThick+wallThick+radius/2.0),Z);
+  FixedComp::setLinkSurf("top",-SMap.realSurf(buildIndex+17));
 
   return;
 }
