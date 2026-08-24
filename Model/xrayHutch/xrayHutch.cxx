@@ -172,17 +172,17 @@ xrayHutch::createLinks()
   FixedComp::setConnect("back",Origin+Y*(length/2.0+wallThick),Y);
   FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+12));
 
-  FixedComp::setConnect("left",Origin-X*(length/2.0+wallThick),-X);
+  FixedComp::setConnect("left",Origin-X*(width/2.0+wallThick),-X);
   FixedComp::setLinkSurf("left",-SMap.realSurf(buildIndex+13));
 
   FixedComp::setConnect("right",Origin+X*(width/2.0+wallThick),X);
-  FixedComp::setLinkSurf("right",-SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf("right",SMap.realSurf(buildIndex+14));
 
   FixedComp::setConnect("base",Origin-Z*(height/2.0+wallThick),-Z);
   FixedComp::setLinkSurf("base",-SMap.realSurf(buildIndex+15));
 
   FixedComp::setConnect("top",Origin+Z*(height/2.0+wallThick),Z);
-  FixedComp::setLinkSurf("top",-SMap.realSurf(buildIndex+16));
+  FixedComp::setLinkSurf("top",SMap.realSurf(buildIndex+16));
 
   return;
 }

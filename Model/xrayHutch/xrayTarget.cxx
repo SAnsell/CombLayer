@@ -148,10 +148,10 @@ xrayTarget::createLinks()
   ELog::RegMethod RegA("xrayTarget","createLinks");
 
   FixedComp::setConnect("front",Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
+  FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+11));
 
-  FixedComp::setConnect("front",Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf("front",SMap.realSurf(buildIndex+2));
+  FixedComp::setConnect("back",Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
 
 
   return;
