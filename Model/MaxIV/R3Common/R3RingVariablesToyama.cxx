@@ -74,6 +74,8 @@
 // [4] S0-2-0AB01088_DanMAX.pdf
 // [5] FE_02.STEP - CAD file for the DanMAX Front-end
 // [6] Toyama Drawing S5-2-1AJ00545
+// [7] Toyama Drawing S6-5-1AG01044
+// [8] Toyama Drawing S6-9-1AG01045
 
 namespace setVariable
 {
@@ -119,7 +121,26 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"AperturePipeA",30.0); // [2]
   Control.addVariable(frontKey+"AperturePipeAOuterVoid",1);
   //  Control.addVariable(frontKey+"AperturePipeAYStep",14.0);
-  collimatorVariables(Control,frontKey+"MoveCollA");
+
+  std::string collKey = frontKey+"MoveCollA";
+  // Dimensions and materials for MoveCollA from [7]
+  // Combining information from "X VIEW (S=1/1)" and "X VIEW"
+  Control.addVariable(collKey+"Width",2.48);
+  // Assuming that the vertical piece is centered in "X VIEW (S=1/1)"
+  Control.addVariable(collKey+"Height",2.1);
+  // A-A
+  Control.addVariable(collKey+"Length",24.4);
+  // "Fully open" configuration in "X VIEW"
+  Control.addVariable(collKey+"InnerAWidth",0.5);
+  Control.addVariable(collKey+"InnerAHeight",0.5);
+  Control.addVariable(collKey+"InnerBWidth",0.5);
+  Control.addVariable(collKey+"InnerBHeight",0.5);
+  // A-A
+  // TODO: should be GLIDCOP AL-15
+  Control.addVariable(collKey+"Mat","Copper");
+  // Looking in beam direction ("X"), the thinner part of the L shape should be at the
+  // bottom, and the thicker part should be on the left.
+  Control.addVariable(collKey+"YAngle",-90.0);
 
 
   BellowGen.setCF<setVariable::CF63>();
@@ -140,8 +161,21 @@ moveApertureTableToyama(FuncDataBase& Control,
   PipeGen.generatePipe(Control,frontKey+"AperturePipeB",30.0); // [2]
   Control.addVariable(frontKey+"AperturePipeBOuterVoid",1);
   //  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
-  collimatorVariables(Control,frontKey+"MoveCollB");
-  Control.addVariable(frontKey+"MoveCollBYAngle",180.0);
+  collKey = frontKey+"MoveCollB";
+  // Dimensions and materials for MoveCollB from [8]
+  // See also the comments on MoveCollA for more information.
+  Control.addVariable(collKey+"Width",2.48);
+  Control.addVariable(collKey+"Height",2.1);
+  Control.addVariable(collKey+"Length",24.4);
+  Control.addVariable(collKey+"InnerAWidth",0.5);
+  Control.addVariable(collKey+"InnerAHeight",0.5);
+  Control.addVariable(collKey+"InnerBWidth",0.5);
+  Control.addVariable(collKey+"InnerBHeight",0.5);
+  // TODO: should be GLIDCOP AL-15
+  Control.addVariable(collKey+"Mat","Copper");
+  // Looking in beam direction ("X"), the thinner part of the L shape should be at the
+  // top, and the thicker part should be on the right.
+  Control.addVariable(collKey+"YAngle",90.0);
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
