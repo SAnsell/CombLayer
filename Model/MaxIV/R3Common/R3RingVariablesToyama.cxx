@@ -130,17 +130,28 @@ moveApertureTableToyama(FuncDataBase& Control,
   Control.addVariable(collKey+"Height",2.1);
   // A-A
   Control.addVariable(collKey+"Length",24.4);
-  // "Fully open" configuration in "X VIEW"
-  Control.addVariable(collKey+"InnerAWidth",0.5);
-  Control.addVariable(collKey+"InnerAHeight",0.5);
-  Control.addVariable(collKey+"InnerBWidth",0.5);
-  Control.addVariable(collKey+"InnerBHeight",0.5);
+  // X VIEW (S=1/1)
+  Control.addVariable(collKey+"InnerAWidth",0.25);
+  Control.addVariable(collKey+"InnerAHeight",0.25);
+  Control.addVariable(collKey+"InnerBWidth",0.25);
+  Control.addVariable(collKey+"InnerBHeight",0.25);
   // A-A
   // TODO: should be GLIDCOP AL-15
   Control.addVariable(collKey+"Mat","Copper");
   // Looking in beam direction ("X"), the thinner part of the L shape should be at the
   // bottom, and the thicker part should be on the left.
   Control.addVariable(collKey+"YAngle",-90.0);
+  // From "X VIEW" and "X VIEW (S=1/1)":
+  //
+  // Position    | XStep (cm) | ZStep (cm)
+  // --------------------------------------
+  // Fully open  |    0.25    |   -0.25
+  // Nominal     |    0.0     |    0.0
+  // Fully close |   -0.5     |    0.5
+  //
+  // Default: Fully open
+  Control.addVariable(collKey+"XStep",0.25);
+  Control.addVariable(collKey+"ZStep",-0.25);
 
 
   BellowGen.setCF<setVariable::CF63>();
@@ -167,15 +178,26 @@ moveApertureTableToyama(FuncDataBase& Control,
   Control.addVariable(collKey+"Width",2.48);
   Control.addVariable(collKey+"Height",2.1);
   Control.addVariable(collKey+"Length",24.4);
-  Control.addVariable(collKey+"InnerAWidth",0.5);
-  Control.addVariable(collKey+"InnerAHeight",0.5);
-  Control.addVariable(collKey+"InnerBWidth",0.5);
-  Control.addVariable(collKey+"InnerBHeight",0.5);
+  Control.addVariable(collKey+"InnerAWidth",0.25);
+  Control.addVariable(collKey+"InnerAHeight",0.25);
+  Control.addVariable(collKey+"InnerBWidth",0.25);
+  Control.addVariable(collKey+"InnerBHeight",0.25);
   // TODO: should be GLIDCOP AL-15
   Control.addVariable(collKey+"Mat","Copper");
   // Looking in beam direction ("X"), the thinner part of the L shape should be at the
   // top, and the thicker part should be on the right.
   Control.addVariable(collKey+"YAngle",90.0);
+  // From "X VIEW" and "X VIEW (S=1/1)":
+  //
+  // Position    | XStep (cm) | ZStep (cm)
+  // --------------------------------------
+  // Fully open  |   -0.25    |    0.25
+  // Nominal     |    0.0     |    0.0
+  // Fully close |    0.5     |   -0.5
+  //
+  // Default: Fully open
+  Control.addVariable(collKey+"XStep",-0.25);
+  Control.addVariable(collKey+"ZStep",0.25);
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
