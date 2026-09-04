@@ -216,7 +216,7 @@ WallLead::createObjects(Simulation& System)
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 3 -13 105 -5 ");
     makeCell("ExtraOutLower",System,cellIndex++,midMat,0.0,HR*frontSurf);
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 13 -14 105 -5 ");
-    makeCell("ExtraOutLower",System,cellIndex++,voidMat,0.0,HR*frontSurf);
+    makeCell("ExtraOutLowerVoid",System,cellIndex++,voidMat,0.0,HR*frontSurf);
     HR=ModelSupport::getHeadRule(SMap,buildIndex,"-11 14 105 -5 ");
     makeCell("ExtraOutLower",System,cellIndex++,midMat,0.0,HR*frontSurf*ring);
   }
