@@ -263,7 +263,7 @@ R3Ring::createSurfaces()
 void
 R3Ring::createFloor(Simulation& System)
   /*!
-    Adds the main roof objects
+    Create the floor cell
     \param System :: Simulation to create objects in
    */
 {
@@ -338,9 +338,9 @@ R3Ring::createObjects(Simulation& System)
       HR*=ModelSupport::getHeadRule(SMap,IPrev,INext,"(3:3M)");
 
       makeCell("InnerVoid",System,cellIndex++,0,0.0,HR*innerLayerHR);
-      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofBaseHR);
-      makeCell("Roof",System,cellIndex++,0,0.0,HR*roofInsulationHR);
-      makeCell("Roof",System,cellIndex++,roofMat,0.0,HR*roofTopHR);
+      makeCell("RoofBase",System,cellIndex++,roofMat,0.0,HR*roofBaseHR);
+      makeCell("RoofInsulation",System,cellIndex++,0,0.0,HR*roofInsulationHR);
+      makeCell("RoofTop",System,cellIndex++,roofMat,0.0,HR*roofTopHR);
 
       // Distinguish between ducts that run through the part of the door that contains
       // the ring door and the ones that run through the longer part which has an
