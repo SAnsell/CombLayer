@@ -27,7 +27,7 @@ set (commonGeneratorSources
     MirrorGenerator.cxx MLMDetailGenerator.cxx MLMonoGenerator.cxx
     MonoBlockXstalsGenerator.cxx MonoBoxGenerator.cxx MonoShutterGenerator.cxx 
     MonoShutterR3Generator.cxx MonoSlitsJJGenerator.cxx MultiPipeGenerator.cxx 
-    MovableSafetyMaskGenerator.cxx 
+    MovableMaskGenerator.cxx MovableSafetyMaskGenerator.cxx 
     NBeamStopGenerator.cxx OctupoleGenerator.cxx OpticsHutchGenerator.cxx 
     XRayHutchBaseGenerator.cxx PipeShieldGenerator.cxx PortChicaneGenerator.cxx
     PowerFilterGenerator.cxx
@@ -142,6 +142,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/MonoSlitsJJGenerator.cxx
   ${tarDIR}/MultiPipeGenerator.cxx
   ${tarDIR}/MovableSafetyMaskGenerator.cxx
+  ${tarDIR}/MovableMaskGenerator.cxx
   ${tarDIR}/NBeamStopGenerator.cxx
   ${tarDIR}/OctupoleGenerator.cxx
   ${tarDIR}/OpticsHutchGenerator.cxx
@@ -264,6 +265,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/MonoShutterR3Generator.h
   ${tarINC}/MonoSlitsJJGenerator.h
   ${tarINC}/MultiPipeGenerator.h
+  ${tarINC}/MovableMaskGenerator.h
   ${tarINC}/MovableSafetyMaskGenerator.h
   ${tarINC}/NBeamStopGenerator.h
   ${tarINC}/OctupoleGenerator.h
