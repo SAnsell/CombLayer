@@ -162,6 +162,7 @@
 #include "MLMonoGenerator.h"
 #include "XRayHutchBaseGenerator.h"
 #include "ExptHutGenerator.h"
+#include "MovableMaskGenerator.h"
 
 namespace setVariable
 {
@@ -945,6 +946,10 @@ SingleItemVariables(FuncDataBase& Control)
   // expt hutch
   exptHutVariables(Control,"");
   localShieldVariables(Control);
+
+  // MovableMask
+  MovableMaskGenerator movableMaskGenerator;
+  movableMaskGenerator.generate(Control, "MovableMask");
 
   // Concrete door
   setVariable::LocalShieldingGenerator LSGen;

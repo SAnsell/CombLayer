@@ -217,6 +217,7 @@
 #include "CM2Crystal.h"
 #include "MonoBlockXstals.h"
 #include "MLMono.h"
+#include "MovableMask.h"
 
 #include "makeSingleItem.h"
 
@@ -278,6 +279,7 @@ makeSingleItem::build(Simulation& System,
   "ConcreteDoor","IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full","MovableSafetyMask","HeatAbsorberToyama",
 	"HeatAbsorberR3Toyama","FixedMaskHybrid","SqrShield","MonoBlockXstals","MLMono",
+  "MovableMask",
   "Help","help"
     });
 
@@ -2071,6 +2073,13 @@ makeSingleItem::build(Simulation& System,
 
         return;
       }
+    if (item == "MovableMask"){
+      std::shared_ptr<xraySystem::MovableMask> movableMask = std::make_shared<xraySystem::MovableMask>("MovableMask");
+      OR.addObject(movableMask);
+
+      movableMask->addInsertCell(voidCell);
+      movableMask->createAll(System,World::masterOrigin(),0);
+    }
 
     if (item == "Cylinder") {
       const auto mbs = std::make_shared<constructSystem::cylinderUnit>(item);
