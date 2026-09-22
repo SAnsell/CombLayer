@@ -32,7 +32,7 @@ namespace xraySystem
 
 /*!
   \class StepBellows
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
   \date May 2026
   \brief Cylindric bellows with parallel shift of incoming and outgoing axis
