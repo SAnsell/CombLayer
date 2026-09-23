@@ -95,7 +95,8 @@ void MovableMask::populate(const FuncDataBase &Control) {
       Control.EvalVar<double>(keyName + "MaskBottomMaxHeight");
   maskBottomMaxWidth = Control.EvalVar<double>(keyName + "MaskBottomMaxWidth");
   maskFocalPoint = Control.EvalVar<double>(keyName + "MaskFocalPoint");
-  maskDownstreamInnerPlaneAngle = Control.EvalVar<double>(keyName + "MaskDownstreamInnerPlaneAngle");
+  maskDownstreamInnerPlaneAngle =
+      Control.EvalVar<double>(keyName + "MaskDownstreamInnerPlaneAngle");
 
   bodyMaterial = ModelSupport::EvalMat<int>(Control, keyName + "BodyMaterial");
   flangeMaterial =
@@ -145,7 +146,8 @@ void MovableMask::createSurfaces() {
   ModelSupport::buildPlane(SMap, buildIndex + 23,
                            Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth),
                            X);
-  Geometry::Vec3D maskLeftSlopeNormal = Y * bodyLength + Z * maskLeftMaxHeight;
+  const Geometry::Vec3D maskLeftSlope = Y * bodyLength + Z * maskLeftMaxHeight;
+  Geometry::Vec3D maskLeftSlopeNormal = maskLeftSlope;
   maskLeftSlopeNormal.rotate(X, M_PI_2);
   ModelSupport::buildPlane(
       SMap, buildIndex + 25,
@@ -153,7 +155,33 @@ void MovableMask::createSurfaces() {
           Z * (maskLeftMaxHeight - (holeHeight / 2.0 - holeOffset)),
       maskLeftSlopeNormal);
 
-  return;
+  const Geometry::Vec3D focalPoint =
+      Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) - Y * bodyLength / 2.0 -
+      Z * (holeHeight / 2.0 - holeOffset) + maskLeftSlope * maskFocalPoint;
+  const Geometry::Vec3D maskLeftDownstreamTopRight =
+      Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) + Y * bodyLength / 2.0 +
+      Z * (-holeHeight / 2.0 + holeOffset + maskLeftMaxHeight);
+  const double maskLeftDownstreamInnerPlaneAngleRad =
+      maskDownstreamInnerPlaneAngle * M_PI / 180.0;
+  Geometry::Vec3D maskLeftDownstreamBottomRight =
+      Origin -
+      X * (holeWidth / 2.0 - maskLeftMaxWidth +
+           (maskLeftMaxHeight - maskBottomMaxHeight) *
+               tan(maskLeftDownstreamInnerPlaneAngleRad)) +
+      Y * bodyLength / 2.0 +
+      Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight);
+  ModelSupport::buildPlane(SMap, buildIndex + 33, focalPoint,
+                           (maskLeftDownstreamBottomRight - focalPoint) *
+                               (maskLeftDownstreamTopRight - focalPoint));
+
+  Geometry::Vec3D maskBottomDownstreamTopLeft =
+      Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) + Y * bodyLength / 2.0 +
+      Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight -
+           tan(maskLeftDownstreamInnerPlaneAngleRad) *
+               (maskBottomMaxWidth - maskLeftMaxWidth));
+  ModelSupport::buildPlane(SMap, buildIndex + 35, focalPoint,
+                           (maskBottomDownstreamTopLeft - focalPoint) *
+                               (maskLeftDownstreamBottomRight - focalPoint));
 }
 
 void MovableMask::createObjects(Simulation &System) {
@@ -189,7 +217,10 @@ void MovableMask::createObjects(Simulation &System) {
            ModelSupport::getHeadRule(SMap, buildIndex, "22 -12 -7 17"));
 
   makeCell("MaskLeft", System, cellIndex++, bodyMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 13 -23 15 -25"));
+           ModelSupport::getHeadRule(SMap, buildIndex,
+                                     "21 -22 13 -23 (-33:-35) 15 -25"));
+  makeCell("MaskLeftVoid", System, cellIndex++, voidMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 -23 33 -25 35"));
 
   addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 -7"));
 }
