@@ -42,21 +42,23 @@ namespace xraySystem {
   arbitrary dimensions and position within the given limits of the mechanics.
 
   The geometry is based on drawings provided for the DanMAX beamline at MAX IV
-  [1-4]. It is a simplified version of the 300-mm long main body [1,3] that
-  includes the flanges. As indicated above, DanMAX uses two of these movable
-  masks in the front end. When viewed from upstream, the first movable mask is
-  oriented like the letter "L", i.e. it constrains the beam from the left and
-  from the bottom. This corresponds to the default orientation of this class:
-  Beam along the y axis, mask along the x (bottom) and z (left) axis.
-  The second movable mask is rotated by 180 degrees about the beam
-  axis compared to the first one, and it constrains the beam from the right and
-  from the top. At the level of detail of this class, the two movable masks are
+  [1-4] and a CAD model [5]. It is a simplified version of the 300-mm long main
+  body [1,3] that includes the flanges. As indicated above, DanMAX uses two of
+  these movable masks in the front end. When viewed from upstream, the first
+  movable mask is oriented like the letter "L", i.e. it constrains the beam from
+  the left and from the bottom. This corresponds to the default orientation of
+  this class: Beam along the y axis, mask along the x (bottom) and z (left)
+  axis. The second movable mask is rotated by 180 degrees about the beam axis
+  compared to the first one, and it constrains the beam from the right and from
+  the top. At the level of detail of this class, the two movable masks are
   identical.
 
   [1] TOYAMA, Movable Mask 1 for DanMAX, S6-4-1AG01042.pdf
   [2] TOYAMA, Movable Mask 1 main body for DanMAX, S6-5-1AG01044.pdf
   [3] TOYAMA, Movable Mask 2 for DanMAX, S6-8-1AG01043.pdf
   [4] TOYAMA, Movable Mask 2 main body for DanMAX, S6-9-1AG01045.pdf
+  [5] CAD model of DanMAX/SINCRYS, J. Selberg, fall/winter 2025,
+  /mxn/groups/rad/Beamlines/DanMAX/Simulations/FE_02.STEP
 */
 
 class MovableMask : public attachSystem::FixedRotate,
@@ -78,6 +80,27 @@ private:
   double holeHeight;
   double holeWidth;
   double holeOffset;
+
+  double maskLeftMaxHeight;   // Maximum height of the left part of the mask,
+                              // measured from the bottom of the hole.
+  double maskLeftMaxWidth;    // Maximum width of the left part of the mask,
+                              // measured from the left side of the hole.
+  double maskBottomMaxHeight; // Maximum height of the bottom part of the mask,
+                              // measured from the bottom of the hole.
+  double maskBottomMaxWidth;  // Maximum width of the bottom part of the mask,
+                              // measured from the left side of the hole.
+  double maskFocalPoint;      // Distance (normalized to bodyLength, i.e.
+                         // dimensionless value between 0.0 and 1.0) from the
+                         // upstream edge of the body to the point where the
+                         // slopes of the mask's surfaces change.
+  double
+      maskDownstreamInnerPlaneAngle; // Angle w.r.t. canonical axis in deg.
+                                     // Upstream from the focal point, the inner
+                                     // surfaces of the mask are parallel to the
+                                     // x and z axes, respectively. Downstream
+                                     // from this point, there is a transition
+                                     // to an angled inner surface which
+                                     // increases the inner cross section.
 
   int flangeMaterial;
   int voidMaterial;

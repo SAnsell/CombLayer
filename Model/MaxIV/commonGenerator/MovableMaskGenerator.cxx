@@ -46,11 +46,11 @@
 namespace setVariable {
 
 MovableMaskGenerator::MovableMaskGenerator()
-    :                                       // All dimensions from [1]
-      length(30.0),                         // A-A
-      bodyHeight(7.2),                      // X VIEW (S=1/1)
-      bodyLength(24.4),                     // A-A
-      bodyWidth(7.2),                       // X VIEW (S=1/1)
+    :                   // All dimensions from [1] if not indicated otherwise.
+      length(30.0),     // A-A
+      bodyHeight(7.2),  // X VIEW (S=1/1)
+      bodyLength(24.4), // A-A
+      bodyWidth(7.2),   // X VIEW (S=1/1)
       flangeInnerRadius(CF63::innerRadius), // Side View
       flangeLength(CF63::flangeLength),     // Side View
       flangeRadius(CF63::flangeRadius),     // Side View
@@ -58,9 +58,18 @@ MovableMaskGenerator::MovableMaskGenerator()
       holeHeight(3.0),                      // X VIEW (S=1/1)
       holeOffset(
           0.45), // X VIEW (S=1/1), difference between hole height and depth
-      holeWidth(3.12),                 // X VIEW (S=1/1)
-      bodyMaterial("Aluminium"),       // A-A, TODO: Should be GLIDCOP AL-15
-      flangeMaterial("Stainless304L"), // A-A
+      holeWidth(3.12),        // X VIEW (S=1/1)
+      maskLeftMaxHeight(2.1), // X VIEW (S=1/1), 2 x 10.5 mm, assuming that the
+                              // part is symmetric about the central axis
+      maskLeftMaxWidth(1.3),  // X VIEW (S=1/1)
+      maskBottomMaxHeight(0.79), // X VIEW (S=1/1)
+      maskBottomMaxWidth(
+          2.8), // X VIEW, 15.6 mm (half hole width) + 5.0 mm (beam offset)
+                // + 2.0 mm (half beam width) + 5.4 mm
+      maskFocalPoint(0.376),              // [5]
+      maskDownstreamInnerPlaneAngle(9.0), // [5]
+      bodyMaterial("Aluminium"),          // A-A, TODO: Should be GLIDCOP AL-15
+      flangeMaterial("Stainless304L"),    // A-A
       voidMaterial("Void") {}
 
 void MovableMaskGenerator::generate(FuncDataBase &Control,
@@ -80,6 +89,13 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "HoleHeight", holeHeight);
   Control.addVariable(keyName + "HoleOffset", holeOffset);
   Control.addVariable(keyName + "HoleWidth", holeWidth);
+
+  Control.addVariable(keyName + "MaskLeftMaxHeight", maskLeftMaxHeight);
+  Control.addVariable(keyName + "MaskLeftMaxWidth", maskLeftMaxWidth);
+  Control.addVariable(keyName + "MaskBottomMaxHeight", maskBottomMaxHeight);
+  Control.addVariable(keyName + "MaskBottomMaxWidth", maskBottomMaxWidth);
+  Control.addVariable(keyName + "MaskFocalPoint", maskFocalPoint);
+  Control.addVariable(keyName + "MaskDownstreamInnerPlaneAngle", maskDownstreamInnerPlaneAngle);
 
   Control.addVariable(keyName + "FlangeMaterial", flangeMaterial);
   Control.addVariable(keyName + "BodyMaterial", bodyMaterial);

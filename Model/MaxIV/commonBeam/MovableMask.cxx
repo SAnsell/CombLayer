@@ -89,6 +89,14 @@ void MovableMask::populate(const FuncDataBase &Control) {
   holeOffset = Control.EvalVar<double>(keyName + "HoleOffset");
   holeWidth = Control.EvalVar<double>(keyName + "HoleWidth");
 
+  maskLeftMaxHeight = Control.EvalVar<double>(keyName + "MaskLeftMaxHeight");
+  maskLeftMaxWidth = Control.EvalVar<double>(keyName + "MaskLeftMaxWidth");
+  maskBottomMaxHeight =
+      Control.EvalVar<double>(keyName + "MaskBottomMaxHeight");
+  maskBottomMaxWidth = Control.EvalVar<double>(keyName + "MaskBottomMaxWidth");
+  maskFocalPoint = Control.EvalVar<double>(keyName + "MaskFocalPoint");
+  maskDownstreamInnerPlaneAngle = Control.EvalVar<double>(keyName + "MaskDownstreamInnerPlaneAngle");
+
   bodyMaterial = ModelSupport::EvalMat<int>(Control, keyName + "BodyMaterial");
   flangeMaterial =
       ModelSupport::EvalMat<int>(Control, keyName + "FlangeMaterial");
@@ -134,6 +142,17 @@ void MovableMask::createSurfaces() {
   ModelSupport::buildCylinder(SMap, buildIndex + 27, Origin, Y,
                               flangeInnerRadius);
 
+  ModelSupport::buildPlane(SMap, buildIndex + 23,
+                           Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth),
+                           X);
+  Geometry::Vec3D maskLeftSlopeNormal = Y * bodyLength + Z * maskLeftMaxHeight;
+  maskLeftSlopeNormal.rotate(X, M_PI_2);
+  ModelSupport::buildPlane(
+      SMap, buildIndex + 25,
+      Origin + Y * bodyLength / 2.0 +
+          Z * (maskLeftMaxHeight - (holeHeight / 2.0 - holeOffset)),
+      maskLeftSlopeNormal);
+
   return;
 }
 
@@ -152,8 +171,10 @@ void MovableMask::createObjects(Simulation &System) {
   makeCell("Body", System, cellIndex++, bodyMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
                                      "21 -22 3 -4 5 -6 (-13:14:-15:16)"));
-  makeCell("BodyInnerVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 13 -14 15 -16"));
+  makeCell("BodyLeftInnerVoid", System, cellIndex++, voidMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 13 -23 25 -16"));
+  makeCell("BodyRightInnerVoid", System, cellIndex++, voidMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 23 -14 15 -16"));
   makeCell(
       "BodyOuterVoid", System, cellIndex++, voidMaterial, 0.0,
       ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 (-3:4:-5:6) -7"));
@@ -166,6 +187,9 @@ void MovableMask::createObjects(Simulation &System) {
            ModelSupport::getHeadRule(SMap, buildIndex, "22 -12 -17 27"));
   makeCell("BackPipeVoid", System, cellIndex++, voidMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "22 -12 -7 17"));
+
+  makeCell("MaskLeft", System, cellIndex++, bodyMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 13 -23 15 -25"));
 
   addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 -7"));
 }

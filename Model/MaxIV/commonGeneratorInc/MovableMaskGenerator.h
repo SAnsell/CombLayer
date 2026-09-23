@@ -51,6 +51,13 @@ private:
   double holeOffset;
   double holeWidth;
 
+  double maskLeftMaxHeight;
+  double maskLeftMaxWidth;
+  double maskBottomMaxHeight;
+  double maskBottomMaxWidth;
+  double maskFocalPoint;
+  double maskDownstreamInnerPlaneAngle;
+
   std::string bodyMaterial;
   std::string flangeMaterial;
   std::string voidMaterial;
