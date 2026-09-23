@@ -121,14 +121,12 @@ void MovableMask::createSurfaces() {
 
   ModelSupport::buildPlane(SMap, buildIndex + 5, Origin - Z * bodyHeight / 2.0,
                            Z);
-  ModelSupport::buildPlane(
-      SMap, buildIndex + 15,
-      Origin - Z * (bodyHeight / 2.0 - holeHeight / 2.0 - holeOffset), Z);
+  ModelSupport::buildPlane(SMap, buildIndex + 15,
+                           Origin - Z * (holeHeight / 2.0 - holeOffset), Z);
   ModelSupport::buildPlane(SMap, buildIndex + 6, Origin + Z * bodyHeight / 2.0,
                            Z);
-  ModelSupport::buildPlane(
-      SMap, buildIndex + 16,
-      Origin + Z * (bodyHeight / 2.0 - holeHeight / 2.0 + holeOffset), Z);
+  ModelSupport::buildPlane(SMap, buildIndex + 16,
+                           Origin + Z * (holeHeight / 2.0 + holeOffset), Z);
 
   ModelSupport::buildCylinder(SMap, buildIndex + 7, Origin, Y, flangeRadius);
   ModelSupport::buildCylinder(SMap, buildIndex + 17, Origin, Y,
