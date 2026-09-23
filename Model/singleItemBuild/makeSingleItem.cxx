@@ -2079,6 +2079,8 @@ makeSingleItem::build(Simulation& System,
 
       movableMask->addInsertCell(voidCell);
       movableMask->createAll(System,World::masterOrigin(),0);
+
+      return;
     }
 
     if (item == "Cylinder") {
