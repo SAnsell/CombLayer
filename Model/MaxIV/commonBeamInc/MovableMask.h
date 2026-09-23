@@ -45,8 +45,10 @@ namespace xraySystem {
   [1-4]. It is a simplified version of the 300-mm long main body [1,3] that
   includes the flanges. As indicated above, DanMAX uses two of these movable
   masks in the front end. When viewed from upstream, the first movable mask is
-  oriented like the letter L, i.e. it constrains the beam from the left and from
-  the bottom. The second movable mask is rotated by 180 degrees about the beam
+  oriented like the letter "L", i.e. it constrains the beam from the left and
+  from the bottom. This corresponds to the default orientation of this class:
+  Beam along the y axis, mask along the x (bottom) and z (left) axis.
+  The second movable mask is rotated by 180 degrees about the beam
   axis compared to the first one, and it constrains the beam from the right and
   from the top. At the level of detail of this class, the two movable masks are
   identical.
