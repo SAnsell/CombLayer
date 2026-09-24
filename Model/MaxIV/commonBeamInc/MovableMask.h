@@ -63,6 +63,7 @@ namespace xraySystem {
 
 class MovableMask : public attachSystem::FixedRotate,
                     public attachSystem::ContainedComp,
+                    public attachSystem::FrontBackCut,
                     public attachSystem::CellMap,
                     public attachSystem::SurfMap {
 private:

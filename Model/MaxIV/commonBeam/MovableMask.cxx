@@ -51,13 +51,16 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "ExternalCut.h"
+#include "FrontBackCut.h"
 #include "MovableMask.h"
 
 namespace xraySystem {
 
 MovableMask::MovableMask(const std::string &Key)
     : attachSystem::FixedRotate(Key), attachSystem::ContainedComp(),
-      attachSystem::CellMap(), attachSystem::SurfMap()
+      attachSystem::FrontBackCut(), attachSystem::CellMap(),
+      attachSystem::SurfMap()
 /*!
   Default constructor
   \param Key :: Key name for variables
@@ -109,12 +112,21 @@ void MovableMask::populate(const FuncDataBase &Control) {
 
 void MovableMask::createSurfaces() {
 
-  ModelSupport::buildPlane(SMap, buildIndex + 1, Origin - Y * length / 2.0, Y);
+  if (!isActive("front")) {
+    ModelSupport::buildPlane(SMap, buildIndex + 1, Origin - Y * length / 2.0,
+                             Y);
+    setFront(SMap.realSurf(buildIndex + 1));
+  }
+  if (!isActive("back")) {
+    ModelSupport::buildPlane(SMap, buildIndex + 2, Origin + Y * length / 2.0,
+                             Y);
+    setBack(-SMap.realSurf(buildIndex + 2));
+  }
+
   ModelSupport::buildPlane(SMap, buildIndex + 11,
                            Origin - Y * (length / 2.0 - flangeLength), Y);
   ModelSupport::buildPlane(SMap, buildIndex + 21, Origin - Y * bodyLength / 2.0,
                            Y);
-  ModelSupport::buildPlane(SMap, buildIndex + 2, Origin + Y * length / 2.0, Y);
   ModelSupport::buildPlane(SMap, buildIndex + 12,
                            Origin + Y * (length / 2.0 - flangeLength), Y);
   ModelSupport::buildPlane(SMap, buildIndex + 22, Origin + Y * bodyLength / 2.0,
@@ -239,12 +251,13 @@ void MovableMask::createSurfaces() {
 }
 
 void MovableMask::createObjects(Simulation &System) {
-  HeadRule HR;
+  const HeadRule front = ExternalCut::getRule("front");
+  const HeadRule back = ExternalCut::getRule("back");
 
   makeCell("FrontFlange", System, cellIndex++, flangeMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "1 -11 -7 27"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "-11 -7 27") * front);
   makeCell("FrontFlangeVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "1 -21 -27"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "-21 -27") * front);
   makeCell("FrontPipe", System, cellIndex++, flangeMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "11 -21 -17 27"));
   makeCell("FrontPipeVoid", System, cellIndex++, voidMaterial, 0.0,
@@ -263,9 +276,9 @@ void MovableMask::createObjects(Simulation &System) {
       ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 (-3:4:-5:6) -7"));
 
   makeCell("BackFlange", System, cellIndex++, flangeMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-2 12 -7 27"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "12 -7 27") * back);
   makeCell("BackFlangeVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-2 32 -27"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "32 -27") * back);
   makeCell("BackPipe", System, cellIndex++, flangeMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "22 -12 -17 27"));
   makeCell("BackPipeVoid", System, cellIndex++, voidMaterial, 0.0,
@@ -289,7 +302,8 @@ void MovableMask::createObjects(Simulation &System) {
   makeCell("SlitVoid", System, cellIndex++, voidMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "22 -32 33 -24 35 -45"));
 
-  addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 -7"));
+  addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "-7") * front *
+               back);
 }
 
 void MovableMask::createLinks()
@@ -299,10 +313,7 @@ void MovableMask::createLinks()
 {
   ELog::RegMethod RegA("MovableMask", "createLinks");
 
-  FixedComp::setConnect("front", Origin - Y * (length / 2.0), -Y);
-  FixedComp::setLinkSurf("front", -SMap.realSurf(buildIndex + 1));
-  FixedComp::setConnect("back", Origin + Y * (length / 2.0), Y);
-  FixedComp::setLinkSurf("back", SMap.realSurf(buildIndex + 2));
+  FrontBackCut::createLinks(*this, Origin, Y);
 
   return;
 }
