@@ -112,6 +112,8 @@ void MovableMask::populate(const FuncDataBase &Control) {
 
 void MovableMask::createSurfaces() {
 
+  Origin = Origin + Y * length / 2.0;
+
   if (!isActive("front")) {
     ModelSupport::buildPlane(SMap, buildIndex + 1, Origin - Y * length / 2.0,
                              Y);
