@@ -19,18 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#include <algorithm>
 #include <cmath>
-#include <complex>
 #include <fstream>
-#include <iomanip>
-#include <iostream>
 #include <list>
 #include <map>
 #include <memory>
 #include <set>
 #include <sstream>
-#include <string>
 #include <vector>
 
 #include "FileReport.h"
@@ -179,7 +174,6 @@ void MovableMask::createSurfaces() {
                            Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
                                Y * (bodyLength / 2.0),
                            slitLeftSurfaceNormal);
-  std::cout << slitLeftSurfaceNormal << std::endl;
 
   const Geometry::Vec3D maskLeftSlope = Y * bodyLength + Z * maskLeftMaxHeight;
   Geometry::Vec3D maskLeftSlopeNormal = maskLeftSlope;

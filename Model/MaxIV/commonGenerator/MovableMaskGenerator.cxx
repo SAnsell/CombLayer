@@ -20,14 +20,11 @@
  *
  ****************************************************************************/
 #include <cmath>
-#include <complex>
 #include <fstream>
-#include <iomanip>
 #include <list>
 #include <map>
 #include <set>
 #include <sstream>
-#include <stack>
 #include <string>
 #include <vector>
 
