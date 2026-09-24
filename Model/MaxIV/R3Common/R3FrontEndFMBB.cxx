@@ -91,6 +91,7 @@
 #include "EntryPipe.h"
 #include "MagnetM1.h"
 #include "MagnetU1.h"
+#include "MovableMask.h"
 
 #include "R3FrontEnd.h"
 #include "R3FrontEndFMBB.h"
@@ -305,19 +306,17 @@ R3FrontEndFMBB::buildApertureTable(Simulation& System,
 
   int outerCell;
   // NOTE order for master cell [Next 4 objects]
-  aperturePipeA->createAll(System,preFC,preSideIndex);  // pipeB
-  moveCollA->addInsertCell(aperturePipeA->getCell("Void"));
-  moveCollA->createAll(System,*aperturePipeA,"midPoint");
+  moveCollA->createAll(System,preFC,preSideIndex);
 
   // bellows AFTER movable aperture pipe
   bellowE->setFront(preFC,preSideIndex);
-  bellowE->setBack(*aperturePipeA,1);
+  bellowE->setBack(*moveCollA, 1);
   bellowE->createAll(System,preFC,preSideIndex);
 
   pump4->createAll(System,preFC,preSideIndex);
 
   // bellows AFTER aperature ionpump and ion pump
-  bellowF->setFront(*aperturePipeA,2);
+  bellowF->setFront(*moveCollA,2);
   bellowF->setBack(*pump4,1);
   bellowF->createAll(System,preFC,preSideIndex);
 
@@ -325,8 +324,8 @@ R3FrontEndFMBB::buildApertureTable(Simulation& System,
   outerCell=buildZone.createUnit(System,*bellowE,2);
   bellowE->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*aperturePipeA,2);
-  aperturePipeA->insertAllInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*moveCollA,2);
+  moveCollA->insertInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowF,2);
   bellowF->insertAllInCell(System,outerCell);

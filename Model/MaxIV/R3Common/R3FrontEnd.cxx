@@ -93,6 +93,7 @@
 #include "MagnetU1.h"
 #include "CleaningMagnet.h"
 #include "HeatAbsorberToyama.h"
+#include "MovableMask.h"
 
 #include "R3FrontEnd.h"
 
@@ -135,8 +136,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   // aperture table
   bellowE(new constructSystem::Bellows(newName+"BellowE")),
-  aperturePipeA(new constructSystem::VacuumPipe(newName+"AperturePipeA")),
-  moveCollA(new xraySystem::LCollimator(newName+"MoveCollA")),
+  moveCollA(new xraySystem::MovableMask(newName+"MoveCollA")),
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   pump4(new constructSystem::CrossPipe(newName+"IonPump4")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
@@ -199,7 +199,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
 
   OR.addObject(pipeB);
   OR.addObject(bellowE);
-  OR.addObject(aperturePipeA);
   OR.addObject(moveCollA);
   OR.addObject(bellowF);
   OR.addObject(pump4);

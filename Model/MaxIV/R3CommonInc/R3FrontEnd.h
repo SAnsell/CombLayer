@@ -77,6 +77,7 @@ namespace xraySystem
   class EPCombine;
   class R3ChokeChamber;
   class R3ChokeInsert;
+  class MovableMask;
 
   /*!
     \class R3FrontEnd
@@ -162,10 +163,8 @@ class R3FrontEnd :
 
     /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowE;
-  /// Variable Apperature pipe A
-  std::shared_ptr<constructSystem::VacuumPipe> aperturePipeA;
-  /// L collimator
-  std::shared_ptr<xraySystem::LCollimator> moveCollA;
+  /// Movable Mask A
+  std::shared_ptr<xraySystem::MovableMask> moveCollA;
   /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowF;
   /// Real Ion pump (KF40) 26cm vertioal

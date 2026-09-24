@@ -103,6 +103,7 @@
 #include "StepBellows.h"
 #include "HeatAbsorberStepBellows.h"
 #include "FlangeMount.h"
+#include "MovableMask.h"
 
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyamaDanMAX.h"
@@ -367,10 +368,8 @@ R3FrontEndToyamaDanMAX::buildSupport6(Simulation& System,
 
   constructSystem::constructUnit(System,buildZone,preFC,"back",*flangePlateF);
   constructSystem::constructUnit(System,buildZone,*flangePlateF,"back",*bellowE);
-  constructSystem::constructUnit(System,buildZone,*bellowE,"back",*aperturePipeA);
-  moveCollA->addInsertCell(aperturePipeA->getCell("Void"));
-  moveCollA->createAll(System,*aperturePipeA,"midPoint");
-  constructSystem::constructUnit(System,buildZone,*aperturePipeA,"back",*bellowF);
+  constructSystem::constructUnit(System,buildZone,*bellowE,"back",*moveCollA);
+  constructSystem::constructUnit(System,buildZone,*moveCollA,"back",*bellowF);
   constructSystem::constructUnit(System,buildZone,*bellowF,"back",*pump4);
   constructSystem::constructUnit(System,buildZone,*pump4,"back",*bellowG);
   constructSystem::constructUnit(System,buildZone,*bellowG,"back",*aperturePipeB);

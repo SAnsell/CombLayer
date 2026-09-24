@@ -68,6 +68,7 @@ namespace xraySystem
   class BladeBPMToyama;
   class FixedMaskHybrid;
   class HeatAbsorberStepBellows;
+  class MovableMask;
 
   /*!
     \class R3FrontEndToyamaDanMAX

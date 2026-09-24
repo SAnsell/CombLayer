@@ -64,6 +64,7 @@
 #include "CleaningMagnetGenerator.h"
 #include "FlangePlateGenerator.h"
 #include "StepBellowsGenerator.h"
+#include "MovableMaskGenerator.h"
 
 // References
 // [1] ForMAX and MicroMAX Frontend Technical Specification
@@ -116,42 +117,23 @@ moveApertureTableToyama(FuncDataBase& Control,
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowE",14.0); // [2]
 
-  // Aperture pipe is movable:
-  PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipeA",30.0); // [2]
-  Control.addVariable(frontKey+"AperturePipeAOuterVoid",1);
-  //  Control.addVariable(frontKey+"AperturePipeAYStep",14.0);
-
   std::string collKey = frontKey+"MoveCollA";
-  // Dimensions and materials for MoveCollA from [7]
-  // Combining information from "X VIEW (S=1/1)" and "X VIEW"
-  Control.addVariable(collKey+"Width",2.48);
-  // Assuming that the vertical piece is centered in "X VIEW (S=1/1)"
-  Control.addVariable(collKey+"Height",2.1);
-  // A-A
-  Control.addVariable(collKey+"Length",24.4);
-  // X VIEW (S=1/1)
-  Control.addVariable(collKey+"InnerAWidth",0.25);
-  Control.addVariable(collKey+"InnerAHeight",0.25);
-  Control.addVariable(collKey+"InnerBWidth",0.25);
-  Control.addVariable(collKey+"InnerBHeight",0.25);
-  // A-A
-  // TODO: should be GLIDCOP AL-15
-  Control.addVariable(collKey+"Mat","Copper");
-  // Looking in beam direction ("X"), the thinner part of the L shape should be at the
-  // bottom, and the thicker part should be on the left.
+  MovableMaskGenerator movableMaskGenerator;
+  movableMaskGenerator.generate(Control,collKey);
+  // When viewed from upstream, the first movable mask is oriented like
+  // the letter "L" [5].
   Control.addVariable(collKey+"YAngle",-90.0);
-  // From "X VIEW" and "X VIEW (S=1/1)":
+  // From "X VIEW" and "X VIEW (S=1/1)" [7]:
   //
   // Position    | XStep (cm) | ZStep (cm)
   // --------------------------------------
-  // Fully open  |    0.25    |   -0.25
+  // Fully open  |    0.5     |   -0.5
   // Nominal     |    0.0     |    0.0
   // Fully close |   -0.5     |    0.5
   //
   // Default: Fully open
-  Control.addVariable(collKey+"XStep",0.25);
-  Control.addVariable(collKey+"ZStep",-0.25);
+  Control.addVariable(collKey+"XStep",0.5);
+  Control.addVariable(collKey+"ZStep",-0.5);
 
 
   BellowGen.setCF<setVariable::CF63>();

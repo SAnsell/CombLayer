@@ -69,6 +69,7 @@ namespace xraySystem
   class EPCombine;
   class R3ChokeChamber;
   class R3ChokeInsert;
+  class MovableMask;
 
   /*!
     \class balderFrontEnd
