@@ -102,9 +102,17 @@ private:
                                      // to an angled inner surface which
                                      // increases the inner cross section.
 
-  int flangeMaterial;
-  int voidMaterial;
+  double slitHeight; // Height of the slit.
+  double
+      slitInnerSurfaceAngle; // The edges of the slit that define the beam's
+                             // cross section have a slope. The angle in degrees
+                             // is the same for the left and bottom edge.
+  double slitThickness;      // Thickness of the slit at the downstream end.
+
   int bodyMaterial;
+  int flangeMaterial;
+  int slitMaterial;
+  int voidMaterial;
 
   void createSurfaces();
   void createObjects(Simulation &);

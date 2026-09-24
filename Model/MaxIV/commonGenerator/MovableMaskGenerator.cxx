@@ -68,8 +68,16 @@ MovableMaskGenerator::MovableMaskGenerator()
                 // + 2.0 mm (half beam width) + 5.4 mm
       maskFocalPoint(0.376),              // [5]
       maskDownstreamInnerPlaneAngle(9.0), // [5]
+      slitHeight(2.75),                   // [5]
+      slitInnerSurfaceAngle(10.0),        // [5]
+      slitThickness(0.5),                 // [5]
       bodyMaterial("Aluminium"),          // A-A, TODO: Should be GLIDCOP AL-15
       flangeMaterial("Stainless304L"),    // A-A
+      slitMaterial(
+          "Tantalum"), // Back View. The part is designated as "Tantalumslit" in
+                       // the drawing, therefore it was assumed that it is pure
+                       // tantalum. Usually, the material specifications in
+                       // the Toyama drawings are more detailed.
       voidMaterial("Void") {}
 
 void MovableMaskGenerator::generate(FuncDataBase &Control,
@@ -95,11 +103,17 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "MaskBottomMaxHeight", maskBottomMaxHeight);
   Control.addVariable(keyName + "MaskBottomMaxWidth", maskBottomMaxWidth);
   Control.addVariable(keyName + "MaskFocalPoint", maskFocalPoint);
-  Control.addVariable(keyName + "MaskDownstreamInnerPlaneAngle", maskDownstreamInnerPlaneAngle);
+  Control.addVariable(keyName + "MaskDownstreamInnerPlaneAngle",
+                      maskDownstreamInnerPlaneAngle);
+
+  Control.addVariable(keyName + "SlitHeight", slitHeight);
+  Control.addVariable(keyName + "SlitThickness", slitThickness);
+  Control.addVariable(keyName + "SlitInnerSurfaceAngle", slitInnerSurfaceAngle);
 
   Control.addVariable(keyName + "FlangeMaterial", flangeMaterial);
   Control.addVariable(keyName + "BodyMaterial", bodyMaterial);
   Control.addVariable(keyName + "VoidMaterial", voidMaterial);
+  Control.addVariable(keyName + "SlitMaterial", slitMaterial);
 }
 
 } // NAMESPACE setVariable

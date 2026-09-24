@@ -98,9 +98,15 @@ void MovableMask::populate(const FuncDataBase &Control) {
   maskDownstreamInnerPlaneAngle =
       Control.EvalVar<double>(keyName + "MaskDownstreamInnerPlaneAngle");
 
+  slitHeight = Control.EvalVar<double>(keyName + "SlitHeight");
+  slitInnerSurfaceAngle =
+      Control.EvalVar<double>(keyName + "SlitInnerSurfaceAngle");
+  slitThickness = Control.EvalVar<double>(keyName + "SlitThickness");
+
   bodyMaterial = ModelSupport::EvalMat<int>(Control, keyName + "BodyMaterial");
   flangeMaterial =
       ModelSupport::EvalMat<int>(Control, keyName + "FlangeMaterial");
+  slitMaterial = ModelSupport::EvalMat<int>(Control, keyName + "SlitMaterial");
   voidMaterial = ModelSupport::EvalMat<int>(Control, keyName + "VoidMaterial");
 
   return;
@@ -118,6 +124,8 @@ void MovableMask::createSurfaces() {
                            Origin + Y * (length / 2.0 - flangeLength), Y);
   ModelSupport::buildPlane(SMap, buildIndex + 22, Origin + Y * bodyLength / 2.0,
                            Y);
+  ModelSupport::buildPlane(SMap, buildIndex + 32,
+                           Origin + Y * (bodyLength / 2.0 + slitThickness), Y);
 
   ModelSupport::buildPlane(SMap, buildIndex + 3, Origin - X * bodyWidth / 2.0,
                            X);
@@ -127,11 +135,30 @@ void MovableMask::createSurfaces() {
                            X);
   ModelSupport::buildPlane(SMap, buildIndex + 14, Origin + X * holeWidth / 2.0,
                            X);
+  ModelSupport::buildPlane(SMap, buildIndex + 24,
+                           Origin + X * (-holeWidth / 2.0 + maskBottomMaxWidth),
+                           X);
 
   ModelSupport::buildPlane(SMap, buildIndex + 5, Origin - Z * bodyHeight / 2.0,
                            Z);
   ModelSupport::buildPlane(SMap, buildIndex + 15,
+                           Origin - Z * (holeHeight / 2.0 - holeOffset -
+                                         maskLeftMaxHeight + slitHeight),
+                           Z);
+  ModelSupport::buildPlane(SMap, buildIndex + 25,
                            Origin - Z * (holeHeight / 2.0 - holeOffset), Z);
+  const double slitInnerSurfaceAngleRad = slitInnerSurfaceAngle * M_PI / 180.0;
+  Geometry::Vec3D slitBottomSurfaceNormal = Z;
+  slitBottomSurfaceNormal.rotate(X, -slitInnerSurfaceAngleRad);
+  ModelSupport::buildPlane(
+      SMap, buildIndex + 35,
+      Origin + Y * (bodyLength / 2.0) +
+          Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight),
+      slitBottomSurfaceNormal);
+  ModelSupport::buildPlane(
+      SMap, buildIndex + 45,
+      Origin - Z * (holeHeight / 2.0 - holeOffset - maskLeftMaxHeight), Z);
+
   ModelSupport::buildPlane(SMap, buildIndex + 6, Origin + Z * bodyHeight / 2.0,
                            Z);
   ModelSupport::buildPlane(SMap, buildIndex + 16,
@@ -146,11 +173,19 @@ void MovableMask::createSurfaces() {
   ModelSupport::buildPlane(SMap, buildIndex + 23,
                            Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth),
                            X);
+  Geometry::Vec3D slitLeftSurfaceNormal = X;
+  slitLeftSurfaceNormal.rotate(Z, slitInnerSurfaceAngleRad);
+  ModelSupport::buildPlane(SMap, buildIndex + 33,
+                           Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
+                               Y * (bodyLength / 2.0),
+                           slitLeftSurfaceNormal);
+  std::cout << slitLeftSurfaceNormal << std::endl;
+
   const Geometry::Vec3D maskLeftSlope = Y * bodyLength + Z * maskLeftMaxHeight;
   Geometry::Vec3D maskLeftSlopeNormal = maskLeftSlope;
   maskLeftSlopeNormal.rotate(X, M_PI_2);
   ModelSupport::buildPlane(
-      SMap, buildIndex + 25,
+      SMap, buildIndex + 55,
       Origin + Y * bodyLength / 2.0 +
           Z * (maskLeftMaxHeight - (holeHeight / 2.0 - holeOffset)),
       maskLeftSlopeNormal);
@@ -170,7 +205,7 @@ void MovableMask::createSurfaces() {
                tan(maskLeftDownstreamInnerPlaneAngleRad)) +
       Y * bodyLength / 2.0 +
       Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight);
-  ModelSupport::buildPlane(SMap, buildIndex + 33, focalPoint,
+  ModelSupport::buildPlane(SMap, buildIndex + 43, focalPoint,
                            (maskLeftDownstreamBottomRight - focalPoint) *
                                (maskLeftDownstreamTopRight - focalPoint));
 
@@ -179,7 +214,7 @@ void MovableMask::createSurfaces() {
       Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight -
            tan(maskLeftDownstreamInnerPlaneAngleRad) *
                (maskBottomMaxWidth - maskLeftMaxWidth));
-  ModelSupport::buildPlane(SMap, buildIndex + 35, focalPoint,
+  ModelSupport::buildPlane(SMap, buildIndex + 65, focalPoint,
                            (maskBottomDownstreamTopLeft - focalPoint) *
                                (maskLeftDownstreamBottomRight - focalPoint));
 
@@ -191,21 +226,20 @@ void MovableMask::createSurfaces() {
       Origin - X * (holeWidth / 2.0 - maskBottomMaxWidth) +
       Y * bodyLength / 2.0 + Z * (-holeHeight / 2.0 + holeOffset);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 45, focalPoint,
+  ModelSupport::buildPlane(SMap, buildIndex + 75, focalPoint,
                            (maskBottomDownstreamTopRight - focalPoint) *
                                (maskBottomDownstreamTopLeft - focalPoint));
 
   Geometry::Vec3D maskLeftUpstreamBottomRight =
       Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) - Y * bodyLength / 2.0 +
       Z * (-holeHeight / 2.0 + holeOffset);
-  std::cout << maskLeftUpstreamBottomRight << std::endl;
 
   ModelSupport::buildPlane(
-      SMap, buildIndex + 55, focalPoint,
+      SMap, buildIndex + 85, focalPoint,
       -(maskBottomDownstreamTopRight - focalPoint) *
           (maskLeftUpstreamBottomRight - maskBottomDownstreamTopRight));
   ModelSupport::buildPlane(
-      SMap, buildIndex + 65, maskLeftUpstreamBottomRight,
+      SMap, buildIndex + 95, maskLeftUpstreamBottomRight,
       -(maskBottomDownstreamTopRight - maskLeftUpstreamBottomRight) *
           (maskBottomDownstreamBottomRight - maskLeftUpstreamBottomRight));
 }
@@ -224,12 +258,12 @@ void MovableMask::createObjects(Simulation &System) {
 
   makeCell("Body", System, cellIndex++, bodyMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "21 -22 3 -4 5 -6 (-13:14:-15:16)"));
+                                     "21 -22 3 -4 5 -6 (-13:14:-25:16)"));
   makeCell("BodyLeftInnerVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 13 -23 25 -16"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 13 -23 55 -16"));
   makeCell("BodyRightInnerVoid", System, cellIndex++, voidMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "21 -22 23 -14 15 -16 (45:55:65)"));
+                                     "21 -22 23 -14 25 -16 (75:85:95)"));
   makeCell(
       "BodyOuterVoid", System, cellIndex++, voidMaterial, 0.0,
       ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 (-3:4:-5:6) -7"));
@@ -237,7 +271,7 @@ void MovableMask::createObjects(Simulation &System) {
   makeCell("BackFlange", System, cellIndex++, flangeMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "-2 12 -7 27"));
   makeCell("BackFlangeVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-2 22 -27"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "-2 32 -27"));
   makeCell("BackPipe", System, cellIndex++, flangeMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "22 -12 -17 27"));
   makeCell("BackPipeVoid", System, cellIndex++, voidMaterial, 0.0,
@@ -245,12 +279,21 @@ void MovableMask::createObjects(Simulation &System) {
 
   makeCell("MaskLeft", System, cellIndex++, bodyMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "21 -22 13 -23 (-33:-35) 15 -25"));
+                                     "21 -22 13 -23 (-43:-65) 25 -55"));
   makeCell("MaskLeftVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 -23 33 -25 35"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 -23 43 -55 65"));
   makeCell(
       "MaskBottom", System, cellIndex++, bodyMaterial, 0.0,
-      ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 23 15 -45 -55 -65"));
+      ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 23 25 -75 -85 -95"));
+
+  makeCell("Slit", System, cellIndex++, slitMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex,
+                                     "22 -32 13 -24 15 -45 (-33:-35)"));
+  makeCell("SlitVoid", System, cellIndex++, voidMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex,
+                                     "22 -32 -27 (-13:-15:24:45)"));
+  makeCell("SlitVoid", System, cellIndex++, voidMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex, "22 -32 33 -24 35 -45"));
 
   addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 -7"));
 }

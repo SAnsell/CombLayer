@@ -58,8 +58,13 @@ private:
   double maskFocalPoint;
   double maskDownstreamInnerPlaneAngle;
 
+  double slitHeight;
+  double slitInnerSurfaceAngle;
+  double slitThickness;
+
   std::string bodyMaterial;
   std::string flangeMaterial;
+  std::string slitMaterial;
   std::string voidMaterial;
 
 public:
