@@ -2074,11 +2074,22 @@ makeSingleItem::build(Simulation& System,
         return;
       }
     if (item == "MovableMask"){
-      std::shared_ptr<xraySystem::MovableMask> movableMask = std::make_shared<xraySystem::MovableMask>("MovableMask");
-      OR.addObject(movableMask);
+      std::shared_ptr<xraySystem::MovableMask> movableMaskNominal = 
+        std::make_shared<xraySystem::MovableMask>("MovableMaskNominal");
+      std::shared_ptr<xraySystem::MovableMask> movableMaskFullyOpen =
+        std::make_shared<xraySystem::MovableMask>("MovableMaskFullyOpen");
+      std::shared_ptr<xraySystem::MovableMask> movableMaskFullyClose =
+        std::make_shared<xraySystem::MovableMask>("MovableMaskFullyClose");
+      OR.addObject(movableMaskNominal);
+      OR.addObject(movableMaskFullyOpen);
+      OR.addObject(movableMaskFullyClose);
 
-      movableMask->addInsertCell(voidCell);
-      movableMask->createAll(System,World::masterOrigin(),0);
+      movableMaskNominal->addInsertCell(voidCell);
+      movableMaskNominal->createAll(System,World::masterOrigin(),0);
+      movableMaskFullyOpen->addInsertCell(voidCell);
+      movableMaskFullyOpen->createAll(System,*movableMaskNominal,"back");
+      movableMaskFullyClose->addInsertCell(voidCell);
+      movableMaskFullyClose->createAll(System,*movableMaskFullyOpen,"back");
 
       return;
     }

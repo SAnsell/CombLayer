@@ -949,7 +949,11 @@ SingleItemVariables(FuncDataBase& Control)
 
   // MovableMask
   MovableMaskGenerator movableMaskGenerator;
-  movableMaskGenerator.generate(Control, "MovableMask");
+  movableMaskGenerator.generate(Control, "MovableMaskNominal");
+  movableMaskGenerator.setFullyOpen();
+  movableMaskGenerator.generate(Control, "MovableMaskFullyOpen");
+  movableMaskGenerator.setFullyClose();
+  movableMaskGenerator.generate(Control, "MovableMaskFullyClose");
 
   // Concrete door
   setVariable::LocalShieldingGenerator LSGen;
