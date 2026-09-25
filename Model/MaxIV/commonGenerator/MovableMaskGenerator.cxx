@@ -65,6 +65,8 @@ MovableMaskGenerator::MovableMaskGenerator()
                 // + 2.0 mm (half beam width) + 5.4 mm
       maskFocalPoint(0.376),              // [5]
       maskDownstreamInnerPlaneAngle(9.0), // [5]
+      positionX(0.0),                     // Nominal zero position
+      positionZ(0.0),                     // Nominal zero position
       slitHeight(2.75),                   // [5]
       slitInnerSurfaceAngle(10.0),        // [5]
       slitThickness(0.5),                 // [5]
@@ -103,6 +105,9 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "MaskDownstreamInnerPlaneAngle",
                       maskDownstreamInnerPlaneAngle);
 
+  Control.addVariable(keyName + "PositionX", positionX);
+  Control.addVariable(keyName + "PositionZ", positionZ);
+
   Control.addVariable(keyName + "SlitHeight", slitHeight);
   Control.addVariable(keyName + "SlitThickness", slitThickness);
   Control.addVariable(keyName + "SlitInnerSurfaceAngle", slitInnerSurfaceAngle);
@@ -111,6 +116,16 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "BodyMaterial", bodyMaterial);
   Control.addVariable(keyName + "VoidMaterial", voidMaterial);
   Control.addVariable(keyName + "SlitMaterial", slitMaterial);
+}
+
+void MovableMaskGenerator::setAperture(const double posX, const double posZ) {
+  if (fabs(posX) > 0.5 || fabs(posZ) > 0.5) {
+    ELog::EM << "MovableMask: Value outside the nominal configuration space "
+                "(|positionX|, |positionZ| < 0.5 cm) set."
+             << ELog::endDiag;
+  }
+  positionX = posX;
+  positionZ = posZ;
 }
 
 } // NAMESPACE setVariable

@@ -96,6 +96,9 @@ void MovableMask::populate(const FuncDataBase &Control) {
   maskDownstreamInnerPlaneAngle =
       Control.EvalVar<double>(keyName + "MaskDownstreamInnerPlaneAngle");
 
+  positionX = Control.EvalVar<double>(keyName + "PositionX");
+  positionZ = Control.EvalVar<double>(keyName + "PositionZ");
+
   slitHeight = Control.EvalVar<double>(keyName + "SlitHeight");
   slitInnerSurfaceAngle =
       Control.EvalVar<double>(keyName + "SlitInnerSurfaceAngle");
@@ -112,78 +115,80 @@ void MovableMask::populate(const FuncDataBase &Control) {
 
 void MovableMask::createSurfaces() {
 
+  const Geometry::Vec3D center = Origin - X * positionX - Z * positionZ;
+
   if (!isActive("front")) {
-    ModelSupport::buildPlane(SMap, buildIndex + 1, Origin, Y);
+    ModelSupport::buildPlane(SMap, buildIndex + 1, center, Y);
     setFront(SMap.realSurf(buildIndex + 1));
   }
   if (!isActive("back")) {
-    ModelSupport::buildPlane(SMap, buildIndex + 2, Origin + Y * length, Y);
+    ModelSupport::buildPlane(SMap, buildIndex + 2, center + Y * length, Y);
     setBack(-SMap.realSurf(buildIndex + 2));
   }
 
-  ModelSupport::buildPlane(SMap, buildIndex + 11, Origin + Y * (flangeLength),
+  ModelSupport::buildPlane(SMap, buildIndex + 11, center + Y * (flangeLength),
                            Y);
   ModelSupport::buildPlane(SMap, buildIndex + 21,
-                           Origin + Y * (length - bodyLength) / 2.0, Y);
+                           center + Y * (length - bodyLength) / 2.0, Y);
   ModelSupport::buildPlane(SMap, buildIndex + 12,
-                           Origin + Y * (length - flangeLength), Y);
+                           center + Y * (length - flangeLength), Y);
   ModelSupport::buildPlane(SMap, buildIndex + 22,
-                           Origin + Y * (length + bodyLength) / 2.0, Y);
+                           center + Y * (length + bodyLength) / 2.0, Y);
   ModelSupport::buildPlane(
       SMap, buildIndex + 32,
-      Origin + Y * ((length + bodyLength) / 2.0 + slitThickness), Y);
+      center + Y * ((length + bodyLength) / 2.0 + slitThickness), Y);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 3, Origin - X * bodyWidth / 2.0,
+  ModelSupport::buildPlane(SMap, buildIndex + 3, center - X * bodyWidth / 2.0,
                            X);
-  ModelSupport::buildPlane(SMap, buildIndex + 13, Origin - X * holeWidth / 2.0,
+  ModelSupport::buildPlane(SMap, buildIndex + 13, center - X * holeWidth / 2.0,
                            X);
-  ModelSupport::buildPlane(SMap, buildIndex + 4, Origin + X * bodyWidth / 2.0,
+  ModelSupport::buildPlane(SMap, buildIndex + 4, center + X * bodyWidth / 2.0,
                            X);
-  ModelSupport::buildPlane(SMap, buildIndex + 14, Origin + X * holeWidth / 2.0,
+  ModelSupport::buildPlane(SMap, buildIndex + 14, center + X * holeWidth / 2.0,
                            X);
   ModelSupport::buildPlane(SMap, buildIndex + 24,
-                           Origin + X * (-holeWidth / 2.0 + maskBottomMaxWidth),
+                           center + X * (-holeWidth / 2.0 + maskBottomMaxWidth),
                            X);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 5, Origin - Z * bodyHeight / 2.0,
+  ModelSupport::buildPlane(SMap, buildIndex + 5, center - Z * bodyHeight / 2.0,
                            Z);
   ModelSupport::buildPlane(SMap, buildIndex + 15,
-                           Origin - Z * (holeHeight / 2.0 - holeOffset -
+                           center - Z * (holeHeight / 2.0 - holeOffset -
                                          maskLeftMaxHeight + slitHeight),
                            Z);
   ModelSupport::buildPlane(SMap, buildIndex + 25,
-                           Origin - Z * (holeHeight / 2.0 - holeOffset), Z);
+                           center - Z * (holeHeight / 2.0 - holeOffset), Z);
 
   const double slitInnerSurfaceAngleRad = slitInnerSurfaceAngle * M_PI / 180.0;
   Geometry::Vec3D slitBottomSurfaceNormal = Z;
   slitBottomSurfaceNormal.rotate(X, -slitInnerSurfaceAngleRad);
   ModelSupport::buildPlane(
       SMap, buildIndex + 35,
-      Origin + Y * ((length + bodyLength) / 2.0) +
+      center + Y * ((length + bodyLength) / 2.0) +
           Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight),
       slitBottomSurfaceNormal);
   ModelSupport::buildPlane(
       SMap, buildIndex + 45,
-      Origin - Z * (holeHeight / 2.0 - holeOffset - maskLeftMaxHeight), Z);
+      center - Z * (holeHeight / 2.0 - holeOffset - maskLeftMaxHeight), Z);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 6, Origin + Z * bodyHeight / 2.0,
+  ModelSupport::buildPlane(SMap, buildIndex + 6, center + Z * bodyHeight / 2.0,
                            Z);
   ModelSupport::buildPlane(SMap, buildIndex + 16,
-                           Origin + Z * (holeHeight / 2.0 + holeOffset), Z);
+                           center + Z * (holeHeight / 2.0 + holeOffset), Z);
 
-  ModelSupport::buildCylinder(SMap, buildIndex + 7, Origin, Y, flangeRadius);
-  ModelSupport::buildCylinder(SMap, buildIndex + 17, Origin, Y,
+  ModelSupport::buildCylinder(SMap, buildIndex + 7, center, Y, flangeRadius);
+  ModelSupport::buildCylinder(SMap, buildIndex + 17, center, Y,
                               flangeInnerRadius + flangeWallThick);
-  ModelSupport::buildCylinder(SMap, buildIndex + 27, Origin, Y,
+  ModelSupport::buildCylinder(SMap, buildIndex + 27, center, Y,
                               flangeInnerRadius);
 
   ModelSupport::buildPlane(SMap, buildIndex + 23,
-                           Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth),
+                           center - X * (holeWidth / 2.0 - maskLeftMaxWidth),
                            X);
   Geometry::Vec3D slitLeftSurfaceNormal = X;
   slitLeftSurfaceNormal.rotate(Z, slitInnerSurfaceAngleRad);
   ModelSupport::buildPlane(SMap, buildIndex + 33,
-                           Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
+                           center - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
                                Y * ((length + bodyLength) / 2.0),
                            slitLeftSurfaceNormal);
 
@@ -192,22 +197,22 @@ void MovableMask::createSurfaces() {
   maskLeftSlopeNormal.rotate(X, M_PI_2);
   ModelSupport::buildPlane(
       SMap, buildIndex + 55,
-      Origin + Y * (length + bodyLength) / 2.0 +
+      center + Y * (length + bodyLength) / 2.0 +
           Z * (maskLeftMaxHeight - (holeHeight / 2.0 - holeOffset)),
       maskLeftSlopeNormal);
 
   const Geometry::Vec3D focalPoint =
-      Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) -
+      center - X * (holeWidth / 2.0 - maskLeftMaxWidth) -
       Y * (length + bodyLength) / 2.0 - Z * (holeHeight / 2.0 - holeOffset) +
       maskLeftSlope * maskFocalPoint;
   const Geometry::Vec3D maskLeftDownstreamTopRight =
-      Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
+      center - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
       Y * (length + bodyLength) / 2.0 +
       Z * (-holeHeight / 2.0 + holeOffset + maskLeftMaxHeight);
   const double maskLeftDownstreamInnerPlaneAngleRad =
       maskDownstreamInnerPlaneAngle * M_PI / 180.0;
-  Geometry::Vec3D maskLeftDownstreamBottomRight =
-      Origin -
+  const Geometry::Vec3D maskLeftDownstreamBottomRight =
+      center -
       X * (holeWidth / 2.0 - maskLeftMaxWidth +
            (maskLeftMaxHeight - maskBottomMaxHeight) *
                tan(maskLeftDownstreamInnerPlaneAngleRad)) +
@@ -217,8 +222,8 @@ void MovableMask::createSurfaces() {
                            (maskLeftDownstreamBottomRight - focalPoint) *
                                (maskLeftDownstreamTopRight - focalPoint));
 
-  Geometry::Vec3D maskBottomDownstreamTopLeft =
-      Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
+  const Geometry::Vec3D maskBottomDownstreamTopLeft =
+      center - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
       Y * (length + bodyLength) / 2.0 +
       Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight -
            tan(maskLeftDownstreamInnerPlaneAngleRad) *
@@ -227,20 +232,20 @@ void MovableMask::createSurfaces() {
                            (maskBottomDownstreamTopLeft - focalPoint) *
                                (maskLeftDownstreamBottomRight - focalPoint));
 
-  Geometry::Vec3D maskBottomDownstreamTopRight =
-      Origin - X * (holeWidth / 2.0 - maskBottomMaxWidth) +
+  const Geometry::Vec3D maskBottomDownstreamTopRight =
+      center - X * (holeWidth / 2.0 - maskBottomMaxWidth) +
       Y * (length + bodyLength) / 2.0 +
       Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight);
-  Geometry::Vec3D maskBottomDownstreamBottomRight =
-      Origin - X * (holeWidth / 2.0 - maskBottomMaxWidth) +
+  const Geometry::Vec3D maskBottomDownstreamBottomRight =
+      center - X * (holeWidth / 2.0 - maskBottomMaxWidth) +
       Y * (length + bodyLength) / 2.0 + Z * (-holeHeight / 2.0 + holeOffset);
 
   ModelSupport::buildPlane(SMap, buildIndex + 75, focalPoint,
                            (maskBottomDownstreamTopRight - focalPoint) *
                                (maskBottomDownstreamTopLeft - focalPoint));
 
-  Geometry::Vec3D maskLeftUpstreamBottomRight =
-      Origin - X * (holeWidth / 2.0 - maskLeftMaxWidth) -
+  const Geometry::Vec3D maskLeftUpstreamBottomRight =
+      center - X * (holeWidth / 2.0 - maskLeftMaxWidth) -
       Y * (length + bodyLength) / 2.0 + Z * (-holeHeight / 2.0 + holeOffset);
 
   ModelSupport::buildPlane(

@@ -58,6 +58,9 @@ private:
   double maskFocalPoint;
   double maskDownstreamInnerPlaneAngle;
 
+  double positionX;
+  double positionZ;
+
   double slitHeight;
   double slitInnerSurfaceAngle;
   double slitThickness;
@@ -71,6 +74,19 @@ public:
   MovableMaskGenerator();
   ~MovableMaskGenerator() = default;
 
+  void setNominalZero() {
+    positionX = 0.0;
+    positionZ = 0.0;
+  }
+  void setFullyOpen() {
+    positionX = 0.5;
+    positionZ = 0.5;
+  }
+  void setFullyClose() {
+    positionX = -0.5;
+    positionZ = -0.5;
+  }
+  void setAperture(const double posX, const double posZ);
   void generate(FuncDataBase &, const std::string &) const;
 };
 

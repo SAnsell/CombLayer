@@ -34,7 +34,8 @@ namespace xraySystem {
 
   When viewed from upstream or downstream, the movable mask appears as an
   L-shaped block that collimates the beam from two sides. However, the inner
-  surfaces are angled to ensure a uniform heat load inside the component.
+  surfaces are angled to ensure a uniform heat load inside the component and
+  to reduce the probability of transmitting small-angle-scattered photons.
 
   The component supports independent left-right and up-down movement.
   Therefore, two of these movable masks, in sequence and rotated against each
@@ -52,6 +53,25 @@ namespace xraySystem {
   compared to the first one, and it constrains the beam from the right and from
   the top. At the level of detail of this class, the two movable masks are
   identical.
+
+  The class provides two variables (positionX, positionZ) for positioning the
+  mask relative to its nominal zero position. This is the recommended method for
+  adjusting the beam cross section. At the moment, the geometry in this class
+  consists solely of the movable part of the movable mask, i.e. the same effect
+  could be achieved by using the XStep and ZStep variables of the base class.
+  The "nominal zero position" [2,4] is the default setting (positionX =
+  positionZ = 0).
+  In general, the parameter space for positionX and positionZ is independently
+  limited to [-0.5, 0.5]. The following special configurations are defined
+  [2,4]:
+
+  Position Name | positionX (cm) | positionZ (cm) | Aperture (cm2)
+  ----------------------------------------------------------------
+  Fully open    |      0.5       |       0.5      |  0.76  x  0.76
+  Nominal       |      0.0       |       0.0      |  0.26  x  0.26
+  Fully close   |     -0.5       |      -0.5      | -0.24  x -0.24
+
+  Note that the x/z offsets of the special configurations are defined as in [2,4].
 
   [1] TOYAMA, Movable Mask 1 for DanMAX, S6-4-1AG01042.pdf
   [2] TOYAMA, Movable Mask 1 main body for DanMAX, S6-5-1AG01044.pdf
@@ -102,6 +122,9 @@ private:
                                      // from this point, there is a transition
                                      // to an angled inner surface which
                                      // increases the inner cross section.
+
+  double positionX; // Horizontal positioning of the movable mask.
+  double positionZ; // Vertical positioning of the movable mask.
 
   double slitHeight; // Height of the slit.
   double
