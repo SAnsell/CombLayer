@@ -27,7 +27,7 @@ class Simulation;
 namespace xraySystem {
 /*!
   \class MovableMask
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
   \date September 2026
   \brief Movable Mask with L-shaped cross section manufactured by TOYAMA
@@ -79,6 +79,9 @@ namespace xraySystem {
   [4] TOYAMA, Movable Mask 2 main body for DanMAX, S6-9-1AG01045.pdf
   [5] CAD model of DanMAX/SINCRYS, J. Selberg, fall/winter 2025,
   /mxn/groups/rad/Beamlines/DanMAX/Simulations/FE_02.STEP
+
+  Version history:
+  1.0   - 2026-09-25
 */
 
 class MovableMask : public attachSystem::FixedRotate,

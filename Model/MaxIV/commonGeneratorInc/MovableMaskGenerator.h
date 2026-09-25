@@ -28,10 +28,13 @@ namespace setVariable {
 
 /*!
   \class MovableMaskGenerator
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
   \date September 2026
   \brief MovableMaskGenerator for variables
+
+  Version history:
+  1.0   - 2026-09-25
 */
 
 class MovableMaskGenerator {
