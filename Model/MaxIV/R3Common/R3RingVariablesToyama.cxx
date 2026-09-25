@@ -119,22 +119,12 @@ moveApertureTableToyama(FuncDataBase& Control,
 
   std::string collKey = frontKey+"MoveCollA";
   MovableMaskGenerator movableMaskGenerator;
+  // Default: Fully open.
+  movableMaskGenerator.setFullyOpen();
   movableMaskGenerator.generate(Control,collKey);
   // When viewed from upstream, the first movable mask is oriented like
   // the letter "L" [5].
   Control.addVariable(collKey+"YAngle",-90.0);
-  // From "X VIEW" and "X VIEW (S=1/1)" [7]:
-  //
-  // Position    | XStep (cm) | ZStep (cm)
-  // --------------------------------------
-  // Fully open  |    0.5     |   -0.5
-  // Nominal     |    0.0     |    0.0
-  // Fully close |   -0.5     |    0.5
-  //
-  // Default: Fully open
-  Control.addVariable(collKey+"XStep",0.5);
-  Control.addVariable(collKey+"ZStep",-0.5);
-
 
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowF",8); //14.0); // [2]
@@ -149,21 +139,11 @@ moveApertureTableToyama(FuncDataBase& Control,
   BellowGen.generateBellow(Control,frontKey+"BellowG",14.0); // [2]
 
   collKey = frontKey+"MoveCollB";
+  // See also MoveCollA.
   movableMaskGenerator.generate(Control,collKey);
   // The second movable mask is rotated by 180 degrees w.r.t. the first one.
   // When viewed from upstream, it constrains the beam from above and from the right.
   Control.addVariable(collKey+"YAngle",180.0);
-  // From "X VIEW" and "X VIEW (S=1/1)":
-  //
-  // Position    | XStep (cm) | ZStep (cm)
-  // --------------------------------------
-  // Fully open  |    0.5     |    0.5
-  // Nominal     |    0.0     |    0.0
-  // Fully close |   -0.5     |   -0.5
-  //
-  // Default: Fully open
-  Control.addVariable(collKey+"XStep",0.5);
-  Control.addVariable(collKey+"ZStep",0.5);
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
