@@ -145,41 +145,25 @@ moveApertureTableToyama(FuncDataBase& Control,
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
     (Control,frontKey+"IonPump4",0.0,15.74,28.70);   // height/depth
 
-  // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,frontKey+"BellowG",14.0); // [2]
 
-  // Aperture pipe is movable:
-  PipeGen.setCF<CF63>();
-  PipeGen.generatePipe(Control,frontKey+"AperturePipeB",30.0); // [2]
-  Control.addVariable(frontKey+"AperturePipeBOuterVoid",1);
-  //  Control.addVariable(frontKey+"AperturePipeBYStep",14.0);
   collKey = frontKey+"MoveCollB";
-  // Dimensions and materials for MoveCollB from [8]
-  // See also the comments on MoveCollA for more information.
-  Control.addVariable(collKey+"Width",2.48);
-  Control.addVariable(collKey+"Height",2.1);
-  Control.addVariable(collKey+"Length",24.4);
-  Control.addVariable(collKey+"InnerAWidth",0.25);
-  Control.addVariable(collKey+"InnerAHeight",0.25);
-  Control.addVariable(collKey+"InnerBWidth",0.25);
-  Control.addVariable(collKey+"InnerBHeight",0.25);
-  // TODO: should be GLIDCOP AL-15
-  Control.addVariable(collKey+"Mat","Copper");
-  // Looking in beam direction ("X"), the thinner part of the L shape should be at the
-  // top, and the thicker part should be on the right.
-  Control.addVariable(collKey+"YAngle",90.0);
+  movableMaskGenerator.generate(Control,collKey);
+  // The second movable mask is rotated by 180 degrees w.r.t. the first one.
+  // When viewed from upstream, it constrains the beam from above and from the right.
+  Control.addVariable(collKey+"YAngle",180.0);
   // From "X VIEW" and "X VIEW (S=1/1)":
   //
   // Position    | XStep (cm) | ZStep (cm)
   // --------------------------------------
-  // Fully open  |   -0.25    |    0.25
+  // Fully open  |    0.5     |    0.5
   // Nominal     |    0.0     |    0.0
-  // Fully close |    0.5     |   -0.5
+  // Fully close |   -0.5     |   -0.5
   //
   // Default: Fully open
-  Control.addVariable(collKey+"XStep",-0.25);
-  Control.addVariable(collKey+"ZStep",0.25);
+  Control.addVariable(collKey+"XStep",0.5);
+  Control.addVariable(collKey+"ZStep",0.5);
 
   // [FREE FLOATING]
   BellowGen.setCF<setVariable::CF63>();

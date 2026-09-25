@@ -62,7 +62,6 @@ namespace xraySystem
 
   class CylGateValve;
   class HeatDump;
-  class LCollimator;
   class SqrCollimator;
   class SquareFMask;
   class MovableSafetyMask;
@@ -163,7 +162,7 @@ class R3FrontEnd :
 
     /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowE;
-  /// Movable Mask A
+  /// Movable Mask 1
   std::shared_ptr<xraySystem::MovableMask> moveCollA;
   /// bellows for third table
   std::shared_ptr<constructSystem::Bellows> bellowF;
@@ -171,10 +170,8 @@ class R3FrontEnd :
   std::shared_ptr<constructSystem::CrossPipe> pump4;
   /// bellows for second movable aperature
   std::shared_ptr<constructSystem::Bellows> bellowG;
-  /// Variable Apperature pipe B
-  std::shared_ptr<constructSystem::VacuumPipe> aperturePipeB;
-  /// L collimator
-  std::shared_ptr<xraySystem::LCollimator> moveCollB;
+  /// Movable Mask 2
+  std::shared_ptr<xraySystem::MovableMask> moveCollB;
   /// bellows for exit of moveable aperatures
   std::shared_ptr<constructSystem::Bellows> bellowH;
   /// Exit of movables

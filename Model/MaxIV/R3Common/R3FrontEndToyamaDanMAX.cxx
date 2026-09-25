@@ -74,7 +74,6 @@
 #include "insertObject.h"
 #include "insertCylinder.h"
 #include "Bellows.h"
-#include "LCollimator.h"
 #include "GateValveCube.h"
 #include "CylGateValve.h"
 #include "OffsetFlangePipe.h"
@@ -372,10 +371,8 @@ R3FrontEndToyamaDanMAX::buildSupport6(Simulation& System,
   constructSystem::constructUnit(System,buildZone,*moveCollA,"back",*bellowF);
   constructSystem::constructUnit(System,buildZone,*bellowF,"back",*pump4);
   constructSystem::constructUnit(System,buildZone,*pump4,"back",*bellowG);
-  constructSystem::constructUnit(System,buildZone,*bellowG,"back",*aperturePipeB);
-  moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
-  moveCollB->createAll(System,*aperturePipeB,"midPoint");
-  constructSystem::constructUnit(System,buildZone,*aperturePipeB,"back",*bellowH);
+  constructSystem::constructUnit(System,buildZone,*bellowG,"back",*moveCollB);
+  constructSystem::constructUnit(System,buildZone,*moveCollB,"back",*bellowH);
 
   // // bellows AFTER movable aperture pipe
   // bellowE->setFront(preFC,preSideIndex);

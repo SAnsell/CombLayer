@@ -59,7 +59,6 @@ namespace xraySystem
   class ProximityShielding;
   class CylGateValve;
   class HeatDump;
-  class LCollimator;
   class SqrCollimator;
   class SquareFMask;
   class BeamMount;

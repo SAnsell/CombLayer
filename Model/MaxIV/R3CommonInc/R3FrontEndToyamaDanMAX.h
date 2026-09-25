@@ -52,7 +52,6 @@ namespace xraySystem
   class CylGateValve;
   class FlangeMount;
   class HeatDump;
-  class LCollimator;
   class SqrCollimator;
   class SquareFMask;
   class BeamMount;

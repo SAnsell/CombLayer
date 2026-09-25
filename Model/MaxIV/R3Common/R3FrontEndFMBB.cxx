@@ -74,7 +74,6 @@
 #include "insertObject.h"
 #include "insertCylinder.h"
 #include "Bellows.h"
-#include "LCollimator.h"
 #include "GateValveCube.h"
 #include "CylGateValve.h"
 #include "OffsetFlangePipe.h"
@@ -334,20 +333,17 @@ R3FrontEndFMBB::buildApertureTable(Simulation& System,
   pump4->insertInCell(System,outerCell);
 
 
-  // Next 4 objects need to be build before insertion
-  aperturePipeB->createAll(System,*pump4,2);
-  moveCollB->addInsertCell(aperturePipeB->getCell("Void"));
-  moveCollB->createAll(System,*aperturePipeB,"midPoint");
+  moveCollB->createAll(System,*pump4,"back");
 
   // bellows AFTER movable aperture pipe
   bellowG->setFront(*pump4,2);
-  bellowG->setBack(*aperturePipeB,1);
+  bellowG->setBack(*moveCollB,1);
   bellowG->createAll(System,*pump4,2);
 
   pipeC->createAll(System,*pump4,2);
 
   // bellows AFTER movable aperture pipe
-  bellowH->setFront(*aperturePipeB,2);
+  bellowH->setFront(*moveCollB,2);
   bellowH->setBack(*pipeC,1);
   bellowH->createAll(System,*pump4,2);
 
@@ -356,8 +352,8 @@ R3FrontEndFMBB::buildApertureTable(Simulation& System,
   outerCell=buildZone.createUnit(System,*bellowG,2);
   bellowG->insertAllInCell(System,outerCell);
 
-  outerCell=buildZone.createUnit(System,*aperturePipeB,2);
-  aperturePipeB->insertAllInCell(System,outerCell);
+  outerCell=buildZone.createUnit(System,*moveCollB,2);
+  moveCollB->insertInCell(System,outerCell);
 
   outerCell=buildZone.createUnit(System,*bellowH,2);
   bellowH->insertAllInCell(System,outerCell);

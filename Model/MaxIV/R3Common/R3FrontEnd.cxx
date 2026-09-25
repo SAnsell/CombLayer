@@ -74,7 +74,6 @@
 #include "insertObject.h"
 #include "insertCylinder.h"
 #include "Bellows.h"
-#include "LCollimator.h"
 #include "GateValveCube.h"
 #include "CylGateValve.h"
 #include "OffsetFlangePipe.h"
@@ -140,8 +139,7 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowF(new constructSystem::Bellows(newName+"BellowF")),
   pump4(new constructSystem::CrossPipe(newName+"IonPump4")),
   bellowG(new constructSystem::Bellows(newName+"BellowG")),
-  aperturePipeB(new constructSystem::VacuumPipe(newName+"AperturePipeB")),
-  moveCollB(new xraySystem::LCollimator(newName+"MoveCollB")),
+  moveCollB(new xraySystem::MovableMask(newName+"MoveCollB")),
   bellowH(new constructSystem::Bellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   // shutter table
@@ -203,7 +201,6 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   OR.addObject(bellowF);
   OR.addObject(pump4);
   OR.addObject(bellowG);
-  OR.addObject(aperturePipeB);
   OR.addObject(moveCollB);
   OR.addObject(bellowH);
   OR.addObject(pipeC);
