@@ -167,13 +167,13 @@ double SmallAngleBellows::bellowsMaterialVolume() const
 
   where
 
-  L = length
+  L = bellows length
   N = nFolds
   r = pipeInnerRadius
   t = bellowsMaterialThick
   b = bellowsThick
 
-  b and the bellows' material vary with the bending angle to conserve V.
+  b and the bellows' effective density vary with the bending angle to conserve V.
  */
 {
   return M_PI*(
@@ -331,7 +331,44 @@ double SmallAngleBellows::sectorAngle(
   const int nSector,const bool centerAngle=false) const
 /*!
   Starting or center angle of a given sector.
- */
+
+  The special case of a single sector is trivial and requires no convention.
+
+  For more than a single sector, the convention of this class is that sector 0 is the
+  one inside the bend, i.e. the one with the shortest sector length, largest radius,
+  and highest effective density.
+  In the x-z plane, sector 0 is centered around the -x axis.
+
+  For an even value of nSectors, sector nSectors/2 is centered around the +x
+  axis and has the longest sector length, the smallest radius,
+  and the lowest effective density.
+  The length and density of sector n is equal (up to numerical precision) to
+  sector nSectors-n for 0 < n < nSectors/2.
+
+  For an odd value of nSectors, sectors floor(nSectors/2) and ceil(nSectors/2) surround
+  the +x axis. The length, radius, and density of sector n is equal
+  (up to numerical precision) to sector nSectors-n for 0 < n < ceil(nSectors/2).
+
+  The convention is illustrated below for the case nSectors=4.
+
+                              z=-x \       Sector 1      / z=x
+                                    \     * * * * *     /
+                                      \ *           * /
+                                      * \     1     / *
+                                     *    \       /    *
+  Sector 1, inside the bend         *       \   /       *  Sector 2, outside the bend
+    - Highest effective density     *   0     X    2    *    - Lowest effective density
+    - Shortest sector               *       /   \       *    - Longest sector
+    - Largest radius                 *    /       \    *     - Largest radius
+                                      * /     3     \ *
+                                      / *           * \
+                                    /     * * * * *     \
+                                  / Sector 3 ~= Sector 1 \
+
+  For the front (back) part of the bellows, sector n is constrained by planes
+  n*10+3(4) and (n+1)*10+3(14) (not showing global offsets), i.e. sector 0
+  in the front part is constrained by planes 3 and 13.
+*/
 {
   if(centerAngle){
     return nSector*2.0*M_PI/nSectors;
@@ -353,7 +390,7 @@ double SmallAngleBellows::sectorLength(const int nSector) const
 
   respectively, where
   
-  L = length
+  L = bellows length
   alpha = angle
   r = pipeInnerRadius
 
@@ -459,10 +496,10 @@ SmallAngleBellows::createSurfaces()
     phi = sectorAngle(n);
     if(nSectors > 1){
       ModelSupport::buildPlane(
-        SMap,buildIndex+sectorPlaneID(n,3),Origin,X*sin(phi)+Z*cos(phi)
+        SMap,buildIndex+sectorPlaneID(n,3),Origin,-X*sin(phi)-Z*cos(phi)
       );
       ModelSupport::buildPlane(
-        SMap,buildIndex+sectorPlaneID(n,4),Origin+Y*length/2.0,Xp*sin(phi)+Z*cos(phi)
+        SMap,buildIndex+sectorPlaneID(n,4),Origin+Y*length/2.0,-Xp*sin(phi)-Z*cos(phi)
       );
     }
     ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,7,100),center,
