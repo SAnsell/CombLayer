@@ -51,7 +51,7 @@ namespace setVariable
 {
 
 SmallAngleBellowsGenerator::SmallAngleBellowsGenerator() :
-  angle(0.0),bellowsStep(0.5),bellowsMaterialThick(0.05),
+  angle(0.0),polarAngle(0.0),bellowsStep(0.5),bellowsMaterialThick(0.05),
   bellowsThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
   flangeLength(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),length(10.0),
@@ -76,6 +76,7 @@ void SmallAngleBellowsGenerator::generateBellows(
   ELog::RegMethod RegA("BellowsGenerator","generatorBellow");
 
   Control.addVariable(keyName+"Angle",angle);
+  Control.addVariable(keyName+"PolarAngle",polarAngle);
   Control.addVariable(keyName+"BellowsMaterialThick",bellowsMaterialThick);
   Control.addVariable(keyName+"BellowsStep",bellowsStep);
   Control.addVariable(keyName+"BellowsThick",bellowsThick);

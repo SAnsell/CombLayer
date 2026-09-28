@@ -47,6 +47,7 @@ class SmallAngleBellowsGenerator
  private:
 
   double angle;
+  double polarAngle;
   double bellowsStep;
   double bellowsMaterialThick;
   double bellowsThick;
@@ -71,6 +72,7 @@ class SmallAngleBellowsGenerator
   ~SmallAngleBellowsGenerator()=default;
 
   void setAngle(const double a){angle = a;}
+  void setPolarAngle(const double p){polarAngle = p;}
   template<typename CF> void setCF();
   void setBellowsThick(const double t){bellowsThick = t;}
   void setBellowsMaterialThick(const double t){bellowsMaterialThick = t;}
