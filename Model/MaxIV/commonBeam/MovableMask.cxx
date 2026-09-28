@@ -100,6 +100,7 @@ void MovableMask::populate(const FuncDataBase &Control) {
   positionZ = Control.EvalVar<double>(keyName + "PositionZ");
 
   slitHeight = Control.EvalVar<double>(keyName + "SlitHeight");
+  slitInnerOffset = Control.EvalVar<double>(keyName + "SlitInnerOffset");
   slitInnerSurfaceAngle =
       Control.EvalVar<double>(keyName + "SlitInnerSurfaceAngle");
   slitThickness = Control.EvalVar<double>(keyName + "SlitThickness");
@@ -162,11 +163,11 @@ void MovableMask::createSurfaces() {
   const double slitInnerSurfaceAngleRad = slitInnerSurfaceAngle * M_PI / 180.0;
   Geometry::Vec3D slitBottomSurfaceNormal = Z;
   slitBottomSurfaceNormal.rotate(X, -slitInnerSurfaceAngleRad);
-  ModelSupport::buildPlane(
-      SMap, buildIndex + 35,
-      center + Y * ((length + bodyLength) / 2.0) +
-          Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight),
-      slitBottomSurfaceNormal);
+  ModelSupport::buildPlane(SMap, buildIndex + 35,
+                           center + Y * ((length + bodyLength) / 2.0) +
+                               Z * (-holeHeight / 2.0 + holeOffset +
+                                    maskBottomMaxHeight + slitInnerOffset),
+                           slitBottomSurfaceNormal);
   ModelSupport::buildPlane(
       SMap, buildIndex + 45,
       center - Z * (holeHeight / 2.0 - holeOffset - maskLeftMaxHeight), Z);
@@ -187,10 +188,11 @@ void MovableMask::createSurfaces() {
                            X);
   Geometry::Vec3D slitLeftSurfaceNormal = X;
   slitLeftSurfaceNormal.rotate(Z, slitInnerSurfaceAngleRad);
-  ModelSupport::buildPlane(SMap, buildIndex + 33,
-                           center - X * (holeWidth / 2.0 - maskLeftMaxWidth) +
-                               Y * ((length + bodyLength) / 2.0),
-                           slitLeftSurfaceNormal);
+  ModelSupport::buildPlane(
+      SMap, buildIndex + 33,
+      center - X * (holeWidth / 2.0 - maskLeftMaxWidth - slitInnerOffset) +
+          Y * ((length + bodyLength) / 2.0),
+      slitLeftSurfaceNormal);
 
   const Geometry::Vec3D maskLeftSlope = Y * bodyLength + Z * maskLeftMaxHeight;
   Geometry::Vec3D maskLeftSlopeNormal = maskLeftSlope;

@@ -28,12 +28,15 @@ namespace setVariable {
 
 /*!
   \class MovableMaskGenerator
-  \version 1.0
+  \version 1.1.0
   \author U. Friman-Gayer
   \date September 2026
   \brief MovableMaskGenerator for variables
 
   Version history:
+  1.1.0 - 2026-09-28
+          Introduce SlitInnerOffset parameter for compatibility with MovableMask
+          v1.1.
   1.0   - 2026-09-25
 */
 
@@ -65,6 +68,7 @@ private:
   double positionZ;
 
   double slitHeight;
+  double slitInnerOffset;
   double slitInnerSurfaceAngle;
   double slitThickness;
 

@@ -27,7 +27,7 @@ class Simulation;
 namespace xraySystem {
 /*!
   \class MovableMask
-  \version 1.0
+  \version 1.1.0
   \author U. Friman-Gayer
   \date September 2026
   \brief Movable Mask with L-shaped cross section manufactured by TOYAMA
@@ -67,11 +67,12 @@ namespace xraySystem {
 
   Position Name | positionX (cm) | positionZ (cm) | Aperture (cm2)
   ----------------------------------------------------------------
-  Fully open    |      0.5       |       0.5      |  0.76  x  0.76
-  Nominal       |      0.0       |       0.0      |  0.26  x  0.26
-  Fully close   |     -0.5       |      -0.5      | -0.24  x -0.24
+  Fully open    |      0.5       |       0.5      |  0.75  x  0.75
+  Nominal       |      0.0       |       0.0      |  0.25  x  0.25
+  Fully close   |     -0.5       |      -0.5      | -0.25  x -0.25
 
-  Note that the x/z offsets of the special configurations are defined as in [2,4].
+  Note that the x/z offsets of the special configurations are defined as in
+  [2,4].
 
   [1] TOYAMA, Movable Mask 1 for DanMAX, S6-4-1AG01042.pdf
   [2] TOYAMA, Movable Mask 1 main body for DanMAX, S6-5-1AG01044.pdf
@@ -81,6 +82,10 @@ namespace xraySystem {
   /mxn/groups/rad/Beamlines/DanMAX/Simulations/FE_02.STEP
 
   Version history:
+  1.1.0 - 2026-09-28
+          0.1-mm gap between main body and slit.
+  1.0.1 - 2026-09-28
+          Fix inner planes.
   1.0   - 2026-09-25
 */
 
@@ -129,7 +134,11 @@ private:
   double positionX; // Horizontal positioning of the movable mask.
   double positionZ; // Vertical positioning of the movable mask.
 
-  double slitHeight; // Height of the slit.
+  double slitHeight;      // Height of the slit.
+  double slitInnerOffset; // Ultimately, the slit constrains the beam. This
+                          // (positive) parameter is the difference -both in
+                          // horizontal and vertical direction- between the
+                          // smallest aperture of the main body and the slit.
   double
       slitInnerSurfaceAngle; // The edges of the slit that define the beam's
                              // cross section have a slope. The angle in degrees

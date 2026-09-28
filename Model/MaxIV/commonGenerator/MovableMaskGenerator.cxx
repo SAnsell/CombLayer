@@ -68,10 +68,12 @@ MovableMaskGenerator::MovableMaskGenerator()
       positionX(0.0),                     // Nominal zero position
       positionZ(0.0),                     // Nominal zero position
       slitHeight(2.75),                   // [5]
-      slitInnerSurfaceAngle(10.0),        // [5]
-      slitThickness(0.5),                 // [5]
-      bodyMaterial("Aluminium"),          // A-A, TODO: Should be GLIDCOP AL-15
-      flangeMaterial("Stainless304L"),    // A-A
+      slitInnerOffset(0.01), // X VIEW (S=1/1), "0.1/slit", see also the slit
+                             // dimensions given in parentheses.
+      slitInnerSurfaceAngle(10.0),     // [5]
+      slitThickness(0.5),              // [5]
+      bodyMaterial("Aluminium"),       // A-A, TODO: Should be GLIDCOP AL-15
+      flangeMaterial("Stainless304L"), // A-A
       slitMaterial(
           "Tantalum"), // Back View. The part is designated as "Tantalumslit" in
                        // the drawing, therefore it was assumed that it is pure
@@ -109,8 +111,9 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "PositionZ", positionZ);
 
   Control.addVariable(keyName + "SlitHeight", slitHeight);
-  Control.addVariable(keyName + "SlitThickness", slitThickness);
+  Control.addVariable(keyName + "SlitInnerOffset", slitInnerOffset);
   Control.addVariable(keyName + "SlitInnerSurfaceAngle", slitInnerSurfaceAngle);
+  Control.addVariable(keyName + "SlitThickness", slitThickness);
 
   Control.addVariable(keyName + "FlangeMaterial", flangeMaterial);
   Control.addVariable(keyName + "BodyMaterial", bodyMaterial);
