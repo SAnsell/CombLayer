@@ -112,6 +112,14 @@ class SmallAngleBellows:
   double angle;
   // Angle between the front- and back-surface normals in degrees.
   double angleDeg;
+  // Angle w.r.t. the default bending axis in radians.
+  // polarAngle = 0       : -X
+  // polarAngle =   pi / 2: +Z
+  // polarAngle =   pi    : +X
+  // polarAngle = 3 pi / 2: -Z
+  double polarAngle;
+  // Angle w.r.t. the default bending axis in radians.
+  double polarAngleDeg;
   // Thickness of the sheets that are folded to create the bellows.
   double bellowsMaterialThick;
   // Length of the piece of pipe between the front/back flanges and the bellows.

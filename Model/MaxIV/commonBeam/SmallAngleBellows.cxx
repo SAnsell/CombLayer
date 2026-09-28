@@ -90,6 +90,7 @@ SmallAngleBellows::SmallAngleBellows(const SmallAngleBellows& A) :
   attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
   angle(A.angle),angleDeg(A.angleDeg),
+  polarAngleDeg(A.polarAngleDeg),
   bellowsStep(A.bellowsStep),
   bellowsThick(A.bellowsThick),
   flangeLength(A.flangeLength),
@@ -122,6 +123,7 @@ SmallAngleBellows::operator=(const SmallAngleBellows& A)
       attachSystem::FrontBackCut::operator=(A);
       angle=A.angle;
       angleDeg=A.angleDeg;
+      polarAngleDeg=A.polarAngleDeg;
       bellowsStep=A.bellowsStep;
       bellowsThick=A.bellowsThick;
       flangeLength=A.flangeLength;
@@ -424,6 +426,8 @@ SmallAngleBellows::populate(const FuncDataBase& Control)
 
   angleDeg=Control.EvalDefVar<double>(keyName+"Angle",0.0);
   angle=M_PI/180.0*angleDeg;
+  polarAngleDeg=Control.EvalDefVar<double>(keyName+"PolarAngle",0.0);
+  polarAngle=M_PI/180.0*polarAngleDeg;
   bellowsMaterialThick=Control.EvalVar<double>(keyName+"BellowsMaterialThick");
   bellowsStep=Control.EvalVar<double>(keyName+"BellowsStep");
   bellowsThick=Control.EvalVar<double>(keyName+"BellowsThick");
@@ -460,18 +464,25 @@ SmallAngleBellows::createSurfaces()
 {
   ELog::RegMethod RegA("SmallAngleBellows","createSurfaces");
 
-  Geometry::Vec3D Xp = X;
-  Xp.rotate(Z,angle);
+  Geometry::Vec3D X0 = X;
+  X0.rotate(Y, polarAngle);
+  // Even if it is identical to Y, define Y0 for consistency of notation.
+  const Geometry::Vec3D Y0 = Y;
+  Geometry::Vec3D Z0 = Z;
+  Z0.rotate(Y, polarAngle);
+
+  Geometry::Vec3D Xp = X0;
+  Xp.rotate(Z0,angle);
   Yp = Y;
-  Yp.rotate(Z,angle);
+  Yp.rotate(Z0,angle);
   Geometry::Vec3D Yp2 = Y;
-  Yp2.rotate(Z,angle/2.0);
+  Yp2.rotate(Z0,angle/2.0);
 
   const Geometry::Vec3D center = Origin+Y*length/2.0;
 
   if (!isActive("front"))
     {
-      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin,Y0);
       ExternalCut::setCutSurf("front",SMap.realSurf(buildIndex+1));
     }
   if (!isActive("back"))
@@ -481,8 +492,8 @@ SmallAngleBellows::createSurfaces()
     }
 
   if(useFrontPipe){
-    ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y*flangeLength,Y);
-    ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y*(flangeLength+bellowsStep),Y);
+    ModelSupport::buildPlane(SMap,buildIndex+11,Origin+Y0*flangeLength,Y0);
+    ModelSupport::buildPlane(SMap,buildIndex+21,Origin+Y0*(flangeLength+bellowsStep),Y0);
   }
   if(useBackPipe){
     ModelSupport::buildPlane(SMap,buildIndex+12,
@@ -496,14 +507,14 @@ SmallAngleBellows::createSurfaces()
     phi = sectorAngle(n);
     if(nSectors > 1){
       ModelSupport::buildPlane(
-        SMap,buildIndex+sectorPlaneID(n,3),Origin,-X*sin(phi)-Z*cos(phi)
+        SMap,buildIndex+sectorPlaneID(n,3),Origin,-X0*sin(phi)-Z0*cos(phi)
       );
       ModelSupport::buildPlane(
-        SMap,buildIndex+sectorPlaneID(n,4),Origin+Y*length/2.0,-Xp*sin(phi)-Z*cos(phi)
+        SMap,buildIndex+sectorPlaneID(n,4),Origin+Y0*length/2.0,-Xp*sin(phi)-Z0*cos(phi)
       );
     }
     ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,7,100),center,
-              Y,pipeInnerRadius+bellowsThickPerSector[n]);
+              Y0,pipeInnerRadius+bellowsThickPerSector[n]);
     ModelSupport::buildCylinder(SMap,buildIndex+sectorPlaneID(n,8,100),center,
               Yp,pipeInnerRadius+bellowsThickPerSector[n]);
   }
@@ -512,19 +523,19 @@ SmallAngleBellows::createSurfaces()
 
   if(useFrontPipe || useBackPipe){
     ModelSupport::buildCylinder(SMap,buildIndex+7,center,
-              Y,flangeRadius);
+              Y0,flangeRadius);
     ModelSupport::buildCylinder(SMap,buildIndex+8,center,
               Yp,flangeRadius);
   }
   if(useFrontPipe){
     ModelSupport::buildCylinder(SMap,buildIndex+17,center,
-              Y,pipeInnerRadius+pipeWallThick);
+              Y0,pipeInnerRadius+pipeWallThick);
   }
   if(useBackPipe){
     ModelSupport::buildCylinder(SMap,buildIndex+18,center,
               Yp,pipeInnerRadius+pipeWallThick);
   }
-  ModelSupport::buildCylinder(SMap,buildIndex+27,center,Y,pipeInnerRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,center,Y0,pipeInnerRadius);
   ModelSupport::buildCylinder(SMap,buildIndex+28,center,Yp,pipeInnerRadius);
 }
 
