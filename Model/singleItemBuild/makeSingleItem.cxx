@@ -310,7 +310,7 @@ makeSingleItem::build(Simulation& System,
     }
   if (item == "SmallAngleBellows" )
     {
-      std::vector<std::shared_ptr<xraySystem::SmallAngleBellows>> smallAngleBellows(8);
+      std::vector<std::shared_ptr<xraySystem::SmallAngleBellows>> smallAngleBellows(10);
       for(size_t i = 0; i < smallAngleBellows.size(); ++i){
         smallAngleBellows[i] = std::make_shared<xraySystem::SmallAngleBellows>(
           "SmallAngleBellows"+std::to_string(i)
