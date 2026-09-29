@@ -443,7 +443,7 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
   stepBellowsGen.setLength(14.0); // [2]
   const double heatAbsorberInOutRange = 1.7; // [63]
   stepBellowsGen.setStep(-heatAbsorberInOutRange/2.0);
-  stepBellowsGen.generateBellows(Control,bellowsName);
+  stepBellowsGen.generate(Control,bellowsName);
 
   HeatAbsorberR3ToyamaGenerator HAGen;
   HAGen.setInOutRange(heatAbsorberInOutRange);
@@ -452,7 +452,7 @@ heatDumpVariablesToyama(FuncDataBase& Control,const std::string& frontKey)
 
   // See BellowPreHA above for more information.
   bellowsName = frontKey+"BellowPostHA";
-  stepBellowsGen.generateBellows(Control,bellowsName);
+  stepBellowsGen.generate(Control,bellowsName);
 
 
   return;
