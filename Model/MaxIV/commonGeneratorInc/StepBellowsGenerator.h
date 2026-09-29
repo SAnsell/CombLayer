@@ -29,9 +29,9 @@ namespace setVariable
 
 /*!
   \class StepBellowsGenerator
-  \version 1.0
+  \version 1.1
   \author U. Friman-Gayer
-  \date May 2026
+  \date September 2026
   \brief StepBellowsGenerator for variables
 
   Although the StepBellows class allows for more general configurations, this generator
@@ -49,8 +49,10 @@ namespace setVariable
     the front bellows and at the back of the back bellows.
 
   Version history:
-  1.0   - 2026-05-07
-    - Compatible with StepBellows v1.0
+  1.1 - 2026-09-29
+      - Update for StepBellows v1.1 (PolarAngle parameter)
+  1.0 - 2026-05-07
+      - Compatible with StepBellows v1.0
 */
 
 class StepBellowsGenerator
@@ -65,6 +67,7 @@ class StepBellowsGenerator
   double length;
   double pipeInnerRadius;
   double pipeWallThick;
+  double polarAngle;
   double step;
 
   int nFolds;
@@ -79,7 +82,7 @@ class StepBellowsGenerator
  public:
 
   StepBellowsGenerator();
-  StepBellowsGenerator(const double s, const double l);
+  StepBellowsGenerator(const double s, const double l, const double p = 0.0);
   ~StepBellowsGenerator()=default;
 
   template<typename CF> void setCF();
@@ -95,7 +98,7 @@ class StepBellowsGenerator
     useBackPipe=useBack;
   }
 
-  void generateBellows(
+  void generate(
     FuncDataBase&,const std::string&) const;
 
 };

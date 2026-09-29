@@ -21,7 +21,6 @@
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
-#include <sstream>
 #include <cmath>
 #include <complex>
 #include <list>
@@ -30,8 +29,6 @@
 #include <set>
 #include <map>
 #include <string>
-#include <algorithm>
-#include <numeric>
 #include <memory>
 
 #include "FileReport.h"
@@ -52,19 +49,21 @@ namespace setVariable
 StepBellowsGenerator::StepBellowsGenerator() :
   bellowsStep(0.5),bellowsMaterialThick(0.05),
   bellowsThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
-  flangeLength(CF40::flangeLength),
-  flangeRadius(CF40::flangeRadius),length(20.0),
-  pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),step(0.0),
-  nFolds(10),nSectors(2),bellowsBaseMat("SteelUnknownGrade"),
-  pipeMat("SteelUnknownGrade"),useFrontPipe(1),useBackPipe(1)
+  flangeLength(CF40::flangeLength),flangeRadius(CF40::flangeRadius),
+  length(20.0),pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),
+  polarAngle(0.0),step(0.0),nFolds(10),nSectors(2),
+  bellowsBaseMat("SteelUnknownGrade"),pipeMat("SteelUnknownGrade"),useFrontPipe(1),
+  useBackPipe(1)
 {}
 
-StepBellowsGenerator::StepBellowsGenerator(const double s, const double l) :
+StepBellowsGenerator::StepBellowsGenerator(
+  const double s, const double l, const double p) :
   bellowsStep(0.5),bellowsMaterialThick(0.05),
   bellowsThick(0.8*(CF40::flangeRadius-CF40::innerRadius)),
   flangeLength(CF40::flangeLength),
   flangeRadius(CF40::flangeRadius),length(l),
-  pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),step(s),
+  pipeInnerRadius(CF40::innerRadius),pipeWallThick(CF40::wallThick),
+  polarAngle(p),step(s),
   nFolds(10),nSectors(2),bellowsBaseMat("SteelUnknownGrade"),
   pipeMat("SteelUnknownGrade"),useFrontPipe(1),useBackPipe(1)
 {}
@@ -79,7 +78,7 @@ StepBellowsGenerator::setCF(){
   bellowsThick = CF::flangeRadius - CF::innerRadius;
 }
 
-void StepBellowsGenerator::generateBellows(
+void StepBellowsGenerator::generate(
   FuncDataBase& Control,const std::string& keyName) const
 {
   ELog::RegMethod RegA("BellowsGenerator","generatorBellow");
@@ -96,7 +95,10 @@ void StepBellowsGenerator::generateBellows(
   const double angleDeg = angle*180.0/M_PI;
 
   std::string prefix;
-  for(auto partBellowsName : std::vector<std::string>{"FrontBellows","BackBellows"}){
+  for(
+    auto partBellowsName : 
+    std::vector<std::string>{"FrontBellows","BackBellows"}
+  ){
     prefix = keyName + partBellowsName;
     Control.addVariable(prefix+"BellowsMaterialThick",bellowsMaterialThick);
     Control.addVariable(prefix+"BellowsStep",bellowsStep);
@@ -106,6 +108,7 @@ void StepBellowsGenerator::generateBellows(
     Control.addVariable(prefix+"Length",partBellowsLength);
     Control.addVariable(prefix+"PipeInnerRadius",pipeInnerRadius);
     Control.addVariable(prefix+"PipeWallThick",pipeWallThick);
+    Control.addVariable(prefix+"PolarAngle",polarAngle);
     Control.addVariable(prefix+"NFolds",nFolds/2);
     Control.addVariable(prefix+"BellowsBaseMat",bellowsBaseMat);
     Control.addVariable(prefix+"PipeMat",pipeMat);

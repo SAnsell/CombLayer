@@ -32,9 +32,9 @@ namespace xraySystem
 
 /*!
   \class StepBellows
-  \version 1.0
+  \version 1.1
   \author U. Friman-Gayer
-  \date May 2026
+  \date September 2026
   \brief Cylindric bellows with parallel shift of incoming and outgoing axis
 
   The parallel shift ("step") of the main axis is achieved by combining two 
@@ -58,11 +58,14 @@ namespace xraySystem
 
   For more information on coordinate systems and restrictions of the class, please
   refer to the documentation of the SmallAngleBellows class.
-  Due to the defintion of the angle in SmallAngleBellows, a positive value for step will
-  parallel shift the outgoing axis in the negative X direction.
+  Due to the defintion of the angle in SmallAngleBellows, a positive value for step
+  will parallel shift the outgoing axis in the negative X direction. The step axis can
+  be changed by setting the polarAngle parameter.
 
   Version history:
-  1.0   - 2026-05-07
+  1.1 - 2026-09-29
+      - Polar-angle parameter to control the bending axis.
+  1.0 - 2026-05-07
 */
 
 class StepBellows:
