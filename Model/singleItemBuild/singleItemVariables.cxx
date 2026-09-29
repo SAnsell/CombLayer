@@ -695,11 +695,15 @@ SingleItemVariables(FuncDataBase& Control)
   }
 
   // StepBellows
-  setVariable::StepBellowsGenerator stepBellowsGenerator(1.5,20.0);
-  stepBellowsGenerator.generateBellows(Control,"StepBellows1");
-  stepBellowsGenerator.setLength(30.0);
-  stepBellowsGenerator.setStep(-2.0);
-  stepBellowsGenerator.generateBellows(Control,"StepBellows2");
+  setVariable::StepBellowsGenerator stepBellowsXGenerator(1.5,20.0);
+  stepBellowsXGenerator.generate(Control,"StepBellowsNegativeX");
+  stepBellowsXGenerator.setLength(30.0);
+  stepBellowsXGenerator.setStep(-2.0);
+  stepBellowsXGenerator.generate(Control,"StepBellowsPositiveX");
+  setVariable::StepBellowsGenerator stepBellowsZGenerator(1.0,25.0,90.0);
+  stepBellowsZGenerator.generate(Control,"StepBellowsPositiveZ");
+  stepBellowsZGenerator.setStep(-1.0);
+  stepBellowsZGenerator.generate(Control,"StepBellowsNegativeZ");
 
   // Lead Clad Pipe
   setVariable::LeadPipeGenerator LeadGen;

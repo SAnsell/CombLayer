@@ -329,20 +329,30 @@ makeSingleItem::build(Simulation& System,
     }
   if (item == "StepBellows" )
     {
-      std::shared_ptr<xraySystem::StepBellows> stepBellows1(
-        new xraySystem::StepBellows("StepBellows1")
+      std::shared_ptr<xraySystem::StepBellows> stepBellowsNegativeX(
+        new xraySystem::StepBellows("StepBellowsNegativeX")
       );
-      std::shared_ptr<xraySystem::StepBellows> stepBellows2(
-        new xraySystem::StepBellows("StepBellows2")
+      std::shared_ptr<xraySystem::StepBellows> stepBellowsPositiveX(
+        new xraySystem::StepBellows("StepBellowsPositiveX")
+      );
+      std::shared_ptr<xraySystem::StepBellows> stepBellowsPositiveZ(
+        new xraySystem::StepBellows("StepBellowsPositiveZ")
+      );
+      std::shared_ptr<xraySystem::StepBellows> stepBellowsNegativeZ(
+        new xraySystem::StepBellows("StepBellowsNegativeZ")
       );
 
-      OR.addObject(stepBellows1);
-      OR.addObject(stepBellows2);
+      OR.addObject(stepBellowsNegativeX);
+      OR.addObject(stepBellowsPositiveX);
 
-      stepBellows1->addAllInsertCell(voidCell);
-      stepBellows1->createAll(System,World::masterOrigin(),0);
-      stepBellows2->addAllInsertCell(voidCell);
-      stepBellows2->createAll(System,*stepBellows1,"back");
+      stepBellowsNegativeX->addAllInsertCell(voidCell);
+      stepBellowsNegativeX->createAll(System,World::masterOrigin(),0);
+      stepBellowsPositiveX->addAllInsertCell(voidCell);
+      stepBellowsPositiveX->createAll(System,*stepBellowsNegativeX,"back");
+      stepBellowsPositiveZ->addAllInsertCell(voidCell);
+      stepBellowsPositiveZ->createAll(System,*stepBellowsPositiveX,"back");
+      stepBellowsNegativeZ->addAllInsertCell(voidCell);
+      stepBellowsNegativeZ->createAll(System,*stepBellowsPositiveZ,"back");
 
       return;
     }
