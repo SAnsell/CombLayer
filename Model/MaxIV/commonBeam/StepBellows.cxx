@@ -137,8 +137,6 @@ StepBellows::populate(const FuncDataBase& Control)
 
   length=Control.EvalDefVar<double>(keyName+"Length",0.0);
   step=Control.EvalDefVar<double>(keyName+"Step",0.0);
-
-  return;
 }
 
 void
@@ -185,8 +183,6 @@ StepBellows::buildComponents(Simulation& System)
 
   ContainedGroup::addOuterSurf("FrontBellows",frontBellows->getOuterSurf());
   ContainedGroup::addOuterSurf("BackBellows",backBellows->getOuterSurf());
-  
-  return;
 }
 
 void
@@ -199,8 +195,6 @@ StepBellows::createLinks()
 
   setLinkCopy("front",*frontBellows,1);
   setLinkCopy("back",*backBellows,2);
-
-  return;
 }
 
 void
@@ -220,8 +214,6 @@ StepBellows::createAll(Simulation& System,
 
   createSurfaces();
   createLinks();
-
-  return;
 }
 
 }  // NAMESPACE constructSystem

@@ -110,8 +110,6 @@ void MovableMask::populate(const FuncDataBase &Control) {
       ModelSupport::EvalMat<int>(Control, keyName + "FlangeMaterial");
   slitMaterial = ModelSupport::EvalMat<int>(Control, keyName + "SlitMaterial");
   voidMaterial = ModelSupport::EvalMat<int>(Control, keyName + "VoidMaterial");
-
-  return;
 }
 
 void MovableMask::createSurfaces() {
@@ -323,8 +321,6 @@ void MovableMask::createLinks()
   ELog::RegMethod RegA("MovableMask", "createLinks");
 
   FrontBackCut::createLinks(*this, Origin, Y);
-
-  return;
 }
 
 void MovableMask::createAll(Simulation &System,
@@ -345,7 +341,6 @@ void MovableMask::createAll(Simulation &System,
   createObjects(System);
   createLinks();
   insertObjects(System);
-  return;
 }
 
 } // NAMESPACE xraySystem

@@ -31,7 +31,7 @@ namespace xraySystem
   \author U. Friman-Gayer
   \version 1.0
   \date May 2026
-  \brief Bellows surrounding Heat Absorber in DanMAX/SINCRYS beamline
+  \brief Bellows surrounding Heat Absorber in MAX IV R3 Frontend for DanMAX/SINCRYS
 
   This class has been derived from StepBellows to be able to accept the heat absorber's
   "Closed" and "InOutRange" variables.

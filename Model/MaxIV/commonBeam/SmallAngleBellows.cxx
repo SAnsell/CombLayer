@@ -447,8 +447,6 @@ SmallAngleBellows::populate(const FuncDataBase& Control)
   useBackPipe=static_cast<bool>(Control.EvalDefVar<int>(keyName+"UseBackPipe",1));
 
   checkInput();
-
-  return;
 }
 
 void
@@ -678,8 +676,6 @@ SmallAngleBellows::createLinks()
 
   FixedComp::setLinkSurf("front",-SMap.realSurf(buildIndex+1));
   FixedComp::setLinkSurf("back",SMap.realSurf(buildIndex+2));
-
-  return;
 }
 
 void
@@ -699,8 +695,6 @@ SmallAngleBellows::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);
-
-  return;
 }
 
 }  // NAMESPACE constructSystem
