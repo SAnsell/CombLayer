@@ -29,9 +29,9 @@ namespace xraySystem
 
 /*!
   \class SmallAngleBellows
-  \version 1.1.1
+  \version 1.2.0
   \author U. Friman-Gayer
-  \date May 2026
+  \date September 2026
   \brief Fixed-length cylindric bellows that bend at a small angle
 
   This class approximates the geometry of cylindric bellows with a small angle between
@@ -90,6 +90,8 @@ namespace xraySystem
   of small-angle bellows.
 
   Version history:
+  1.2.0 - 2026-09-29
+        - Polar-angle parameter to control the bending axis.
   1.1.1 - 2026-09-28
         - Assign densities/radii to correct sectors.
         - Previously, density/radius profile was the opposite of what it should be.

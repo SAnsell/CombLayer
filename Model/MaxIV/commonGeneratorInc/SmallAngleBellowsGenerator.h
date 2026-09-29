@@ -29,12 +29,14 @@ namespace setVariable
 
 /*!
   \class SmallAngleBellowsGenerator
-  \version 1.1
+  \version 1.2.0
   \author U. Friman-Gayer
-  \date May 2026
+  \date September 2026
   \brief SmallAngleBellowsGenerator for variables
 
   Version history:
+  1.2.0 - 2026-09-29
+        - Update for SmallAngleBellows v1.2 (PolarAngle parameter)
   1.1.1 - 2026-05-06
     - Fix setCF function.
   1.1   - 2026-05-05
