@@ -93,6 +93,7 @@
 #include "CleaningMagnet.h"
 #include "HeatAbsorberToyama.h"
 #include "MovableMask.h"
+#include "StepBellows.h"
 
 #include "R3FrontEnd.h"
 
@@ -134,13 +135,13 @@ R3FrontEnd::R3FrontEnd(const std::string& Key) :
   bellowD(new constructSystem::Bellows(newName+"BellowD")),
   pipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   // aperture table
-  bellowE(new constructSystem::Bellows(newName+"BellowE")),
+  bellowE(new xraySystem::StepBellows(newName+"BellowE")),
   moveCollA(new xraySystem::MovableMask(newName+"MoveCollA")),
-  bellowF(new constructSystem::Bellows(newName+"BellowF")),
+  bellowF(new xraySystem::StepBellows(newName+"BellowF")),
   pump4(new constructSystem::CrossPipe(newName+"IonPump4")),
-  bellowG(new constructSystem::Bellows(newName+"BellowG")),
+  bellowG(new xraySystem::StepBellows(newName+"BellowG")),
   moveCollB(new xraySystem::MovableMask(newName+"MoveCollB")),
-  bellowH(new constructSystem::Bellows(newName+"BellowH")),
+  bellowH(new xraySystem::StepBellows(newName+"BellowH")),
   pipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   // shutter table
   valve1(new constructSystem::GateValveCube(newName+"Valve1")), // V1 FCV Valve (fast closing valve)

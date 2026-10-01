@@ -100,6 +100,7 @@
 #include "R3FrontEnd.h"
 #include "R3FrontEndToyama.h"
 #include "MovableMask.h"
+#include "StepBellows.h"
 
 namespace xraySystem
 {

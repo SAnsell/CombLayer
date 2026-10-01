@@ -91,6 +91,7 @@
 #include "MagnetM1.h"
 #include "MagnetU1.h"
 #include "MovableMask.h"
+#include "StepBellows.h"
 
 #include "R3FrontEnd.h"
 #include "R3FrontEndFMBB.h"

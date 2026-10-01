@@ -77,6 +77,7 @@ namespace xraySystem
   class R3ChokeChamber;
   class R3ChokeInsert;
   class MovableMask;
+  class StepBellows;
 
   /*!
     \class R3FrontEnd
@@ -161,19 +162,19 @@ class R3FrontEnd :
 
 
     /// bellows for third table
-  std::shared_ptr<constructSystem::Bellows> bellowE;
+  std::shared_ptr<xraySystem::StepBellows> bellowE;
   /// Movable Mask 1
   std::shared_ptr<xraySystem::MovableMask> moveCollA;
   /// bellows for third table
-  std::shared_ptr<constructSystem::Bellows> bellowF;
+  std::shared_ptr<xraySystem::StepBellows> bellowF;
   /// Real Ion pump (KF40) 26cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> pump4;
   /// bellows for second movable aperature
-  std::shared_ptr<constructSystem::Bellows> bellowG;
+  std::shared_ptr<xraySystem::StepBellows> bellowG;
   /// Movable Mask 2
   std::shared_ptr<xraySystem::MovableMask> moveCollB;
   /// bellows for exit of moveable aperatures
-  std::shared_ptr<constructSystem::Bellows> bellowH;
+  std::shared_ptr<xraySystem::StepBellows> bellowH;
   /// Exit of movables
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
 

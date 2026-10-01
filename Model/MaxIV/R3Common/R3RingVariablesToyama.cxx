@@ -114,20 +114,22 @@ moveApertureTableToyama(FuncDataBase& Control,
 
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowE",14.0); // [2]
+
+  StepBellowsGenerator stepBellowsGenerator;
+  stepBellowsGenerator.setLength(14.0); // [4]
+  stepBellowsGenerator.setCF<setVariable::CF63>(); // [5]
+  stepBellowsGenerator.generate(Control, frontKey+"BellowE");
 
   std::string collKey = frontKey+"MoveCollA";
   MovableMaskGenerator movableMaskGenerator;
   // Default: Fully open.
-  movableMaskGenerator.setFullyOpen();
+  // movableMaskGenerator.setFullyOpen();
   movableMaskGenerator.generate(Control,collKey);
   // When viewed from upstream, the first movable mask is oriented like
   // the letter "L" [5].
   Control.addVariable(collKey+"YAngle",-90.0);
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowF",8); //14.0); // [2]
+  stepBellowsGenerator.generate(Control, frontKey+"BellowF");
 
   CrossGen.setMat("SteelUnknownGrade");
   CrossGen.setPlates(0.5,2.0,2.0);     // wall/Top/base
@@ -135,8 +137,7 @@ moveApertureTableToyama(FuncDataBase& Control,
   CrossGen.generateDoubleCF<setVariable::CF63,setVariable::CF100>
     (Control,frontKey+"IonPump4",0.0,15.74,28.70);   // height/depth
 
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowG",14.0); // [2]
+  stepBellowsGenerator.generate(Control, frontKey+"BellowG");
 
   collKey = frontKey+"MoveCollB";
   // See also MoveCollA.
@@ -145,9 +146,7 @@ moveApertureTableToyama(FuncDataBase& Control,
   // When viewed from upstream, it constrains the beam from above and from the right.
   Control.addVariable(collKey+"YAngle",180.0);
 
-  // [FREE FLOATING]
-  BellowGen.setCF<setVariable::CF63>();
-  BellowGen.generateBellow(Control,frontKey+"BellowH",8); //14.0); // [2]
+  stepBellowsGenerator.generate(Control, frontKey+"BellowH");
 
   // [End fix for BellowH]
   PipeGen.setCF<CF40>();
