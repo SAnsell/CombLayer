@@ -88,6 +88,18 @@ RectangularCollimator<N>::operator=(const RectangularCollimator<N> &A) {
 }
 
 template <std::size_t N>
+int RectangularCollimator<N>::planeIndex(const unsigned int n_segment,
+                                         const unsigned int side) const {
+  if (n_segment == N - 1 && side == 1) {
+    return 2;
+  }
+  if (side > 1) {
+    return (n_segment + 1) * 10 + side;
+  }
+  return n_segment * 10 + side;
+}
+
+template <std::size_t N>
 void RectangularCollimator<N>::populate(const FuncDataBase &Control) {
   FixedRotate::populate(Control);
 
@@ -132,29 +144,46 @@ template <std::size_t N> void RectangularCollimator<N>::createSurfaces() {
   ModelSupport::buildPlane(SMap, buildIndex + 6, Origin + Z * height / 2.0, Z);
 
   for (unsigned int n = 1; n < N - 1; ++n) {
-    ModelSupport::buildPlane(SMap, buildIndex + n * 10 + 1,
+    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 1),
                              Origin + Y * apertureY[n], Y);
+  }
+  for (unsigned int n = 0; n < N - 1; ++n) {
+    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 3),
+                             Origin + X * apertureX[n].first, X);
+    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 4),
+                             Origin + X * apertureX[n].second, X);
+    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 5),
+                             Origin + Z * apertureX[n].first, Z);
+    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 6),
+                             Origin + Z * apertureX[n].second, Z);
   }
 }
 
 template <std::size_t N>
 void RectangularCollimator<N>::createObjects(Simulation &System) {
   if (N == 2) {
-    makeCell("Collimator0", System, cellIndex++, material, 0.0,
+    makeCell("Segment0", System, cellIndex++, material, 0.0,
              ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
   } else {
-    for (unsigned int n = 0; n < N - 2; ++n) {
-      makeCell("CollimatorSegment" + std::to_string(n), System, cellIndex++,
-               material, 0.0,
+    HeadRule hole, segmentLimits;
+    for (unsigned int n = 0; n < N - 1; ++n) {
+      segmentLimits =
+          ModelSupport::getHeadRule(SMap, buildIndex,
+                                    std::to_string(planeIndex(n, 1)) + " -" +
+                                        std::to_string(planeIndex(n + 1, 1)));
+      hole = ModelSupport::getHeadRule(
+          SMap, buildIndex,
+          std::to_string(planeIndex(n, 3)) + " -" +
+              std::to_string(planeIndex(n, 4)) + " " +
+              std::to_string(planeIndex(n, 5)) + " -" +
+              std::to_string(planeIndex(n, 6)));
+      makeCell("Segment" + std::to_string(n), System, cellIndex++, material,
+               0.0,
                ModelSupport::getHeadRule(SMap, buildIndex, "3 -4 5 -6") *
-                   ModelSupport::getHeadRule(SMap, buildIndex,
-                                             std::to_string(10 * n + 1) + " -" +
-                                                 std::to_string(10 * n + 11)));
+                   segmentLimits * hole.complement());
+      makeCell("SegmentHole" + std::to_string(n), System, cellIndex++,
+               voidMaterial, 0.0, segmentLimits * hole);
     }
-    makeCell("Collimator0", System, cellIndex++, material, 0.0,
-             ModelSupport::getHeadRule(SMap, buildIndex, "-2 3 -4 5 -6") *
-                 ModelSupport::getHeadRule(SMap, buildIndex,
-                                           std::to_string(10 * (N - 2) + 1)));
   }
 
   addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
