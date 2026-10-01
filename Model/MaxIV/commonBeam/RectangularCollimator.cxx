@@ -130,12 +130,33 @@ template <std::size_t N> void RectangularCollimator<N>::createSurfaces() {
   ModelSupport::buildPlane(SMap, buildIndex + 4, Origin + X * width / 2.0, X);
   ModelSupport::buildPlane(SMap, buildIndex + 5, Origin - Z * height / 2.0, Z);
   ModelSupport::buildPlane(SMap, buildIndex + 6, Origin + Z * height / 2.0, Z);
+
+  for (unsigned int n = 1; n < N - 1; ++n) {
+    ModelSupport::buildPlane(SMap, buildIndex + n * 10 + 1,
+                             Origin + Y * apertureY[n], Y);
+  }
 }
 
 template <std::size_t N>
 void RectangularCollimator<N>::createObjects(Simulation &System) {
-  makeCell("Collimator", System, cellIndex++, material, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
+  if (N == 2) {
+    makeCell("Collimator0", System, cellIndex++, material, 0.0,
+             ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
+  } else {
+    for (unsigned int n = 0; n < N - 2; ++n) {
+      makeCell("CollimatorSegment" + std::to_string(n), System, cellIndex++,
+               material, 0.0,
+               ModelSupport::getHeadRule(SMap, buildIndex, "3 -4 5 -6") *
+                   ModelSupport::getHeadRule(SMap, buildIndex,
+                                             std::to_string(10 * n + 1) + " -" +
+                                                 std::to_string(10 * n + 11)));
+    }
+    makeCell("Collimator0", System, cellIndex++, material, 0.0,
+             ModelSupport::getHeadRule(SMap, buildIndex, "-2 3 -4 5 -6") *
+                 ModelSupport::getHeadRule(SMap, buildIndex,
+                                           std::to_string(10 * (N - 2) + 1)));
+  }
+
   addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
 }
 
