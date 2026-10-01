@@ -218,6 +218,7 @@
 #include "MonoBlockXstals.h"
 #include "MLMono.h"
 #include "MovableMask.h"
+#include "RectangularCollimator.h"
 
 #include "makeSingleItem.h"
 
@@ -279,7 +280,7 @@ makeSingleItem::build(Simulation& System,
   "ConcreteDoor","IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full","MovableSafetyMask","HeatAbsorberToyama",
 	"HeatAbsorberR3Toyama","FixedMaskHybrid","SqrShield","MonoBlockXstals","MLMono",
-  "MovableMask",
+  "MovableMask", "RectangularCollimator",
   "Help","help"
     });
 
@@ -2100,6 +2101,17 @@ makeSingleItem::build(Simulation& System,
       movableMaskFullyOpen->createAll(System,*movableMaskNominal,"back");
       movableMaskFullyClose->addInsertCell(voidCell);
       movableMaskFullyClose->createAll(System,*movableMaskFullyOpen,"back");
+
+      return;
+    }
+
+    if (item == "RectangularCollimator"){
+      std::shared_ptr<xraySystem::RectangularCollimator<4>> rectangularCollimator = 
+        std::make_shared<xraySystem::RectangularCollimator<4>>("RectangularCollimator");
+      OR.addObject(rectangularCollimator);;
+
+      rectangularCollimator->addInsertCell(voidCell);
+      rectangularCollimator->createAll(System,World::masterOrigin(),0);
 
       return;
     }

@@ -963,6 +963,32 @@ SingleItemVariables(FuncDataBase& Control)
   movableMaskGenerator.setFullyClose();
   movableMaskGenerator.generate(Control, "MovableMaskFullyClose");
 
+  // RectangularCollimator
+  const std::string rectangularCollimatorKey = "RectangularCollimator";
+  Control.addVariable(rectangularCollimatorKey+"ApertureXMin0", 0.0);
+  Control.addVariable(rectangularCollimatorKey+"ApertureXMax0", 1.0);
+  Control.addVariable(rectangularCollimatorKey+"ApertureXMin1", 0.4);
+  Control.addVariable(rectangularCollimatorKey+"ApertureXMax1", 0.6);
+  Control.addVariable(rectangularCollimatorKey+"ApertureXMin2", 0.4);
+  Control.addVariable(rectangularCollimatorKey+"ApertureXMax2", 0.6);
+  Control.addVariable(rectangularCollimatorKey+"ApertureXMin3", 0.1);
+  Control.addVariable(rectangularCollimatorKey+"ApertureXMax3", 0.9);
+  Control.addVariable(rectangularCollimatorKey+"ApertureY1", 10.0);
+  Control.addVariable(rectangularCollimatorKey+"ApertureY2", 40.0);
+  Control.addVariable(rectangularCollimatorKey+"ApertureY3", 50.0);
+  Control.addVariable(rectangularCollimatorKey+"ApertureZMin0", 0.0);
+  Control.addVariable(rectangularCollimatorKey+"ApertureZMax0", 1.0);
+  Control.addVariable(rectangularCollimatorKey+"ApertureZMin1", 0.4);
+  Control.addVariable(rectangularCollimatorKey+"ApertureZMax1", 0.6);
+  Control.addVariable(rectangularCollimatorKey+"ApertureZMin2", 0.4);
+  Control.addVariable(rectangularCollimatorKey+"ApertureZMax2", 0.6);
+  Control.addVariable(rectangularCollimatorKey+"ApertureZMin3", 0.1);
+  Control.addVariable(rectangularCollimatorKey+"ApertureZMax3", 0.9);
+  Control.addVariable(rectangularCollimatorKey+"Height", 10.0);
+  Control.addVariable(rectangularCollimatorKey+"Width", 20.0);
+  Control.addVariable(rectangularCollimatorKey+"Material", "Copper");
+  Control.addVariable(rectangularCollimatorKey+"VoidMaterial", "Void");
+
   // Concrete door
   setVariable::LocalShieldingGenerator LSGen;
   LSGen.setSize(40.,300,250.0);
