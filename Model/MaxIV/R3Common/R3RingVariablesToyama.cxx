@@ -114,16 +114,16 @@ moveApertureTableToyama(FuncDataBase& Control,
 
   BellowGen.setMat("SteelUnknownGrade", "SteelUnknownGrade");
 
-
+  // Values set by this generator hold for all bellows around the movable masks [4,5].
   StepBellowsGenerator stepBellowsGenerator;
-  stepBellowsGenerator.setLength(14.0); // [4]
-  stepBellowsGenerator.setCF<setVariable::CF63>(); // [5]
+  stepBellowsGenerator.setLength(14.0);
+  stepBellowsGenerator.setCF<setVariable::CF63>();
   stepBellowsGenerator.generate(Control, frontKey+"BellowE");
 
   std::string collKey = frontKey+"MoveCollA";
   MovableMaskGenerator movableMaskGenerator;
   // Default: Fully open.
-  // movableMaskGenerator.setFullyOpen();
+  movableMaskGenerator.setFullyOpen();
   movableMaskGenerator.generate(Control,collKey);
   // When viewed from upstream, the first movable mask is oriented like
   // the letter "L" [5].
