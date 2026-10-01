@@ -52,6 +52,7 @@ private:
   int voidMaterial;
 
   int planeIndex(const unsigned int n_segment, const unsigned int side) const;
+  void buildInnerPlane(const unsigned int n_segment, const unsigned int side);
 
   void createSurfaces();
   void createObjects(Simulation &);

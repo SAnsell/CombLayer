@@ -100,6 +100,41 @@ int RectangularCollimator<N>::planeIndex(const unsigned int n_segment,
 }
 
 template <std::size_t N>
+void RectangularCollimator<N>::buildInnerPlane(const unsigned int n_segment,
+                                               const unsigned int side) {
+  bool isOddSide = side % 2;
+  double angle;
+  Geometry::Vec3D normalVector, rotationAxis;
+  Geometry::Vec3D planeOrigin = Y * apertureY[n_segment];
+  if (side < 5) {
+    normalVector = X;
+    rotationAxis = -Z;
+    angle = isOddSide ? tan((apertureX[n_segment + 1].first -
+                             apertureX[n_segment].first) /
+                            (apertureY[n_segment + 1] - apertureY[n_segment]))
+                      : tan((apertureX[n_segment + 1].second -
+                             apertureX[n_segment].second) /
+                            (apertureY[n_segment + 1] - apertureY[n_segment]));
+    planeOrigin += isOddSide ? X * apertureX[n_segment].first
+                             : X * apertureX[n_segment].second;
+  } else {
+    normalVector = Z;
+    rotationAxis = X;
+    angle = isOddSide ? tan((apertureZ[n_segment + 1].first -
+                             apertureZ[n_segment].first) /
+                            (apertureY[n_segment + 1] - apertureY[n_segment]))
+                      : tan((apertureZ[n_segment + 1].second -
+                             apertureZ[n_segment].second) /
+                            (apertureY[n_segment + 1] - apertureY[n_segment]));
+    planeOrigin += isOddSide ? Z * apertureZ[n_segment].first
+                             : Z * apertureZ[n_segment].second;
+  }
+  normalVector.rotate(rotationAxis, angle);
+  ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n_segment, side),
+                           Origin + planeOrigin, normalVector);
+}
+
+template <std::size_t N>
 void RectangularCollimator<N>::populate(const FuncDataBase &Control) {
   FixedRotate::populate(Control);
 
@@ -148,14 +183,9 @@ template <std::size_t N> void RectangularCollimator<N>::createSurfaces() {
                              Origin + Y * apertureY[n], Y);
   }
   for (unsigned int n = 0; n < N - 1; ++n) {
-    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 3),
-                             Origin + X * apertureX[n].first, X);
-    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 4),
-                             Origin + X * apertureX[n].second, X);
-    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 5),
-                             Origin + Z * apertureX[n].first, Z);
-    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 6),
-                             Origin + Z * apertureX[n].second, Z);
+    for (unsigned int side = 3; side < 7; ++side) {
+      buildInnerPlane(n, side);
+    }
   }
 }
 
