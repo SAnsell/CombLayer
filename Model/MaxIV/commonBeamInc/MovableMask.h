@@ -32,10 +32,17 @@ namespace xraySystem {
   \date September 2026
   \brief Movable Mask with L-shaped cross section manufactured by TOYAMA
 
-  When viewed from upstream or downstream, the movable mask appears as an
-  L-shaped block that collimates the beam from two sides. However, the inner
-  surfaces are angled to ensure a uniform heat load inside the component and
-  to reduce the probability of transmitting small-angle-scattered photons.
+  The model of the movable mask consists of an inner part with a rectangular
+  bulk cross section and the aperture. On the upstream and downstream end of the
+  inner part, there are flanges to connect to incoming/outgoing bellows, with an
+  optional connecting piece (rectangular with rounded edges) between the inner
+  part and the flanges.
+
+  When viewed from upstream or downstream, the appears appears
+  as an L-shaped block that collimates the beam from two sides. However, the
+  inner surfaces are angled in a more complex way to ensure a uniform heat load
+  inside the component and to reduce the probability of transmitting
+  small-angle-scattered photons.
 
   The component supports independent left-right and up-down movement.
   Therefore, two of these movable masks, in sequence and rotated against each
@@ -54,7 +61,14 @@ namespace xraySystem {
   the top. At the level of detail of this class, the two movable masks are
   identical.
 
-  The class provides two variables (positionX, positionZ) for positioning the
+  The morphology of the movable masks at the Bloch [6-7], CoSAXS [8-11],
+  FinEstBeAMS [6-7], FlexPES [6-7], ForMAX [12-15], MAXPEEM [6-7], MicroMAX
+  [12-15], SoftiMAX [8-11], and SPECIES [6-7] beamlines at MAX IV is equivalent
+  to DanMAX. They differ only in dimensions and materials. Furthermore, this
+  class is flexible enough to generate a model of the movable masks at the
+  TomoWISE [16-18] beamline.
+
+  This class provides two variables (positionX, positionZ) for positioning the
   mask relative to its nominal zero position. This is the recommended method for
   adjusting the beam cross section. At the moment, the geometry in this class
   consists solely of the movable part of the movable mask, i.e. the same effect
@@ -80,6 +94,19 @@ namespace xraySystem {
   [4] TOYAMA, Movable Mask 2 main body for DanMAX, S6-9-1AG01045.pdf
   [5] CAD model of DanMAX/SINCRYS, J. Selberg, fall/winter 2025,
   /mxn/groups/rad/Beamlines/DanMAX/Simulations/FE_02.STEP
+  [6] TOYAMA, Movable Aperture 1, 1AG00962.pdf
+  [7] TOYAMA, Movable Aperture 2, 1AG00963.pdf
+  [8] TOYAMA, Movable Mask 1 for CoSAXS and SoftiMAX, S6-2-1AG01033.pdf
+  [9] TOYAMA, Movable Mask 1 main body for CoSAXS and SoftiMAX,
+  S6-3-1AG01040.pdf [10] TOYAMA, Movable Mask 2 for CoSAXS and SoftiMAX,
+  S6-6-1AG01034.pdf [11] TOYAMA, Movable Mask 2 main body for CoSAXS and
+  SoftiMAX, S6-7-1AG01041.pdf [12] TOYAMA, Movable Mask 1 ForMAX & MicroMAX,
+  1AB-01670.pdf [13] TOYAMA, Movable Mask 1 main body, 1AG-01044.pdf [14]
+  TOYAMA, Movable Mask 2 ForMAX & MicroMAX, 1AB-01671.pdf [15] TOYAMA, Movable
+  Mask 2 main body, 1AG-01045.pdf [16] TOYAMA, TomoWISE FE Mobable [sic] Mask 1,
+  14_MM1_1AG01502_20260715.pdf [17] TOYAMA, TomoWISE FE Mobable [sic] Mask 2,
+  15_MM2_1AG01504_20260715.pdf [18] TOYAMA, Movable mask main body,
+  16_MM_2JG01416_20260715.pdf
 
   Version history:
   1.1.0 - 2026-09-28
