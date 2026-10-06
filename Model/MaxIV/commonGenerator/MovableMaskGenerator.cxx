@@ -48,11 +48,15 @@ MovableMaskGenerator::MovableMaskGenerator()
       bodyHeight(7.2),  // X VIEW (S=1/1)
       bodyLength(24.4), // A-A
       bodyWidth(7.2),   // X VIEW (S=1/1)
-      flangeInnerRadius(CF63::innerRadius), // Side View
-      flangeLength(CF63::flangeLength),     // Side View
-      flangeRadius(CF63::flangeRadius),     // Side View
-      flangeWallThick(CF63::wallThick),     // Side View
-      holeHeight(3.0),                      // X VIEW (S=1/1)
+      useConnector(true), connectorInnerEdgeRadius(0.5), // [5]
+      connectorInnerHeight(5.2),                         // [5]
+      connectorInnerWidth(4.3),                          // [5]
+      connectorWallThickness(0.5),                       // [5]
+      flangeInnerRadius(CF63::innerRadius),              // Side View
+      flangeLength(CF63::flangeLength),                  // Side View
+      flangeRadius(CF63::flangeRadius),                  // Side View
+      flangeWallThick(CF63::wallThick),                  // Side View
+      holeHeight(3.0),                                   // X VIEW (S=1/1)
       holeOffset(
           0.45), // X VIEW (S=1/1), difference between hole height and depth
       holeWidth(3.12),        // X VIEW (S=1/1)
@@ -89,6 +93,14 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "BodyHeight", bodyHeight);
   Control.addVariable(keyName + "BodyLength", bodyLength);
   Control.addVariable(keyName + "BodyWidth", bodyWidth);
+
+  Control.addVariable(keyName + "UseConnector", useConnector);
+  Control.addVariable(keyName + "ConnectorInnerEdgeRadius",
+                      connectorInnerEdgeRadius);
+  Control.addVariable(keyName + "ConnectorInnerHeight", connectorInnerHeight);
+  Control.addVariable(keyName + "ConnectorInnerWidth", connectorInnerWidth);
+  Control.addVariable(keyName + "ConnectorWallThickness",
+                      connectorWallThickness);
 
   Control.addVariable(keyName + "FlangeInnerRadius", flangeInnerRadius);
   Control.addVariable(keyName + "FlangeLength", flangeLength);

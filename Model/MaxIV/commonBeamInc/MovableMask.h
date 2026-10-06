@@ -128,6 +128,17 @@ private:
   double bodyLength;
   double bodyWidth;
 
+  bool useConnector; // True: Build a connector piece with a rectangular cross
+                     // section with rounded edges between the main body and the
+                     // flanges.
+                     // False: Attach the flange directly to the main body. If
+                     // necessary, adjust the flange length for the correct
+                     // length of the entire component.
+  double connectorInnerEdgeRadius;
+  double connectorInnerHeight;
+  double connectorInnerWidth;
+  double connectorWallThickness;
+
   double flangeInnerRadius;
   double flangeLength;
   double flangeRadius;
@@ -178,6 +189,11 @@ private:
   int voidMaterial;
 
   void createSurfaces();
+  void createRoundedRectanglePipe(Simulation &System, const std::string name,
+                                  const HeadRule &front, const HeadRule &back,
+                                  const HeadRule &outer,
+                                  const HeadRule &exclude,
+                                  const bool buildOuterVoid);
   void createObjects(Simulation &);
   void createLinks();
 

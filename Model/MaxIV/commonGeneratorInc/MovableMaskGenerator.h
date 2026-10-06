@@ -48,6 +48,12 @@ private:
   double bodyLength;
   double bodyWidth;
 
+  int useConnector;
+  double connectorInnerEdgeRadius;
+  double connectorInnerHeight;
+  double connectorInnerWidth;
+  double connectorWallThickness;
+
   double flangeInnerRadius;
   double flangeLength;
   double flangeRadius;

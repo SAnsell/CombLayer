@@ -60,12 +60,7 @@ namespace xraySystem {
 MovableMask::MovableMask(const std::string &Key)
     : attachSystem::FixedRotate(Key), attachSystem::ContainedComp(),
       attachSystem::FrontBackCut(), attachSystem::CellMap(),
-      attachSystem::SurfMap()
-/*!
-  Default constructor
-  \param Key :: Key name for variables
-*/
-{}
+      attachSystem::SurfMap() {}
 
 void MovableMask::populate(const FuncDataBase &Control) {
   ELog::RegMethod RegA("MovableMask", "populate");
@@ -77,6 +72,16 @@ void MovableMask::populate(const FuncDataBase &Control) {
   bodyHeight = Control.EvalVar<double>(keyName + "BodyHeight");
   bodyLength = Control.EvalVar<double>(keyName + "BodyLength");
   bodyWidth = Control.EvalVar<double>(keyName + "BodyWidth");
+
+  useConnector = Control.EvalVar<int>(keyName + "UseConnector");
+  connectorInnerEdgeRadius =
+      Control.EvalVar<double>(keyName + "ConnectorInnerEdgeRadius");
+  connectorInnerHeight =
+      Control.EvalVar<double>(keyName + "ConnectorInnerHeight");
+  connectorInnerWidth =
+      Control.EvalVar<double>(keyName + "ConnectorInnerWidth");
+  connectorWallThickness =
+      Control.EvalVar<double>(keyName + "ConnectorWallThickness");
 
   flangeInnerRadius = Control.EvalVar<double>(keyName + "FlangeInnerRadius");
   flangeLength = Control.EvalVar<double>(keyName + "FlangeLength");
@@ -137,57 +142,114 @@ void MovableMask::createSurfaces() {
       SMap, buildIndex + 32,
       center + Y * ((length + bodyLength) / 2.0 + slitThickness), Y);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 3, center - X * bodyWidth / 2.0,
-                           X);
-  ModelSupport::buildPlane(SMap, buildIndex + 13, center - X * holeWidth / 2.0,
-                           X);
-  ModelSupport::buildPlane(SMap, buildIndex + 4, center + X * bodyWidth / 2.0,
-                           X);
-  ModelSupport::buildPlane(SMap, buildIndex + 14, center + X * holeWidth / 2.0,
-                           X);
-  ModelSupport::buildPlane(SMap, buildIndex + 24,
+  int sign;
+  double bodyScale, connectorScale, holeScale;
+  Geometry::Vec3D normalVector;
+  for (int i = 3; i <= 6; ++i) {
+    sign = i % 2 == 1 ? -1 : 1;
+    if (i < 5) {
+      normalVector = X;
+      bodyScale = bodyWidth;
+      connectorScale = connectorInnerWidth;
+      holeScale = holeWidth;
+    } else {
+      normalVector = Z;
+      bodyScale = bodyHeight;
+      connectorScale = connectorInnerHeight;
+      holeScale = holeHeight;
+    }
+
+    ModelSupport::buildPlane(SMap, buildIndex + i,
+                             center + normalVector * sign * bodyScale / 2.0,
+                             normalVector);
+    ModelSupport::buildPlane(
+        SMap, buildIndex + 10 + i,
+        center + normalVector * sign *
+                     (connectorScale / 2.0 + connectorWallThickness),
+        normalVector);
+    ModelSupport::buildPlane(
+        SMap, buildIndex + 20 + i,
+        center + normalVector * sign * connectorScale / 2.0, normalVector);
+    ModelSupport::buildPlane(
+        SMap, buildIndex + 30 + i,
+        center + normalVector * sign *
+                     (connectorScale / 2.0 - connectorInnerEdgeRadius),
+        normalVector);
+    ModelSupport::buildPlane(SMap, buildIndex + 40 + i,
+                             center + normalVector * sign * holeScale / 2.0,
+                             normalVector);
+  }
+
+  ModelSupport::buildPlane(SMap, buildIndex + 54,
                            center + X * (-holeWidth / 2.0 + maskBottomMaxWidth),
                            X);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 5, center - Z * bodyHeight / 2.0,
-                           Z);
-  ModelSupport::buildPlane(SMap, buildIndex + 15,
-                           center - Z * (holeHeight / 2.0 - holeOffset -
-                                         maskLeftMaxHeight + slitHeight),
-                           Z);
-  ModelSupport::buildPlane(SMap, buildIndex + 25,
+  ModelSupport::buildPlane(SMap, buildIndex + 55,
                            center - Z * (holeHeight / 2.0 - holeOffset), Z);
 
   const double slitInnerSurfaceAngleRad = slitInnerSurfaceAngle * M_PI / 180.0;
   Geometry::Vec3D slitBottomSurfaceNormal = Z;
   slitBottomSurfaceNormal.rotate(X, -slitInnerSurfaceAngleRad);
-  ModelSupport::buildPlane(SMap, buildIndex + 35,
+  ModelSupport::buildPlane(SMap, buildIndex + 65,
                            center + Y * ((length + bodyLength) / 2.0) +
                                Z * (-holeHeight / 2.0 + holeOffset +
                                     maskBottomMaxHeight + slitInnerOffset),
                            slitBottomSurfaceNormal);
   ModelSupport::buildPlane(
-      SMap, buildIndex + 45,
+      SMap, buildIndex + 75,
       center - Z * (holeHeight / 2.0 - holeOffset - maskLeftMaxHeight), Z);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 6, center + Z * bodyHeight / 2.0,
-                           Z);
-  ModelSupport::buildPlane(SMap, buildIndex + 16,
-                           center + Z * (holeHeight / 2.0 + holeOffset), Z);
-
   ModelSupport::buildCylinder(SMap, buildIndex + 7, center, Y, flangeRadius);
-  ModelSupport::buildCylinder(SMap, buildIndex + 17, center, Y,
-                              flangeInnerRadius + flangeWallThick);
   ModelSupport::buildCylinder(SMap, buildIndex + 27, center, Y,
                               flangeInnerRadius);
+  ModelSupport::buildCylinder(
+      SMap, buildIndex + 37,
+      center - X * (connectorInnerWidth / 2.0 - connectorInnerEdgeRadius) -
+          Z * (connectorInnerHeight / 2.0 - connectorInnerEdgeRadius),
+      Y, connectorInnerEdgeRadius);
+  ModelSupport::buildCylinder(
+      SMap, buildIndex + 47,
+      center - X * (connectorInnerWidth / 2.0 - connectorInnerEdgeRadius) +
+          Z * (connectorInnerHeight / 2.0 - connectorInnerEdgeRadius),
+      Y, connectorInnerEdgeRadius);
+  ModelSupport::buildCylinder(
+      SMap, buildIndex + 57,
+      center + X * (connectorInnerWidth / 2.0 - connectorInnerEdgeRadius) -
+          Z * (connectorInnerHeight / 2.0 - connectorInnerEdgeRadius),
+      Y, connectorInnerEdgeRadius);
+  ModelSupport::buildCylinder(
+      SMap, buildIndex + 67,
+      center + X * (connectorInnerWidth / 2.0 - connectorInnerEdgeRadius) +
+          Z * (connectorInnerHeight / 2.0 - connectorInnerEdgeRadius),
+      Y, connectorInnerEdgeRadius);
+  ModelSupport::buildCylinder(
+      SMap, buildIndex + 137,
+      center - X * (connectorInnerWidth / 2.0 - connectorInnerEdgeRadius) -
+          Z * (connectorInnerHeight / 2.0 - connectorInnerEdgeRadius),
+      Y, connectorInnerEdgeRadius + connectorWallThickness);
+  ModelSupport::buildCylinder(
+      SMap, buildIndex + 147,
+      center - X * (connectorInnerWidth / 2.0 - connectorInnerEdgeRadius) +
+          Z * (connectorInnerHeight / 2.0 - connectorInnerEdgeRadius),
+      Y, connectorInnerEdgeRadius + connectorWallThickness);
+  ModelSupport::buildCylinder(
+      SMap, buildIndex + 157,
+      center + X * (connectorInnerWidth / 2.0 - connectorInnerEdgeRadius) -
+          Z * (connectorInnerHeight / 2.0 - connectorInnerEdgeRadius),
+      Y, connectorInnerEdgeRadius + connectorWallThickness);
+  ModelSupport::buildCylinder(
+      SMap, buildIndex + 167,
+      center + X * (connectorInnerWidth / 2.0 - connectorInnerEdgeRadius) +
+          Z * (connectorInnerHeight / 2.0 - connectorInnerEdgeRadius),
+      Y, connectorInnerEdgeRadius + connectorWallThickness);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 23,
+  ModelSupport::buildPlane(SMap, buildIndex + 53,
                            center - X * (holeWidth / 2.0 - maskLeftMaxWidth),
                            X);
   Geometry::Vec3D slitLeftSurfaceNormal = X;
   slitLeftSurfaceNormal.rotate(Z, slitInnerSurfaceAngleRad);
   ModelSupport::buildPlane(
-      SMap, buildIndex + 33,
+      SMap, buildIndex + 63,
       center - X * (holeWidth / 2.0 - maskLeftMaxWidth - slitInnerOffset) +
           Y * ((length + bodyLength) / 2.0),
       slitLeftSurfaceNormal);
@@ -196,7 +258,7 @@ void MovableMask::createSurfaces() {
   Geometry::Vec3D maskLeftSlopeNormal = maskLeftSlope;
   maskLeftSlopeNormal.rotate(X, M_PI_2);
   ModelSupport::buildPlane(
-      SMap, buildIndex + 55,
+      SMap, buildIndex + 85,
       center + Y * (length + bodyLength) / 2.0 +
           Z * (maskLeftMaxHeight - (holeHeight / 2.0 - holeOffset)),
       maskLeftSlopeNormal);
@@ -221,7 +283,7 @@ void MovableMask::createSurfaces() {
                tan(maskLeftDownstreamInnerPlaneAngleRad)) +
       Y * (length + bodyLength) / 2.0 +
       Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight);
-  ModelSupport::buildPlane(SMap, buildIndex + 43, focalPoint,
+  ModelSupport::buildPlane(SMap, buildIndex + 73, focalPoint,
                            (maskLeftDownstreamBottomRight - focalPoint) *
                                (maskLeftDownstreamTopRight - focalPoint));
 
@@ -231,7 +293,7 @@ void MovableMask::createSurfaces() {
       Z * (-holeHeight / 2.0 + holeOffset + maskBottomMaxHeight -
            tan(maskLeftDownstreamInnerPlaneAngleRad) *
                (maskBottomMaxWidth - maskLeftMaxWidth));
-  ModelSupport::buildPlane(SMap, buildIndex + 65, focalPoint,
+  ModelSupport::buildPlane(SMap, buildIndex + 95, focalPoint,
                            (maskBottomDownstreamTopLeft - focalPoint) *
                                (maskLeftDownstreamBottomRight - focalPoint));
 
@@ -243,81 +305,179 @@ void MovableMask::createSurfaces() {
       center - X * (holeWidth / 2.0 - maskBottomMaxWidth) +
       Y * (length + bodyLength) / 2.0 + Z * (-holeHeight / 2.0 + holeOffset);
 
-  ModelSupport::buildPlane(SMap, buildIndex + 75, focalPoint,
+  ModelSupport::buildPlane(SMap, buildIndex + 105, focalPoint,
                            (maskBottomDownstreamTopRight - focalPoint) *
                                (maskBottomDownstreamTopLeft - focalPoint));
 
   ModelSupport::buildPlane(
-      SMap, buildIndex + 85, focalPoint,
+      SMap, buildIndex + 115, focalPoint,
       -(maskBottomDownstreamTopRight - focalPoint) *
           (maskLeftUpstreamBottomRight - maskBottomDownstreamTopRight));
   ModelSupport::buildPlane(
-      SMap, buildIndex + 95, maskLeftUpstreamBottomRight,
+      SMap, buildIndex + 125, maskLeftUpstreamBottomRight,
       -(maskBottomDownstreamTopRight - maskLeftUpstreamBottomRight) *
           (maskBottomDownstreamBottomRight - maskLeftUpstreamBottomRight));
+}
+
+int cornerIndex(const int &i, const int &j, const int offset = 0) {
+  int index = 37;
+  if (i == 3) {
+    if (j == 6) {
+      index = 47;
+    }
+  } else if (j == 5) {
+    index = 57;
+  } else {
+    index = 67;
+  }
+  return index + offset;
+}
+
+void MovableMask::createRoundedRectanglePipe(
+    Simulation &System, const std::string name, const HeadRule &front,
+    const HeadRule &back, const HeadRule &outer, const HeadRule &exclude,
+    const bool buildOuterVoid) {
+  int sign_i, sign_j;
+  for (int i = 3; i <= 4; ++i) {
+    sign_i = i % 2 == 0 ? 1 : -1;
+    for (int j = 5; j <= 6; ++j) {
+      sign_j = j % 2 == 0 ? 1 : -1;
+      if (buildOuterVoid) {
+        makeCell(name, System, cellIndex++, flangeMaterial, 0.0,
+                 ModelSupport::getHeadRule(
+                     SMap, buildIndex,
+                     std::to_string(cornerIndex(i, j)) + " " +
+                         std::to_string(-cornerIndex(i, j, 100)) + " " +
+                         std::to_string(sign_i * (30 + i)) + " " +
+                         std::to_string(sign_j * (30 + j))) *
+                     front * back);
+        makeCell(name, System, cellIndex++, voidMaterial, 0.0,
+                 ModelSupport::getHeadRule(
+                     SMap, buildIndex,
+                     std::to_string(cornerIndex(i, j, 100)) + " " +
+                         std::to_string(sign_i * (30 + i)) + " " +
+                         std::to_string(sign_j * (30 + j))) *
+                     front * back * outer);
+      } else {
+        makeCell(name, System, cellIndex++, flangeMaterial, 0.0,
+                 ModelSupport::getHeadRule(
+                     SMap, buildIndex,
+                     std::to_string(cornerIndex(i, j)) + " " +
+                         std::to_string(sign_i * (30 + i)) + " " +
+                         std::to_string(sign_j * (30 + j))) *
+                     front * back * outer);
+      }
+      makeCell(name + "Void", System, cellIndex++, voidMaterial, 0.0,
+               ModelSupport::getHeadRule(
+                   SMap, buildIndex,
+                   std::to_string(-cornerIndex(i, j)) + " " +
+                       std::to_string(sign_i * (30 + i)) + " " +
+                       std::to_string(sign_j * (30 + j))) *
+                   front * back);
+    }
+    if (buildOuterVoid) {
+      makeCell(name, System, cellIndex++, flangeMaterial, 0.0,
+               ModelSupport::getHeadRule(
+                   SMap, buildIndex,
+                   std::to_string(-sign_i * (10 + i)) + " " +
+                       std::to_string(sign_i * (20 + i)) + " 35 -36") *
+                   front * back);
+      makeCell(name, System, cellIndex++, voidMaterial, 0.0,
+               ModelSupport::getHeadRule(SMap, buildIndex,
+                                         std::to_string(sign_i * (10 + i)) +
+                                             " 35 -36") *
+                   front * back * outer);
+      makeCell(name, System, cellIndex++, flangeMaterial, 0.0,
+               ModelSupport::getHeadRule(
+                   SMap, buildIndex,
+                   std::to_string(-sign_i * (10 + i + 2)) + " " +
+                       std::to_string(sign_i * (20 + i + 2)) + " 33 -34") *
+                   front * back);
+      makeCell(name, System, cellIndex++, voidMaterial, 0.0,
+               ModelSupport::getHeadRule(SMap, buildIndex,
+                                         std::to_string(sign_i * (10 + i + 2)) +
+                                             " 33 -34") *
+                   front * back * outer);
+    }
+    makeCell(name + "Void", System, cellIndex++, voidMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 std::to_string(-sign_i * (20 + i)) + " " +
+                     std::to_string(sign_i * (30 + i)) + " 35 -36") *
+                 front * back);
+    makeCell(name + "Void", System, cellIndex++, voidMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 std::to_string(-sign_i * (20 + i + 2)) + " " +
+                     std::to_string(sign_i * (30 + i + 2)) + " 33 -34") *
+                 front * back);
+  }
+  if (!buildOuterVoid) {
+    makeCell(name, System, cellIndex++, flangeMaterial, 0.0,
+             ModelSupport::getHeadRule(SMap, buildIndex, "(-23:24) 35 -36") *
+                 front * back * outer);
+    makeCell(name, System, cellIndex++, flangeMaterial, 0.0,
+             ModelSupport::getHeadRule(SMap, buildIndex, "(-25:26) 33 -34") *
+                 front * back * outer);
+  }
+  makeCell(name + "Void", System, cellIndex++, voidMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex, "33 -34 35 -36") *
+               front * back * exclude);
 }
 
 void MovableMask::createObjects(Simulation &System) {
   const HeadRule front = ExternalCut::getRule("front");
   const HeadRule back = ExternalCut::getRule("back");
 
-  makeCell("FrontFlange", System, cellIndex++, flangeMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-11 -7 27") * front);
-  makeCell("FrontFlangeVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-21 -27") * front);
-  makeCell("FrontPipe", System, cellIndex++, flangeMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "11 -21 -17 27"));
-  makeCell("FrontPipeVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "11 -21 -7 17"));
+  createRoundedRectanglePipe(System, "FrontFlange", front,
+                             ModelSupport::getHeadRule(SMap, buildIndex, "-11"),
+                             ModelSupport::getHeadRule(SMap, buildIndex, "-7"),
+                             HeadRule(), false);
+  createRoundedRectanglePipe(System, "FrontConnector",
+                             ModelSupport::getHeadRule(SMap, buildIndex, "11"),
+                             ModelSupport::getHeadRule(SMap, buildIndex, "-21"),
+                             ModelSupport::getHeadRule(SMap, buildIndex, "-7"),
+                             HeadRule(), true);
+  const HeadRule slitHR = ModelSupport::getHeadRule(
+      SMap, buildIndex, "22 -32 43 -54 45 -75 (-63:-65)");
+  createRoundedRectanglePipe(System, "BackConnector",
+                             ModelSupport::getHeadRule(SMap, buildIndex, "22"),
+                             ModelSupport::getHeadRule(SMap, buildIndex, "-12"),
+                             ModelSupport::getHeadRule(SMap, buildIndex, "-7"),
+                             slitHR.complement(), true);
+  createRoundedRectanglePipe(
+      System, "BackFlange", ModelSupport::getHeadRule(SMap, buildIndex, "12"),
+      back, ModelSupport::getHeadRule(SMap, buildIndex, "-7"), HeadRule(),
+      false);
 
   makeCell("Body", System, cellIndex++, bodyMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "21 -22 3 -4 5 -6 (-13:14:-25:16)"));
+                                     "21 -22 3 -4 5 -6 (-43:44:-55:46)"));
   makeCell("BodyLeftInnerVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 13 -23 55 -16"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 43 -53 85 -46"));
   makeCell("BodyRightInnerVoid", System, cellIndex++, voidMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "21 -22 23 -14 25 -16 (75:85:95)"));
+                                     "21 -22 53 -44 55 -46 (105:115:125)"));
   makeCell(
       "BodyOuterVoid", System, cellIndex++, voidMaterial, 0.0,
       ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 (-3:4:-5:6) -7"));
 
-  makeCell("BackFlange", System, cellIndex++, flangeMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "12 -7 27") * back);
-  makeCell("BackFlangeVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "32 -27") * back);
-  makeCell("BackPipe", System, cellIndex++, flangeMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "22 -12 -17 27"));
-  makeCell("BackPipeVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "22 -12 -7 17"));
-
   makeCell("MaskLeft", System, cellIndex++, bodyMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "21 -22 13 -23 (-43:-65) 25 -55"));
+                                     "21 -22 43 -53 (-73:-95) 55 -85"));
   makeCell("MaskLeftVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 -23 43 -55 65"));
-  makeCell(
-      "MaskBottom", System, cellIndex++, bodyMaterial, 0.0,
-      ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 23 25 -75 -85 -95"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 -53 73 -85 95"));
+  makeCell("MaskBottom", System, cellIndex++, bodyMaterial, 0.0,
+           ModelSupport::getHeadRule(SMap, buildIndex,
+                                     "21 -22 53 55 -105 -115 -125"));
 
-  makeCell("Slit", System, cellIndex++, slitMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "22 -32 13 -24 15 -45 (-33:-35)"));
-  makeCell("SlitVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "22 -32 -27 (-13:-15:24:45)"));
-  makeCell("SlitVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "22 -32 33 -24 35 -45"));
+  makeCell("Slit", System, cellIndex++, slitMaterial, 0.0, slitHR);
 
   addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "-7") * front *
                back);
 }
 
-void MovableMask::createLinks()
-/*!
-  Construct the links for the system
-*/
-{
+void MovableMask::createLinks() {
   ELog::RegMethod RegA("MovableMask", "createLinks");
 
   FrontBackCut::createLinks(*this, Origin, Y);
