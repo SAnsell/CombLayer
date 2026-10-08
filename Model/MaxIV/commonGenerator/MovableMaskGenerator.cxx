@@ -39,6 +39,7 @@
 #include "CFFlanges.h"
 
 #include "MovableMaskGenerator.h"
+#include "MovableMaskToyama.h"
 
 namespace setVariable {
 
@@ -84,6 +85,37 @@ MovableMaskGenerator::MovableMaskGenerator()
                        // tantalum. Usually, the material specifications in
                        // the Toyama drawings are more detailed.
       voidMaterial("Void") {}
+
+template <typename Dimensions> void MovableMaskGenerator::setDimensions() {
+  length = Dimensions::length;
+
+  bodyHeight = Dimensions::bodyHeight;
+  bodyLength = Dimensions::bodyLength;
+  bodyWidth = Dimensions::bodyWidth;
+
+  useConnector = Dimensions::useConnector;
+
+  holeHeight = Dimensions::holeHeight;
+  holeOffset = Dimensions::holeOffset;
+  holeWidth = Dimensions::holeWidth;
+
+  maskLeftMaxHeight = Dimensions::maskLeftMaxHeight;
+  maskLeftMaxWidth = Dimensions::maskLeftMaxWidth;
+  maskBottomMaxHeight = Dimensions::maskBottomMaxHeight;
+  maskBottomMaxWidth = Dimensions::maskBottomMaxWidth;
+  maskFocalPoint = Dimensions::maskFocalPoint;
+  maskDownstreamInnerPlaneAngle = Dimensions::maskDownstreamInnerPlaneAngle;
+
+  slitHeight = Dimensions::slitHeight;
+  slitInnerOffset = Dimensions::slitInnerOffset;
+  slitInnerSurfaceAngle = Dimensions::slitInnerSurfaceAngle;
+  slitThickness = Dimensions::slitThickness;
+
+  bodyMaterial = Dimensions::bodyMaterial;
+  flangeMaterial = Dimensions::flangeMaterial;
+  slitMaterial = Dimensions::slitMaterial;
+  voidMaterial = Dimensions::voidMaterial;
+}
 
 void MovableMaskGenerator::generate(FuncDataBase &Control,
                                     const std::string &keyName) const {
@@ -142,5 +174,8 @@ void MovableMaskGenerator::setAperture(const double posX, const double posZ) {
   positionX = posX;
   positionZ = posZ;
 }
+
+template void MovableMaskGenerator::setDimensions<MovableMaskToyamaR3B3>();
+template void MovableMaskGenerator::setDimensions<MovableMaskToyamaR3B5>();
 
 } // NAMESPACE setVariable

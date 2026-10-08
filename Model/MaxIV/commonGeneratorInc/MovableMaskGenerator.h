@@ -89,6 +89,7 @@ public:
   MovableMaskGenerator();
   ~MovableMaskGenerator() = default;
 
+  template <typename Dimensions> void setDimensions();
   void setNominalZero() {
     positionX = 0.0;
     positionZ = 0.0;
