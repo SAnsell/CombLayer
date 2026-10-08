@@ -34,6 +34,8 @@ namespace setVariable {
   \brief MovableMaskGenerator for variables
 
   Version history:
+  1.1.1 - 2026-10-08
+          Fix default body material.
   1.1.0 - 2026-09-28
           Introduce SlitInnerOffset parameter for compatibility with MovableMask
           v1.1.

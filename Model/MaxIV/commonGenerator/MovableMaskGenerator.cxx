@@ -76,7 +76,7 @@ MovableMaskGenerator::MovableMaskGenerator()
                              // dimensions given in parentheses.
       slitInnerSurfaceAngle(10.0),     // [5]
       slitThickness(0.5),              // [5]
-      bodyMaterial("Aluminium"),       // A-A, TODO: Should be GLIDCOP AL-15
+      bodyMaterial("Copper"),          // A-A, TODO: Should be GLIDCOP AL-15
       flangeMaterial("Stainless304L"), // A-A
       slitMaterial(
           "Tantalum"), // Back View. The part is designated as "Tantalumslit" in
