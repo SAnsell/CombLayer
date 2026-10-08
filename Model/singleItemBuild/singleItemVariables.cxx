@@ -163,6 +163,7 @@
 #include "XRayHutchBaseGenerator.h"
 #include "ExptHutGenerator.h"
 #include "MovableMaskGenerator.h"
+#include "MovableMaskToyama.h"
 
 namespace setVariable
 {
@@ -957,11 +958,17 @@ SingleItemVariables(FuncDataBase& Control)
 
   // MovableMask
   MovableMaskGenerator movableMaskGenerator;
+  movableMaskGenerator.setDimensions<MovableMaskToyamaR3B3>();
   movableMaskGenerator.generate(Control, "MovableMaskNominal");
   movableMaskGenerator.setFullyOpen();
   movableMaskGenerator.generate(Control, "MovableMaskFullyOpen");
   movableMaskGenerator.setFullyClose();
   movableMaskGenerator.generate(Control, "MovableMaskFullyClose");
+
+  movableMaskGenerator.setDimensions<MovableMaskToyamaR3B5>();
+  movableMaskGenerator.setNominalZero();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B5");
+  Control.addVariable("MovableMaskToyamaR3B5ZStep", 20.0);
 
   // RectangularCollimator
   const std::string rectangularCollimatorKey = "RectangularCollimator";

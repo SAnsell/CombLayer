@@ -2091,9 +2091,12 @@ makeSingleItem::build(Simulation& System,
         std::make_shared<xraySystem::MovableMask>("MovableMaskFullyOpen");
       std::shared_ptr<xraySystem::MovableMask> movableMaskFullyClose =
         std::make_shared<xraySystem::MovableMask>("MovableMaskFullyClose");
+      std::shared_ptr<xraySystem::MovableMask> movableMaskToyamaR3B5 =
+        std::make_shared<xraySystem::MovableMask>("MovableMaskToyamaR3B5");
       OR.addObject(movableMaskNominal);
       OR.addObject(movableMaskFullyOpen);
       OR.addObject(movableMaskFullyClose);
+      OR.addObject(movableMaskToyamaR3B5);
 
       movableMaskNominal->addInsertCell(voidCell);
       movableMaskNominal->createAll(System,World::masterOrigin(),0);
@@ -2101,6 +2104,8 @@ makeSingleItem::build(Simulation& System,
       movableMaskFullyOpen->createAll(System,*movableMaskNominal,"back");
       movableMaskFullyClose->addInsertCell(voidCell);
       movableMaskFullyClose->createAll(System,*movableMaskFullyOpen,"back");
+      movableMaskToyamaR3B5->addInsertCell(voidCell);
+      movableMaskToyamaR3B5->createAll(System,World::masterOrigin(),0);
 
       return;
     }
