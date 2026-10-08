@@ -130,12 +130,15 @@ void MovableMask::createSurfaces() {
     setBack(-SMap.realSurf(buildIndex + 2));
   }
 
-  ModelSupport::buildPlane(SMap, buildIndex + 11, center + Y * (flangeLength),
-                           Y);
+  const double effectiveFlangeLength =
+      useConnector ? flangeLength : (length - bodyLength) / 2.0;
+
+  ModelSupport::buildPlane(SMap, buildIndex + 11,
+                           center + Y * (effectiveFlangeLength), Y);
   ModelSupport::buildPlane(SMap, buildIndex + 21,
                            center + Y * (length - bodyLength) / 2.0, Y);
   ModelSupport::buildPlane(SMap, buildIndex + 12,
-                           center + Y * (length - flangeLength), Y);
+                           center + Y * (length - effectiveFlangeLength), Y);
   ModelSupport::buildPlane(SMap, buildIndex + 22,
                            center + Y * (length + bodyLength) / 2.0, Y);
   ModelSupport::buildPlane(
@@ -404,13 +407,13 @@ void MovableMask::createRoundedRectanglePipe(
                  SMap, buildIndex,
                  std::to_string(-sign_i * (20 + i)) + " " +
                      std::to_string(sign_i * (30 + i)) + " 35 -36") *
-                 front * back);
+                 front * back * exclude);
     makeCell(name + "Void", System, cellIndex++, voidMaterial, 0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  std::to_string(-sign_i * (20 + i + 2)) + " " +
                      std::to_string(sign_i * (30 + i + 2)) + " 33 -34") *
-                 front * back);
+                 front * back * exclude);
   }
   if (!buildOuterVoid) {
     makeCell(name, System, cellIndex++, flangeMaterial, 0.0,
@@ -429,26 +432,35 @@ void MovableMask::createObjects(Simulation &System) {
   const HeadRule front = ExternalCut::getRule("front");
   const HeadRule back = ExternalCut::getRule("back");
 
-  createRoundedRectanglePipe(System, "FrontFlange", front,
-                             ModelSupport::getHeadRule(SMap, buildIndex, "-11"),
-                             ModelSupport::getHeadRule(SMap, buildIndex, "-7"),
-                             HeadRule(), false);
-  createRoundedRectanglePipe(System, "FrontConnector",
-                             ModelSupport::getHeadRule(SMap, buildIndex, "11"),
-                             ModelSupport::getHeadRule(SMap, buildIndex, "-21"),
-                             ModelSupport::getHeadRule(SMap, buildIndex, "-7"),
-                             HeadRule(), true);
+  const std::string frontFlangeBack = useConnector ? "-11" : "-21";
+  const std::string backFlangeFront = useConnector ? "12" : "22";
+
+  createRoundedRectanglePipe(
+      System, "FrontFlange", front,
+      ModelSupport::getHeadRule(SMap, buildIndex, frontFlangeBack),
+      ModelSupport::getHeadRule(SMap, buildIndex, "-7"), HeadRule(), false);
+  if (useConnector) {
+    createRoundedRectanglePipe(
+        System, "FrontConnector",
+        ModelSupport::getHeadRule(SMap, buildIndex, "11"),
+        ModelSupport::getHeadRule(SMap, buildIndex, "-21"),
+        ModelSupport::getHeadRule(SMap, buildIndex, "-7"), HeadRule(), true);
+  }
   const HeadRule slitHR = ModelSupport::getHeadRule(
       SMap, buildIndex, "22 -32 43 -54 45 -75 (-63:-65)");
-  createRoundedRectanglePipe(System, "BackConnector",
-                             ModelSupport::getHeadRule(SMap, buildIndex, "22"),
-                             ModelSupport::getHeadRule(SMap, buildIndex, "-12"),
-                             ModelSupport::getHeadRule(SMap, buildIndex, "-7"),
-                             slitHR.complement(), true);
+  if (useConnector) {
+    createRoundedRectanglePipe(
+        System, "BackConnector",
+        ModelSupport::getHeadRule(SMap, buildIndex, "22"),
+        ModelSupport::getHeadRule(SMap, buildIndex, "-12"),
+        ModelSupport::getHeadRule(SMap, buildIndex, "-7"), slitHR.complement(),
+        true);
+  }
   createRoundedRectanglePipe(
-      System, "BackFlange", ModelSupport::getHeadRule(SMap, buildIndex, "12"),
-      back, ModelSupport::getHeadRule(SMap, buildIndex, "-7"), HeadRule(),
-      false);
+      System, "BackFlange",
+      ModelSupport::getHeadRule(SMap, buildIndex, backFlangeFront), back,
+      ModelSupport::getHeadRule(SMap, buildIndex, "-7"),
+      useConnector ? HeadRule() : slitHR.complement(), false);
 
   makeCell("Body", System, cellIndex++, bodyMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
