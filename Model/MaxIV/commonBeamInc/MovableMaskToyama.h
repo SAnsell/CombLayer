@@ -79,6 +79,10 @@ struct MovableMaskToyamaR3B5 {
 
   static constexpr bool useConnector = false;
 
+  static constexpr double connectorInnerEdgeRadius = 0.5;
+  static constexpr double connectorInnerHeight = 3.95;
+  static constexpr double connectorInnerWidth = 5.2;
+
   static constexpr double holeHeight = 2.0;
   static constexpr double holeOffset = 0.0;
   static constexpr double holeWidth = 3.85;
@@ -90,7 +94,7 @@ struct MovableMaskToyamaR3B5 {
   static constexpr double maskFocalPoint = 0.5;                // Estimate
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0; // Estimate
 
-  static constexpr double slitHeight = 1.4; // Estimate
+  static constexpr double slitHeight = 1.45; // Estimate
   static constexpr double slitInnerOffset = 0.01;
   static constexpr double slitInnerSurfaceAngle =
       -1.0; // Estimate. Note the different sign.

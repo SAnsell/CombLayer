@@ -95,6 +95,10 @@ template <typename Dimensions> void MovableMaskGenerator::setDimensions() {
 
   useConnector = Dimensions::useConnector;
 
+  connectorInnerEdgeRadius = Dimensions::connectorInnerEdgeRadius;
+  connectorInnerHeight = Dimensions::connectorInnerHeight;
+  connectorInnerWidth = Dimensions::connectorInnerWidth;
+
   holeHeight = Dimensions::holeHeight;
   holeOffset = Dimensions::holeOffset;
   holeWidth = Dimensions::holeWidth;
