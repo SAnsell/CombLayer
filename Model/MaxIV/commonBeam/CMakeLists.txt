@@ -182,6 +182,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/MonoShutterR3.h
   ${tarINC}/MonoSlitsJJ.h
   ${tarINC}/MovableMask.h
+  ${tarINC}/MovableMaskToyama.h
   ${tarINC}/MovableSafetyMask.h
   ${tarINC}/Octupole.h
   ${tarINC}/OpticsHutch.h
