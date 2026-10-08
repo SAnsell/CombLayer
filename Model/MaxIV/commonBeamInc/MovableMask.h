@@ -99,14 +99,16 @@ namespace xraySystem {
   [8] TOYAMA, Movable Mask 1 for CoSAXS and SoftiMAX, S6-2-1AG01033.pdf
   [9] TOYAMA, Movable Mask 1 main body for CoSAXS and SoftiMAX,
   S6-3-1AG01040.pdf [10] TOYAMA, Movable Mask 2 for CoSAXS and SoftiMAX,
-  S6-6-1AG01034.pdf [11] TOYAMA, Movable Mask 2 main body for CoSAXS and
-  SoftiMAX, S6-7-1AG01041.pdf [12] TOYAMA, Movable Mask 1 ForMAX & MicroMAX,
-  1AB-01670.pdf [13] TOYAMA, Movable Mask 1 main body, 1AG-01044.pdf [14]
-  TOYAMA, Movable Mask 2 ForMAX & MicroMAX, 1AB-01671.pdf [15] TOYAMA, Movable
-  Mask 2 main body, 1AG-01045.pdf [16] TOYAMA, TomoWISE FE Mobable [sic] Mask 1,
-  14_MM1_1AG01502_20260715.pdf [17] TOYAMA, TomoWISE FE Mobable [sic] Mask 2,
-  15_MM2_1AG01504_20260715.pdf [18] TOYAMA, Movable mask main body,
-  16_MM_2JG01416_20260715.pdf
+  S6-6-1AG01034.pdf
+  [11] TOYAMA, Movable Mask 2 main body for CoSAXS and SoftiMAX,
+  S6-7-1AG01041.pdf
+  [12] TOYAMA, Movable Mask 1 ForMAX & MicroMAX, 1AB-01670.pdf
+  [13] TOYAMA, Movable Mask 1 main body, 1AG-01044.pdf
+  [14] TOYAMA, Movable Mask 2 ForMAX & MicroMAX, 1AB-01671.pdf
+  [15] TOYAMA, Movable Mask 2 main body, 1AG-01045.pdf
+  [16] TOYAMA, TomoWISE FE Mobable [sic] Mask 1, 14_MM1_1AG01502_20260715.pdf
+  [17] TOYAMA, TomoWISE FE Mobable [sic] Mask 2, 15_MM2_1AG01504_20260715.pdf
+  [18] TOYAMA, Movable mask main body, 16_MM_2JG01416_20260715.pdf
 
   Version history:
   1.1.0 - 2026-09-28
