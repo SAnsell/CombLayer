@@ -98,8 +98,8 @@ namespace xraySystem {
   [7] TOYAMA, Movable Aperture 2, 1AG00963.pdf
   [8] TOYAMA, Movable Mask 1 for CoSAXS and SoftiMAX, S6-2-1AG01033.pdf
   [9] TOYAMA, Movable Mask 1 main body for CoSAXS and SoftiMAX,
-  S6-3-1AG01040.pdf [10] TOYAMA, Movable Mask 2 for CoSAXS and SoftiMAX,
-  S6-6-1AG01034.pdf
+  S6-3-1AG01040.pdf
+  [10] TOYAMA, Movable Mask 2 for CoSAXS and SoftiMAX, S6-6-1AG01034.pdf
   [11] TOYAMA, Movable Mask 2 main body for CoSAXS and SoftiMAX,
   S6-7-1AG01041.pdf
   [12] TOYAMA, Movable Mask 1 ForMAX & MicroMAX, 1AB-01670.pdf
@@ -109,6 +109,7 @@ namespace xraySystem {
   [16] TOYAMA, TomoWISE FE Mobable [sic] Mask 1, 14_MM1_1AG01502_20260715.pdf
   [17] TOYAMA, TomoWISE FE Mobable [sic] Mask 2, 15_MM2_1AG01504_20260715.pdf
   [18] TOYAMA, Movable mask main body, 16_MM_2JG01416_20260715.pdf
+  [19] TOYAMA, CAD Model of TomoWISE Frontend, 20260630_TomoWISE_FE_Layout.X_T
 
   Version history:
   1.1.0 - 2026-09-28
