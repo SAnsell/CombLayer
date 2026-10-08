@@ -72,7 +72,6 @@ MovableMaskGenerator::MovableMaskGenerator()
       maskDownstreamInnerPlaneAngle(9.0), // [5]
       positionX(0.0),                     // Nominal zero position
       positionZ(0.0),                     // Nominal zero position
-      slitHeight(2.75),                   // [5]
       slitInnerOffset(0.01), // X VIEW (S=1/1), "0.1/slit", see also the slit
                              // dimensions given in parentheses.
       slitInnerSurfaceAngle(10.0),     // [5]
@@ -110,7 +109,6 @@ template <typename Dimensions> void MovableMaskGenerator::setDimensions() {
   maskFocalPoint = Dimensions::maskFocalPoint;
   maskDownstreamInnerPlaneAngle = Dimensions::maskDownstreamInnerPlaneAngle;
 
-  slitHeight = Dimensions::slitHeight;
   slitInnerOffset = Dimensions::slitInnerOffset;
   slitInnerSurfaceAngle = Dimensions::slitInnerSurfaceAngle;
   slitThickness = Dimensions::slitThickness;
@@ -158,7 +156,6 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "PositionX", positionX);
   Control.addVariable(keyName + "PositionZ", positionZ);
 
-  Control.addVariable(keyName + "SlitHeight", slitHeight);
   Control.addVariable(keyName + "SlitInnerOffset", slitInnerOffset);
   Control.addVariable(keyName + "SlitInnerSurfaceAngle", slitInnerSurfaceAngle);
   Control.addVariable(keyName + "SlitThickness", slitThickness);

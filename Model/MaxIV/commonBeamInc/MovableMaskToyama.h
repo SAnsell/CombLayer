@@ -57,7 +57,6 @@ struct MovableMaskToyamaR3B3 {
   static constexpr double maskFocalPoint = 0.376;
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0;
 
-  static constexpr double slitHeight = 2.75;
   static constexpr double slitInnerOffset = 0.01;
   static constexpr double slitInnerSurfaceAngle = 10.0;
   static constexpr double slitThickness = 0.5;
@@ -94,7 +93,6 @@ struct MovableMaskToyamaR3B5 {
   static constexpr double maskFocalPoint = 0.5;                // Estimate
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0; // Estimate
 
-  static constexpr double slitHeight = 1.45; // Estimate
   static constexpr double slitInnerOffset = 0.01;
   static constexpr double slitInnerSurfaceAngle =
       -1.0; // Estimate. Note the different sign.

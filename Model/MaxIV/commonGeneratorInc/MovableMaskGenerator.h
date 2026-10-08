@@ -75,7 +75,6 @@ private:
   double positionX;
   double positionZ;
 
-  double slitHeight;
   double slitInnerOffset;
   double slitInnerSurfaceAngle;
   double slitThickness;

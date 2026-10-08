@@ -175,7 +175,6 @@ private:
   double positionX; // Horizontal positioning of the movable mask.
   double positionZ; // Vertical positioning of the movable mask.
 
-  double slitHeight;      // Height of the slit.
   double slitInnerOffset; // Ultimately, the slit constrains the beam. This
                           // (positive) parameter is the difference -both in
                           // horizontal and vertical direction- between the

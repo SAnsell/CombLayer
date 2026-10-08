@@ -104,7 +104,6 @@ void MovableMask::populate(const FuncDataBase &Control) {
   positionX = Control.EvalVar<double>(keyName + "PositionX");
   positionZ = Control.EvalVar<double>(keyName + "PositionZ");
 
-  slitHeight = Control.EvalVar<double>(keyName + "SlitHeight");
   slitInnerOffset = Control.EvalVar<double>(keyName + "SlitInnerOffset");
   slitInnerSurfaceAngle =
       Control.EvalVar<double>(keyName + "SlitInnerSurfaceAngle");
