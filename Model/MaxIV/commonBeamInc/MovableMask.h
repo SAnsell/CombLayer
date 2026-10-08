@@ -147,8 +147,8 @@ private:
   double flangeWallThick;
 
   double holeHeight;
-  double holeWidth;
   double holeOffset;
+  double holeWidth;
 
   double maskLeftMaxHeight;   // Maximum height of the left part of the mask,
                               // measured from the bottom of the hole.
