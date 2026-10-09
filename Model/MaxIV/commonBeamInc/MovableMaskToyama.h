@@ -22,7 +22,7 @@
 
 /*!
   \class MovableMaskToyama
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
   \date October 2026
   \brief Dimensions of Movable Masks in Toyama Design
@@ -35,6 +35,10 @@
   For all of the models, it was found that Movable Mask 1 (upstream) is
   identical to Movable Mask 2 (downstream) (up to the orientation) within the
   precision of the MovableMask class.
+
+  Version history:
+  1.0   - 2026-10-09
+          Compatible with MovableMaskGenerator v2.0
 */
 
 namespace setVariable {
