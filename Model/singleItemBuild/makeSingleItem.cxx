@@ -2085,27 +2085,21 @@ makeSingleItem::build(Simulation& System,
         return;
       }
     if (item == "MovableMask"){
-      std::shared_ptr<xraySystem::MovableMask> movableMaskNominal = 
-        std::make_shared<xraySystem::MovableMask>("MovableMaskNominal");
-      std::shared_ptr<xraySystem::MovableMask> movableMaskFullyOpen =
-        std::make_shared<xraySystem::MovableMask>("MovableMaskFullyOpen");
-      std::shared_ptr<xraySystem::MovableMask> movableMaskFullyClose =
-        std::make_shared<xraySystem::MovableMask>("MovableMaskFullyClose");
-      std::shared_ptr<xraySystem::MovableMask> movableMaskToyamaR3B5 =
-        std::make_shared<xraySystem::MovableMask>("MovableMaskToyamaR3B5");
-      OR.addObject(movableMaskNominal);
-      OR.addObject(movableMaskFullyOpen);
-      OR.addObject(movableMaskFullyClose);
-      OR.addObject(movableMaskToyamaR3B5);
-
-      movableMaskNominal->addInsertCell(voidCell);
-      movableMaskNominal->createAll(System,World::masterOrigin(),0);
-      movableMaskFullyOpen->addInsertCell(voidCell);
-      movableMaskFullyOpen->createAll(System,*movableMaskNominal,"back");
-      movableMaskFullyClose->addInsertCell(voidCell);
-      movableMaskFullyClose->createAll(System,*movableMaskFullyOpen,"back");
-      movableMaskToyamaR3B5->addInsertCell(voidCell);
-      movableMaskToyamaR3B5->createAll(System,World::masterOrigin(),0);
+      std::vector<std::string> models = {"MovableMaskToyamaR3B2", "MovableMaskToyamaR3B3", "MovableMaskToyamaR3B3B4", "MovableMaskToyamaR3B5"};
+      std::vector<std::string> configurations = {"Nominal", "FullyOpen", "FullyClose"};
+      std::vector<std::shared_ptr<xraySystem::MovableMask>> movableMask;
+      for(size_t n_model = 0; n_model < models.size(); ++n_model){
+        for(size_t n_config = 0; n_config < configurations.size(); ++n_config){
+          movableMask.push_back(std::make_shared<xraySystem::MovableMask>(models[n_model]+configurations[n_config]));
+          OR.addObject(movableMask[movableMask.size()-1]);
+          movableMask[movableMask.size()-1]->addInsertCell(voidCell);
+          if(n_config == 0){
+            movableMask[movableMask.size()-1]->createAll(System,World::masterOrigin(),0);
+          } else {
+            movableMask[movableMask.size()-1]->createAll(System,*movableMask[movableMask.size()-2],"back");
+          }
+        } 
+      }
 
       return;
     }

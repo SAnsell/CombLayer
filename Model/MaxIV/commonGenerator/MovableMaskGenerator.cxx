@@ -176,7 +176,9 @@ void MovableMaskGenerator::setAperture(const double posX, const double posZ) {
   positionZ = posZ;
 }
 
+template void MovableMaskGenerator::setDimensions<MovableMaskToyamaR3B2>();
 template void MovableMaskGenerator::setDimensions<MovableMaskToyamaR3B3>();
+template void MovableMaskGenerator::setDimensions<MovableMaskToyamaR3B3B4>();
 template void MovableMaskGenerator::setDimensions<MovableMaskToyamaR3B5>();
 
 } // NAMESPACE setVariable

@@ -958,17 +958,41 @@ SingleItemVariables(FuncDataBase& Control)
 
   // MovableMask
   MovableMaskGenerator movableMaskGenerator;
-  movableMaskGenerator.setDimensions<MovableMaskToyamaR3B3>();
-  movableMaskGenerator.generate(Control, "MovableMaskNominal");
+  movableMaskGenerator.setDimensions<MovableMaskToyamaR3B2>();
+  movableMaskGenerator.setNominalZero();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B2Nominal");
   movableMaskGenerator.setFullyOpen();
-  movableMaskGenerator.generate(Control, "MovableMaskFullyOpen");
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B2FullyOpen");
   movableMaskGenerator.setFullyClose();
-  movableMaskGenerator.generate(Control, "MovableMaskFullyClose");
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B2FullyClose");
+
+  movableMaskGenerator.setDimensions<MovableMaskToyamaR3B3>();
+  movableMaskGenerator.setNominalZero();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B3Nominal");
+  Control.addVariable("MovableMaskToyamaR3B3NominalZStep", 20.0);
+  movableMaskGenerator.setFullyOpen();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B3FullyOpen");
+  movableMaskGenerator.setFullyClose();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B3FullyClose");
+
+  movableMaskGenerator.setDimensions<MovableMaskToyamaR3B3B4>();
+  movableMaskGenerator.setNominalZero();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B3B4Nominal");
+  Control.addVariable("MovableMaskToyamaR3B3B4NominalZStep", 40.0);
+  movableMaskGenerator.setFullyOpen();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B3B4FullyOpen");
+  movableMaskGenerator.setFullyClose();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B3B4FullyClose");
+
 
   movableMaskGenerator.setDimensions<MovableMaskToyamaR3B5>();
   movableMaskGenerator.setNominalZero();
-  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B5");
-  Control.addVariable("MovableMaskToyamaR3B5ZStep", 20.0);
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B5Nominal");
+  Control.addVariable("MovableMaskToyamaR3B5NominalZStep", 60.0);
+  movableMaskGenerator.setFullyOpen();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B5FullyOpen");
+  movableMaskGenerator.setFullyClose();
+  movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B5FullyClose");
 
   // RectangularCollimator
   const std::string rectangularCollimatorKey = "RectangularCollimator";
