@@ -28,12 +28,18 @@ namespace setVariable {
 
 /*!
   \class MovableMaskGenerator
-  \version 1.1.0
+  \version 2.0
   \author U. Friman-Gayer
-  \date September 2026
+  \date October 2026
   \brief MovableMaskGenerator for variables
 
   Version history:
+  2.0   - 2026-10-09
+        - Switch between different movable-mask models by via a template
+          parameter.
+        - Set aperture position within user-defined (instead of hard-coded)
+          limits.
+        - Compatibility with MovableMask v2.0.
   1.1.1 - 2026-10-08
           Fix default body material.
   1.1.0 - 2026-09-28
