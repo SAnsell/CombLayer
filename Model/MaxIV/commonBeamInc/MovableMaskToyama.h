@@ -47,9 +47,9 @@ struct MovableMaskToyamaR3B2 {
 
     Position Name | positionX (cm) | positionZ (cm) | Aperture (cm2)
     ----------------------------------------------------------------
-    Fully open    |      0.8       |       0.8      |  2.0   x  2.0
-    Nominal       |      0.0       |       0.0      |  1.2   x  1.2
-    Fully close   |     -1.7       |      -1.7      | -0.5   x -0.5
+    Fully open    |      0.43      |       0.43     |  2.0   x  2.0
+    Nominal       |      0.0       |       0.0      |  1.14  x  1.14
+    Fully close   |     -1.07      |      -1.07     | -0.5   x -0.5
   */
   static constexpr double length = 24.0;
 
@@ -60,8 +60,9 @@ struct MovableMaskToyamaR3B2 {
   static constexpr bool useConnector = true;
 
   static constexpr double connectorInnerEdgeRadius = 0.5;
-  static constexpr double connectorInnerHeight = 5.2;
-  static constexpr double connectorInnerWidth = 4.3;
+  // Connector inner height/width enlarged w.r.t. B3 to make room for the slit.
+  static constexpr double connectorInnerHeight = 6.2;
+  static constexpr double connectorInnerWidth = 5.3;
   static constexpr double connectorWallThickness = 0.5;
 
   static constexpr double holeHeight = 5.1;
@@ -79,14 +80,14 @@ struct MovableMaskToyamaR3B2 {
 
   // All Min/Max positions estimated, since there is no information about this
   // in [6,7].
-  static constexpr double positionXMax = 0.8;
-  static constexpr double positionXMin = -1.7;
-  static constexpr double positionZMax = 0.8;
-  static constexpr double positionZMin = -1.7;
+  static constexpr double positionXMax = 0.43;
+  static constexpr double positionXMin = -1.07;
+  static constexpr double positionZMax = 0.43;
+  static constexpr double positionZMin = -1.07;
 
   static constexpr double slitInnerOffset =
       0.015; // Determined such that the default aperture in [6,7] results in a
-             // "round" value of 1.2 cm x 1.2 cm.
+             // "round" value of 1.14 cm x 1.14 cm.
   static constexpr double slitInnerSurfaceAngle = 10.0;
   static constexpr double slitThickness = 0.5;
 
