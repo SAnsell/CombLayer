@@ -27,9 +27,9 @@ class Simulation;
 namespace xraySystem {
 /*!
   \class MovableMask
-  \version 1.1.0
+  \version 2.0
   \author U. Friman-Gayer
-  \date September 2026
+  \date October 2026
   \brief Movable Mask with L-shaped cross section manufactured by TOYAMA
 
   The model of the movable mask consists of an inner part with a rectangular
@@ -116,6 +116,16 @@ namespace xraySystem {
   [19] TOYAMA, CAD Model of TomoWISE Frontend, 20260630_TomoWISE_FE_Layout.X_T
 
   Version history:
+  2.0   - 2026-10-09
+        - More detailed connector. Possibility to build without connector.
+        - Allow both horizontal and vertical hole offset. Previously only
+  vertical.
+        - Introduce user-defined aperture limits.
+        - Allow negative slope angles for slits.
+        - Code refactoring: generate surfaces more efficiently.
+        - Remove unnecessary "focal point" and "slit height" parameters.
+        - Include references for other Toyama movable mask models.
+        - Documentation is more general. Not focused on a single model.
   1.1.0 - 2026-09-28
           0.1-mm gap between main body and slit.
   1.0.1 - 2026-09-28
