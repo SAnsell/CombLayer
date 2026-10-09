@@ -483,7 +483,7 @@ void MovableMask::createObjects(Simulation &System) {
 
   makeCell("Body", System, cellIndex++, bodyMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex,
-                                     "21 -22 3 -4 5 -6 (-43:44:-55:46)"));
+                                     "21 -22 3 -4 5 -6 -7 (-43:44:-55:46)"));
   makeCell("BodyLeftInnerVoid", System, cellIndex++, voidMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "21 -22 43 -53 85 -46"));
   makeCell("BodyRightInnerVoid", System, cellIndex++, voidMaterial, 0.0,
