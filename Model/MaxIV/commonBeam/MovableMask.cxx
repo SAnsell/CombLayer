@@ -188,7 +188,7 @@ void MovableMask::createSurfaces() {
         normalVector);
     ModelSupport::buildPlane(SMap, buildIndex + 40 + i,
                              center + normalVector *
-                                          (sign * holeScale / 2.0 - holeOffset),
+                                          (sign * holeScale / 2.0 + holeOffset),
                              normalVector);
   }
 
