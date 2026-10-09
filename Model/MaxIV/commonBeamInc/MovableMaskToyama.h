@@ -35,6 +35,7 @@ namespace setVariable {
 struct MovableMaskToyamaR3B3 {
   // Data from [1] and [5]
   static constexpr double length = 30.0;
+
   static constexpr double bodyHeight = 7.2;
   static constexpr double bodyLength = 24.4;
   static constexpr double bodyWidth = 7.2;
@@ -47,14 +48,14 @@ struct MovableMaskToyamaR3B3 {
   static constexpr double connectorWallThickness = 0.5;
 
   static constexpr double holeHeight = 3.0;
-  static constexpr double holeOffset = 0.45;
+  static constexpr double holeOffsetHorizontal = 0.0;
+  static constexpr double holeOffsetVertical = 0.45;
   static constexpr double holeWidth = 3.12;
 
   static constexpr double maskLeftMaxHeight = 2.1;
   static constexpr double maskLeftMaxWidth = 1.3;
   static constexpr double maskBottomMaxHeight = 0.79;
   static constexpr double maskBottomMaxWidth = 2.8;
-  static constexpr double maskFocalPoint = 0.376;
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0;
 
   static constexpr double slitInnerOffset = 0.01;
@@ -72,6 +73,7 @@ struct MovableMaskToyamaR3B5 {
   // With the available software, measurements in the CAD model [19] were not
   // possible. Therefore, some values are marked as "Estimate".
   static constexpr double length = 30.0;
+
   static constexpr double bodyHeight = 9.5;
   static constexpr double bodyLength = 26.0;
   static constexpr double bodyWidth = 7.6;
@@ -83,14 +85,14 @@ struct MovableMaskToyamaR3B5 {
   static constexpr double connectorInnerWidth = 5.2;
 
   static constexpr double holeHeight = 2.0;
-  static constexpr double holeOffset = 0.0;
+  static constexpr double holeOffsetHorizontal = -0.225;
+  static constexpr double holeOffsetVertical = 0.0;
   static constexpr double holeWidth = 3.85;
 
   static constexpr double maskLeftMaxHeight = 1.5;
   static constexpr double maskLeftMaxWidth = 0.74;
   static constexpr double maskBottomMaxHeight = 0.84;
-  static constexpr double maskBottomMaxWidth = 3.59;
-  static constexpr double maskFocalPoint = 0.5;                // Estimate
+  static constexpr double maskBottomMaxWidth = 3.6;
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0; // Estimate
 
   static constexpr double slitInnerOffset = 0.01;
