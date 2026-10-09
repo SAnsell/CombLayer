@@ -200,8 +200,12 @@ void MovableMask::createSurfaces() {
   const double slitInnerSurfaceAngleRad = slitInnerSurfaceAngle * M_PI / 180.0;
   Geometry::Vec3D slitBottomSurfaceNormal = Z;
   slitBottomSurfaceNormal.rotate(X, -slitInnerSurfaceAngleRad);
+  const double slitAngledSurfaceY =
+      slitInnerSurfaceAngleRad < 0.0
+          ? (length + bodyLength) / 2.0 + slitThickness
+          : (length + bodyLength) / 2.0;
   ModelSupport::buildPlane(SMap, buildIndex + 65,
-                           center + Y * ((length + bodyLength) / 2.0) +
+                           center + Y * slitAngledSurfaceY +
                                Z * (-holeHeight / 2.0 + holeOffsetVertical +
                                     maskBottomMaxHeight + slitInnerOffset),
                            slitBottomSurfaceNormal);
@@ -264,7 +268,7 @@ void MovableMask::createSurfaces() {
                            center -
                                X * (holeWidth / 2.0 + holeOffsetHorizontal -
                                     maskLeftMaxWidth - slitInnerOffset) +
-                               Y * ((length + bodyLength) / 2.0),
+                               Y * slitAngledSurfaceY,
                            slitLeftSurfaceNormal);
 
   const Geometry::Vec3D maskLeftSlope = Y * bodyLength + Z * maskLeftMaxHeight;
