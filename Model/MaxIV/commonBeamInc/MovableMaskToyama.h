@@ -29,11 +29,100 @@
 
   See the documentation of the MovableMask and MovableMaskGenerator classes for
   more information.
+
+  The models are identified by the location of their beamline (R1 or R3 ring at
+  MAX IV) and batch numbers (B2 - B5, some models apply to multiple batches).
+  For all of the models, it was found that Movable Mask 1 (upstream) is
+  identical to Movable Mask 2 (downstream) (up to the orientation) within the
+  precision of the MovableMask class.
 */
 
 namespace setVariable {
+
+struct MovableMaskToyamaR3B2 {
+  // Data from [6,7]. These are the least informative of the available 2D
+  // drawings, therefore some dimensions were assumed to be the same as in the
+  // short version of B3.
+  static constexpr double length = 24.0;
+
+  static constexpr double bodyHeight = 7.2;
+  static constexpr double bodyLength = 18.4;
+  static constexpr double bodyWidth = 7.2;
+
+  static constexpr bool useConnector = true;
+
+  static constexpr double connectorInnerEdgeRadius = 0.5;
+  static constexpr double connectorInnerHeight = 5.2;
+  static constexpr double connectorInnerWidth = 4.3;
+  static constexpr double connectorWallThickness = 0.5;
+
+  static constexpr double holeHeight = 5.1;
+  static constexpr double holeOffsetHorizontal = 0.0;
+  static constexpr double holeOffsetVertical = 0.0;
+  static constexpr double holeWidth = 4.2;
+
+  static constexpr double maskLeftMaxHeight =
+      3.825; // Estimated, 3/4 of the hole height.
+  static constexpr double maskLeftMaxWidth = 1.515;
+  static constexpr double maskBottomMaxHeight = 1.965;
+  static constexpr double maskBottomMaxWidth =
+      3.36; // Estimated, 4/5 of the hole width.
+  static constexpr double maskDownstreamInnerPlaneAngle = 9.0;
+
+  static constexpr double slitInnerOffset = 0.01;
+  static constexpr double slitInnerSurfaceAngle = 10.0;
+  static constexpr double slitThickness = 0.5;
+
+  static constexpr std::string bodyMaterial = "Copper";
+  static constexpr std::string flangeMaterial = "Stainless304L";
+  static constexpr std::string slitMaterial = "Tantalum";
+  static constexpr std::string voidMaterial = "Void";
+};
+
 struct MovableMaskToyamaR3B3 {
-  // Data from [1] and [5]
+  // Data from [9,11]. Since a 3D model of the short mask in B3 was not
+  // available, assumed that all missing dimensions are the same as in the long
+  // mask [5].
+  static constexpr double length = 24.0;
+
+  static constexpr double bodyHeight = 7.2;
+  static constexpr double bodyLength = 18.4;
+  static constexpr double bodyWidth = 7.2;
+
+  static constexpr bool useConnector = true;
+
+  static constexpr double connectorInnerEdgeRadius = 0.5;
+  static constexpr double connectorInnerHeight = 5.2;
+  static constexpr double connectorInnerWidth = 4.3;
+  static constexpr double connectorWallThickness = 0.5;
+
+  static constexpr double holeHeight = 3.0;
+  static constexpr double holeOffsetHorizontal = 0.0;
+  static constexpr double holeOffsetVertical = 0.45;
+  static constexpr double holeWidth = 3.12;
+
+  static constexpr double maskLeftMaxHeight = 2.1;
+  static constexpr double maskLeftMaxWidth = 1.3;
+  static constexpr double maskBottomMaxHeight = 0.79;
+  static constexpr double maskBottomMaxWidth = 2.8;
+  static constexpr double maskDownstreamInnerPlaneAngle = 9.0;
+
+  static constexpr double slitInnerOffset = 0.01;
+  static constexpr double slitInnerSurfaceAngle = 10.0;
+  static constexpr double slitThickness = 0.5;
+
+  static constexpr std::string bodyMaterial = "Copper";
+  static constexpr std::string flangeMaterial = "Stainless304L";
+  static constexpr std::string slitMaterial = "Tantalum";
+  static constexpr std::string voidMaterial = "Void";
+};
+
+struct MovableMaskToyamaR3B3B4 {
+  // Data from [2,4] and [5] for B3.
+  // Verified from Ref. [13,15] that the dimensions in the 2D drawings of B4 are
+  // identical to the long version of B3. Since a 3D model of B4 was not
+  // available, assumed that all missing dimensions are the same as in the long
+  // B3.
   static constexpr double length = 30.0;
 
   static constexpr double bodyHeight = 7.2;
