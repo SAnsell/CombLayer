@@ -40,9 +40,17 @@
 namespace setVariable {
 
 struct MovableMaskToyamaR3B2 {
-  // Data from [6,7]. These are the least informative of the available 2D
-  // drawings, therefore some dimensions were assumed to be the same as in the
-  // short version of B3.
+  /*
+    Data from [6,7]. These are the least informative of the available 2D
+    drawings, therefore some dimensions were assumed to be the same as in the
+    short version of B3.
+
+    Position Name | positionX (cm) | positionZ (cm) | Aperture (cm2)
+    ----------------------------------------------------------------
+    Fully open    |      0.8       |       0.8      |  2.0   x  2.0
+    Nominal       |      0.0       |       0.0      |  1.2   x  1.2
+    Fully close   |     -1.7       |      -1.7      | -0.5   x -0.5
+  */
   static constexpr double length = 24.0;
 
   static constexpr double bodyHeight = 7.2;
@@ -69,7 +77,16 @@ struct MovableMaskToyamaR3B2 {
       3.36; // Estimated, 4/5 of the hole width.
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0;
 
-  static constexpr double slitInnerOffset = 0.01;
+  // All Min/Max positions estimated, since there is no information about this
+  // in [6,7].
+  static constexpr double positionXMax = 0.8;
+  static constexpr double positionXMin = -1.7;
+  static constexpr double positionZMax = 0.8;
+  static constexpr double positionZMin = -1.7;
+
+  static constexpr double slitInnerOffset =
+      0.015; // Determined such that the default aperture in [6,7] results in a
+             // "round" value of 1.2 cm x 1.2 cm.
   static constexpr double slitInnerSurfaceAngle = 10.0;
   static constexpr double slitThickness = 0.5;
 
@@ -80,9 +97,18 @@ struct MovableMaskToyamaR3B2 {
 };
 
 struct MovableMaskToyamaR3B3 {
-  // Data from [9,11]. Since a 3D model of the short mask in B3 was not
-  // available, assumed that all missing dimensions are the same as in the long
-  // mask [5].
+  /*
+    Data from [9,11]. Since a 3D model of the short mask in B3 was not
+    available, assumed that all missing dimensions are the same as in the long
+    mask [5].
+
+    Position Name | positionX (cm) | positionZ (cm) | Aperture (cm2)
+    ----------------------------------------------------------------
+    Fully open    |      0.5       |       0.5      |  0.75  x  0.75
+    Nominal       |      0.0       |       0.0      |  0.25  x  0.25
+    Fully close   |     -0.5       |      -0.5      | -0.25  x -0.25
+  */
+
   static constexpr double length = 24.0;
 
   static constexpr double bodyHeight = 7.2;
@@ -107,6 +133,11 @@ struct MovableMaskToyamaR3B3 {
   static constexpr double maskBottomMaxWidth = 2.8;
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0;
 
+  static constexpr double positionXMax = 0.5;
+  static constexpr double positionXMin = -0.5;
+  static constexpr double positionZMax = 0.5;
+  static constexpr double positionZMin = -0.5;
+
   static constexpr double slitInnerOffset = 0.01;
   static constexpr double slitInnerSurfaceAngle = 10.0;
   static constexpr double slitThickness = 0.5;
@@ -118,11 +149,20 @@ struct MovableMaskToyamaR3B3 {
 };
 
 struct MovableMaskToyamaR3B3B4 {
-  // Data from [2,4] and [5] for B3.
-  // Verified from Ref. [13,15] that the dimensions in the 2D drawings of B4 are
-  // identical to the long version of B3. Since a 3D model of B4 was not
-  // available, assumed that all missing dimensions are the same as in the long
-  // B3.
+  /*
+     Data from [2,4] and [5] for B3.
+     Verified from Ref. [13,15] that the dimensions in the 2D drawings of B4 are
+     identical to the long version of B3. Since a 3D model of B4 was not
+     available, assumed that all missing dimensions are the same as in the long
+     B3.
+
+    Position Name | positionX (cm) | positionZ (cm) | Aperture (cm2)
+    ----------------------------------------------------------------
+    Fully open    |      0.5       |       0.5      |  0.75  x  0.75
+    Nominal       |      0.0       |       0.0      |  0.25  x  0.25
+    Fully close   |     -0.5       |      -0.5      | -0.25  x -0.25
+  */
+
   static constexpr double length = 30.0;
 
   static constexpr double bodyHeight = 7.2;
@@ -147,6 +187,11 @@ struct MovableMaskToyamaR3B3B4 {
   static constexpr double maskBottomMaxWidth = 2.8;
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0;
 
+  static constexpr double positionXMax = 0.5;
+  static constexpr double positionXMin = -0.5;
+  static constexpr double positionZMax = 0.5;
+  static constexpr double positionZMin = -0.5;
+
   static constexpr double slitInnerOffset = 0.01;
   static constexpr double slitInnerSurfaceAngle = 10.0;
   static constexpr double slitThickness = 0.5;
@@ -158,9 +203,18 @@ struct MovableMaskToyamaR3B3B4 {
 };
 
 struct MovableMaskToyamaR3B5 {
-  // Data from [18] and [19]
-  // With the available software, measurements in the CAD model [19] were not
-  // possible. Therefore, some values are marked as "Estimate".
+  /*
+    Data from [18] and [19]
+    With the available software, measurements in the CAD model [19] were not
+    possible. Therefore, some values are marked as "Estimate".
+
+    Position Name | positionX (cm) | positionZ (cm) | Aperture (cm2)
+    ----------------------------------------------------------------
+    Fully open    |      0.375     |       0.0      |  2.65  x  0.3
+    Nominal       |      0.0       |       0.0      |  1.9   x  0.3
+    Fully close   |     -1.5       |      -0.3      | -0.55  x -0.3
+  */
+
   static constexpr double length = 30.0;
 
   static constexpr double bodyHeight = 9.5;
@@ -183,6 +237,11 @@ struct MovableMaskToyamaR3B5 {
   static constexpr double maskBottomMaxHeight = 0.84;
   static constexpr double maskBottomMaxWidth = 3.6;
   static constexpr double maskDownstreamInnerPlaneAngle = 9.0; // Estimate
+
+  static constexpr double positionXMax = 0.375;
+  static constexpr double positionXMin = -1.5;
+  static constexpr double positionZMax = 0.375;
+  static constexpr double positionZMin = -0.3;
 
   static constexpr double slitInnerOffset = 0.01;
   static constexpr double slitInnerSurfaceAngle =

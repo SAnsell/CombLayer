@@ -104,7 +104,12 @@ void MovableMask::populate(const FuncDataBase &Control) {
       Control.EvalVar<double>(keyName + "MaskDownstreamInnerPlaneAngle");
 
   positionX = Control.EvalVar<double>(keyName + "PositionX");
+  positionXMax = Control.EvalVar<double>(keyName + "PositionXMax");
+  positionXMin = Control.EvalVar<double>(keyName + "PositionXMin");
+  positionX = Control.EvalVar<double>(keyName + "PositionX");
   positionZ = Control.EvalVar<double>(keyName + "PositionZ");
+  positionZMax = Control.EvalVar<double>(keyName + "PositionZMax");
+  positionZMin = Control.EvalVar<double>(keyName + "PositionZMin");
 
   slitInnerOffset = Control.EvalVar<double>(keyName + "SlitInnerOffset");
   slitInnerSurfaceAngle =

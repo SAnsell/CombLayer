@@ -71,7 +71,11 @@ MovableMaskGenerator::MovableMaskGenerator()
                 // + 2.0 mm (half beam width) + 5.4 mm
       maskDownstreamInnerPlaneAngle(9.0), // [5]
       positionX(0.0),                     // Nominal zero position
+      positionXMax(0.5),                  // X VIEW, Fully open
+      positionXMin(-0.5),                 // X VIEW, Fully close
       positionZ(0.0),                     // Nominal zero position
+      positionZMax(0.5),                  // X VIEW, Fully open
+      positionZMin(-0.5),                 // X VIEW, Fully close
       slitInnerOffset(0.01), // X VIEW (S=1/1), "0.1/slit", see also the slit
                              // dimensions given in parentheses.
       slitInnerSurfaceAngle(10.0),     // [5]
@@ -108,6 +112,11 @@ template <typename Dimensions> void MovableMaskGenerator::setDimensions() {
   maskBottomMaxHeight = Dimensions::maskBottomMaxHeight;
   maskBottomMaxWidth = Dimensions::maskBottomMaxWidth;
   maskDownstreamInnerPlaneAngle = Dimensions::maskDownstreamInnerPlaneAngle;
+
+  positionXMax = Dimensions::positionXMax;
+  positionXMin = Dimensions::positionXMin;
+  positionZMax = Dimensions::positionZMax;
+  positionZMin = Dimensions::positionZMin;
 
   slitInnerOffset = Dimensions::slitInnerOffset;
   slitInnerSurfaceAngle = Dimensions::slitInnerSurfaceAngle;
@@ -154,7 +163,11 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
                       maskDownstreamInnerPlaneAngle);
 
   Control.addVariable(keyName + "PositionX", positionX);
+  Control.addVariable(keyName + "PositionXMax", positionXMax);
+  Control.addVariable(keyName + "PositionXMin", positionXMin);
   Control.addVariable(keyName + "PositionZ", positionZ);
+  Control.addVariable(keyName + "PositionZMax", positionZMax);
+  Control.addVariable(keyName + "PositionZMin", positionZMin);
 
   Control.addVariable(keyName + "SlitInnerOffset", slitInnerOffset);
   Control.addVariable(keyName + "SlitInnerSurfaceAngle", slitInnerSurfaceAngle);
@@ -167,10 +180,13 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
 }
 
 void MovableMaskGenerator::setAperture(const double posX, const double posZ) {
-  if (fabs(posX) > 0.5 || fabs(posZ) > 0.5) {
-    ELog::EM << "MovableMask: Value outside the nominal configuration space "
-                "(|positionX|, |positionZ| < 0.5 cm) set."
-             << ELog::endDiag;
+  if (posX < positionXMin || posX > positionXMax || posZ < positionZMin ||
+      posZ > positionZMax) {
+    ELog::EM
+        << "Warning: Aperture setting not within design limits. Condition\n\t"
+        << positionXMin << " <= positionX <= " << positionXMax << "\nor\n\t"
+        << positionZMin << " <= positionZ <= " << positionZMax << "\nviolated."
+        << ELog::endDiag;
   }
   positionX = posX;
   positionZ = posZ;

@@ -73,7 +73,11 @@ private:
   double maskDownstreamInnerPlaneAngle;
 
   double positionX;
+  double positionXMax;
+  double positionXMin;
   double positionZ;
+  double positionZMax;
+  double positionZMin;
 
   double slitInnerOffset;
   double slitInnerSurfaceAngle;
@@ -94,12 +98,12 @@ public:
     positionZ = 0.0;
   }
   void setFullyOpen() {
-    positionX = 0.5;
-    positionZ = 0.5;
+    positionX = positionXMax;
+    positionZ = positionZMax;
   }
   void setFullyClose() {
-    positionX = -0.5;
-    positionZ = -0.5;
+    positionX = positionXMin;
+    positionZ = positionZMin;
   }
   void setAperture(const double posX, const double posZ);
   void generate(FuncDataBase &, const std::string &) const;

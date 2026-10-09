@@ -78,17 +78,19 @@ namespace xraySystem {
   The "nominal zero position" [2,4] is the default setting (positionX =
   positionZ = 0).
   In general, the parameter space for positionX and positionZ is independently
-  limited to [-0.5, 0.5]. The following special configurations are defined
-  [2,4]:
+  limited to [positionXMin, positionXMax] and [positionZMin, positionZMax],
+  respectively. Here, the minimum is supposed to be a negative, and the maximum
+  a positive number. The following special configurations are defined
+  (naming from [2, 4]):
 
-  Position Name | positionX (cm) | positionZ (cm) | Aperture (cm2)
-  ----------------------------------------------------------------
-  Fully open    |      0.5       |       0.5      |  0.75  x  0.75
-  Nominal       |      0.0       |       0.0      |  0.25  x  0.25
-  Fully close   |     -0.5       |      -0.5      | -0.25  x -0.25
+  Position Name |  positionX   |  positionZ
+  --------------------------------------------
+  Fully open    | positionXMax | positionZMax
+  Nominal       |      0.0     |      0.0
+  Fully close   | positionXMin | positionZMin
 
-  Note that the x/z offsets of the special configurations are defined as in
-  [2,4].
+  Note that the x/z offsets of the special configurations follow the sign
+  conventions in [2,4].
 
   [1] TOYAMA, Movable Mask 1 for DanMAX, S6-4-1AG01042.pdf
   [2] TOYAMA, Movable Mask 1 main body for DanMAX, S6-5-1AG01044.pdf
@@ -171,8 +173,12 @@ private:
                                      // to an angled inner surface which
                                      // increases the inner cross section.
 
-  double positionX; // Horizontal positioning of the movable mask.
-  double positionZ; // Vertical positioning of the movable mask.
+  double positionX;    // Horizontal positioning of the movable mask.
+  double positionXMax; // Maximum value for positionX.
+  double positionXMin; // Minimum value for positionX.
+  double positionZ;    // Vertical positioning of the movable mask.
+  double positionZMax; // Maximum value for positionX.
+  double positionZMin; // Minimum value for positionX.
 
   double slitInnerOffset; // Ultimately, the slit constrains the beam. This
                           // (positive) parameter is the difference -both in
