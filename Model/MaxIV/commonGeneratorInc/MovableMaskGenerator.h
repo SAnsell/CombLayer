@@ -62,7 +62,8 @@ private:
   double flangeWallThick;
 
   double holeHeight;
-  double holeOffset;
+  double holeOffsetHorizontal;
+  double holeOffsetVertical;
   double holeWidth;
 
   double maskLeftMaxHeight;

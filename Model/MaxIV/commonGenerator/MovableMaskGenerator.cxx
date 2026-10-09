@@ -58,7 +58,8 @@ MovableMaskGenerator::MovableMaskGenerator()
       flangeRadius(CF63::flangeRadius),                  // Side View
       flangeWallThick(CF63::wallThick),                  // Side View
       holeHeight(3.0),                                   // X VIEW (S=1/1)
-      holeOffset(
+      holeOffsetHorizontal(0.0),                         // X VIEW (S=1/1)
+      holeOffsetVertical(
           0.45), // X VIEW (S=1/1), difference between hole height and depth
       holeWidth(3.12),        // X VIEW (S=1/1)
       maskLeftMaxHeight(2.1), // X VIEW (S=1/1), 2 x 10.5 mm, assuming that the
@@ -99,7 +100,8 @@ template <typename Dimensions> void MovableMaskGenerator::setDimensions() {
   connectorInnerWidth = Dimensions::connectorInnerWidth;
 
   holeHeight = Dimensions::holeHeight;
-  holeOffset = Dimensions::holeOffset;
+  holeOffsetHorizontal = Dimensions::holeOffsetHorizontal;
+  holeOffsetVertical = Dimensions::holeOffsetVertical;
   holeWidth = Dimensions::holeWidth;
 
   maskLeftMaxHeight = Dimensions::maskLeftMaxHeight;
@@ -142,7 +144,8 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "FlangeWallThick", flangeWallThick);
 
   Control.addVariable(keyName + "HoleHeight", holeHeight);
-  Control.addVariable(keyName + "HoleOffset", holeOffset);
+  Control.addVariable(keyName + "HoleOffsetHorizontal", holeOffsetHorizontal);
+  Control.addVariable(keyName + "HoleOffsetVertical", holeOffsetVertical);
   Control.addVariable(keyName + "HoleWidth", holeWidth);
 
   Control.addVariable(keyName + "MaskLeftMaxHeight", maskLeftMaxHeight);
