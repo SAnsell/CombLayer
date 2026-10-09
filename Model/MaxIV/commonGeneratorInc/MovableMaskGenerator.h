@@ -70,7 +70,6 @@ private:
   double maskLeftMaxWidth;
   double maskBottomMaxHeight;
   double maskBottomMaxWidth;
-  double maskFocalPoint;
   double maskDownstreamInnerPlaneAngle;
 
   double positionX;

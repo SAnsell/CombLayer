@@ -69,7 +69,6 @@ MovableMaskGenerator::MovableMaskGenerator()
       maskBottomMaxWidth(
           2.8), // X VIEW, 15.6 mm (half hole width) + 5.0 mm (beam offset)
                 // + 2.0 mm (half beam width) + 5.4 mm
-      maskFocalPoint(0.376),              // [5]
       maskDownstreamInnerPlaneAngle(9.0), // [5]
       positionX(0.0),                     // Nominal zero position
       positionZ(0.0),                     // Nominal zero position
@@ -108,7 +107,6 @@ template <typename Dimensions> void MovableMaskGenerator::setDimensions() {
   maskLeftMaxWidth = Dimensions::maskLeftMaxWidth;
   maskBottomMaxHeight = Dimensions::maskBottomMaxHeight;
   maskBottomMaxWidth = Dimensions::maskBottomMaxWidth;
-  maskFocalPoint = Dimensions::maskFocalPoint;
   maskDownstreamInnerPlaneAngle = Dimensions::maskDownstreamInnerPlaneAngle;
 
   slitInnerOffset = Dimensions::slitInnerOffset;
@@ -152,7 +150,6 @@ void MovableMaskGenerator::generate(FuncDataBase &Control,
   Control.addVariable(keyName + "MaskLeftMaxWidth", maskLeftMaxWidth);
   Control.addVariable(keyName + "MaskBottomMaxHeight", maskBottomMaxHeight);
   Control.addVariable(keyName + "MaskBottomMaxWidth", maskBottomMaxWidth);
-  Control.addVariable(keyName + "MaskFocalPoint", maskFocalPoint);
   Control.addVariable(keyName + "MaskDownstreamInnerPlaneAngle",
                       maskDownstreamInnerPlaneAngle);
 

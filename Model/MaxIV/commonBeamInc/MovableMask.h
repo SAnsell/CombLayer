@@ -42,7 +42,9 @@ namespace xraySystem {
   as an L-shaped block that collimates the beam from two sides. However, the
   inner surfaces are angled in a more complex way to ensure a uniform heat load
   inside the component and to reduce the probability of transmitting
-  small-angle-scattered photons.
+  small-angle-scattered photons. The point that is located roughly in the center
+  of the inner part when seen from the side and from which the sloped planes
+  originate is called "focal point" in this class due to its geometry.
 
   The component supports independent left-right and up-down movement.
   Therefore, two of these movable masks, in sequence and rotated against each
@@ -160,10 +162,6 @@ private:
                               // measured from the bottom of the hole.
   double maskBottomMaxWidth;  // Maximum width of the bottom part of the mask,
                               // measured from the left side of the hole.
-  double maskFocalPoint;      // Distance (normalized to bodyLength, i.e.
-                         // dimensionless value between 0.0 and 1.0) from the
-                         // upstream edge of the body to the point where the
-                         // slopes of the mask's surfaces change.
   double
       maskDownstreamInnerPlaneAngle; // Angle w.r.t. canonical axis in deg.
                                      // Upstream from the focal point, the inner

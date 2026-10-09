@@ -21,6 +21,7 @@
  ****************************************************************************/
 #include <cmath>
 #include <fstream>
+#include <iostream>
 #include <list>
 #include <map>
 #include <memory>
@@ -99,7 +100,6 @@ void MovableMask::populate(const FuncDataBase &Control) {
   maskBottomMaxHeight =
       Control.EvalVar<double>(keyName + "MaskBottomMaxHeight");
   maskBottomMaxWidth = Control.EvalVar<double>(keyName + "MaskBottomMaxWidth");
-  maskFocalPoint = Control.EvalVar<double>(keyName + "MaskFocalPoint");
   maskDownstreamInnerPlaneAngle =
       Control.EvalVar<double>(keyName + "MaskDownstreamInnerPlaneAngle");
 
@@ -281,7 +281,8 @@ void MovableMask::createSurfaces() {
       Y * (length - bodyLength) / 2.0 +
       Z * (-holeHeight / 2.0 + holeOffsetVertical);
   const Geometry::Vec3D focalPoint =
-      maskLeftUpstreamBottomRight + maskLeftSlope * maskFocalPoint;
+      maskLeftUpstreamBottomRight +
+      maskLeftSlope * maskBottomMaxHeight / maskLeftMaxHeight;
 
   const Geometry::Vec3D maskLeftDownstreamTopRight =
       center - X * (holeWidth / 2.0 + holeOffsetHorizontal - maskLeftMaxWidth) +
