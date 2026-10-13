@@ -219,6 +219,7 @@
 #include "MLMono.h"
 #include "MovableMask.h"
 #include "RectangularCollimator.h"
+#include "WallPanelSeparator.h"
 
 #include "makeSingleItem.h"
 
@@ -280,7 +281,7 @@ makeSingleItem::build(Simulation& System,
   "ConcreteDoor","IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full","MovableSafetyMask","HeatAbsorberToyama",
 	"HeatAbsorberR3Toyama","FixedMaskHybrid","SqrShield","MonoBlockXstals","MLMono",
-  "MovableMask", "RectangularCollimator",
+  "MovableMask", "RectangularCollimator", "WallPanelSeparator",
   "Help","help"
     });
 
@@ -2157,6 +2158,36 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
+    if (item == "WallPanelSeparator") {
+      std::shared_ptr<xraySystem::ExperimentalHutch>
+        experimentalHutch = std::make_shared<xraySystem::ExperimentalHutch>("ExpHutch");
+      std::shared_ptr<xraySystem::WallPanelSeparator> wallPanelSeparator = 
+        std::make_shared<xraySystem::WallPanelSeparator>("WallPanelSeparator");
+
+      OR.addObject(experimentalHutch);
+      OR.addObject(wallPanelSeparator);
+
+      experimentalHutch->addInsertCell(voidCell);
+      experimentalHutch->createAll(System,World::masterOrigin(),0);
+
+      wallPanelSeparator->addInsertCell(
+        experimentalHutch->getCell("InnerOuterWall"));
+      wallPanelSeparator->addInsertCell(
+        experimentalHutch->getCell("LeadOuterWall"));
+      wallPanelSeparator->addInsertCell(
+        experimentalHutch->getCell("OuterSkinOuterWall"));
+      wallPanelSeparator->addInsertCell(
+        experimentalHutch->getCell("FloorShineOuterWallVoid"));
+      wallPanelSeparator->addInsertCell(
+        experimentalHutch->getCell("OuterLeftVoid", 0));
+      wallPanelSeparator->setCutSurf(
+        "innerWall", *experimentalHutch, "OuterWallInner");
+      wallPanelSeparator->setCutSurf(
+        "outerWall", *experimentalHutch, "leftWall");
+      wallPanelSeparator->createAll(
+        System,*experimentalHutch, experimentalHutch->getSideIndex("leftWall"));
+    return;
+  }
 
     if (item=="Help" || item=="help")
       {

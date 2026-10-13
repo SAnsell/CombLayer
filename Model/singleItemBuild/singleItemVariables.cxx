@@ -1153,6 +1153,26 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("DanMAXSINCRYSBranchShift",0.0);
   Control.addVariable("CM2CrystalMode",2);
 
+  // WallPanelGenerator
+  setVariable::ExptHutGenerator EGen;
+  EGen.generateHut(Control,"ExpHutch",0.0, 500.0);
+  Control.addVariable("WallPanelSeparatorChannelGapToPlug", 0.5);
+  Control.addVariable("WallPanelSeparatorChannelGapToWall", 0.5);
+  Control.addVariable("WallPanelSeparatorChannelHeight", 5.0);
+  Control.addVariable("WallPanelSeparatorChannelThickness", 0.5);
+  Control.addVariable("WallPanelSeparatorChannelWidth", 8.0);
+  Control.addVariable("WallPanelSeparatorHeight", 100.0);
+  Control.addVariable("WallPanelSeparatorPlugGapInside", 0.1);
+  Control.addVariable("WallPanelSeparatorPlugGapOutside", 0.1);
+  Control.addVariable("WallPanelSeparatorPlugOffsetInside", 0.05);
+  Control.addVariable("WallPanelSeparatorPlugThicknessInside", 1.2);
+  Control.addVariable("WallPanelSeparatorPlugThicknessOutside", 3.0);
+  Control.addVariable("WallPanelSeparatorPlugWidthInside", 9.0);
+  Control.addVariable("WallPanelSeparatorPlugWidthOutside", 9.0);
+  Control.addVariable("WallPanelSeparatorChannelMaterial", "SteelUnknownGrade");
+  Control.addVariable("WallPanelSeparatorPlugMaterial", "Lead");
+  Control.addVariable("WallPanelSeparatorVoidMaterial", "Void");
+
   return;
 }
 
