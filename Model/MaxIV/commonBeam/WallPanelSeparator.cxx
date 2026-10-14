@@ -149,10 +149,16 @@ void WallPanelSeparator::createSurfaces() {
         X);
   }
 
-  ModelSupport::buildPlane(SMap, buildIndex + 5, Origin - Z * (height / 2.0),
-                           Z);
-  ModelSupport::buildPlane(SMap, buildIndex + 6, Origin + Z * (height / 2.0),
-                           Z);
+  roofHR = getRule("roof");
+  if (roofHR.isEmpty()) {
+    ModelSupport::buildPlane(SMap, buildIndex + 5, Origin - Z * (height / 2.0),
+                             Z);
+    ModelSupport::buildPlane(SMap, buildIndex + 6, Origin + Z * (height / 2.0),
+                             Z);
+    roofHR = ModelSupport::getHeadRule(SMap, buildIndex, "-6");
+  } else {
+    ExternalCut::makeShiftedSurf(SMap, "roof", buildIndex + 5, Z, -height);
+  }
 }
 
 void WallPanelSeparator::createObjects(Simulation &System) {
@@ -160,9 +166,10 @@ void WallPanelSeparator::createObjects(Simulation &System) {
   const HeadRule innerHR = getRule("innerWall");
 
   makeCell("PlugInside", System, cellIndex++, plugMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5") * roofHR);
   makeCell("PlugOutside", System, cellIndex++, plugMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "2 -12 43 -44 5 -6"));
+           ModelSupport::getHeadRule(SMap, buildIndex, "2 -12 43 -44 5") *
+               roofHR);
 
   std::string sideName = "Left";
   int sign = 1;
@@ -173,72 +180,77 @@ void WallPanelSeparator::createObjects(Simulation &System) {
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "-2 " + std::to_string(sign * side) + " " +
-                     std::to_string(-sign * (side + 10)) + " 5 -6") *
-                 innerHR.complement());
+                     std::to_string(-sign * (side + 10)) + " 5") *
+                 roofHR * innerHR.complement());
     makeCell("PlugGapInside" + sideName, System, cellIndex++, voidMaterial, 0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "101 " + std::to_string(sign * side) + " " +
-                     std::to_string(-sign * (side + 50)) + " 5 -6") *
-                 innerHR);
+                     std::to_string(-sign * (side + 50)) + " 5") *
+                 roofHR * innerHR);
     makeCell("PlugGapInside" + sideName, System, cellIndex++, voidMaterial, 0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "-101 131 " + std::to_string(sign * side) + " " +
-                     std::to_string(-sign * (side + 20)) + " 5 -6") *
-                 innerHR);
+                     std::to_string(-sign * (side + 20)) + " 5") *
+                 roofHR * innerHR);
     makeCell("PlugGapInside" + sideName, System, cellIndex++, voidMaterial, 0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "1 -131 " + std::to_string(sign * side) + " " +
-                     std::to_string(-sign * (side + 50)) + " 5 -6") *
-                 innerHR);
+                     std::to_string(-sign * (side + 50)) + " 5") *
+                 roofHR * innerHR);
     makeCell("PlugGapOutside" + sideName, System, cellIndex++, voidMaterial,
              0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "-2 " + std::to_string(sign * (side + 10)) + " " +
-                     std::to_string(-sign * (side + 40)) + " 5 -6") *
-                 outerHR);
+                     std::to_string(-sign * (side + 40)) + " 5") *
+                 roofHR * outerHR);
 
     makeCell("Channel" + sideName, System, cellIndex++, channelMaterial, 0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "-101 131 " + std::to_string(sign * (side + 20)) + " " +
-                     std::to_string(-sign * (side + 30)) + " 5 -6"));
+                     std::to_string(-sign * (side + 30)) + " 5") *
+                 roofHR);
     makeCell("Channel" + sideName, System, cellIndex++, channelMaterial, 0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "-101 111 " + std::to_string(sign * (side + 30)) + " " +
-                     std::to_string(-sign * (side + 50)) + " 5 -6"));
+                     std::to_string(-sign * (side + 50)) + " 5") *
+                 roofHR);
     makeCell("Channel" + sideName, System, cellIndex++, channelMaterial, 0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "-121 131 " + std::to_string(sign * (side + 30)) + " " +
-                     std::to_string(-sign * (side + 50)) + " 5 -6"));
+                     std::to_string(-sign * (side + 50)) + " 5") *
+                 roofHR);
     makeCell("Channel" + sideName + "Void", System, cellIndex++, voidMaterial,
              0.0,
              ModelSupport::getHeadRule(
                  SMap, buildIndex,
                  "-111 121 " + std::to_string(sign * (side + 30)) + " " +
-                     std::to_string(-sign * (side + 50)) + " 5 -6"));
+                     std::to_string(-sign * (side + 50)) + " 5") *
+                 roofHR);
   }
 
   HeadRule backSurface;
   if (channelGapToWall + channelWidth > plugWidthInside) {
     backSurface = ModelSupport::getHeadRule(SMap, buildIndex, "131");
     makeCell("PlugInsideVoid", System, cellIndex++, voidMaterial, 0.0,
-             ModelSupport::getHeadRule(SMap, buildIndex, "131 -1 3 -4 5 -6"));
+             ModelSupport::getHeadRule(SMap, buildIndex, "131 -1 3 -4 5") *
+                 roofHR);
   } else {
     backSurface = ModelSupport::getHeadRule(SMap, buildIndex, "1");
   }
 
-  addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "53 -54 5 -6") *
-                   innerHR * backSurface +
-               ModelSupport::getHeadRule(SMap, buildIndex, "13 -14 5 -6") *
-                   innerHR.complement() * outerHR.complement() +
-               ModelSupport::getHeadRule(SMap, buildIndex, "-12 43 -44 5 -6") *
-                   outerHR);
+  addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "53 -54 5") *
+                   roofHR * innerHR * backSurface +
+               ModelSupport::getHeadRule(SMap, buildIndex, "13 -14 5") *
+                   roofHR * innerHR.complement() * outerHR.complement() +
+               ModelSupport::getHeadRule(SMap, buildIndex, "-12 43 -44 5") *
+                   roofHR * outerHR);
 }
 
 void WallPanelSeparator::createLinks() {}
