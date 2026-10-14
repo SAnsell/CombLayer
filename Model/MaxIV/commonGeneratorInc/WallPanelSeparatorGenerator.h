@@ -28,10 +28,14 @@ namespace setVariable {
 
 /*!
   \class WallPanelSeparatorGenerator
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
   \date October 2026
   \brief WallPanelSeparatorGenerator for variables
+
+  Version History
+  ---------------
+  1.0   - 2026-10-14
 */
 
 class WallPanelSeparatorGenerator {

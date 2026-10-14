@@ -27,7 +27,7 @@ class Simulation;
 namespace xraySystem {
 /*!
   \class WallPanelSeparator
-  \version 0.1
+  \version 1.0
   \author U. Friman-Gayer
   \date October 2026
   \brief Separator between panels of a straight wall in Caratelli design
@@ -100,6 +100,10 @@ namespace xraySystem {
   ----------
   [1] Caratelli, MAX IV DanMAX, 06769-00-000-C.pdf
   [2] CAD Model for DanMAX Hutches, DANMAX 2017-12-15.STEP
+
+  Version History
+  ---------------
+  1.0   - 2026-10-14
 */
 
 class WallPanelSeparator : public attachSystem::ContainedComp,
