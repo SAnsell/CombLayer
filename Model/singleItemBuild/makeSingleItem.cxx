@@ -2168,7 +2168,7 @@ makeSingleItem::build(Simulation& System,
       experimentalHutch->createAll(System,World::masterOrigin(),0);
 
       std::vector<std::string> wallPanelSeparatorSuffix = {
-        "Default", "Offset", "NarrowChannel", "NoChannel"};
+        "Default", "Offset", "NarrowChannel", "NoChannel", "NoRoof"};
       std::vector<std::shared_ptr<xraySystem::WallPanelSeparator>> wallPanelSeparator;
       for(size_t i = 0; i < wallPanelSeparatorSuffix.size(); ++i){
         wallPanelSeparator.push_back(
@@ -2191,6 +2191,10 @@ makeSingleItem::build(Simulation& System,
           "innerWall", *experimentalHutch, "OuterWallInner");
         wallPanelSeparator[i]->setCutSurf(
           "outerWall", *experimentalHutch, "leftWall");
+        if(i < wallPanelSeparatorSuffix.size()-1){
+          wallPanelSeparator[i]->setCutSurf(
+            "roof", *experimentalHutch, "RoofInner");
+        }
         wallPanelSeparator[i]->createAll(
           System,*experimentalHutch, experimentalHutch->getSideIndex("leftWall"));
       }

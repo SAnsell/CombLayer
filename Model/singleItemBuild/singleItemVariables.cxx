@@ -1177,6 +1177,10 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable(wallPanelSeparatorName+"ChannelMaterial", "Void");
   Control.addVariable(wallPanelSeparatorName+"XStep", 45.0);
 
+  wallPanelSeparatorName = "WallPanelSeparatorNoRoof";
+  wallPanelSeparatorGenerator.generate(Control, wallPanelSeparatorName);
+  Control.addVariable(wallPanelSeparatorName+"XStep", 60.0);
+
   return;
 }
 
