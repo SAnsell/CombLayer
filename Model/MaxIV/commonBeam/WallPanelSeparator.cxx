@@ -224,11 +224,21 @@ void WallPanelSeparator::createObjects(Simulation &System) {
                      std::to_string(-sign * (side + 50)) + " 5 -6"));
   }
 
-  addOuterSurf(
-      ModelSupport::getHeadRule(SMap, buildIndex, "1 53 -54 5 -6") * innerHR +
-      ModelSupport::getHeadRule(SMap, buildIndex, "13 -14 5 -6") *
-          innerHR.complement() * outerHR.complement() +
-      ModelSupport::getHeadRule(SMap, buildIndex, "-12 43 -44 5 -6") * outerHR);
+  HeadRule backSurface;
+  if (channelGapToWall + channelWidth > plugWidthInside) {
+    backSurface = ModelSupport::getHeadRule(SMap, buildIndex, "131");
+    makeCell("PlugInsideVoid", System, cellIndex++, voidMaterial, 0.0,
+             ModelSupport::getHeadRule(SMap, buildIndex, "131 -1 3 -4 5 -6"));
+  } else {
+    backSurface = ModelSupport::getHeadRule(SMap, buildIndex, "1");
+  }
+
+  addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "53 -54 5 -6") *
+                   innerHR * backSurface +
+               ModelSupport::getHeadRule(SMap, buildIndex, "13 -14 5 -6") *
+                   innerHR.complement() * outerHR.complement() +
+               ModelSupport::getHeadRule(SMap, buildIndex, "-12 43 -44 5 -6") *
+                   outerHR);
 }
 
 void WallPanelSeparator::createLinks() {}
