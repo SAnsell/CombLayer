@@ -43,12 +43,22 @@
 namespace setVariable {
 
 WallPanelSeparatorGenerator::WallPanelSeparatorGenerator()
-    : channelGapToPlug(0.05), channelGapToWall(0.05), channelHeight(5.0),
-      channelThickness(0.6), channelWidth(10.0), height(300.0),
+    : // All values that have no reference have been estimated.
+      // Detail E in [1] gives few values explicitly, the others were measured
+      // with a screen ruler.
+      channelGapToPlug(0.05), channelGapToWall(0.05),
+      channelHeight(5.0),    // Detail E in [1]
+      channelThickness(0.6), // Detail E in [1]
+      channelWidth(10.0),    // Detail E in [1]
+      height(375.0),         // [2]
       plugGapInside(0.05), plugGapOutside(0.05), plugOffsetInside(0.0),
-      plugThicknessInside(0.8), plugThicknessOutside(0.8), plugWidthInside(8.5),
-      plugWidthOutside(9.0), channelMaterial("SteelUnknownGrade"),
-      plugMaterial("Lead"), voidMaterial("Void") {}
+      plugThicknessInside(0.8),  // Detail E in [1]
+      plugThicknessOutside(0.8), // Detail E in [1]
+      plugWidthInside(8.5),      // Detail E in [1]
+      plugWidthOutside(9.0),     // Detail E in [1]
+      channelMaterial("SteelUnknownGrade"),
+      plugMaterial("Lead"), // Detail E in [1]
+      voidMaterial("Void") {}
 
 void WallPanelSeparatorGenerator::generate(FuncDataBase &Control,
                                            const std::string &keyName) const {
