@@ -218,7 +218,7 @@
 #include "MonoBlockXstals.h"
 #include "MLMono.h"
 #include "MovableMask.h"
-#include "RectangularCollimator.h"
+#include "ProjectionCollimator.h"
 #include "WallPanelSeparator.h"
 
 #include "makeSingleItem.h"
@@ -281,7 +281,7 @@ makeSingleItem::build(Simulation& System,
   "ConcreteDoor","IonPumpGammaVacuum", "RFGun", "Solenoid","SlitsMask","Torus",
 	"M1detail","M1Full","MovableSafetyMask","HeatAbsorberToyama",
 	"HeatAbsorberR3Toyama","FixedMaskHybrid","SqrShield","MonoBlockXstals","MLMono",
-  "MovableMask", "RectangularCollimator", "WallPanelSeparator",
+  "MovableMask", "ProjectionCollimator", "WallPanelSeparator",
   "Help","help"
     });
 
@@ -2105,13 +2105,13 @@ makeSingleItem::build(Simulation& System,
       return;
     }
 
-    if (item == "RectangularCollimator"){
-      std::shared_ptr<xraySystem::RectangularCollimator<4>> rectangularCollimator = 
-        std::make_shared<xraySystem::RectangularCollimator<4>>("RectangularCollimator");
-      OR.addObject(rectangularCollimator);;
+    if (item == "ProjectionCollimator"){
+      std::shared_ptr<xraySystem::ProjectionCollimator<4>> ProjectionCollimator = 
+        std::make_shared<xraySystem::ProjectionCollimator<4>>("ProjectionCollimator");
+      OR.addObject(ProjectionCollimator);;
 
-      rectangularCollimator->addInsertCell(voidCell);
-      rectangularCollimator->createAll(System,World::masterOrigin(),0);
+      ProjectionCollimator->addInsertCell(voidCell);
+      ProjectionCollimator->createAll(System,World::masterOrigin(),0);
 
       return;
     }

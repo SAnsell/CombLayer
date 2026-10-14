@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeamInc/RectangularCollimator.h
+ * File:   commonBeamInc/ProjectionCollimator.h
  *
  * Copyright (c) 2004-2026 by S. Ansell and U. Friman-Gayer
  *
@@ -20,14 +20,14 @@
  *
  ****************************************************************************/
 
-#ifndef xraySystem_RectangularCollimator_h
-#define xraySystem_RectangularCollimator_h
+#ifndef xraySystem_ProjectionCollimator_h
+#define xraySystem_ProjectionCollimator_h
 
 class Simulation;
 
 namespace xraySystem {
 /*!
-  \class RectangularCollimator
+  \class ProjectionCollimator
   \version 0.1
   \author U. Friman-Gayer
   \date October 2026
@@ -35,7 +35,7 @@ namespace xraySystem {
 */
 
 template <std::size_t N>
-class RectangularCollimator : public attachSystem::ContainedComp,
+class ProjectionCollimator : public attachSystem::ContainedComp,
                               public attachSystem::FixedRotate,
                               public attachSystem::FrontBackCut,
                               public attachSystem::CellMap,
@@ -59,10 +59,10 @@ private:
   void createLinks();
 
 public:
-  RectangularCollimator(const std::string &);
-  RectangularCollimator(const RectangularCollimator &);
-  RectangularCollimator &operator=(const RectangularCollimator &);
-  ~RectangularCollimator() override {}
+  ProjectionCollimator(const std::string &);
+  ProjectionCollimator(const ProjectionCollimator &);
+  ProjectionCollimator &operator=(const ProjectionCollimator &);
+  ~ProjectionCollimator() override {}
 
   void populate(const FuncDataBase &) override;
 

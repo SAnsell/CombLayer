@@ -1,7 +1,7 @@
 /*********************************************************************
   CombLayer : MCNP(X) Input builder
 
- * File:   commonBeam/RectangularCollimator.cxx
+ * File:   commonBeam/ProjectionCollimator.cxx
  *
  * Copyright (c) 2004-2026 by S. Ansell and U. Friman-Gayer
  *
@@ -61,23 +61,23 @@
 #include "SurfMap.h"
 #include "ExternalCut.h"
 #include "FrontBackCut.h"
-#include "RectangularCollimator.h"
+#include "ProjectionCollimator.h"
 
 namespace xraySystem {
 template <std::size_t N>
-RectangularCollimator<N>::RectangularCollimator(const std::string &Key)
+ProjectionCollimator<N>::ProjectionCollimator(const std::string &Key)
     : attachSystem::ContainedComp(), attachSystem::FixedRotate(Key),
       attachSystem::CellMap(), attachSystem::SurfMap() {}
 
 template <std::size_t N>
-RectangularCollimator<N>::RectangularCollimator(const RectangularCollimator &A)
+ProjectionCollimator<N>::ProjectionCollimator(const ProjectionCollimator &A)
     : attachSystem::ContainedComp(A), attachSystem::FixedRotate(A),
       attachSystem::FrontBackCut(A), attachSystem::CellMap(A),
       attachSystem::SurfMap(A) {}
 
 template <std::size_t N>
-RectangularCollimator<N> &
-RectangularCollimator<N>::operator=(const RectangularCollimator<N> &A) {
+ProjectionCollimator<N> &
+ProjectionCollimator<N>::operator=(const ProjectionCollimator<N> &A) {
   if (this != &A) {
     attachSystem::ContainedComp::operator=(A);
     attachSystem::FixedRotate::operator=(A);
@@ -88,7 +88,7 @@ RectangularCollimator<N>::operator=(const RectangularCollimator<N> &A) {
 }
 
 template <std::size_t N>
-int RectangularCollimator<N>::planeIndex(const unsigned int n_segment,
+int ProjectionCollimator<N>::planeIndex(const unsigned int n_segment,
                                          const unsigned int side) const {
   if (n_segment == N - 1 && side == 1) {
     return 2;
@@ -100,7 +100,7 @@ int RectangularCollimator<N>::planeIndex(const unsigned int n_segment,
 }
 
 template <std::size_t N>
-void RectangularCollimator<N>::buildInnerPlane(const unsigned int n_segment,
+void ProjectionCollimator<N>::buildInnerPlane(const unsigned int n_segment,
                                                const unsigned int side) {
   bool isOddSide = side % 2;
   double angle;
@@ -135,7 +135,7 @@ void RectangularCollimator<N>::buildInnerPlane(const unsigned int n_segment,
 }
 
 template <std::size_t N>
-void RectangularCollimator<N>::populate(const FuncDataBase &Control) {
+void ProjectionCollimator<N>::populate(const FuncDataBase &Control) {
   FixedRotate::populate(Control);
 
   apertureY[0] = 0.0;
@@ -161,7 +161,7 @@ void RectangularCollimator<N>::populate(const FuncDataBase &Control) {
   voidMaterial = ModelSupport::EvalDefMat(Control, keyName + "VoidMaterial", 0);
 }
 
-template <std::size_t N> void RectangularCollimator<N>::createSurfaces() {
+template <std::size_t N> void ProjectionCollimator<N>::createSurfaces() {
 
   if (!isActive("front")) {
     ModelSupport::buildPlane(SMap, buildIndex + 1, Origin, Y);
@@ -190,7 +190,7 @@ template <std::size_t N> void RectangularCollimator<N>::createSurfaces() {
 }
 
 template <std::size_t N>
-void RectangularCollimator<N>::createObjects(Simulation &System) {
+void ProjectionCollimator<N>::createObjects(Simulation &System) {
   if (N == 2) {
     makeCell("Segment0", System, cellIndex++, material, 0.0,
              ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
@@ -219,12 +219,12 @@ void RectangularCollimator<N>::createObjects(Simulation &System) {
   addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
 }
 
-template <std::size_t N> void RectangularCollimator<N>::createLinks() {
+template <std::size_t N> void ProjectionCollimator<N>::createLinks() {
   FrontBackCut::createLinks(*this, Origin, Y);
 }
 
 template <std::size_t N>
-void RectangularCollimator<N>::createAll(Simulation &System,
+void ProjectionCollimator<N>::createAll(Simulation &System,
                                          const attachSystem::FixedComp &FC,
                                          const long int sideIndex) {
   populate(System.getDataBase());
@@ -235,8 +235,8 @@ void RectangularCollimator<N>::createAll(Simulation &System,
   insertObjects(System);
 }
 
-template class RectangularCollimator<2>;
-template class RectangularCollimator<3>;
-template class RectangularCollimator<4>;
+template class ProjectionCollimator<2>;
+template class ProjectionCollimator<3>;
+template class ProjectionCollimator<4>;
 
 } // namespace xraySystem
