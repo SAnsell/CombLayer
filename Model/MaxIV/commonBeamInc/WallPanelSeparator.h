@@ -66,9 +66,7 @@ private:
 
 public:
   WallPanelSeparator(const std::string &);
-  WallPanelSeparator(const WallPanelSeparator &);
-  WallPanelSeparator &operator=(const WallPanelSeparator &);
-  ~WallPanelSeparator() override {} ///< Destructor
+  ~WallPanelSeparator() override {}
 
   using attachSystem::FixedComp::createAll;
   void createAll(Simulation &, const attachSystem::FixedComp &,
