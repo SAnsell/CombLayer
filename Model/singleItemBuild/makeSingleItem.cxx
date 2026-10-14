@@ -2160,32 +2160,41 @@ makeSingleItem::build(Simulation& System,
 
     if (item == "WallPanelSeparator") {
       std::shared_ptr<xraySystem::ExperimentalHutch>
-        experimentalHutch = std::make_shared<xraySystem::ExperimentalHutch>("ExpHutch");
-      std::shared_ptr<xraySystem::WallPanelSeparator> wallPanelSeparator = 
-        std::make_shared<xraySystem::WallPanelSeparator>("WallPanelSeparator");
-
+        experimentalHutch = std::make_shared<xraySystem::ExperimentalHutch>(
+          "ExpHutch");
       OR.addObject(experimentalHutch);
-      OR.addObject(wallPanelSeparator);
 
       experimentalHutch->addInsertCell(voidCell);
       experimentalHutch->createAll(System,World::masterOrigin(),0);
 
-      wallPanelSeparator->addInsertCell(
-        experimentalHutch->getCell("InnerOuterWall"));
-      wallPanelSeparator->addInsertCell(
-        experimentalHutch->getCell("LeadOuterWall"));
-      wallPanelSeparator->addInsertCell(
-        experimentalHutch->getCell("OuterSkinOuterWall"));
-      wallPanelSeparator->addInsertCell(
-        experimentalHutch->getCell("FloorShineOuterWallVoid"));
-      wallPanelSeparator->addInsertCell(
-        experimentalHutch->getCell("OuterLeftVoid", 0));
-      wallPanelSeparator->setCutSurf(
-        "innerWall", *experimentalHutch, "OuterWallInner");
-      wallPanelSeparator->setCutSurf(
-        "outerWall", *experimentalHutch, "leftWall");
-      wallPanelSeparator->createAll(
-        System,*experimentalHutch, experimentalHutch->getSideIndex("leftWall"));
+      std::vector<std::string> wallPanelSeparatorSuffix = {
+        "Default", "Offset", "NarrowChannel", "NoChannel"};
+      std::vector<std::shared_ptr<xraySystem::WallPanelSeparator>> wallPanelSeparator;
+      for(size_t i = 0; i < wallPanelSeparatorSuffix.size(); ++i){
+        wallPanelSeparator.push_back(
+          std::make_shared<xraySystem::WallPanelSeparator>(
+            "WallPanelSeparator"+wallPanelSeparatorSuffix[i])
+        );
+        OR.addObject(wallPanelSeparator[i]);
+
+        wallPanelSeparator[i]->addInsertCell(
+          experimentalHutch->getCell("InnerOuterWall"));
+        wallPanelSeparator[i]->addInsertCell(
+          experimentalHutch->getCell("LeadOuterWall"));
+        wallPanelSeparator[i]->addInsertCell(
+          experimentalHutch->getCell("OuterSkinOuterWall"));
+        wallPanelSeparator[i]->addInsertCell(
+          experimentalHutch->getCell("FloorShineOuterWallVoid"));
+        wallPanelSeparator[i]->addInsertCell(
+          experimentalHutch->getCell("OuterLeftVoid", 0));
+        wallPanelSeparator[i]->setCutSurf(
+          "innerWall", *experimentalHutch, "OuterWallInner");
+        wallPanelSeparator[i]->setCutSurf(
+          "outerWall", *experimentalHutch, "leftWall");
+        wallPanelSeparator[i]->createAll(
+          System,*experimentalHutch, experimentalHutch->getSideIndex("leftWall"));
+      }
+
     return;
   }
 

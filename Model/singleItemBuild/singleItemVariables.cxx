@@ -164,6 +164,7 @@
 #include "ExptHutGenerator.h"
 #include "MovableMaskGenerator.h"
 #include "MovableMaskToyama.h"
+#include "WallPanelSeparatorGenerator.h"
 
 namespace setVariable
 {
@@ -1156,22 +1157,25 @@ SingleItemVariables(FuncDataBase& Control)
   // WallPanelGenerator
   setVariable::ExptHutGenerator EGen;
   EGen.generateHut(Control,"ExpHutch",0.0, 500.0);
-  Control.addVariable("WallPanelSeparatorChannelGapToPlug", 0.5);
-  Control.addVariable("WallPanelSeparatorChannelGapToWall", 0.5);
-  Control.addVariable("WallPanelSeparatorChannelHeight", 5.0);
-  Control.addVariable("WallPanelSeparatorChannelThickness", 0.5);
-  Control.addVariable("WallPanelSeparatorChannelWidth", 8.0);
-  Control.addVariable("WallPanelSeparatorHeight", 100.0);
-  Control.addVariable("WallPanelSeparatorPlugGapInside", 0.1);
-  Control.addVariable("WallPanelSeparatorPlugGapOutside", 0.1);
-  Control.addVariable("WallPanelSeparatorPlugOffsetInside", 0.05);
-  Control.addVariable("WallPanelSeparatorPlugThicknessInside", 1.2);
-  Control.addVariable("WallPanelSeparatorPlugThicknessOutside", 3.0);
-  Control.addVariable("WallPanelSeparatorPlugWidthInside", 9.0);
-  Control.addVariable("WallPanelSeparatorPlugWidthOutside", 9.0);
-  Control.addVariable("WallPanelSeparatorChannelMaterial", "SteelUnknownGrade");
-  Control.addVariable("WallPanelSeparatorPlugMaterial", "Lead");
-  Control.addVariable("WallPanelSeparatorVoidMaterial", "Void");
+  setVariable::WallPanelSeparatorGenerator wallPanelSeparatorGenerator;
+
+  std::string wallPanelSeparatorName = "WallPanelSeparatorDefault";
+  wallPanelSeparatorGenerator.generate(Control, wallPanelSeparatorName);
+
+  wallPanelSeparatorName = "WallPanelSeparatorOffset";
+  wallPanelSeparatorGenerator.generate(Control, wallPanelSeparatorName);
+  Control.addVariable(wallPanelSeparatorName+"PlugOffsetInside", 0.01);
+  Control.addVariable(wallPanelSeparatorName+"XStep", 15.0);
+
+  wallPanelSeparatorName = "WallPanelSeparatorNarrowChannel";
+  wallPanelSeparatorGenerator.generate(Control, wallPanelSeparatorName);
+  Control.addVariable(wallPanelSeparatorName+"ChannelWidth", 6.0);
+  Control.addVariable(wallPanelSeparatorName+"XStep", 30.0);
+
+  wallPanelSeparatorName = "WallPanelSeparatorNoChannel";
+  wallPanelSeparatorGenerator.generate(Control, wallPanelSeparatorName);
+  Control.addVariable(wallPanelSeparatorName+"ChannelMaterial", "Void");
+  Control.addVariable(wallPanelSeparatorName+"XStep", 45.0);
 
   return;
 }
