@@ -30,7 +30,76 @@ namespace xraySystem {
   \version 0.1
   \author U. Friman-Gayer
   \date October 2026
-  \brief
+  \brief Separator between panels of a straight wall in Caratelli design
+
+  Long shielding walls in the Caratelli design typically consist of multiple
+  panels. To avoid radiation leakage from the gaps between the panels, a piece
+  with a letter-T-shaped cross section -here referred to as a "plug"- is
+  inserted.
+
+  This class implements the T-shaped plug and a pair of so-called C channels
+  that are located at the inside of a straight (separators between angled panels
+  or between hutches may have a different design) wall. While the main shielding
+  function is fulfilled by the plug alone, the channels may significantly
+  contribute as well. Several variables are provided to model imperfections like
+  gaps and offsets in the separator.
+
+  An overview of all variables of the plug is shown in the top-view drawing
+  below:
+
+  <--------------PlugWidthOutside ------------------>
+  ---------------------------------------------------  ^
+  |                 PLUG OUTSIDE                    |  | PlugThicknessOutside
+  ---------------------------------------------------  v
+                      |     |                          ^
+                      |  P  |                          | PlugGapOutside
+                      |  L  |                          v
+  -----------------   |  U  |   ------------------------
+        WALL      |   |  G  |   |       WALL
+  -----------------   |     |   ------------------------
+  PlugGapInside    <->|  I  |<-> PlugGapInside     ^
+  - PlugGapOffset     |  N  |    + PlugGapOffset   |
+                      |  S  |                      |
+                      |  I  |                      | PlugWidthInside
+                      |  D  |                      |
+       "Left"         |  E  |         "Right"      |
+                      |     |                      |
+                      -------                      v
+                      <-----> PlugThicknessInside
+
+  The drawing above also shows the definition of "left" and "right" used in this
+  class. The channels provide the variables shown in the top-view drawing below:
+
+  -----------------   |  P  |   ------------------------
+        WALL      |   |  L  |   |       WALL
+  -----------------   |  U  |   ------------------------
+                      |  G  |      ChannelHeight      ^
+                      |     |   <-------------------> |  ChannelGapToWall
+                      |     |    ____________________ v
+                ^     |     |   |                   | ^  ChannelThickness
+                |     |     |   |   ________________| v
+                |     |     |   |   |
+  ChannelWidth  |     |     |   |   |
+                |     |     |   |   |
+                |     |     |   |   |
+                |     |     |   |   |________________
+                |     |     |   |                   |
+                v     |     |   |___________________|
+                             <-> ChannelGapToPlug
+
+  The only parameter that is not shown in the drawings is the height.
+
+  In order to place the separator, "innerWall" and "outerWall" rules
+  must be provided as cut surfaces. An optional "roof" rule can also be supplied
+  to attach the separator to the inside of a roof surface.
+
+  The general design of the wall-panel separators was taken from Refs. [1] and
+  [2] for the DanMAX beamline at MAX IV.
+
+  References
+  ----------
+  [1] Caratelli, MAX IV DanMAX, 06769-00-000-C.pdf
+  [2] CAD Model for DanMAX Hutches, DANMAX 2017-12-15.STEP
 */
 
 class WallPanelSeparator : public attachSystem::ContainedComp,
@@ -58,6 +127,8 @@ private:
   int channelMaterial;
   int plugMaterial;
   int voidMaterial;
+
+  HeadRule roofHR;
 
   void populate(const FuncDataBase &) override;
   void createSurfaces();
