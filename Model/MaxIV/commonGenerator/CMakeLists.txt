@@ -44,7 +44,8 @@ set (commonGeneratorSources
     TWCavityGenerator.cxx TwinPipeGenerator.cxx UndVacGenerator.cxx
     ViewScreenGenerator.cxx WallLeadGenerator.cxx YagScreenGenerator.cxx
     YagUnitBigGenerator.cxx YagUnitGenerator.cxx SlitsMaskGenerator.cxx
-    GTFBeamDumpGenerator.cxx FixedMaskHybridGenerator.cxx WhiteBeamStopGenerator.cxx
+    GTFBeamDumpGenerator.cxx FixedMaskHybridGenerator.cxx
+    WallPanelSeparatorGenerator.cxx WhiteBeamStopGenerator.cxx
 )
 
 add_library (commonGenerator SHARED
@@ -190,6 +191,7 @@ set (SRC_LIST ${SRC_LIST}
   $(tarDIR)/GTFBeamDumpGenerator.cxx
   ${tarDIR}/FixedMaskHybridGenerator.cxx
   ${tarDIR}/WhiteBeamStopGenerator.cxx
+  ${tarDIR}/WallPanelSeparatorGenerator.cxx
   ${tarINC}/AreaDetectorGenerator.h
   ${tarINC}/BeamBoxGenerator.h
   ${tarINC}/BeamDividerGenerator.h
@@ -314,4 +316,5 @@ set (SRC_LIST ${SRC_LIST}
   $(tarINC)/GTFBeamDumpGenerator.h
   ${tarINC}/FixedMaskHybridGenerator.h
   ${tarINC}/WhiteBeamStopGenerator.h
+  ${tarINC}/WallPanelSeparatorGenerator.h
   ${tarDIR}/CMakeLists.txt PARENT_SCOPE)
