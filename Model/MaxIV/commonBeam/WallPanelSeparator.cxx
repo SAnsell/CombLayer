@@ -158,40 +158,71 @@ void WallPanelSeparator::createSurfaces() {
 void WallPanelSeparator::createObjects(Simulation &System) {
   const HeadRule outerHR = getRule("outerWall");
   const HeadRule innerHR = getRule("innerWall");
+
   makeCell("PlugInside", System, cellIndex++, plugMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
-  makeCell("PlugGapWallLeft", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-2 -3 13 5 -6") *
-               innerHR.complement());
-  makeCell("PlugGapInsideLeft", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "101 -3 53 5 -6") *
-               innerHR);
-  makeCell("PlugGapInsideLeft", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-101 131 -3 23 5 -6") *
-               innerHR);
-  makeCell("PlugGapInsideLeft", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "1 -131 -3 53 5 -6") *
-               innerHR);
-  makeCell("PlugGapWallRight", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-2 4 -14 5 -6") *
-               innerHR.complement());
   makeCell("PlugOutside", System, cellIndex++, plugMaterial, 0.0,
            ModelSupport::getHeadRule(SMap, buildIndex, "2 -12 43 -44 5 -6"));
-  makeCell("PlugGapOutsideLeft", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-2 -13 43 5 -6") *
-               outerHR);
-  makeCell("PlugGapOutsideRight", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-2 14 -44 5 -6") *
-               outerHR);
 
-  makeCell("ChannelLeft", System, cellIndex++, channelMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-101 131 -23 33 5 -6"));
-  makeCell("ChannelLeft", System, cellIndex++, channelMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-101 111 -33 53 5 -6"));
-  makeCell("ChannelLeft", System, cellIndex++, channelMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-121 131 -33 53 5 -6"));
-  makeCell("ChannelLeftVoid", System, cellIndex++, voidMaterial, 0.0,
-           ModelSupport::getHeadRule(SMap, buildIndex, "-111 121 -33 53 5 -6"));
+  std::string sideName = "Left";
+  int sign = 1;
+  for (int side = 3; side <= 4; ++side) {
+    sideName = side == 3 ? "Left" : "Right";
+    sign = side == 3 ? -1 : 1;
+    makeCell("PlugGapWall" + sideName, System, cellIndex++, voidMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "-2 " + std::to_string(sign * side) + " " +
+                     std::to_string(-sign * (side + 10)) + " 5 -6") *
+                 innerHR.complement());
+    makeCell("PlugGapInside" + sideName, System, cellIndex++, voidMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "101 " + std::to_string(sign * side) + " " +
+                     std::to_string(-sign * (side + 50)) + " 5 -6") *
+                 innerHR);
+    makeCell("PlugGapInside" + sideName, System, cellIndex++, voidMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "-101 131 " + std::to_string(sign * side) + " " +
+                     std::to_string(-sign * (side + 20)) + " 5 -6") *
+                 innerHR);
+    makeCell("PlugGapInside" + sideName, System, cellIndex++, voidMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "1 -131 " + std::to_string(sign * side) + " " +
+                     std::to_string(-sign * (side + 50)) + " 5 -6") *
+                 innerHR);
+    makeCell("PlugGapOutside" + sideName, System, cellIndex++, voidMaterial,
+             0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "-2 " + std::to_string(sign * (side + 10)) + " " +
+                     std::to_string(-sign * (side + 40)) + " 5 -6") *
+                 outerHR);
+
+    makeCell("Channel" + sideName, System, cellIndex++, channelMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "-101 131 " + std::to_string(sign * (side + 20)) + " " +
+                     std::to_string(-sign * (side + 30)) + " 5 -6"));
+    makeCell("Channel" + sideName, System, cellIndex++, channelMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "-101 111 " + std::to_string(sign * (side + 30)) + " " +
+                     std::to_string(-sign * (side + 50)) + " 5 -6"));
+    makeCell("Channel" + sideName, System, cellIndex++, channelMaterial, 0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "-121 131 " + std::to_string(sign * (side + 30)) + " " +
+                     std::to_string(-sign * (side + 50)) + " 5 -6"));
+    makeCell("Channel" + sideName + "Void", System, cellIndex++, voidMaterial,
+             0.0,
+             ModelSupport::getHeadRule(
+                 SMap, buildIndex,
+                 "-111 121 " + std::to_string(sign * (side + 30)) + " " +
+                     std::to_string(-sign * (side + 50)) + " 5 -6"));
+  }
 
   addOuterSurf(
       ModelSupport::getHeadRule(SMap, buildIndex, "1 53 -54 5 -6") * innerHR +
