@@ -2106,8 +2106,8 @@ makeSingleItem::build(Simulation& System,
     }
 
     if (item == "ProjectionCollimator"){
-      std::shared_ptr<xraySystem::ProjectionCollimator<4>> ProjectionCollimator = 
-        std::make_shared<xraySystem::ProjectionCollimator<4>>("ProjectionCollimator");
+      std::shared_ptr<xraySystem::ProjectionCollimator<4, 2>> ProjectionCollimator = 
+        std::make_shared<xraySystem::ProjectionCollimator<4, 2>>("ProjectionCollimator");
       OR.addObject(ProjectionCollimator);;
 
       ProjectionCollimator->addInsertCell(voidCell);

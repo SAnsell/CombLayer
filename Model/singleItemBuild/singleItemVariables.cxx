@@ -165,6 +165,7 @@
 #include "MovableMaskGenerator.h"
 #include "MovableMaskToyama.h"
 #include "WallPanelSeparatorGenerator.h"
+#include "ProjectionCollimatorGenerator.h"
 
 namespace setVariable
 {
@@ -996,30 +997,13 @@ SingleItemVariables(FuncDataBase& Control)
   movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B5FullyClose");
 
   // ProjectionCollimator
-  const std::string ProjectionCollimatorKey = "ProjectionCollimator";
-  Control.addVariable(ProjectionCollimatorKey+"ApertureXMin0", 0.0);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureXMax0", 1.0);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureXMin1", 0.4);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureXMax1", 0.6);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureXMin2", 0.4);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureXMax2", 0.6);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureXMin3", 0.1);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureXMax3", 0.9);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureY1", 10.0);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureY2", 40.0);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureY3", 50.0);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureZMin0", 0.0);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureZMax0", 1.0);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureZMin1", 0.4);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureZMax1", 0.6);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureZMin2", 0.4);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureZMax2", 0.6);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureZMin3", 0.1);
-  Control.addVariable(ProjectionCollimatorKey+"ApertureZMax3", 0.9);
-  Control.addVariable(ProjectionCollimatorKey+"Height", 10.0);
-  Control.addVariable(ProjectionCollimatorKey+"Width", 20.0);
-  Control.addVariable(ProjectionCollimatorKey+"Material", "Copper");
-  Control.addVariable(ProjectionCollimatorKey+"VoidMaterial", "Void");
+  ProjectionCollimatorGenerator<4,2> projectionCollimatorGenerator;
+  projectionCollimatorGenerator.setAperture(
+    {{{-0.5, 0.5, 0.5, -0.5}, {-0.5, 0.0, 0.0, -0.5}, {-0.5, 0.5, 0.5, -0.5}}},
+    {0.0, 10.0, 20.0},
+    {{{-0.5, -0.5, 0.5, 0.5}, {-0.5, -0.5, 0.5, 0.5}, {-0.5, -0.5, 0.0, 0.0}}}
+  );
+  projectionCollimatorGenerator.generate(Control, "ProjectionCollimator");
 
   // Concrete door
   setVariable::LocalShieldingGenerator LSGen;
