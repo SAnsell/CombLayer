@@ -3,7 +3,7 @@
 
  * File:   commonBeamInc/ProjectionCollimator.h
  *
- * Copyright (c) 2004-2026 by S. Ansell and U. Friman-Gayer
+ * Copyright (c) 2026 by U. Friman-Gayer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -32,7 +32,8 @@ set (commonGeneratorSources
     XRayHutchBaseGenerator.cxx PipeShieldGenerator.cxx PortChicaneGenerator.cxx
     PowerFilterGenerator.cxx
     ProximityShieldingGenerator.cxx
-    PreDipoleGenerator.cxx PrismaChamberGenerator.cxx QuadrupoleGenerator.cxx
+    PreDipoleGenerator.cxx PrismaChamberGenerator.cxx
+    ProjectionCollimatorGenerator.cxx QuadrupoleGenerator.cxx
     QuadUnitGenerator.cxx R3ChokeChamberGenerator.cxx RFGunGenerator.cxx
     RingDoorGenerator.cxx RoundShutterGenerator.cxx ScrapperGenerator.cxx
     ScreenGenerator.cxx SexupoleGenerator.cxx ShutterUnitGenerator.cxx
@@ -154,6 +155,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarDIR}/ProximityShieldingGenerator.cxx
   ${tarDIR}/PreDipoleGenerator.cxx
   ${tarDIR}/PrismaChamberGenerator.cxx
+  ${tarDIR}/ProjectionCollimatorGenerator.cxx
   ${tarDIR}/QuadrupoleGenerator.cxx
   ${tarDIR}/QuadUnitGenerator.cxx
   ${tarDIR}/R3ChokeChamberGenerator.cxx
@@ -279,6 +281,7 @@ set (SRC_LIST ${SRC_LIST}
   ${tarINC}/ProximityShieldingGenerator.h
   ${tarINC}/PreDipoleGenerator.h
   ${tarINC}/PrismaChamberGenerator.h
+  ${tarINC}/ProjectionCollimatorGenerator.h
   ${tarINC}/QuadrupoleGenerator.h
   ${tarINC}/QuadUnitGenerator.h
   ${tarINC}/R3ChokeChamberGenerator.h
