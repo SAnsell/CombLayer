@@ -70,26 +70,6 @@ ProjectionCollimator<NPoints, NSegments>::ProjectionCollimator(
       attachSystem::CellMap(), attachSystem::SurfMap() {}
 
 template <std::size_t NPoints, std::size_t NSegments>
-ProjectionCollimator<NPoints, NSegments>::ProjectionCollimator(
-    const ProjectionCollimator &A)
-    : attachSystem::ContainedComp(A), attachSystem::FixedRotate(A),
-      attachSystem::FrontBackCut(A), attachSystem::CellMap(A),
-      attachSystem::SurfMap(A) {}
-
-template <std::size_t NPoints, std::size_t NSegments>
-ProjectionCollimator<NPoints, NSegments> &
-ProjectionCollimator<NPoints, NSegments>::operator=(
-    const ProjectionCollimator<NPoints, NSegments> &A) {
-  if (this != &A) {
-    attachSystem::ContainedComp::operator=(A);
-    attachSystem::FixedRotate::operator=(A);
-    attachSystem::CellMap::operator=(A);
-    attachSystem::SurfMap::operator=(A);
-  }
-  return *this;
-}
-
-template <std::size_t NPoints, std::size_t NSegments>
 void ProjectionCollimator<NPoints, NSegments>::populate(
     const FuncDataBase &Control) {
   FixedRotate::populate(Control);

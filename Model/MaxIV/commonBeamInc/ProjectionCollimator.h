@@ -57,8 +57,6 @@ private:
 
 public:
   ProjectionCollimator(const std::string &);
-  ProjectionCollimator(const ProjectionCollimator &);
-  ProjectionCollimator &operator=(const ProjectionCollimator &);
   ~ProjectionCollimator() override {}
 
   void populate(const FuncDataBase &) override;
