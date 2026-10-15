@@ -23,7 +23,6 @@
 #include <array>
 #include <fstream>
 #include <iomanip>
-#include <iostream>
 #include <sstream>
 #include <cmath>
 #include <complex>
@@ -64,20 +63,23 @@
 #include "ProjectionCollimator.h"
 
 namespace xraySystem {
-template <std::size_t N>
-ProjectionCollimator<N>::ProjectionCollimator(const std::string &Key)
+template <std::size_t NPoints, std::size_t NSegments>
+ProjectionCollimator<NPoints, NSegments>::ProjectionCollimator(
+    const std::string &Key)
     : attachSystem::ContainedComp(), attachSystem::FixedRotate(Key),
       attachSystem::CellMap(), attachSystem::SurfMap() {}
 
-template <std::size_t N>
-ProjectionCollimator<N>::ProjectionCollimator(const ProjectionCollimator &A)
+template <std::size_t NPoints, std::size_t NSegments>
+ProjectionCollimator<NPoints, NSegments>::ProjectionCollimator(
+    const ProjectionCollimator &A)
     : attachSystem::ContainedComp(A), attachSystem::FixedRotate(A),
       attachSystem::FrontBackCut(A), attachSystem::CellMap(A),
       attachSystem::SurfMap(A) {}
 
-template <std::size_t N>
-ProjectionCollimator<N> &
-ProjectionCollimator<N>::operator=(const ProjectionCollimator<N> &A) {
+template <std::size_t NPoints, std::size_t NSegments>
+ProjectionCollimator<NPoints, NSegments> &
+ProjectionCollimator<NPoints, NSegments>::operator=(
+    const ProjectionCollimator<NPoints, NSegments> &A) {
   if (this != &A) {
     attachSystem::ContainedComp::operator=(A);
     attachSystem::FixedRotate::operator=(A);
@@ -87,71 +89,25 @@ ProjectionCollimator<N>::operator=(const ProjectionCollimator<N> &A) {
   return *this;
 }
 
-template <std::size_t N>
-int ProjectionCollimator<N>::planeIndex(const unsigned int n_segment,
-                                         const unsigned int side) const {
-  if (n_segment == N - 1 && side == 1) {
-    return 2;
-  }
-  if (side > 1) {
-    return (n_segment + 1) * 10 + side;
-  }
-  return n_segment * 10 + side;
-}
-
-template <std::size_t N>
-void ProjectionCollimator<N>::buildInnerPlane(const unsigned int n_segment,
-                                               const unsigned int side) {
-  bool isOddSide = side % 2;
-  double angle;
-  Geometry::Vec3D normalVector, rotationAxis;
-  Geometry::Vec3D planeOrigin = Y * apertureY[n_segment];
-  if (side < 5) {
-    normalVector = X;
-    rotationAxis = -Z;
-    angle = isOddSide ? tan((apertureX[n_segment + 1].first -
-                             apertureX[n_segment].first) /
-                            (apertureY[n_segment + 1] - apertureY[n_segment]))
-                      : tan((apertureX[n_segment + 1].second -
-                             apertureX[n_segment].second) /
-                            (apertureY[n_segment + 1] - apertureY[n_segment]));
-    planeOrigin += isOddSide ? X * apertureX[n_segment].first
-                             : X * apertureX[n_segment].second;
-  } else {
-    normalVector = Z;
-    rotationAxis = X;
-    angle = isOddSide ? tan((apertureZ[n_segment + 1].first -
-                             apertureZ[n_segment].first) /
-                            (apertureY[n_segment + 1] - apertureY[n_segment]))
-                      : tan((apertureZ[n_segment + 1].second -
-                             apertureZ[n_segment].second) /
-                            (apertureY[n_segment + 1] - apertureY[n_segment]));
-    planeOrigin += isOddSide ? Z * apertureZ[n_segment].first
-                             : Z * apertureZ[n_segment].second;
-  }
-  normalVector.rotate(rotationAxis, angle);
-  ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n_segment, side),
-                           Origin + planeOrigin, normalVector);
-}
-
-template <std::size_t N>
-void ProjectionCollimator<N>::populate(const FuncDataBase &Control) {
+template <std::size_t NPoints, std::size_t NSegments>
+void ProjectionCollimator<NPoints, NSegments>::populate(
+    const FuncDataBase &Control) {
   FixedRotate::populate(Control);
 
   apertureY[0] = 0.0;
-  for (size_t n = 0; n < N; ++n) {
-    apertureX[n].first =
-        Control.EvalVar<double>(keyName + "ApertureXMin" + std::to_string(n));
-    apertureX[n].second =
-        Control.EvalVar<double>(keyName + "ApertureXMax" + std::to_string(n));
-    if (n > 0) {
-      apertureY[n] =
-          Control.EvalVar<double>(keyName + "ApertureY" + std::to_string(n));
+  for (size_t nSection = 0; nSection < NSegments + 1; ++nSection) {
+    for (size_t nPoint = 0; nPoint < NPoints; ++nPoint) {
+      apertureX[nSection][nPoint] =
+          Control.EvalVar<double>(keyName + "X" + std::to_string(nPoint) +
+                                  "AtY" + std::to_string(nSection));
+      if (nSection > 0) {
+        apertureY[nSection] =
+            Control.EvalVar<double>(keyName + "Y" + std::to_string(nSection));
+      }
+      apertureZ[nSection][nPoint] =
+          Control.EvalVar<double>(keyName + "Z" + std::to_string(nPoint) +
+                                  "AtY" + std::to_string(nSection));
     }
-    apertureZ[n].first =
-        Control.EvalVar<double>(keyName + "ApertureZMin" + std::to_string(n));
-    apertureZ[n].second =
-        Control.EvalVar<double>(keyName + "ApertureZMax" + std::to_string(n));
   }
 
   height = Control.EvalVar<double>(keyName + "Height");
@@ -161,7 +117,22 @@ void ProjectionCollimator<N>::populate(const FuncDataBase &Control) {
   voidMaterial = ModelSupport::EvalDefMat(Control, keyName + "VoidMaterial", 0);
 }
 
-template <std::size_t N> void ProjectionCollimator<N>::createSurfaces() {
+template <std::size_t NPoints, std::size_t NSegments>
+void ProjectionCollimator<NPoints, NSegments>::initializePoints(
+    std::array<std::array<Geometry::Vec3D, NPoints + 1>, NSegments + 1>
+        &points) {
+  for (unsigned int nSection = 0; nSection < NSegments + 1; ++nSection) {
+    for (unsigned int nPoint = 0; nPoint < NPoints; ++nPoint) {
+      points[nSection][nPoint] =
+          Geometry::Vec3D(apertureX[nSection][nPoint], apertureY[nSection],
+                          apertureZ[nSection][nPoint]);
+    }
+    points[nSection][NPoints] = points[nSection][0];
+  }
+}
+
+template <std::size_t NPoints, std::size_t NSegments>
+void ProjectionCollimator<NPoints, NSegments>::createSurfaces() {
 
   if (!isActive("front")) {
     ModelSupport::buildPlane(SMap, buildIndex + 1, Origin, Y);
@@ -169,64 +140,77 @@ template <std::size_t N> void ProjectionCollimator<N>::createSurfaces() {
   }
   if (!isActive("back")) {
     ModelSupport::buildPlane(SMap, buildIndex + 2,
-                             Origin + Y * apertureY[N - 1], Y);
+                             Origin + Y * apertureY[NSegments], Y);
     setBack(-SMap.realSurf(buildIndex + 2));
   }
+
+  std::array<std::array<Geometry::Vec3D, NPoints + 1>, NSegments + 1> points;
+  initializePoints(points);
 
   ModelSupport::buildPlane(SMap, buildIndex + 3, Origin - X * width / 2.0, X);
   ModelSupport::buildPlane(SMap, buildIndex + 4, Origin + X * width / 2.0, X);
   ModelSupport::buildPlane(SMap, buildIndex + 5, Origin - Z * height / 2.0, Z);
   ModelSupport::buildPlane(SMap, buildIndex + 6, Origin + Z * height / 2.0, Z);
 
-  for (unsigned int n = 1; n < N - 1; ++n) {
-    ModelSupport::buildPlane(SMap, buildIndex + planeIndex(n, 1),
-                             Origin + Y * apertureY[n], Y);
-  }
-  for (unsigned int n = 0; n < N - 1; ++n) {
-    for (unsigned int side = 3; side < 7; ++side) {
-      buildInnerPlane(n, side);
+  for (unsigned int nSection = 0; nSection < NSegments + 1; ++nSection) {
+    if (nSection > 0 && nSection < NSegments) {
+      ModelSupport::buildPlane(SMap, buildIndex + nSection * 10 + 1,
+                               Origin + Y * apertureY[nSection], Y);
+    }
+    for (unsigned int nPoint = 0; nPoint < NPoints; ++nPoint) {
+      ModelSupport::buildPlane(
+          SMap, buildIndex + (int)(nSection * NPoints + nPoint + 1) * 10 + 3,
+          Origin + points[nSection][nPoint],
+          (points[nSection][nPoint + 1] - points[nSection][nPoint]) *
+              (points[nSection + 1][nPoint] - points[nSection][nPoint]));
     }
   }
 }
 
-template <std::size_t N>
-void ProjectionCollimator<N>::createObjects(Simulation &System) {
-  if (N == 2) {
-    makeCell("Segment0", System, cellIndex++, material, 0.0,
-             ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
-  } else {
-    HeadRule hole, segmentLimits;
-    for (unsigned int n = 0; n < N - 1; ++n) {
-      segmentLimits =
-          ModelSupport::getHeadRule(SMap, buildIndex,
-                                    std::to_string(planeIndex(n, 1)) + " -" +
-                                        std::to_string(planeIndex(n + 1, 1)));
-      hole = ModelSupport::getHeadRule(
-          SMap, buildIndex,
-          std::to_string(planeIndex(n, 3)) + " -" +
-              std::to_string(planeIndex(n, 4)) + " " +
-              std::to_string(planeIndex(n, 5)) + " -" +
-              std::to_string(planeIndex(n, 6)));
-      makeCell("Segment" + std::to_string(n), System, cellIndex++, material,
-               0.0,
-               ModelSupport::getHeadRule(SMap, buildIndex, "3 -4 5 -6") *
-                   segmentLimits * hole.complement());
-      makeCell("SegmentHole" + std::to_string(n), System, cellIndex++,
-               voidMaterial, 0.0, segmentLimits * hole);
+template <std::size_t NPoints, std::size_t NSegments>
+void ProjectionCollimator<NPoints, NSegments>::createObjects(
+    Simulation &System) {
+
+  std::string holestr;
+  HeadRule holeSegment, segmentFront, segmentBack;
+  const HeadRule body =
+      ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6");
+  for (unsigned int nSection = 0; nSection < NSegments; ++nSection) {
+    holestr = "";
+    segmentFront = ModelSupport::getHeadRule(SMap, buildIndex,
+                                             std::to_string(nSection * 10 + 1));
+    segmentBack =
+        ModelSupport::getHeadRule(SMap, buildIndex,
+                                  nSection == NSegments - 1
+                                      ? "2"
+                                      : std::to_string((nSection + 1) * 10 + 1))
+            .complement();
+
+    for (unsigned int nPoint = 0; nPoint < NPoints; ++nPoint) {
+      holestr +=
+          std::to_string((nSection * NPoints + nPoint + 1) * 10 + 3) + " ";
     }
+
+    holeSegment = ModelSupport::getHeadRule(SMap, buildIndex, holestr);
+    makeCell("Segment" + std::to_string(nSection) + "Hole", System, cellIndex++,
+             voidMaterial, 0.0, segmentFront * segmentBack * holeSegment);
+    makeCell("Segment" + std::to_string(nSection) + "Body", System, cellIndex++,
+             material, 0.0,
+             segmentFront * body * segmentBack * holeSegment.complement());
   }
 
-  addOuterSurf(ModelSupport::getHeadRule(SMap, buildIndex, "1 -2 3 -4 5 -6"));
+  addOuterSurf(body);
 }
 
-template <std::size_t N> void ProjectionCollimator<N>::createLinks() {
+template <std::size_t NPoints, std::size_t NSegments>
+void ProjectionCollimator<NPoints, NSegments>::createLinks() {
   FrontBackCut::createLinks(*this, Origin, Y);
 }
 
-template <std::size_t N>
-void ProjectionCollimator<N>::createAll(Simulation &System,
-                                         const attachSystem::FixedComp &FC,
-                                         const long int sideIndex) {
+template <std::size_t NPoints, std::size_t NSegments>
+void ProjectionCollimator<NPoints, NSegments>::createAll(
+    Simulation &System, const attachSystem::FixedComp &FC,
+    const long int sideIndex) {
   populate(System.getDataBase());
   createUnitVector(FC, sideIndex);
   createSurfaces();
@@ -235,8 +219,6 @@ void ProjectionCollimator<N>::createAll(Simulation &System,
   insertObjects(System);
 }
 
-template class ProjectionCollimator<2>;
-template class ProjectionCollimator<3>;
-template class ProjectionCollimator<4>;
+template class ProjectionCollimator<4, 2>;
 
 } // namespace xraySystem

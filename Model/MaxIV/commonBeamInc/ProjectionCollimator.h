@@ -34,25 +34,22 @@ namespace xraySystem {
   \brief
 */
 
-template <std::size_t N>
+template <std::size_t NPoints, std::size_t NSegments>
 class ProjectionCollimator : public attachSystem::ContainedComp,
-                              public attachSystem::FixedRotate,
-                              public attachSystem::FrontBackCut,
-                              public attachSystem::CellMap,
-                              public attachSystem::SurfMap {
+                             public attachSystem::FixedRotate,
+                             public attachSystem::FrontBackCut,
+                             public attachSystem::CellMap,
+                             public attachSystem::SurfMap {
 private:
-  std::array<std::pair<double, double>, N> apertureX;
-  std::array<double, N> apertureY;
-  std::array<std::pair<double, double>, N> apertureZ;
+  std::array<std::array<double, NPoints>, NSegments + 1> apertureX;
+  std::array<double, NSegments + 1> apertureY;
+  std::array<std::array<double, NPoints>, NSegments + 1> apertureZ;
 
   double height;
   double width;
 
   int material;
   int voidMaterial;
-
-  int planeIndex(const unsigned int n_segment, const unsigned int side) const;
-  void buildInnerPlane(const unsigned int n_segment, const unsigned int side);
 
   void createSurfaces();
   void createObjects(Simulation &);
@@ -65,6 +62,9 @@ public:
   ~ProjectionCollimator() override {}
 
   void populate(const FuncDataBase &) override;
+
+  void initializePoints(
+      std::array<std::array<Geometry::Vec3D, NPoints + 1>, NSegments + 1> &);
 
   void createAll(Simulation &, const attachSystem::FixedComp &,
                  const long int) override;
