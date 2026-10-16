@@ -112,6 +112,21 @@ void ProjectionCollimator<NPoints, NSegments>::initializePoints(
 }
 
 template <std::size_t NPoints, std::size_t NSegments>
+void ProjectionCollimator<NPoints, NSegments>::findCOM(
+    std::array<Geometry::Vec3D, NSegments> &com,
+    const std::array<std::array<Geometry::Vec3D, NPoints + 1>, NSegments + 1>
+        &points) {
+  const double norm = 1.0 / (double)NPoints;
+  for (size_t nSegment = 0; nSegment < NSegments; ++nSegment) {
+    com[nSegment] = Geometry::Vec3D(0.0, 0.0, 0.0);
+    for (size_t nPoint = 0; nPoint < NPoints; ++nPoint) {
+      com[nSegment] += points[nSegment][nPoint];
+    }
+    com[nSegment] = com[nSegment] * norm;
+  }
+}
+
+template <std::size_t NPoints, std::size_t NSegments>
 void ProjectionCollimator<NPoints, NSegments>::createSurfaces() {
 
   if (!isActive("front")) {
@@ -126,6 +141,8 @@ void ProjectionCollimator<NPoints, NSegments>::createSurfaces() {
 
   std::array<std::array<Geometry::Vec3D, NPoints + 1>, NSegments + 1> points;
   initializePoints(points);
+  std::array<Geometry::Vec3D, NSegments> com;
+  findCOM(com, points);
 
   ModelSupport::buildPlane(SMap, buildIndex + 3, Origin - X * width / 2.0, X);
   ModelSupport::buildPlane(SMap, buildIndex + 4, Origin + X * width / 2.0, X);
@@ -142,6 +159,11 @@ void ProjectionCollimator<NPoints, NSegments>::createSurfaces() {
           SMap, buildIndex + (int)(nSection * NPoints + nPoint + 1) * 10 + 3,
           Origin + points[nSection][nPoint],
           (points[nSection][nPoint + 1] - points[nSection][nPoint]) *
+              (points[nSection + 1][nPoint] - points[nSection][nPoint]));
+      ModelSupport::buildPlane(
+          SMap, buildIndex + (int)(nSection * NPoints + nPoint + 1) * 10 + 5,
+          Origin + points[nSection][nPoint],
+          (com[nSection] - points[nSection][nPoint]) *
               (points[nSection + 1][nPoint] - points[nSection][nPoint]));
     }
   }

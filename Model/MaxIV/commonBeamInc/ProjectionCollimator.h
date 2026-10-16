@@ -63,6 +63,9 @@ public:
 
   void initializePoints(
       std::array<std::array<Geometry::Vec3D, NPoints + 1>, NSegments + 1> &);
+  void findCOM(std::array<Geometry::Vec3D, NSegments> &,
+               const std::array<std::array<Geometry::Vec3D, NPoints + 1>,
+                                NSegments + 1> &);
 
   void createAll(Simulation &, const attachSystem::FixedComp &,
                  const long int) override;
