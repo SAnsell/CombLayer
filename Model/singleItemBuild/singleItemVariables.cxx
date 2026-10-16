@@ -1004,6 +1004,15 @@ SingleItemVariables(FuncDataBase& Control)
     {{{-0.5, -0.5, 0.5, 0.5}, {-0.5, -0.5, 0.5, 0.5}, {-0.5, -0.5, 0.0, 0.0}}}
   );
   projectionCollimatorGenerator.generate(Control, "ProjectionCollimator");
+  projectionCollimatorGenerator.setRoundedRectangularAperture(
+    {{{-0.5, 0.5}, {-0.5, 0.0}, {-0.5, 0.5}}},
+    {0.0, 10.0, 20.0},
+    {{{-0.5, 0.5}, {-0.5, 0.5}, {-0.5, 0.0}}},
+    0.0
+  );
+  projectionCollimatorGenerator.generate(
+    Control, "ProjectionCollimatorRoundedRectangle");
+  Control.addVariable("ProjectionCollimatorRoundedRectangleZStep", 20.0);
 
   // Concrete door
   setVariable::LocalShieldingGenerator LSGen;

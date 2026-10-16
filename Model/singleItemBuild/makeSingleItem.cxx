@@ -2106,12 +2106,20 @@ makeSingleItem::build(Simulation& System,
     }
 
     if (item == "ProjectionCollimator"){
-      std::shared_ptr<xraySystem::ProjectionCollimator<4, 2>> ProjectionCollimator = 
-        std::make_shared<xraySystem::ProjectionCollimator<4, 2>>("ProjectionCollimator");
-      OR.addObject(ProjectionCollimator);;
+      std::shared_ptr<xraySystem::ProjectionCollimator<4, 2>> 
+        ProjectionCollimator = std::make_shared<xraySystem::
+        ProjectionCollimator<4, 2>>("ProjectionCollimator");
+      std::shared_ptr<xraySystem::ProjectionCollimator<4, 2>>
+        ProjectionCollimatorRoundedRectangle = std::make_shared<xraySystem::
+        ProjectionCollimator<4, 2>>("ProjectionCollimatorRoundedRectangle");
+      OR.addObject(ProjectionCollimator);
+      OR.addObject(ProjectionCollimatorRoundedRectangle);
 
       ProjectionCollimator->addInsertCell(voidCell);
       ProjectionCollimator->createAll(System,World::masterOrigin(),0);
+      ProjectionCollimatorRoundedRectangle->addInsertCell(voidCell);
+      ProjectionCollimatorRoundedRectangle->createAll(
+        System,World::masterOrigin(),0);
 
       return;
     }
