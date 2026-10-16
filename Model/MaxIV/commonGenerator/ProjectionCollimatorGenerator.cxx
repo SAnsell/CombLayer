@@ -103,7 +103,7 @@ void ProjectionCollimatorGenerator<NPoints, NSegments>::
   }
 
   size_t nPoint = 0;
-  double angleStep, cosAngle, sinAngle;
+  double angle, angleStep, cornerRotationCenterX, cornerRotationCenterZ;
   for (size_t nSection = 0; nSection < NSegments + 1; ++nSection) {
     nPoint = 0;
     for (size_t quadrant = 0; quadrant < 4; ++quadrant) {
@@ -131,28 +131,30 @@ void ProjectionCollimatorGenerator<NPoints, NSegments>::
         angleStep = M_PI_2 / (double)(nPointsPerQuadrant[quadrant] - 1);
         for (size_t nQuadrantPoint = 0;
              nQuadrantPoint < nPointsPerQuadrant[quadrant]; ++nQuadrantPoint) {
-          cosAngle = cos(angleStep * (double)nQuadrantPoint /
-                         (double)(nPointsPerQuadrant[quadrant] - 1));
-          sinAngle = sin(angleStep * (double)nQuadrantPoint /
-                         (double)(nPointsPerQuadrant[quadrant] - 1));
+          angle =
+              angleStep * (double)nQuadrantPoint + (double)quadrant * M_PI_2;
           switch (quadrant) {
           case 0:
-            apertureX[nSection][nPoint] = aX[nSection][1] - radius * sinAngle;
-            apertureZ[nSection][nPoint] = aZ[nSection][1] - radius * cosAngle;
+            cornerRotationCenterX = aX[nSection][1] - radius;
+            cornerRotationCenterZ = aZ[nSection][1] - radius;
             break;
           case 1:
-            apertureX[nSection][nPoint] = aX[nSection][0] + radius * cosAngle;
-            apertureZ[nSection][nPoint] = aZ[nSection][1] - radius * sinAngle;
+            cornerRotationCenterX = aX[nSection][0] + radius;
+            cornerRotationCenterZ = aZ[nSection][1] - radius;
             break;
           case 2:
-            apertureX[nSection][nPoint] = aX[nSection][0] + radius * sinAngle;
-            apertureZ[nSection][nPoint] = aZ[nSection][0] + radius * cosAngle;
+            cornerRotationCenterX = aX[nSection][0] + radius;
+            cornerRotationCenterZ = aZ[nSection][0] + radius;
             break;
           case 3:
-            apertureX[nSection][nPoint] = aX[nSection][1] - radius * cosAngle;
-            apertureZ[nSection][nPoint] = aZ[nSection][0] + radius * sinAngle;
+            cornerRotationCenterX = aX[nSection][1] - radius;
+            cornerRotationCenterZ = aZ[nSection][0] + radius;
             break;
           }
+          apertureX[nSection][nPoint] =
+              cornerRotationCenterX + radius * cos(angle);
+          apertureZ[nSection][nPoint] =
+              cornerRotationCenterZ + radius * sin(angle);
           ++nPoint;
         }
       }
@@ -162,5 +164,7 @@ void ProjectionCollimatorGenerator<NPoints, NSegments>::
 
 template class ProjectionCollimatorGenerator<4, 2>;
 template class ProjectionCollimatorGenerator<8, 2>;
+template class ProjectionCollimatorGenerator<9, 2>;
+template class ProjectionCollimatorGenerator<12, 2>;
 
 } // NAMESPACE setVariable
