@@ -19,6 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
+
+#include <array>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -997,22 +999,62 @@ SingleItemVariables(FuncDataBase& Control)
   movableMaskGenerator.generate(Control, "MovableMaskToyamaR3B5FullyClose");
 
   // ProjectionCollimator
-  ProjectionCollimatorGenerator<4,2> projectionCollimatorGenerator;
-  projectionCollimatorGenerator.setAperture(
+  ProjectionCollimatorGenerator<4,2> projectionCollimatorGenerator4;
+  projectionCollimatorGenerator4.setAperture(
     {{{-0.5, 0.5, 0.5, -0.5}, {-0.5, 0.0, 0.0, -0.5}, {-0.5, 0.5, 0.5, -0.5}}},
     {0.0, 10.0, 20.0},
     {{{-0.5, -0.5, 0.5, 0.5}, {-0.5, -0.5, 0.5, 0.5}, {-0.5, -0.5, 0.0, 0.0}}}
   );
-  projectionCollimatorGenerator.generate(Control, "ProjectionCollimator");
-  projectionCollimatorGenerator.setRoundedRectangularAperture(
-    {{{-0.5, 0.5}, {-0.5, 0.0}, {-0.5, 0.5}}},
-    {0.0, 10.0, 20.0},
-    {{{-0.5, 0.5}, {-0.5, 0.5}, {-0.5, 0.0}}},
-    0.0
+  projectionCollimatorGenerator4.generate(Control, "ProjectionCollimator");
+  const std::array<std::array<double, 2>, 3> apertureX =
+    {{{-0.5, 0.5}, {-0.5, 0.0}, {-0.5, 0.5}}};
+  const std::array<double, 3> apertureY = {0.0, 10.0, 20.0};
+  const std::array<std::array<double, 2>, 3> apertureZ =
+    {{{-0.5, 0.5}, {-0.5, 0.5}, {-0.5, 0.0}}};
+  const double radius = 0.1;
+  projectionCollimatorGenerator4.setRoundedRectangularAperture(
+    apertureX,
+    apertureY,
+    apertureZ,
+    radius
   );
-  projectionCollimatorGenerator.generate(
-    Control, "ProjectionCollimatorRoundedRectangle");
-  Control.addVariable("ProjectionCollimatorRoundedRectangleZStep", 20.0);
+  projectionCollimatorGenerator4.generate(
+    Control, "ProjectionCollimatorRoundedRectangle4");
+  Control.addVariable("ProjectionCollimatorRoundedRectangle4ZStep", 20.0);
+
+  ProjectionCollimatorGenerator<8,2> projectionCollimatorGenerator8;
+  projectionCollimatorGenerator8.setRoundedRectangularAperture(
+    apertureX,
+    apertureY,
+    apertureZ,
+    radius
+  );
+  projectionCollimatorGenerator8.generate(
+    Control, "ProjectionCollimatorRoundedRectangle8");
+  Control.addVariable("ProjectionCollimatorRoundedRectangle8ZStep", 40.0);
+
+  ProjectionCollimatorGenerator<9,2> projectionCollimatorGenerator9;
+  projectionCollimatorGenerator9.setRoundedRectangularAperture(
+    apertureX,
+    apertureY,
+    apertureZ,
+    radius
+  );
+  projectionCollimatorGenerator9.generate(
+    Control, "ProjectionCollimatorRoundedRectangle9");
+  Control.addVariable("ProjectionCollimatorRoundedRectangle9ZStep", 60.0);
+
+  ProjectionCollimatorGenerator<12,2> projectionCollimatorGenerator12;
+  projectionCollimatorGenerator12.setRoundedRectangularAperture(
+    apertureX,
+    apertureY,
+    apertureZ,
+    radius
+  );
+  projectionCollimatorGenerator12.generate(
+    Control, "ProjectionCollimatorRoundedRectangle12");
+  Control.addVariable("ProjectionCollimatorRoundedRectangle12ZStep", 80.0);
+
 
   // Concrete door
   setVariable::LocalShieldingGenerator LSGen;

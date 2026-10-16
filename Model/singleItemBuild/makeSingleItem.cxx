@@ -2110,15 +2110,36 @@ makeSingleItem::build(Simulation& System,
         ProjectionCollimator = std::make_shared<xraySystem::
         ProjectionCollimator<4, 2>>("ProjectionCollimator");
       std::shared_ptr<xraySystem::ProjectionCollimator<4, 2>>
-        ProjectionCollimatorRoundedRectangle = std::make_shared<xraySystem::
-        ProjectionCollimator<4, 2>>("ProjectionCollimatorRoundedRectangle");
+        ProjectionCollimatorRoundedRectangle4 = std::make_shared<xraySystem::
+        ProjectionCollimator<4, 2>>("ProjectionCollimatorRoundedRectangle4");
+      std::shared_ptr<xraySystem::ProjectionCollimator<8, 2>>
+        ProjectionCollimatorRoundedRectangle8 = std::make_shared<xraySystem::
+        ProjectionCollimator<8, 2>>("ProjectionCollimatorRoundedRectangle8");
+      std::shared_ptr<xraySystem::ProjectionCollimator<9, 2>>
+        ProjectionCollimatorRoundedRectangle9 = std::make_shared<xraySystem::
+        ProjectionCollimator<9, 2>>("ProjectionCollimatorRoundedRectangle9");
+      std::shared_ptr<xraySystem::ProjectionCollimator<12, 2>>
+        ProjectionCollimatorRoundedRectangle12 = std::make_shared<xraySystem::
+        ProjectionCollimator<12, 2>>("ProjectionCollimatorRoundedRectangle12");
       OR.addObject(ProjectionCollimator);
-      OR.addObject(ProjectionCollimatorRoundedRectangle);
+      OR.addObject(ProjectionCollimatorRoundedRectangle4);
+      OR.addObject(ProjectionCollimatorRoundedRectangle8);
+      OR.addObject(ProjectionCollimatorRoundedRectangle9);
+      OR.addObject(ProjectionCollimatorRoundedRectangle12);
 
       ProjectionCollimator->addInsertCell(voidCell);
       ProjectionCollimator->createAll(System,World::masterOrigin(),0);
-      ProjectionCollimatorRoundedRectangle->addInsertCell(voidCell);
-      ProjectionCollimatorRoundedRectangle->createAll(
+      ProjectionCollimatorRoundedRectangle4->addInsertCell(voidCell);
+      ProjectionCollimatorRoundedRectangle4->createAll(
+        System,World::masterOrigin(),0);
+      ProjectionCollimatorRoundedRectangle8->addInsertCell(voidCell);
+      ProjectionCollimatorRoundedRectangle8->createAll(
+        System,World::masterOrigin(),0);
+      ProjectionCollimatorRoundedRectangle9->addInsertCell(voidCell);
+      ProjectionCollimatorRoundedRectangle9->createAll(
+        System,World::masterOrigin(),0);
+      ProjectionCollimatorRoundedRectangle12->addInsertCell(voidCell);
+      ProjectionCollimatorRoundedRectangle12->createAll(
         System,World::masterOrigin(),0);
 
       return;
