@@ -103,39 +103,64 @@ void ProjectionCollimatorGenerator<NPoints, NSegments>::
   }
 
   size_t nPoint = 0;
-  double angleStep, x(0.0), z(0.0);
+  double angleStep, cosAngle, sinAngle, x(0.0), z(0.0);
   for (size_t nSection = 0; nSection < NSegments + 1; ++nSection) {
     nPoint = 0;
     for (size_t quadrant = 0; quadrant < 4; ++quadrant) {
-      switch (quadrant) {
-      case 0:
-        x = aX[nSection][1];
-        z = aZ[nSection][1];
-        break;
-      case 1:
-        x = aX[nSection][0];
-        z = aZ[nSection][1];
-        break;
-      case 2:
-        x = aX[nSection][0];
-        z = aZ[nSection][0];
-        break;
-      case 3:
-        x = aX[nSection][1];
-        z = aZ[nSection][0];
-        break;
-      }
       if (nPointsPerQuadrant[quadrant] == 1) {
-        apertureX[nSection][nPoint] = x;
-        apertureZ[nSection][nPoint] = z;
-        ++nPoint;
+        switch (quadrant) {
+        case 0:
+          apertureX[nSection][nPoint] = aX[nSection][1];
+          apertureZ[nSection][nPoint] = aZ[nSection][1];
+          break;
+        case 1:
+          apertureX[nSection][nPoint] = aX[nSection][0];
+          apertureZ[nSection][nPoint] = aZ[nSection][1];
+          break;
+        case 2:
+          apertureX[nSection][nPoint] = aX[nSection][0];
+          apertureZ[nSection][nPoint] = aZ[nSection][0];
+          break;
+        case 3:
+          apertureX[nSection][nPoint] = aX[nSection][1];
+          apertureZ[nSection][nPoint] = aZ[nSection][0];
+          break;
+          ++nPoint;
+        }
       } else {
         angleStep = M_PI_2 / (double)(nPointsPerQuadrant[quadrant] - 1);
+        for (size_t nQuadrantPoint = 0;
+             nQuadrantPoint < nPointsPerQuadrant[quadrant]; ++nQuadrantPoint) {
+          cosAngle = cos(angleStep * (double)nQuadrantPoint /
+                         (double)(nPointsPerQuadrant[quadrant] - 1));
+          sinAngle = sin(angleStep * (double)nQuadrantPoint /
+                         (double)(nPointsPerQuadrant[quadrant] - 1));
+          switch (quadrant) {
+          case 0:
+            apertureX[nSection][nPoint] = aX[nSection][1] - radius * sinAngle;
+            apertureZ[nSection][nPoint] = aZ[nSection][1] - radius * cosAngle;
+            break;
+          case 1:
+            apertureX[nSection][nPoint] = aX[nSection][0] + radius * cosAngle;
+            apertureZ[nSection][nPoint] = aZ[nSection][1] - radius * sinAngle;
+            break;
+          case 2:
+            apertureX[nSection][nPoint] = aX[nSection][0] + radius * sinAngle;
+            apertureZ[nSection][nPoint] = aZ[nSection][0] + radius * cosAngle;
+            break;
+          case 3:
+            apertureX[nSection][nPoint] = aX[nSection][1] - radius * cosAngle;
+            apertureZ[nSection][nPoint] = aZ[nSection][0] + radius * sinAngle;
+            break;
+          }
+          ++nPoint;
+        }
       }
     }
   }
 }
 
 template class ProjectionCollimatorGenerator<4, 2>;
+template class ProjectionCollimatorGenerator<8, 2>;
 
 } // NAMESPACE setVariable

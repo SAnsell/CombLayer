@@ -200,5 +200,6 @@ void ProjectionCollimator<NPoints, NSegments>::createAll(
 }
 
 template class ProjectionCollimator<4, 2>;
+template class ProjectionCollimator<8, 2>;
 
 } // namespace xraySystem
