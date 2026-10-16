@@ -103,7 +103,7 @@ void ProjectionCollimatorGenerator<NPoints, NSegments>::
   }
 
   size_t nPoint = 0;
-  double angleStep, cosAngle, sinAngle, x(0.0), z(0.0);
+  double angleStep, cosAngle, sinAngle;
   for (size_t nSection = 0; nSection < NSegments + 1; ++nSection) {
     nPoint = 0;
     for (size_t quadrant = 0; quadrant < 4; ++quadrant) {
@@ -125,8 +125,8 @@ void ProjectionCollimatorGenerator<NPoints, NSegments>::
           apertureX[nSection][nPoint] = aX[nSection][1];
           apertureZ[nSection][nPoint] = aZ[nSection][0];
           break;
-          ++nPoint;
         }
+        ++nPoint;
       } else {
         angleStep = M_PI_2 / (double)(nPointsPerQuadrant[quadrant] - 1);
         for (size_t nQuadrantPoint = 0;
