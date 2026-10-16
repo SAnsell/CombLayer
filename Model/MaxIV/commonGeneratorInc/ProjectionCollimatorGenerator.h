@@ -61,6 +61,11 @@ public:
     apertureY = aY;
     apertureZ = aZ;
   };
+  void setRoundedRectangularAperture(
+      const std::array<std::array<double, 2>, NSegments + 1> &aX,
+      const std::array<double, NSegments + 1> &aY,
+      const std::array<std::array<double, 2>, NSegments + 1> &aZ,
+      const double radius);
 
   void generate(FuncDataBase &, const std::string &) const;
 };

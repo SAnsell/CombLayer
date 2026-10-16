@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
-#include <array>
+
 #include <cmath>
 #include <fstream>
 #include <list>
@@ -29,6 +29,7 @@
 #include <string>
 #include <vector>
 
+#include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
@@ -73,6 +74,66 @@ void ProjectionCollimatorGenerator<NPoints, NSegments>::generate(
 
   Control.addVariable(keyName + "Material", material);
   Control.addVariable(keyName + "VoidMaterial", voidMaterial);
+}
+
+template <std::size_t NPoints, std::size_t NSegments>
+void ProjectionCollimatorGenerator<NPoints, NSegments>::
+    setRoundedRectangularAperture(
+        const std::array<std::array<double, 2>, NSegments + 1> &aX,
+        const std::array<double, NSegments + 1> &aY,
+        const std::array<std::array<double, 2>, NSegments + 1> &aZ,
+        const double radius) {
+  if (NPoints < 4) {
+    throw ColErr::SizeError<size_t>(
+        NPoints, 4,
+        "At least four points are required to draw a rectangular aperture.");
+  }
+  if (NPoints % 4 != 0) {
+    ELog::EM << "Warning: Given number of points is not divisible by four. The "
+                "resulting shape will not be symmetric."
+             << ELog::endDiag;
+  }
+
+  apertureY = aY;
+
+  std::array<size_t, 4> nPointsPerQuadrant;
+  nPointsPerQuadrant.fill(NPoints / 4);
+  for (size_t n = 0; n < NPoints % 4; ++n) {
+    nPointsPerQuadrant[n]++;
+  }
+
+  size_t nPoint = 0;
+  double angleStep, x(0.0), z(0.0);
+  for (size_t nSection = 0; nSection < NSegments + 1; ++nSection) {
+    nPoint = 0;
+    for (size_t quadrant = 0; quadrant < 4; ++quadrant) {
+      switch (quadrant) {
+      case 0:
+        x = aX[nSection][1];
+        z = aZ[nSection][1];
+        break;
+      case 1:
+        x = aX[nSection][0];
+        z = aZ[nSection][1];
+        break;
+      case 2:
+        x = aX[nSection][0];
+        z = aZ[nSection][0];
+        break;
+      case 3:
+        x = aX[nSection][1];
+        z = aZ[nSection][0];
+        break;
+      }
+      if (nPointsPerQuadrant[quadrant] == 1) {
+        apertureX[nSection][nPoint] = x;
+        apertureZ[nSection][nPoint] = z;
+        ++nPoint;
+      } else {
+        angleStep = M_PI_2 / (double)(nPointsPerQuadrant[quadrant] - 1);
+      }
+    }
+  }
 }
 
 template class ProjectionCollimatorGenerator<4, 2>;
